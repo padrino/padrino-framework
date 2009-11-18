@@ -75,6 +75,7 @@ module Padrino
         use Rack::Session::Cookie
         use Rack::Flash if flash?
         use Padrino::Reloader if reload?
+        register DatabaseSetup if defined?(DatabaseSetup)
         Dir[Padrino.root + '/config/initializers/*.rb'].each do |file|
           Padrino.load_dependencies(file)
           file_class = File.basename(file, '.rb').classify

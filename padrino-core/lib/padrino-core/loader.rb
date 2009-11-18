@@ -3,7 +3,8 @@ module Padrino
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
       load_required_gems # load bundler gems
-      load_dependencies("#{root}/config/apps.rb", "#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
+      load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb")
+      load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       reload! # We need to fill our Stat::CACHE but we do that only for development
     end
 
