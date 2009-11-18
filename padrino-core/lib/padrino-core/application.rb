@@ -1,5 +1,5 @@
 module Padrino
-  class ApplicationLoadError < RuntimeError; end
+  class ApplicationSetupError < RuntimeError; end
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
@@ -73,7 +73,7 @@ module Padrino
       # Calculates any required paths after app_file and root have been properly configured
       # Executes as part of the setup_application! method
       def calculate_paths
-        raise ApplicationLoadError.new("Please specify 'app_file' configuration option!") unless self.app_file
+        raise ApplicationSetupError.new("Please specify 'app_file' configuration option!") unless self.app_file
         set :views, find_view_path if find_view_path
         set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
       end
