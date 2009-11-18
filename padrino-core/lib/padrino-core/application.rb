@@ -1,4 +1,5 @@
 module Padrino
+  class ApplicationLoadError < RuntimeError; end
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
@@ -26,7 +27,7 @@ module Padrino
       # Makes the routes defined in the block and in the Modules given
       # in `extensions` available to the application
       def controllers(*extensions, &block)
-        @routes = {} if reload? # This perform a basic reload controller
+        @routes = Padrino::Application.dupe_routes if reload? # This performs a basic controller reload
         instance_eval(&block) if block_given?
         include(*extensions)  if extensions.any?
       end
@@ -41,9 +42,10 @@ module Padrino
       protected
 
       # Setup the application by registering initializers, load paths and logger
-      # Invoked automatically when an application instance is created
+      # Invoked automatically when an application is first instantiated
       def setup_application!
         return if @configured
+        self.calculate_paths
         self.register_initializers
         self.register_framework_extensions
         self.require_load_paths
@@ -61,13 +63,19 @@ module Padrino
         set :reload, development?
         # Padrino specific
         set :app_name, self.to_s.underscore.to_sym
-        set :app_file, Padrino.mounted_root(self.app_name.to_s, "/app.rb")
         set :environment, PADRINO_ENV.to_sym
-        set :images_path, self.public + "/images"
         set :default_builder, 'StandardFormBuilder'
         enable :flash
         # Plugin specific
         enable :padrino_helpers
+      end
+
+      # Calculates any required paths after app_file and root have been properly configured
+      # Executes as part of the setup_application! method
+      def calculate_paths
+        raise ApplicationLoadError.new("Please specify 'app_file' configuration option!") unless self.app_file
+        set :views, find_view_path if find_view_path
+        set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
       end
 
       # Requires the middleware and initializer modules to configure components
@@ -92,7 +100,7 @@ module Padrino
 
       # Require all files within the application's load paths
       def require_load_paths
-        load_paths.each { |path|  Padrino.load_dependencies(File.join(self.root, path)) }
+        load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) }
       end
 
       # Creates the log directory and redirects output to file if needed
@@ -104,9 +112,16 @@ module Padrino
         $stderr.reopen(log)
       end
 
-      # Returns the load_paths for the application relative to the application root
+      # Returns the load_paths for the application (relative to the application root)
       def load_paths
-        @load_paths ||= ["models/*.rb", "urls.rb", "controllers/*.rb", "helpers/*.rb"]
+        @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb",
+                         "controllers/*.rb", "app/controllers/*.rb","helpers/*.rb", "app/helpers/*.rb"]
+      end
+
+      # Returns the path to the views directory from root by returning the first that is found
+      def find_view_path
+        @view_paths = ["views", "app/views"].collect { |path| File.join(self.root, path) }
+        @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
       end
     end
   end
