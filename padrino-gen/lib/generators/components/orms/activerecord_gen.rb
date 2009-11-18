@@ -6,7 +6,7 @@ module Padrino
         module ActiverecordGen
           
           AR = (<<-AR).gsub(/^ {10}/, '')
-          module ActiveRecordInitializer
+          module DatabaseSetup
             def self.registered(app)
               app.configure :development do
                 ActiveRecord::Base.establish_connection(
@@ -50,7 +50,7 @@ module Padrino
 
           def setup_orm
             require_dependencies 'activerecord'
-            create_file("config/initializers/active_record.rb", AR)
+            create_file("config/database.rb", AR)
             create_file("Rakefile", RAKE)
           end
         end

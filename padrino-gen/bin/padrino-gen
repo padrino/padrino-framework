@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 %w[rubygems activesupport thor].each { |gem| require gem }
 require File.dirname(__FILE__) + "/../lib/padrino-gen"
+
+generator_kind = ARGV.delete_at(0)
 arguments = ARGV.any? ? ARGV : ['-h']
-Padrino::Generators::Skeleton.start(arguments)
+
+case generator_kind
+  when /app/        then Padrino::Generators::Skeleton.start(arguments)
+  when /controller/ then Padrino::Generators::Controller.start(arguments)
+  else puts "Please select a valid generator_type" # TODO list out generator types here (perhaps created generator type definitions)
+end

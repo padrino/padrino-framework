@@ -10,9 +10,15 @@ class TestSkeletonGenerator < Test::Unit::TestCase
     should "allow simple generator to run and create base_app with no options" do
       assert_nothing_raised { silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--script=none']) } }
       assert File.exist?('/tmp/sample_app')
-      assert File.exist?('/tmp/sample_app/apps')
+      assert File.exist?('/tmp/sample_app/app')
       assert File.exist?('/tmp/sample_app/config/boot.rb')
       assert File.exist?('/tmp/sample_app/test/test_config.rb')
+    end
+    should "place app specific names into correct files" do
+      silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--script=none']) }
+      assert_match_in_file(/class SampleApp < Padrino::Application/m, '/tmp/sample_app/app.rb')
+      assert_match_in_file(/Padrino.mount_core\(:app_class => "SampleApp"\)/m, '/tmp/sample_app/config/apps.rb')
+      assert_match_in_file(/SampleApp::urls do/m, '/tmp/sample_app/config/urls.rb')
     end
     should "create components file containing options chosen with defaults" do
       silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp']) }
@@ -73,37 +79,36 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--orm=sequel', '--script=none']) }
       assert_match /Applying.*?sequel.*?orm/, buffer
       assert_match_in_file(/gem 'sequel'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/SequelInitializer/, '/tmp/sample_app/config/initializers/sequel.rb')
-      # assert_match_in_file(/class User < Sequel::Model/, '/tmp/sample_app/app/models/user.rb')
+      assert_match_in_file(/Sequel.connect/, '/tmp/sample_app/config/database.rb')
     end
 
     should "properly generate for activerecord" do
       buffer = silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--orm=activerecord', '--script=none']) }
       assert_match /Applying.*?activerecord.*?orm/, buffer
       assert_match_in_file(/gem 'activerecord'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/ActiveRecordInitializer/, '/tmp/sample_app/config/initializers/active_record.rb')
       assert_match_in_file(/Migrate the database/, '/tmp/sample_app/Rakefile')
+      assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_app/config/database.rb')
     end
 
     should "properly generate default for datamapper" do
       buffer = silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--orm=datamapper', '--script=none']) }
       assert_match /Applying.*?datamapper.*?orm/, buffer
       assert_match_in_file(/gem 'dm-core'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/DataMapperInitializer/, '/tmp/sample_app/config/initializers/data_mapper.rb')
+      assert_match_in_file(/DataMapper.setup/, '/tmp/sample_app/config/database.rb')
     end
 
     should "properly generate for mongomapper" do
       buffer = silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--orm=mongomapper', '--script=none']) }
       assert_match /Applying.*?mongomapper.*?orm/, buffer
       assert_match_in_file(/gem 'mongo_mapper'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/MongoDbInitializer/, '/tmp/sample_app/config/initializers/mongo_db.rb')
+      assert_match_in_file(/MongoMapper.database/, '/tmp/sample_app/config/database.rb')
     end
 
     should "properly generate for couchrest" do
       buffer = silence_logger { Padrino::Generators::Skeleton.start(['sample_app', '/tmp', '--orm=couchrest', '--script=none']) }
       assert_match /Applying.*?couchrest.*?orm/, buffer
       assert_match_in_file(/gem 'couchrest'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/CouchRestInitializer/, '/tmp/sample_app/config/initializers/couch_rest.rb')    
+      assert_match_in_file(/CouchRest.database!/, '/tmp/sample_app/config/database.rb')    
     end
   end
 

@@ -6,7 +6,7 @@ module Padrino
         module SequelGen
 
           SEQUEL = (<<-SEQUEL).gsub(/^ {10}/, '')
-          module SequelInitializer
+          module DatabaseSetup
             def self.registered(app)
               Sequel::Model.plugin(:schema)
               app.configure(:development) { Sequel.connect('your_dev_db_here') }
@@ -18,7 +18,7 @@ module Padrino
 
           def setup_orm
             require_dependencies 'sequel'
-            create_file("config/initializers/sequel.rb", SEQUEL)
+            create_file("config/database.rb", SEQUEL)
           end
         end
 

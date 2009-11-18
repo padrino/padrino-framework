@@ -6,7 +6,7 @@ module Padrino
         module CouchrestGen
 
           COUCHREST = (<<-COUCHREST).gsub(/^ {10}/, '')
-          module CouchRestInitializer
+          module DatabaseSetup
             def self.registered(app)
               app.configure(:development) { set :couchdb, CouchRest.database!('your_dev_db_here') }
               app.configure(:production)  { set :couchdb, CouchRest.database!('your_production_db_here') }
@@ -18,7 +18,7 @@ module Padrino
 
           def setup_orm
             require_dependencies 'couchrest'
-            create_file("config/initializers/couch_rest.rb", COUCHREST)
+            create_file("config/database.rb", COUCHREST)
           end
         end
         

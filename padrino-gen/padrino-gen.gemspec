@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-17}
+  s.date = %q{2009-11-18}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -47,19 +47,35 @@ Gem::Specification.new do |s|
      "lib/generators/components/tests/rspec_test_gen.rb",
      "lib/generators/components/tests/shoulda_test_gen.rb",
      "lib/generators/components/tests/testspec_test_gen.rb",
-     "lib/generators/project/.gitignore",
-     "lib/generators/project/Gemfile",
-     "lib/generators/project/apps/.empty_directory",
-     "lib/generators/project/config.ru",
-     "lib/generators/project/config/boot.rb",
-     "lib/generators/project/lib/.empty_directory",
-     "lib/generators/project/test/test_config.rb.tt",
-     "lib/generators/project/tmp/.emptydirectory",
+     "lib/generators/controller.rb",
      "lib/generators/skeleton.rb",
+     "lib/generators/skeleton/.gitignore",
+     "lib/generators/skeleton/Gemfile",
+     "lib/generators/skeleton/app.rb.tt",
+     "lib/generators/skeleton/app/.empty_directory",
+     "lib/generators/skeleton/app/controllers/.empty_directory",
+     "lib/generators/skeleton/app/helpers/.empty_directory",
+     "lib/generators/skeleton/app/models/.empty_directory",
+     "lib/generators/skeleton/app/views/.empty_directory",
+     "lib/generators/skeleton/config.ru",
+     "lib/generators/skeleton/config/apps.rb.tt",
+     "lib/generators/skeleton/config/boot.rb",
+     "lib/generators/skeleton/config/initializers/.empty_directory",
+     "lib/generators/skeleton/config/initializers/example.rb",
+     "lib/generators/skeleton/config/urls.rb.tt",
+     "lib/generators/skeleton/lib/.empty_directory",
+     "lib/generators/skeleton/public/images/.empty_directory",
+     "lib/generators/skeleton/public/javascripts/.empty_directory",
+     "lib/generators/skeleton/public/stylesheets/.empty_directory",
+     "lib/generators/skeleton/test/test_config.rb.tt",
+     "lib/generators/skeleton/tmp/.emptydirectory",
+     "lib/generators/skeleton/vendor/gems/.empty_directory",
+     "lib/generators/templates/controller.rb.tt",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
      "test/active_support_helpers.rb",
      "test/helper.rb",
+     "test/test_controller_generator.rb",
      "test/test_skeleton_generator.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-gen}

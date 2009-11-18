@@ -8,7 +8,7 @@ module Padrino
           MONGO = (<<-MONGO).gsub(/^ {10}/, '')
           class MongoDBConnectionFailure < RuntimeError; end
 
-          module MongoDbInitializer
+          module DatabaseSetup
             def self.registered(app)
               app.configure :development do
                 MongoMapper.connection = Mongo::Connection.new('localhost')
@@ -43,7 +43,7 @@ module Padrino
 
           def setup_orm
             require_dependencies 'mongo_mapper'
-            create_file("config/initializers/mongo_db.rb", MONGO)
+            create_file("config/database.rb", MONGO)
             create_file("lib/ext/mongo_mapper.rb", CONCERNED)
           end
         end

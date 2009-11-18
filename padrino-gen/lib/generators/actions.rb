@@ -1,5 +1,6 @@
 module Padrino
   module Generators
+    class  AppRootNotFound < RuntimeError; end
     module Actions
 
       def self.included(base)
@@ -53,6 +54,17 @@ module Padrino
       # i.e retrieve_component_config(...) => { :mock => 'rr', :test => 'riot', ... }
       def retrieve_component_config(target)
         YAML.load_file(target)
+      end
+      
+      # Returns true if inside a Padrino application
+      def in_app_root?(path=nil)
+        path ? File.exist?(File.join(path, 'config/boot.rb')) : File.exist?('config/boot.rb')
+      end
+      
+      # Returns the app_name for the application at root
+      def fetch_app_name(path=nil)
+        app_path = path ? File.join(path, 'app.rb') : 'app.rb'
+        @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
       module ClassMethods
