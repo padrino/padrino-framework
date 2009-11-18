@@ -1,9 +1,20 @@
 = padrino-gen
 
-In addition to the support provided above, padrino also comes preloaded with flexible code generators for Sinatra
-powered in part by the excellent Thor gem (incidentally also used in the Rails 3 generators). These generators are intended
-to allow for easy code generation both in creating new applications and building on existing ones. The generators have been
-built to be as library-agnostic as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc. 
+== Installation
+
+To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
+
+  $ sudo gem install padrino --source http://gemcutter.org
+  
+This will install the necessary padrino gems to get you started.
+Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+  
+== Overview
+
+Padrino comes preloaded with flexible code generators for Sinatra powered in part by the excellent 
+Thor gem (incidentally also used in the Rails 3 generators). These generators are intended to allow for easy code 
+generation both in creating new applications and building on existing ones. The generators have been built to be as 
+library-agnostic as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc. 
 
 The usage for the generator is quite simple:
 

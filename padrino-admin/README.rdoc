@@ -1,6 +1,21 @@
 = padrino-admin
 
-Description goes here.
+== Installation
+
+To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
+
+  $ sudo gem install padrino --source http://gemcutter.org
+  
+This will install the necessary padrino gems to get you started.
+Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+
+You can also install only the padrino-admin gem for more fine-grained use:
+
+  $ sudo gem install padrino-admin --source http://gemcutter.org
+  
+== Usage
+
+Not implemented yet.
 
 == Copyright
 

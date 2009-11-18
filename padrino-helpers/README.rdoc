@@ -4,7 +4,22 @@ This component provides a great deal of view helpers related to html markup gene
 There are helpers for generating tags, forms, links, images, and more. Most of the basic
 methods should be very familiar to anyone who has used rails view helpers.
 
-== Output Helpers
+== Installation
+
+To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
+
+  $ sudo gem install padrino --source http://gemcutter.org
+  
+This will install the necessary padrino gems to get you started.
+Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+
+You can also install only the padrino-helpers gem for more fine-grained use:
+
+  $ sudo gem install padrino-helpers --source http://gemcutter.org
+
+== Usage
+
+=== Output Helpers
 
 * <tt>content_for(key, &block)</tt>
   * Capture a block of content to be rendered at a later time.
@@ -23,7 +38,7 @@ methods should be very familiar to anyone who has used rails view helpers.
   * Outputs the given text to the templates buffer directly in erb or haml
   * <tt>concat_content("This will be output to the template buffer in erb or haml")</tt>
 
-== Tag Helpers
+=== Tag Helpers
 
 * <tt>tag(name, options={})</tt>
   * Creates an html tag with the given name and options
@@ -38,7 +53,7 @@ methods should be very familiar to anyone who has used rails view helpers.
   * <tt>input_tag :text,     :class => "demo"</tt>
   * <tt>input_tag :password, :value => "secret", :class => "demo"</tt>
 
-== Asset Helpers
+=== Asset Helpers
 
 * <tt>flash_tag(kind, options={})</tt>
   * Creates a div to display the flash of given type if it exists
@@ -61,7 +76,7 @@ methods should be very familiar to anyone who has used rails view helpers.
   * Returns an html script tag for each of the sources provided.
   * <tt>javascript_include_tag 'application', 'special'</tt>
   
-== Form Helpers
+=== Form Helpers
 
 * <tt>form_tag(url, options={}, &block)</tt>
   * Constructs a form without object based on options
@@ -133,7 +148,7 @@ A form_tag might look like:
     - field_set_tag(:class => 'buttons') do
       = submit_tag "Remove"
     
-== FormBuilders
+=== FormBuilders
 
 * <tt>form_for(object, url, settings={}, &block)</tt>
   * Constructs a form using given or default form_builder
@@ -268,7 +283,7 @@ The form builder can even be made into the default builder when form_for is invo
 And there you have it, a fairly complete form builder solution for sinatra. 
 I hope to create or merge in an even better 'default' form_builder in the near future.
 
-== Format Helpers
+=== Format Helpers
 
 * <tt>escape_html</tt> (alias <tt>h</tt> and <tt>h!</tt>)
   * (from RackUtils) Escape ampersands, brackets and quotes to their HTML/XML entities.
@@ -288,7 +303,7 @@ I hope to create or merge in an even better 'default' form_builder in the near f
 
 See the wiki article for additional information: <...WIKI...>
 
-== RenderPlugin
+=== Render Helpers
 
 This component provides a number of rendering helpers for sinatra, making the process
 of displaying templates far smoother. This plugin also has support for useful additions
