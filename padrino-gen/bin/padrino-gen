@@ -2,11 +2,16 @@
 %w[rubygems activesupport thor].each { |gem| require gem }
 require File.dirname(__FILE__) + "/../lib/padrino-gen"
 
-generator_kind = ARGV.delete_at(0)
+generator_mappings = ActiveSupport::OrderedHash.new
+generator_mappings[:app] = Padrino::Generators::Skeleton
+generator_mappings[:controller] = Padrino::Generators::Controller
+
+generator_kind = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
+generator_class = generator_mappings[generator_kind]
 arguments = ARGV.any? ? ARGV : ['-h']
 
-case generator_kind
-  when /app/        then Padrino::Generators::Skeleton.start(arguments)
-  when /controller/ then Padrino::Generators::Controller.start(arguments)
-  else puts "Please select a valid generator_type" # TODO list out generator types here (perhaps created generator type definitions)
+if generator_class 
+  generator_class.start(arguments)
+else
+  puts "Please specify generator to use (#{generator_mappings.keys.join(", ")})"
 end
