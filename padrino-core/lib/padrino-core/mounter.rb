@@ -12,7 +12,8 @@ module Padrino
       @app_file  = options[:app_file]  || Padrino.mounted_root(name, 'app.rb')
     end
 
-    # registers the mounted application to Padrino
+    # Registers the mounted application onto Padrino
+    # @example Mounter.new("blog_app").to("/blog")
     def to(mount_url)
       @uri_root = mount_url
       Padrino.mounted_apps << self
@@ -23,8 +24,7 @@ module Padrino
     # @example @app.map_onto(@builder)
     def map_onto(builder)
       require(self.app_file)
-      app_data  = self
-      app_klass = self.app_klass.constantize
+      app_data, app_klass = self, self.app_klass.constantize
       builder.map self.uri_root do
         app_klass.set :uri_root, app_data.uri_root
         app_klass.set :app_file, app_data.app_file
@@ -44,11 +44,17 @@ module Padrino
       @mounted_apps ||= []
     end
 
-    # Mounts a new sub-application onto Padrino
+    # Mounts a new sub-application onto Padrino project
     # @example Padrino.mount("blog_app").to("/blog")
-    # @example Padrino.mount("blog_app", :app_file => "/path/to/root/app.rb").to("/blog")
     def mount(name, options={})
       Mounter.new(name, options)
+    end
+    
+    # Mounts the core application onto Padrino project
+    # @example Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
+    def mount_core(options={})
+      options.reverse_merge!(:app_file => Padrino.root('app.rb'))
+      Mounter.new("core", options).to("/")
     end
   end
 end
