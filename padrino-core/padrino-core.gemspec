@@ -23,6 +23,8 @@ Gem::Specification.new do |s|
      ".gitignore",
      "LICENSE",
      "README.rdoc",
+     "README.rdoc",
+     "Rakefile",
      "Rakefile",
      "VERSION",
      "bin/padrino",
@@ -30,8 +32,12 @@ Gem::Specification.new do |s|
      "lib/padrino-core/application.rb",
      "lib/padrino-core/loader.rb",
      "lib/padrino-core/mounter.rb",
+     "lib/padrino-core/reloader.rb",
+     "lib/padrino-core/stat.rb",
      "lib/padrino-core/support_lite.rb",
      "lib/padrino-core/tasks.rb",
+     "lib/padrino-core/tasks/console.rb",
+     "lib/padrino-core/version.rb",
      "padrino-core.gemspec",
      "test/active_support_helpers.rb",
      "test/fixtures/extended_app/app.rb",
@@ -46,15 +52,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{The required Padrino core gem}
-  s.test_files = [
-    "test/active_support_helpers.rb",
-     "test/fixtures/extended_app/app.rb",
-     "test/fixtures/simple_app/app.rb",
-     "test/helper.rb",
-     "test/test_padrino_core.rb",
-     "test/test_padrino_mounting.rb",
-     "test/test_padrino_tasks.rb"
-  ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
