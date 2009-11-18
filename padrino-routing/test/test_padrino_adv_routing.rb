@@ -1,4 +1,4 @@
-PADRINO_ENV = RACK_ENV = 'test'
+PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
 require File.dirname(__FILE__) + '/helper'
 
 class TestPadrinoAdvRouting < Test::Unit::TestCase

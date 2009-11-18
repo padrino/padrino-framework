@@ -11,12 +11,13 @@ class MailerDemo < Sinatra::Base
       :user   => 'user',
       :pass   => 'pass',
       :auth   => :plain
-   }
+    }
   end
-  
+
   register Padrino::Mailer
-  
-  class SampleMailer < Padrino::Mailer::Base    
+
+  class SampleMailer < Padrino::Mailer::Base
+    
     def birthday_message(name, age)
       subject "Happy Birthday!"
       to   'john@fake.com'
@@ -24,7 +25,7 @@ class MailerDemo < Sinatra::Base
       body 'name' => name, 'age' => age
       via  :smtp
     end
-    
+
     def anniversary_message(names, years_married)
       subject "Happy anniversary!"
       to   'julie@fake.com'
@@ -33,12 +34,12 @@ class MailerDemo < Sinatra::Base
       type 'html'
     end
   end
-  
+
   post "/deliver/plain" do
     result = SampleMailer.deliver_birthday_message("Joey", 21)
     result ? "mail delivered" : 'mail not delivered'
   end
-  
+
   post "/deliver/html" do
     result = SampleMailer.deliver_anniversary_message("Joey & Charlotte", 16)
     result ? "mail delivered" : 'mail not delivered'
@@ -46,5 +47,5 @@ class MailerDemo < Sinatra::Base
 end
 
 class MailerUser
-  
+
 end
