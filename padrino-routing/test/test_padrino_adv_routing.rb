@@ -2,9 +2,10 @@ PADRINO_ENV = RACK_ENV = 'test'
 require File.dirname(__FILE__) + '/helper'
 
 class TestPadrinoAdvRouting < Test::Unit::TestCase
+  silence_logger { require File.dirname(__FILE__) + '/fixtures/adv_routing_app/config/boot' }
+  require File.dirname(__FILE__) + '/fixtures/adv_routing_app/app'
+  
   def app
-    silence_logger {  require File.dirname(__FILE__) + '/fixtures/adv_routing_app/config/boot' }
-    require File.dirname(__FILE__) + '/fixtures/adv_routing_app/app'
     AdvRoutingDemo.tap { |app| app.set :environment, :test }
   end
 

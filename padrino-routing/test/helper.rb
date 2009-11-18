@@ -50,6 +50,12 @@ class Test::Unit::TestCase
   # Silences the output by redirecting to stringIO
   # silence_logger { ...commands... } => "...output..."
   def silence_logger(&block)
+    self.class.silence_logger(&block)
+  end
+  
+  # Silences the output by redirecting to stringIO
+  # silence_logger { ...commands... } => "...output..."
+  def self.silence_logger(&block)
     orig_stdout = $stdout
     $stdout = log_buffer = StringIO.new
     block.call
