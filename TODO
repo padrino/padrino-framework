@@ -34,7 +34,7 @@
 * Add generator support for mounting subapplications
 * Add support for model, controller, migration, mailer generator types based on components
 * Add support for destroying existing controller, model, migrations, mailer
-* Implement sinatra-cache gem functionality
+* Implement padrino-cache gem functionality
 * Add helpers to helpers gem:
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
 
@@ -43,7 +43,7 @@
 * Add tests for padrino_core gem (and any other gems if you want - generators and routing)
 * Optimize (improve performance) padrino_core gem
 * Implement padrino-core padrino file for tasks (start, stop, test, console)
-* Implement sinatra-admin gem (with authentication)
+* Implement padrino-admin gem (with authentication)
 
 == COMPLETED
 
@@ -55,7 +55,7 @@
 * Moved over all the gems to jeweler with built in rake tasks releases, testing, versioning, etc
 * Added gems to their own repos and added them back to test-app as submodules
 * Added over existing tests and make them pass for each gem
-* Made the sinatra-gen at least have tests pass and fixed errors (still needs a lot of work)
+* Made the padrino-gen at least have tests pass and fixed errors (still needs a lot of work)
 * Added the padrino bin file to padrino-core using Thor to stub out support for the commands (still need to be implemented)
 * Added support for test task outside in lib/padrino which runs all tests for all the subgems
  
