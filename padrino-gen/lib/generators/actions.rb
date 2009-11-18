@@ -15,6 +15,15 @@ module Padrino
         self.class.send(:include, generator_module_for(choice, component))
         send("setup_#{component}") if respond_to?("setup_#{component}")
       end
+      
+      # Includes the component module for the given component and choice
+      # Determines the choice using .components file
+      # include_component_module_for(:mock)
+      # include_component_module_for(:mock, 'rr')
+      def include_component_module_for(component, root=nil, choice=nil)
+        choice = fetch_component_choice(component, root) unless choice
+        self.class.send(:include, generator_module_for(choice, component))
+      end
 
       # Prompts the user if necessary until a valid choice is returned for the component
       # resolve_valid_choice(:mock) => 'rr'
@@ -56,14 +65,21 @@ module Padrino
         YAML.load_file(target)
       end
       
+      # Returns the component choice stored within the .component file of an application
+      # fetch_component_choice(:mock)
+      def fetch_component_choice(component, root=nil)
+        comp_path = root ? File.join(root, '.components') : '.components'
+        retrieve_component_config(comp_path)[component]
+      end
+      
       # Returns true if inside a Padrino application
-      def in_app_root?(path=nil)
-        path ? File.exist?(File.join(path, 'config/boot.rb')) : File.exist?('config/boot.rb')
+      def in_app_root?(root=nil)
+        root ? File.exist?(File.join(root, 'config/boot.rb')) : File.exist?('config/boot.rb')
       end
       
       # Returns the app_name for the application at root
-      def fetch_app_name(path=nil)
-        app_path = path ? File.join(path, 'app.rb') : 'app.rb'
+      def fetch_app_name(root=nil)
+        app_path = root ? File.join(root, 'app.rb') : 'app.rb'
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 

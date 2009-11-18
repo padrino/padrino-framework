@@ -23,6 +23,9 @@ module Padrino
         if in_app_root?(options[:root])
           @app_name = fetch_app_name(options[:root])
           template "templates/controller.rb.tt", File.join(options[:root] || '.', "app/controllers/#{name}.rb")
+          template "templates/helper.rb.tt",     File.join(options[:root] || '.', "app/helpers/#{name}_helper.rb")
+          include_component_module_for(:test, options[:root])
+          generate_controller_test(name, options[:root] || '.')
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end
