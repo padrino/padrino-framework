@@ -24,10 +24,8 @@ module Padrino
           simple_name = name.to_s.gsub(/mailer/i, '')
           @mailer_basename = "#{simple_name.downcase.underscore}_mailer"
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
-          mailer_path = File.join(options[:root] || '.', "app/mailers/#{@mailer_basename}.rb")
-          initializer_path = File.join(options[:root] || '.', "config/initializers/mailer.rb")
-          template "templates/mailer_initializer.rb.tt", initializer_path, :skip => true
-          template "templates/mailer.rb.tt", mailer_path
+          template "templates/mailer_initializer.rb.tt", app_root_path("config/initializers/mailer.rb"), :skip => true
+          template "templates/mailer.rb.tt", app_root_path("app/mailers", "#{@mailer_basename}.rb")
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

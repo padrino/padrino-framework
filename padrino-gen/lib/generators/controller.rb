@@ -22,8 +22,8 @@ module Padrino
       def create_controller
         if in_app_root?(options[:root])
           @app_name = fetch_app_name(options[:root])
-          template "templates/controller.rb.tt", File.join(options[:root] || '.', "app/controllers/#{name}.rb")
-          template "templates/helper.rb.tt",     File.join(options[:root] || '.', "app/helpers/#{name}_helper.rb")
+          template "templates/controller.rb.tt", app_root_path("app/controllers", "#{name}.rb")
+          template "templates/helper.rb.tt",     app_root_path("app/helpers", "#{name}_helper.rb")
           include_component_module_for(:test, options[:root])
           generate_controller_test(name, options[:root] || '.')
         else

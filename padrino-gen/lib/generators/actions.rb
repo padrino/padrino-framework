@@ -82,6 +82,13 @@ module Padrino
         app_path = root ? File.join(root, 'app.rb') : 'app.rb'
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
+      
+      # Constructs a path from the specified app root
+      # build_target_path("app/mailers", "#{@mailer_basename}.rb")
+      def app_root_path(*paths)
+        settings = paths.extract_options!
+        File.join(settings[:root] || options[:root] || '.', *paths)
+      end
 
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
