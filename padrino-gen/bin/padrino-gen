@@ -3,8 +3,9 @@
 require File.dirname(__FILE__) + "/../lib/padrino-gen"
 
 generator_mappings = ActiveSupport::OrderedHash.new
-generator_mappings[:app] = Padrino::Generators::Skeleton
+generator_mappings[:app]        = Padrino::Generators::Skeleton
 generator_mappings[:controller] = Padrino::Generators::Controller
+generator_mappings[:mailer]     = Padrino::Generators::Mailer
 
 generator_kind = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
 generator_class = generator_mappings[generator_kind]

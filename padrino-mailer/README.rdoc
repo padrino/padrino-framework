@@ -22,7 +22,7 @@ You can also install only the padrino-mailer gem for more fine-grained use:
 Let's take a look at using the MailerPlugin in an application. By default, MailerPlugin uses the built-in sendmail
 functionality on the server. However, smtp is also supported using the following configuration:
 
-    SinatraMore::MailerBase.smtp_settings = {
+    Padrino::Mailer::Base.smtp_settings = {
       :host   => 'smtp.gmail.com',
       :port   => '587',
       :tls    => true,
@@ -32,10 +32,10 @@ functionality on the server. However, smtp is also supported using the following
    }
 
 Once those have been defined, the default will become smtp delivery unless overwritten in an individual mail definition.
-Next, we should define a custom mailer extended from <tt>SinatraMore::MailerBase</tt>.
+Next, we should define a custom mailer extended from <tt>Padrino::Mailer::Base</tt>.
 
   # app/mailers/sample_mailer.rb
-  class SampleMailer < SinatraMore::MailerBase
+  class SampleMailer < Padrino::Mailer::Base
     def registration_email(name, user_email_address)
       from 'admin@site.com'
       to user_email_address
@@ -69,7 +69,7 @@ A few variations are shown below for completeness.
 If we want to attach files to our email:
 
   # app/mailers/sample_mailer.rb
-  class SampleMailer < SinatraMore::MailerBase
+  class SampleMailer < Padrino::Mailer::Base
     def attachment_email(name, user_email_address)
       from 'admin@site.com'
       to user_email_address
@@ -81,7 +81,7 @@ If we want to attach files to our email:
 or perhaps we want to have a short body without the need for a template file:
 
   # app/mailers/sample_mailer.rb
-  class SampleMailer < SinatraMore::MailerBase
+  class SampleMailer < Padrino::Mailer::Base
     def short_email(name, user_email_address)
       from 'admin@site.com'
       to user_email_address
