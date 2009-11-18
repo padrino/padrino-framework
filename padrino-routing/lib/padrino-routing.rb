@@ -36,11 +36,17 @@ module Padrino
       # Supports namespaces by accessing the instance variable and appending this to the route alias name
       # If the path is not a symbol, nothing is changed and the original route method is invoked
       def route(verb, path, options={}, &block)
-        if path.kind_of? Symbol
-          route_name = [self.app_name, @_namespace, path].flatten.compact
-          path = named_paths[route_name]
-          raise RouteNotFound.new("Route alias #{route_name.inspect} is not mapped to a url") unless path
+        if path.kind_of?(Symbol) 
+          route_name = [@_namespace, path].flatten.compact
+          if mapped_url = options.delete(:map) # constructing named route
+            map(*route_name).to(mapped_url) 
+            path = mapped_url
+          else # referencing prior named route
+            route_name.unshift(self.app_name)
+            path = named_paths[route_name]
+          end
         end
+        raise RouteNotFound.new("Route alias #{route_name.inspect} is not mapped to a url") unless path
         super verb, path, options, &block
       end
     end
