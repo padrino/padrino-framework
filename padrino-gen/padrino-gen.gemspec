@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
      "lib/generators/components/tests/shoulda_test_gen.rb",
      "lib/generators/components/tests/testspec_test_gen.rb",
      "lib/generators/controller.rb",
+     "lib/generators/mailer.rb",
      "lib/generators/skeleton.rb",
      "lib/generators/skeleton/.gitignore",
      "lib/generators/skeleton/Gemfile",
@@ -72,11 +73,14 @@ Gem::Specification.new do |s|
      "lib/generators/skeleton/vendor/gems/.empty_directory",
      "lib/generators/templates/controller.rb.tt",
      "lib/generators/templates/helper.rb.tt",
+     "lib/generators/templates/mailer.rb.tt",
+     "lib/generators/templates/mailer_initializer.rb.tt",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
      "test/active_support_helpers.rb",
      "test/helper.rb",
      "test/test_controller_generator.rb",
+     "test/test_mailer_generator.rb",
      "test/test_skeleton_generator.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-gen}
