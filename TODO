@@ -6,6 +6,7 @@
 
 * We need to fix the parent Rakefile to support bumping versions and publishing each gem (?)
 * Creating and migrating databases using padrino binary (or rake and using any of the orms)
+* We need to remove dependency on activesupport (and use support_lite to work with extlib or activesupport)
 * Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 * Helpers for check_box_group, radio_button_group which create a set of checkboxes or radio buttons
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
@@ -15,6 +16,7 @@
 * Make sure reloader middleware works for urls, models, controllers and all application files
 * Decide what to do about initializers (where do they go single app, multiple apps)
 * Verify logging works properly and can be accessed from any controller (and with specified severity)
+* Make sure that mailer works and perhaps port over (http://github.com/benprew/pony) for use instead
 
 === IDEAS
 
