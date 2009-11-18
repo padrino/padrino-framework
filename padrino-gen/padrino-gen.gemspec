@@ -23,14 +23,12 @@ Gem::Specification.new do |s|
      ".gitignore",
      "LICENSE",
      "README.rdoc",
+     "README.rdoc",
+     "Rakefile",
      "Rakefile",
      "VERSION",
      "bin/padrino-gen",
      "lib/generators/actions.rb",
-     "lib/generators/base_app/.gitignore",
-     "lib/generators/base_app/Gemfile",
-     "lib/generators/base_app/config/dependencies.rb.tt",
-     "lib/generators/base_app/test/test_config.rb.tt",
      "lib/generators/components/actions.rb",
      "lib/generators/components/mocks/mocha_gen.rb",
      "lib/generators/components/mocks/rr_gen.rb",
@@ -49,6 +47,14 @@ Gem::Specification.new do |s|
      "lib/generators/components/tests/rspec_test_gen.rb",
      "lib/generators/components/tests/shoulda_test_gen.rb",
      "lib/generators/components/tests/testspec_test_gen.rb",
+     "lib/generators/project/.gitignore",
+     "lib/generators/project/Gemfile",
+     "lib/generators/project/apps/.empty_directory",
+     "lib/generators/project/config.ru",
+     "lib/generators/project/config/boot.rb",
+     "lib/generators/project/lib/.empty_directory",
+     "lib/generators/project/test/test_config.rb.tt",
+     "lib/generators/project/tmp/.emptydirectory",
      "lib/generators/skeleton.rb",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
@@ -61,11 +67,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Generators for easily creating and building padrino applications}
-  s.test_files = [
-    "test/active_support_helpers.rb",
-     "test/helper.rb",
-     "test/test_skeleton_generator.rb"
-  ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

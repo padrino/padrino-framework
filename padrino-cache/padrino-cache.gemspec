@@ -21,6 +21,8 @@ Gem::Specification.new do |s|
      ".gitignore",
      "LICENSE",
      "README.rdoc",
+     "README.rdoc",
+     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-cache.rb",
@@ -34,11 +36,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Page and fragment caching for Padrino}
-  s.test_files = [
-    "test/active_support_helpers.rb",
-     "test/helper.rb",
-     "test/test_padrino_cache.rb"
-  ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
