@@ -1,0 +1,7 @@
+= padrino-framework
+
+Is the metagem
+
+== Copyright
+
+Copyright (c) 2009 Padrino. See LICENSE for details.

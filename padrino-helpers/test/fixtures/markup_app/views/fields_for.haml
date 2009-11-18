@@ -1,0 +1,6 @@
+- @user = MarkupUser.new
+- form_for @user , '/demo1', :id => 'demo-fields-for' do |f|
+  = f.text_field :gender
+  - fields_for @user.permission do |permission|
+    = permission.check_box :can_edit
+    = permission.check_box :can_delete

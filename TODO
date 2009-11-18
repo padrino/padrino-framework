@@ -1,0 +1,27 @@
+TODO
+
+* Add tests for padrino_core gem
+* Fix generators and project to import concept-app changes (base_app, etc)
+  * Figure out how we want the sinatra-gen to work now
+  $ padrino-gen project project_name
+  $ cd project_name
+  $ padrino-gen app app_name
+* Implement padrino-core padrino file for tasks (start, stop, test, console)
+* Decide what to do about initializers (where do they go single app, multiple apps)
+* Figure out where to work in the WardenPlugin
+* Finish sinatra-cache gem
+* Finish sinatra-admin gem
+* Add helpers to helpers gem:
+  * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
+* Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
+* Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
+
+COMPLETED
+
+* Moved over all the gems to jeweler with built in rake tasks releases, testing, versioning, etc
+* Added gems to their own repos and added them back to test-app as submodules
+* Added over existing tests and make them pass for each gem
+* Made the sinatra-gen at least have tests pass and fixed errors (still needs a lot of work)
+* Added the padrino bin file to padrino-core using Thor to stub out support for the commands (still need to be implemented)
+* Added support for test task outside in lib/padrino which runs all tests for all the subgems
+ 

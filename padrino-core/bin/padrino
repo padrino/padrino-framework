@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+%w[rubygems activesupport thor].each { |gem| require gem }
+require File.dirname(__FILE__) + "/../lib/padrino-core/tasks"
+
+arguments = ARGV.any? ? ARGV : ['-h']
+Padrino::Tasks::Base.start(arguments)

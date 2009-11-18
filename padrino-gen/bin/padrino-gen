@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+%w[rubygems activesupport thor].each { |gem| require gem }
+require File.dirname(__FILE__) + "/../lib/padrino-gen"
+arguments = ARGV.any? ? ARGV : ['-h']
+Padrino::Generators::Skeleton.start(arguments)
