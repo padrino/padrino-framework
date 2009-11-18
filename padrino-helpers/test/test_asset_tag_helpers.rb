@@ -82,6 +82,10 @@ class TestAssetTagHelpers < Test::Unit::TestCase
     should "display image tag absolute link with no options" do
       assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
     end
+    should "display image tag absolute link with specified uri root" do
+      self.class.stubs(:uri_root).returns("/blog")
+      assert_has_tag('img', :src => "/blog/images/relative/pic.gif") { image_tag('relative/pic.gif') }
+    end
     should "display image tag relative link with options" do
       assert_has_tag('img.photo', :src => "/images/relative/pic.gif") { image_tag('relative/pic.gif', :class => 'photo') }
     end
@@ -99,6 +103,19 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
       assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { stylesheet_link_tag('style') }
     end
+    should "display stylesheet link item with absolute path" do
+      time = stop_time_for_test
+      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      actual_html = stylesheet_link_tag('/css/style')
+      assert_has_tag('link', expected_options.merge(:href => "/css/style.css?#{time.to_i}")) { actual_html }
+    end
+    should "display stylesheet link item with uri root" do
+      self.class.stubs(:uri_root).returns("/blog")
+      time = stop_time_for_test
+      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      actual_html = stylesheet_link_tag('style')
+      assert_has_tag('link', expected_options.merge(:href => "/blog/stylesheets/style.css?#{time.to_i}")) { actual_html }
+    end
     should "display stylesheet link items" do
       time = stop_time_for_test
       actual_html = stylesheet_link_tag('style', 'layout.css', 'http://google.com/style.css')
@@ -114,6 +131,17 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+    should "display javascript item with absolute path" do
+      time = stop_time_for_test
+      actual_html = javascript_include_tag('/js/application')
+      assert_has_tag('script', :src => "/js/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+    should "display javascript item with uri root" do
+      self.class.stubs(:uri_root).returns("/blog")
+      time = stop_time_for_test
+      actual_html = javascript_include_tag('application')
+      assert_has_tag('script', :src => "/blog/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
     end
     should "display javascript items" do
       time = stop_time_for_test

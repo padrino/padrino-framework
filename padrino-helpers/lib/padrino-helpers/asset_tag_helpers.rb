@@ -62,7 +62,7 @@ module Padrino
       # Returns the path to the image, either relative or absolute
       def image_path(src)
         src.gsub!(/\s/, '')
-        src =~ %r{^\s*(/|http)} ? src : File.join('/images', src)
+        src =~ %r{^\s*(/|http)} ? src : uri_root_path('images', src)
       end
 
       protected
@@ -79,18 +79,29 @@ module Padrino
         tag(:script, options)
       end
 
+      # Returns the javascript_path appending the default javascripts path if necessary
       def javascript_path(source)
         return source if source =~ /^http/
-        result_path = "/javascripts/#{File.basename(source, '.js')}.js"
+        result_path = "#{source}.js" if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("javascripts", "#{File.basename(source, '.js')}.js")
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
       end
 
+      # Returns the stylesheet_path appending the default stylesheets path if necessary
       def stylesheet_path(source)
         return source if source =~ /^http/
-        result_path = "/stylesheets/#{File.basename(source, '.css')}.css"
+        result_path = "#{source}.css" if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("stylesheets", "#{File.basename(source, '.css')}.css")
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
+      end
+
+      # Returns the uri root of the application, defaulting to '/'
+      # @example uri_root('javascripts')
+      def uri_root_path(*paths)
+        root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
+        File.join(root_uri || '/', *paths)
       end
     end
   end
