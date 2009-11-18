@@ -1,6 +1,80 @@
 = padrino-routing
 
-Description goes here.
+This component provides Sinatra with an enhanced url routing system which enables named route aliases to be defined
+and used throughout your application to refer to urls. The benefits of this is that instead of having to hard-code route urls
+into every area of your application, now we can just define the urls in a single spot and then attach an alias
+which can be used to refer to the url throughout the rest. 
+
+Let's take a look at how to define named route mappings:
+
+  # /app/routes/example.rb
+  require 'padrino-routing'
+  
+  class RoutingDemo < Sinatra::Application
+    register SinatraMore::RoutingPlugin  
+    
+    # Define the named route mappings
+    map(:account).to("/the/accounts/:name/and/:id")
+    map(:accounts).to("/the/accounts/index")
+    
+    # Configure the routes using the named alias
+    get(:account)  { "name: params[:name] - id: params[:id]" }    
+    get(:accounts) { "I am the body for the url /the/accounts/index" }
+  end
+
+Notice we simply create a route alias using the <tt>map</tt> function and then pass in the corresponding url into the <tt>to</tt> method.
+You can then define the routes using the named symbol representing the url. The route aliases can be accessed using <tt>url_for</tt>
+
+  url_for(:accounts)
+  url_for(:account, :id => 1, :name => 'first')
+
+You can also refer to the url in views using <tt>url_for</tt>
+
+  # /app/views/index.erb
+  <p>Go to the <%= link_to 'accounts dashboard', url_for(:accounts) %> to view your accounts</p>
+  <p>Go to account for <%= link_to 'first account', url_for(:account, :id => 1, :name => 'first') %>
+
+Simply invoking <tt>url_for(name, *parameters)</tt> will return the full mapped url for use in links or anywhere else
+that the url might be required.
+
+The routing system also supports url route configuration namespaces:
+
+  # /app/routes/example.rb
+  map(:admin, :show).to("/admin/:id/show")
+  
+  namespace :admin do
+    get :show do
+      "admin show for #{params[:id]}"
+    end
+  end
+  
+You could also define the route aliases themselves using a namespace for convenience:
+
+  # /app/routes/example.rb
+  map :admin do |namespace|
+    namespace.map(:show).to("/admin/:id/show")
+    namespace.map(:destroy).to("/admin/:id/destroy")
+  end
+  
+  namespace :admin do
+    get :show do
+      "admin show for #{params[:id]}"
+    end
+    
+    get :destroy do
+      "admin destroy for #{params[:id]}"
+    end
+  end
+
+You can then reference the urls using the same <tt>url_for</tt> method:
+
+  <%= link_to 'admin page', url_for(:admin, :show, :id => 25) %>
+  <%= link_to 'admin page', url_for(:admin, :update, :id => 25) %>
+  <%= link_to 'admin page', url_for(:admin, :show, :id => 25) %>
+  
+You can freely use both named route aliases and traditional Sinatra routes in the same application without conflict.
+
+See the wiki article for additional information: <...WIKI...>
 
 == Copyright
 

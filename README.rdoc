@@ -2,4 +2,70 @@
 
 Padrino is the godfather of Sinatra.
 
-More info coming soon
+== Preface
+
+This gem has been designed to work on top of and enhance Sinatra (http://www.sinatrarb.com).
+Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
+The canonical example of how to create an entire simple web application with Sinatra is something like:
+
+  # myapp.rb
+  require 'rubygems'
+  require 'sinatra'
+  get '/' do
+    'Hello world!'
+  end
+  
+and then to run the application:
+
+  $ ruby myapp.rb
+  
+The extreme simplicity of the framework is quite refreshing. We have been using Sinatra a great deal
+for recent projects. First for small and simple json and xml web services and then even
+for more complex full-featured applications. This gem represents an attempt to make it as fun and easy
+as possible to code increasingly advanced view-heavy web applications in Sinatra.
+
+== Introduction
+
+Note: This library is still experimental and may not be ready for production just yet. 
+That being said the gem is being actively used on a number of sinatra projects.
+In addition, the gem has fairly solid test coverage ensuring that everything works as expected.
+
+This will be a framework which expands sinatra's capabilities in a variety of ways. 
+Note that all extensions have been created to work with haml, erb, and erubis. 
+This gem is intended to be template-agnostic in providing helpers wherever possible.
+
+Let me expand briefly on what I want to accomplish with this gem. I love sinatra but if I want to use it
+for any non-trivial application I very quickly miss a lot of the extra tools provided by rails.
+
+Now the obvious question is "Why not just use rails then?" Well, in many cases that might be the right decision.
+Still, at least until version 3 comes along, Rails is quite a large framework with a 'take it or leave it' attitude.
+Personally, I have come to love the spirit of sinatra which acts as a thin wrapper on top of rack 
+often allowing middleware to do most of the work and pulling in additional complexity only as required. 
+
+My goal with this extension is to match the spirit of Sinatra and at the same time create a standard library
+of tools, helpers and components that will make Sinatra suitable for more complex applications.
+
+Here is a small list of what Padrino contains:
+
+* Code generators for creating new padrino applications (using <tt>padrino_gen</tt> on command line)
+* Generic view and tag helpers (<tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>, ...)
+* Asset tag helpers (<tt>link_to</tt>, <tt>image_tag</tt>, <tt>javascript_include_tag</tt>, ...)
+* Full form helpers and builders support (<tt>form_tag</tt>, <tt>form_for</tt>, <tt>field_set_tag</tt>, <tt>text_field</tt>, ...)
+* Full url named route support to avoid hardcoding route url paths (<tt>map</tt>, <tt>url_for</tt>)
+* Generally useful formatting extensions (<tt>relative_time_ago</tt>, <tt>js_escape_html</tt>, <tt>sanitize_html</tt>)
+* Simple 'mailer' email delivery support (akin to <tt>ActionMailer</tt> but simpler)
+* Automatic authentication and administrative views out of the box 
+
+Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
+or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
+
+Please help me brainstorm and fork the project if you have any ideas to contribute.
+
+== Installation
+
+To install the padrino framework, simply grab the latest version from gemcutter:
+
+  $ sudo gem install padrino --source http://gemcutter.org
+  
+This will install the necessary padrino gems to get you started.
+Now you are ready to use this gem in your sinatra project or to create Padrino applications.
