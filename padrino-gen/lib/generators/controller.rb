@@ -24,6 +24,7 @@ module Padrino
           @app_name = fetch_app_name(options[:root])
           template "templates/controller.rb.tt", app_root_path("app/controllers", "#{name}.rb")
           template "templates/helper.rb.tt",     app_root_path("app/helpers", "#{name}_helper.rb")
+          empty_directory app_root_path("app/views/#{name}")
           include_component_module_for(:test, options[:root])
           generate_controller_test(name, options[:root] || '.')
         else

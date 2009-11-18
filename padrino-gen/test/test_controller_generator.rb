@@ -20,6 +20,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/SampleApp::controllers do/m, '/tmp/sample_app/app/controllers/demo_items.rb')
       assert_match_in_file(/SampleApp::helpers do/m, '/tmp/sample_app/app/helpers/demo_items_helper.rb')
+      assert File.exist?('/tmp/sample_app/app/views/demo_items')
     end
 
     should "generate controller test for bacon" do
