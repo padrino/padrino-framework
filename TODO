@@ -1,5 +1,6 @@
 TODO
 
+* We need to fix the parent Rakefile to easily support publishing each gem (?)
 * Add tests for padrino_core gem
 * Fix generators and project to import concept-app changes (base_app, etc)
   * Figure out how we want the sinatra-gen to work now
