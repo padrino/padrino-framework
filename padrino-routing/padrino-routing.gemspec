@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-17}
+  s.date = %q{2009-11-18}
   s.description = %q{Enhances padrino with a named route mapping system allowing for advanced routes}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -26,13 +26,22 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/padrino-routing.rb",
+     "lib/padrino-routing/controller_ext.rb",
      "lib/padrino-routing/helpers.rb",
      "lib/padrino-routing/named_route.rb",
      "padrino-routing.gemspec",
      "test/active_support_helpers.rb",
+     "test/fixtures/adv_routing_app/Gemfile",
+     "test/fixtures/adv_routing_app/app.rb",
+     "test/fixtures/adv_routing_app/config/apps.rb",
+     "test/fixtures/adv_routing_app/config/boot.rb",
+     "test/fixtures/adv_routing_app/config/urls.rb",
+     "test/fixtures/adv_routing_app/controllers/namespacing.rb",
+     "test/fixtures/adv_routing_app/controllers/url_autogeneration.rb",
      "test/fixtures/routing_app/app.rb",
      "test/fixtures/routing_app/views/index.haml",
      "test/helper.rb",
+     "test/test_padrino_adv_routing.rb",
      "test/test_padrino_routing.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-routing}

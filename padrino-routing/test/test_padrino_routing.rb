@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/fixtures/routing_app/app'
 
 class TestPadrinoRouting < Test::Unit::TestCase
   def app
-    RoutingDemo.tap { |app| app.set :environment, :test }.tap { |app| app.set :uri_root, '/blog' }
+    RoutingDemo.tap { |app| app.set :environment, :test }
   end
 
   context 'for links list displaying routes' do

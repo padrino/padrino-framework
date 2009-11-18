@@ -1,0 +1,1 @@
+Padrino.mount_core(:app_class => "AdvRoutingDemo")

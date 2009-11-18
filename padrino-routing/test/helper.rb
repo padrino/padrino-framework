@@ -9,7 +9,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'active_support_helpers'
 require 'padrino-helpers'
-require 'padrino-routing'
 
 class Test::Unit::TestCase
   include Padrino::Helpers::OutputHelpers
