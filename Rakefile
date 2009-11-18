@@ -13,20 +13,24 @@ gems = [
   "padrino-routing",
   "padrino"
 ]
+ 
+def rake_command(command)
+  sh "#{Gem.ruby} -S rake #{command}"
+end
 
 %w(clean install gemspec build release).each do |task_name|
   desc "Run #{task_name} for all projects"
   task task_name do
     gems.each do |dir|
-      Dir.chdir(dir) { sh "#{Gem.ruby} -S rake #{task_name}" }
+      Dir.chdir(dir) { rake_command(task_name) }
     end
   end
 end
 
-desc "Bump patch version and release all padrino gems"
+desc "Release all padrino gems"
 task :publish do
   gems.each do |dir|
-    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake version:bump:patch release" }
+    Dir.chdir(dir) { rake_command("gemcutter:release") }
   end
 end
 
