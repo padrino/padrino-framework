@@ -40,6 +40,7 @@
 * Add support for migration generator types based on components
   - fix the number prefix on migrations (http://guides.rubyonrails.org/migrations.html#whats-in-a-name)
   - allow for special names to be interpreted (http://guides.rubyonrails.org/migrations.html#creating-a-standalone-migration)
+* Add app generator to specify orm=none, test=none, script=none
 * Add support for destroying existing controller, model, migrations, mailer
 * Implement padrino-cache gem functionality
 * Add helpers to helpers gem:
