@@ -39,11 +39,15 @@ module Padrino
       end
 
       desc "console ENVIRONMENT", "Boots up the Padrino application irb console"
+      method_option :boot, :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
       def console(environment="development")
-        require File.dirname(__FILE__) + "/version.rb"
-        boot = 'config/boot.rb'
-        boot = File.join(options.chdir, boot) if options.chdir
-        raise "Are you in a Padrino Project? We didn't find #{boot} !!!" unless File.exist?(boot)
+        require File.dirname(__FILE__) + "/version"
+        boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
+        unless File.exist?(boot)
+          puts "=> Are you in a Padrino Project?"
+          puts "=> We didn't find boot file: #{boot} !!!"
+          exit
+        end
         ENV["PADRINO_ENV"] ||= environment
         puts "=> Loading #{environment} console (Padrino v.#{Padrino.version})"
         irb   = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'

@@ -13,6 +13,7 @@ module Padrino
       def inherited(subclass)
         subclass.default_configuration!
         super # Loading the subclass
+        subclass.register_framework_extensions
       end
 
       # Hooks into when a new instance of the application is created
@@ -47,7 +48,6 @@ module Padrino
         return if @configured
         self.calculate_paths
         self.register_initializers
-        self.register_framework_extensions
         self.require_load_paths
         self.setup_logger
         @configured = true
@@ -73,7 +73,7 @@ module Padrino
       # Calculates any required paths after app_file and root have been properly configured
       # Executes as part of the setup_application! method
       def calculate_paths
-        raise ApplicationSetupError.new("Please specify 'app_file' configuration option!") unless self.app_file
+        raise ApplicationSetupError.new("Please define 'app_file' option for #{self.name} app!") unless self.app_file
         set :views, find_view_path if find_view_path
         set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
       end
@@ -93,9 +93,11 @@ module Padrino
 
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
+        return if @registered
         register Padrino::Routing
         register Padrino::Mailer
         register Padrino::Helpers  if padrino_helpers?
+        @registered = true
       end
 
       # Require all files within the application's load paths

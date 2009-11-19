@@ -87,7 +87,70 @@ individual gem or gems.
 
 === Enhanced Base Application (padrino-core)
 
-...
+Sinatra has support for classes which can be extended to create an application: <tt>Sinatra::Base</tt> and <tt>Sinatra::Application</tt>
+These classes can be extended in order to create a Sinatra web application. These classes provide support for all the basic
+functionality afforded by Sinatra.
+
+Padrino has support for an enhanced base application class <tt>Padrino::Application</tt>. <tt>Padrino::Application</tt>
+expands the capabilities of Sinatra::Application and automatically provides the resulting application access to all of
+the padrino framework's functionalities. 
+
+Similar in spirit to Sinatra itself, Padrino application layout is extremely flexible and can be as small as a single file.
+However, Padrino provides many extensions which improve upon the ability to construct more complex applications.
+
+Let us first take a look at the simplest possible Padrino application:
+
+  # app.rb
+  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+  require 'padrino'
+  Padrino.load!
+
+  class SimpleApp < Padrino::Application
+    set :app_file, __FILE__
+  
+    get '/ do
+      'Hello world'
+    end
+  end
+  
+While this is a fully operational Padrino application in itself, let us take a look at Padrino's expanded capabilites. First, 
+we can create Gemfile within the application root. This will contain a list of all the dependencies for our application.
+
+  # /Gemfile
+  clear_sources
+  source 'http://gemcutter.org'
+  gem 'sinatra',     :require_as => 'sinatra/base'
+  gem 'rack-flash'
+  
+This file uses the standard <tt>bundler</tt> syntax which can be found here: http://github.com/wycats/bundler
+This allows us to place all our dependencies into a single file. Padrino will then automatically require
+all necessary files (if they exist on the system). 
+
+If the dependencies are not on the system, you can automatically vendor all necessary gems 
+using the <tt>gem bundle</tt> command within the application root. Note that this is all possible without
+any further effort than adding the Gemfile (or having this generated automatically with generators explained later).
+
+Padrino also intelligently supports requiring useful files within your application automatically and provides
+functionality for easily splitting up your application into separate files. Any files in the <tt>lib</tt> folder
+will be required automatically by Padrino.
+
+Suppose we want to add additional routes to our Padrino application, and we want to organize the routes
+within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
+
+  # controllers.rb
+  SimpleApp::controllers do
+    get "/test" do
+      "Text to return"
+    end
+  end
+
+...Logging...
+...Models...
+...Database Config...
+...Mounted Apps...
+...Reloader...
+...Tasks... (reload, applications, start, stop, test, console)
+  
 
 === Application Extensions and Helpers (padrino-helpers)
 

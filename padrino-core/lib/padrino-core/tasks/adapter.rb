@@ -11,7 +11,7 @@ module Padrino
 
           ENV["PADRINO_ENV"] = options.environment.to_s
 
-          require  'config/boot'
+          require  'config/boot' # TODO perhaps search for a boot file (don't force path)
 
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
 

@@ -32,6 +32,7 @@ module Padrino
         require 'bundler'
         gemfile_path = root("Gemfile")
         puts "=> Loading GemFile #{gemfile_path} for #{PADRINO_ENV}"
+        # TODO possibly support padrino apps where no Gemfile is specified (skip requires, assume explicit dependencies)
         Bundler::Environment.load(gemfile_path).require_env(PADRINO_ENV)
       rescue Bundler::DefaultManifestNotFound => e
         puts "=> You didn't create Bundler Gemfile manifest or you are not in a Sinatra application."
