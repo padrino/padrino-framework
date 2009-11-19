@@ -3,24 +3,24 @@ require 'sinatra/base'
 require 'haml'
 require 'padrino-core'
 
-class Core1Demo < Sinatra::Base
-
-  configure do
-    set :root, File.dirname(__FILE__)
-    set :log_to_file, true
-  end
+class Core1Demo < Padrino::Application
+  set :root, File.dirname(__FILE__)
+  set :log_to_file, true
+  disable :padrino_routing
+  disable :padrino_mailer
+  disable :padrino_helpers
   
   get "" do
     "Im Core1Demo"
   end
 end
 
-class Core2Demo < Sinatra::Base
-
-  configure do
-    set :root, File.dirname(__FILE__)
-    set :log_to_file, true
-  end
+class Core2Demo < Padrino::Application
+  set :root, File.dirname(__FILE__)
+  set :log_to_file, true
+  disable :padrino_routing
+  disable :padrino_mailer
+  disable :padrino_helpers
   
   get "" do
     "Im Core2Demo"
