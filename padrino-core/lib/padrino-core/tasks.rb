@@ -37,6 +37,7 @@ module Padrino
       desc "console ENVIRONMENT", "Boots up the Padrino application irb console"
       def console(environment="development")
         require File.dirname(__FILE__) + "/version.rb"
+        # TODO perhaps search for a boot file (don't force path)
         raise "Are you in a Padrino Project? We didn't find config/boot.rb !!!" unless File.exist?("config/boot.rb")
         ENV["PADRINO_ENV"] ||= environment
         puts "=> Loading #{environment} console (Padrino v.#{Padrino.version})"

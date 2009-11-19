@@ -87,7 +87,13 @@ individual gem or gems.
 
 === Enhanced Base Application (padrino-core)
 
-...
+Sinatra has support for classes which can be extended to create an application: <tt>Sinatra::Base</tt> and <tt>Sinatra::Application</tt>
+These classes can be extended in order to create a Sinatra web application. These classes provide support for all the basic
+functionality afforded by Sinatra.
+
+Padrino has support for an enhanced base application class <tt>Padrino::Application</tt>. <tt>Padrino::Application</tt>
+expands the capabilities of Sinatra::Application and automatically provides the resulting application access to all of
+the padrino framework's functionalities. 
 
 === Application Extensions and Helpers (padrino-helpers)
 
