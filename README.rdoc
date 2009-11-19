@@ -134,7 +134,7 @@ If the dependencies are not on the system, you can automatically vendor all nece
 using the <tt>gem bundle</tt> command within the application root. Note that this is all possible without
 any further effort than adding the Gemfile (or having this generated automatically with generators explained later).
 
-=== Load Paths ===
+=== Auto Load Paths
 
 Padrino also intelligently supports requiring useful files within your application automatically and provides
 functionality for easily splitting up your application into separate files. Padrino automatically requires <tt>config/database.rb</tt>
