@@ -26,6 +26,7 @@ module Padrino
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
           template "templates/mailer_initializer.rb.tt", app_root_path("config/initializers/mailer.rb"), :skip => true
           template "templates/mailer.rb.tt", app_root_path("app/mailers", "#{@mailer_basename}.rb")
+          empty_directory app_root_path('app/views/', @mailer_basename)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end
