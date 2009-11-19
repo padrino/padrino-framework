@@ -79,7 +79,7 @@ module Padrino
       
       # Returns the app_name for the application at root
       def fetch_app_name(root=nil)
-        app_path = root ? File.join(root, 'app.rb') : 'app.rb'
+        app_path = root ? File.join(root, 'app/app.rb') : 'app/app.rb'
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
       
