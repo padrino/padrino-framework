@@ -7,10 +7,8 @@ require 'webrat'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
 
 require 'active_support_helpers'
-require 'padrino-core'
 
 class Test::Unit::TestCase
   include Rack::Test::Methods

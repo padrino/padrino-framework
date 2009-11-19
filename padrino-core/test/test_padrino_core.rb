@@ -1,19 +1,14 @@
 require File.dirname(__FILE__) + '/helper'
+
+PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
 require File.dirname(__FILE__) + '/fixtures/simple_app/app'
+require 'padrino-core'
 
 class TestPadrinoCore < Test::Unit::TestCase
-  
-  def app
-    Padrino.application.tap
-  end
-  
-  def setup
-    silence_logger { Padrino.load! }
-  end
 
   context 'for core functionality' do
 
-    should 'check global helpers' do
+    should 'check global methods' do
       assert_respond_to Padrino, :env
       assert_respond_to Padrino, :root
       assert_respond_to Padrino, :load!
@@ -29,11 +24,14 @@ class TestPadrinoCore < Test::Unit::TestCase
 
     should 'validate global helpers' do
       # We mount a demo app
-      Padrino.mount("demo", :app_file => "#{Padrino.root("app.rb")}").to("/demo")
-      
-      assert_equal Padrino.env, "test"
-      assert_equal Padrino.root, File.dirname(__FILE__) + "/fixtures/simple_app"
-      assert_equal Padrino.mounted_apps.collect(&:name), ["demo"]
+      assert_equal "test", Padrino.env
+      assert_equal File.dirname(__FILE__) + "/fixtures/simple_app", Padrino.root
+    end
+    
+    should 'raise application error if I istantiate a new padrino application without mounted apps' do
+      assert_raise Padrino::ApplicationLoadError do
+        Padrino.application.tap { }
+      end
     end
   end
 end

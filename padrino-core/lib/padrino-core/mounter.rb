@@ -38,7 +38,13 @@ module Padrino
   class << self
     # Returns the root to the mounted apps base directory
     def mounted_root(*args)
-      File.join(Padrino.root, "apps", *args)
+      @mounted_root ||= "apps" # Other apps
+      File.join(Padrino.root, @mounted_root, *args)
+    end
+
+    # Set the root directory where padrino search mounted apps
+    def mounted_root=(value)
+      @mounted_root = value
     end
 
     # Returns the mounted padrino applications (MountedApp objects)
