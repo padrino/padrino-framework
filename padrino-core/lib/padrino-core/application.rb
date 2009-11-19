@@ -13,7 +13,6 @@ module Padrino
       def inherited(subclass)
         subclass.default_configuration!
         super # Loading the subclass
-        subclass.register_framework_extensions
       end
 
       # Hooks into when a new instance of the application is created
@@ -50,6 +49,7 @@ module Padrino
         self.register_initializers
         self.require_load_paths
         self.setup_logger
+        self.register_framework_extensions
         @configured = true
       end
 
@@ -67,6 +67,8 @@ module Padrino
         set :default_builder, 'StandardFormBuilder'
         enable :flash
         # Plugin specific
+        enable :padrino_routing
+        enable :padrino_mailer
         enable :padrino_helpers
       end
 
@@ -94,8 +96,8 @@ module Padrino
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
         return if @registered
-        register Padrino::Routing
-        register Padrino::Mailer
+        register Padrino::Routing  if padrino_routing?
+        register Padrino::Mailer   if padrino_mailer?
         register Padrino::Helpers  if padrino_helpers?
         @registered = true
       end
