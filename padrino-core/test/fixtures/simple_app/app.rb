@@ -4,7 +4,8 @@ require 'haml'
 require 'padrino-core'
 
 class Core1Demo < Padrino::Application
-  set :root, File.dirname(__FILE__)
+  set :app_file, __FILE__
+  disable :reload
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
@@ -15,7 +16,8 @@ class Core1Demo < Padrino::Application
 end
 
 class Core2Demo < Padrino::Application
-  set :root, File.dirname(__FILE__)
+  set :app_file, __FILE__
+  disable :reload
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
