@@ -17,7 +17,7 @@ module Padrino
       desc "start", "Start the Padrino application"
       def start
         require File.dirname(__FILE__) + "/tasks/adapter"
-        require 'config/boot'
+        require File.join(options.chdir.to_s, 'config/boot')
         Padrino::Tasks::Adapter.start(options)
       end
 
