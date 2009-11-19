@@ -49,6 +49,7 @@ Gem::Specification.new do |s|
      "lib/generators/components/tests/testspec_test_gen.rb",
      "lib/generators/controller.rb",
      "lib/generators/mailer.rb",
+     "lib/generators/model.rb",
      "lib/generators/skeleton.rb",
      "lib/generators/skeleton/.gitignore",
      "lib/generators/skeleton/Gemfile",
@@ -81,6 +82,8 @@ Gem::Specification.new do |s|
      "test/helper.rb",
      "test/test_controller_generator.rb",
      "test/test_mailer_generator.rb",
+     "test/test_migration_generator.rb",
+     "test/test_model_generator.rb",
      "test/test_skeleton_generator.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-gen}
