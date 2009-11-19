@@ -3,11 +3,11 @@ module Padrino
     module Adapter
 
       class << self
+
         ADAPTERS = %w[thin mongrel webrick]
 
+        # Start for the given options a rackup handler
         def start(options)
-
-          chdir(options.chdir) if options.chdir
 
           ENV["PADRINO_ENV"] = options.environment.to_s
 
@@ -32,8 +32,6 @@ module Padrino
               STDOUT.reopen "/dev/null", "a"
               STDERR.reopen STDOUT
 
-              chdir(options.chdir) if options.chdir
-
               FileUtils.mkdir_p("tmp/pids") unless File.exist?("tmp/pids")
               pid = "tmp/pids/server.pid"
 
@@ -50,18 +48,7 @@ module Padrino
           end
         end
 
-        def chdir(dir)
-          begin
-            Dir.chdir(dir.to_s)
-          rescue Errno::ENOENT
-            puts "=> You specified Padrino root as #{dir}, " +
-                 "that seems to be inexistent."
-          rescue Errno::EACCES
-            puts "=> You specified Padrino root as #{dir}, " +
-                 "yet the current user does not have access to it."
-          end
-        end
-
+        # Method that run the Padrino.application
         def run_app(options)
 
           handler_name = options.adapter.to_s.capitalize
@@ -84,8 +71,8 @@ module Padrino
           puts "=> Someone is already performing on port #{options.port}!"
         end
 
-        def stop(dir=nil)
-          chdir(dir) if dir
+        # Method that stop (if exist) a running Padrino.application
+        def stop
           if File.exist?("tmp/pids/server.pid")
             pid = File.read("tmp/pids/server.pid").to_i
             print "=> Sending SIGTERM to process with pid #{pid} wait "
