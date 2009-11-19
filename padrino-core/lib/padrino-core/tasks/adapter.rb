@@ -6,7 +6,9 @@ module Padrino
         ADAPTERS = %w[thin mongrel webrick]
 
         def start(options)
-
+          
+          require File.join(options.chdir.to_s, 'config/boot') # Requiring our config/boot.rb
+          
           ENV["PADRINO_ENV"] = options.environment.to_s
 
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
