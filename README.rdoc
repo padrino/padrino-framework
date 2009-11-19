@@ -98,7 +98,7 @@ the padrino framework's functionalities.
 Similar in spirit to Sinatra itself, Padrino application layout is extremely flexible and can be as small as a single file.
 However, Padrino provides many extensions which improve upon the ability to construct more complex applications.
 
-=== Simple Application Definition ===
+=== Simple Application Definition
 
 Let us first take a look at the simplest possible Padrino application:
 
@@ -115,7 +115,7 @@ Let us first take a look at the simplest possible Padrino application:
     end
   end
   
-=== Gemfile Dependency Resolution ===
+=== Gemfile Dependency Resolution
   
 While this is a fully operational Padrino application in itself, let us take a look at Padrino's expanded capabilites. First, 
 we can create Gemfile within the application root. This will contain a list of all the dependencies for our application.
@@ -153,7 +153,7 @@ within your application:
 This will instruct Padrino to autoload these files (and reload them when changes are detected). By default, the load path 
 contains certain paths known to contain important files such as controllers, mailers, models, urls, and helpers. 
 
-=== Initializers ===
+=== Initializers
 
 Padrino also has support for 'initializers' which are important setup steps or configuration within an application
 that should occur during the bootup process. To construct initializers, simply add a file to the <tt>config/initializers<tt>
@@ -171,7 +171,7 @@ directory following this convention:
 Initializers are automatically required and 'registered' during the application startup process. Note that
 the name of the module must be the name of the file appended with 'Initializer' (i.e sample.rb => SampleInitializer)
 
-=== Controllers ===
+=== Controllers
 
 Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
 within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
@@ -183,7 +183,7 @@ within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/co
     end
   end
   
-=== Logging ===
+=== Application Logging
 
 Padrino also supports robust logging capabilities. By default, logging information will
 go to the STDOUT in development (for use in a console) and in an environment-specific log file <tt>log/development.log</tt>
@@ -208,7 +208,7 @@ within your app and any controller or views:
 The logger automatically supports severity through the use of <tt>logger.info</tt>, <tt>logger.warn</tt>, <tt>logger.error</tt>, et al.
 For more information about the logger, check out the logger rdoc (http://www.ruby-doc.org/stdlib/libdoc/logger/rdoc/)
 
-=== Mounting Applications ===
+=== Mounting Applications
 
 Padrino applications are all automatically mountable into other Padrino projects. This means that a given Padrino
 project directory can easily mount multiple applications. This allows for better organization of complex applications,
@@ -233,7 +233,7 @@ which is served from the uri root. This can be easily applied with:
 This will mount a 'core' application with class AppName from the file 'app.rb' to the uri root and will act as a primary
 application.
 
-=== Reloader ===
+=== Development Reloader
 
 Padrino applications also have the enabled ability to automatically reload all changing application files without
 the need to restart the server. Through the use of a customized Rack middleware, all files on the 'load path'
@@ -252,7 +252,7 @@ An application can explicitly enable / disable reloading through the use of opti
   
 By default, reloading is enabled in development and disabled in the test and production environments.
 
-=== Commands ===
+=== Terminal Commands
 
 Padrino also comes equipped with multiple useful terminal commands which can be activated to perform
 common tasks such as starting / stopping the application, executing the unit tests or activating an irb session.
