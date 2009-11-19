@@ -4,22 +4,37 @@ module Padrino
   module Tasks 
     class Base < Thor
       include Thor::Actions
-      
-      desc "start", "Starts the Padrino application"
+
+      desc "start ", "Starts the Padrino application"
+
+      method_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development
+      method_option :adapter,     :type => :string,  :aliases => "-a", :required => true, :default => :thin
+      method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "localhost"
+      method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
+      method_option :daemonize,   :type => :boolean, :aliases => "-d"
+      method_option :chdir,       :type => :string,  :aliases => "-c"
+
+      desc "start", "Start the Padrino application"
       def start
-        say "Starting the Padrino application from root #{destination_root}"
+        require File.dirname(__FILE__) + "/tasks/adapter"
+        require 'config/boot'
+        Padrino::Tasks::Adapter.start(options)
       end
-      
+
       desc "stop", "Stops the Padrino application"
+
+      method_option :chdir, :type => :string,  :aliases => "-c"
+
       def stop
-        say "Stopping the Padrino application"
+        require File.dirname(__FILE__) + "/tasks/adapter"
+        Padrino::Tasks::Adapter.stop(options.chdir)
       end
-      
+
       desc "test", "Executes all the Padrino test files"
       def test
         say "Executing Padrino test files"
       end
-      
+
       desc "console ENVIRONMENT", "Boots up the Padrino application irb console"
       def console(environment="development")
         require File.dirname(__FILE__) + "/version.rb"
