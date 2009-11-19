@@ -69,3 +69,46 @@ To install the padrino framework, simply grab the latest version from gemcutter:
   
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+
+== Usage
+
+Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of 
+additional tools and helpers to extend the foundation. This README and Padrino documentation in general will focus
+on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
+usage of Sinatra itself. Resources for Sinatra are listed below:
+
+* README (http://www.sinatrarb.com/intro.html)
+* Book   (http://www.sinatrarb.com/book.html)
+* Repo   (http://github.com/sinatra/sinatra)
+
+Below is a guide to how this gem enhances the Sinatra framework as part of a 'full-stack' padrino application.
+For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the README for that 
+individual gem or gems.
+
+=== Enhanced Base Application (padrino-core)
+
+...
+
+=== Application Extensions and Helpers (padrino-helpers)
+
+...
+
+=== Advanced Routing Support (padrino-routing)
+
+...
+
+=== Agnostic Application Generators (padrino-gen)
+
+...
+
+=== Simple Mailer Support (padrino-mailer)
+
+...
+
+=== Painless Page and Fragment Caching (padrino-cache)
+
+...
+
+=== Admin Dashboard and Authentication (padrino-admin)
+
+...
