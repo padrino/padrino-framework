@@ -6,10 +6,12 @@ module Padrino
         ADAPTERS = %w[thin mongrel webrick]
 
         def start(options)
-          
-          require File.join(options.chdir.to_s, 'config/boot') # Requiring our config/boot.rb
-          
+
+          chdir(options.chdir) if options.chdir
+
           ENV["PADRINO_ENV"] = options.environment.to_s
+
+          require  'config/boot'
 
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
 
@@ -19,7 +21,7 @@ module Padrino
               exit 
             end
 
-            stop(options.chdir) # We need to stop a process if exist
+            stop # We need to stop a process if exist
 
             fork do
               Process.setsid
@@ -79,7 +81,7 @@ module Padrino
           puts "=> Someone is already performing on port #{options.port}!"
         end
 
-        def stop(dir)
+        def stop(dir=nil)
           chdir(dir) if dir
           if File.exist?("tmp/pids/server.pid")
             pid = File.read("tmp/pids/server.pid").to_i
