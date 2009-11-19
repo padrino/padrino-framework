@@ -36,6 +36,22 @@ module Padrino
             create_file File.join(root, "test/controllers/#{name}_controller_test.rb"), testspec_contents
           end
 
+          TESTSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
+          require File.dirname(__FILE__) + '/../test_config.rb'
+
+          context "!NAME! Model" do
+            specify 'can be created' do
+              @!DNAME! = !NAME!.new
+              @!DNAME!.should.not.be.nil
+            end
+          end
+          TEST
+
+          def generate_model_test(name)
+            tests_contents = TESTSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
+            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), tests_contents
+          end
+
         end
 
       end

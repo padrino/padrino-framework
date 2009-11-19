@@ -36,6 +36,22 @@ module Padrino
             create_file File.join(root, "test/controllers/#{name}_controller_test.rb"), riot_contents
           end
 
+          RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
+          require File.dirname(__FILE__) + '/../test_config.rb'
+
+          context "!NAME! Model" do
+            context 'can be created' do
+              setup { @!DNAME! = !NAME!.new }
+              asserts("that record is not nil") { !@!DNAME!.nil? }
+            end
+          end
+          TEST
+
+          def generate_model_test(name)
+            riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
+            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), riot_contents
+          end
+
         end
 
       end

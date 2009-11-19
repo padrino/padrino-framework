@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + "/../lib/padrino-gen"
 
 generator_mappings = ActiveSupport::OrderedHash.new
 generator_mappings[:app]        = Padrino::Generators::Skeleton
+generator_mappings[:model]      = Padrino::Generators::Model
 generator_mappings[:controller] = Padrino::Generators::Controller
 generator_mappings[:mailer]     = Padrino::Generators::Mailer
 

@@ -2,7 +2,7 @@ module Padrino
   module Generators
     module Components
       module Tests
-        
+
         module BaconGen
           BACON_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           class Bacon::Context
@@ -19,7 +19,7 @@ module Padrino
             require_dependencies 'bacon', :env => :testing
             insert_test_suite_setup BACON_SETUP
           end
-          
+
           BACON_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
 
@@ -30,15 +30,31 @@ module Padrino
             end
           end
           TEST
-          
+
           # Generates a controller test given the controllers name
           def generate_controller_test(name, root)
             bacon_contents = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
             create_file File.join(root, "test/controllers/#{name}_controller_test.rb"), bacon_contents
           end
 
+          BACON_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
+          require File.dirname(__FILE__) + '/../test_config.rb'
+
+          describe "!NAME! Model" do
+            it 'can be created' do
+              @!DNAME! = !NAME!.new
+              @!DNAME!.should.not.be.nil
+            end
+          end
+          TEST
+
+          def generate_model_test(name)
+            bacon_contents = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
+            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), bacon_contents
+          end
+
         end
-        
+
       end
     end
   end

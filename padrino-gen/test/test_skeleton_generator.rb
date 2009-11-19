@@ -109,7 +109,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--orm=couchrest', '--script=none']) }
       assert_match /Applying.*?couchrest.*?orm/, buffer
       assert_match_in_file(/gem 'couchrest'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/CouchRest.database!/, '/tmp/sample_app/config/database.rb')    
+      assert_match_in_file(/CouchRest.database!/, '/tmp/sample_app/config/database.rb')
     end
   end
 
