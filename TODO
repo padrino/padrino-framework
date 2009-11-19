@@ -47,7 +47,7 @@
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
   * add ajax adapters for the various js components (rightjs, jquery, prototype)
 
-== DAVID
+== DAddYE
 
 * Add tests for padrino_core gem (and any other gems if you want - generators and routing)
 * Optimize (improve performance) padrino_core gem
