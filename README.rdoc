@@ -48,7 +48,7 @@ of tools, helpers and components that will make Sinatra suitable for more comple
 Here is a small list of what Padrino contains:
 
 Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
-MultiApp:: unlike other ruby framework Padrino as Django do can handle mutliple apps at the same time.
+MultiApp:: unlike other ruby framework Padrino as Django do is designed from principe for handle mutliple apps at the same time.
 Routing:: Full url named route support to avoid hardcoding route url paths (<tt>map</tt>, <tt>url_for</tt>)
 Tag Helpers:: tag helpers like: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>
 Asset Helpers:: like: <tt>link_to</tt>, <tt>image_tag</tt>, <tt>javascript_include_tag</tt>, ...
