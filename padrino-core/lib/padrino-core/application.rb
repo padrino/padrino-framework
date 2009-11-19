@@ -13,7 +13,6 @@ module Padrino
       def inherited(subclass)
         subclass.default_configuration!
         super # Loading the subclass
-        subclass.register_framework_extensions
       end
 
       # Hooks into when a new instance of the application is created
@@ -46,6 +45,7 @@ module Padrino
       # Invoked automatically when an application is first instantiated
       def setup_application!
         return if @configured
+        self.register_framework_extensions
         self.calculate_paths
         self.register_initializers
         self.require_load_paths

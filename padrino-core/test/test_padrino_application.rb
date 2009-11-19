@@ -6,6 +6,10 @@ require 'padrino-core'
 
 class TestPadrinoMounter < Test::Unit::TestCase
 
+  def app
+    Padrino.application.tap { }
+  end
+
   def setup
     Padrino.mounted_apps.clear
     Padrino.mount("core_1_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_1_demo")
@@ -30,8 +34,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
     end
 
     should 'have controllers' do
-      Padrino.application.tap { }
-      Core1Demo::controllers :admin do
+      Core1Demo::controllers do
         get("/controller") { "Im a controller" }
       end
       visit "/core_1_demo/admin/controller"

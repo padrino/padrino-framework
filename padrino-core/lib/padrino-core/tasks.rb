@@ -45,7 +45,6 @@ module Padrino
         require File.dirname(__FILE__) + "/version"
         boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
         unless File.exist?(boot)
-          puts "=> Are you in a Padrino Project?"
           puts "=> We didn't find boot file: #{boot} !!!"
           exit
         end

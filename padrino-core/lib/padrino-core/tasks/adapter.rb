@@ -13,8 +13,7 @@ module Padrino
 
           boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
           unless File.exist?(boot)
-            puts "=> Are you in a Padrino Project?"
-            puts "=> We didn't find boot file: #{boot} !!!"
+            puts "=> We didn't find boot file: #{boot.inspect} !!!"
             exit
           end
           require boot

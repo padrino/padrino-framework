@@ -24,7 +24,7 @@ class TestPadrinoCore < Test::Unit::TestCase
 
     should 'validate global helpers' do
       assert_equal "test", Padrino.env
-      assert_equal File.dirname(__FILE__) + "/fixtures/simple_app", Padrino.root
+      assert_equal "./test/fixtures/simple_app", Padrino.root
     end
     
     should 'raise application error if I istantiate a new padrino application without mounted apps' do
