@@ -1,9 +1,13 @@
 require 'thor'
+require File.dirname(__FILE__) + "/tasks/helpers"
 
 module Padrino
   module Tasks 
     class Base < Thor
       include Thor::Actions
+      include Padrino::Tasks::Helpers
+
+      class_option :chdir, :type => :string, :aliases => "-c"
 
       desc "start ", "Starts the Padrino application"
 
@@ -12,26 +16,26 @@ module Padrino
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "localhost"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
-      method_option :chdir,       :type => :string,  :aliases => "-c"
 
       desc "start", "Start the Padrino application"
       def start
         require File.dirname(__FILE__) + "/tasks/adapter"
+        chdir(options.chdir)
         Padrino::Tasks::Adapter.start(options)
       end
 
       desc "stop", "Stops the Padrino application"
-
-      method_option :chdir, :type => :string,  :aliases => "-c"
-
       def stop
         require File.dirname(__FILE__) + "/tasks/adapter"
-        Padrino::Tasks::Adapter.stop(options.chdir)
+        chdir(options.chdir)
+        Padrino::Tasks::Adapter.stop
       end
 
       desc "test", "Executes all the Padrino test files"
       def test
-        say "Executing Padrino test files"
+        require File.dirname(__FILE__) + "/tasks/test"
+        chdir(options.chdir)
+        Padrino::Tasks::Test.start
       end
 
       desc "console ENVIRONMENT", "Boots up the Padrino application irb console"
