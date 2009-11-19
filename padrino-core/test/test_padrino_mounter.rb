@@ -12,6 +12,8 @@ class TestPadrinoMounter < Test::Unit::TestCase
 
   def setup
     Padrino.mounted_apps.clear
+    Padrino.mount("core_1_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_1_demo")
+    Padrino.mount("core_2_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_2_demo")
   end
 
   context 'for mounter functionality' do
@@ -30,23 +32,19 @@ class TestPadrinoMounter < Test::Unit::TestCase
     end
 
     should 'mount some apps' do
-      Padrino.mount("demo_1", :app_file => "#{Padrino.root("app.rb")}").to("/demo_1")
-      Padrino.mount("demo_2", :app_file => "#{Padrino.root("app.rb")}").to("/demo_2")
-      assert_equal ["demo_1", "demo_2"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["core_1_demo", "core_2_demo"], Padrino.mounted_apps.collect(&:name)
     end
 
     should 'mount only a core' do
+      Padrino.mounted_apps.clear
       Padrino.mount_core(:app_file => "#{Padrino.root("app.rb")}")
       assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
     end
 
-    should 'correctly instantiate a new Padrino.application' do
-      Padrino.mount("core_1_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_1_demo")
-      Padrino.mount("core_2_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_2_demo")
-      assert app
-      visit '/core_1_demo'
+    should 'correctly instantiate a new padrino application' do
+      visit '/core_1_demo/'
       assert_contain "Im Core1Demo"
-      visit '/core_2_demo'
+      visit '/core_2_demo/'
       assert_contain "Im Core2Demo"
     end
   end

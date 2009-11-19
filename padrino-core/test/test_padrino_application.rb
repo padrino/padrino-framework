@@ -37,7 +37,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       Core1Demo::controllers do
         get("/controller") { "Im a controller" }
       end
-      visit "/core_1_demo/admin/controller"
+      visit "/core_1_demo/controller"
       assert_contain "Im a controller"
     end
     

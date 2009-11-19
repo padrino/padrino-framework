@@ -109,9 +109,9 @@ module Padrino
 
       # Creates the log directory and redirects output to file if needed
       def setup_logger
-        return unless self.log_to_file?
-        FileUtils.mkdir_p 'log' unless File.exists?('log')
-        log = File.new("log/#{PADRINO_ENV.downcase}.log", "a+")
+        return unless log_to_file?
+        FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
+        log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
         $stdout.reopen(log)
         $stderr.reopen(log)
       end
