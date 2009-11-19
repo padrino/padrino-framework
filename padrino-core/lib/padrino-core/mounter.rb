@@ -55,7 +55,7 @@ module Padrino
     # Mounts the core application onto Padrino project
     # @example Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
     def mount_core(options={})
-      options.reverse_merge!(:app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root(''))
+      options.reverse_merge!(:app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root)
       Mounter.new("core", options).to("/")
     end
   end

@@ -7,14 +7,12 @@ require 'webrat'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
+PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
+
 require 'active_support_helpers'
-require 'padrino-helpers'
 require 'padrino-core'
 
 class Test::Unit::TestCase
-  include Padrino::Helpers::OutputHelpers
-  include Padrino::Helpers::TagHelpers
-  include Padrino::Helpers::AssetTagHelpers
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
@@ -27,25 +25,6 @@ class Test::Unit::TestCase
     time = Time.now
     Time.stubs(:now).returns(time)
     return time
-  end
-
-  # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {}, &block)
-    html = block && block.call
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
-  # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {}, &block)
-    html = block && block.call
-    attributes.merge!(:count => 0)
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
   end
 
   # Silences the output by redirecting to stringIO
