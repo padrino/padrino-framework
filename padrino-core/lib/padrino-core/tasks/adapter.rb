@@ -11,7 +11,13 @@ module Padrino
 
           ENV["PADRINO_ENV"] = options.environment.to_s
 
-          require  'config/boot' # TODO perhaps search for a boot file (don't force path)
+          boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
+          unless File.exist?(boot)
+            puts "=> Are you in a Padrino Project?"
+            puts "=> We didn't find boot file: #{boot} !!!"
+            exit
+          end
+          require boot
 
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
 

@@ -15,6 +15,7 @@ module Padrino
       method_option :adapter,     :type => :string,  :aliases => "-a", :required => true, :default => :thin
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "localhost"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
+      method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
 
       desc "start", "Start the Padrino application"
