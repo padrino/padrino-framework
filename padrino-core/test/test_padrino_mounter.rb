@@ -44,6 +44,10 @@ class TestPadrinoMounter < Test::Unit::TestCase
       Padrino.mount("core_1_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_1_demo")
       Padrino.mount("core_2_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_2_demo")
       assert app
+      visit '/core_1_demo'
+      assert_contain "Im Core1Demo"
+      visit '/core_2_demo'
+      assert_contain "Im Core2Demo"
     end
   end
 end

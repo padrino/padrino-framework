@@ -23,7 +23,6 @@ class TestPadrinoCore < Test::Unit::TestCase
     end
 
     should 'validate global helpers' do
-      # We mount a demo app
       assert_equal "test", Padrino.env
       assert_equal File.dirname(__FILE__) + "/fixtures/simple_app", Padrino.root
     end

@@ -9,6 +9,10 @@ class Core1Demo < Sinatra::Base
     set :root, File.dirname(__FILE__)
     set :log_to_file, true
   end
+  
+  get "" do
+    "Im Core1Demo"
+  end
 end
 
 class Core2Demo < Sinatra::Base
@@ -18,6 +22,9 @@ class Core2Demo < Sinatra::Base
     set :log_to_file, true
   end
   
+  get "" do
+    "Im Core2Demo"
+  end
 end
 
 orig_stdout = $stdout
