@@ -5,20 +5,18 @@ module Padrino
     
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
-      raise ApplicationSetupError, "You need to disable reload in your apps if they contains Padrino.load!" if loaded?
+      raise ApplicationSetupError, "You need to disable reload in your apps if they contains Padrino.loa" if loaded?
       load_required_gems # load bundler gems
       load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       reload! # We need to fill our Stat::CACHE but we do that only for development
       loaded = true
     end
-    
+
     # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
     def load_required_gems
-      return if @_loaded
       self.load_bundler_manifest
       self.require_vendored_gems
-      @_loaded = true
     end
 
     # Attempts to load/require all dependency libs that we need.
@@ -33,7 +31,7 @@ module Padrino
       end
     end
     alias_method :load_dependency, :load_dependencies
-    
+
     # Method for reload required classes
     def reload!
       Stat::reload!
@@ -46,9 +44,9 @@ module Padrino
       require 'bundler'
       print "=> Locating Gemfile for #{PADRINO_ENV}"
       Bundler::Environment.load(root("Gemfile")).require_env(PADRINO_ENV)
-      print " ... Loaded!"
+      print "...Loaded!"
     rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
-      print " ... Not Found"
+      print "...Not Found"
     end
 
     # Loads bundled gems if they exist
