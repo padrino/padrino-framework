@@ -12,16 +12,11 @@
 
 === TESTING / POLISHING
 
-* Defining inline named routes inside app.rb files (get :show, :map => '...") cause an error
 * Test that controller, mailer, migration and model generators work properly
 * Make sure reloader middleware works for urls, models, controllers and all application files
 * Decide what to do about initializers (where do they go single app, multiple apps)
 * Verify logging works properly and can be accessed from any controller (and with specified severity)
 * Make sure that mailer works and perhaps port over (http://github.com/benprew/pony) for use instead
-* If you define routes directly inside of the application class (app.rb) routes are not reloaded (?)
-  - class Demo < Padrino::Application; get("/example"); end
-* If you define controller inside the app file, causes infinite loading loop
-  - class Demo < Padrino::Application; end + Demo.controllers { ... }
 
 === IDEAS
 
@@ -57,6 +52,10 @@
 
 == DAddYE
 
+* If you define routes directly inside of the application class (app.rb) routes are not reloaded and infinite loop (?)
+  - class Demo < Padrino::Application; get("/example"); end
+* If you define controller inside the app file, causes infinite loading loop
+  - class Demo < Padrino::Application; end + Demo.controllers { ... }
 * Add tests for padrino_core gem (and any other gems - generators and routing)
 * Optimize (improve performance) padrino_core gem
 * Implement padrino-admin gem (with authentication)
@@ -64,6 +63,7 @@
 
 == COMPLETED
 
+* Defining inline named routes inside app.rb files (get :show, :map => '...") cause an error
 * Add app generator to specify orm=none, test=none, script=none
 * We need to remove dependency on activesupport (and use support_lite to work with extlib or as)
 * Implement Basic padrino-core padrino file for tasks (start, stop, test, console)
