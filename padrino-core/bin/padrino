@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 %w[rubygems thor].each { |gem| require gem }
-require 'padrino-core/support_lite'
+require File.dirname(__FILE__) + "/../lib/padrino-core/support_lite"
 require File.dirname(__FILE__) + "/../lib/padrino-core/tasks"
 
 arguments = ARGV.any? ? ARGV : ['-h']
