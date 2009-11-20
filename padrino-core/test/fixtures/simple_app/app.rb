@@ -4,23 +4,23 @@ require 'haml'
 require 'padrino-core'
 
 class Core1Demo < Padrino::Application
-  set :root, File.dirname(__FILE__)
+  set :app_file, File.dirname(__FILE__) + "/app.rb"
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
   
-  get "/" do
+  get "" do
     "Im Core1Demo"
   end
 end
 
 class Core2Demo < Padrino::Application
-  set :root, File.dirname(__FILE__)
+  set :app_file, File.dirname(__FILE__) + "/app.rb"
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
   
-  get "/" do
+  get "" do
     "Im Core2Demo"
   end
 end

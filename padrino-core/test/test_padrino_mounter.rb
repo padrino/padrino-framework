@@ -42,9 +42,9 @@ class TestPadrinoMounter < Test::Unit::TestCase
     end
 
     should 'correctly instantiate a new padrino application' do
-      visit '/core_1_demo/'
+      visit '/core_1_demo'
       assert_contain "Im Core1Demo"
-      visit '/core_2_demo/'
+      visit '/core_2_demo'
       assert_contain "Im Core2Demo"
     end
   end
