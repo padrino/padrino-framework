@@ -4,8 +4,8 @@ module Padrino
     # in `extensions` available to the application
     def controllers_with_namespaces(*namespace, &block)
       controllers_without_namespaces unless namespace.size == 1 && namespace.first.is_a?(Symbol)
-      @routes = Padrino::Application.dupe_routes if reload?
       namespace(namespace.first) { instance_eval(&block) } if block_given?
+        self.reset_routes! if reload?
     end
   end
 

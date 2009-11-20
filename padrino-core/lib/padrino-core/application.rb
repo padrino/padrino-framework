@@ -27,7 +27,7 @@ module Padrino
       # Makes the routes defined in the block and in the Modules given
       # in `extensions` available to the application
       def controllers(*extensions, &block)
-        @routes = {}; load(app_file) if reload? # This performs a basic controller reload (compatible with sinatra edge)
+        self.reset_routes!    if reload?
         instance_eval(&block) if block_given?
         include(*extensions)  if extensions.any?
       end
@@ -111,7 +111,7 @@ module Padrino
 
       # Returns the load_paths for the application (relative to the application root)
       def load_paths
-        @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb", 
+        @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb",
                          "mailers/*.rb", "app/mailers/*.rb", "controllers/*.rb", "app/controllers/*.rb",
                          "helpers/*.rb", "app/helpers/*.rb"]
       end
@@ -120,6 +120,12 @@ module Padrino
       def find_view_path
         @view_paths = ["views", "app/views"].collect { |path| File.join(self.root, path) }
         @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
+      end
+
+      # Resets application routes for use in reloading the application
+      # This performs a basic routes reload (compatible with sinatra edge)
+      def reset_routes!
+        @routes = {}; load(self.app_file)
       end
     end
   end
