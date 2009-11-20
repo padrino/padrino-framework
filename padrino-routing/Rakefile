@@ -8,7 +8,7 @@ begin
     gem.summary = "Named route mapping system"
     gem.description = "Enhances padrino with a named route mapping system allowing for advanced routes"
     gem.email = "nesquena@gmail.com"
-    gem.homepage = "http://github.com/padrino/padrino-routing"
+    gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-routing"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.add_runtime_dependency     "sinatra",       ">= 0.9.2"
     gem.add_runtime_dependency     "padrino-core",  ">= 0.1.1"

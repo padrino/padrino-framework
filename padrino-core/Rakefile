@@ -8,7 +8,7 @@ begin
     gem.summary = "The required Padrino core gem"
     gem.description = "The Padrino core gem required for use of this framework"
     gem.email = "nesquena@gmail.com"
-    gem.homepage = "http://github.com/padrino/padrino-core"
+    gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-core"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.executables = ["padrino"]
     gem.add_runtime_dependency     "sinatra",       ">= 0.9.2"

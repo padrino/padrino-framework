@@ -8,7 +8,7 @@ begin
     gem.summary = "Generators for easily creating and building padrino applications"
     gem.description = "Generators for easily creating and building padrino applications from the console"
     gem.email = "nesquena@gmail.com"
-    gem.homepage = "http://github.com/padrino/padrino-gen"
+    gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-gen"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.executables = ["padrino-gen"]
     gem.add_runtime_dependency     "sinatra",       ">= 0.9.2"
