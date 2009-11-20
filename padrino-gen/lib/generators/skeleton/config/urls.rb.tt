@@ -1,4 +1,4 @@
-<%= @class_name %>::urls do
+<%= @class_name %>.urls do
   # map(:index).to("/")
   # map(:test).to("/test")
 end

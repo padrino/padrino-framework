@@ -1,4 +1,4 @@
-AdvRoutingDemo::controllers :admin do
+AdvRoutingDemo.controllers :admin do
   get :dashboard do
     "<h1>This is the admin dashboard, id: #{params[:id]}</h1>"
   end
@@ -17,7 +17,7 @@ AdvRoutingDemo::controllers :admin do
 end
 
 
-AdvRoutingDemo::controllers do
+AdvRoutingDemo.controllers do
   namespace :blog do
     get :index, :map => "/blog/index/action" do
       "<h1>Here is the blog</h1>"

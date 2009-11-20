@@ -33,7 +33,7 @@ class TestPadrinoApplication < Test::Unit::TestCase
     end
 
     should 'have controllers' do
-      Core1Demo::controllers do
+      Core1Demo.controllers do
         get("/controller") { "Im a controller" }
       end
       visit "/core_1_demo/controller"

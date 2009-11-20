@@ -178,7 +178,7 @@ Suppose we wanted to add additional routes to our Padrino application, and we wa
 within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
 
   # controllers/example.rb
-  SimpleApp::controllers do
+  SimpleApp.controllers do
     get "/test" do
       "Text to return"
     end
@@ -202,7 +202,7 @@ To use the logger within a Padrino application, simply refer to the <tt>logger</
 within your app and any controller or views:
 
   # controllers/example.rb
-  SimpleApp::controllers do
+  SimpleApp.controllers do
     get("/test") { logger.info "This is a test" }
   end
   
@@ -282,7 +282,7 @@ Using these commands can simplify common tasks making development that much smoo
 
 == Advanced Routing Support (padrino-routing)
 
-...SimpleApp::urls...
+...SimpleApp.urls...
 ...
 
 == Agnostic Application Generators (padrino-gen)

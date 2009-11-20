@@ -1,4 +1,4 @@
-AdvRoutingDemo::controllers do
+AdvRoutingDemo.controllers do
   get :simple, :map => "/some/simple/action" do
     "<h1>simple action welcomes you</h1>"
   end
