@@ -1,10 +1,10 @@
-==Padrino
+= Padrino
 
 Padrino is the godfather of Sinatra.
 
 == Preface
 
-This gem has been designed to work on top of and enhance Sinatra (http://www.sinatrarb.com).
+This gem has been designed to enhance and build upon Sinatra (http://www.sinatrarb.com).
 Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
 The canonical example of how to create an entire simple web application with Sinatra is something like:
 
@@ -19,33 +19,25 @@ and then to run the application:
 
   $ ruby myapp.rb
   
-The extreme simplicity of the framework is quite refreshing. We have been using Sinatra a great deal
+The extreme simplicity of this framework is quite refreshing. We have been using Sinatra a great deal
 for recent projects. First for small and simple json and xml web services and then even
 for more complex full-featured applications. This gem represents an attempt to make it as fun and easy
-as possible to code increasingly advanced view-heavy web applications in Sinatra.
+as possible to code increasingly advanced web applications in Sinatra.
 
 == Introduction
 
-Note: This library is still experimental and may not be ready for production just yet. 
-That being said the gem is being actively used on a number of sinatra projects.
-In addition, the gem has fairly solid test coverage ensuring that everything works as expected.
+Many people love Sinatra's simplicity and lightweight but often quickly come to miss a great deal
+of functionality provided by other web frameworks such as Rails when building non-trivial applications.
 
-This will be a framework which expands sinatra's capabilities in a variety of ways. 
-Note that all extensions have been created to work with haml, erb, and erubis. 
-This gem is intended to be template-agnostic in providing helpers wherever possible.
+The obvious question in these cases might be "Why not just use rails then?". This can often be a viable option
+but still Rails is quite a large framework with a 'take it or leave it' attitude.
+Personally, we have come to love the philosophy of Sinatra which acts as a thin layer on top of rack 
+often allowing middleware to do most of the work and pulling in additional complexity only when required. 
 
-Let me expand briefly on what I want to accomplish with this gem. I love sinatra but if I want to use it
-for any non-trivial application I very quickly miss a lot of the extra tools provided by rails.
-
-Now the obvious question is "Why not just use rails then?" Well, in many cases that might be the right decision.
-Still, at least until version 3 comes along, Rails is quite a large framework with a 'take it or leave it' attitude.
-Personally, I have come to love the spirit of sinatra which acts as a thin wrapper on top of rack 
-often allowing middleware to do most of the work and pulling in additional complexity only as required. 
-
-My goal with this extension is to match the spirit of Sinatra and at the same time create a standard library
+My goal with this extension is to match the essence of Sinatra and at the same time create a standard library
 of tools, helpers and components that will make Sinatra suitable for more complex applications.
 
-Here is a small list of what Padrino contains:
+Here is a small list of what Padrino provides:
 
 Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
 MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
@@ -59,6 +51,9 @@ Admin:: an ajax admin that displays your records in sortable grids, tree, window
 
 Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
+
+Note that all work has been created to be compatible with haml, erb, and erubis and that this gem is intended to be 
+template-agnostic in providing helpers wherever possible.
 
 Please help me brainstorm and fork the project if you have any ideas to contribute.
 
