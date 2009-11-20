@@ -589,7 +589,65 @@ Note that controller namespaces are simply a shortcut for standard namespaces an
 
 == Simple Mailer Support (padrino-mailer)
 
-...
+Padrino provides support for mailer capabilities to make delivering email within your application as painless
+as possible and familiar to anyone who has ever used ActionMailer. This functionality is performed using
+an adapted version of the excellent and lightweight 
+{pony}[http://adamblog.heroku.com/past/2008/11/2/pony_the_express_way_to_send_email_from_ruby/]
+but no longer relies upon this as a dependency.
+
+For detailed information on the padrino mailer, check out the 
+{padrino-mailer README}[http://github.com/padrino/padrino-framework/tree/master/padrino-mailer/].
+
+Let’s take a look at using the MailerPlugin in an application. By default, MailerPlugin uses the built-in sendmail 
+functionality on the server. However, SMTP is also supported using the following configuration:
+
+    Padrino::Mailer::Base.smtp_settings = {
+      :host   => 'smtp.gmail.com',
+      :port   => '587',
+      :tls    => true,
+      :user   => 'user',
+      :pass   => 'pass',
+      :auth   => :plain
+   }
+
+Once that has been defined, the default will become smtp delivery unless overwritten in an individual mail definition.
+Next, we should define a custom mailer extended from Padrino::Mailer::Base or use the mailer generator (see next section)
+
+  $ sinatra-gen mailer sample
+
+Once the mailer is generated, we can define the specific email delivery methods
+
+  # app/mailers/sample_mailer.rb
+  class SampleMailer < Padrino::Mailer::Base
+    def registration_email(name, user_email_address)
+      from 'admin@site.com'
+      to user_email_address
+      subject 'Welcome to the site!'
+      body    :name => name
+      type    'html'                # optional, defaults to plain/text
+      charset 'windows-1252'        # optional, defaults to utf-8
+      via     :sendmail             # optional, to smtp if defined otherwise sendmail
+    end
+  end
+
+This defines mail called ‘registration_mail’ with the specified attributes for delivery. 
+The body method is passing the name attribute to the body message template which should be 
+defined in [views_path]/sample_mailer/registration_email.erb as shown below:
+
+  # ./views/sample_mailer/registration_email.erb
+  This is the body of the email and can access the <%= name %> that was passed in from the mailer definition
+  That's all there is to defining the body of the email which can be plain text or html
+
+Once the mailer definition has been completed and the template has been defined, the email can be sent using:
+
+  SampleMailer.deliver(:registration_email, "Bob", "bob@bobby.com")
+
+or if you like the method_missing approach:
+
+  SampleMailer.deliver_registration_email "Bob", 'bob@bobby.com'
+  
+For detailed information or examples using attachments or more advanced techniques, check out the 
+{padrino-mailer README}[http://github.com/padrino/padrino-framework/tree/master/padrino-mailer/].
 
 == Agnostic Application Generators (padrino-gen)
 
@@ -601,7 +659,6 @@ single spot and then attach an alias which can be used to refer to the url throu
 For a detailed look at all of padrino generator functionality, check out the documentation within the 
 {padrino-generator README}[http://github.com/padrino/padrino-framework/tree/master/padrino-gen/].
 The following is a whirlwind guide through useful generators provided by this gem.
-
 
 === Application Generator
 
