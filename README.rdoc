@@ -603,7 +603,7 @@ For a detailed look at all of padrino generator functionality, check out the doc
 The following is a whirlwind guide through useful generators provided by this gem.
 
 
-=== Application Generator ===
+=== Application Generator
 
 Padrino provides generator support for quickly creating new Padrino applications. This provides many benefits
 such as constructing the recommended Padrino application structure, auto-generating a Gemfile listing
@@ -627,7 +627,7 @@ This will automatically create a new folder called 'demo_blog' containing a star
 For information on generating appications, check out the 
 {padrino-generator README}[http://github.com/padrino/padrino-framework/tree/master/padrino-gen/].
 
-=== Model Generator ===
+=== Model Generator
 
 Padrino provides generator support for quickly creating new models within your Padrino application. Note that
 the models (and migrations) generated are specifically tailored towards the ORM component and testing framework
@@ -654,7 +654,7 @@ Usually the model file will generate files similar to the following:
   
 You can define as many models as you would like in a Padrino application using this generator.
 
-=== Migration Generator ===
+=== Migration Generator
 
 Padrino provides generator for quickly generating new migrations to change or manipulate the database schema.
 These migrations generated will be tailored towards the ORM chosen when generating the application.
@@ -676,7 +676,7 @@ You can also specify desired columns to be added to the migration file:
 The migration generator will then construct the migration file according to your ORM component chosen
 within <tt>db/migrate/xxx_add_fields_to_users.rb</tt> including the columns specified in the command.
 
-=== Controller Generator ===
+=== Controller Generator
 
 Padrino provides generator support for quickly creating new controllers within your Padrino application. Note that
 the controller tests are generated specifically tailored towards the testing framework chosen 
@@ -697,7 +697,7 @@ The controller generator will then construct the controller file within <tt>app/
 and also a controller test file at <tt>test/controllers/admin_controller_test.rb</tt> according to the 
 test framework chosen during app generation.
 
-=== Mailer Generator ===
+=== Mailer Generator
 
 Padrino provides generator support for quickly creating new mailers within your Padrino application.
 Very important to note that mailer generators are intended primarily to work within applications 
