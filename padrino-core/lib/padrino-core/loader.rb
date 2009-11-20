@@ -2,10 +2,10 @@ module Padrino
   class << self
     attr_reader :loaded
     alias_method :loaded?, :loaded
-    
+
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
-      raise ApplicationSetupError, "You need to disable reload in your apps if they contains Padrino.loa" if loaded?
+      raise ApplicationSetupError, "You need to disable reload in your app if the file contains Padrino.load!" if loaded?
       load_required_gems # load bundler gems
       load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
