@@ -29,6 +29,7 @@ module Padrino
       builder.map self.uri_root do
         app_klass.set :uri_root, app_data.uri_root
         app_klass.set :app_file, app_data.app_file
+        app_klass.set :app_name, app_data.name
         app_klass.set :root,     app_data.app_root if app_data.app_root
         run app_klass
       end

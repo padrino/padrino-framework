@@ -15,6 +15,7 @@ module Padrino
         subclass.default_configuration!
         super # Loading the subclass
         subclass.register Padrino::Routing if defined?(Padrino::Routing)
+        subclass.check_single_app
       end
 
       # Hooks into when a new instance of the application is created
@@ -32,6 +33,13 @@ module Padrino
         self.reset_routes!    if reload?
         instance_eval(&block) if block_given?
         include(*extensions)  if extensions.any?
+      end
+
+      # Return true if the bootloader => Padrino.load! it's instatiated in the same 
+      # palace of the app.
+      # Notice that <tt>signle_apps</tt> was not reloadable!
+      def single_app?
+        @_single_app
       end
 
       protected
@@ -70,6 +78,11 @@ module Padrino
         enable :padrino_helpers
       end
 
+      def check_single_app
+        @_single_app = File.expand_path(self.app_file) == File.expand_path(Padrino.called_from)
+        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not aviable" if @_single_app
+      end
+
       # Calculates any required paths after app_file and root have been properly configured
       # Executes as part of the setup_application! method
       def calculate_paths
@@ -82,7 +95,7 @@ module Padrino
       def register_initializers
         use Rack::Session::Cookie
         use Rack::Flash if defined?(Rack::Flash) && flash?
-        use Padrino::Reloader if reload?
+        use Padrino::Reloader unless single_app?
         register DatabaseSetup if defined?(DatabaseSetup)
         Dir[Padrino.root + '/config/initializers/*.rb'].each do |file|
           Padrino.load_dependencies(file)
@@ -128,7 +141,7 @@ module Padrino
       # This performs a basic routes reload (compatible with sinatra edge)
       def reset_routes!
         @routes = Padrino::Application.dupe_routes
-        load(self.app_file) if File.expand_path(self.app_file) != File.expand_path(Padrino.caller_files.first)
+        load(self.app_file) unless single_app?
       end
     end
   end
