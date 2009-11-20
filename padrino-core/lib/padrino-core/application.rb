@@ -76,7 +76,7 @@ module Padrino
       # Requires the middleware and initializer modules to configure components
       def register_initializers
         use Rack::Session::Cookie
-        use Rack::Flash if flash?
+        use Rack::Flash if defined?(Rack::Flash) && flash?
         use Padrino::Reloader if reload?
         register DatabaseSetup if defined?(DatabaseSetup)
         Dir[Padrino.root + '/config/initializers/*.rb'].each do |file|
@@ -89,8 +89,8 @@ module Padrino
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
         return if @registered
-        register Padrino::Mailer   if padrino_mailer?
-        register Padrino::Helpers  if padrino_helpers?
+        register Padrino::Mailer   if defined?(Padrino::Mailer) && padrino_mailer?
+        register Padrino::Helpers  if defined?(Padrino::Helpers) && padrino_helpers?
         @registered = true
       end
 

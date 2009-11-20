@@ -26,24 +26,32 @@ module Padrino
     end
     alias_method :load_dependency, :load_dependencies
 
-    # Attempts to require all dependencies with bundler; if fails, we try to use system wide gems
+    # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
     def load_required_gems
-      begin
-        require 'bundler'
-        gemfile_path = root("Gemfile")
-        puts "=> Loading GemFile #{gemfile_path} for #{PADRINO_ENV}"
-        # TODO possibly support padrino apps where no Gemfile is specified (skip requires, assume explicit dependencies)
-        Bundler::Environment.load(gemfile_path).require_env(PADRINO_ENV)
-      rescue Bundler::DefaultManifestNotFound => e
-        puts "=> You didn't create Bundler Gemfile manifest or you are not in a Sinatra application."
-      end
+      return if @loaded
+      self.load_bundler_manifest
+      self.require_vendored_gems
+      @loaded = true
+    end
 
-      begin
-        load_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
-        puts "=> Using bundled gems"
-      rescue LoadError => e
-        puts "=> Using system wide gems (No bundled gems)"
-      end
+    protected
+
+    # Loads the bundler manifest Gemfile if it exists
+    def load_bundler_manifest
+      require 'bundler'
+      print "=> Locating Gemfile for #{PADRINO_ENV}"
+      Bundler::Environment.load(root("Gemfile")).require_env(PADRINO_ENV)
+      print "...Loaded!"
+    rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
+      print "...Not Found"
+    end
+
+    # Loads bundled gems if they exist
+    def require_vendored_gems
+      load_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
+      puts " (Loading bundled gems)"
+    rescue LoadError => e
+      puts " (Loading system gems)"
     end
   end
 end
