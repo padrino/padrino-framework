@@ -1,17 +1,24 @@
 module Padrino
   class << self
-    attr_reader :loaded, :called_from
-    alias_method :loaded?, :loaded
-
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
       return if loaded?
-      @called_from = caller_files.first
+      @_called_from = caller_files.first
       load_required_gems # load bundler gems
       load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       reload! # We need to fill our Stat::CACHE but we do that only for development
-      @loaded = true
+      @_loaded = true
+    end
+    
+    # This add the ablity to instantiate Padrino.load! after Padrino::Application definition.
+    def called_from
+      @_called_from || caller_files.first
+    end
+
+    # Return true if Padrino was loaded with Padrino.load!
+    def loaded?
+      @_loaded
     end
 
     # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
