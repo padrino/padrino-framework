@@ -89,8 +89,8 @@ module Padrino
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
         return if @registered
-        register Padrino::Mailer   if padrino_mailer?
-        register Padrino::Helpers  if padrino_helpers?
+        register Padrino::Mailer   if padrino_mailer?  && defined?(Padrino::Mailer)
+        register Padrino::Helpers  if padrino_helpers? && defined?(Padrino::Helpers)
         @registered = true
       end
 
