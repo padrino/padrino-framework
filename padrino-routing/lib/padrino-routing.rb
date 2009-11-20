@@ -13,13 +13,6 @@ module Padrino
       app.set :uri_root, '/' unless app.respond_to?(:uri_root)
       app.helpers Padrino::Routing::Helpers
 
-      # Makes the routing urls defined in this block and in the Modules given
-      # in `extensions` available to the application
-      def urls(*extensions, &block)
-        instance_eval(&block) if block_given?
-        include(*extensions)  if extensions.any?
-      end
-
       # map constructs a mapping between a named route and a specified alias
       # the mapping url can contain url query parameters
       # map(:accounts).to('/accounts/url')
