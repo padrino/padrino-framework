@@ -23,8 +23,4 @@ class Core2Demo < Padrino::Application
   end
 end
 
-orig_stdout = $stdout
-$stdout = log_buffer = StringIO.new
-Padrino.load!
-$stdout = orig_stdout
-log_buffer.rewind && log_buffer.read
+silence_logger { Padrino.load! }
