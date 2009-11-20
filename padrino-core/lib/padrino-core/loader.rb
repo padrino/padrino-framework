@@ -1,16 +1,41 @@
 module Padrino
   class << self
-    attr_reader :loaded
+    attr_reader :loaded, :called_from
     alias_method :loaded?, :loaded
     
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
-      raise ApplicationSetupError, "You need to disable reload in your apps if they contains Padrino.load!" if loaded?
+      puts caller_files.join("\n")
+      return if loaded?
+      @called_from = caller_files.first
       load_required_gems # load bundler gems
       load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       reload! # We need to fill our Stat::CACHE but we do that only for development
       @loaded = true
+    end
+    
+    CALLERS_TO_IGNORE = [
+      /\/padrino-.*$/,            # all padrino code
+      /\(.*\)/,                   # generated code
+      /custom_require\.rb$/,      # rubygems require hacks
+      /active_support/,           # active_support require hacks
+      /thor/                      # thor require hacks
+    ]
+
+    # add rubinius (and hopefully other VM impls) ignore patterns ...
+    CALLERS_TO_IGNORE.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
+
+    # Like Kernel#caller but excluding certain magic entries and without
+    # line / method information; the resulting array contains filenames only.
+    def caller_files
+      caller_locations.map { |file,line| file }
+    end
+
+    def caller_locations
+      caller(1).
+        map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
+        reject { |file,line| CALLERS_TO_IGNORE.any? { |pattern| file =~ pattern } }
     end
 
     # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
@@ -44,9 +69,9 @@ module Padrino
       require 'bundler'
       print "=> Locating Gemfile for #{PADRINO_ENV}"
       Bundler::Environment.load(root("Gemfile")).require_env(PADRINO_ENV)
-      print "...Loaded!"
+      print " ... Loaded!"
     rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
-      print "...Not Found"
+      print " ... Not Found"
     end
 
     # Loads bundled gems if they exist

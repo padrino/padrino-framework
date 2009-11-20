@@ -3,7 +3,7 @@ module Padrino
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
-
+    
     def logger
       @log_stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
       @logger     ||= Logger.new(@log_stream)
@@ -122,7 +122,8 @@ module Padrino
       # Resets application routes for use in reloading the application
       # This performs a basic routes reload (compatible with sinatra edge)
       def reset_routes!
-        @routes = Padrino::Application.dupe_routes; load(self.app_file)
+        @routes = Padrino::Application.dupe_routes
+        load(self.app_file) if File.expand_path(self.app_file) != File.expand_path(Padrino.caller_files.first)
       end
     end
   end
