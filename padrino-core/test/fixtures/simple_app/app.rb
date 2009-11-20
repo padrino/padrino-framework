@@ -1,6 +1,5 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 require 'sinatra/base'
-require 'haml'
 require 'padrino-core'
 
 class Core1Demo < Padrino::Application
