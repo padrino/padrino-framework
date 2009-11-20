@@ -103,6 +103,12 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
       assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { stylesheet_link_tag('style') }
     end
+    should "display stylesheet link item for long relative path" do
+      time = stop_time_for_test
+      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      actual_html = stylesheet_link_tag('example/demo/style')
+      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/example/demo/style.css?#{time.to_i}")) { actual_html }
+    end
     should "display stylesheet link item with absolute path" do
       time = stop_time_for_test
       expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
@@ -131,6 +137,11 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+    should "display javascript item for long relative path" do
+      time = stop_time_for_test
+      actual_html = javascript_include_tag('example/demo/application')
+      assert_has_tag('script', :src => "/javascripts/example/demo/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
     end
     should "display javascript item with absolute path" do
       time = stop_time_for_test

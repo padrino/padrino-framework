@@ -19,7 +19,10 @@
 * Decide what to do about initializers (where do they go single app, multiple apps)
 * Verify logging works properly and can be accessed from any controller (and with specified severity)
 * Make sure that mailer works and perhaps port over (http://github.com/benprew/pony) for use instead
-* If you define routes directly inside of the application file (app.rb) routes are not reloaded (?)
+* If you define routes directly inside of the application class (app.rb) routes are not reloaded (?)
+  - class Demo < Padrino::Application; get("/example"); end
+* If you define controller inside the app file, causes infinite loading loop
+  - class Demo < Padrino::Application; end + Demo.controllers { ... }
 
 === IDEAS
 

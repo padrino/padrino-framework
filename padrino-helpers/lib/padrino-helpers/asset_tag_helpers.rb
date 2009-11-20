@@ -82,8 +82,9 @@ module Padrino
       # Returns the javascript_path appending the default javascripts path if necessary
       def javascript_path(source)
         return source if source =~ /^http/
+        source.gsub!(/\.js$/, '')
         result_path = "#{source}.js" if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("javascripts", "#{File.basename(source, '.js')}.js")
+        result_path ||= uri_root_path("javascripts", "#{source}.js")
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
       end
@@ -91,8 +92,9 @@ module Padrino
       # Returns the stylesheet_path appending the default stylesheets path if necessary
       def stylesheet_path(source)
         return source if source =~ /^http/
+        source.gsub!(/\.css$/, '')
         result_path = "#{source}.css" if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("stylesheets", "#{File.basename(source, '.css')}.css")
+        result_path ||= uri_root_path("stylesheets", "#{source}.css")
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
       end
