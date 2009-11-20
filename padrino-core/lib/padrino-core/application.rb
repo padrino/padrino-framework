@@ -11,6 +11,7 @@ module Padrino
 
     class << self
       def inherited(subclass)
+        CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         subclass.default_configuration!
         super # Loading the subclass
         subclass.register Padrino::Routing if defined?(Padrino::Routing)
@@ -50,6 +51,10 @@ module Padrino
       # Defines default settings for Padrino application
       def default_configuration!
         # Overwriting Sinatra defaults
+        # We assume that the first file that requires 'padrino' is the
+        # app_file. All other path related options are calculated based
+        # on this path by default.
+        set :app_file, caller_files.first || $0 
         set :raise_errors, true if development?
         set :logging, true
         set :sessions, true
