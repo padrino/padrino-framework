@@ -52,8 +52,9 @@
 
 == DAddYE
 
-* If you define routes directly inside of the application class (app.rb) routes are not reloaded and infinite loop (?)
+* If you define routes directly inside of the application class (app.rb) routes are not reloaded
   - class Demo < Padrino::Application; get("/example"); end
+  - If you move boot.rb code into the top of app.rb for minimalism we get infinite loop
 * If you define controller inside the app file, causes infinite loading loop
   - class Demo < Padrino::Application; end + Demo.controllers { ... }
 * Add tests for padrino_core gem (and any other gems - generators and routing)

@@ -12,10 +12,13 @@ module Padrino
       reload! # We need to fill our Stat::CACHE but we do that only for development
       loaded = true
     end
-
-    # Method for reload required classes
-    def reload!
-      Stat::reload!
+    
+    # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
+    def load_required_gems
+      return if @_loaded
+      self.load_bundler_manifest
+      self.require_vendored_gems
+      @_loaded = true
     end
 
     # Attempts to load/require all dependency libs that we need.
@@ -30,13 +33,10 @@ module Padrino
       end
     end
     alias_method :load_dependency, :load_dependencies
-
-    # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
-    def load_required_gems
-      return if @loaded
-      self.load_bundler_manifest
-      self.require_vendored_gems
-      @loaded = true
+    
+    # Method for reload required classes
+    def reload!
+      Stat::reload!
     end
 
     protected
