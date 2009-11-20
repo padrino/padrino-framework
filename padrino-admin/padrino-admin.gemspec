@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/padrino-admin.rb",
      "padrino-admin.gemspec",
-     "test/support_helpers.rb",
      "test/helper.rb",
+     "test/support_helpers.rb",
      "test/test_padrino_admin.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-admin}
