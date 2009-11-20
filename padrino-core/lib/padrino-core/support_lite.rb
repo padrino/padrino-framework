@@ -1,14 +1,14 @@
 =begin
 
-This file determines if Extlib or Activesupport are already loaded, and then ensures
-required methods exist for Padrino to use.
+This file determines if extlib or activesupport are already loaded, and then ensures
+the required objects and methods exist for Padrino to use.
 
-required methods:
+Required for Padrino to run:
 
   * Class#cattr_accessor
   * Module#alias_method_chain
   * String#inflectors (classify, underscore, camelize, etc)
-  * Hash#extract_options!
+  * Array#extract_options!
   * Object#blank?
   * Object#present?
   * Hash#symbolize_keys
@@ -17,11 +17,8 @@ required methods:
 
 =end
 
-
-if defined?(ActiveSupport)
-  require File.dirname(__FILE__) + '/support_lite/as_support'
-elsif defined?(Extlib)
+if defined?(Extlib) # load if already using extlib
   require File.dirname(__FILE__) + '/support_lite/extlib_support'
-else # just use active support by default
+else # load active support by default
   require File.dirname(__FILE__) + '/support_lite/as_support'
 end

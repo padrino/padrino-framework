@@ -2,10 +2,9 @@ module Padrino
   class << self
     attr_reader :loaded, :called_from
     alias_method :loaded?, :loaded
-    
+
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
-      puts caller_files.join("\n")
       return if loaded?
       @called_from = caller_files.first
       load_required_gems # load bundler gems
