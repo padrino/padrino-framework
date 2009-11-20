@@ -11,6 +11,7 @@ module Padrino
       @_loaded = true
     end
     
+    # This add the ablity to instantiate Padrino.load! after Padrino::Application definition.
     def called_from
       @_called_from || caller_files.first
     end
