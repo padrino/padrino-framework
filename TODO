@@ -44,7 +44,6 @@
 * Add support for migration generator types based on components
   - fix the number prefix on migrations (http://guides.rubyonrails.org/migrations.html#whats-in-a-name)
   - allow for special names to be interpreted (http://guides.rubyonrails.org/migrations.html#creating-a-standalone-migration)
-* Add app generator to specify orm=none, test=none, script=none
 * Add support for configuring generators model, controller, migrations, mailer
   * Which components to use, where to generate the files
 * Add support for destroying existing controller, model, migrations, mailer
@@ -65,6 +64,7 @@
 
 == COMPLETED
 
+* Add app generator to specify orm=none, test=none, script=none
 * We need to remove dependency on activesupport (and use support_lite to work with extlib or as)
 * Implement Basic padrino-core padrino file for tasks (start, stop, test, console)
 * Add initial support for controller, model, mailer generator types
