@@ -13,22 +13,18 @@ Gem::Specification.new do |s|
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-admin.rb",
      "padrino-admin.gemspec",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_padrino_admin.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-admin}

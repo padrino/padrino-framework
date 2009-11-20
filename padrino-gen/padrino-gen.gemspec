@@ -15,16 +15,13 @@ Gem::Specification.new do |s|
   s.email = %q{nesquena@gmail.com}
   s.executables = ["padrino-gen"]
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "bin/padrino-gen",
@@ -79,7 +76,6 @@ Gem::Specification.new do |s|
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_controller_generator.rb",
      "test/test_mailer_generator.rb",
      "test/test_migration_generator.rb",
@@ -100,7 +96,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_runtime_dependency(%q<padrino-core>, [">= 0.1.1"])
       s.add_runtime_dependency(%q<thor>, [">= 0.11.8"])
-      s.add_runtime_dependency(%q<bundler>, [">= 0"])
+      s.add_runtime_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
@@ -110,7 +106,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<padrino-core>, [">= 0.1.1"])
       s.add_dependency(%q<thor>, [">= 0.11.8"])
-      s.add_dependency(%q<bundler>, [">= 0"])
+      s.add_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
@@ -121,7 +117,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
     s.add_dependency(%q<padrino-core>, [">= 0.1.1"])
     s.add_dependency(%q<thor>, [">= 0.11.8"])
-    s.add_dependency(%q<bundler>, [">= 0"])
+    s.add_dependency(%q<bundler>, [">= 0.5.0"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])

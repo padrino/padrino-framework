@@ -15,16 +15,13 @@ Gem::Specification.new do |s|
   s.email = %q{nesquena@gmail.com}
   s.executables = ["padrino"]
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "bin/padrino",
@@ -49,7 +46,6 @@ Gem::Specification.new do |s|
      "test/fixtures/simple_app/Gemfile",
      "test/fixtures/simple_app/app.rb",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_padrino_application.rb",
      "test/test_padrino_core.rb",
      "test/test_padrino_mounter.rb"
@@ -68,6 +64,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.11.8"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
+      s.add_runtime_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
@@ -76,6 +73,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<thor>, [">= 0.11.8"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
+      s.add_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_dependency(%q<rack-test>, [">= 0.5.0"])
@@ -85,6 +83,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
     s.add_dependency(%q<thor>, [">= 0.11.8"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
+    s.add_dependency(%q<bundler>, [">= 0.5.0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
     s.add_dependency(%q<rack-test>, [">= 0.5.0"])

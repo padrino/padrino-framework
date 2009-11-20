@@ -13,16 +13,13 @@ Gem::Specification.new do |s|
   s.description = %q{Enhances padrino with a named route mapping system allowing for advanced routes}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-routing.rb",
@@ -40,7 +37,6 @@ Gem::Specification.new do |s|
      "test/fixtures/routing_app/app.rb",
      "test/fixtures/routing_app/views/index.haml",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_padrino_adv_routing.rb",
      "test/test_padrino_routing.rb"
   ]

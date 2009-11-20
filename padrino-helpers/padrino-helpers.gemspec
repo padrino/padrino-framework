@@ -13,16 +13,13 @@ Gem::Specification.new do |s|
   s.description = %q{Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-helpers.rb",

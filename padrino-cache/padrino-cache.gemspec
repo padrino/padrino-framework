@@ -13,22 +13,18 @@ Gem::Specification.new do |s|
   s.description = %q{Caching support for memcached, page and fragment}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-cache.rb",
      "padrino-cache.gemspec",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_padrino_cache.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-cache}

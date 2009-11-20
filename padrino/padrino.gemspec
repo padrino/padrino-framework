@@ -13,16 +13,13 @@ Gem::Specification.new do |s|
   s.description = %q{The Godfather of Sinatra provides a full-stack agnostic framework on top of Sinatra}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino.rb",

@@ -13,16 +13,13 @@ Gem::Specification.new do |s|
   s.description = %q{Mailer system for padrino allowing easy delivery of application emails}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
      "README.rdoc",
-     "README.rdoc",
-     "Rakefile",
      "Rakefile",
      "VERSION",
      "lib/padrino-mailer.rb",
@@ -35,7 +32,6 @@ Gem::Specification.new do |s|
      "test/fixtures/mailer_app/views/sample_mailer/anniversary_message.erb",
      "test/fixtures/mailer_app/views/sample_mailer/birthday_message.erb",
      "test/helper.rb",
-     "test/support_helpers.rb",
      "test/test_mail_object.rb",
      "test/test_mailer_base.rb",
      "test/test_padrino_mailer.rb"
