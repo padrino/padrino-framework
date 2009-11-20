@@ -45,7 +45,7 @@ module Padrino
         require File.dirname(__FILE__) + "/version"
         boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
         unless File.exist?(boot)
-          puts "=> We didn't find boot file: #{boot} !!!"
+          puts "=> Could not find boot file: #{boot.inspect} !!!"
           exit
         end
         ENV["PADRINO_ENV"] ||= environment
