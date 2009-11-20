@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-18}
+  s.date = %q{2009-11-20}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{nesquena@gmail.com}
@@ -36,16 +36,21 @@ Gem::Specification.new do |s|
      "lib/padrino-core/stat.rb",
      "lib/padrino-core/support_lite.rb",
      "lib/padrino-core/tasks.rb",
+     "lib/padrino-core/tasks/adapter.rb",
      "lib/padrino-core/tasks/console.rb",
+     "lib/padrino-core/tasks/helpers.rb",
+     "lib/padrino-core/tasks/test.rb",
      "lib/padrino-core/version.rb",
      "padrino-core.gemspec",
      "test/active_support_helpers.rb",
-     "test/fixtures/extended_app/app.rb",
+     "test/fixtures/simple_app/.components",
+     "test/fixtures/simple_app/.gitignore",
+     "test/fixtures/simple_app/Gemfile",
      "test/fixtures/simple_app/app.rb",
      "test/helper.rb",
+     "test/test_padrino_application.rb",
      "test/test_padrino_core.rb",
-     "test/test_padrino_mounting.rb",
-     "test/test_padrino_tasks.rb"
+     "test/test_padrino_mounter.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-core}
   s.rdoc_options = ["--charset=UTF-8"]
