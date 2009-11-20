@@ -38,13 +38,13 @@ module Padrino
       # Setup the application by registering initializers, load paths and logger
       # Invoked automatically when an application is first instantiated
       def setup_application!
-        return if @configured
+        return if @_configured
         self.register_framework_extensions
         self.calculate_paths
         self.register_initializers
         self.require_load_paths
         self.setup_logger
-        @configured = true
+        @_configured = true
       end
 
       # Defines default settings for Padrino application
@@ -88,10 +88,8 @@ module Padrino
 
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
-        return if @registered
         register Padrino::Mailer   if padrino_mailer?  && defined?(Padrino::Mailer)
         register Padrino::Helpers  if padrino_helpers? && defined?(Padrino::Helpers)
-        @registered = true
       end
 
       # Require all files within the application's load paths
