@@ -59,10 +59,7 @@ module Padrino
       # Defines default settings for Padrino application
       def default_configuration!
         # Overwriting Sinatra defaults
-        # We assume that the first file that requires 'padrino' is the
-        # app_file. All other path related options are calculated based
-        # on this path by default.
-        set :app_file, caller_files.first || $0
+        set :app_file, caller_files.first || $0 # Assume app file is first caller
         set :raise_errors, true if development?
         set :logging, true
         set :sessions, true
