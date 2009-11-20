@@ -32,13 +32,6 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
-      # Makes the urls defined in the block and in the Modules given
-      # in `extensions` available to the application
-      def urls(*extensions, &block)
-        instance_eval(&block) if block_given?
-        include(*extensions)  if extensions.any?
-      end
-
       protected
 
       # Setup the application by registering initializers, load paths and logger

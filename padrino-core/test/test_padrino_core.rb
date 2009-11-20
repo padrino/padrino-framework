@@ -27,7 +27,7 @@ class TestPadrinoCore < Test::Unit::TestCase
       assert_equal "./test/fixtures/simple_app", Padrino.root
     end
     
-    should 'raise application error if I istantiate a new padrino application without mounted apps' do
+    should 'raise application error if I instantiate a new padrino application without mounted apps' do
       assert_raise Padrino::ApplicationLoadError do
         Padrino.application.tap { }
       end
