@@ -15,8 +15,8 @@ module Padrino
 
     # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
     def load_required_gems
-      self.load_bundler_manifest
-      self.require_vendored_gems
+      load_bundler_manifest
+      require_vendored_gems
     end
 
     # Attempts to load/require all dependency libs that we need.
