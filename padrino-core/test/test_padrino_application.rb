@@ -4,7 +4,7 @@ PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
 require File.dirname(__FILE__) + '/fixtures/simple_app/app'
 require 'padrino-core'
 
-class TestPadrinoMounter < Test::Unit::TestCase
+class TestPadrinoApplication < Test::Unit::TestCase
 
   def app
     Padrino.application.tap { }
@@ -21,7 +21,6 @@ class TestPadrinoMounter < Test::Unit::TestCase
     should 'check methods' do
       assert_respond_to Padrino::Application, :new
       assert_respond_to Padrino::Application, :controllers
-      assert_respond_to Padrino::Application, :urls
       assert_respond_to Padrino::Application, :setup_application!
       assert_respond_to Padrino::Application, :default_configuration!
       assert_respond_to Padrino::Application, :calculate_paths
