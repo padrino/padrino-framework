@@ -2,7 +2,6 @@ AdvRoutingDemo.controllers do
   get :simple, :map => "/some/simple/action" do
     "<h1>simple action welcomes you</h1>"
   end
-  
   get :hello, :map => "/some/hello/action/:id/param" do
     "<h1>hello params id is #{params[:id]}</h1>"
   end
