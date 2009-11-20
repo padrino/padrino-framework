@@ -48,10 +48,10 @@
 * Add helpers to helpers gem:
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
   * add ajax adapters for the various js components (rightjs, jquery, prototype)
-  * Add an application.js file with app generator for javascript
 
 == DAddYE
 
+* Add an application.js file to app generator for javascript
 * If you define routes directly inside of the application class (app.rb) routes are not reloaded
   - class Demo < Padrino::Application; get("/example"); end
   - If you move boot.rb code into the top of app.rb for minimalism we get infinite loop

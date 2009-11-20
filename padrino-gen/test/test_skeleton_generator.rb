@@ -132,6 +132,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=jquery']) }
       assert_match /Applying.*?jquery.*?script/, buffer
       assert File.exist?('/tmp/sample_app/public/javascripts/jquery.min.js')
+      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for prototype" do
@@ -139,12 +140,14 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?prototype.*?script/, buffer
       assert File.exist?('/tmp/sample_app/public/javascripts/prototype.js')
       assert File.exist?('/tmp/sample_app/public/javascripts/lowpro.js')
+      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for rightjs" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=rightjs']) }
       assert_match /Applying.*?rightjs.*?script/, buffer
       assert File.exist?('/tmp/sample_app/public/javascripts/right-min.js')
+      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
     end
   end
 
