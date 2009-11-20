@@ -103,9 +103,7 @@ Let us first take a look at the simplest possible Padrino application:
   require 'padrino'
   Padrino.load!
 
-  class SimpleApp < Padrino::Application
-    set :app_file, __FILE__
-  
+  class SimpleApp < Padrino::Application  
     get '/ do
       'Hello world'
     end
@@ -480,9 +478,7 @@ The following is a whirlwind guide through useful route extensions provided by t
 The simplest example of route aliases is to construct named aliases representing a url, and then use
 the alias to reference the url within the application:
 
-  class SimpleApp < Padrino::Application
-    set :app_file, __FILE__
-  
+  class SimpleApp < Padrino::Application  
      # Define the named route mappings
      map(:account).to("/the/accounts/:name/and/:id")
      map(:accounts).to("/the/accounts/index")
