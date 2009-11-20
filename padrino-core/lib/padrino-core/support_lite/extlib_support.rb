@@ -1,11 +1,11 @@
-# This allows extlib to act like ActiveSupport for the dependencies required by Padrino
+# This helps extlib to act like ActiveSupport for use with Padrino
 
-# cattr_accessor
+## Class#cattr_accessor
 unless Class.method_defined?(:cattr_accessor)
   require 'extlib/class'
 end
 
-## Ordered Hash
+## SupportLite::OrderedHash
 unless defined?(SupportLite::OrderedHash)
   require 'extlib/dictionary'
   module SupportLite
@@ -13,7 +13,7 @@ unless defined?(SupportLite::OrderedHash)
   end
 end
 
-### Symbolize Keys
+## Hash#symbolize_keys
 unless Hash.method_defined?(:symbolize_keys)
   require 'extlib/hash'
   require 'extlib/mash'
@@ -24,40 +24,8 @@ unless Hash.method_defined?(:symbolize_keys)
   end
 end
 
-## Inflections
-unless String.method_defined?(:constantize)
-  require 'extlib/inflection'
-  class String
-    def classify; Extlib::Inflection.classify(self);     end
-    def underscore; Extlib::Inflection.underscore(self);  end
-    def constantize; Extlib::Inflection.constantize(self); end
-  end
-end
 
-## Extract Options
-unless Array.method_defined?(:extract_options!)
-  class Array
-    def extract_options!
-      last.is_a?(::Hash) ? pop : {}
-    end
-  end
-end
-
-## Blank?
-unless Array.method_defined?(:blank?)
-  require 'extlib/blank'
-end
-
-## Present?
-unless Array.method_defined?(:present?)
-  class Object
-    def present?
-      !blank?
-    end
-  end
-end
-
-## Reverse Merge
+## Hash#reverse_merge, Hash#reverse_merge!
 unless Hash.method_defined?(:present?)
   class Hash
     def reverse_merge(other_hash)
@@ -70,7 +38,40 @@ unless Hash.method_defined?(:present?)
   end
 end
 
-## Alias Method Chain
+## Array#extract_options!
+unless Array.method_defined?(:extract_options!)
+  class Array
+    def extract_options!
+      last.is_a?(::Hash) ? pop : {}
+    end
+  end
+end
+
+## String#inflectors
+unless String.method_defined?(:constantize)
+  require 'extlib/inflection'
+  class String
+    def classify; Extlib::Inflection.classify(self);     end
+    def underscore; Extlib::Inflection.underscore(self);  end
+    def constantize; Extlib::Inflection.constantize(self); end
+  end
+end
+
+## Object#blank?
+unless Array.method_defined?(:blank?)
+  require 'extlib/blank'
+end
+
+## Object#present?
+unless Array.method_defined?(:present?)
+  class Object
+    def present?
+      !blank?
+    end
+  end
+end
+
+## Module#alias_method_chain
 unless Module.method_defined?(:alias_method_chain)
   def alias_method_chain(target, feature)
     # Strip out punctuation on predicates or bang methods since
