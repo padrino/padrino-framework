@@ -13,12 +13,13 @@
 
 === TESTING / POLISHING
 
+* Defining inline named routes inside app.rb files (get :show, :map => '...") cause an error
 * Test that controller, mailer, migration and model generators work properly
 * Make sure reloader middleware works for urls, models, controllers and all application files
 * Decide what to do about initializers (where do they go single app, multiple apps)
 * Verify logging works properly and can be accessed from any controller (and with specified severity)
 * Make sure that mailer works and perhaps port over (http://github.com/benprew/pony) for use instead
-* If you define routes directly inside of the application file (app.rb) routes are not reloaded
+* If you define routes directly inside of the application file (app.rb) routes are not reloaded (?)
 
 === IDEAS
 
@@ -36,7 +37,6 @@
 
 == NATHAN
 
-* call each App.controllers, App.helpers instead of App:controllers App::helpers
 * Add generator support for mounting subapplications
 * Add support for migration generator types based on components
   - fix the number prefix on migrations (http://guides.rubyonrails.org/migrations.html#whats-in-a-name)

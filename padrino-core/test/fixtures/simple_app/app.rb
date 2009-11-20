@@ -25,6 +25,15 @@ class Core2Demo < Padrino::Application
   end
 end
 
+class Core3Demo < Padrino::Application
+  enable :padrino_routing
+  
+  # TODO enabling this causes an error (because routing not loaded yet)
+  # get :test, :map => '/test' do
+  #   "This raises a large error"
+  # end
+end
+
 orig_stdout = $stdout
 $stdout = log_buffer = StringIO.new
 Padrino.load!
