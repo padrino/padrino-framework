@@ -27,7 +27,7 @@ module Padrino
       # Makes the routes defined in the block and in the Modules given
       # in `extensions` available to the application
       def controllers(*extensions, &block)
-        @routes = Padrino::Application.dupe_routes if reload? # This performs a basic controller reload
+        @routes = {}; load(app_file) if reload? # This performs a basic controller reload (compatible with sinatra edge)
         instance_eval(&block) if block_given?
         include(*extensions)  if extensions.any?
       end
