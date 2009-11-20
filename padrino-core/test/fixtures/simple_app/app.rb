@@ -4,7 +4,7 @@ require 'haml'
 require 'padrino-core'
 
 class Core1Demo < Padrino::Application
-  set :app_file, File.dirname(__FILE__) + "/app.rb"
+  set :app_file, __FILE__
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
@@ -15,7 +15,7 @@ class Core1Demo < Padrino::Application
 end
 
 class Core2Demo < Padrino::Application
-  set :app_file, File.dirname(__FILE__) + "/app.rb"
+  set :app_file, __FILE__
   disable :padrino_routing
   disable :padrino_mailer
   disable :padrino_helpers
@@ -23,15 +23,6 @@ class Core2Demo < Padrino::Application
   get "" do
     "Im Core2Demo"
   end
-end
-
-class Core3Demo < Padrino::Application
-  enable :padrino_routing
-  
-  # TODO enabling this causes an error (because routing not loaded yet)
-  # get :test, :map => '/test' do
-  #   "This raises a large error"
-  # end
 end
 
 orig_stdout = $stdout
