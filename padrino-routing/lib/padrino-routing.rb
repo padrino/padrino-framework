@@ -42,7 +42,7 @@ module Padrino
             map(*route_name).to(mapped_url)
             path = mapped_url
           else # referencing prior named route
-            route_name.unshift(self.app_name)
+            route_name.unshift(self.app_name.to_sym)
             path = named_paths[route_name]
           end
         end
