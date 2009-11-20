@@ -475,7 +475,7 @@ For a detailed look at all of padrino routing functionality, check out the docum
 {padrino-routing README}[http://github.com/padrino/padrino-framework/tree/master/padrino-routing/].
 The following is a whirlwind guide through useful helpers provided by this gem.
 
-=== Simple Route Aliases ===
+=== Simple Route Aliases
 
 The simplest example of route aliases is to construct named aliases representing a url, and then use
 the alias to reference the url within the application:
@@ -495,6 +495,8 @@ the alias to reference the url within the application:
       "I am the body for the url /the/accounts/index"
     end
   end
+  
+=== Padrino Routing Conventions
   
 The convention within a Padrino application is to store 'external' route alias mappings within a special
 urls file located at <tt>urls.rb</tt> or <tt>config/urls.rb</tt>. A url routing file might look like:
@@ -523,6 +525,8 @@ and finally referenced anywhere in the application:
   # app/views/example.haml
   = link_to "Index", url_for(:index)
   = link_to "Account", url_for(:account, :id => 1, :name => 'first')
+  
+=== Inline Route Alias Definitions
 
 The routing plugin also supports inline route definitions in which the url and the named alias
 are defined together within the controller:
@@ -539,6 +543,8 @@ are defined together within the controller:
   end
   
 Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
+
+=== Namespaced Route Aliases
 
 There is also support for namespaced routes which are organized into a larger grouping:
 
@@ -563,6 +569,8 @@ You can then reference the urls using the same url_for method:
 
   <%= link_to 'admin show page', url_for(:admin, :show, :id => 25) %>
   <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
+  
+=== Controller Namespaces
 
 In addition to regular namespacing, as a shortcut you can have a controller serve as a namespace as well:
 
