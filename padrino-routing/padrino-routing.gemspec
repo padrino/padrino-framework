@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
      "lib/padrino-routing/helpers.rb",
      "lib/padrino-routing/named_route.rb",
      "padrino-routing.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/fixtures/adv_routing_app/Gemfile",
      "test/fixtures/adv_routing_app/app.rb",
      "test/fixtures/adv_routing_app/config/apps.rb",

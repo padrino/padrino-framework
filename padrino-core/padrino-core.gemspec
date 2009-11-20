@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
      "lib/padrino-core/tasks/test.rb",
      "lib/padrino-core/version.rb",
      "padrino-core.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/fixtures/simple_app/.components",
      "test/fixtures/simple_app/.gitignore",
      "test/fixtures/simple_app/Gemfile",

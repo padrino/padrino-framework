@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
      "lib/padrino-helpers/render_helpers.rb",
      "lib/padrino-helpers/tag_helpers.rb",
      "padrino-helpers.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/fixtures/markup_app/app.rb",
      "test/fixtures/markup_app/views/capture_concat.erb",
      "test/fixtures/markup_app/views/capture_concat.haml",

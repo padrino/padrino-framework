@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
      "lib/padrino-mailer/delivery.rb",
      "lib/padrino-mailer/mail_object.rb",
      "padrino-mailer.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/fixtures/mailer_app/app.rb",
      "test/fixtures/mailer_app/views/demo_mailer/sample_mail.erb",
      "test/fixtures/mailer_app/views/sample_mailer/anniversary_message.erb",

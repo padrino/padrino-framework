@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/padrino-cache.rb",
      "padrino-cache.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/helper.rb",
      "test/test_padrino_cache.rb"
   ]

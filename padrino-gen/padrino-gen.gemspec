@@ -78,7 +78,7 @@ Gem::Specification.new do |s|
      "lib/generators/templates/mailer_initializer.rb.tt",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
-     "test/active_support_helpers.rb",
+     "test/support_helpers.rb",
      "test/helper.rb",
      "test/test_controller_generator.rb",
      "test/test_mailer_generator.rb",

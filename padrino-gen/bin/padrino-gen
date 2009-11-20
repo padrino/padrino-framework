@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
-%w[rubygems activesupport thor].each { |gem| require gem }
+%w[rubygems thor].each { |gem| require gem }
+require 'padrino-core/support_lite'
 require File.dirname(__FILE__) + "/../lib/padrino-gen"
 
-generator_mappings = ActiveSupport::OrderedHash.new
+generator_mappings = SupportLite::OrderedHash.new
 generator_mappings[:app]        = Padrino::Generators::Skeleton
 generator_mappings[:model]      = Padrino::Generators::Model
 generator_mappings[:controller] = Padrino::Generators::Controller
