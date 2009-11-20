@@ -3,7 +3,7 @@ module Padrino
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
-    
+
     def logger
       @log_stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
       @logger     ||= Logger.new(@log_stream)
@@ -35,7 +35,7 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
-      # Return true if the bootloader => Padrino.load! it's instatiated in the same 
+      # Return true if the bootloader => Padrino.load! it's instatiated in the same
       # palace of the app.
       # Notice that <tt>signle_apps</tt> was not reloadable!
       def single_app?
@@ -62,7 +62,7 @@ module Padrino
         # We assume that the first file that requires 'padrino' is the
         # app_file. All other path related options are calculated based
         # on this path by default.
-        set :app_file, caller_files.first || $0 
+        set :app_file, caller_files.first || $0
         set :raise_errors, true if development?
         set :logging, true
         set :sessions, true
@@ -79,8 +79,8 @@ module Padrino
       end
 
       def check_single_app
-        @_single_app = File.expand_path(self.app_file) == File.expand_path(Padrino.called_from)
-        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not aviable" if @_single_app
+        @_single_app = Padrino.called_from.nil? || File.expand_path(self.app_file) == File.expand_path(Padrino.called_from)
+        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not available" if @_single_app
       end
 
       # Calculates any required paths after app_file and root have been properly configured
@@ -140,8 +140,9 @@ module Padrino
       # Resets application routes for use in reloading the application
       # This performs a basic routes reload (compatible with sinatra edge)
       def reset_routes!
+        return if single_app? # Don't reset routes for single app
         @routes = Padrino::Application.dupe_routes
-        load(self.app_file) unless single_app?
+        load(self.app_file)
       end
     end
   end

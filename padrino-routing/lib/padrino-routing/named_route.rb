@@ -12,7 +12,7 @@ module Padrino
       # Used to define the url mapping to the supplied alias
       # NamedRoute.new(@app, :account).to('/account/path')
       def to(path)
-        @app.named_paths[@names.unshift(@app.app_name)] = path
+        @app.named_paths[@names.unshift(@app.app_name.to_sym)] = path
       end
 
       # Used to define the url mappings for child aliases within a namespace

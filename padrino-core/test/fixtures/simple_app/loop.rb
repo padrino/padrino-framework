@@ -10,7 +10,7 @@ class Demo < Padrino::Application; end
 
 Demo.controllers do
   get "/test" do
-    'Hello Test world 3 yea'
+    'This should work'
   end
 end
 
