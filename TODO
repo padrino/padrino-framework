@@ -36,7 +36,6 @@
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
 * Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
-* Allow model, controller, mailer to take attributes or action names (padrino-gen mailer base confirm_account ...)
 
 == NATHAN
 
@@ -54,6 +53,7 @@
 * Add helpers to helpers gem:
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
   * add ajax adapters for the various js components (rightjs, jquery, prototype)
+  * Add an application.js file with app generator for javascript
 
 == DAddYE
 
