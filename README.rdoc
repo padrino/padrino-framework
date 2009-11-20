@@ -681,6 +681,10 @@ Generating a brand new Padrino project is as simple as a single command on the t
 This will automatically create a new folder called 'demo_blog' containing a starting point for the
 'DemoBlog' Padrino application using all the components specified during construction.
 
+You can also instruct the generator to skip a certain component to avoid using one at all (or to use your own):
+
+  $ padrino-gen demo_app . --test=none --renderer=none
+
 For information on generating appications, check out the 
 {padrino-generator README}[http://github.com/padrino/padrino-framework/tree/master/padrino-gen/].
 

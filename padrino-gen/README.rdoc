@@ -52,6 +52,10 @@ There is also support for aliases for each component within the command:
 
   $ padrino-gen demo_app . -t=rspec -r=haml -m=rr -s=jquery -d=datamapper
   
+You can also instruct the generator to skip a certain component to avoid using one at all (or to use your own):
+
+  $ padrino-gen demo_app . --test=none --renderer=none
+  
 The available components and their default options are listed below:
 
 * test:     <tt>bacon</tt>  (default), <tt>shoulda</tt>, <tt>rspec</tt>, <tt>testspec</tt>, <tt>riot</tt>
