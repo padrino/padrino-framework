@@ -22,7 +22,6 @@ module Padrino
       # Copies over the base sinatra starting project
       def create_model
         if in_app_root?(options[:root])
-          say "Name: #{name}, Fields: #{fields.inspect}"
           include_component_module_for(:orm, options[:root])
           include_component_module_for(:test, options[:root])
           migration_name = "create_#{name.pluralize.underscore}"
