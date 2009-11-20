@@ -466,8 +466,119 @@ and then the partial would be:
 
 == Advanced Routing Support (padrino-routing)
 
-...SimpleApp.urls...
-...
+Padrino provides support for advanced routing functionality not available within Sinatra. This routing
+supports named route aliases and easy access to url paths. The benefits of this is that instead of having to 
+hard-code route urls into every area of your application, now we can just define the urls in a 
+single spot and then attach an alias which can be used to refer to the url throughout the application.
+
+For a detailed look at all of padrino routing functionality, check out the documentation within the 
+{padrino-routing README}[http://github.com/padrino/padrino-framework/tree/master/padrino-routing/].
+The following is a whirlwind guide through useful helpers provided by this gem.
+
+=== Simple Route Aliases ===
+
+The simplest example of route aliases is to construct named aliases representing a url, and then use
+the alias to reference the url within the application:
+
+  class SimpleApp < Padrino::Application
+    set :app_file, __FILE__
+  
+     # Define the named route mappings
+     map(:account).to("/the/accounts/:name/and/:id")
+     map(:accounts).to("/the/accounts/index")
+     
+     # Configure the routes using the named alias
+    get :account  do
+      "name: params[:name] - id: params[:id]"
+    end
+    get :accounts do
+      "I am the body for the url /the/accounts/index"
+    end
+  end
+  
+The convention within a Padrino application is to store 'external' route alias mappings within a special
+urls file located at <tt>urls.rb</tt> or <tt>config/urls.rb</tt>. A url routing file might look like:
+
+  # config/urls.rb
+  SimpleApp.urls do
+    map(:index).to("/index")
+    map(:account).to("/the/accounts/:name/and/:id")
+  end
+    
+Urls mapped here can then be defined within a controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index do
+      ...
+    end
+    
+    get :account do
+      # access params[:name] and params[:index]
+    end
+  end
+  
+and finally referenced anywhere in the application:
+
+  # app/views/example.haml
+  = link_to "Index", url_for(:index)
+  = link_to "Account", url_for(:account, :id => 1, :name => 'first')
+
+The routing plugin also supports inline route definitions in which the url and the named alias
+are defined together within the controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index, :map => '/index' do
+      ...
+    end
+    
+    get :account, :map => '/the/accounts/:name/and/:id' do
+      # access params[:name] and params[:index]
+    end
+  end
+  
+Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
+
+There is also support for namespaced routes which are organized into a larger grouping:
+
+  # /app/routes/example.rb
+  SimpleApp.controllers do
+    map :admin do |namespace|
+      namespace.map(:show).to("/admin/:id/show")
+    end
+
+    namespace :admin do
+      get :show do
+        "admin show for #{params[:id]}"
+      end
+
+      get :index, :map => "/admin/:id/index" do
+        "admin destroy for #{params[:id]}"
+      end
+    end
+  end
+  
+You can then reference the urls using the same url_for method: 
+
+  <%= link_to 'admin show page', url_for(:admin, :show, :id => 25) %>
+  <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
+
+In addition to regular namespacing, as a shortcut you can have a controller serve as a namespace as well:
+
+   # /app/routes/admin.rb
+  SimpleApp.controllers :admin do
+    get :index, :map => "/admin/:id/index" do
+      "admin destroy for #{params[:id]}"
+    end
+  end
+  
+This will put all named routes within this controller block into the 'admin' namespace and then can be referenced:
+
+  <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
+  
+Note that controller namespaces are simply a shortcut for standard namespaces and do not differ in any other way.
+  
 
 == Agnostic Application Generators (padrino-gen)
 

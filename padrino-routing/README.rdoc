@@ -52,6 +52,22 @@ You can also refer to the url in views using <tt>url_for</tt>
 Simply invoking <tt>url_for(name, *parameters)</tt> will return the full mapped url for use in links or anywhere else
 that the url might be required.
 
+The routing plugin supports inline route definitions as well in which the url and the named alias
+are defined together within the controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index, :map => '/index' do
+      ...
+    end
+    
+    get :account, :map => '/the/accounts/:name/and/:id' do
+      # access params[:name] and params[:index]
+    end
+  end
+  
+Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
+
 The routing system also supports url route configuration namespaces:
 
   # /app/routes/example.rb
@@ -83,9 +99,23 @@ You could also define the route aliases themselves using a namespace for conveni
 
 You can then reference the urls using the same <tt>url_for</tt> method:
 
-  <%= link_to 'admin page', url_for(:admin, :show, :id => 25) %>
-  <%= link_to 'admin page', url_for(:admin, :update, :id => 25) %>
-  <%= link_to 'admin page', url_for(:admin, :show, :id => 25) %>
+  <%= link_to 'admin show page', url_for(:admin, :show, :id => 25) %>
+  <%= link_to 'admin index page', url_for(:admin, :destroy, :id => 25) %>
+  
+In addition to regular namespacing, as a shortcut you can have a controller serve as a namespace as well:
+
+   # /app/routes/admin.rb
+  SimpleApp.controllers :admin do
+    get :index, :map => "/admin/:id/index" do
+      "admin destroy for #{params[:id]}"
+    end
+  end
+  
+This will put all named routes within this controller block into the 'admin' namespace and then can be referenced:
+
+  <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
+  
+Note that controller namespaces are simply a shortcut for standard namespaces and do not differ in any other way.
   
 You can freely use both named route aliases and traditional Sinatra routes in the same application without conflict.
 
