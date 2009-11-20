@@ -13,7 +13,7 @@ module Padrino
 
           boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
           unless File.exist?(boot)
-            puts "=> We didn't find boot file: #{boot.inspect} !!!"
+            puts "=> Could not find boot file: #{boot.inspect} !!!"
             exit
           end
           require boot
@@ -26,13 +26,13 @@ module Padrino
               exit 
             end
 
-            stop # We need to stop a process if exist
+            stop # Need to stop a process if it exists
 
             fork do
               Process.setsid
               exit if fork
               File.umask 0000
-              puts "=> Padrino is daemonized with pid #{Process.pid}"
+              puts "=> Padrino server has been daemonized with pid #{Process.pid}"
               STDIN.reopen "/dev/null"
               STDOUT.reopen "/dev/null", "a"
               STDERR.reopen STDOUT
@@ -61,7 +61,7 @@ module Padrino
           begin
             handler = Rack::Handler.get(handler_name.downcase)
           rescue
-            puts "#{handler_name} not supported yet, available adapter are: #{ADAPTERS.inspect}"
+            puts "#{handler_name} not supported yet, available adapters are: #{ADAPTERS.inspect}"
             exit
           end
           
