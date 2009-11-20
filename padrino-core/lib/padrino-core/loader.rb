@@ -10,8 +10,8 @@ module Padrino
       reload! # We need to fill our Stat::CACHE but we do that only for development
       @_loaded = true
     end
-    
-    # This add the ablity to instantiate Padrino.load! after Padrino::Application definition.
+
+    # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
     def called_from
       @_called_from || caller_files.first
     end

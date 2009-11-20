@@ -9,7 +9,7 @@ module Padrino
     def initialize(name, options={})
       @name      = name
       @app_klass = options[:app_class] || name.classify
-      @app_file  = options[:app_file]  || Padrino.caller_files.first# Padrino.mounted_root(name, 'app.rb')
+      @app_file  = options[:app_file]  || Padrino.caller_files.first # Padrino.mounted_root(name, 'app.rb')
       @app_root  = options[:app_root]  if options[:app_root]
     end
 
