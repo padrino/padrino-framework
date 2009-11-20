@@ -46,6 +46,9 @@
   - allow for special names to be interpreted (http://guides.rubyonrails.org/migrations.html#creating-a-standalone-migration)
 * Add app generator to specify orm=none, test=none, script=none
 * Add support for destroying existing controller, model, migrations, mailer
+* Add support for specifying 'actions' within controller and mailer migrations
+  * padrino-gen controller User :index [:admin, :index]
+  * padrino-gen mailer User method1 method2 method3
 * Implement padrino-cache gem functionality
 * Add helpers to helpers gem:
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
