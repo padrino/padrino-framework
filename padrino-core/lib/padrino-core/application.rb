@@ -79,8 +79,8 @@ module Padrino
       end
 
       def check_single_app
-        @_single_app = File.expand_path(self.app_file) == File.expand_path(Padrino.called_from)
-        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not aviable" if @_single_app
+        @_single_app = Padrino.called_from.nil? || File.expand_path(self.app_file) == File.expand_path(Padrino.called_from)
+        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not available" if @_single_app
       end
 
       # Calculates any required paths after app_file and root have been properly configured
