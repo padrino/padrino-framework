@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
      "test/test_mailer_base.rb",
      "test/test_padrino_mailer.rb"
   ]
-  s.homepage = %q{http://github.com/padrino/padrino-mailer}
+  s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-mailer}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}

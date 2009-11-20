@@ -82,7 +82,7 @@ Gem::Specification.new do |s|
      "test/test_model_generator.rb",
      "test/test_skeleton_generator.rb"
   ]
-  s.homepage = %q{http://github.com/padrino/padrino-gen}
+  s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-gen}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
