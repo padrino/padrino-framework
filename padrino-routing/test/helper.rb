@@ -7,13 +7,9 @@ require 'webrat'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'support_helpers'
 require 'padrino-helpers'
 
 class Test::Unit::TestCase
-  include Padrino::Helpers::OutputHelpers
-  include Padrino::Helpers::TagHelpers
-  include Padrino::Helpers::AssetTagHelpers
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers

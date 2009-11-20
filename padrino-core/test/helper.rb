@@ -8,8 +8,6 @@ require 'webrat'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'support_helpers'
-
 class Test::Unit::TestCase
   include Rack::Test::Methods
   include Webrat::Methods
