@@ -8,6 +8,8 @@ require 'active_support/core_ext/array' unless Array.method_defined?(:extract_op
 require 'active_support/core_ext/module' unless Module.method_defined?(:alias_method_chain)
 require 'active_support/ordered_hash' unless defined?(ActiveSupport::OrderedHash)
 
-module SupportLite
-  OrderedHash = ::ActiveSupport::OrderedHash
+unless defined?(SupportLite::OrderedHash)
+  module SupportLite
+    OrderedHash = ::ActiveSupport::OrderedHash
+  end
 end
