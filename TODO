@@ -36,6 +36,7 @@
 
 == NATHAN
 
+* call each App.controllers, App.helpers instead of App:controllers App::helpers
 * Add generator support for mounting subapplications
 * Add support for migration generator types based on components
   - fix the number prefix on migrations (http://guides.rubyonrails.org/migrations.html#whats-in-a-name)
