@@ -42,13 +42,11 @@ Gem::Specification.new do |s|
      "lib/padrino-core/tasks/test.rb",
      "lib/padrino-core/version.rb",
      "padrino-core.gemspec",
-     "test/fixtures/simple_app/.components",
-     "test/fixtures/simple_app/.gitignore",
-     "test/fixtures/simple_app/Gemfile",
-     "test/fixtures/simple_app/app.rb",
-     "test/fixtures/simple_app/loop.rb",
+     "test/fixtures/apps/.components",
+     "test/fixtures/apps/.gitignore",
+     "test/fixtures/apps/app.rb",
+     "test/fixtures/apps/multi.rb",
      "test/helper.rb",
-     "test/test_padrino_application.rb",
      "test/test_padrino_core.rb",
      "test/test_padrino_mounter.rb"
   ]
