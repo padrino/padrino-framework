@@ -36,7 +36,7 @@ module Padrino
 
     # Returns the determined location of the mounted application main file
     def locate_app_file
-      callers_are_identical = File.identical?(Padrino.first_caller, Padrino.called_from)
+      callers_are_identical = File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
       callers_are_identical ? Padrino.first_caller : Padrino.mounted_root(name, "app.rb")
     end
   end

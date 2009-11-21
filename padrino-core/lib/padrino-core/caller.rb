@@ -1,12 +1,15 @@
 module Padrino
   PADRINO_IGNORE_CALLERS = [
-    /\/padrino-.*$/,            # all padrino code
-    /\/sinatra/,                # all sinatra code
-    /lib\/tilt.*\.rb$/,         # all tilt code
-    /\(.*\)/,                   # generated code
-    /custom_require\.rb$/,      # rubygems require hacks
-    /active_support/,           # active_support require hacks
-    /\/thor/,                   # thor require hacks
+    %r{/padrino-.*$},            # all padrino code
+    %r{/sinatra},                # all sinatra code
+    %r{lib/tilt.*\.rb$},         # all tilt code
+    %r{\(.*\)},                  # generated code
+    %r{shoulda/context\.rb$},    # shoulda hacks
+    %r{mocha/integration},       # mocha hacks
+    %r{test/unit},               # test unit hacks
+    %r{custom_require\.rb$},     # rubygems require hacks
+    %r{active_support},          # active_support require hacks
+    %r{/thor},                   # thor require hacks
   ]
 
   # add rubinius (and hopefully other VM impls) ignore patterns ...
