@@ -12,7 +12,7 @@ To install the 'full-stack' padrino framework, simply grab the latest version fr
   $ sudo gem install padrino --source http://gemcutter.org
   
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
 
 You can also install only the padrino-routing gem for more fine-grained use:
 
@@ -117,7 +117,7 @@ This will put all named routes within this controller block into the 'admin' nam
   
 Note that controller namespaces are simply a shortcut for standard namespaces and do not differ in any other way.
   
-You can freely use both named route aliases and traditional Sinatra routes in the same application without conflict.
+You can freely use both named route aliases and traditional Sinatra routes in the same application without any conflicts.
 
 See the wiki article for additional information: <...WIKI...>
 

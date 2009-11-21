@@ -11,7 +11,7 @@ To install the 'full-stack' padrino framework, simply grab the latest version fr
   $ sudo gem install padrino --source http://gemcutter.org
   
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
 
 You can also install only the padrino-helpers gem for more fine-grained use:
 
@@ -368,10 +368,10 @@ Once a custom builder is defined, any call to form_for can use the new builder:
 
 The form builder can even be made into the default builder when form_for is invoked:
 
-  # anywhere in the sinatra application
+  # anywhere in the Padrino or Sinatra application
   set :default_builder, 'MyCustomFormBuilder'
 
-And there you have it, a fairly complete form builder solution for sinatra. 
+And there you have it, a fairly complete form builder solution for Padrino (and Sinatra). 
 I hope to create or merge in an even better 'default' form_builder in the near future.
 
 === Format Helpers
@@ -403,17 +403,16 @@ The list of defined helpers in the 'format helpers' category:
   * <tt>time_in_words(2.days.ago)</tt> => "2 days ago"
   * <tt>time_in_words(100.days.ago)</tt> => "Tuesday, July 21"
   * <tt>time_in_words(1.day.from_now)</tt> => "tomorrow"
-* <tt>escape_javascript(html_content)</tt>
+* <tt>js_escape_html(html_content)</tt>
   * Escapes html to allow passing information to javascript. Used for passing data inside an ajax .js.erb template
-  * <tt>escape_javascript("<h1>Hey</h1>")</tt>
+  * <tt>js_escape_html("<h1>Hey</h1>")</tt>
 
 See the wiki article for additional information: <...WIKI...>
 
 === Render Helpers
 
-This component provides a number of rendering helpers for sinatra, making the process
-of displaying templates far smoother. This plugin also has support for useful additions
-such as partials (with support for :collection) into the templating system.
+This component provides a number of rendering helpers making the process of displaying templates a bit easier. 
+This plugin also has support for useful additions such as partials (with support for :collection) for the templating system.
 
 Using render plugin helpers is extremely simple. If you want to render an erb template in your view path:
 
@@ -427,7 +426,7 @@ There is also a method which renders the first view matching the path and remove
 
   render_template 'path/to/any/template'
   
-It is worth noting these are mostly for convenience. When I had more complex view files in sinatra, I got tired of writing:
+It is worth noting these are mostly for convenience. With nested view file paths in Sinatra, this becomes tiresome:
 
   haml :"the/path/to/file"
   erb "/path/to/file".to_sym

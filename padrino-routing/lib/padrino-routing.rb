@@ -32,7 +32,7 @@ module Padrino
         @_namespace = original
       end
 
-      # Hijacking route method in sinatra to replace a route alias (i.e :account) with the full url string mapping
+      # Hijacking route method in Sinatra to replace a route alias (i.e :account) with the full url string mapping
       # Supports namespaces by accessing the instance variable and appending this to the route alias name
       # If the path is not a symbol, nothing is changed and the original route method is invoked
       def route(verb, path, options={}, &block)

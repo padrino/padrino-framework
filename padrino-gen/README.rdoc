@@ -7,14 +7,14 @@ To install the 'full-stack' padrino framework, simply grab the latest version fr
   $ sudo gem install padrino --source http://gemcutter.org
   
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
   
 == Overview
 
-Padrino comes preloaded with flexible code generators for Sinatra powered in part by the excellent 
-Thor gem (incidentally also used in the Rails 3 generators). These generators are intended to allow for easy code 
-generation both in creating new applications and building on existing ones. The generators have been built to be as 
-library-agnostic as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc. 
+Padrino comes preloaded with flexible code generators powered in part by the excellent Thor gem
+(incidentally also used in the Rails 3 generators). These generators are intended to allow for easy code generation
+both in creating new applications and building on existing ones. The generators have been built to be as library agnostic
+as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc.
 
 See the wiki article for additional information: <...WIKI...>
 
@@ -74,8 +74,8 @@ If not executed manually, the bundling will be performed automatically the first
 Note that this command only has to be performed when the application is first generated or when the Gemfile is modified.
  
 The generator framework within padrino is extensible and additional components and tools can be added easily.
-This would be achieved through forking our project and reading through the code in <tt>/generators/sinatra_generator.rb</tt> and
-the setup instructions inside the relevant files within <tt>/generators/components/</tt>. We are happy to accept pull requests
+This would be achieved through forking our project and reading through the code in <tt>lib/generators/skeleton.rb</tt> and
+the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
 for additional component types not originally included (although helping us maintain them would also be appreciated).
 
 === Model Generator ===

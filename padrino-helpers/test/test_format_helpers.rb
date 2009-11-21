@@ -82,15 +82,15 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
   end
 
-  context 'for #escape_javascript method' do
+  context 'for #js_escape_html method' do
     should "escape double quotes" do
-      assert_equal "\"hello\"", escape_javascript('"hello"')
+      assert_equal "\"hello\"", js_escape_html('"hello"')
     end
     should "escape single quotes" do
-      assert_equal "\"hello\"", escape_javascript("'hello'")
+      assert_equal "\"hello\"", js_escape_html("'hello'")
     end
     should "escape html tags and breaks" do
-      assert_equal "\"\\n<p>hello<\\/p>\\n\"", escape_javascript("\n\r<p>hello</p>\r\n")
+      assert_equal "\"\\n<p>hello<\\/p>\\n\"", js_escape_html("\n\r<p>hello</p>\r\n")
     end
   end
 end

@@ -55,9 +55,9 @@ module Padrino
         end
       end
 
-      # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from sinatra
-      # escape_javascript("<h1>Hey</h1>")
-      def escape_javascript(html_content)
+      # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino
+      # js_escape_html("<h1>Hey</h1>")
+      def js_escape_html(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n' }
         javascript_mapping.merge("\r" => '\n', '"' => '\\"', "'" => "\\'")
@@ -65,9 +65,8 @@ module Padrino
         "\"#{escaped_string}\""
       end
 
-      alias js_escape escape_javascript
-      alias js_escape_html escape_javascript
-      alias escape_for_javascript escape_javascript
+      alias escape_javascript js_escape_html
+      alias escape_for_javascript js_escape_html
 
     end
   end

@@ -25,7 +25,7 @@ module Padrino
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs]
       component_option :renderer, "template engine",    :aliases => '-r', :choices => [:erb, :haml]
 
-      # Copies over the base sinatra starting project
+      # Copies over the Padrino base application skeleton
       def setup_skeleton
         self.destination_root = File.join(path, name)
         @class_name = name.classify

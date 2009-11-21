@@ -442,7 +442,7 @@ This section also includes partial support to allow rendering mini-templates.
 
 The <tt>haml_template</tt> and <tt>erb_template</tt> functions simply make rendering view templates easier
 when working with templates inside the views directory. Sinatra provides helpers for this but they work
-in a way which can be slightly counterintuitive:
+in a way which can be slightly counter-intuitive:
 
   haml :index        # OK, renders the ./views/index.haml
   haml 'site/index'  # This renders the literal string 'site/index'
@@ -614,7 +614,7 @@ functionality on the server. However, SMTP is also supported using the following
 Once that has been defined, the default will become smtp delivery unless overwritten in an individual mail definition.
 Next, we should define a custom mailer extended from Padrino::Mailer::Base or use the mailer generator (see next section)
 
-  $ sinatra-gen mailer sample
+  $ padrino-gen mailer sample
 
 Once the mailer is generated, we can define the specific email delivery methods
 
