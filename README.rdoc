@@ -4,7 +4,7 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-This gem has been designed to enhance and build upon Sinatra (http://www.sinatrarb.com).
+This gem has been designed to enhance and build upon the {Sinatra Microframework}[http://www.sinatrarb.com].
 Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
 The canonical example of how to create an entire simple web application with Sinatra is something like:
 
@@ -73,9 +73,9 @@ additional tools and helpers to extend the foundation. This README and Padrino d
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
 usage of Sinatra itself. Resources for Sinatra are listed below:
 
-* README (http://www.sinatrarb.com/intro.html)
-* Book   (http://www.sinatrarb.com/book.html)
-* Repo   (http://github.com/sinatra/sinatra)
+* {Sinatra Introduction}[http://www.sinatrarb.com/intro.html]
+* {Sinatra Book}[http://www.sinatrarb.com/book.html]
+* {Sinatra Github Repo}[http://github.com/sinatra/sinatra]
 
 Below is a guide to how this gem enhances the Sinatra framework as part of a 'full-stack' padrino application.
 For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the README for that 
@@ -120,8 +120,9 @@ we can create Gemfile within the application root. This will contain a list of a
   gem 'sinatra',     :require_as => 'sinatra/base'
   gem 'rack-flash'
   
-This file uses the standard <tt>bundler</tt> syntax which can be found here: http://github.com/wycats/bundler
-This allows us to place all our dependencies into a single file. Padrino will then automatically require
+This manifest file uses the standard <tt>bundler</tt> gem syntax of which details can be found in the
+{Bundler README}[http://github.com/wycats/bundler]
+This gem allows us to place all our dependencies into a single file. Padrino will then automatically require
 all necessary files (if they exist on the system). 
 
 If the dependencies are not on the system, you can automatically vendor all necessary gems 
@@ -200,7 +201,7 @@ within your app and any controller or views:
   end
   
 The logger automatically supports severity through the use of <tt>logger.info</tt>, <tt>logger.warn</tt>, <tt>logger.error</tt>, et al.
-For more information about the logger, check out the logger rdoc (http://www.ruby-doc.org/stdlib/libdoc/logger/rdoc/)
+For more information about the logger, check out the {Logger RDOC}[http://www.ruby-doc.org/stdlib/libdoc/logger/rdoc/]
 
 === Mounting Applications
 
