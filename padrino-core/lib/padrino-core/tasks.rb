@@ -2,23 +2,20 @@ require 'thor'
 require File.dirname(__FILE__) + "/tasks/helpers"
 
 module Padrino
-  module Tasks 
+  module Tasks
     class Base < Thor
       include Thor::Actions
       include Padrino::Tasks::Helpers
 
       class_option :chdir, :type => :string, :aliases => "-c"
 
-      desc "start ", "Starts the Padrino application"
-
+      desc "start", "Starts the Padrino application"
       method_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development
       method_option :adapter,     :type => :string,  :aliases => "-a", :required => true, :default => :thin
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "localhost"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
       method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
-
-      desc "start", "Start the Padrino application"
       def start
         require File.dirname(__FILE__) + "/tasks/adapter"
         chdir(options.chdir)

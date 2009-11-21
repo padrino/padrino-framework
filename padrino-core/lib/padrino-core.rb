@@ -6,7 +6,6 @@ PADRINO_ENV = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development" unless de
 
 module Padrino
   class ApplicationLoadError < RuntimeError; end
-
   # Helper method for file references.
   #
   # Example:
@@ -16,7 +15,7 @@ module Padrino
   def self.root(*args)
     File.join(PADRINO_ROOT, *args)
   end
-  
+
   # Helper method that return PADRINO_ENV
   def self.env
     PADRINO_ENV
