@@ -24,5 +24,4 @@ end
 
 Padrino.mount("multi_1_demo").to("/multi_1_demo")
 Padrino.mount("multi_2_demo").to("/multi_2_demo")
-
-silence_logger { Padrino.load! }
+Padrino.load!
