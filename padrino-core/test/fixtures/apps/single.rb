@@ -3,15 +3,14 @@ require 'rubygems'
 require 'sinatra/base'
 require 'lib/padrino-core'
 
-Padrino.load!
-Padrino.mount_core("loop")
+class SingleDemo < Padrino::Application; end
 
-class Loop < Padrino::Application; end
-
-Loop.controllers do
+SingleDemo.controllers do
   get "/test" do
     'This should work'
   end
 end
 
-Loop.run!
+Padrino.mount_core("single_demo")
+
+silence_logger { Padrino.load! }

@@ -1,19 +1,9 @@
 require File.dirname(__FILE__) + '/helper'
 
-PADRINO_ENV = RACK_ENV = 'test' unless defined?(PADRINO_ENV)
-require File.dirname(__FILE__) + '/fixtures/simple_app/app'
-require 'padrino-core'
-
 class TestPadrinoMounter < Test::Unit::TestCase
-
-  def app
-    Padrino.application.tap { }
-  end
 
   def setup
     Padrino.mounted_apps.clear
-    Padrino.mount("core_1_demo").to("/core_1_demo")
-    Padrino.mount("core_2_demo").to("/core_2_demo")
   end
 
   context 'for mounter functionality' do
@@ -26,26 +16,39 @@ class TestPadrinoMounter < Test::Unit::TestCase
       assert_respond_to mounter, :to
       assert_respond_to mounter, :map_onto
       assert_equal "test", mounter.name
+      assert_equal "Test", mounter.app_class
       assert_equal "/path/to/test.rb", mounter.app_file
       assert_equal "/test", mounter.uri_root
       assert_nil mounter.app_root
     end
 
-    should 'mount some apps' do
-      assert_equal ["core_1_demo", "core_2_demo"], Padrino.mounted_apps.collect(&:name)
-    end
-
-    should 'mount only a core' do
-      Padrino.mounted_apps.clear
-      Padrino.mount_core(:app_file => Padrino.root("app.rb"))
+    should 'mount an app' do
+      class AnApp < Padrino::Application; end
+      
+      Padrino.mount_core("an_app")
       assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
     end
 
+    should 'mount multiple apps' do
+      class OneApp < Padrino::Application; end
+      class TwoApp < Padrino::Application; end
+      
+      Padrino.mount("one_app").to("/one_app")
+      Padrino.mount("two_app").to("/two_app")
+
+      assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
+    end
+
     should 'correctly instantiate a new padrino application' do
-      visit '/core_1_demo'
-      assert_contain "Im Core1Demo"
-      visit '/core_2_demo'
-      assert_contain "Im Core2Demo"
+      mock_app do
+        get("/demo_1"){ "Im Demo 1" }
+        get("/demo_2"){ "Im Demo 2" }
+      end
+      
+      get '/demo_1'
+      assert_contain "Im Demo 1"
+      visit '/demo_2'
+      assert_contain "Im Demo 2"
     end
   end
 end
