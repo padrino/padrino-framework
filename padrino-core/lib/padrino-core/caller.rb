@@ -7,6 +7,7 @@ module Padrino
     %r{shoulda/context\.rb$},    # shoulda hacks
     %r{mocha/integration},       # mocha hacks
     %r{test/unit},               # test unit hacks
+    %r{rake_test_loader\.rb},    # rake hacks
     %r{custom_require\.rb$},     # rubygems require hacks
     %r{active_support},          # active_support require hacks
     %r{/thor},                   # thor require hacks
