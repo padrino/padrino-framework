@@ -13,4 +13,4 @@ end
 
 Padrino.mount_core("single_demo")
 
-silence_logger { Padrino.load! }
+Padrino.load!

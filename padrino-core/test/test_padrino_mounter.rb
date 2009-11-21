@@ -22,6 +22,16 @@ class TestPadrinoMounter < Test::Unit::TestCase
       assert_nil mounter.app_root
     end
 
+    should 'check locate_app_file with __FILE__' do
+      mounter = Padrino::Mounter.new("test")
+      mounter.to("/test")
+      assert_equal "test", mounter.name
+      assert_equal "Test", mounter.app_class
+      assert_equal __FILE__, mounter.app_file
+      assert_equal "/test", mounter.uri_root
+      assert_nil mounter.app_root
+    end
+
     should 'mount an app' do
       class AnApp < Padrino::Application; end
       
