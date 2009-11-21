@@ -21,7 +21,6 @@
 
 * Respond_to support? a way to respond to multiple content formats (xml, json, html) within a single action (?)
 * Mustache template rendering (classes / views using forms, markup) in render/helpers
-* Clean up log line for controller request access description to have more information
 * Implement before/after filters which run on only specified routes [ before :only => [:show, "/account"] { ... } ]
 * Route 'resource' mapping: map(:user).resource
 * Internationalization baked in (http://r18n.rubyforge.org/#sinatra)
@@ -30,6 +29,7 @@
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
 * Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
+* Use better logger in Padrino application (replace Logger with vendored Log4R for more flexibility)
 
 == NATHAN
 
@@ -39,7 +39,7 @@
   - allow for special names to be interpreted (http://guides.rubyonrails.org/migrations.html#creating-a-standalone-migration)
 * Add support for configuring generators model, controller, migrations, mailer
   * Which components to use, where to generate the files
-* Add support for destroying existing controller, model, migrations, mailer
+* Add support for destroying existing controller, model, migrations, mailer (--destroy)
 * Add support for specifying 'actions' within controller and mailer migrations
   * padrino-gen controller User :index [:admin, :index]
   * padrino-gen mailer User method1 method2 method3
