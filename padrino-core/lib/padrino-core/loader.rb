@@ -3,7 +3,7 @@ module Padrino
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
       return if loaded?
-      @_called_from = caller_files.first
+      @_called_from = first_caller
       load_required_gems # load bundler gems
       load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
@@ -13,7 +13,7 @@ module Padrino
 
     # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
     def called_from
-      @_called_from || caller_files.first
+      @_called_from || first_caller
     end
 
     # Return true if Padrino was loaded with Padrino.load!

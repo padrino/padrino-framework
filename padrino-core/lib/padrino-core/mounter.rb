@@ -1,20 +1,15 @@
 module Padrino
-  class MounterError < RuntimeError; end 
   # Represents a particular mounted padrino application
   # Stores the name of the application (app folder name) and url mount path
-  # @example Mounter.new("blog_app").to("/blog")
-  # @example Mounter.new("blog_app", :app_file => "/path/to/root/app.rb").to("/blog")
   # @example Mounter.new("blog_app", :app_class => "Blog").to("/blog")
+  # @example Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   class Mounter
     attr_accessor :name, :uri_root, :app_file, :app_klass, :app_root
     def initialize(name, options={})
       @name      = name.downcase
       @app_klass = options[:app_class] || name.classify
-      @app_root  = options[:app_root]  if options[:app_root]
-      @app_file  = options[:app_file] || (
-                   File.identical?(Padrino.caller_files.first, Padrino.called_from) ? 
-                   Padrino.caller_files.first :
-                   Padrino.mounted_root(name, "app.rb"))
+      @app_file  = options[:app_file]  || locate_app_file
+      @app_root  = options[:app_root]
     end
 
     # Registers the mounted application onto Padrino
@@ -37,6 +32,12 @@ module Padrino
         app_klass.set :root,     app_data.app_root if app_data.app_root
         run app_klass
       end
+    end
+
+    # Returns the determined location of the mounted application main file
+    def locate_app_file
+      callers_are_identical = File.identical?(Padrino.first_caller, Padrino.called_from)
+      callers_are_identical ? Padrino.first_caller : Padrino.mounted_root(name, "app.rb")
     end
   end
 
@@ -62,7 +63,7 @@ module Padrino
     def mount(name, options={})
       Mounter.new(name, options)
     end
-    
+
     # Mounts the core application onto Padrino project
     # @example Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
     def mount_core(options={})
