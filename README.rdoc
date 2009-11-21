@@ -359,7 +359,8 @@ simple view template:
     %p Mail me at #{mail_to 'fake@faker.com', "Fake Email Link", :cc => "test@demo.com"}
     %p= image_tag 'padrino.png', :width => '35', :class => 'logo'
     
-For more detailed documentation, check out the <tt>padrino-helpers</tt> gem README
+For more detailed documentation, check out the 
+{padrino-helpers README}[http://github.com/padrino/padrino-framework/tree/master/padrino-helpers/].
 
 === Form Helpers
 
@@ -383,7 +384,8 @@ example of constructing a non-object form would be:
   - field_set_tag(:class => 'buttons') do
     = submit_tag "Remove"
     
-For more detailed documentation, check out the <tt>padrino-helpers</tt> gem README
+For more detailed documentation, check out the 
+{padrino-helpers README}[http://github.com/padrino/padrino-framework/tree/master/padrino-helpers/].
 
 === Form Builders
 
@@ -415,7 +417,8 @@ using a simple, intuitive syntax. Building a form is as follows:
     = f.submit "Create", :class => 'button'
 
 There is also support for using more advanced form builders or even creating your own to make
-form building even easier. For more detailed documentation, check out the <tt>padrino-helpers</tt> gem README.
+form building even easier. For more detailed documentation, check out the 
+{padrino-helpers README}[http://github.com/padrino/padrino-framework/tree/master/padrino-helpers/].
 
 === Format Helpers
 
@@ -430,7 +433,7 @@ passing javascript information from a js template to a javascript function.
 
   escape_html('<hello>&<goodbye>') # => &lt;hello&gt;&amp;&lt;goodbye&gt;
 
-There is also an alias for escape_html called <tt>h</tt> for even easier usage within templates
+There is also an alias for escape_html called <tt>h</tt> for even easier usage within templates.
 
 === Render Helpers
 
