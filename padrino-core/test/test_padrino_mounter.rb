@@ -37,7 +37,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
 
     should 'mount only a core' do
       Padrino.mounted_apps.clear
-      Padrino.mount_core(:app_file => "#{Padrino.root("app.rb")}")
+      Padrino.mount_core(:app_file => Padrino.root("app.rb"))
       assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
     end
 

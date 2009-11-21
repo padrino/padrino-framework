@@ -42,15 +42,11 @@ module Padrino
   end
 
   class << self
+    attr_writer :mounted_root # Set root directory where padrino searches mounted apps
+
     # Returns the root to the mounted apps base directory
     def mounted_root(*args)
-      @mounted_root ||= "apps" # Other apps
-      File.join(Padrino.root, @mounted_root, *args)
-    end
-
-    # Set the root directory where padrino search mounted apps
-    def mounted_root=(value)
-      @mounted_root = value
+      File.join(Padrino.root, @mounted_root ||= "apps", *args)
     end
 
     # Returns the mounted padrino applications (MountedApp objects)
@@ -64,10 +60,13 @@ module Padrino
       Mounter.new(name, options)
     end
 
-    # Mounts the core application onto Padrino project
+    # Mounts the core application onto Padrino project with given app settings (file, class, root)
+    # @example Padrino.mount_core("Blog")
     # @example Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
-    def mount_core(options={})
-      options.reverse_merge!(:app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root)
+    def mount_core(*args)
+      options = args.extract_options!
+      app_class = args.size > 0 ? args.first.to_s.camelize : nil
+      options.reverse_merge!(:app_class => app_class, :app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root)
       Mounter.new("core", options).to("/")
     end
   end

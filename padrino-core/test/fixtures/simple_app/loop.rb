@@ -4,7 +4,7 @@ require 'sinatra/base'
 require 'lib/padrino-core'
 
 Padrino.load!
-Padrino.mount_core(:app_class => "Loop")
+Padrino.mount_core("loop")
 
 class Loop < Padrino::Application; end
 

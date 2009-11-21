@@ -220,12 +220,13 @@ the following structure:
   
 This would mount two applications onto the Padrino project, one served from the '/blog' uri namespace and the other
 served from the '/website' uri namespace. Often a Padrino project directory requires a single 'core' application
-which is served from the uri root. This can be easily applied with:
+which is served from the uri root. This can be easily configured using:
 
-  Padrino.mount_core(:app_class => "AppName", :app_file => "app.rb")
+  Padrino.mount_core("app_name") # mounts app with class AppName, in file <tt>app/app.rb</tt>
+  Padrino.mount_core("app_name", :app_file => Padrino.root('app.rb')) # now with file in <tt>app.rb</tt>
   
-This will mount a 'core' application with class AppName from the file 'app.rb' to the uri root and will act as a primary
-application.
+This will mount a 'core' application with class AppName from the file 'app.rb' to the uri root which will
+act as a primary application.
 
 === Development Reloader
 
