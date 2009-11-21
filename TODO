@@ -33,6 +33,10 @@
 
 == NATHAN
 
+* Generate a super small skeleton
+  - If one use --test=none don't create test folder
+  - If one use --orm=none dont' create a model folder
+  - Don't create a vendor folder (bundler I think can mkdir them)
 * Add generator support for mounting subapplications
 * Add support for migration generator types based on components
   - fix the number prefix on migrations (http://guides.rubyonrails.org/migrations.html#whats-in-a-name)
@@ -54,11 +58,6 @@
   * rake db:create, db:create:all, db:migrate, db:test:prepare, gems, log:clear, middleware, etc
   * Creating and migrating databases using padrino binary (or rake and using any of the orms) 
   * (maybe ties into generator if needed)
-* If you define routes directly inside of the application class (app.rb) routes are not reloaded
-  - class Demo < Padrino::Application; get("/example"); end
-  - If you move boot.rb code into the top of app.rb for minimalism we get infinite loop
-* If you define controller inside the app file, causes infinite loading loop
-  - class Demo < Padrino::Application; end + Demo.controllers { ... }
 * Add tests for padrino_core gem (and any other gems - generators and routing)
 * Optimize (improve performance) padrino_core gem
 * Implement padrino-admin gem (with authentication)
@@ -66,6 +65,11 @@
 
 == COMPLETED
 
+* If you define controller inside the app file, causes infinite loading loop
+  - class Demo < Padrino::Application; end + Demo.controllers { ... }
+* If you define routes directly inside of the application class (app.rb) routes are not reloaded
+  - class Demo < Padrino::Application; get("/example"); end
+  - If you move boot.rb code into the top of app.rb for minimalism we get infinite loop
 * Defining inline named routes inside app.rb files (get :show, :map => '...") cause an error
 * Add an application.js file to app generator for javascript
 * Add app generator to specify orm=none, test=none, script=none
