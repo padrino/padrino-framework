@@ -12,7 +12,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     should "fail outside app root" do
       output = silence_logger { @contgen.start(['demo', '-r=/tmp']) }
       assert_match(/not at the root/, output)
-      assert !File.exist?('/tmp/app/controllers/demo.rb')
+      assert_no_file_exists('/tmp/app/controllers/demo.rb')
     end
 
     should "generate controller within existing application" do
@@ -20,7 +20,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/SampleApp.controllers do/m, '/tmp/sample_app/app/controllers/demo_items.rb')
       assert_match_in_file(/SampleApp.helpers do/m, '/tmp/sample_app/app/helpers/demo_items_helper.rb')
-      assert File.exist?('/tmp/sample_app/app/views/demo_items')
+      assert_file_exists('/tmp/sample_app/app/views/demo_items')
     end
 
     should "generate controller test for bacon" do

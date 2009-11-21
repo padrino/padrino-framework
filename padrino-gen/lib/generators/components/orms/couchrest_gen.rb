@@ -19,6 +19,7 @@ module Padrino
           def setup_orm
             require_dependencies 'couchrest'
             create_file("config/database.rb", COUCHREST)
+            empty_directory('app/models')
           end
 
           CR_MODEL = (<<-MODEL).gsub(/^ {10}/, '')

@@ -28,23 +28,10 @@ module Padrino
           end
           MONGO
 
-          CONCERNED = (<<-CONCERN).gsub(/^ {10}/, '')
-          module MongoMapper
-            module Document
-              module ClassMethods
-                # TODO find a cleaner way for it to know where to look for dependencies
-                def concerned_with(*concerns)
-                  concerns.each { |concern| require_dependency "./app/models/\#{name.underscore}/\#{concern}" }
-                end
-              end
-            end
-          end
-          CONCERN
-
           def setup_orm
             require_dependencies 'mongo_mapper'
             create_file("config/database.rb", MONGO)
-            create_file("lib/ext/mongo_mapper.rb", CONCERNED)
+            empty_directory('app/models')
           end
 
           MM_MODEL = (<<-MODEL).gsub(/^ {10}/, '')

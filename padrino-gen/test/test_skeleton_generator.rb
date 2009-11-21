@@ -10,10 +10,15 @@ class TestSkeletonGenerator < Test::Unit::TestCase
   context 'the skeleton generator' do
     should "allow simple generator to run and create base_app with no options" do
       assert_nothing_raised { silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none']) } }
-      assert File.exist?('/tmp/sample_app')
-      assert File.exist?('/tmp/sample_app/app')
-      assert File.exist?('/tmp/sample_app/config/boot.rb')
-      assert File.exist?('/tmp/sample_app/test/test_config.rb')
+      assert_file_exists('/tmp/sample_app')
+      assert_file_exists('/tmp/sample_app/app')
+      assert_file_exists('/tmp/sample_app/config/boot.rb')
+      assert_file_exists('/tmp/sample_app/test/test_config.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
+    end
+    should "not create models folder if no orm is chosen" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '--orm=none']) }
+      assert_no_dir_exists('/tmp/sample_app/app/models')
     end
     should "place app specific names into correct files" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none']) }
@@ -81,6 +86,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?sequel.*?orm/, buffer
       assert_match_in_file(/gem 'sequel'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/Sequel.connect/, '/tmp/sample_app/config/database.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
     end
 
     should "properly generate for activerecord" do
@@ -89,6 +95,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'activerecord'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/Migrate the database/, '/tmp/sample_app/Rakefile')
       assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_app/config/database.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
     end
 
     should "properly generate default for datamapper" do
@@ -96,6 +103,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?datamapper.*?orm/, buffer
       assert_match_in_file(/gem 'dm-core'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/DataMapper.setup/, '/tmp/sample_app/config/database.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
     end
 
     should "properly generate for mongomapper" do
@@ -103,6 +111,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?mongomapper.*?orm/, buffer
       assert_match_in_file(/gem 'mongo_mapper'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/MongoMapper.database/, '/tmp/sample_app/config/database.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
     end
 
     should "properly generate for couchrest" do
@@ -110,6 +119,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?couchrest.*?orm/, buffer
       assert_match_in_file(/gem 'couchrest'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/CouchRest.database!/, '/tmp/sample_app/config/database.rb')
+      assert_dir_exists('/tmp/sample_app/app/models')
     end
   end
 
@@ -131,23 +141,23 @@ class TestSkeletonGenerator < Test::Unit::TestCase
     should "properly generate for jquery" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=jquery']) }
       assert_match /Applying.*?jquery.*?script/, buffer
-      assert File.exist?('/tmp/sample_app/public/javascripts/jquery.min.js')
-      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/jquery.min.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for prototype" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=prototype']) }
       assert_match /Applying.*?prototype.*?script/, buffer
-      assert File.exist?('/tmp/sample_app/public/javascripts/prototype.js')
-      assert File.exist?('/tmp/sample_app/public/javascripts/lowpro.js')
-      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/prototype.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/lowpro.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for rightjs" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=rightjs']) }
       assert_match /Applying.*?rightjs.*?script/, buffer
-      assert File.exist?('/tmp/sample_app/public/javascripts/right-min.js')
-      assert File.exist?('/tmp/sample_app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/right-min.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
   end
 

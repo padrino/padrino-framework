@@ -12,7 +12,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "fail outside app root" do
       output = silence_logger { @model_gen.start(['user', '-r=/tmp']) }
       assert_match(/not at the root/, output)
-      assert !File.exist?('/tmp/app/models/user.rb')
+      assert_no_file_exists('/tmp/app/models/user.rb')
     end
 
     should "generate only generate model once" do

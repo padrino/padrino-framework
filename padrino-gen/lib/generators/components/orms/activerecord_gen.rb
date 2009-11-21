@@ -52,6 +52,7 @@ module Padrino
             require_dependencies 'activerecord'
             create_file("config/database.rb", AR)
             create_file("Rakefile", RAKE)
+            empty_directory('app/models')
           end
 
           AR_MODEL = (<<-MODEL).gsub(/^ {10}/, '')
