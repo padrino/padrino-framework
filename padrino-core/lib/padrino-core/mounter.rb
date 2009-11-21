@@ -1,4 +1,5 @@
 module Padrino
+  class MounterError < RuntimeError; end 
   # Represents a particular mounted padrino application
   # Stores the name of the application (app folder name) and url mount path
   # @example Mounter.new("blog_app").to("/blog")
@@ -7,10 +8,13 @@ module Padrino
   class Mounter
     attr_accessor :name, :uri_root, :app_file, :app_klass, :app_root
     def initialize(name, options={})
-      @name      = name
+      @name      = name.downcase
       @app_klass = options[:app_class] || name.classify
-      @app_file  = options[:app_file]  || Padrino.caller_files.first # Padrino.mounted_root(name, 'app.rb')
       @app_root  = options[:app_root]  if options[:app_root]
+      @app_file  = options[:app_file] || (
+                   File.identical?(Padrino.caller_files.first, Padrino.called_from) ? 
+                   Padrino.caller_files.first :
+                   Padrino.mounted_root(name, "app.rb"))
     end
 
     # Registers the mounted application onto Padrino
@@ -24,7 +28,7 @@ module Padrino
     # For use in constructing a Rack application
     # @example @app.map_onto(@builder)
     def map_onto(builder)
-      require(self.app_file) unless defined?(self.app_klass.constantize)
+      self.app_klass.constantize rescue require(self.app_file)
       app_data, app_klass = self, self.app_klass.constantize
       builder.map self.uri_root do
         app_klass.set :uri_root, app_data.uri_root

@@ -12,8 +12,8 @@ class TestPadrinoApplication < Test::Unit::TestCase
 
   def setup
     Padrino.mounted_apps.clear
-    Padrino.mount("core_1_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_1_demo")
-    Padrino.mount("core_2_demo", :app_file => "#{Padrino.root("app.rb")}").to("/core_2_demo")
+    Padrino.mount("core_1_demo").to("/core_1_demo")
+    Padrino.mount("core_2_demo").to("/core_2_demo")
   end
 
   context 'for application functionality' do
