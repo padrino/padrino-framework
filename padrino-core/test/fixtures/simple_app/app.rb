@@ -22,4 +22,4 @@ class Core2Demo < Padrino::Application
   end
 end
 
-silence_logger { Padrino.load! }
+Padrino.load!

@@ -50,19 +50,24 @@ module Padrino
     # Loads the bundler manifest Gemfile if it exists
     def load_bundler_manifest
       require 'bundler'
-      print "=> Locating Gemfile for #{PADRINO_ENV}"
+      say "=> Locating Gemfile for #{PADRINO_ENV}"
       Bundler::Environment.load(root("Gemfile")).require_env(PADRINO_ENV)
-      print " ... Loaded!"
+      say " ... Loaded!"
     rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
-      print " ... Not Found"
+      say " ... Not Found"
     end
 
     # Loads bundled gems if they exist
     def require_vendored_gems
       load_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
-      puts " (Loading bundled gems)"
+      say " (Loading bundled gems)\n"
     rescue LoadError => e
-      puts " (Loading system gems)"
+      say " (Loading system gems)\n"
+    end
+
+    # Prints out a message to the stdout if not in test environment
+    def say(text)
+      print text if PADRINO_ENV.to_s != 'test'
     end
   end
 end

@@ -43,26 +43,22 @@ class Test::Unit::TestCase
     assert matcher.matches?(html), matcher.failure_message
   end
 
+  # Asserts that a file matches the pattern
+  def assert_match_in_file(pattern, file)
+    assert File.exist?(file), "File '#{file}' does not exist!"
+    assert_match pattern, File.read(file)
+  end
+end
+
+class Object
   # Silences the output by redirecting to stringIO
   # silence_logger { ...commands... } => "...output..."
   def silence_logger(&block)
-    self.class.silence_logger(&block)
-  end
-  
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def self.silence_logger(&block)
     orig_stdout = $stdout
     $stdout = log_buffer = StringIO.new
     block.call
     $stdout = orig_stdout
     log_buffer.rewind && log_buffer.read
-  end
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
-    assert_match pattern, File.read(file)
   end
 end
 
