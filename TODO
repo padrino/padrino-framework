@@ -5,7 +5,6 @@
 === IMPORTANT
 
 * We need to fix the parent Rakefile to support bumping versions and publishing each gem (?)
-* Creating and migrating databases using padrino binary (or rake and using any of the orms)
 * Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 * Helpers for check_box_group, radio_button_group which create a set of checkboxes or radio buttons
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
@@ -51,7 +50,10 @@
 
 == DAddYE
 
-* Add an application.js file to app generator for javascript
+* Perhaps port over certain great rails tasks (into padrino bin or thor)
+  * rake db:create, db:create:all, db:migrate, db:test:prepare, gems, log:clear, middleware, etc
+  * Creating and migrating databases using padrino binary (or rake and using any of the orms) 
+  * (maybe ties into generator if needed)
 * If you define routes directly inside of the application class (app.rb) routes are not reloaded
   - class Demo < Padrino::Application; get("/example"); end
   - If you move boot.rb code into the top of app.rb for minimalism we get infinite loop
@@ -65,6 +67,7 @@
 == COMPLETED
 
 * Defining inline named routes inside app.rb files (get :show, :map => '...") cause an error
+* Add an application.js file to app generator for javascript
 * Add app generator to specify orm=none, test=none, script=none
 * We need to remove dependency on activesupport (and use support_lite to work with extlib or as)
 * Implement Basic padrino-core padrino file for tasks (start, stop, test, console)
