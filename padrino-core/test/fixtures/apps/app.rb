@@ -12,5 +12,4 @@ SingleDemo.controllers do
 end
 
 Padrino.mount_core("single_demo")
-
 Padrino.load!
