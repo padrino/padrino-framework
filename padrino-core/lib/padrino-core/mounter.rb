@@ -54,12 +54,6 @@ module Padrino
       @mounted_apps ||= []
     end
 
-    # Mounts a new sub-application onto Padrino project
-    # @example Padrino.mount("blog_app").to("/blog")
-    def mount(name, options={})
-      Mounter.new(name, options)
-    end
-
     # Mounts the core application onto Padrino project with given app settings (file, class, root)
     # @example Padrino.mount_core("Blog")
     # @example Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
@@ -67,7 +61,13 @@ module Padrino
       options = args.extract_options!
       app_class = args.size > 0 ? args.first.to_s.camelize : nil
       options.reverse_merge!(:app_class => app_class, :app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root)
-      Mounter.new("core", options).to("/")
+      mount("core", options).to("/")
+    end
+
+    # Mounts a new sub-application onto Padrino project
+    # @example Padrino.mount("blog_app").to("/blog")
+    def mount(name, options={})
+      Mounter.new(name, options)
     end
   end
 end
