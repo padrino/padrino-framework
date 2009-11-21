@@ -13,12 +13,16 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_app')
       assert_file_exists('/tmp/sample_app/app')
       assert_file_exists('/tmp/sample_app/config/boot.rb')
-      assert_file_exists('/tmp/sample_app/test/test_config.rb')
       assert_dir_exists('/tmp/sample_app/app/models')
+      assert_file_exists('/tmp/sample_app/test/test_config.rb')
     end
     should "not create models folder if no orm is chosen" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '--orm=none']) }
       assert_no_dir_exists('/tmp/sample_app/app/models')
+    end
+    should "not create tests folder if no test framework is chosen" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '--test=none']) }
+      assert_no_dir_exists('/tmp/sample_app/test')
     end
     should "place app specific names into correct files" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none']) }
@@ -166,6 +170,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--test=bacon', '--script=none']) }
       assert_match /Applying.*?bacon.*?test/, buffer
       assert_match_in_file(/gem 'bacon'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/Bundler.require_env\(:testing\)/, '/tmp/sample_app/test/test_config.rb')
       assert_match_in_file(/Bacon::Context/, '/tmp/sample_app/test/test_config.rb')
     end
 
@@ -173,6 +178,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--test=riot', '--script=none']) }
       assert_match /Applying.*?riot.*?test/, buffer
       assert_match_in_file(/gem 'riot'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/Bundler.require_env\(:testing\)/, '/tmp/sample_app/test/test_config.rb')
       assert_match_in_file(/Riot::Situation/, '/tmp/sample_app/test/test_config.rb')
     end
 
@@ -180,6 +186,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--test=rspec', '--script=none']) }
       assert_match /Applying.*?rspec.*?test/, buffer
       assert_match_in_file(/gem 'spec'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/Bundler.require_env\(:testing\)/, '/tmp/sample_app/test/test_config.rb')
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_app/test/test_config.rb')
     end
 
@@ -187,6 +194,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--test=shoulda', '--script=none']) }
       assert_match /Applying.*?shoulda.*?test/, buffer
       assert_match_in_file(/gem 'shoulda'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/Bundler.require_env\(:testing\)/, '/tmp/sample_app/test/test_config.rb')
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_app/test/test_config.rb')
     end
 
@@ -194,6 +202,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--test=testspec', '--script=none']) }
       assert_match /Applying.*?testspec.*?test/, buffer
       assert_match_in_file(/gem 'test\/spec'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/Bundler.require_env\(:testing\)/, '/tmp/sample_app/test/test_config.rb')
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_app/test/test_config.rb')
     end
   end

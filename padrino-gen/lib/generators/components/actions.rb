@@ -2,6 +2,12 @@ module Padrino
   module Generators
     module Components
       module Actions
+        BASE_TEST_HELPER = (<<-TEST).gsub(/^ {8}/, '')
+        RACK_ENV = 'test' unless defined?(RACK_ENV)
+        require File.dirname(__FILE__) + "/../config/boot"
+        Bundler.require_env(:testing)
+        TEST
+
         # Adds all the specified gems into the Gemfile for bundler
         # require_dependencies 'activerecord'
         # require_dependencies 'mocha', 'bacon', :env => :testing
@@ -25,8 +31,9 @@ module Padrino
         # insert_test_suite_setup('...CLASS_NAME...')
         # => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @class_name), :after => "set :environment, :test\n")
         def insert_test_suite_setup(suite_text, options={})
-          options.reverse_merge!(:path => "test/test_config.rb", :after => /Test configuration\n/)
-          inject_into_file(options[:path], suite_text.gsub(/CLASS_NAME/, @class_name), :after => options[:after])
+          test_helper_text = [BASE_TEST_HELPER, suite_text.gsub(/CLASS_NAME/, @class_name)].join("\n")
+          options.reverse_merge!(:path => "test/test_config.rb")
+          create_file(options[:path], test_helper_text)
         end
 
         # Injects the mock library include into the test class in test_config for setting up mock gen
@@ -34,6 +41,7 @@ module Padrino
         # => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
         def insert_mocking_include(library_name, options={})
           options.reverse_merge!(:indent => 2, :after => /class.*?\n/, :path => "test/test_config.rb")
+          return unless File.exist?(File.join(self.destination_root, options[:path]))
           include_text = indent_spaces(options[:indent]) + "include #{library_name}\n"
           inject_into_file(options[:path], include_text, :after => options[:after])
         end
