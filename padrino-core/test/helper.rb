@@ -1,12 +1,16 @@
+ENV['PADRINO_ENV'] = 'test'
+PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
 require 'rubygems'
+require 'padrino-core'
 require 'test/unit'
 require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
-
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
 
 class Test::Unit::TestCase
   include Rack::Test::Methods
@@ -15,6 +19,20 @@ class Test::Unit::TestCase
 
   Webrat.configure do |config|
     config.mode = :rack
+  end
+
+  # Test App
+  class PadrinoTestApp < Padrino::Application; end
+
+  # Sets up a Sinatra::Base subclass defined with the block
+  # given. Used in setup or individual spec methods to establish
+  # the application.
+  def mock_app(base=PadrinoTestApp, &block)
+    @app = Sinatra.new(base, &block)
+  end
+  
+  def app
+    Rack::Lint.new(@app)
   end
 
   def stop_time_for_test
