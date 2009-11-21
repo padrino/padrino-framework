@@ -8,7 +8,7 @@ module Padrino
       # url_for(:admin, show, :id => 5, :name => "demo") => '/admin/path/5/demo'
       def url_for(*route_name)
         values = route_name.extract_options!
-        mapped_url = self.class.named_paths[route_name] || self.class.named_paths[route_name.dup.unshift(self.class.app_name)]
+        mapped_url = self.class.named_paths[route_name] || self.class.named_paths[route_name.dup.unshift(self.class.app_name.to_sym)]
         raise Padrino::RouteNotFound.new("Route alias #{route_name.inspect} is not mapped to a url") unless mapped_url
         result_url = String.new(File.join(self.class.uri_root, mapped_url))
         result_url.scan(%r{/?(:\S+?)(?:/|$)}).each do |placeholder|
