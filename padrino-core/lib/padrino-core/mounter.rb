@@ -4,10 +4,10 @@ module Padrino
   # @example Mounter.new("blog_app", :app_class => "Blog").to("/blog")
   # @example Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   class Mounter
-    attr_accessor :name, :uri_root, :app_file, :app_klass, :app_root
+    attr_accessor :name, :uri_root, :app_file, :app_class, :app_root
     def initialize(name, options={})
       @name      = name.downcase
-      @app_klass = options[:app_class] || name.classify
+      @app_class = options[:app_class] || name.classify
       @app_file  = options[:app_file]  || locate_app_file
       @app_root  = options[:app_root]
     end
@@ -23,14 +23,14 @@ module Padrino
     # For use in constructing a Rack application
     # @example @app.map_onto(@builder)
     def map_onto(builder)
-      self.app_klass.constantize rescue require(self.app_file)
-      app_data, app_klass = self, self.app_klass.constantize
+      self.app_class.constantize rescue require(self.app_file)
+      app_data, app_class = self, self.app_class.constantize
       builder.map self.uri_root do
-        app_klass.set :uri_root, app_data.uri_root
-        app_klass.set :app_file, app_data.app_file
-        app_klass.set :app_name, app_data.name
-        app_klass.set :root,     app_data.app_root if app_data.app_root
-        run app_klass
+        app_class.set :uri_root, app_data.uri_root
+        app_class.set :app_file, app_data.app_file
+        app_class.set :app_name, app_data.name
+        app_class.set :root,     app_data.app_root if app_data.app_root
+        run app_class
       end
     end
 

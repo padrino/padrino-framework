@@ -16,6 +16,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       assert_respond_to mounter, :to
       assert_respond_to mounter, :map_onto
       assert_equal "test", mounter.name
+      assert_equal "Test", mounter.app_class
       assert_equal "/path/to/test.rb", mounter.app_file
       assert_equal "/test", mounter.uri_root
       assert_nil mounter.app_root
