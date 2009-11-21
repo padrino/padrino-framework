@@ -60,14 +60,14 @@ module Padrino
       def default_configuration!
         # Overwriting Sinatra defaults
         set :app_file, caller_files.first || $0 # Assume app file is first caller
+        set :environment, PADRINO_ENV.to_sym
         set :raise_errors, true if development?
-        set :logging, true
+        set :logging, !test?
         set :sessions, true
         set :log_to_file, !development?
         set :reload, development?
         # Padrino specific
         set :app_name, self.to_s.underscore.to_sym
-        set :environment, PADRINO_ENV.to_sym
         set :default_builder, 'StandardFormBuilder'
         enable :flash
         # Plugin specific
@@ -77,7 +77,7 @@ module Padrino
 
       def check_single_app
         @_single_app = File.identical?(self.app_file, Padrino.called_from.to_s)
-        puts "=> Booting #{File.basename(self.app_file, '.rb').classify} in single app mode, reload is not available" if @_single_app
+        puts "=> Instantiated #{File.basename(self.app_file)} in single app mode, reload is not available" if @_single_app && logging?
       end
 
       # Calculates any required paths after app_file and root have been properly configured
