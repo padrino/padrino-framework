@@ -41,7 +41,6 @@ module Padrino
               create_table :!TABLE! do
                 primary_key :id
                 # <type> <name>
-                text :username, :unique => true, :null => false
                 !FIELDS!
               end
             end
