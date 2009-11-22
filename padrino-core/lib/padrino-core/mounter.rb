@@ -17,6 +17,7 @@ module Padrino
     def to(mount_url)
       @uri_root = mount_url
       Padrino.mounted_apps << self
+      self
     end
 
     # Maps Padrino application onto a Rack::Builder
