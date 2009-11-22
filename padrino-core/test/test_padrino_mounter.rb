@@ -57,6 +57,15 @@ class TestPadrinoMounter < Test::Unit::TestCase
 
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
     end
+    
+    should 'change mounted_root' do
+      Padrino.mounted_root = "fixtures"
+      assert_equal Padrino.root("fixtures", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
+      Padrino.mounted_root = "apps"
+      assert_equal Padrino.root("apps", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
+      Padrino.mounted_root = nil
+      assert_equal Padrino.root("apps", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
+    end
 
     should 'correctly instantiate a new padrino application' do
       mock_app do
