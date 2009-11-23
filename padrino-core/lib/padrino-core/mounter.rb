@@ -16,8 +16,8 @@ module Padrino
     # Registers the mounted application onto Padrino
     # @example Mounter.new("blog_app").to("/blog")
     def to(mount_url)
-      @uri_root = mount_url
-      Padrino.mounted_apps << self
+      @uri_root = mount_url               # This prevent to mount for each reload an app (useful for single app file)
+      Padrino.mounted_apps << self unless Padrino.mounted_apps.any? { |mounter| mounter.name == name }
       self
     end
     

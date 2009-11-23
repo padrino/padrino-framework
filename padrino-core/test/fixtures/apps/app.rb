@@ -14,7 +14,7 @@ end
 
 SingleDemo.controllers do
   get "/" do
-    'This should work too'
+    'This should work too!'
   end
 end
 
