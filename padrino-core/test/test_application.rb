@@ -8,8 +8,6 @@ class TestApplication < Test::Unit::TestCase
       assert_match %r{test/helper.rb}, PadrinoTestApp.app_file
       assert_equal :test, PadrinoTestApp.environment
       assert_equal Padrino.root("views"), PadrinoTestApp.views
-      assert_equal Padrino.root("public"), PadrinoTestApp.public
-      # TODO: Why this not work? assert_equal Padrino.root("public", "images"), PadrinoTestApp.images_path
       assert PadrinoTestApp.raise_errors
       assert !PadrinoTestApp.logging
       assert PadrinoTestApp.sessions
@@ -18,6 +16,11 @@ class TestApplication < Test::Unit::TestCase
     end
 
     should 'check padrino specific options' do
+      assert !PadrinoTestApp.instance_variable_get(:@_configured)
+      PadrinoTestApp.send(:setup_application!)
+      assert PadrinoTestApp.instance_variable_get(:@_configured)
+      assert !PadrinoTestApp.send(:find_view_path)
+      assert PadrinoTestApp.single_app?
       assert !PadrinoTestApp.reload?
       assert 'padrino_test_app', PadrinoTestApp.app_name
       assert 'StandardFormBuilder', PadrinoTestApp.default_builder
