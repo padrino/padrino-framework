@@ -1,9 +1,10 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 require 'rubygems'
-require 'sinatra/base'
 require 'lib/padrino-core'
 
-class SingleDemo < Padrino::Application; end
+class SingleDemo < Padrino::Application
+  set :reload, true
+end
 
 SingleDemo.controllers do
   get "/test" do

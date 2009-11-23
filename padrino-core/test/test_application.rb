@@ -28,5 +28,10 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.padrino_mailer
       assert !PadrinoTestApp.padrino_helpers
     end
+
+    should 'reload correctly an app' do
+      require 'fixtures/apps/app'
+      assert SingleDemo.reload?
+    end
   end
 end
