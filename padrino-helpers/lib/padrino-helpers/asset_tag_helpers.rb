@@ -16,14 +16,15 @@ module Padrino
       # link_to('/dashboard', :class => 'blocky') do ... end
       # parameters: name, url='javascript:void(0)', options={}, &block
       def link_to(*args, &block)
+        options = args.extract_options!
         if block_given?
-          url, options = (args[0] || 'javascript:void(0);'), (args[1] || {})
+          url = args[0] || 'javascript:void(0);'
           options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
-          name, url, options = args.first, (args[1] || 'javascript:void(0);'), (args[2] || {})
+          name, url = args[0], (args[1] || 'javascript:void(0);')
           options.reverse_merge!(:href => url)
           content_tag(:a, name, options)
         end
