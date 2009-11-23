@@ -7,6 +7,9 @@ class TestApplication < Test::Unit::TestCase
     should 'check default options' do
       assert_match %r{test/helper.rb}, PadrinoTestApp.app_file
       assert_equal :test, PadrinoTestApp.environment
+      assert_equal Padrino.root("views"), PadrinoTestApp.views
+      assert_equal Padrino.root("public"), PadrinoTestApp.public
+      # TODO: Why this not work? assert_equal Padrino.root("public", "images"), PadrinoTestApp.images_path
       assert PadrinoTestApp.raise_errors
       assert !PadrinoTestApp.logging
       assert PadrinoTestApp.sessions
