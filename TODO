@@ -11,6 +11,9 @@
 
 === TESTING / POLISHING
 
+* Change syntax for mounting / routes
+  * Padrino.mount("blog_app").to("/blog") => Padrino.mount("blog_app", :to => "/blog")
+  * map(:index).to("/example/:name") => map(:index, :to => "/example/:name")
 * Test that controller, mailer, migration and model generators work properly
 * Make sure reloader middleware works for urls, models, controllers and all application files
 * Decide what to do about initializers (where do they go single app, multiple apps)
