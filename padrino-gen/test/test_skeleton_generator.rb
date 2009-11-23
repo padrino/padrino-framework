@@ -138,6 +138,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--renderer=haml','--script=none']) }
       assert_match /Applying.*?haml.*?renderer/, buffer
       assert_match_in_file(/gem 'haml'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_app/config/initializers/sass.rb')
     end
   end
 
