@@ -139,6 +139,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
       assert_match /Applying.*?haml.*?renderer/, buffer
       assert_match_in_file(/gem 'haml'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_app/config/initializers/sass.rb')
+      assert_file_exists('/tmp/sample_app/public/stylesheets/sass')
     end
   end
 
