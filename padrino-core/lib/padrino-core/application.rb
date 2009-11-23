@@ -135,9 +135,10 @@ module Padrino
       # Resets application routes for use in reloading the application
       # This performs a basic routes reload (compatible with sinatra edge)
       def reset_routes!
-        return if single_app? # Don't reset routes for single app
+        return false if single_app? # Don't reset routes for single app
         @routes = Padrino::Application.dupe_routes
         load(self.app_file)
+        true
       end
 
       # Registers an initializer with the application
