@@ -69,10 +69,10 @@ module Padrino
         set :reload, development?
         set :app_name, self.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
-        enable :flash
+        set :flash, defined?(Rack::Flash)
         # Plugin specific
-        enable :padrino_mailer
-        enable :padrino_helpers
+        set :padrino_mailer, defined?(Padrino::Mailer)
+        set :padrino_helpers, defined?(Padrino::Helpers)
       end
 
       def check_single_app
@@ -92,7 +92,7 @@ module Padrino
       # Requires the middleware and initializer modules to configure components
       def register_initializers
         use Rack::Session::Cookie
-        use Rack::Flash if flash? && defined?(Rack::Flash)
+        use Rack::Flash if flash?
         use Padrino::Reloader unless single_app?
         register DatabaseSetup if defined?(DatabaseSetup)
         @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
@@ -101,8 +101,8 @@ module Padrino
 
       # Registers all desired padrino extension helpers/routing
       def register_framework_extensions
-        register Padrino::Mailer   if padrino_mailer?  && defined?(Padrino::Mailer)
-        register Padrino::Helpers  if padrino_helpers? && defined?(Padrino::Helpers)
+        register Padrino::Mailer   if padrino_mailer?
+        register Padrino::Helpers  if padrino_helpers?
       end
 
       # Require all files within the application's load paths
