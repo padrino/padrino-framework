@@ -95,11 +95,8 @@ module Padrino
         use Rack::Flash if defined?(Rack::Flash) && flash?
         use Padrino::Reloader unless single_app?
         register DatabaseSetup if defined?(DatabaseSetup)
-        Dir[Padrino.root + '/config/initializers/*.rb'].each do |file|
-          Padrino.load_dependencies(file)
-          file_class = File.basename(file, '.rb').classify
-          register "#{file_class}Initializer".constantize
-        end
+        @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
+        Dir[@initializer_path].each { |file| register_initializer(file) }
       end
 
       # Registers all desired padrino extension helpers/routing
@@ -141,6 +138,17 @@ module Padrino
         return if single_app? # Don't reset routes for single app
         @routes = Padrino::Application.dupe_routes
         load(self.app_file)
+      end
+
+      # Registers an initializer with the application
+      # register_initializer('/path/to/initializer')
+      def register_initializer(file_path)
+        Padrino.load_dependencies(file_path)
+        file_class = File.basename(file_path, '.rb').camelize
+        register "#{file_class}Initializer".constantize
+      rescue NameError => e
+        puts "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
+        puts "   Initializer error was '#{e.message}'" if logging?
       end
     end
   end
