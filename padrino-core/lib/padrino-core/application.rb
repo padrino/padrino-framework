@@ -92,7 +92,7 @@ module Padrino
       # Requires the middleware and initializer modules to configure components
       def register_initializers
         use Rack::Session::Cookie
-        use Rack::Flash if defined?(Rack::Flash) && flash?
+        use Rack::Flash if flash? && defined?(Rack::Flash)
         use Padrino::Reloader unless single_app?
         register DatabaseSetup if defined?(DatabaseSetup)
         @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
