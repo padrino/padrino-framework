@@ -13,7 +13,7 @@ module Padrino
   #   Padrino.root("config", "settings.yml")
   #   # returns PADRINO_ROOT + "/config/setting.yml"
   def self.root(*args)
-    File.join(PADRINO_ROOT, *args)
+    File.expand_path(File.join(PADRINO_ROOT, *args))
   end
 
   # Helper method that return PADRINO_ENV
