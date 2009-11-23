@@ -4,13 +4,14 @@ module Padrino
       module Orms
 
         module DatamapperGen
-
           DM = (<<-DM).gsub(/^ {10}/, '')
           module DatabaseSetup
             def self.registered(app)
               app.configure(:development) { DataMapper.setup(:default, 'your_dev_db_here') }
               app.configure(:production)  { DataMapper.setup(:default, 'your_production_db_here') }
               app.configure(:test)        { DataMapper.setup(:default, 'your_test_db_here') }
+            rescue ArgumentError => e
+              puts "Database options need to be configured within 'config/database.rb'!" if app.logging?
             end
           end
           DM
