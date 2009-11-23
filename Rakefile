@@ -20,11 +20,22 @@ def rake_command(command)
   sh "#{Gem.ruby} -S rake #{command}"
 end
 
-%w(clean install gemspec build release).each do |task_name|
+%w(install gemspec build release).each do |task_name|
   desc "Run #{task_name} for all projects"
   task task_name do
     padrino_gems.each do |dir|
       Dir.chdir(dir) { rake_command(task_name) }
+    end
+  end
+end
+
+desc "Clean pkg and other stuff"
+task :clean do
+  padrino_gems.each do |dir|
+    Dir.chdir(dir) do
+      FileUtils.rm_rf "doc"
+      FileUtils.rm_rf "tmp"
+      FileUtils.rm_rf "pkg"
     end
   end
 end
