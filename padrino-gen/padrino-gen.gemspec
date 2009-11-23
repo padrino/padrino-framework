@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-21}
+  s.date = %q{2009-11-23}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -54,7 +54,6 @@ Gem::Specification.new do |s|
      "lib/generators/skeleton/app/app.rb.tt",
      "lib/generators/skeleton/app/controllers/.empty_directory",
      "lib/generators/skeleton/app/helpers/.empty_directory",
-     "lib/generators/skeleton/app/models/.empty_directory",
      "lib/generators/skeleton/app/views/.empty_directory",
      "lib/generators/skeleton/config.ru",
      "lib/generators/skeleton/config/apps.rb.tt",
@@ -66,9 +65,7 @@ Gem::Specification.new do |s|
      "lib/generators/skeleton/public/images/.empty_directory",
      "lib/generators/skeleton/public/javascripts/.empty_directory",
      "lib/generators/skeleton/public/stylesheets/.empty_directory",
-     "lib/generators/skeleton/test/test_config.rb.tt",
      "lib/generators/skeleton/tmp/.emptydirectory",
-     "lib/generators/skeleton/vendor/gems/.empty_directory",
      "lib/generators/templates/controller.rb.tt",
      "lib/generators/templates/helper.rb.tt",
      "lib/generators/templates/mailer.rb.tt",

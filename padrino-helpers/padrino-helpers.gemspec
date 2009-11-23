@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-21}
+  s.date = %q{2009-11-23}
   s.description = %q{Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
