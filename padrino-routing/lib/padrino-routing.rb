@@ -18,8 +18,8 @@ module Padrino
       # map(:accounts).to('/accounts/url')
       # map(:admin, :show).to('/admin/show/:id')
       # map(:admin) { |namespace| namespace.map(:show).to('/admin/show/:id') }
-      def map(*args, &block)
-        named_router = Padrino::Routing::NamedRoute.new(self, *args)
+      def map(*names, &block)
+        named_router = Padrino::Routing::NamedRoute.new(self, *names)
         block_given? ? block.call(named_router) : named_router
       end
 

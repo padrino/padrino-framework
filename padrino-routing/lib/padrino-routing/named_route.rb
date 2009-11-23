@@ -10,9 +10,11 @@ module Padrino
       end
 
       # Used to define the url mapping to the supplied alias
+      # Appends the application name to front of route if necessary
       # NamedRoute.new(@app, :account).to('/account/path')
       def to(path)
-        @app.named_paths[@names.unshift(@app.app_name.to_sym)] = path
+        @names.unshift(@app.app_name.to_sym) unless @names.first == @app.app_name.to_sym
+        @app.named_paths[@names] = path
       end
 
       # Used to define the url mappings for child aliases within a namespace
