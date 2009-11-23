@@ -54,20 +54,18 @@
 
 == DAddYE
 
-* Fix failing test 'for mounter functionality should check locate_app_file with __FILE__'
-  - test_padrino_mounter.rb:30
-  - fails with <"./padrino-core/test/test_padrino_mounter.rb"> expected but was <"./padrino-core/test/apps/test/app.rb">.
 * Perhaps port over certain great rails tasks (into padrino bin or thor)
   * rake db:create, db:create:all, db:migrate, db:test:prepare, gems, log:clear, middleware, etc
   * Creating and migrating databases using padrino binary (or rake and using any of the orms) 
   * (maybe ties into generator if needed)
-* Add tests for padrino_core gem (and any other gems - generators and routing)
+* Add additional test coverage for padrino_core gem (and any other gems as necessary)
 * Optimize (improve performance) padrino_core gem
 * Implement padrino-admin gem (with authentication)
   * Check another way for build json configurations instead of rjs
 
 == COMPLETED
 
+* Fixed 'rake test' in parent to run the tests of each gem individually
 * Generate a super small skeleton
   - If one use --test=none don't create test folder
   - If one use --orm=none dont' create a model folder
