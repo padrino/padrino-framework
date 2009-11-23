@@ -4,7 +4,7 @@ if defined?(Padrino::Application) # Extends padrino application if being used
       # Makes the routes defined in the block and in the Modules given
       # in `extensions` available to the application
       def controllers_with_namespaces(*namespace, &block)
-        must_use_namespaces = namespace.size == 1 and namespace.first.is_a?(Symbol)
+        must_use_namespaces = namespace.size == 1 && namespace.first.is_a?(Symbol)
         return controllers_without_namespaces(*namespace, &block) unless must_use_namespaces
         self.reset_routes! if reload?
         namespace(namespace.first) { instance_eval(&block) } if block_given?
