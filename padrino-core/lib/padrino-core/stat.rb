@@ -17,6 +17,15 @@ module Padrino
         end
       end
 
+      def changed?
+        changed = false
+        rotation do |file, mtime|
+          previous_mtime = MTIMES[file] ||= mtime
+          changed = true if mtime > MTIMES[file]
+        end
+        changed
+      end
+
       # A safe Kernel::load, issuing the hooks depending on the results
       def safe_load(file, mtime)
         puts "=> Reloading #{file}"
@@ -32,9 +41,8 @@ module Padrino
         files = [$0, *$LOADED_FEATURES].uniq
         paths = ['./', *$LOAD_PATH].uniq
 
-        files.map{|file|
-          next if file =~ /\.(so|bundle)$/ # cannot reload compiled files
-
+        files.map{ |file|
+          next if file =~ /\.(so|bundle)$/                   # cannot reload compiled files
           found, stat = figure_path(file, paths)
           next unless found && stat && mtime = stat.mtime
 

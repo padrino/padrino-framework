@@ -12,5 +12,14 @@ SingleDemo.controllers do
   end
 end
 
+SingleDemo.controllers do
+  get "/" do
+    'This should work too'
+  end
+end
+
 Padrino.mount_core("single_demo")
-Padrino.load!
+
+if Padrino.load!
+  SingleDemo.run!
+end

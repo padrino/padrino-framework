@@ -2,13 +2,13 @@ module Padrino
   class << self
     # Requires necessary dependencies as well as application files from root lib and models
     def load!
-      return if loaded?
+      return false if loaded?
       @_called_from = first_caller
       load_required_gems # load bundler gems
-      load_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
-      load_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
-      reload! # We need to fill our Stat::CACHE but we do that only for development
-      @_loaded = true
+      require_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
+      require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
+      Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
+      Thread.current[:padrino_loaded] = true
     end
 
     # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
@@ -18,7 +18,7 @@ module Padrino
 
     # Return true if Padrino was loaded with Padrino.load!
     def loaded?
-      @_loaded
+      Thread.current[:padrino_loaded]
     end
 
     # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
@@ -27,22 +27,40 @@ module Padrino
       require_vendored_gems
     end
 
-    # Attempts to load/require all dependency libs that we need.
+    # Attempts to require all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     #
-    # @param paths [Array] Path where is necessary require or load a dependency
-    # @example For load all our app libs we need to do:
-    #   load_dependencies("#{Padrino.root}/lib/**/*.rb")
-    def load_dependencies(*paths)
+    # ==== Parameters
+    # paths:: Path where is necessary require or load a dependency
+    # 
+    # Example:
+    #   # For require all our app libs we need to do:
+    #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
+    def require_dependencies(*paths)
       paths.each do |path|
         Dir[path].each { |file| require(file) }
       end
     end
-    alias_method :load_dependency, :load_dependencies
+    alias :require_dependency :require_dependencies
+    
+    # Attempts to load all dependency libs that we need.
+    # If you use this method we can perform correctly a Padrino.reload!
+    #
+    # ==== Parameters
+    # paths:: Path where is necessary require or load a dependency
+    def load_dependencies(*paths)
+      paths.each do |path|
+        Dir[path].each { |file| load(file) }
+      end
+    end
+    alias :load_dependency :load_dependencies
 
     # Method for reload required classes
     def reload!
-      Stat::reload!
+      return unless Stat.changed?
+      Padrino.mounted_apps.each { |m| m.app.reset_routes! } # First we need to reset all our routes
+      Stat.reload! # Now we reload the changed file
+      Padrino.mounted_apps.each { |m| m.app.reload! } # Finally we reload all our controllers
     end
 
     protected
@@ -59,7 +77,7 @@ module Padrino
 
     # Loads bundled gems if they exist
     def require_vendored_gems
-      load_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
+      require_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
       say " (Loading bundled gems)\n"
     rescue LoadError => e
       say " (Loading system gems)\n"

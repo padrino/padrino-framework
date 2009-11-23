@@ -20,18 +20,12 @@ class TestApplication < Test::Unit::TestCase
       PadrinoTestApp.send(:setup_application!)
       assert PadrinoTestApp.instance_variable_get(:@_configured)
       assert !PadrinoTestApp.send(:find_view_path)
-      assert PadrinoTestApp.single_app?
       assert !PadrinoTestApp.reload?
       assert 'padrino_test_app', PadrinoTestApp.app_name
       assert 'StandardFormBuilder', PadrinoTestApp.default_builder
       assert !PadrinoTestApp.flash
       assert !PadrinoTestApp.padrino_mailer
       assert !PadrinoTestApp.padrino_helpers
-    end
-
-    should 'reload correctly an app' do
-      require 'fixtures/apps/app'
-      assert SingleDemo.reload?
     end
   end
 end

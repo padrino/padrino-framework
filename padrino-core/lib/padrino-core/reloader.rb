@@ -7,7 +7,7 @@ module Padrino
   # also respects a cool down time, during which nothing will be done.
   class Reloader
 
-    def initialize(app, cooldown = 1, backend = Stat)
+    def initialize(app, cooldown = 1)
       @app = app
       @cooldown = cooldown
       @last = (Time.now - cooldown)

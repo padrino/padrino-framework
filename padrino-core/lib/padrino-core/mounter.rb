@@ -5,6 +5,7 @@ module Padrino
   # @example Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   class Mounter
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root
+    
     def initialize(name, options={})
       @name      = name.downcase
       @app_class = options[:app_class] || name.classify
@@ -19,13 +20,18 @@ module Padrino
       Padrino.mounted_apps << self
       self
     end
+    
+    # Return the Class of the app
+    def app
+      app_class.constantize rescue Padrino.require_dependency(app_file)
+      app_class.constantize 
+    end
 
     # Maps Padrino application onto a Rack::Builder
     # For use in constructing a Rack application
     # @example @app.map_onto(@builder)
     def map_onto(builder)
-      self.app_class.constantize rescue require(self.app_file)
-      app_data, app_class = self, self.app_class.constantize
+      app_data, app_class = self, self.app
       builder.map self.uri_root do
         app_class.set :uri_root, app_data.uri_root
         app_class.set :app_file, app_data.app_file
