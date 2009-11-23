@@ -6,7 +6,7 @@ module Padrino
 
     def logger
       @log_stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
-      @logger     ||= Logger.new(@log_stream)
+      @logger     ||= Padrino::Logger.new(@log_stream)
     end
 
     class << self
