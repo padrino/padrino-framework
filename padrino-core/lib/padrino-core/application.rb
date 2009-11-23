@@ -5,8 +5,8 @@ module Padrino
   class Application < Sinatra::Application
 
     def logger
-      @log_stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
-      @logger     ||= Padrino::Logger.new(@log_stream)
+      @stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
+      @logger ||= Padrino::Logger.new(:stream => @stream)
     end
 
     class << self

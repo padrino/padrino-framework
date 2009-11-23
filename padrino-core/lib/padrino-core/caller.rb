@@ -11,7 +11,7 @@ module Padrino
     %r{custom_require\.rb$},     # rubygems require hacks
     %r{active_support},          # active_support require hacks
     %r{/thor},                   # thor require hacks
-  ]
+  ] unless defined?(PADRINO_IGNORE_CALLERS)
 
   # add rubinius (and hopefully other VM impls) ignore patterns ...
   PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
