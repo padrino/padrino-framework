@@ -65,8 +65,8 @@ module Padrino
         set :logging, !test?
         set :sessions, true
         set :log_to_file, !development?
-        set :reload, development?
         # Padrino specific
+        set :reload, development?
         set :app_name, self.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
         enable :flash
