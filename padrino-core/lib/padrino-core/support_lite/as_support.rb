@@ -2,7 +2,7 @@
 
 ## Class#cattr_accessor
 require 'active_support/core_ext/class/attribute_accessors' unless Class.method_defined?(:cattr_accessor)
-## Hash#symbolize_keys, Hash#reverse_merge, Hash#reverse_merge!, Hash#extract_options!
+## Hash#symbolize_keys, Hash#reverse_merge, Hash#reverse_merge!, Hash#extract_options!, Hash#slice!
 require 'active_support/core_ext/hash' unless Hash.method_defined?(:reverse_merge)
 ## String#inflectors
 require 'active_support/inflector' unless String.method_defined?(:constantize)

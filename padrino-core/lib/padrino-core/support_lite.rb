@@ -11,6 +11,7 @@ Required for Padrino to run:
   * Array#extract_options!
   * Object#blank?
   * Object#present?
+  * Hash#slice, Hash#slice!
   * Hash#symbolize_keys
   * Hash#reverse_merge, Hash#reverse_merge!
   * SupportLite::OrderedHash

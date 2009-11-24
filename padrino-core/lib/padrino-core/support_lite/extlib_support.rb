@@ -24,6 +24,18 @@ unless Hash.method_defined?(:symbolize_keys)
   end
 end
 
+## Hash#slice, Hash#slice!
+unless Hash.method_defined?(:slice)
+  require 'extlib/hash'
+  class Hash
+    def slice(*keys)
+      keys = keys.map! { |key| convert_key(key) } if respond_to?(:convert_key)
+      hash = self.class.new
+      keys.each { |k| hash[k] = self[k] if has_key?(k) }
+      hash
+    end
+  end
+end
 
 ## Hash#reverse_merge, Hash#reverse_merge!
 unless Hash.method_defined?(:present?)
