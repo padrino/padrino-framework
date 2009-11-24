@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.1.5"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/padrino-core/application.rb",
      "lib/padrino-core/caller.rb",
      "lib/padrino-core/loader.rb",
+     "lib/padrino-core/logger.rb",
      "lib/padrino-core/mounter.rb",
      "lib/padrino-core/reloader.rb",
      "lib/padrino-core/stat.rb",
@@ -47,6 +48,7 @@ Gem::Specification.new do |s|
      "test/fixtures/apps/app.rb",
      "test/fixtures/apps/multi.rb",
      "test/helper.rb",
+     "test/test_application.rb",
      "test/test_padrino_core.rb",
      "test/test_padrino_mounter.rb"
   ]
