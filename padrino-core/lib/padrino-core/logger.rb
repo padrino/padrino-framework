@@ -7,8 +7,10 @@ module Padrino
         FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
         log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
         Thread.current[:padrino_logger] = Padrino::Logger.new(:log_level => :error, :stream => log)
-      else
+      when :development
         Thread.current[:padrino_logger] = Padrino::Logger.new
+      when :test
+        Thread.current[:padrino_logger] = Padrino::Logger.new(:stream => StringIO.new)
     end
     Thread.current[:padrino_logger]
   end
@@ -156,9 +158,8 @@ module Padrino
     #  %{%s - %s %s %s%s %s - %d %s %0.4f}
     FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
 
-    def initialize(app, logger=nil)
+    def initialize(app)
       @app = app
-      @logger = logger
     end
 
     def call(env)
@@ -174,7 +175,6 @@ module Padrino
       now = Time.now
       length = extract_content_length(header)
 
-      logger = @logger || env['rack.errors']
       logger.debug FORMAT % [
         env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
         env["REMOTE_USER"] || "-",

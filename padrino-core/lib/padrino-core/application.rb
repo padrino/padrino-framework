@@ -18,10 +18,7 @@ module Padrino
       # Only performs the setup first time application is initialized
       def new(*args, &bk)
         setup_application!
-        builder = Rack::Builder.new
-        middleware.each { |c,a,b| builder.use(c, *a, &b) }
-        builder.run super
-        builder.to_app
+        super
       end
 
       # Makes the routes defined in the block and in the Modules given
@@ -51,6 +48,7 @@ module Padrino
         self.calculate_paths
         self.register_initializers
         self.require_load_paths
+        self.disable :logging # We need do that as default because Sinatra use commonlogger.
         @_configured = true
       end
 
@@ -62,7 +60,7 @@ module Padrino
         set :app_file, caller_files.first || $0 # Assume app file is first caller
         set :environment, PADRINO_ENV.to_sym
         set :raise_errors, true if development?
-        set :logging, !test?
+        set :logging, false#!test?
         set :sessions, true
         # Padrino specific
         set :reload, development?
@@ -84,12 +82,9 @@ module Padrino
 
       # Requires the middleware and initializer modules to configure components
       def register_initializers
+        use Padrino::RackLogger
         use Padrino::Reloader              if reload?
-        use Padrino::RackLogger, logger    if logging?
-        use Rack::Session::Cookie          if sessions?
         use Rack::Flash                    if flash?
-        use Rack::MethodOverride           if methodoverride?
-        use Sinatra::ShowExceptions        if show_exceptions?
         register DatabaseSetup             if defined?(DatabaseSetup)
         @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
         Dir[@initializer_path].each { |file| register_initializer(file) }
@@ -126,8 +121,8 @@ module Padrino
         file_class = File.basename(file_path, '.rb').camelize
         register "#{file_class}Initializer".constantize
       rescue NameError => e
-        logger.error "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
-        logger.error "   Initializer error was '#{e.message}'" if logging?
+        logger.error "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!"
+        logger.error "   Initializer error was '#{e.message}'"
       end
     end
   end
