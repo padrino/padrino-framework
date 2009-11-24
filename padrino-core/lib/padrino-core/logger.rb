@@ -1,11 +1,12 @@
 module Padrino
 
+  # Setup a new logger
   def self.setup_logger!
     case Padrino.env
       when :production
         FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
         log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
-        Thread.current[:padrino_logger] = Padrino::Logger.new(:log_level => 9, :stream => log)
+        Thread.current[:padrino_logger] = Padrino::Logger.new(:log_level => :error, :stream => log)
       else
         Thread.current[:padrino_logger] = Padrino::Logger.new
     end
@@ -22,6 +23,7 @@ module Padrino
 
     # ==== Notes
     # Ruby (standard) logger levels:
+    # 
     # :fatal:: An unhandleable error that results in a program crash
     # :error:: A handleable error condition
     # :warn:: A warning
@@ -42,6 +44,7 @@ module Padrino
     # To initialize the logger you create a new object, proxies to set_log.
     #
     # ==== Options can be:
+    # 
     # :stream:: Either an IO object or a name of a logfile. Defaults to $stdout
     # :log_level::
     #   The log level from, e.g. :fatal or :info. Defaults to :debug in the
@@ -54,7 +57,7 @@ module Padrino
     def initialize(options={})
       @buffer            = []
       @auto_flush        = options.has_key?(:auto_flush) ? options[:auto_flush] : true
-      @level             = options[:log_legel] ? Levels[options[:log_level]] : Levels[:debug]
+      @level             = options[:log_level] ? Levels[options[:log_level]] : Levels[:debug]
       @log               = options[:stream]  || $stdout
       @log.sync          = true
       @mutex             = @@mutex[@log] ||= Mutex.new
@@ -89,7 +92,7 @@ module Padrino
       self << @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
     end
 
-    def << (message = nil)
+    def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
       @buffer << message
       flush if @auto_flush
