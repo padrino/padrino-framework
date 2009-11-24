@@ -79,7 +79,7 @@ module Padrino
             end
 
             def self.down
-              drop_table :users
+              drop_table :!TABLE!
             end
           end
           MIGRATION

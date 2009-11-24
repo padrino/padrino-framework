@@ -40,6 +40,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :users/m, migration_file_path)
       assert_match_in_file(/# t.column :age, :integer[\n\s]+?end/m, migration_file_path)
+      assert_match_in_file(/drop_table :users/m, migration_file_path)
     end
 
     should "generate migration file with given fields" do
@@ -53,6 +54,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/t.column :name, :string/m,   migration_file_path)
       assert_match_in_file(/t.column :age, :integer/m,   migration_file_path)
       assert_match_in_file(/t.column :email, :string/m,  migration_file_path)
+      assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
 
@@ -141,6 +143,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/string :name/m,   migration_file_path)
       assert_match_in_file(/integer :age/m,   migration_file_path)
       assert_match_in_file(/string :email/m,  migration_file_path)
+      assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
 
