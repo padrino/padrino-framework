@@ -74,7 +74,7 @@ module Padrino
       say " ... Not Found"
     end
 
-    # Loads bundled gems if they exist
+    # Require bundled gems if they exist
     def require_vendored_gems
       require_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
       say! " (Loading bundled gems)"

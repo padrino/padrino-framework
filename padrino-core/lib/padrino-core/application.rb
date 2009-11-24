@@ -4,11 +4,6 @@ module Padrino
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
 
-    def logger
-      @stream ||= self.class.log_to_file? ? Padrino.root("log/#{PADRINO_ENV.downcase}.log") : $stdout
-      @logger ||= Padrino::Logger.new(:stream => @stream)
-    end
-
     class << self
       def inherited(subclass)
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
@@ -53,7 +48,6 @@ module Padrino
         self.calculate_paths
         self.register_initializers
         self.require_load_paths
-        self.setup_logger
         @_configured = true
       end
 
@@ -67,7 +61,6 @@ module Padrino
         set :raise_errors, true if development?
         set :logging, !test?
         set :sessions, true
-        set :log_to_file, !development?
         # Padrino specific
         set :reload, development?
         set :app_name, self.to_s.underscore.to_sym
@@ -91,6 +84,7 @@ module Padrino
         use Rack::Session::Cookie
         use Rack::Flash if flash?
         use Padrino::Reloader if reload?
+        use Rack::CommonLogger, logger if logging?
         register DatabaseSetup if defined?(DatabaseSetup)
         @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
         Dir[@initializer_path].each { |file| register_initializer(file) }
@@ -105,15 +99,6 @@ module Padrino
       # Requires all files within the application load paths
       def require_load_paths
         load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
-      end
-
-      # Creates the log directory and redirects output to file if needed
-      def setup_logger
-        return unless logging? && log_to_file?
-        FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
-        log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
-        $stdout.reopen(log)
-        $stderr.reopen(log)
       end
 
       # Returns the load_paths for the application (relative to the application root)
@@ -136,8 +121,8 @@ module Padrino
         file_class = File.basename(file_path, '.rb').camelize
         register "#{file_class}Initializer".constantize
       rescue NameError => e
-        Padrino.say! "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
-        Padrino.say! "   Initializer error was '#{e.message}'" if logging?
+        logger.error "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
+        logger.error "   Initializer error was '#{e.message}'" if logging?
       end
     end
   end

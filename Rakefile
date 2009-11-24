@@ -45,6 +45,13 @@ task :clean do
   end
 end
 
+desc "Clean pkg and other stuff"
+task :uninstall do
+  padrino_gems.each do |gem|
+    sh "gem uninstall #{gem} -a"
+  end
+end
+
 desc "Release all padrino gems"
 task :publish do
   padrino_gems.each do |dir|

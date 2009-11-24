@@ -1,8 +1,20 @@
 module Padrino
+
+  def self.setup_logger!
+    case Padrino.env
+      when :production
+        FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
+        log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
+        Thread.current[:padrino_logger] = Padrino::Logger.new(:log_level => 9, :stream => log)
+      else
+        Thread.current[:padrino_logger] = Padrino::Logger.new
+    end
+    Thread.current[:padrino_logger]
+  end
+
   class Logger
 
     attr_accessor :level
-    attr_accessor :delimiter
     attr_accessor :auto_flush
     attr_reader   :buffer
     attr_reader   :log
@@ -74,11 +86,13 @@ module Padrino
     # ==== Returns
     # message:: The resulting message added to the log file.
     def push(message = nil, level = nil)
-      message  = @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
+      self << @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
+    end
+
+    def << (message = nil)
       message << "\n" unless message[-1] == ?\n
       @buffer << message
       flush if @auto_flush
-
       message
     end
 
@@ -129,4 +143,9 @@ module Padrino
     end
 
   end
+end
+
+# Define a logger aviable every where in our app
+def logger
+  Thread.current[:padrino_logger] ||= Padrino::setup_logger!
 end

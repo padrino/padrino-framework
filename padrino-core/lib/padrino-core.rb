@@ -18,7 +18,7 @@ module Padrino
 
   # Helper method that return PADRINO_ENV
   def self.env
-    PADRINO_ENV.to_s
+    PADRINO_ENV.to_s.downcase.to_sym
   end
 
   # Returns the resulting rack builder mapping each 'mounted' application
