@@ -11,6 +11,13 @@ module Padrino
       Thread.current[:padrino_loaded] = true
     end
 
+    # Method for reloading required applications and their files
+    def reload!
+      return unless Stat.changed?
+      Stat.reload! # detects the modified files
+      Padrino.mounted_apps.each { |m| m.app.reload! } # finally we reload all files for each app
+    end
+
     # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
     def called_from
       @_called_from || first_caller
@@ -54,13 +61,6 @@ module Padrino
       end
     end
     alias :load_dependency :load_dependencies
-
-    # Method for reload required classes
-    def reload!
-      return unless Stat.changed?
-      Stat.reload! # detects the modified files
-      Padrino.mounted_apps.each { |m| m.app.reload! } # finally we reload all files for each app
-    end
 
     protected
 
