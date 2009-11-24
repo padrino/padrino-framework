@@ -33,21 +33,16 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
-      # Resets application routes for use in reloading the application
-      # This performs a basic routes reload (compatible with sinatra edge)
-      def reset_routes!
-        @routes = Padrino::Application.dupe_routes
+      # Reloads the application files from all defined load paths
+      def reload!
+        reset_routes! # remove all existing user-defined application routes
+        Padrino.load_dependency(self.app_file)  # reload the app file
+        load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) }
       end
 
-      # Reload application routes
-      def reload!
+      # Resets application routes to only routes not defined by the user
+      def reset_routes!
         @routes = Padrino::Application.dupe_routes
-        # We need to reload the app file
-        Padrino.load_dependency(self.app_file)
-        # We need to reload all controllers so we don't forget routes
-        load_paths.each do |path|
-          Padrino.load_dependencies(File.join(self.root, path))
-        end
       end
 
       protected
@@ -107,7 +102,7 @@ module Padrino
         register Padrino::Helpers  if padrino_helpers?
       end
 
-      # Require all files within the application's load paths
+      # Requires all files within the application load paths
       def require_load_paths
         load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
       end

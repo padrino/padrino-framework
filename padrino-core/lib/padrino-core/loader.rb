@@ -31,8 +31,8 @@ module Padrino
     # If you use this method we can perform correctly a Padrino.reload!
     #
     # ==== Parameters
-    # paths:: Path where is necessary require or load a dependency
-    # 
+    # paths:: Path where is necessary require a dependency
+    #
     # Example:
     #   # For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
@@ -42,12 +42,12 @@ module Padrino
       end
     end
     alias :require_dependency :require_dependencies
-    
+
     # Attempts to load all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     #
     # ==== Parameters
-    # paths:: Path where is necessary require or load a dependency
+    # paths:: Path where is necessary to load a dependency
     def load_dependencies(*paths)
       paths.each do |path|
         Dir[path].each { |file| load(file) }
@@ -58,9 +58,8 @@ module Padrino
     # Method for reload required classes
     def reload!
       return unless Stat.changed?
-      Padrino.mounted_apps.each { |m| m.app.reset_routes! } # First we need to reset all our routes
-      Stat.reload! # Now we reload the changed file
-      Padrino.mounted_apps.each { |m| m.app.reload! } # Finally we reload all our controllers
+      Stat.reload! # detects the modified files
+      Padrino.mounted_apps.each { |m| m.app.reload! } # finally we reload all files for each app
     end
 
     protected
