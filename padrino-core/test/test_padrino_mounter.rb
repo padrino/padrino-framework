@@ -27,7 +27,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       mounter.to("/test")
       assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
-      assert_equal __FILE__, mounter.app_file
+      assert_match %r{test/apps/test/app.rb}, mounter.app_file
       assert_equal "/test", mounter.uri_root
       assert_nil mounter.app_root
     end

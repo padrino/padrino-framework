@@ -136,8 +136,8 @@ module Padrino
         file_class = File.basename(file_path, '.rb').camelize
         register "#{file_class}Initializer".constantize
       rescue NameError => e
-        puts "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
-        puts "   Initializer error was '#{e.message}'" if logging?
+        Padrino.say! "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!" if logging?
+        Padrino.say! "   Initializer error was '#{e.message}'" if logging?
       end
     end
   end
