@@ -4,19 +4,20 @@ module Padrino
   # @example Mounter.new("blog_app", :app_class => "Blog").to("/blog")
   # @example Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   class Mounter
-    attr_accessor :name, :uri_root, :app_file, :app_class, :app_root
+    attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj
 
     def initialize(name, options={})
       @name      = name.downcase
       @app_class = options[:app_class] || name.classify
       @app_file  = options[:app_file]  || locate_app_file
       @app_root  = options[:app_root]
+      @app_obj   = self.app_object
     end
 
     # Registers the mounted application onto Padrino
     # @example Mounter.new("blog_app").to("/blog")
     def to(mount_url)
-      @uri_root = mount_url
+      @uri_root  = mount_url
       Padrino.insert_mounted_app(self)
       self
     end
@@ -25,18 +26,18 @@ module Padrino
     # For use in constructing a Rack application
     # @example @app.map_onto(@builder)
     def map_onto(builder)
-      app_data, app_class = self, self.app
+      app_data, app_obj = self, @app_obj
       builder.map self.uri_root do
-        app_class.set :uri_root, app_data.uri_root
-        app_class.set :app_file, app_data.app_file
-        app_class.set :app_name, app_data.name
-        app_class.set :root,     app_data.app_root if app_data.app_root
-        run app_class
+        app_obj.set :uri_root, app_data.uri_root
+        app_obj.set :app_file, app_data.app_file
+        app_obj.set :app_name, app_data.name
+        app_obj.set :root,     app_data.app_root if app_data.app_root
+        run app_obj
       end
     end
 
-    # Return the class of the app
-    def app
+    # Return the class for the app
+    def app_object
       app_class.constantize rescue Padrino.require_dependency(app_file)
       app_class.constantize
     end

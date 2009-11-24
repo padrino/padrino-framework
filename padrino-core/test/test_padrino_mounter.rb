@@ -33,9 +33,9 @@ class TestPadrinoMounter < Test::Unit::TestCase
     end
 
     should 'mount an app' do
-      class AnApp < Padrino::Application; end
-      
+      class ::AnApp < Padrino::Application; end
       Padrino.mount_core("an_app")
+      assert_equal AnApp, Padrino.mounted_apps.first.app_obj
       assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
     end
     
@@ -43,14 +43,15 @@ class TestPadrinoMounter < Test::Unit::TestCase
       mounter = Padrino.mount_core("test")
       assert_equal "core", mounter.name
       assert_equal "Test", mounter.app_class
+      assert_equal Test, mounter.app_obj
       assert_equal Padrino.root('app/app.rb'), mounter.app_file
       assert_equal "/", mounter.uri_root
       assert_equal Padrino.root, mounter.app_root
     end
 
     should 'mount multiple apps' do
-      class OneApp < Padrino::Application; end
-      class TwoApp < Padrino::Application; end
+      class ::OneApp < Padrino::Application; end
+      class ::TwoApp < Padrino::Application; end
       
       Padrino.mount("one_app").to("/one_app")
       Padrino.mount("two_app").to("/two_app")
@@ -58,6 +59,8 @@ class TestPadrinoMounter < Test::Unit::TestCase
       Padrino.mount("one_app").to("/one_app")
       Padrino.mount("two_app").to("/two_app")
 
+      assert_equal OneApp, Padrino.mounted_apps[0].app_obj
+      assert_equal TwoApp, Padrino.mounted_apps[1].app_obj
       assert_equal 2, Padrino.mounted_apps.size, "should not mount duplicate apps"
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
     end
