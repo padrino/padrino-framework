@@ -16,7 +16,7 @@ end
 
 SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 21!' # Change only the number!!!
+    'The magick number is: 59!' # Change only the number!!!
   end
 end
 

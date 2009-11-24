@@ -18,7 +18,10 @@ module Padrino
       # Only performs the setup first time application is initialized
       def new(*args, &bk)
         setup_application!
-        super
+        builder = Rack::Builder.new
+        middleware.each { |c,a,b| builder.use(c, *a, &b) }
+        builder.run super
+        builder.to_app
       end
 
       # Makes the routes defined in the block and in the Modules given
@@ -81,11 +84,13 @@ module Padrino
 
       # Requires the middleware and initializer modules to configure components
       def register_initializers
-        use Rack::Session::Cookie
-        use Rack::Flash if flash?
-        use Padrino::Reloader if reload?
-        use Rack::CommonLogger, logger if logging?
-        register DatabaseSetup if defined?(DatabaseSetup)
+        use Padrino::Reloader              if reload?
+        use Padrino::RackLogger, logger    if logging?
+        use Rack::Session::Cookie          if sessions?
+        use Rack::Flash                    if flash?
+        use Rack::MethodOverride           if methodoverride?
+        use Sinatra::ShowExceptions        if show_exceptions?
+        register DatabaseSetup             if defined?(DatabaseSetup)
         @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
         Dir[@initializer_path].each { |file| register_initializer(file) }
       end
