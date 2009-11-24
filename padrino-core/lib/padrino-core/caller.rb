@@ -1,7 +1,8 @@
 module Padrino
   PADRINO_IGNORE_CALLERS = [
+   %r{lib/padrino-.*$},   # all padrino code
    %r{/padrino-.*/(lib|bin)},   # all padrino code
-   %r{/bin/padrino$},         # all padrino code
+   %r{/bin/padrino$},           # all padrino code
    %r{/sinatra},                # all sinatra code
    %r{lib/tilt.*\.rb$},         # all tilt code
    %r{lib/rack.*\.rb$},         # all rack code

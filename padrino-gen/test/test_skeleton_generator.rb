@@ -1,8 +1,14 @@
 require File.dirname(__FILE__) + '/helper'
 require 'thor'
+require 'fakeweb'
 
 class TestSkeletonGenerator < Test::Unit::TestCase
   def setup
+    FakeWeb.allow_net_connect = false
+    FakeWeb.register_uri(:get, "http://prototypejs.org/assets/2009/8/31/prototype.js", :body => "prototype")
+    FakeWeb.register_uri(:get, "http://github.com/nesquena/lowpro/raw/master/dist/lowpro.js", :body => "lowpro")
+    FakeWeb.register_uri(:get, "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js", :body => "jquery")
+    FakeWeb.register_uri(:get, "http://rightjs.org/builds/current/right-min.js", :body => "rightjs")
     `rm -rf /tmp/sample_app`
     @skeleton = Padrino::Generators::Skeleton.dup
   end

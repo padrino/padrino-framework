@@ -99,6 +99,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
+      s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<padrino-core>, [">= 0.1.1"])
@@ -109,6 +110,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_dependency(%q<rack-test>, [">= 0.5.0"])
       s.add_dependency(%q<webrat>, [">= 0.5.1"])
+      s.add_dependency(%q<fakeweb>, [">= 1.2.3"])
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
@@ -120,6 +122,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
     s.add_dependency(%q<rack-test>, [">= 0.5.0"])
     s.add_dependency(%q<webrat>, [">= 0.5.1"])
+    s.add_dependency(%q<fakeweb>, [">= 1.2.3"])
   end
 end
 
