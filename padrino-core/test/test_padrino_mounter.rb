@@ -80,7 +80,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
         get("/demo_2"){ "Im Demo 2" }
       end
       
-      get '/demo_1'
+      visit '/demo_1'
       assert_contain "Im Demo 1"
       visit '/demo_2'
       assert_contain "Im Demo 2"

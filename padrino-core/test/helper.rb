@@ -46,6 +46,18 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
+  
+  # Delegate other missing methods to response.
+  def method_missing(name, *args, &block)
+    if response && response.respond_to?(name)
+      response.send(name, *args, &block)
+    else
+      super
+    end
+  end
+
+  alias_method :response, :last_response
+
 end
 
 class Object
