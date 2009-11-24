@@ -11,13 +11,13 @@ class TestReloader < Test::Unit::TestCase
         end
       end
       1.step(10).each do |i|
-        visit "/#{i}"
-        assert_contain "Foo #{i}"
+        get "/#{i}"
+        assert_equal "Foo #{i}", body
       end
       @app.reset_routes!
       1.step(10).each do |i|
-        visit "/#{i}"
-        assert_equal 404, response.status
+        get "/#{i}"
+        assert_equal 404, status
       end
     end
   end
