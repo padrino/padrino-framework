@@ -8,9 +8,13 @@
 * Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 * Helpers for check_box_group, radio_button_group which create a set of checkboxes or radio buttons
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
-* Add support for working migrations with AR, DM, Sequel (rake db:migrate or thor)
-* Add support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
 * Decide what to do about initializers (where do they go single app, multiple apps)
+* Port over plugins for sequel, activerecord, and datamapper (and create equivalents for couchdb and mongo)
+  - http://github.com/merb/merb_datamapper/ + http://github.com/zapnap/mogo/
+  - http://github.com/merb/merb_sequel + http://github.com/rtomayko/sinatra-sequel/
+  - http://github.com/merb/merb_activerecord + http://github.com/bmizerany/sinatra-activerecord/
+  * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
+  * Add support for working migrations with AR, DM, Sequel (rake db:migrate or thor)
 
 === TESTING / POLISHING
 
