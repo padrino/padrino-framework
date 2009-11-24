@@ -27,7 +27,7 @@ module Padrino
             include DataMapper::Resource
 
             # property <name>, <type>
-            # property :id,       Serial
+            property :id,       Serial
             !FIELDS!
           end
           MODEL
