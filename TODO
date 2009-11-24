@@ -32,6 +32,7 @@
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
 * Use better logger in Padrino application (replace Logger with vendored Log4R for more flexibility)
 * Support for an asset_auto_include type system where certain css/js are included on certain templates (?)
+* Replace all alias_method_chain with (http://github.com/Gimi/overridable)
 
 == NATHAN
 
