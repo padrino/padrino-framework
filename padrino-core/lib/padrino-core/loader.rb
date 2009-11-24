@@ -84,12 +84,12 @@ module Padrino
 
     # Prints out a message to the stdout if not in test environment
     def say(text)
-      print text if Padrino.env != 'test'
+      print text if Padrino.env != :test
     end
     
     # Puts out a message to the stdout if not in test environment
     def say!(text)
-      puts text if Padrino.env != 'test'
+      puts text if Padrino.env != :test
     end
   end
 end
