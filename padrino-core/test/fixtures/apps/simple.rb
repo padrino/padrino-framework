@@ -10,13 +10,13 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 #   SingleDemo.run!
 # end
 
-class SingleDemo < Padrino::Application
+class SimpleDemo < Padrino::Application
   set :reload, true
 end
 
-SingleDemo.controllers do
+SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 86!' # Change only the number!!!
+    'The magick number is: 74!' # Change only the number!!!
   end
 end
 
