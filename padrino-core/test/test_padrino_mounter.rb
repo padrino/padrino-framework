@@ -81,9 +81,9 @@ class TestPadrinoMounter < Test::Unit::TestCase
       end
       
       get '/demo_1'
-      assert_contain "Im Demo 1"
-      visit '/demo_2'
-      assert_contain "Im Demo 2"
+      assert_equal "Im Demo 1", body
+      get '/demo_2'
+      assert_equal "Im Demo 2", body
     end
   end
 end

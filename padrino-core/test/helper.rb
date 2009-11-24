@@ -7,19 +7,12 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rubygems'
 require 'padrino-core'
 require 'test/unit'
-require 'shoulda'
-require 'mocha'
 require 'rack/test'
-require 'webrat'
+require 'rack'
+require 'shoulda'
 
 class Test::Unit::TestCase
   include Rack::Test::Methods
-  include Webrat::Methods
-  include Webrat::Matchers
-
-  Webrat.configure do |config|
-    config.mode = :rack
-  end
 
   # Test App
   class PadrinoTestApp < Padrino::Application; end
@@ -46,6 +39,17 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
+  
+  # Delegate other missing methods to response.
+  def method_missing(name, *args, &block)
+    if response && response.respond_to?(name)
+      response.send(name, *args, &block)
+    else
+      super
+    end
+  end
+
+  alias :response :last_response
 end
 
 class Object
@@ -57,13 +61,5 @@ class Object
     block.call
     $stdout = orig_stdout
     log_buffer.rewind && log_buffer.read
-  end
-end
-
-module Webrat
-  module Logging
-    def logger # :nodoc:
-      @logger = nil
-    end
   end
 end
