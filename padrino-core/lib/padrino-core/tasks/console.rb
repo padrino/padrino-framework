@@ -1,7 +1,6 @@
 # Reloads classes
 def reload!
   Padrino.reload!
-  true
 end
 
 # Show applications
@@ -18,4 +17,5 @@ end
 Padrino.mounted_apps.each do |app|
   puts "=> Loading Application #{app.name}"
   Padrino.require_dependency(app.app_file)
+  ["models/*.rb", "app/models/*.rb"].each { |p| Padrino.require_dependencies(File.join(app.app_object.root, p)) }
 end

@@ -16,6 +16,7 @@ module Padrino
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
       method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
+
       def start
         require File.dirname(__FILE__) + "/tasks/adapter"
         chdir(options.chdir)
@@ -47,11 +48,11 @@ module Padrino
         end
         ENV["PADRINO_ENV"] ||= environment
         puts "=> Loading #{environment} console (Padrino v.#{Padrino.version})"
-        irb   = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'
-        libs  = " -r irb/completion"
-        libs << " -r #{boot}"
-        libs << " -r #{File.dirname(__FILE__)}/tasks/console"
-        exec "#{irb} #{libs} --simple-prompt"
+        require 'irb'
+        require "irb/completion"
+        require boot
+        require File.dirname(__FILE__) + '/tasks/console'
+        IRB.start
       end
     end
   end
