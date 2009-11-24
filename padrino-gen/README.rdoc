@@ -46,15 +46,15 @@ setup performed for the default components.
 
 You can also define specific components to be used:
 
-  $ padrino-gen demo_app . --test=rspec --renderer=haml --mock=rr --script=jquery --orm datamapper
+  $ padrino-gen demo_app . --test rspec --renderer haml --mock rr --script jquery --orm datamapper
   
 There is also support for aliases for each component within the command:
 
-  $ padrino-gen demo_app . -t=rspec -r=haml -m=rr -s=jquery -d=datamapper
+  $ padrino-gen demo_app . -t rspec -r haml -m rr -s jquery -d datamapper
   
 You can also instruct the generator to skip a certain component to avoid using one at all (or to use your own):
 
-  $ padrino-gen demo_app . --test=none --renderer=none
+  $ padrino-gen demo_app . --test none --renderer none
   
 The available components and their default options are listed below:
 
