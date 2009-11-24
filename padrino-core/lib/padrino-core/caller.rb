@@ -1,16 +1,21 @@
 module Padrino
   PADRINO_IGNORE_CALLERS = [
-    %r{/padrino-.*$},            # all padrino code
-    %r{/sinatra},                # all sinatra code
-    %r{lib/tilt.*\.rb$},         # all tilt code
-    %r{\(.*\)},                  # generated code
-    %r{shoulda/context\.rb$},    # shoulda hacks
-    %r{mocha/integration},       # mocha hacks
-    %r{test/unit},               # test unit hacks
-    %r{rake_test_loader\.rb},    # rake hacks
-    %r{custom_require\.rb$},     # rubygems require hacks
-    %r{active_support},          # active_support require hacks
-    %r{/thor},                   # thor require hacks
+   %r{/padrino-.*/(lib|bin)},   # all padrino code
+   %r{/bin/padrino$},         # all padrino code
+   %r{/sinatra},                # all sinatra code
+   %r{lib/tilt.*\.rb$},         # all tilt code
+   %r{lib/rack.*\.rb$},         # all rack code
+   %r{lib/mongrel.*\.rb$},      # all mongrel code
+   %r{lib/shotgun.*\.rb$},      # all shotgun lib
+   %r{bin/shotgun$},            # shotgun binary
+   %r{\(.*\)},                  # generated code
+   %r{shoulda/context\.rb$},    # shoulda hacks
+   %r{mocha/integration},       # mocha hacks
+   %r{test/unit},               # test unit hacks
+   %r{rake_test_loader\.rb},    # rake hacks
+   %r{custom_require\.rb$},     # rubygems require hacks
+   %r{active_support},          # active_support require hacks
+   %r{/thor},                   # thor require hacks
   ] unless defined?(PADRINO_IGNORE_CALLERS)
 
   # add rubinius (and hopefully other VM impls) ignore patterns ...
