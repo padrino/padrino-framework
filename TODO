@@ -2,23 +2,21 @@
 
 == UNSORTED
 
-=== IMPORTANT
+=== GENERAL
 
 * We need to fix the parent Rakefile to support bumping versions and publishing each gem (?)
 * Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 * Helpers for check_box_group, radio_button_group which create a set of checkboxes or radio buttons
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
+* Add support for working migrations with AR, DM, Sequel (rake db:migrate or thor)
+* Add support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
+* Decide what to do about initializers (where do they go single app, multiple apps)
 
 === TESTING / POLISHING
 
-* Change syntax for mounting / routes
-  * Padrino.mount("blog_app").to("/blog") => Padrino.mount("blog_app", :to => "/blog")
-  * map(:index).to("/example/:name") => map(:index, :to => "/example/:name")
 * Test that controller, mailer, migration and model generators work properly
-* Make sure reloader middleware works for urls, models, controllers and all application files
-* Decide what to do about initializers (where do they go single app, multiple apps)
+* Make sure reloader middleware works for urls, models, controllers, views and all application files
 * Verify logging works properly and can be accessed from any controller (and with specified severity)
-* Make sure that mailer works and perhaps port over (http://github.com/benprew/pony) for use instead
 
 === IDEAS
 
@@ -49,19 +47,23 @@
   * padrino-gen mailer User method1 method2 method3
 * Implement padrino-cache gem functionality
 * Add helpers to helpers gem:
+  * Add view helpers (pluralize, simple_format)
   * ajax helpers (http://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/ajax_helper.rb)
   * add ajax adapters for the various js components (rightjs, jquery, prototype)
+* url_for should support calling to_param on objects url_for(:show, :post => @post) would incoke @post.to_param
 
 == DAddYE
 
+* padrino console doesn't seem to have access to the models defined within the application
 * Big reloading bug. If an app has more than one controller file or block, after a reload, only one of the controllers works
   - fix this issue by allowing all controllers to work after a reload
   - write a regression test which ensures this is fixed
 * Check how can merge log of:
   - Multiple apps
   - Log of ActiveRecord/MongoMapper/DM/etc...
-* Perhaps port over certain great rails tasks (into padrino bin or thor)
+* Port over certain great rails tasks (into padrino bin or thor)
   * rake db:create, db:create:all, db:migrate, db:test:prepare, gems, log:clear, middleware, etc
+  * perhaps more support for migration controls (for ORMs) such as migrate:down, migrate:up, etc
   * Creating and migrating databases using padrino binary (or rake and using any of the orms) 
   * (maybe ties into generator if needed)
 * Add additional test coverage for padrino_core gem (and any other gems as necessary)
