@@ -15,7 +15,7 @@ module Padrino
     def reload!
       return unless Stat.changed?
       Stat.reload! # detects the modified files
-      Padrino.mounted_apps.each { |m| m.app.reload! } # finally we reload all files for each app
+      Padrino.mounted_apps.each { |m| m.app_object.reload! } # finally we reload all files for each app
     end
 
     # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
