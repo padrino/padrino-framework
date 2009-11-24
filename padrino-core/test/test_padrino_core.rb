@@ -13,7 +13,7 @@ class TestPadrinoCore < Test::Unit::TestCase
     end
 
     should 'validate global helpers' do
-      assert_equal "test", Padrino.env
+      assert_equal :test, Padrino.env
       assert_match /\/test/, Padrino.root
     end
     

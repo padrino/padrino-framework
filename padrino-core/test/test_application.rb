@@ -11,7 +11,6 @@ class TestApplication < Test::Unit::TestCase
       assert PadrinoTestApp.raise_errors
       assert !PadrinoTestApp.logging
       assert PadrinoTestApp.sessions
-      assert PadrinoTestApp.log_to_file
       assert 'PadrinoTestApp', PadrinoTestApp.app_name
     end
 
