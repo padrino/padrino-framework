@@ -1,9 +1,12 @@
+require 'pathname'
 require "rake/clean"
 require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
 
-ROOT = File.dirname(__FILE__)
+ROOT = Pathname(__FILE__).dirname.expand_path
+GEM_NAME = 'padrino-framework'
+GEM_VERSION = ROOT.join('VERSION').read
 
 padrino_gems = [
   "padrino-core",
@@ -15,15 +18,17 @@ padrino_gems = [
   "padrino-routing",
   "padrino"
 ]
+
+GEM_PATHS = padrino_gems.freeze
  
 def rake_command(command)
-  sh "#{Gem.ruby} -S rake #{command}"
+  sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
 
-%w(install gemspec build release).each do |task_name|
+%w(install gemspec build).each do |task_name|
   desc "Run #{task_name} for all projects"
   task task_name do
-    padrino_gems.each do |dir|
+    GEM_PATHS.each do |dir|
       Dir.chdir(dir) { rake_command(task_name) }
     end
   end
@@ -44,6 +49,15 @@ desc "Release all padrino gems"
 task :publish do
   padrino_gems.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
+  end
+end
+
+# NOTE: this task must be named release_all, and not release
+desc "Release #{GEM_NAME} #{GEM_VERSION}"
+task :release_all do
+  # sh "rake release VERSION=#{GEM_VERSION}"
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake_command "release VERSION=#{GEM_VERSION}" }
   end
 end
 
