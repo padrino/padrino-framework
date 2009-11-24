@@ -16,8 +16,8 @@ module Padrino
     # Registers the mounted application onto Padrino
     # @example Mounter.new("blog_app").to("/blog")
     def to(mount_url)
-      @uri_root = mount_url               # This prevent to mount for each reload an app (useful for single app file)
-      Padrino.mounted_apps << self unless Padrino.mounted_apps.any? { |mounter| mounter.name == name }
+      @uri_root = mount_url
+      Padrino.insert_mounted_app(self)
       self
     end
 
@@ -46,6 +46,11 @@ module Padrino
       callers_are_identical = File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
       callers_are_identical ? Padrino.first_caller : Padrino.mounted_root(name, "app.rb")
     end
+
+    # Makes two Mounters equal if they have the same name and uri_root
+    def ==(other)
+      other.is_a?(Mounter) && self.name == other.name && self.uri_root == other.uri_root
+    end
   end
 
   class << self
@@ -59,6 +64,12 @@ module Padrino
     # Returns the mounted padrino applications (MountedApp objects)
     def mounted_apps
       @mounted_apps ||= []
+    end
+
+    # Inserts a Mounter object into the mounted applications (avoids duplicates)
+    def insert_mounted_app(mounter)
+      return false if Padrino.mounted_apps.include?(mounter)
+      Padrino.mounted_apps << mounter
     end
 
     # Mounts the core application onto Padrino project with given app settings (file, class, root)

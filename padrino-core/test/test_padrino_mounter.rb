@@ -54,7 +54,11 @@ class TestPadrinoMounter < Test::Unit::TestCase
       
       Padrino.mount("one_app").to("/one_app")
       Padrino.mount("two_app").to("/two_app")
+      # And testing no duplicates
+      Padrino.mount("one_app").to("/one_app")
+      Padrino.mount("two_app").to("/two_app")
 
+      assert_equal 2, Padrino.mounted_apps.size, "should not mount duplicate apps"
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
     end
     
