@@ -17,12 +17,12 @@ module Padrino
         end
 
         # Inserts a required gem into the Gemfile to add the bundler dependency
-        # insert_dependency_to_gemfile(name)
-        # insert_dependency_to_gemfile(name, :env => :testing)
+        # insert_into_gemfile(name)
+        # insert_into_gemfile(name, :env => :testing, :require_as => 'foo')
         def insert_into_gemfile(name, options={})
-          after_pattern = "# Component requirements\n"
-          after_pattern = "# #{options[:env].to_s.capitalize} requirements\n" if environment = options[:env]
-          include_text = "gem '#{name}'" << (environment ? ", :only => #{environment.inspect}" : "") << "\n"
+          after_pattern = options[:env] ? "#{options[:env].to_s.capitalize} requirements\n" : "Component requirements\n"
+          gem_options = options.slice(:env, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
+          include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
           options.merge!(:content => include_text, :after => after_pattern)
           inject_into_file('Gemfile', options[:content], :after => options[:after])
         end

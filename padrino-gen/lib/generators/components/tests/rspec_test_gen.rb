@@ -16,7 +16,7 @@ module Padrino
 
           # TODO move to spec directory to follow convention
           def setup_test
-            require_dependencies 'rspec', :env => :testing
+            require_dependencies 'rspec', :env => :testing, :require_as => 'spec'
             insert_test_suite_setup RSPEC_SETUP
           end
 
