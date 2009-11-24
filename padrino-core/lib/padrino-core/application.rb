@@ -45,8 +45,6 @@ module Padrino
         @routes = Padrino::Application.dupe_routes
       end
 
-      protected
-
       # Setup the application by registering initializers, load paths and logger
       # Invoked automatically when an application is first instantiated
       def setup_application!
@@ -58,6 +56,8 @@ module Padrino
         self.setup_logger
         @_configured = true
       end
+
+      protected
 
       # Defines default settings for Padrino application
       def default_configuration!
