@@ -49,7 +49,7 @@ module Padrino
 
           def generate_model_test(name)
             riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), riot_contents
+            create_file app_root_path("test/models/#{name.to_s.downcase}_test.rb"), riot_contents
           end
 
         end

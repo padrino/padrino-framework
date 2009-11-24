@@ -152,46 +152,46 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate test file for bacon" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user.rb')
+      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user_test.rb')
     end
 
     # RIOT
     should "generate test file for riot" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=riot', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/context "User Model" do/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!@user.nil\? \}/m, '/tmp/sample_app/test/models/user.rb')
+      assert_match_in_file(/context "User Model" do/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!@user.nil\? \}/m, '/tmp/sample_app/test/models/user_test.rb')
     end
 
     # RSPEC
     should "generate test file for rspec" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user\.should\.not\.be\snil/m, '/tmp/sample_app/test/models/user.rb')
+      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_app/test/models/user_spec.rb')
+      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user_spec.rb')
+      assert_match_in_file(/@user\.should\.not\.be\snil/m, '/tmp/sample_app/test/models/user_spec.rb')
     end
 
     # SHOULDA
     should "generate test file for shoulda" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/class UserControllerTest < Test::Unit::TestCase/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/context "User Model"/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/assert_not_nil @user/m, '/tmp/sample_app/test/models/user.rb')
+      silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_app']) }
+      assert_match_in_file(/class PersonControllerTest < Test::Unit::TestCase/m, '/tmp/sample_app/test/models/person_test.rb')
+      assert_match_in_file(/context "Person Model"/m, '/tmp/sample_app/test/models/person_test.rb')
+      assert_match_in_file(/@person = Person.new/m, '/tmp/sample_app/test/models/person_test.rb')
+      assert_match_in_file(/assert_not_nil @person/m, '/tmp/sample_app/test/models/person_test.rb')
     end
 
     # TESTSPEC
     should "generate test file for testspec" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=testspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/context "User Model"/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user.rb')
-      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user.rb')
+      assert_match_in_file(/context "User Model"/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user_test.rb')
+      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user_test.rb')
     end
   end
 

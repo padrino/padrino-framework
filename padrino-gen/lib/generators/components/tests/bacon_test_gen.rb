@@ -50,7 +50,7 @@ module Padrino
 
           def generate_model_test(name)
             bacon_contents = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), bacon_contents
+            create_file app_root_path("test/models/#{name.to_s.downcase}_test.rb"), bacon_contents
           end
 
         end

@@ -49,7 +49,7 @@ module Padrino
 
           def generate_model_test(name)
             tests_contents = TESTSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file app_root_path("test/models/#{name.to_s.downcase}.rb"), tests_contents
+            create_file app_root_path("test/models/#{name.to_s.downcase}_test.rb"), tests_contents
           end
 
         end
