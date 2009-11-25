@@ -57,7 +57,7 @@ class TestComplexReloader < Test::Unit::TestCase
       assert_equal 200, status
 
       # Now we need to prevent to commit a new changed file so we revert it
-      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
+      File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
     end
   end
 end

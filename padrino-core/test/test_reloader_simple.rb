@@ -37,7 +37,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       @app = SimpleDemo
       get "/"
       assert_equal 200, status
-      new_phrase =  "The magick number is: #{rand(100)}!"
+      new_phrase = "The magick number is: #{rand(100)}!"
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
       File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
@@ -46,7 +46,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert_equal new_phrase, body
 
       # Now we need to prevent to commit a new changed file so we revert it
-      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
+      File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
     end
   end
 end
