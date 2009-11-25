@@ -6,10 +6,8 @@ Dir["lib/tasks/**/*.rake"].each { |ext| load(ext) }
 
 # TODO: require here padrino-gen rake db:migrate, padrino-routes rake routes etc...
 
-module Padrino::Tasks::RakeFile
-  class << self
-    attr_accessor :boot_file
-  end
+class Padrino::Tasks::RakeFile
+  cattr_accessor :boot_file
 end
 
 task :environment do
