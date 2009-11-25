@@ -7,11 +7,12 @@ module Padrino
           DM = (<<-DM).gsub(/^ {10}/, '')
           module DatabaseSetup
             def self.registered(app)
-              app.configure(:development) { DataMapper.setup(:default, 'sqlite3://your_dev_db_here') }
-              app.configure(:production)  { DataMapper.setup(:default, 'sqlite3://your_production_db_here') }
-              app.configure(:test)        { DataMapper.setup(:default, 'sqlite3://your_test_db_here') }
+              app.configure               { DataMapper.logger = logger }
+              app.configure(:development) { DataMapper.setup(:default, "sqlite3://your_dev_db_here") }
+              app.configure(:production)  { DataMapper.setup(:default, "sqlite3://your_production_db_here") }
+              app.configure(:test)        { DataMapper.setup(:default, "sqlite3://your_test_db_here") }
             rescue ArgumentError => e
-              puts "Database options need to be configured within 'config/database.rb'!" if app.logging?
+              logger.error "Database options need to be configured within 'config/database.rb'!" if app.logging?
             end
           end
           DM
@@ -37,6 +38,7 @@ module Padrino
             return false if File.exist?(model_path)
             model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
             field_tuples = fields.collect { |value| value.split(":") }
+            field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
             column_declarations = field_tuples.collect { |field, kind|"property :#{field}, #{kind.camelize}" }.join("\n  ")
             model_contents.gsub!(/!FIELDS!/, column_declarations)
             create_file(model_path, model_contents)

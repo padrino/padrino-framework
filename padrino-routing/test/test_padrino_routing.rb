@@ -5,6 +5,40 @@ class TestPadrinoRouting < Test::Unit::TestCase
   def app
     RoutingDemo.tap { |app| app.set :environment, :test }
   end
+  
+  context 'for url_for method' do
+    should "support finding known urls" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo/:name')
+      assert_equal '/admin/demo/john', demo.url_for(:admin, :demo, :name => 'john')
+    end
+    should "support finding known urls ignoring blank extra param" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo')
+      assert_equal '/admin/demo', demo.url_for(:admin, :demo, :foo => '')
+    end
+    should "support finding known urls with named param ignoring blank extra param" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo/:name')
+      assert_equal '/admin/demo/john', demo.url_for(:admin, :demo, :name => 'john', :foo => ' ')
+    end
+    should "support finding known urls with one extra param" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo/:name')
+      assert_equal '/admin/demo/john?foo=bar', demo.url_for(:admin, :demo, :name => 'john', :foo => 'bar')
+    end
+    should "support finding known urls with extra params" do
+      demo = app.new
+      demo.class.map(:demo).to('/demo/:name')
+      assert_equal '/demo/john?foo=bar&bar=foo', demo.url_for(:demo, :name => 'john', :foo => 'bar', :bar => 'foo')
+    end
+    should "support finding known urls with multiple named params with extra params" do
+      demo = app.new
+      demo.class.map(:demo).to('/demo/:name/id/:id')
+      actual_url = demo.url_for(:demo, :name => 'john', :foo => 'bar', :bar => 'foo', :id => 5)
+      assert_equal '/demo/john/id/5?foo=bar&bar=foo', actual_url
+    end
+  end
 
   context 'for links list displaying routes' do
     setup { visit '/links' }

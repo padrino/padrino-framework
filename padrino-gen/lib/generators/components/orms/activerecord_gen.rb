@@ -8,24 +8,25 @@ module Padrino
           AR = (<<-AR).gsub(/^ {10}/, '')
           module DatabaseSetup
             def self.registered(app)
+              app.configure { ActiveRecord::Base.logger = logger }
               app.configure :development do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => 'your_dev_db_here'
+                  :database => "your_dev_db_here"
                 )
               end
 
               app.configure :production do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => 'your_production_db_here'
+                  :database => "your_production_db_here"
                 )
               end
 
               app.configure :test do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => 'your_test_db_here'
+                  :database => "your_test_db_here"
                 )
               end
             end

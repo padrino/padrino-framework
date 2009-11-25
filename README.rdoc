@@ -435,6 +435,19 @@ passing javascript information from a js template to a javascript function.
 
 There is also an alias for escape_html called <tt>h</tt> for even easier usage within templates.
 
+Format helpers also includes a number of useful text manipulation functions such as <tt>simple_format</tt>,
+<tt>pluralize</tt>, <tt>word_wrap</tt>, and <tt>truncate</tt>. 
+
+  simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
+  pluralize(2, 'person') => '2 people'
+  word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
+  truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+  
+These helpers can be invoked from any route or view within your application.
+
+For a breakdown of all format helper methods, check out the 
+{padrino-helpers README}[http://github.com/padrino/padrino-framework/tree/master/padrino-helpers/].
+
 === Render Helpers
 
 Render helpers are a series of helpers intended to make certain rendering template tasks easier to perform.

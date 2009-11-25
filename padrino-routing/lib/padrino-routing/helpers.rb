@@ -13,8 +13,10 @@ module Padrino
         result_url = String.new(File.join(self.class.uri_root, mapped_url))
         result_url.scan(%r{/?(:\S+?)(?:/|$)}).each do |placeholder|
           value_key = placeholder[0][1..-1].to_sym
-          result_url.gsub!(Regexp.new(placeholder[0]), values[value_key].to_s)
+          result_url.gsub!(Regexp.new(placeholder[0]), values.delete(value_key).to_s)
         end
+        values.reject! { |name, val| val.blank? }
+        result_url << "?" + values.collect { |name, val| "#{name}=#{val}" }.join("&") if values.any?
         result_url
       end
     end

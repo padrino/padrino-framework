@@ -36,7 +36,7 @@ end
 
 desc "Clean pkg and other stuff"
 task :clean do
-  padrino_gems.each do |dir|
+  GEM_PATHS.each do |dir|
     Dir.chdir(dir) do
       FileUtils.rm_rf "doc"
       FileUtils.rm_rf "tmp"
@@ -47,14 +47,14 @@ end
 
 desc "Clean pkg and other stuff"
 task :uninstall do
-  padrino_gems.each do |gem|
+  GEM_PATHS.each do |gem|
     sh "gem uninstall #{gem} -a"
   end
 end
 
 desc "Release all padrino gems"
 task :publish do
-  padrino_gems.each do |dir|
+  GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
   end
 end
@@ -71,7 +71,7 @@ end
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
-  padrino_gems[0..-2].each do |gem_info|
+  GEM_PATHS[0..-2].each do |gem_info|
     Dir.chdir(File.join(ROOT, gem_info)) { rake_command "test" }
   end
 end
