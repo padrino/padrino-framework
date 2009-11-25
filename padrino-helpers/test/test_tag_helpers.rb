@@ -25,6 +25,10 @@ class TestTagHelpers < Test::Unit::TestCase
       actual_html = tag(:p, :content => "Demo", :class => 'large', :id => 'intro')
       assert_has_tag('p#intro.large', :content => "Demo") { actual_html }
     end
+    should "support open tags" do
+      actual_html = tag(:p, :class => 'demo', :open => true)
+      assert_equal "<p class=\"demo\">", actual_html
+    end
   end
 
   context 'for #content_tag method' do
