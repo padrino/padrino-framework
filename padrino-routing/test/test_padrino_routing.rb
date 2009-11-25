@@ -17,6 +17,12 @@ class TestPadrinoRouting < Test::Unit::TestCase
       demo.class.map(:admin, :demo).to('/admin/demo')
       assert_equal '/admin/demo', demo.url_for(:admin, :demo, :foo => '')
     end
+    should "support calling to_param on an object which supports the call" do
+      obj = stub(:to_param => '25', :to_s => "<Fake>")
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo/:foo')
+      assert_equal '/admin/demo/25', demo.url_for(:admin, :demo, :foo => obj)
+    end
     should "support finding known urls with named param ignoring blank extra param" do
       demo = app.new
       demo.class.map(:admin, :demo).to('/admin/demo/:name')
@@ -30,13 +36,13 @@ class TestPadrinoRouting < Test::Unit::TestCase
     should "support finding known urls with extra params" do
       demo = app.new
       demo.class.map(:demo).to('/demo/:name')
-      assert_equal '/demo/john?foo=bar&bar=foo', demo.url_for(:demo, :name => 'john', :foo => 'bar', :bar => 'foo')
+      assert_equal '/demo/john?bar=foo&foo=bar', demo.url_for(:demo, :name => 'john', :foo => 'bar', :bar => 'foo')
     end
     should "support finding known urls with multiple named params with extra params" do
       demo = app.new
       demo.class.map(:demo).to('/demo/:name/id/:id')
       actual_url = demo.url_for(:demo, :name => 'john', :foo => 'bar', :bar => 'foo', :id => 5)
-      assert_equal '/demo/john/id/5?foo=bar&bar=foo', actual_url
+      assert_equal '/demo/john/id/5?bar=foo&foo=bar', actual_url
     end
   end
 

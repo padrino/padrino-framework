@@ -7,16 +7,18 @@ module Padrino
       # url_for(:account, :id => 5) => '/account/5'
       # url_for(:admin, show, :id => 5, :name => "demo") => '/admin/path/5/demo'
       def url_for(*route_name)
-        values = route_name.extract_options!
-        mapped_url = self.class.named_paths[route_name] || self.class.named_paths[route_name.dup.unshift(self.class.app_name.to_sym)]
+        params = route_name.extract_options!.reject { |name, val| val.blank? }
+        route_name.unshift(self.class.app_name.to_sym) unless route_name.first == self.class.app_name.to_sym
+        mapped_url = self.class.named_paths[route_name]
         raise Padrino::RouteNotFound.new("Route alias #{route_name.inspect} is not mapped to a url") unless mapped_url
         result_url = String.new(File.join(self.class.uri_root, mapped_url))
         result_url.scan(%r{/?(:\S+?)(?:/|$)}).each do |placeholder|
-          value_key = placeholder[0][1..-1].to_sym
-          result_url.gsub!(Regexp.new(placeholder[0]), values.delete(value_key).to_s)
+          param_key = placeholder[0][1..-1].to_sym
+          param_obj = params.delete(param_key)
+          param_value = param_obj.respond_to?(:to_param) ? param_obj.to_param : param_obj
+          result_url.gsub!(Regexp.new(placeholder[0]), param_value.to_s)
         end
-        values.reject! { |name, val| val.blank? }
-        result_url << "?" + values.collect { |name, val| "#{name}=#{val}" }.join("&") if values.any?
+        result_url << "?" + params.to_params if params.any?
         result_url
       end
     end
