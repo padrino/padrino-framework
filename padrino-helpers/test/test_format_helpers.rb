@@ -8,6 +8,68 @@ class TestFormatHelpers < Test::Unit::TestCase
 
   include Padrino::Helpers::FormatHelpers
 
+  context 'for #simple_format method' do
+    should "format simple text into html format" do
+      actual_text = simple_format("Here is some basic text...\n...with a line break.")
+      assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
+    end
+
+    should "format more text into html format" do
+      actual_text = simple_format("We want to put a paragraph...\n\n...right there.")
+      assert_equal "<p>We want to put a paragraph...</p>\n\n<p>...right there.</p>", actual_text
+    end
+
+    should "support defining a class for the paragraphs" do
+      actual_text = simple_format("Look ma! A class!", :class => 'description')
+      assert_equal "<p class=\"description\">Look ma! A class!</p>", actual_text
+    end
+  end
+
+  context 'for #pluralize method' do
+    should "return singular count for 1 item collections" do
+      actual_text = pluralize(1, 'person')
+      assert_equal '1 person', actual_text
+    end
+    should "return plural count for empty collections" do
+      actual_text = pluralize(0, 'person')
+      assert_equal '0 people', actual_text
+    end
+    should "return plural count for many collections" do
+      actual_text =  pluralize(2, 'person')
+      assert_equal '2 people', actual_text
+    end
+    should "return pluralized word specified as argument" do
+      actual_text =  pluralize(3, 'person', 'users')
+      assert_equal '3 users', actual_text
+    end
+  end
+
+  context 'for #word_wrap method' do
+    should "return proper formatting for 8 max width" do
+      actual_text = word_wrap('Once upon a time', :line_width => 8)
+      assert_equal "Once\nupon a\ntime", actual_text
+    end
+    should "return proper formatting for 1 max width" do
+      actual_text = word_wrap('Once upon a time', :line_width => 1)
+      assert_equal "Once\nupon\na\ntime", actual_text
+    end
+  end
+
+  context 'for #truncate method' do
+    should "support default truncation" do
+      actual_text = truncate("Once upon a time in a world far far away")
+      assert_equal "Once upon a time in a world...", actual_text
+    end
+    should "support specifying length" do
+      actual_text = truncate("Once upon a time in a world far far away", :length => 14)
+      assert_equal "Once upon a...", actual_text
+    end
+    should "support specifying omission text" do
+      actual_text = truncate("And they found that many people were sleeping better.", :length => 25, :omission => "(clipped)")
+      assert_equal "And they found t(clipped)", actual_text
+    end
+  end
+
   context 'for #h and #h! method' do
     should "escape the simple html" do
       assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h('<h1>hello</h1>')

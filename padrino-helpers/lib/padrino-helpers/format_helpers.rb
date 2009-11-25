@@ -16,6 +16,54 @@ module Padrino
         h text
       end
 
+      # Returns text transformed into HTML using simple formatting rules. Two or more consecutive newlines(\n\n) are considered
+      # as a paragraph and wrapped in <p> tags. One newline (\n) is considered as a linebreak and a <br /> tag is appended.
+      # This method does not remove the newlines from the text.
+      # simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
+      def simple_format(text, html_options={})
+        start_tag = tag('p', html_options.merge(:open => true))
+        text = text.to_s.dup
+        text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
+        text.gsub!(/\n\n+/, "</p>\n\n#{start_tag}")  # 2+ newline  -> paragraph
+        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
+        text.insert 0, start_tag
+        text << "</p>"
+      end
+
+      # Attempts to pluralize the singular word unless count is 1. If plural is supplied, it will use that when count is > 1,
+      # otherwise it will use the Inflector to determine the plural form
+      # pluralize(2, 'person') => '2 people'
+      def pluralize(count, singular, plural = nil)
+        "#{count || 0} " + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
+      end
+
+      # Truncates a given text after a given :length if text is longer than :length (defaults to 30).
+      # The last characters will be replaced with the :omission (defaults to "…") for a total length not exceeding :length.
+      # truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+      def truncate(text, *args)
+        options = args.extract_options!
+        options.reverse_merge!(:length => 30, :omission => "...")
+        if text
+          len = options[:length] - options[:omission].length
+          chars = text
+          (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
+        end
+      end
+
+      # Wraps the text into lines no longer than line_width width.
+      # This method breaks on the first whitespace character that does not exceed line_width (which is 80 by default).
+      # word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
+      def word_wrap(text, *args)
+        options = args.extract_options!
+        unless args.blank?
+          options[:line_width] = args[0] || 80
+        end
+        options.reverse_merge!(:line_width => 80)
+
+        text.split("\n").collect do |line|
+          line.length > options[:line_width] ? line.gsub(/(.{1,#{options[:line_width]}})(\s+|$)/, "\\1\n").strip : line
+        end * "\n"
+      end
 
       # Smart time helper which returns relative text representing times for recent dates
       # and absolutes for dates that are far removed from the current date

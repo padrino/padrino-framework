@@ -389,8 +389,30 @@ passing javascript information from a js template to a javascript function.
 
 There is also an alias for escape_html called <tt>h</tt> for even easier usage within templates.
 
+Format helpers also includes a number of useful text manipulation functions such as <tt>simple_format</tt>,
+<tt>pluralize</tt>, <tt>word_wrap</tt>, and <tt>truncate</tt>. 
+
+  simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
+  pluralize(2, 'person') => '2 people'
+  word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
+  truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+
+These helpers can be invoked from any route or view within your application.
+
 The list of defined helpers in the 'format helpers' category:
 
+* <tt>simple_format(text, html_options)</tt>
+  * Returns text transformed into HTML using simple formatting rules.
+  * <tt>simple_format("hello\nworld")</tt> => "<p>hello<br/>world</p>"
+* <tt>pluralize(count, singular, plural = nil)</tt>
+  * Attempts to pluralize the singular word unless count is 1.
+  * <tt>pluralize(2, 'person')</tt> => '2 people'
+* <tt>word_wrap(text, *args)</tt>
+  * Wraps the text into lines no longer than line_width width.
+  * <tt>word_wrap('Once upon a time', :line_width => 8)</tt> => "Once upon\na time"
+* <tt>truncate(text, *args)</tt>
+  * Truncates a given text after a given :length if text is longer than :length (defaults to 30).
+  * <tt>truncate("Once upon a time in a world far far away", :length => 8)</tt> => "Once upon..."
 * <tt>escape_html</tt> (alias <tt>h</tt> and <tt>h!</tt>)
   * (from RackUtils) Escape ampersands, brackets and quotes to their HTML/XML entities.
 * <tt>relative_time_ago(date)</tt>
