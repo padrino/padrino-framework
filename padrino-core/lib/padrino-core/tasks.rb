@@ -37,17 +37,19 @@ module Padrino
         Padrino::Tasks::Test.start
       end
 
-      desc "console ENVIRONMENT", "Boots up the Padrino application irb console"
-      method_option :boot, :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
-      def console(environment="development")
+      desc "console", "Boots up the Padrino application irb console"
+      method_option :boot,        :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
+      method_option :environment, :type => :string, :aliases => "-e", :required => true, :default => :development
+      def console
         require File.dirname(__FILE__) + "/version"
         boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
         unless File.exist?(boot)
           puts "=> Could not find boot file: #{boot.inspect} !!!"
           exit
         end
-        ENV["PADRINO_ENV"] ||= environment
-        puts "=> Loading #{environment} console (Padrino v.#{Padrino.version})"
+        ENV["PADRINO_ENV"] ||= options.environment
+        ARGV.clear
+        puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
         require 'irb'
         require "irb/completion"
         require boot
