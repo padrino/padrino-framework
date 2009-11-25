@@ -47,7 +47,7 @@ module Padrino
           puts "=> Could not find boot file: #{boot.inspect} !!!"
           exit
         end
-        ENV["PADRINO_ENV"] ||= options.environment
+        ENV["PADRINO_ENV"] ||= options.environment.to_s
         ARGV.clear
         puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
         require 'irb'
