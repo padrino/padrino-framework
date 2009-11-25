@@ -19,9 +19,7 @@ class TestPadrinoCore < Test::Unit::TestCase
     
     should 'raise application error if I instantiate a new padrino application without mounted apps' do
       Padrino.mounted_apps.clear
-      assert_raise Padrino::ApplicationLoadError do
-        Padrino.application.tap { }
-      end
+      assert_raise(Padrino::ApplicationLoadError) { Padrino.application.new }
     end
   end
 end
