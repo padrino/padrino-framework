@@ -3,9 +3,6 @@ module Padrino
     module Adapter
 
       class << self
-
-        ADAPTERS = %w[thin mongrel webrick]
-
         # Start for the given options a rackup handler
         def start(options)
 
