@@ -1,20 +1,9 @@
 module Padrino
 
-  # Setup a new logger
-  def self.setup_logger!
-    case Padrino.env
-      when :production
-        FileUtils.mkdir_p("#{Padrino.root}/log") unless File.exists?("#{Padrino.root}/log")
-        log = File.new("#{Padrino.root}/log/#{PADRINO_ENV.downcase}.log", "a+")
-        Thread.current[:padrino_logger] = Padrino::Logger.new(:log_level => :error, :stream => log)
-      when :development
-        Thread.current[:padrino_logger] = Padrino::Logger.new
-      when :test
-        Thread.current[:padrino_logger] = Padrino::Logger.new(:stream => StringIO.new)
-    end
-    Thread.current[:padrino_logger]
+  def self.logger
+    Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
   end
-
+  
   class Logger
 
     attr_accessor :level
@@ -40,6 +29,55 @@ module Padrino
     } unless const_defined?(:Levels)
 
     @@mutex = {}
+
+    # ==== Notes
+    # Configuration for a given environment, possible options are:
+    # 
+    # :log_level:: Once of [:fatal, :error, :warn, :info, :debug]
+    # :stream:: Once of [:to_file, :null, :stdout, :stderr] our your custom stream
+    # :log_level::
+    #   The log level from, e.g. :fatal or :info. Defaults to :debug in the
+    #   production environment and :debug otherwise.
+    # :auto_flush::
+    #   Whether the log should automatically flush after new messages are
+    #   added. Defaults to true.
+    # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
+    # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # 
+    # Example:
+    # 
+    #   Padrino::Logger::Config[:development] = { :log_level => :debug, :to_file }
+    #   # or you can edit our defaults
+    #   Padrino::Logger::Config[:development][:log_level] = :error
+    #   # or you can use your stream
+    #   Padrino::Logger::Config[:development][:stream] = StringIO.new
+    # 
+    # Defaults are:
+    # 
+    #   :production  => { :log_level => :error, :stream => :to_file }
+    #   :development => { :log_level => :debug, :stream => :stdout }
+    #   :test        => { :log_level => :fatal, :stream => :null }
+    Config = {
+      :production  => { :log_level => :error, :stream => :to_file },
+      :development => { :log_level => :debug, :stream => :stdout },
+      :test        => { :log_level => :debug, :stream => :null }
+    } unless const_defined?(:Config)
+
+
+    # Setup a new logger
+    def self.setup!
+      config = Config[Padrino.env] || Config[:test]
+      stream = case config[:stream]
+        when :to_file
+          FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
+          File.new(Padrino.root("log", "#{Padrino.env}.log"), "a+")
+        when :null   then StringIO.new
+        when :stdout then $stdout
+        when :stderr then $stderr
+        else config[:stream] # return itself, probabilly is a custom stream.
+      end
+      Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
+    end
 
     public
 
@@ -198,7 +236,10 @@ module Padrino
   end
 end
 
-# Define a logger available every where in our app
-def logger
-  Thread.current[:padrino_logger] ||= Padrino::setup_logger!
+module Kernel
+
+  # Define a logger available every where in our app
+  def logger
+    Padrino.logger
+  end
 end

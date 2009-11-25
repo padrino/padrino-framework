@@ -35,9 +35,10 @@ class TestComplexReloader < Test::Unit::TestCase
       get "/complex_2_demo/old"
       assert_equal 200, status
 
-      new_phrase =  "The magick number is: #{rand(100)}!"
-      buffer = File.read(Complex1Demo.app_file).gsub!(/The magick number is: \d+!/, new_phrase)
-      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
+      new_phrase = "The magick number is: #{rand(100)}!"
+      buffer     = File.read(Complex1Demo.app_file)
+      new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
+      File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
       sleep 1.2 # We need at least a cooldown of 1 sec.
       get "/complex_2_demo"
       assert_equal new_phrase, body
@@ -54,6 +55,9 @@ class TestComplexReloader < Test::Unit::TestCase
 
       get "/complex_2_demo/old"
       assert_equal 200, status
+
+      # Now we need to prevent to commit a new changed file so we revert it
+      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
     end
   end
 end
