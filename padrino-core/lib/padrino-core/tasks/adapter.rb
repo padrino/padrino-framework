@@ -21,10 +21,6 @@ module Padrino
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
 
           if options.daemonize?
-            unless fork
-              puts "=> Daemonized mode is not supported on your platform." 
-              exit 
-            end
 
             stop # Need to stop a process if it exists
 
@@ -45,35 +41,12 @@ module Padrino
                 at_exit { File.delete(pid) if File.exist?(pid) }
               end
 
-              run_app(options)
+              Padrino.run!(options.host, options.port, options.adapter)
 
             end
           else
-            run_app(options)
+            Padrino.run!(options.host, options.port, options.adapter)
           end
-        end
-
-        # Method that run the Padrino.application
-        def run_app(options)
-
-          handler_name = options.adapter.to_s.capitalize
-
-          begin
-            handler = Rack::Handler.get(handler_name.downcase)
-          rescue
-            puts "#{handler_name} not supported yet, available adapters are: #{ADAPTERS.inspect}"
-            exit
-          end
-          
-          handler.run Padrino.application, :Host => options.host, :Port => options.port do |server|
-            trap(:INT) do
-              # Use thins' hard #stop! if available, otherwise just #stop
-              server.respond_to?(:stop!) ? server.stop! : server.stop
-              puts "<= Padrino has ended his set (crowd applauds)"
-            end
-          end
-        rescue Errno::EADDRINUSE
-          puts "=> Someone is already performing on port #{options.port}!"
         end
 
         # Method that stop (if exist) a running Padrino.application
