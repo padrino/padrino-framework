@@ -7,6 +7,7 @@ module Padrino
           DM = (<<-DM).gsub(/^ {10}/, '')
           module DatabaseSetup
             def self.registered(app)
+              app.configure               { DataMapper.logger = logger }
               app.configure(:development) { DataMapper.setup(:default, "sqlite3://your_dev_db_here") }
               app.configure(:production)  { DataMapper.setup(:default, "sqlite3://your_production_db_here") }
               app.configure(:test)        { DataMapper.setup(:default, "sqlite3://your_test_db_here") }
