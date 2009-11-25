@@ -97,11 +97,11 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/person.rb')
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_create_people.rb"
       assert_match_in_file(/migration NUM, :create_people do/m, migration_file_path)
-      assert_match_in_file(/create_table\(:people\) do/m, migration_file_path)
-      assert_match_in_file(/column\(:name, String\)/m, migration_file_path)
-      assert_match_in_file(/column\(:created_at, DateTime\)/m, migration_file_path)
-      assert_match_in_file(/column\(:email, String\)/m, migration_file_path)
-      assert_match_in_file(/drop_table\(:people\)/m, migration_file_path)
+      assert_match_in_file(/create_table :people do/m, migration_file_path)
+      assert_match_in_file(/column :name, String/m, migration_file_path)
+      assert_match_in_file(/column :created_at, DateTime/m, migration_file_path)
+      assert_match_in_file(/column :email, String/m, migration_file_path)
+      assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
 

@@ -37,8 +37,8 @@ class TestMigrationGenerator < Test::Unit::TestCase
       response_success = silence_logger { @mig_gen.start(['add_email_to_user', "email:string", '-r=/tmp/sample_app']) }
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_add_email_to_user.rb"
       assert_match_in_file(/class AddEmailToUser/m, migration_file_path)
-      assert_match_in_file(/add_column :users/, migration_file_path)
-      assert_match_in_file(/remove_column :users/, migration_file_path)
+      assert_match_in_file(/t.column :email, :string/, migration_file_path)
+      assert_match_in_file(/t.remove :email/, migration_file_path)
     end
   end
 
@@ -59,10 +59,10 @@ class TestMigrationGenerator < Test::Unit::TestCase
       response_success = silence_logger { @mig_gen.start(migration_params) }
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_add_email_to_users.rb"
       assert_match_in_file(/class AddEmailToUsers/m, migration_file_path)
-      assert_match_in_file(/def self\.up.*?add_column :users, :email, :string/m, migration_file_path)
-      assert_match_in_file(/add_column :users, :age, :integer/m, migration_file_path)
-      assert_match_in_file(/def self\.down.*?remove_column :users, :email/m, migration_file_path)
-      assert_match_in_file(/remove_column :users, :age/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.column :email, :string/m, migration_file_path)
+      assert_match_in_file(/t\.column :age, :integer/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.remove :email/m, migration_file_path)
+      assert_match_in_file(/t\.remove :age/m, migration_file_path)
     end
     should "generate migration for removing columns" do
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
@@ -71,10 +71,10 @@ class TestMigrationGenerator < Test::Unit::TestCase
       response_success = silence_logger { @mig_gen.start(migration_params) }
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_remove_email_from_users.rb"
       assert_match_in_file(/class RemoveEmailFromUsers/m, migration_file_path)
-      assert_match_in_file(/def self\.up.*?remove_column :users, :email/m, migration_file_path)
-      assert_match_in_file(/remove_column :users, :age/m, migration_file_path)
-      assert_match_in_file(/def self\.down.*?add_column :users, :email, :string/m, migration_file_path)
-      assert_match_in_file(/add_column :users, :age, :integer/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.remove :email/m, migration_file_path)
+      assert_match_in_file(/t\.remove :age/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.column :email, :string/m, migration_file_path)
+      assert_match_in_file(/t\.column :age, :integer/m, migration_file_path)
     end
   end
 
