@@ -22,6 +22,16 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class User < ActiveRecord::Base/m, '/tmp/sample_app/app/models/user.rb')
       assert_match /'user' model has already been generated!/, response_duplicate
     end
+
+    should "generate migration file versions properly" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['account', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['bank', '-r=/tmp/sample_app']) }
+      assert_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
+      assert_file_exists('/tmp/sample_app/db/migrate/002_create_accounts.rb')
+      assert_file_exists('/tmp/sample_app/db/migrate/003_create_banks.rb')
+    end
   end
 
   # ACTIVERECORD
@@ -36,7 +46,7 @@ class TestModelGenerator < Test::Unit::TestCase
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
-      migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_create_users.rb"
+      migration_file_path = "/tmp/sample_app/db/migrate/001_create_users.rb"
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :users/m, migration_file_path)
       assert_match_in_file(/# t.column :age, :integer[\n\s]+?end/m, migration_file_path)
@@ -47,7 +57,7 @@ class TestModelGenerator < Test::Unit::TestCase
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       silence_logger { @model_gen.start(['person', "name:string", "age:integer", "email:string", '-r=/tmp/sample_app']) }
-      migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_create_people.rb"
+      migration_file_path = "/tmp/sample_app/db/migrate/001_create_people.rb"
       assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
       assert_match_in_file(/# t.column :age, :integer/m, migration_file_path)
@@ -90,13 +100,26 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/property :created_at, DateTime/m, '/tmp/sample_app/app/models/user.rb')
     end
 
+    should "properly generate version numbers" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=datamapper']) }
+      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['person', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['account', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_app']) }
+      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/user.rb')
+      assert_match_in_file(/migration 1, :create_users do/m, "/tmp/sample_app/db/migrate/001_create_users.rb")
+      assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/person.rb')
+      assert_match_in_file(/migration 2, :create_people do/m, "/tmp/sample_app/db/migrate/002_create_people.rb")
+      assert_match_in_file(/class Account\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/account.rb')
+      assert_match_in_file(/migration 3, :create_accounts do/m, "/tmp/sample_app/db/migrate/003_create_accounts.rb")
+    end
+
     should "generate migration with given fields" do
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=datamapper']) }
       silence_logger { @model_gen.start(['person', "name:string", "created_at:datetime", "email:string", '-r=/tmp/sample_app']) }
       assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/person.rb')
-      migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_create_people.rb"
-      assert_match_in_file(/migration NUM, :create_people do/m, migration_file_path)
+      migration_file_path = "/tmp/sample_app/db/migrate/001_create_people.rb"
+      assert_match_in_file(/migration 1, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table :people do/m, migration_file_path)
       assert_match_in_file(/column :name, String/m, migration_file_path)
       assert_match_in_file(/column :created_at, DateTime/m, migration_file_path)
@@ -107,7 +130,7 @@ class TestModelGenerator < Test::Unit::TestCase
 
   # MONGOMAPPER
   context "model generator using mongomapper" do
-    should "generate migration file with given fields" do
+    should "generate model file with no properties" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=mongomapper']) }
       silence_logger { @model_gen.start(['person', '-r=/tmp/sample_app']) }
       assert_match_in_file(/class Person\n\s+include MongoMapper::Document/m, '/tmp/sample_app/app/models/person.rb')
@@ -136,7 +159,7 @@ class TestModelGenerator < Test::Unit::TestCase
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=sequel']) }
       silence_logger { @model_gen.start(['person', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_app']) }
-      migration_file_path = "/tmp/sample_app/db/migrate/#{current_time}_create_people.rb"
+      migration_file_path = "/tmp/sample_app/db/migrate/001_create_people.rb"
       assert_match_in_file(/class Person < Sequel::Model/m, '/tmp/sample_app/app/models/person.rb')
       assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)

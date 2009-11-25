@@ -45,7 +45,7 @@ module Padrino
           end
 
           DM_MIGRATION = (<<-MIGRATION).gsub(/^ {10}/, '')
-          migration NUM, :!FILENAME! do
+          migration !VERSION!, :!FILENAME! do
             up do
               !UP!
             end
