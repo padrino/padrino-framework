@@ -9,7 +9,7 @@ module Padrino
         # Start for the given options a rackup handler
         def start(options)
 
-          ENV["PADRINO_ENV"] = options.environment.to_s
+          ENV["PADRINO_ENV"] ||= options.environment.to_s
 
           boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
           unless File.exist?(boot)

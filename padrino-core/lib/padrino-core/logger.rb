@@ -54,11 +54,11 @@ module Padrino
     # 
     # Defaults are:
     # 
-    #   :production  => { :log_level => :error, :stream => :to_file }
+    #   :production  => { :log_level => :warn, :stream => :to_file }
     #   :development => { :log_level => :debug, :stream => :stdout }
     #   :test        => { :log_level => :fatal, :stream => :null }
     Config = {
-      :production  => { :log_level => :error, :stream => :to_file },
+      :production  => { :log_level => :warn, :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     } unless const_defined?(:Config)
@@ -213,7 +213,7 @@ module Padrino
       now = Time.now
       length = extract_content_length(header)
 
-      logger.debug FORMAT % [
+      logger.warn FORMAT % [
         env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
         env["REMOTE_USER"] || "-",
         env["REQUEST_METHOD"],
