@@ -16,7 +16,6 @@ module Padrino
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000
       method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
-
       def start
         require File.dirname(__FILE__) + "/tasks/adapter"
         chdir(options.chdir)
