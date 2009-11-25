@@ -83,11 +83,11 @@ class TestModelGenerator < Test::Unit::TestCase
   context "model generator using datamapper" do
     should "generate model file with fields" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=datamapper']) }
-      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_app']) }
       assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/user.rb')
       assert_match_in_file(/property :name, String/m, '/tmp/sample_app/app/models/user.rb')
       assert_match_in_file(/property :age, Integer/m, '/tmp/sample_app/app/models/user.rb')
-      assert_match_in_file(/property :email, String/m, '/tmp/sample_app/app/models/user.rb')
+      assert_match_in_file(/property :created_at, DateTime/m, '/tmp/sample_app/app/models/user.rb')
     end
 
     should "generate migration with given fields" do
