@@ -4,6 +4,9 @@
 require 'active_support/core_ext/class/attribute_accessors' unless Class.method_defined?(:cattr_accessor)
 ## Hash#symbolize_keys, Hash#reverse_merge, Hash#reverse_merge!, Hash#extract_options!, Hash#slice!
 require 'active_support/core_ext/hash' unless Hash.method_defined?(:reverse_merge)
+## Hash#to_params
+require 'active_support/core_ext/object' unless Object.method_defined?(:to_query)
+class Hash; alias to_params to_query; end unless Hash.method_defined?(:to_params)
 ## String#inflectors
 require 'active_support/inflector' unless String.method_defined?(:constantize)
 ## Object#blank?, Object#present?

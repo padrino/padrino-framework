@@ -37,6 +37,11 @@ unless Hash.method_defined?(:slice)
   end
 end
 
+## Hash#to_params
+unless Hash.method_defined?(:to_params)
+  require 'extlib/hash'
+end
+
 ## Hash#reverse_merge, Hash#reverse_merge!
 unless Hash.method_defined?(:present?)
   class Hash
