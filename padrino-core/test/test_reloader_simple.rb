@@ -38,11 +38,15 @@ class TestSimpleReloader < Test::Unit::TestCase
       get "/"
       assert_equal 200, status
       new_phrase =  "The magick number is: #{rand(100)}!"
-      buffer = File.read(SimpleDemo.app_file).gsub!(/The magick number is: \d+!/, new_phrase)
-      File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
+      buffer     = File.read(SimpleDemo.app_file)
+      new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
+      File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
       sleep 1.2 # We need at least a cooldown of 1 sec.
       get "/"
       assert_equal new_phrase, body
+
+      # Now we need to prevent to commit a new changed file so we revert it
+      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
     end
   end
 end
