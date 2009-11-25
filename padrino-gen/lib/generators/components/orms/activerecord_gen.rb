@@ -103,7 +103,7 @@ module Padrino
             migration_contents.gsub!(/!TABLE!/, model_name.underscore)
             migration_contents.gsub!(/!FILENAME!/, filename.camelize)
             migration_contents.gsub!(/!FIELDS!/, column_declarations)
-            migration_filename = "#{Time.now.to_i}_#{filename}.rb"
+            migration_filename = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{filename}.rb"
             create_file(app_root_path('db/migrate/', migration_filename), migration_contents)
           end
 
@@ -117,7 +117,7 @@ module Padrino
             migration_contents.gsub!(/!FILENAME!/, migration_name.camelize)
             migration_contents.gsub!(/!UP!/m,   (direction == 'add' ? add_cols : remove_cols))
             migration_contents.gsub!(/!DOWN!/m, (direction == 'add' ? remove_cols : add_cols))
-            migration_filename = "#{Time.now.to_i}_#{migration_name.underscore}.rb"
+            migration_filename = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{migration_name.underscore}.rb"
             create_file(app_root_path('db/migrate/', migration_filename), migration_contents)
           end
 
