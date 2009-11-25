@@ -69,7 +69,7 @@ module Padrino
       config = Config[Padrino.env] || Config[:test]
       stream = case config[:stream]
         when :to_file
-          FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?()
+          FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
           File.new(Padrino.root("log", "#{Padrino.env}.log"), "a+")
         when :null   then StringIO.new
         when :stdout then $stdout
