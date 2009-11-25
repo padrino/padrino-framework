@@ -2,12 +2,37 @@ require File.dirname(__FILE__) + '/helper'
 
 class TestPadrinoLogger < Test::Unit::TestCase
 
+  def setup
+    Padrino::Logger::Config[:test][:stream] = :null # The default
+    Padrino::Logger.setup!
+  end
+
   def setup_logger(options={})
     @log    = StringIO.new
     @logger = Padrino::Logger.new(options.merge(:stream => @log))
   end
 
   context 'for logger functionality' do
+
+    context 'check stream config' do
+
+      should 'use stdout if stream is nil' do
+        Padrino::Logger::Config[:test][:stream] = nil
+        Padrino::Logger.setup!
+        assert_equal $stdout, Padrino.logger.log
+      end
+
+      should 'use StringIO as default for test' do
+        assert_instance_of StringIO, Padrino.logger.log
+      end
+
+      should 'use a custom stream' do
+        my_stream = StringIO.new
+        Padrino::Logger::Config[:test][:stream] = my_stream
+        Padrino::Logger.setup!
+        assert_equal my_stream, Padrino.logger.log
+      end
+    end
 
     should 'log something' do
       setup_logger(:log_level => :error)
@@ -19,18 +44,12 @@ class TestPadrinoLogger < Test::Unit::TestCase
       assert_match(/Yep this can be logged/, @log.string)
     end
 
-    # This can work when in future we can configure Padrino Logging
-    # so we can tell that for :test env we can log something.
-    # 
-    # should 'log an application' do
-    #   setup_logger
-    #   logger = @logger # We need to replace our padrino logger
-    #   mock_app { get("/"){ "Foo" } }
-    #   get "/"
-    #   assert_equal "Foo", body
-    #   assert_match /GET \/ " 200 - /, @log.string
-    #   logger = nil # We need to reset padrino logger
-    # end
+    should 'log an application' do
+      mock_app { get("/"){ "Foo" } }
+      get "/"
+      assert_equal "Foo", body
+      assert_match /GET \/  - 200/, Padrino.logger.log.string
+    end
 
   end
 end
