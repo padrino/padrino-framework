@@ -198,7 +198,10 @@ module Padrino
   end
 end
 
-# Define a logger available every where in our app
-def logger
-  Thread.current[:padrino_logger] ||= Padrino::setup_logger!
+module Kernel
+
+  # Define a logger available every where in our app
+  def logger
+    Thread.current[:padrino_logger] ||= Padrino::setup_logger!
+  end
 end
