@@ -53,7 +53,11 @@ module Padrino
             create_file(model_path, model_contents)
           end
 
-          def create_migration_file(filename, name, fields)
+          def create_model_migration(filename, name, fields)
+            # NO MIGRATION NEEDED
+          end
+
+          def create_migration_file(migration_name, name, columns)
             # NO MIGRATION NEEDED
           end
         end

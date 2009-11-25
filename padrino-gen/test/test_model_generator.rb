@@ -93,13 +93,13 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate migration with given fields" do
       current_time = stop_time_for_test
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=datamapper']) }
-      silence_logger { @model_gen.start(['person', "name:string", "age:integer", "email:string", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['person', "name:string", "created_at:datetime", "email:string", '-r=/tmp/sample_app']) }
       assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, '/tmp/sample_app/app/models/person.rb')
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time.to_i}_create_people.rb"
       assert_match_in_file(/migration NUM, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table\(:people\) do/m, migration_file_path)
       assert_match_in_file(/column\(:name, String\)/m, migration_file_path)
-      assert_match_in_file(/column\(:age, Integer\)/m, migration_file_path)
+      assert_match_in_file(/column\(:created_at, DateTime\)/m, migration_file_path)
       assert_match_in_file(/column\(:email, String\)/m, migration_file_path)
       assert_match_in_file(/drop_table\(:people\)/m, migration_file_path)
     end
@@ -128,21 +128,21 @@ class TestModelGenerator < Test::Unit::TestCase
   context "model generator using sequel" do
     should "generate model file with given properties" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=sequel']) }
-      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_app']) }
       assert_match_in_file(/class User < Sequel::Model/m, '/tmp/sample_app/app/models/user.rb')
     end
 
     should "generate migration file with given properties" do
       current_time = stop_time_for_test
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-d=sequel']) }
-      silence_logger { @model_gen.start(['person', "name:string", "age:integer", "email:string", '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['person', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_app']) }
       migration_file_path = "/tmp/sample_app/db/migrate/#{current_time.to_i}_create_people.rb"
       assert_match_in_file(/class Person < Sequel::Model/m, '/tmp/sample_app/app/models/person.rb')
       assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/string :name/m,   migration_file_path)
-      assert_match_in_file(/integer :age/m,   migration_file_path)
-      assert_match_in_file(/string :email/m,  migration_file_path)
+      assert_match_in_file(/String :name/m,   migration_file_path)
+      assert_match_in_file(/Integer :age/m,   migration_file_path)
+      assert_match_in_file(/DateTime :created/m,  migration_file_path)
       assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
