@@ -15,7 +15,8 @@ module Padrino
           value_key = placeholder[0][1..-1].to_sym
           result_url.gsub!(Regexp.new(placeholder[0]), values.delete(value_key).to_s)
         end
-        result_url << "?" + values.collect { |name, val| "#{name}=#{val}" if val.present? }.compact.join("&") if values.any?
+        values.reject! { |name, val| val.blank? }
+        result_url << "?" + values.collect { |name, val| "#{name}=#{val}" }.join("&") if values.any?
         result_url
       end
     end

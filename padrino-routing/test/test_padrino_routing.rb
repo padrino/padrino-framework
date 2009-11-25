@@ -12,6 +12,16 @@ class TestPadrinoRouting < Test::Unit::TestCase
       demo.class.map(:admin, :demo).to('/admin/demo/:name')
       assert_equal '/admin/demo/john', demo.url_for(:admin, :demo, :name => 'john')
     end
+    should "support finding known urls ignoring blank extra param" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo')
+      assert_equal '/admin/demo', demo.url_for(:admin, :demo, :foo => '')
+    end
+    should "support finding known urls with named param ignoring blank extra param" do
+      demo = app.new
+      demo.class.map(:admin, :demo).to('/admin/demo/:name')
+      assert_equal '/admin/demo/john', demo.url_for(:admin, :demo, :name => 'john', :foo => ' ')
+    end
     should "support finding known urls with one extra param" do
       demo = app.new
       demo.class.map(:admin, :demo).to('/admin/demo/:name')
