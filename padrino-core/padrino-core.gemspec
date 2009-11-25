@@ -45,13 +45,14 @@ Gem::Specification.new do |s|
      "padrino-core.gemspec",
      "test/fixtures/apps/.components",
      "test/fixtures/apps/.gitignore",
-     "test/fixtures/apps/app.rb",
-     "test/fixtures/apps/multi.rb",
+     "test/fixtures/apps/complex.rb",
+     "test/fixtures/apps/simple.rb",
      "test/helper.rb",
      "test/test_application.rb",
      "test/test_padrino_core.rb",
      "test/test_padrino_mounter.rb",
-     "test/test_reloader.rb"
+     "test/test_reloader_complex.rb",
+     "test/test_reloader_simple.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-core}
   s.rdoc_options = ["--charset=UTF-8"]
