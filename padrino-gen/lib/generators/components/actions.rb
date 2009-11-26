@@ -98,6 +98,16 @@ module Padrino
         def indent_spaces(count)
           ' ' * count
         end
+        
+        # For Controller action generation
+        # Takes in fields for routes in the form of get:index post:test delete:yada and such
+        def controller_actions(fields)
+          field_tuples = fields.collect { |value| value.split(":") }
+          action_declarations = field_tuples.collect do |request, name| 
+            "#{request} :#{name} do\n  end\n"
+            end.join("\n  ")
+        end
+        
       end
     end
   end

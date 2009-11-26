@@ -14,4 +14,6 @@
   # get "/example" do
   #   "Hello world!"
   # end
+  
+  <%= @actions %>
 end

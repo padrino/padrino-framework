@@ -5,6 +5,8 @@ class TestControllerGenerator < Test::Unit::TestCase
   def setup
     @skeleton = Padrino::Generators::Skeleton.dup
     @contgen = Padrino::Generators::Controller.dup
+    @controller_path = '/tmp/sample_app/app/controllers/demo_items.rb'
+    @controller_test_path = '/tmp/sample_app/test/controllers/demo_items_controller_test.rb'
     `rm -rf /tmp/sample_app`
   end
 
@@ -18,7 +20,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     should "generate controller within existing application" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/SampleApp.controllers do/m, '/tmp/sample_app/app/controllers/demo_items.rb')
+      assert_match_in_file(/SampleApp.controllers do/m, @controller_path)
       assert_match_in_file(/SampleApp.helpers do/m, '/tmp/sample_app/app/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_app/app/views/demo_items')
     end
@@ -26,19 +28,19 @@ class TestControllerGenerator < Test::Unit::TestCase
     should "generate controller test for bacon" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/describe "DemoItemsController" do/m, '/tmp/sample_app/test/controllers/demo_items_controller_test.rb')
+      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for riot" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=riot']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/context "DemoItemsController" do/m, '/tmp/sample_app/test/controllers/demo_items_controller_test.rb')
+      assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for testspec" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=testspec']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/context "DemoItemsController" do/m, '/tmp/sample_app/test/controllers/demo_items_controller_test.rb')
+      assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for rspec" do
@@ -51,7 +53,23 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       expected_pattern = /class DemoItemsControllerTest < Test::Unit::TestCase/m
-      assert_match_in_file(expected_pattern, '/tmp/sample_app/test/controllers/demo_items_controller_test.rb')
+      assert_match_in_file(expected_pattern, @controller_test_path)
     end
+    
+    # Controller action generation
+    
+    should "generate :test action with get request" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items', "get:test",'-r=/tmp/sample_app']) }
+      assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
+    end
+    
+    should "generate actions for get:test post:yada" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items', "get:test","post:yada",'-r=/tmp/sample_app']) }
+      assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
+      assert_match_in_file(/post :yada do\n  end\n/m,@controller_path)
+    end
+    
   end
 end
