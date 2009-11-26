@@ -17,8 +17,15 @@ module Padrino
       method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
       def start
+        ENV["PADRINO_ENV"] ||= options.environment.to_s
         require File.dirname(__FILE__) + "/tasks/adapter"
         chdir(options.chdir)
+        boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
+        unless File.exist?(boot)
+          puts "=> Could not find boot file: #{boot.inspect} !!!"
+          return
+        end
+        require boot
         Padrino::Tasks::Adapter.start(options)
       end
 
@@ -44,7 +51,7 @@ module Padrino
         boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
         unless File.exist?(boot)
           puts "=> Could not find boot file: #{boot.inspect} !!!"
-          exit
+          return
         end
         # require boot
         require 'rake'
@@ -59,13 +66,13 @@ module Padrino
       method_option :boot,        :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :environment, :type => :string, :aliases => "-e", :required => true, :default => :development
       def console
+        ENV["PADRINO_ENV"] ||= options.environment.to_s
         require File.dirname(__FILE__) + "/version"
         boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
         unless File.exist?(boot)
           puts "=> Could not find boot file: #{boot.inspect} !!!"
-          exit
+          return
         end
-        ENV["PADRINO_ENV"] ||= options.environment.to_s
         ARGV.clear
         puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
         require 'irb'

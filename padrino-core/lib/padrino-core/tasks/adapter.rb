@@ -6,15 +6,6 @@ module Padrino
         # Start for the given options a rackup handler
         def start(options)
 
-          ENV["PADRINO_ENV"] ||= options.environment.to_s
-
-          boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
-          unless File.exist?(boot)
-            puts "=> Could not find boot file: #{boot.inspect} !!!"
-            exit
-          end
-          require boot
-
           puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
 
           if options.daemonize?
@@ -23,7 +14,7 @@ module Padrino
 
             fork do
               Process.setsid
-              exit if fork
+              return if fork
               File.umask 0000
               puts "=> Padrino server has been daemonized with pid #{Process.pid}"
               STDIN.reopen "/dev/null"
@@ -35,7 +26,7 @@ module Padrino
 
               if pid
                 File.open(pid, 'w'){ |f| f.write("#{Process.pid}") }
-                at_exit { File.delete(pid) if File.exist?(pid) }
+                at_return { File.delete(pid) if File.exist?(pid) }
               end
 
               Padrino.run!(options.host, options.port, options.adapter)

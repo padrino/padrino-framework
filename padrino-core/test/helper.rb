@@ -11,6 +11,18 @@ require 'rack/test'
 require 'rack'
 require 'shoulda'
 
+module Kernel
+  # Silences the output by redirecting to stringIO
+  # silence_logger { ...commands... } => "...output..."
+  def silence_logger(&block)
+    $stdout = log_buffer = StringIO.new
+    block.call
+    $stdout = STDOUT
+    log_buffer.string
+  end
+  alias :silence_stdout :silence_logger
+end
+
 class Padrino::Application
   # Allow assertions in request context
   include Test::Unit::Assertions
