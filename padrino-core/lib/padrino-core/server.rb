@@ -5,7 +5,11 @@ module Padrino
   end
 
   module Server
+
+    class LoadError < RuntimeError; end
+
     Handlers = %w[thin mongrel webrick] unless const_defined?(:Handlers)
+
     private
       def self.build(host="localhost", port=3000, adapter=nil)
         handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
@@ -13,7 +17,7 @@ module Padrino
         begin
           handler = Rack::Handler.get(handler_name.downcase)
         rescue
-          puts "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
+          raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
           exit
         end
 
@@ -42,7 +46,7 @@ module Padrino
           rescue NameError
           end
         end
-        fail "Server handler (#{servers.join(',')}) not found."
+        raise LoadError, "Server handler (#{servers.join(',')}) not found."
       end
   end
 end

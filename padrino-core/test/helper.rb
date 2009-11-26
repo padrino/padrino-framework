@@ -56,15 +56,3 @@ class Test::Unit::TestCase
 
   alias :response :last_response
 end
-# 
-# class Object
-#   # Silences the output by redirecting to stringIO
-#   # silence_logger { ...commands... } => "...output..."
-#   def silence_logger(&block)
-#     orig_stdout = $stdout
-#     $stdout = log_buffer = StringIO.new
-#     block.call
-#     $stdout = orig_stdout
-#     log_buffer.rewind && log_buffer.read
-#   end
-# end
