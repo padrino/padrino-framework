@@ -7,6 +7,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     @contgen = Padrino::Generators::Controller.dup
     @controller_path = '/tmp/sample_app/app/controllers/demo_items.rb'
     @controller_test_path = '/tmp/sample_app/test/controllers/demo_items_controller_test.rb'
+    @route_path = '/tmp/sample_app/config/urls.rb'
     `rm -rf /tmp/sample_app`
   end
 
@@ -69,6 +70,19 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { @contgen.start(['demo_items', "get:test","post:yada",'-r=/tmp/sample_app']) }
       assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
       assert_match_in_file(/post :yada do\n  end\n/m,@controller_path)
+    end
+    
+    should "generate url routes for get:test" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items', "get:test",'-r=/tmp/sample_app']) }
+      assert_match_in_file(/map\(\:test\).to\(\"\/demo_items\/test\"\)/m,@route_path)      
+    end
+    
+    should "generate url routes for get:yoda post:yada" do
+      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }
+      assert_match_in_file(/map\(\:yoda\).to\(\"\/demo_items\/yoda\"\)/m,@route_path)
+      assert_match_in_file(/map\(\:yada\).to\(\"\/demo_items\/yada\"\)/m,@route_path)      
     end
     
   end

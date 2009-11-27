@@ -108,6 +108,16 @@ module Padrino
             end.join("\n  ")
         end
         
+        #For controller route generation
+        # Takes in the fields and maps out an appropriate default route.
+        # where controller is user and route is get:test, will add map(:test).to("/user/test")
+        def controller_routes(name,fields)
+          field_tuples = fields.collect { |value| value.split(":") }
+          routes = field_tuples.collect do |request, route| 
+            "map(:#{route}).to(\"/#{name}/#{route}\")"
+            end.join("\n  ")
+        end
+        
       end
     end
   end
