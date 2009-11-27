@@ -58,26 +58,14 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
     
     # Controller action generation
-    
-    should "generate :test action with get request" do
-      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
-      silence_logger { @contgen.start(['demo_items', "get:test",'-r=/tmp/sample_app']) }
-      assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
-    end
-    
+        
     should "generate actions for get:test post:yada" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items', "get:test","post:yada",'-r=/tmp/sample_app']) }
       assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
       assert_match_in_file(/post :yada do\n  end\n/m,@controller_path)
     end
-    
-    should "generate url routes for get:test" do
-      silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
-      silence_logger { @contgen.start(['demo_items', "get:test",'-r=/tmp/sample_app']) }
-      assert_match_in_file(/map\(\:test\).to\(\"\/demo_items\/test\"\)/m,@route_path)      
-    end
-    
+        
     should "generate url routes for get:yoda post:yada" do
       silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }
