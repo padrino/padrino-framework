@@ -3,12 +3,7 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 # 
 # require 'rubygems'
 # require 'lib/padrino-core'
-# 
-# Use this for prevent (when reload is in use) to re run the server.
-# 
-# if Padrino.load!
-#   SingleDemo.run!
-# end
+#
 
 class SimpleDemo < Padrino::Application
   set :reload, true
@@ -20,4 +15,4 @@ SimpleDemo.controllers do
   end
 end
 
-Padrino.load! # Remove this if you will run the app standalone
+Padrino.load! # Replace this with Parino.run! unless Padrino.loaded? if you want to run the app standalone

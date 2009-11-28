@@ -1,6 +1,7 @@
 module Padrino
 
   def self.run!(*args)
+    Padrino.load! unless Padrino.loaded?
     Server.build(*args)
   end
 

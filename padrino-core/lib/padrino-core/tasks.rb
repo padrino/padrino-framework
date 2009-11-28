@@ -1,10 +1,12 @@
 require 'thor'
+require 'thor/rake_compat'
 require File.dirname(__FILE__) + "/tasks/helpers"
 
 module Padrino
   module Tasks
     class Base < Thor
       include Thor::Actions
+      include Thor::RakeCompat
       include Padrino::Tasks::Helpers
 
       class_option :chdir, :type => :string, :aliases => "-c"
@@ -43,20 +45,9 @@ module Padrino
         boot = check_boot
         return unless boot
         require 'rake'
-        # TODO: better way for do that
-        # 
-        # This hack is necessary for remove from ARGV (that's it's used by rake) thor things.
-        options.each do |k,v| 
-          ARGV.each_with_index do |a,i| 
-            if ARGV[i] == v # if we found a thor value
-              ARGV.delete_at(i) # we remove this value
-              ARGV.delete_at(i-1) # and their method_option
-            end
-          end
-        end
-        puts "=> Executing Rake #{ARGV.first}..."
+        puts "=> Executing Rake..."
         Rake.application.init
-        load(File.dirname(__FILE__) + "/tasks/rakefile.rb")
+        load(File.dirname(__FILE__) + "/tasks/rake_tasks.rb")
         Padrino::Tasks::RakeFile.boot_file = boot
         Rake.application.top_level
       end
