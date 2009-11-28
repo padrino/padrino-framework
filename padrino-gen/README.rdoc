@@ -142,11 +142,15 @@ Using the controller generator is as simple as:
   
 You can also specify desired actions to be added to your controller:
 
-  $ padrino-gen controller Admin :index [:admin, :index]
+  $ padrino-gen controller Admin get:index get:new post:create
   
 The controller generator will then construct the controller file within <tt>app/controllers/admin.rb</tt>
 and also a controller test file at <tt>test/controllers/admin_controller_test.rb</tt> according to the 
-test framework chosen during app generation.
+test framework chosen during app generation. A default route will also be generated mapping to name of the controller and the route name. For example:
+
+  $ padrino-gen controller User get:index
+  
+  will create a url route for :index mapping to "/user/index"
 
 === Mailer Generator ===
 
