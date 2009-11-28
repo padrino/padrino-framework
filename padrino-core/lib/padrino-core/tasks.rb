@@ -72,12 +72,11 @@ module Padrino
         def check_boot
           ENV["PADRINO_ENV"] ||= options.environment.to_s
           chdir(options.chdir)
-          boot = options.chdir ? File.join(options.chdir, options.boot) : options.boot
-          unless File.exist?(boot)
-            puts "=> Could not find boot file: #{boot.inspect} !!!"
+          unless File.exist?(options.boot)
+            puts "=> Could not find boot file: #{options.boot.inspect} !!!"
             return
           end
-          boot
+          options.boot
         end
     end
   end
