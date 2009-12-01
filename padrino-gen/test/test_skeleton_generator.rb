@@ -5,10 +5,6 @@ require 'fakeweb'
 class TestSkeletonGenerator < Test::Unit::TestCase
   def setup
     FakeWeb.allow_net_connect = false
-    FakeWeb.register_uri(:get, "http://prototypejs.org/assets/2009/8/31/prototype.js", :body => "prototype")
-    FakeWeb.register_uri(:get, "http://github.com/nesquena/lowpro/raw/master/dist/lowpro.js", :body => "lowpro")
-    FakeWeb.register_uri(:get, "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js", :body => "jquery")
-    FakeWeb.register_uri(:get, "http://rightjs.org/builds/current/right-min.js", :body => "rightjs")
     `rm -rf /tmp/sample_app`
     @skeleton = Padrino::Generators::Skeleton.dup
   end
@@ -153,14 +149,14 @@ class TestSkeletonGenerator < Test::Unit::TestCase
     should "properly generate for jquery" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=jquery']) }
       assert_match /Applying.*?jquery.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/public/javascripts/jquery.min.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/jquery.js')
       assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for prototype" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=prototype']) }
       assert_match /Applying.*?prototype.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/public/javascripts/prototype.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/protopak.js')
       assert_file_exists('/tmp/sample_app/public/javascripts/lowpro.js')
       assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
@@ -168,7 +164,7 @@ class TestSkeletonGenerator < Test::Unit::TestCase
     should "properly generate for rightjs" do
       buffer = silence_logger { @skeleton.start(['sample_app', '/tmp', '--script=rightjs']) }
       assert_match /Applying.*?rightjs.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/public/javascripts/right-min.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/right.js')
       assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
   end

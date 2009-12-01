@@ -5,9 +5,9 @@ module Padrino
         
         module PrototypeGen
           def setup_script
-            get("http://prototypejs.org/assets/2009/8/31/prototype.js", "public/javascripts/prototype.js")
-            get('http://github.com/nesquena/lowpro/raw/master/dist/lowpro.js', "public/javascripts/lowpro.js")
-            create_file('public/javascripts/application.js')
+            copy_file('templates/scripts/protopak.js', "public/javascripts/protopak.js")
+            copy_file('templates/scripts/lowpro.js', "public/javascripts/lowpro.js")
+            create_file('public/javascripts/application.js', "// Put your application scripts here")
           end
         end
         

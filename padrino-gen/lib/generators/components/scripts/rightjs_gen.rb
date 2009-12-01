@@ -5,8 +5,8 @@ module Padrino
         
         module RightjsGen
           def setup_script
-            get("http://rightjs.org/builds/current/right-min.js", "public/javascripts/right-min.js")
-            create_file('public/javascripts/application.js')
+            copy_file('templates/scripts/right.js', "public/javascripts/right.js")
+            create_file('public/javascripts/application.js', "// Put your application scripts here")
           end
         end
         
