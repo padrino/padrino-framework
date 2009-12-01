@@ -84,8 +84,9 @@ module Padrino
       def javascript_path(source)
         return source if source =~ /^http/
         source.gsub!(/\.js$/, '')
-        result_path = "#{source}.js" if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("javascripts", "#{source}.js")
+        source_name = source; source_name << ".js" unless source =~ /\.js\w{2,4}$/
+        result_path = source_name if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("javascripts", source_name)
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
       end
@@ -94,8 +95,9 @@ module Padrino
       def stylesheet_path(source)
         return source if source =~ /^http/
         source.gsub!(/\.css$/, '')
-        result_path = "#{source}.css" if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("stylesheets", "#{source}.css")
+        source_name = source; source_name << ".css" unless source =~ /\.css$/
+        result_path = source_name if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("stylesheets", source_name)
         stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
         "#{result_path}?#{stamp}"
       end
