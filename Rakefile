@@ -2,11 +2,14 @@ require 'pathname'
 require "rake/clean"
 require "rake/gempackagetask"
 require 'fileutils'
+require File.dirname(__FILE__) + '/versioner'
+
 include FileUtils
 
 ROOT = Pathname(__FILE__).dirname.expand_path
 GEM_NAME = 'padrino-framework'
-GEM_VERSION = ROOT.join('VERSION').read
+GEM_VERSION = ROOT.join('VERSION').read.chomp
+VERSIONER = Versioner.new(GEM_VERSION, Dir[File.dirname(__FILE__) + '/**/VERSION'])
 
 padrino_gems = [
   "padrino-core",
@@ -20,7 +23,7 @@ padrino_gems = [
 ]
 
 GEM_PATHS = padrino_gems.freeze
- 
+
 def rake_command(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
@@ -52,6 +55,45 @@ task :uninstall do
   end
 end
 
+desc "Displays the current version"
+task :version do
+  puts "Current version: #{VERSIONER.current_version}"
+end
+
+desc "Commits all staged files"
+task :commit, [:message] do |t, args|
+  system("git commit -a -m \"#{args.message}\"")
+end
+
+namespace :version do
+  namespace :bump do
+    desc "Bump the gemspec by a major version."
+    task :major => :versionomy do
+      version = VERSIONER.bump!(:major)
+      Rake::Task['gemspec'].invoke
+      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
+    end
+
+    desc "Bump the gemspec by a minor version."
+    task :minor => :versionomy do
+      version = VERSIONER.bump!(:minor)
+      Rake::Task['gemspec'].invoke
+      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
+    end
+
+    desc "Bump the gemspec by a patch version."
+    task :patch => :versionomy do |t|
+      version = VERSIONER.bump!(:patch)
+      Rake::Task['gemspec'].invoke
+      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
+    end
+
+    task :versionomy do
+      require 'versionomy' unless defined?(Versionomy) # gem install versionomy
+    end
+  end
+end
+
 desc "Release all padrino gems"
 task :publish do
   GEM_PATHS.each do |dir|
@@ -76,7 +118,7 @@ task :test do
   end
 end
 
-# Alternate testing method, load all tests and run them at once 
+# Alternate testing method, load all tests and run them at once
 # Keep this because this test running method exposes test flaws sometimes not found with 'test'
 require 'rake/testtask'
 Rake::TestTask.new(:test_alt) do |test|
