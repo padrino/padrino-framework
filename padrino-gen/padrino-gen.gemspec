@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-11-30}
+  s.date = %q{2009-12-01}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -71,6 +71,10 @@ Gem::Specification.new do |s|
      "lib/generators/templates/helper.rb.tt",
      "lib/generators/templates/mailer.rb.tt",
      "lib/generators/templates/mailer_initializer.rb.tt",
+     "lib/generators/templates/scripts/jquery.js",
+     "lib/generators/templates/scripts/lowpro.js",
+     "lib/generators/templates/scripts/protopak.js",
+     "lib/generators/templates/scripts/right.js",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
      "test/helper.rb",

@@ -1,3 +1,5 @@
+# Simple release is: rake version:bump:minor publish
+
 require 'pathname'
 require "rake/clean"
 require "rake/gempackagetask"
