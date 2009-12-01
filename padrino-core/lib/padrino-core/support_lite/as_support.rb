@@ -1,5 +1,11 @@
 # This requires necessary pieces of ActiveSupport for the dependencies required by Padrino
 
+## ActiveSupport::Deprecation
+unless defined?(ActiveSupport::Deprecation)
+  require 'active_support/core_ext/kernel' unless Kernel.method_defined?(:silence_warnings)
+  require 'active_support/core_ext/module' unless Module.method_defined?(:mattr_accessor)
+  require 'active_support/deprecation'
+end
 ## Class#cattr_accessor
 require 'active_support/core_ext/class/attribute_accessors' unless Class.method_defined?(:cattr_accessor)
 ## Hash#symbolize_keys, Hash#reverse_merge, Hash#reverse_merge!, Hash#extract_options!, Hash#slice!
