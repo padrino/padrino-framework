@@ -72,6 +72,7 @@ namespace :version do
     desc "Bump the gemspec by a major version."
     task :major => :versionomy do
       version = VERSIONER.bump!(:major)
+      puts "Bumping the major version to #{version.to_s}"
       Rake::Task['gemspec'].invoke
       Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
     end
@@ -79,6 +80,7 @@ namespace :version do
     desc "Bump the gemspec by a minor version."
     task :minor => :versionomy do
       version = VERSIONER.bump!(:minor)
+      puts "Bumping the minor version to #{version.to_s}"
       Rake::Task['gemspec'].invoke
       Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
     end
@@ -86,6 +88,7 @@ namespace :version do
     desc "Bump the gemspec by a patch version."
     task :patch => :versionomy do |t|
       version = VERSIONER.bump!(:patch)
+      puts "Bumping the patch version to #{version.to_s}"
       Rake::Task['gemspec'].invoke
       Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
     end
@@ -98,6 +101,9 @@ end
 
 desc "Release all padrino gems"
 task :publish do
+  puts "Pushing to GitHub..."
+  system("git push")
+  puts "Pushing to Gemcutter..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
   end
