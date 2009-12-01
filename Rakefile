@@ -103,15 +103,6 @@ task :publish do
   end
 end
 
-# NOTE: this task must be named release_all, and not release
-desc "Release #{GEM_NAME} #{GEM_VERSION}"
-task :release_all do
-  # sh "rake release VERSION=#{GEM_VERSION}"
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake_command "release VERSION=#{GEM_VERSION}" }
-  end
-end
-
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
