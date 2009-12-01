@@ -4,9 +4,7 @@
 
 === GENERAL
 
-* We need to fix the parent Rakefile to support bumping versions and publishing each gem (?)
 * Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
-* Helpers for check_box_group, radio_button_group which create a set of checkboxes or radio buttons
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
 * Decide what to do about initializers (where do they go single app, multiple apps)
 * Port over plugins for sequel, activerecord, and datamapper (and create equivalents for couchdb and mongo)
