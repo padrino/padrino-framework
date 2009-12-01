@@ -10,6 +10,7 @@ class Hash; alias to_params to_query; end unless Hash.method_defined?(:to_params
 ## String#inflectors
 require 'active_support/inflector' unless String.method_defined?(:constantize)
 ## Object#blank?, Object#present?
+require 'active_support/core_ext/object' unless Object.method_defined?(:blank?)
 require 'active_support/core_ext/blank' unless Object.method_defined?(:blank?)
 ## Array#extract_options!
 require 'active_support/core_ext/array' unless Array.method_defined?(:extract_options!)
