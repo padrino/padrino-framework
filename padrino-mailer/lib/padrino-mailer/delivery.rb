@@ -81,7 +81,7 @@ module Padrino
             smtp.enable_starttls
           end
           if o.include?(:auth)
-            smtp.start(o[:domain], o[:user], o[:password], o[:auth])
+            smtp.start(o[:domain], o[:user], o[:pass] || o[:password], o[:auth])
           else
             smtp.start(o[:domain])
           end
