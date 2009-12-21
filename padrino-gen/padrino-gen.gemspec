@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.2.3"
+  s.version = "0.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
@@ -46,6 +46,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/public/javascripts/.empty_directory",
      "lib/padrino-gen/generators/app/public/stylesheets/.empty_directory",
      "lib/padrino-gen/generators/app/tmp/.empty_directory",
+     "lib/padrino-gen/generators/base.rb",
      "lib/padrino-gen/generators/components/actions.rb",
      "lib/padrino-gen/generators/components/mocks/mocha_gen.rb",
      "lib/padrino-gen/generators/components/mocks/rr_gen.rb",
