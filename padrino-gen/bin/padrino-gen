@@ -2,13 +2,14 @@
 %w[rubygems thor].each { |gem| require gem }
 require File.dirname(__FILE__) + "/../lib/padrino-gen"
 
+Padrino::Generators::Base.start(ARGV)
 Padrino::Generators.lockup!
 
 generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
 generator_class = Padrino::Generators.mappings[generator_kind]
 arguments = ARGV.any? ? ARGV : ['-h']
 
-if generator_class 
+if generator_class
   generator_class.start(arguments)
 else
   puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(", ")})"
