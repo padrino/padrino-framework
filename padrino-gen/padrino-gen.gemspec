@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-20}
+  s.date = %q{2009-12-21}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -26,13 +26,64 @@ Gem::Specification.new do |s|
      "VERSION",
      "bin/padrino-gen",
      "lib/padrino-gen.rb",
+     "lib/padrino-gen/generators/actions.rb",
+     "lib/padrino-gen/generators/app.rb",
+     "lib/padrino-gen/generators/app/.gitignore",
+     "lib/padrino-gen/generators/app/Gemfile",
+     "lib/padrino-gen/generators/app/app/.empty_directory",
+     "lib/padrino-gen/generators/app/app/app.rb.tt",
+     "lib/padrino-gen/generators/app/app/controllers/.empty_directory",
+     "lib/padrino-gen/generators/app/app/helpers/.empty_directory",
+     "lib/padrino-gen/generators/app/app/views/.empty_directory",
+     "lib/padrino-gen/generators/app/config.ru",
+     "lib/padrino-gen/generators/app/config/apps.rb.tt",
+     "lib/padrino-gen/generators/app/config/boot.rb",
+     "lib/padrino-gen/generators/app/config/initializers/.empty_directory",
+     "lib/padrino-gen/generators/app/config/initializers/example.rb",
+     "lib/padrino-gen/generators/app/config/urls.rb.tt",
+     "lib/padrino-gen/generators/app/lib/.empty_directory",
+     "lib/padrino-gen/generators/app/public/images/.empty_directory",
+     "lib/padrino-gen/generators/app/public/javascripts/.empty_directory",
+     "lib/padrino-gen/generators/app/public/stylesheets/.empty_directory",
+     "lib/padrino-gen/generators/app/tmp/.empty_directory",
+     "lib/padrino-gen/generators/components/actions.rb",
+     "lib/padrino-gen/generators/components/mocks/mocha_gen.rb",
+     "lib/padrino-gen/generators/components/mocks/rr_gen.rb",
+     "lib/padrino-gen/generators/components/orms/activerecord_gen.rb",
+     "lib/padrino-gen/generators/components/orms/couchrest_gen.rb",
+     "lib/padrino-gen/generators/components/orms/datamapper_gen.rb",
+     "lib/padrino-gen/generators/components/orms/mongomapper_gen.rb",
+     "lib/padrino-gen/generators/components/orms/sequel_gen.rb",
+     "lib/padrino-gen/generators/components/renderers/erb_gen.rb",
+     "lib/padrino-gen/generators/components/renderers/haml_gen.rb",
+     "lib/padrino-gen/generators/components/scripts/jquery_gen.rb",
+     "lib/padrino-gen/generators/components/scripts/prototype_gen.rb",
+     "lib/padrino-gen/generators/components/scripts/rightjs_gen.rb",
+     "lib/padrino-gen/generators/components/tests/bacon_test_gen.rb",
+     "lib/padrino-gen/generators/components/tests/riot_test_gen.rb",
+     "lib/padrino-gen/generators/components/tests/rspec_test_gen.rb",
+     "lib/padrino-gen/generators/components/tests/shoulda_test_gen.rb",
+     "lib/padrino-gen/generators/components/tests/testspec_test_gen.rb",
+     "lib/padrino-gen/generators/controller.rb",
+     "lib/padrino-gen/generators/mailer.rb",
+     "lib/padrino-gen/generators/migration.rb",
+     "lib/padrino-gen/generators/model.rb",
+     "lib/padrino-gen/generators/templates/controller.rb.tt",
+     "lib/padrino-gen/generators/templates/helper.rb.tt",
+     "lib/padrino-gen/generators/templates/mailer.rb.tt",
+     "lib/padrino-gen/generators/templates/mailer_initializer.rb.tt",
+     "lib/padrino-gen/generators/templates/scripts/jquery.js",
+     "lib/padrino-gen/generators/templates/scripts/lowpro.js",
+     "lib/padrino-gen/generators/templates/scripts/protopak.js",
+     "lib/padrino-gen/generators/templates/scripts/right.js",
      "padrino-gen.gemspec",
      "test/helper.rb",
+     "test/test_app_generator.rb",
      "test/test_controller_generator.rb",
+     "test/test_generator.rb",
      "test/test_mailer_generator.rb",
      "test/test_migration_generator.rb",
-     "test/test_model_generator.rb",
-     "test/test_app_generator.rb"
+     "test/test_model_generator.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-gen}
   s.rdoc_options = ["--charset=UTF-8"]
