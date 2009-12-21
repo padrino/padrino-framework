@@ -26,7 +26,7 @@ module ExtJs
   class Variable < String
     yaml_as "tag:yaml.org,2002:js"
 
-    def to_json(*a)
+    def to_json(*a) #:nodoc:
       self
     end
   end
@@ -59,7 +59,7 @@ module ExtJs
   #     :cm => ExtJs::Variable.new('gridPanelColumnModel'), :region => "center",
   #     :sm => ExtJs::Variable.new('gridPanelCheckboxSelectionModel'),
   #     :viewConfig => { :forceFit => true }, plugins => [ExtJs::Variable.new('new Ext.grid.Search()'].
-  #     :border => false ... continue 
+  #     :border => false ... more more code...
   # 
   # As you can see writing json in pure ruby (in this case with hash) require much time and is
   # <tt>less</tt> readable.
@@ -116,6 +116,8 @@ module ExtJs
   # See our test for more complex examples.
   # 
   class Config < Hash
+    
+    # Initialize a new config parsing an Hash
     def initialize(data)
       @data   = data
       parsed  = parse(@data)
@@ -123,10 +125,12 @@ module ExtJs
       replace parsed
     end
 
+    # Load a new config from an yml file and return a parsed hash.
     def self.load_file(path, binding=nil)
       self.load(File.read(path), binding)
     end
 
+    # Load a new config from a yaml "string" and return a parsed hash.
     def self.load(string, binding=nil)
       self.new YAML.parse(ERB.new(string).result(binding))
     end
