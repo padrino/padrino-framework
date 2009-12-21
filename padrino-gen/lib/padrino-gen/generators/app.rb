@@ -2,7 +2,11 @@ require 'thor'
 
 module Padrino
   module Generators
-    class Skeleton < Thor::Group
+    class App < Thor::Group
+
+      # Add this generator to our padrino-gen
+      Padrino::Generators.add_generator(:app, self)
+
       # Define the source template root
       def self.source_root; File.dirname(__FILE__); end
       def self.banner; "padrino-gen project [name] [path] [options]"; end
@@ -25,11 +29,11 @@ module Padrino
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs]
       component_option :renderer, "template engine",    :aliases => '-r', :choices => [:erb, :haml]
 
-      # Copies over the Padrino base application skeleton
-      def setup_skeleton
+      # Copies over the Padrino base application App
+      def setup_app
         self.destination_root = File.join(path, name)
         @class_name = name.classify
-        directory("skeleton/", self.destination_root)
+        directory("app/", self.destination_root)
         store_component_config('.components')
       end
 

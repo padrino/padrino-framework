@@ -68,8 +68,8 @@ end
 unless String.method_defined?(:constantize)
   require 'extlib/inflection'
   class String
-    def classify; Extlib::Inflection.classify(self);     end
-    def underscore; Extlib::Inflection.underscore(self);  end
+    def classify; Extlib::Inflection.classify(self);       end
+    def underscore; Extlib::Inflection.underscore(self);   end
     def constantize; Extlib::Inflection.constantize(self); end
   end
 end

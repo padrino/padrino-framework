@@ -1,4 +1,26 @@
 require 'padrino-core/support_lite'
-Dir[File.dirname(__FILE__) + "/generators/{components}/**/*.rb"].each { |lib| require lib }
-require File.dirname(__FILE__) + "/generators/actions.rb"
-Dir[File.dirname(__FILE__) + "/generators/{skeleton,mailer,controller,model,migration}.rb"].each { |lib| require lib }
+Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{components}/**/*.rb'].each { |lib| require lib }
+require File.dirname(__FILE__) + '/padrino-gen/generators/actions.rb'
+
+module Padrino
+  module Generators
+
+    class << self
+      def load_paths
+        @load_paths ||= Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{app,mailer,controller,model,migration}.rb']
+      end
+
+      def mappings
+        @mappings ||= SupportLite::OrderedHash.new
+      end
+
+      def add_generator(name, klass)
+        mappings[name] = klass
+      end
+
+      def lockup!
+        load_paths.each { |lib| require lib  }
+      end
+    end
+  end
+end

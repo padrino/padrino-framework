@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-01}
+  s.date = %q{2009-12-20}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -25,56 +25,6 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/padrino-gen",
-     "lib/generators/actions.rb",
-     "lib/generators/components/actions.rb",
-     "lib/generators/components/mocks/mocha_gen.rb",
-     "lib/generators/components/mocks/rr_gen.rb",
-     "lib/generators/components/orms/activerecord_gen.rb",
-     "lib/generators/components/orms/couchrest_gen.rb",
-     "lib/generators/components/orms/datamapper_gen.rb",
-     "lib/generators/components/orms/mongomapper_gen.rb",
-     "lib/generators/components/orms/sequel_gen.rb",
-     "lib/generators/components/renderers/erb_gen.rb",
-     "lib/generators/components/renderers/haml_gen.rb",
-     "lib/generators/components/scripts/jquery_gen.rb",
-     "lib/generators/components/scripts/prototype_gen.rb",
-     "lib/generators/components/scripts/rightjs_gen.rb",
-     "lib/generators/components/tests/bacon_test_gen.rb",
-     "lib/generators/components/tests/riot_test_gen.rb",
-     "lib/generators/components/tests/rspec_test_gen.rb",
-     "lib/generators/components/tests/shoulda_test_gen.rb",
-     "lib/generators/components/tests/testspec_test_gen.rb",
-     "lib/generators/controller.rb",
-     "lib/generators/mailer.rb",
-     "lib/generators/migration.rb",
-     "lib/generators/model.rb",
-     "lib/generators/skeleton.rb",
-     "lib/generators/skeleton/.gitignore",
-     "lib/generators/skeleton/Gemfile",
-     "lib/generators/skeleton/app/.empty_directory",
-     "lib/generators/skeleton/app/app.rb.tt",
-     "lib/generators/skeleton/app/controllers/.empty_directory",
-     "lib/generators/skeleton/app/helpers/.empty_directory",
-     "lib/generators/skeleton/app/views/.empty_directory",
-     "lib/generators/skeleton/config.ru",
-     "lib/generators/skeleton/config/apps.rb.tt",
-     "lib/generators/skeleton/config/boot.rb",
-     "lib/generators/skeleton/config/initializers/.empty_directory",
-     "lib/generators/skeleton/config/initializers/example.rb",
-     "lib/generators/skeleton/config/urls.rb.tt",
-     "lib/generators/skeleton/lib/.empty_directory",
-     "lib/generators/skeleton/public/images/.empty_directory",
-     "lib/generators/skeleton/public/javascripts/.empty_directory",
-     "lib/generators/skeleton/public/stylesheets/.empty_directory",
-     "lib/generators/skeleton/tmp/.empty_directory",
-     "lib/generators/templates/controller.rb.tt",
-     "lib/generators/templates/helper.rb.tt",
-     "lib/generators/templates/mailer.rb.tt",
-     "lib/generators/templates/mailer_initializer.rb.tt",
-     "lib/generators/templates/scripts/jquery.js",
-     "lib/generators/templates/scripts/lowpro.js",
-     "lib/generators/templates/scripts/protopak.js",
-     "lib/generators/templates/scripts/right.js",
      "lib/padrino-gen.rb",
      "padrino-gen.gemspec",
      "test/helper.rb",
@@ -82,7 +32,7 @@ Gem::Specification.new do |s|
      "test/test_mailer_generator.rb",
      "test/test_migration_generator.rb",
      "test/test_model_generator.rb",
-     "test/test_skeleton_generator.rb"
+     "test/test_app_generator.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-gen}
   s.rdoc_options = ["--charset=UTF-8"]

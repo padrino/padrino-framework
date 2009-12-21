@@ -4,6 +4,10 @@ module Padrino
   module Generators
 
     class Model < Thor::Group
+
+      # Add this generator to our padrino-gen
+      Padrino::Generators.add_generator(:model, self)
+
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       def self.banner; "padrino-gen model [name] [fields]"; end

@@ -74,7 +74,7 @@ If not executed manually, the bundling will be performed automatically the first
 Note that this command only has to be performed when the application is first generated or when the Gemfile is modified.
  
 The generator framework within padrino is extensible and additional components and tools can be added easily.
-This would be achieved through forking our project and reading through the code in <tt>lib/generators/skeleton.rb</tt> and
+This would be achieved through forking our project and reading through the code in <tt>lib/generators/App.rb</tt> and
 the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
 for additional component types not originally included (although helping us maintain them would also be appreciated).
 
