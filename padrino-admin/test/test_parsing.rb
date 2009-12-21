@@ -17,6 +17,7 @@ class ParsingTest < Test::Unit::TestCase
       nested:
         fn: !js function(){ alert('nested fn') }
       fn: !js function(){ alert('fn') }
+      array: [!js function(){ alert('array') }]
       test_one: %fn
       test_two: %nested/fn
       test_three:
@@ -28,11 +29,13 @@ class ParsingTest < Test::Unit::TestCase
     assert_kind_of ExtJs::Variable, config["test_one"]
     assert_kind_of ExtJs::Variable, config["test_three"]["no_nested"]
     assert_kind_of ExtJs::Variable, config["test_three"]["nested"]
+    assert_kind_of ExtJs::Variable, config["array"].first
     
     assert_equal "function(){ alert('fn') }", config["test_one"]
     assert_equal "function(){ alert('nested fn') }", config["test_two"]
     assert_equal "function(){ alert('fn') }", config["test_three"]["no_nested"]
     assert_equal "function(){ alert('nested fn') }", config["test_three"]["nested"]
+    assert_equal "function(){ alert('array') }", config["array"].first
   end
 
   should "Parse a multinested YAML" do
