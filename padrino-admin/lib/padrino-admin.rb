@@ -1,3 +1,1 @@
-require 'padrino-core/support_lite'
-require 'padrino-gen/generators/actions.rb'
-require 'padrino-admin/generators/backend'
+Dir[File.dirname(__FILE__) + '/padrino-admin/**/*.rb'].each {|file| require file }

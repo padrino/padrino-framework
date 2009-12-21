@@ -1,0 +1,18 @@
+default:
+  tbar: &default-tbar
+    buttons: &default-tbar-buttons
+      - &default-tbar-buttons-add
+        text: Add
+        cls: x-btn-text-icon add
+      - &default-tbar-buttons-delete
+        text: Delete
+        disabled: true
+        cls: x-btn-text-icon print
+        handler: !js delete
+
+orders:
+  editable: true
+  title: Elenco <%= @title %>
+  basepath: /backend/orders
+  tbar: *default-tbar
+  sm: checkbox
