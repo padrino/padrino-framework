@@ -17,7 +17,7 @@ class ParsingTest < Test::Unit::TestCase
       nested:
         fn: !js function(){ alert('nested fn') }
       fn: !js function(){ alert('fn') }
-      array: [!js function(){ alert('array') }]
+      array: [!js function(){ alert('array') }, perfect]
       test_one: %fn
       test_two: %nested/fn
       test_three:
@@ -36,6 +36,7 @@ class ParsingTest < Test::Unit::TestCase
     assert_equal "function(){ alert('fn') }", config["test_three"]["no_nested"]
     assert_equal "function(){ alert('nested fn') }", config["test_three"]["nested"]
     assert_equal "function(){ alert('array') }", config["array"].first
+    assert_equal "perfect", config["array"].last
   end
 
   should "Parse a multinested YAML" do
@@ -89,7 +90,6 @@ class ParsingTest < Test::Unit::TestCase
       grid:
         <<: %default/grid
         editable: true
-        title: Elenco <%= @title %>
         basepath: /backend/orders
         sm: checkbox
         template: custom
@@ -103,7 +103,7 @@ class ParsingTest < Test::Unit::TestCase
     assert_equal "custom", config["grid"]["template"]
     assert_equal ["Add", "Delete", "Test"], config["grid"]["tbar"]["buttons"].collect { |b| b["text"] }
   end
-  
+
   should "Merge a complex config" do
     config = ExtJs::Config.load <<-YAML
       default:
@@ -123,7 +123,6 @@ class ParsingTest < Test::Unit::TestCase
       grid:
         <<: %default/grid
         editable: true
-        title: Elenco <%= @title %>
         basepath: /backend/orders
         sm: checkbox
         template: custom
