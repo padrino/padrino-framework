@@ -16,7 +16,7 @@ module Padrino
 
           # Setup the testing configuration helper and dependencies
           def setup_test
-            require_dependencies 'bacon', :env => :testing
+            require_dependencies 'bacon', :only => :testing
             insert_test_suite_setup BACON_SETUP
           end
 
