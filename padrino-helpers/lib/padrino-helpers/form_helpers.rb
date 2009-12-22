@@ -81,10 +81,10 @@ module Padrino
       end
 
       # Constructs a text area input from the given options
-      # text_area_tag :username, :class => 'long'
+      # text_area_tag :username, :class => 'long', :value => "Demo?"
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        content_tag(:textarea, '', options)
+        options.reverse_merge!(:name => name, :value => '')
+        content_tag(:textarea, options.delete(:value), options)
       end
 
       # Constructs a password field input from the given options

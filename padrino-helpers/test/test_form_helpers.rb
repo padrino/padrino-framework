@@ -190,6 +190,11 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag(:textarea, :class => "long", :name => 'about') { actual_html }
     end
 
+    should "display text area in ruby with specified content" do
+      actual_html = text_area_tag(:about, :value => "a test")
+      assert_has_tag(:textarea, :content => "a test", :name => 'about') { actual_html }
+    end
+
     should "display text area in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.advanced-form textarea', :count => 1, :name => 'about', :class => 'large'
