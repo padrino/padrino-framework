@@ -33,6 +33,12 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_has_tag('form input', :type => 'text', :name => 'markup_user[username]') { actual_html }
       assert_has_tag('form input[type=hidden]', :name => '_method', :count => 0) { actual_html } # no method action field
     end
+    
+    should "display correct form html for namespaced object" do
+      actual_html = form_for(Outer::UserAccount.new, '/register', :method => 'post') { |f| f.text_field :username }
+      assert_has_tag('form', :action => '/register', :method => 'post') { actual_html }
+      assert_has_tag('form input', :type => 'text', :name => 'outer-user_account[username]') { actual_html }
+    end
 
     should "display correct form html with method :put" do
       actual_html = form_for(@user, '/update', :method => 'put') { "Demo" }

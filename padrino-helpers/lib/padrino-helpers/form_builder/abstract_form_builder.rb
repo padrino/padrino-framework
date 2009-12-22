@@ -95,7 +95,7 @@ module Padrino
         # Returns the object's models name
         #   => user_assignment
         def object_name
-          object.is_a?(Symbol) ? object : object.class.to_s.underscore
+          object.is_a?(Symbol) ? object : object.class.to_s.underscore.gsub('/', '-')
         end
 
         # Returns true if the value matches the value in the field

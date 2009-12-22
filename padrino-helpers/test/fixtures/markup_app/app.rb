@@ -59,3 +59,7 @@ class Errors < Array
     ["This is a fake error", "This is a second fake error", "This is a third fake error"]
   end
 end
+
+module Outer
+  class UserAccount; end
+end
