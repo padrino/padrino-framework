@@ -40,6 +40,14 @@ module Padrino
         link_to (caption || email), mail_href, html_options
       end
 
+      # Creates a meta element with the content and given options
+      # meta_tag "weblog,news", :name => "keywords"                         => <meta name="keywords" content="weblog,news">
+      # meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"  => <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      def meta_tag(content, options={})
+        options.reverse_merge!("content" => content)
+        content_tag(:meta, '', options)
+      end
+
       # Creates an image element with given url and options
       # image_tag('icons/avatar.png')
       def image_tag(url, options={})
