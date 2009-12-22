@@ -148,7 +148,7 @@ class TestFormBuilder < Test::Unit::TestCase
 
   context 'for #label method' do
     should "display correct label html" do
-      actual_html = standard_builder.label(:first_name, :class => 'large', :caption => "F. Name")
+      actual_html = standard_builder.label(:first_name, :class => 'large', :caption => "F. Name: ")
       assert_has_tag('label', :class => 'large', :for => 'user_first_name', :content => "F. Name: ") { actual_html }
     end
 
@@ -459,7 +459,7 @@ class TestFormBuilder < Test::Unit::TestCase
   context 'for #text_field_block method' do
     should "display correct text field block html" do
       actual_html = standard_builder.text_field_block(:first_name, :class => 'large', :caption => "FName")
-      assert_has_tag('p label', :for => 'user_first_name', :content => "FName: ") { actual_html }
+      assert_has_tag('p label', :for => 'user_first_name', :content => "FName") { actual_html }
       assert_has_tag('p input.large[type=text]', :value => "Joe", :id => 'user_first_name', :name => 'user[first_name]') { actual_html }
     end
 
@@ -479,7 +479,7 @@ class TestFormBuilder < Test::Unit::TestCase
   context 'for #text_area_block method' do
     should "display correct text area block html" do
       actual_html = standard_builder.text_area_block(:about, :class => 'large', :caption => "About Me")
-      assert_has_tag('p label', :for => 'user_about', :content => "About Me: ") { actual_html }
+      assert_has_tag('p label', :for => 'user_about', :content => "About Me") { actual_html }
       assert_has_tag('p textarea', :id => 'user_about', :name => 'user[about]') { actual_html }
     end
 
@@ -498,7 +498,7 @@ class TestFormBuilder < Test::Unit::TestCase
 
   context 'for #password_field_block method' do
     should "display correct password field block html" do
-      actual_html = standard_builder.password_field_block(:keycode, :class => 'large', :caption => "Code")
+      actual_html = standard_builder.password_field_block(:keycode, :class => 'large', :caption => "Code: ")
       assert_has_tag('p label', :for => 'user_keycode', :content => "Code: ") { actual_html }
       assert_has_tag('p input.large[type=password]', :id => 'user_keycode', :name => 'user[keycode]') { actual_html }
     end
@@ -518,7 +518,7 @@ class TestFormBuilder < Test::Unit::TestCase
 
   context 'for #file_field_block method' do
     should "display correct file field block html" do
-      actual_html = standard_builder.file_field_block(:photo, :class => 'large', :caption => "Photo")
+      actual_html = standard_builder.file_field_block(:photo, :class => 'large', :caption => "Photo: ")
       assert_has_tag('p label', :for => 'user_photo', :content => "Photo: ") { actual_html }
       assert_has_tag('p input.large[type=file]', :id => 'user_photo', :name => 'user[photo]') { actual_html }
     end
@@ -538,8 +538,8 @@ class TestFormBuilder < Test::Unit::TestCase
 
   context 'for #check_box_block method' do
     should "display correct check box block html" do
-      actual_html = standard_builder.check_box_block(:remember_me, :class => 'large', :caption => "Remember session")
-      assert_has_tag('p label', :for => 'user_remember_me', :content => "Remember session: ") { actual_html }
+      actual_html = standard_builder.check_box_block(:remember_me, :class => 'large', :caption => "Remember session?")
+      assert_has_tag('p label', :for => 'user_remember_me', :content => "Remember session?") { actual_html }
       assert_has_tag('p input.large[type=checkbox]', :id => 'user_remember_me', :name => 'user[remember_me]') { actual_html }
     end
 
@@ -559,7 +559,7 @@ class TestFormBuilder < Test::Unit::TestCase
   context 'for #select_block method' do
     should "display correct select_block block html" do
       actual_html = standard_builder.select_block(:country, :options => ['USA', 'Canada'], :class => 'large', :caption => "Your country")
-      assert_has_tag('p label', :for => 'user_country', :content => "Your country: ") { actual_html }
+      assert_has_tag('p label', :for => 'user_country', :content => "Your country") { actual_html }
       assert_has_tag('p select', :id => 'user_country', :name => 'user[country]') { actual_html }
       assert_has_tag('p select option', :content => 'USA')   { actual_html }
       assert_has_tag('p select option', :content => 'Canada') { actual_html }

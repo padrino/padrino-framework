@@ -108,7 +108,7 @@ class TestFormHelpers < Test::Unit::TestCase
   context 'for #label_tag method' do
     should "display label tag in ruby" do
       actual_html = label_tag(:username, :class => 'long-label', :caption => "Nickname")
-      assert_has_tag(:label, :for => 'username', :class => 'long-label', :content => "Nickname: ") { actual_html }
+      assert_has_tag(:label, :for => 'username', :class => 'long-label', :content => "Nickname") { actual_html }
     end
 
     should "display label tag in erb for simple form" do

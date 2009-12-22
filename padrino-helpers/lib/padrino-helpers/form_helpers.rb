@@ -56,8 +56,8 @@ module Padrino
       # label_tag :username, :class => 'long-label'
       # label_tag :username, :class => 'long-label' do ... end
       def label_tag(name, options={}, &block)
-        options.reverse_merge!(:caption => name.to_s.titleize, :for => name)
-        caption_text = options.delete(:caption) + ": "
+        options.reverse_merge!(:caption => "#{name.to_s.titleize}: ", :for => name)
+        caption_text = options.delete(:caption)
         if block_given? # label with inner content
           label_content = caption_text + capture_html(&block)
           concat_content(content_tag(:label, label_content, options))

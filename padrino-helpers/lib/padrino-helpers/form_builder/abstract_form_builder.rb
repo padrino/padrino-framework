@@ -18,7 +18,7 @@ module Padrino
 
         # f.label :username, :caption => "Nickname"
         def label(field, options={})
-          options.reverse_merge!(:caption => field.to_s.titleize)
+          options.reverse_merge!(:caption => "#{field.to_s.titleize}: ")
           @template.label_tag(field_id(field), options)
         end
 

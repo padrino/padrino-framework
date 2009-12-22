@@ -2,7 +2,7 @@
   = f.error_messages(:header_message => "custom MarkupUser cannot be saved!")
   = f.hidden_field :session_id
   %p
-    = f.label :username, :caption => "Login", :class => 'user-label'
+    = f.label :username, :caption => "Login: ", :class => 'user-label'
     = f.text_field :username, :class => 'user-text', :value => "John"
   %p
     = f.label :email, :caption => "Email", :class => 'user-email'
@@ -14,10 +14,10 @@
     = f.label :photo
     = f.file_field :photo, :class => 'user-photo'
   %p
-    = f.label :about, :caption => "About Me"
+    = f.label :about, :caption => "About Me: "
     = f.text_area :about, :class => 'user-about'  
   %p
-    = f.label :gender, :caption => "Your gender"
+    = f.label :gender, :caption => "Your gender: "
     = f.radio_button :gender, :value => 'male'
     = f.radio_button :gender, :value => 'female'
   %p
@@ -34,7 +34,7 @@
 - form_for MarkupUser.new, '/another_demo', :id => 'demo2', :method => 'get' do |f|
   = f.error_messages :header_message => "custom MarkupUser cannot be saved!"
   = f.hidden_field :session_id
-  = f.text_field_block :username, { :class => 'input' }, { :caption => 'Nickname', :class => 'label' }
+  = f.text_field_block :username, { :class => 'input' }, { :caption => 'Nickname: ', :class => 'label' }
   = f.password_field_block :code, { :class => 'input' }
   = f.text_area_block :about, { :class => 'textarea' }
   = f.file_field_block :photo, { :class => 'upload' }
