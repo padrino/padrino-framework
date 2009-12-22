@@ -68,7 +68,7 @@ module Padrino
     def load_bundler_manifest
       require 'bundler'
       say "=> Locating Gemfile for #{PADRINO_ENV}"
-      Bundler::Environment.new(root("Gemfile")).require_env(PADRINO_ENV)
+      Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(PADRINO_ENV)
       say " ... Loaded!"
     rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
       say " ... Not Found"
