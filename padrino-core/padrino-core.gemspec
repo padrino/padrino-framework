@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.3.1"
+  s.version = "0.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
      "test/fixtures/apps/.components",
      "test/fixtures/apps/.gitignore",
      "test/fixtures/apps/complex.rb",
+     "test/fixtures/apps/layout.rb",
      "test/fixtures/apps/simple.rb",
      "test/helper.rb",
      "test/test_application.rb",
