@@ -20,8 +20,8 @@ module Padrino
         # insert_into_gemfile(name)
         # insert_into_gemfile(name, :only => :testing, :require_as => 'foo')
         def insert_into_gemfile(name, options={})
-          after_pattern = options[:env] ? "#{options[:env].to_s.capitalize} requirements\n" : "Component requirements\n"
-          gem_options = options.slice(:env, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
+          after_pattern = options[:only] ? "#{options[:only].to_s.capitalize} requirements\n" : "Component requirements\n"
+          gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
           include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
           options.merge!(:content => include_text, :after => after_pattern)
           inject_into_file('Gemfile', options[:content], :after => options[:after])
