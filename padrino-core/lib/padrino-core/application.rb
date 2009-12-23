@@ -28,6 +28,14 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
+      # With this method we can use layout like rails do or if a block given like sinatra
+      # By default we look in your/app/views/layouts/application.(haml|erb|etc)
+      # 
+      # If you define:
+      # 
+      #   layout :custom
+      # 
+      # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
       def layout(name=:layout, &block)
         return super if block_given?
         puts "Passo #{name}"
