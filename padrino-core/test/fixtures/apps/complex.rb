@@ -1,9 +1,7 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 module LibDemo
-  module_function
-  
-  def give_me_a_random
+  def self.give_me_a_random
     @rand ||= rand(100)
   end
 end

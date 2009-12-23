@@ -2,7 +2,8 @@
 Dir[File.dirname(__FILE__) + '/padrino-routing/**/*.rb'].each {|file| require file }
 
 module Padrino
-  class RouteNotFound < RuntimeError; end
+  class RouteNotFound < RuntimeError;    end
+  class InvalidNameSpace < RuntimeError; end
 
   module Routing
     def self.registered(app)
@@ -26,10 +27,14 @@ module Padrino
       # Used to define namespaced route configurations in order to group similar routes
       # Class evals the routes but with the namespace assigned which will append to each route
       # namespace(:admin) { get(:show) { "..." } }
-      def namespace(name, &block)
-        original, @_namespace = @_namespace, name
-        self.class_eval(&block)
-        @_namespace = original
+      def namespace(*args, &block)
+        if namespace = args.find { |ns| !ns.kind_of?(Symbol) }
+          raise InvalidNameSpace, "The name space #{namespace.inspect} must be a symbol"
+        else
+          original, @_namespaces = @_namespaces, args
+          self.class_eval(&block)
+          @_namespaces = original
+        end
       end
 
       # Hijacking route method in Sinatra to replace a route alias (i.e :account) with the full url string mapping
@@ -37,16 +42,20 @@ module Padrino
       # If the path is not a symbol, nothing is changed and the original route method is invoked
       def route(verb, path, options={}, &block)
         if path.kind_of?(Symbol)
-          route_name = [@_namespace, path].flatten.compact
+          route_name = [@_namespaces, path].flatten.compact
           if mapped_url = options.delete(:map) # constructing named route
             map(*route_name).to(mapped_url)
             path = mapped_url
           else # referencing prior named route
-            route_name.unshift(self.app_name.to_sym)
-            path = named_paths[route_name]
+            path = named_paths[route_name.dup.unshift(self.app_name.to_sym)]
+          end
+          # If here we don't have a path we autobuild them
+          unless path
+            mapped_url = "/" + route_name.join("/")
+            map(*route_name).to(mapped_url)
+            path = mapped_url
           end
         end
-        raise RouteNotFound.new("Route alias #{route_name.inspect} is not mapped to a url") unless path
         super verb, path, options, &block
       end
     end
