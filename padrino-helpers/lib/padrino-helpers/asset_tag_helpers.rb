@@ -45,7 +45,7 @@ module Padrino
       # meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"  => <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       def meta_tag(content, options={})
         options.reverse_merge!("content" => content)
-        content_tag(:meta, '', options)
+        tag(:meta, options)
       end
 
       # Creates an image element with given url and options
