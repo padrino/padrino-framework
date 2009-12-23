@@ -38,7 +38,6 @@ module Padrino
       # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
       def layout(name=:layout, &block)
         return super if block_given?
-        puts "Passo #{name}"
         @_layout = name
       end
 
