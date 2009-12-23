@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-routing}
-  s.version = "0.2.8"
+  s.version = "0.2.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-23}
+  s.date = %q{2009-12-22}
   s.description = %q{Enhances padrino with a named route mapping system allowing for advanced routes}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
