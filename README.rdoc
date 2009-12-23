@@ -464,8 +464,8 @@ in a way which can be slightly counter-intuitive:
 For this reason, additional helpers for erb and haml have been provided which always renders a given file path:
 
   haml_template :index        # OK, renders the ./views/index.haml
-  haml_template 'site/index'  # This renders ./views/index.haml
-  haml_template :'site/index' # This also renders ./views/index.haml
+  haml_template 'site/index'  # This renders ./views/site/index.haml
+  haml_template :'site/index' # This also renders ./views/site/index.haml
   
 This helper also supports template partials which make rendering small bits of view template
 within a view much easier. Quick example would be:
