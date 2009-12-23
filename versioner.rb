@@ -7,7 +7,7 @@ class Versioner
   end
 
   def bump!(kind)
-    @current_version = Versionomy.parse(@current_version).bump(:tiny).to_s
+    @current_version = Versionomy.parse(@current_version).bump(kind).to_s
     @version_files.each { |file| File.open(file, 'w') { |f| f.puts @current_version } }
     @current_version
   end
