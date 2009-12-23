@@ -49,7 +49,6 @@ module Padrino
       alias render_partial partial
 
       private
-
         # Returns the template engine (i.e haml) to use for a given template_path
         # resolve_template_engine('users/new') => :haml
         def resolve_template_engine(template_path)

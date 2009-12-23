@@ -28,6 +28,12 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
+      def layout(name=:layout, &block)
+        return super if block_given?
+        puts "Passo #{name}"
+        @_layout = name
+      end
+
       # Reloads the application files from all defined load paths
       def reload!
         reset_routes! # remove all existing user-defined application routes
@@ -125,5 +131,15 @@ module Padrino
         logger.error "   Initializer error was '#{e.message}'"
       end
     end
+
+    private
+      def render(engine, data, options={}, locals={}, &block)
+        if options[:layout].nil? || options[:layout] == true
+          layout = self.class.instance_variable_get(:@_layout) || :application
+          options[:layout] = File.join('layouts', layout.to_s).to_sym
+          logger.debug "Rendering layout #{options[:layout]}"
+        end
+        super
+      end
   end
 end

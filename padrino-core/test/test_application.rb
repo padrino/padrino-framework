@@ -1,6 +1,11 @@
 require File.dirname(__FILE__) + '/helper'
+require 'fixtures/apps/layout'
 
 class TestApplication < Test::Unit::TestCase
+
+  def setup
+    @app = Padrino.application
+  end
 
   context 'for application functionality' do
 
@@ -25,6 +30,19 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.flash
       assert !PadrinoTestApp.padrino_mailer
       assert !PadrinoTestApp.padrino_helpers
+    end
+  end
+
+  context 'for application layout functionality' do
+
+    should 'get no layout' do
+      get "/no_layout"
+      assert_equal "no layout", body
+    end
+
+    should 'compatible with sinatra layout' do
+      get "/sinatra"
+      assert_equal "sinatra layout\n", body
     end
   end
 end
