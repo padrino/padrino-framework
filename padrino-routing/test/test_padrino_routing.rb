@@ -124,14 +124,14 @@ class TestPadrinoRouting < Test::Unit::TestCase
   end
 
   context 'for no namespaced account route' do
-    setup { visit '/the/accounts/demo/path/5/end'}
+    setup { visit '/the/accounts/demo/path/5/end' }
     should "return proper account text" do
       assert_have_selector :h1, :content => "the account url for demo and id 5"
     end
   end
 
   context 'for no namespaced accounts index route' do
-    setup { visit '/the/accounts/index/'}
+    setup { visit '/the/accounts/index/' }
     should "return proper account text" do
       assert_have_selector :h1, :content => "the accounts index"
     end

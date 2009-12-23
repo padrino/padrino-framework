@@ -104,7 +104,7 @@ module Padrino
       # Returns the load_paths for the application (relative to the application root)
       def load_paths
         @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb",
-                         "mailers/*.rb", "app/mailers/*.rb", "controllers/*.rb", "app/controllers/*.rb",
+                         "mailers/*.rb", "app/mailers/*.rb", "controllers/**/*.rb", "app/controllers/**/*.rb",
                          "helpers/*.rb", "app/helpers/*.rb"]
       end
 

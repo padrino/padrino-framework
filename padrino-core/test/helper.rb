@@ -45,12 +45,6 @@ class Test::Unit::TestCase
     Rack::Lint.new(@app)
   end
 
-  def stop_time_for_test
-    time = Time.now
-    Time.stubs(:now).returns(time)
-    return time
-  end
-
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"
