@@ -31,13 +31,10 @@ end
 class Test::Unit::TestCase
   include Rack::Test::Methods
 
-  # Test App
-  class PadrinoTestApp < Padrino::Application; end
-
   # Sets up a Sinatra::Base subclass defined with the block
   # given. Used in setup or individual spec methods to establish
   # the application.
-  def mock_app(base=PadrinoTestApp, &block)
+  def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
   end
   

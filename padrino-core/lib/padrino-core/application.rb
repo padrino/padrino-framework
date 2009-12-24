@@ -141,7 +141,7 @@ module Padrino
 
     private
       def render(engine, data, options={}, locals={}, &block)
-        if options[:layout].nil? || options[:layout] == true
+        if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           layout = self.class.instance_variable_get(:@_layout) || :application
           options[:layout] = File.join('layouts', layout.to_s).to_sym
           logger.debug "Rendering layout #{options[:layout]}"
