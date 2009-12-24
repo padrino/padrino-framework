@@ -118,12 +118,18 @@ class TestApplication < Test::Unit::TestCase
           get("/foo") { render :erb, :index }
           get("/bar") { erb :index }
           get("/dir") { "3" }
+          get("/inj") { erb "<%= 2+1 %>" }
+          get("/rnj") { render :erb, "<%= 2+1 %>" }
         end
         get "/foo"
         assert_equal "3", body
         get "/bar"
         assert_equal "3", body
         get "/dir"
+        assert_equal "3", body
+        get "/inj"
+        assert_equal "3", body
+        get "/rnj"
         assert_equal "3", body
       end
     end
