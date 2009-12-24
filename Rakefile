@@ -86,8 +86,8 @@ namespace :version do
     end
 
     desc "Bump the gemspec by a patch version."
-    task :patch => :versionomy do |t|
-      version = VERSIONER.bump!(:patch)
+    task :tiny => :versionomy do |t|
+      version = VERSIONER.bump!(:tiny)
       puts "Bumping the patch version to #{version.to_s}"
       Rake::Task['gemspec'].invoke
       Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")

@@ -3,10 +3,9 @@ if defined?(Padrino::Application) # Extends padrino application if being used
     module ControllerNamespacing
       # Makes the routes defined in the block and in the Modules given
       # in `extensions` available to the application
-      def controllers_with_namespaces(*namespace, &block)
-        must_use_namespaces = namespace.size == 1 && namespace.first.is_a?(Symbol)
-        return controllers_without_namespaces(*namespace, &block) unless must_use_namespaces
-        namespace(namespace.first) { instance_eval(&block) } if block_given?
+      def controllers_with_namespaces(*args, &block)
+        return controllers_without_namespaces(*args, &block) unless args.all? { |a| a.kind_of?(Symbol) }
+        namespace(*args) { instance_eval(&block) } if block_given?
       end
 
       # Makes the routing urls defined in this block and in the Modules given

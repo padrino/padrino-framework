@@ -2,10 +2,24 @@ require File.dirname(__FILE__) + '/helper'
 
 class TestApplication < Test::Unit::TestCase
 
+  def with_layout(name=:application)
+    # Build a temp layout
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
+    layout = File.dirname(__FILE__) + "/views/layouts/#{name}.erb"
+    File.open(layout, 'wb') { |io| io.write "this is a <%= yield %>" }
+    yield
+  ensure
+    # Remove temp layout
+    File.unlink(layout) rescue nil
+    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
+  end
+
+  class PadrinoTestApp < Padrino::Application; end
+
   context 'for application functionality' do
 
     should 'check default options' do
-      assert_match %r{test/helper.rb}, PadrinoTestApp.app_file
+      assert_match __FILE__, PadrinoTestApp.app_file
       assert_equal :test, PadrinoTestApp.environment
       assert_equal Padrino.root("views"), PadrinoTestApp.views
       assert PadrinoTestApp.raise_errors
@@ -25,6 +39,54 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.flash
       assert !PadrinoTestApp.padrino_mailer
       assert !PadrinoTestApp.padrino_helpers
+    end
+  end
+
+  context 'for application layout functionality' do
+
+    should 'get no layout' do
+      mock_app do
+        get("/"){ "no layout" }
+      end
+
+      get "/"
+      assert_equal "no layout", body
+    end
+
+    should 'compatible with sinatra layout' do
+      mock_app do
+        layout do
+          "this is a <%= yield %>"
+        end
+        
+        get("/"){ render :erb, "sinatra layout" }
+      end
+
+      get "/"
+      assert_equal "this is a sinatra layout", body
+    end
+
+    should 'use rails way layout' do
+      with_layout do
+        mock_app do
+          get("/"){ render :erb, "rails way layout" }
+        end
+
+        get "/"
+        assert_equal "this is a rails way layout", body
+      end
+    end
+
+    should 'use rails way for a custom layout' do
+      with_layout :custom do
+        mock_app do
+          layout :custom
+          get("/"){ render :erb, "rails way custom layout" }
+        end
+
+        get "/"
+        assert_equal "this is a rails way custom layout", body
+      end
     end
   end
 end

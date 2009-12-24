@@ -28,6 +28,19 @@ module Padrino
         include(*extensions)  if extensions.any?
       end
 
+      # With this method we can use layout like rails do or if a block given like sinatra
+      # By default we look in your/app/views/layouts/application.(haml|erb|etc)
+      # 
+      # If you define:
+      # 
+      #   layout :custom
+      # 
+      # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
+      def layout(name=:layout, &block)
+        return super if block_given?
+        @_layout = name
+      end
+
       # Reloads the application files from all defined load paths
       def reload!
         reset_routes! # remove all existing user-defined application routes
@@ -104,7 +117,7 @@ module Padrino
       # Returns the load_paths for the application (relative to the application root)
       def load_paths
         @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb",
-                         "mailers/*.rb", "app/mailers/*.rb", "controllers/*.rb", "app/controllers/*.rb",
+                         "mailers/*.rb", "app/mailers/*.rb", "controllers/**/*.rb", "app/controllers/**/*.rb",
                          "helpers/*.rb", "app/helpers/*.rb"]
       end
 
@@ -125,5 +138,15 @@ module Padrino
         logger.error "   Initializer error was '#{e.message}'"
       end
     end
+
+    private
+      def render(engine, data, options={}, locals={}, &block)
+        if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
+          layout = self.class.instance_variable_get(:@_layout) || :application
+          options[:layout] = File.join('layouts', layout.to_s).to_sym
+          logger.debug "Rendering layout #{options[:layout]}"
+        end
+        super
+      end
   end
 end

@@ -31,24 +31,15 @@ end
 class Test::Unit::TestCase
   include Rack::Test::Methods
 
-  # Test App
-  class PadrinoTestApp < Padrino::Application; end
-
   # Sets up a Sinatra::Base subclass defined with the block
   # given. Used in setup or individual spec methods to establish
   # the application.
-  def mock_app(base=PadrinoTestApp, &block)
+  def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
   end
   
   def app
     Rack::Lint.new(@app)
-  end
-
-  def stop_time_for_test
-    time = Time.now
-    Time.stubs(:now).returns(time)
-    return time
   end
 
   # Asserts that a file matches the pattern

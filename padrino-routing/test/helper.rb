@@ -4,10 +4,13 @@ require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
+require 'padrino-core'
+require 'padrino-helpers'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'padrino-helpers'
+
+require 'padrino-routing'
 
 class Test::Unit::TestCase
   include Rack::Test::Methods
