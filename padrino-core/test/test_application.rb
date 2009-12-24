@@ -14,6 +14,18 @@ class TestApplication < Test::Unit::TestCase
     FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
   end
 
+  def with_view(name, content)
+    # Build a temp layout
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
+    layout = File.dirname(__FILE__) + "/views/#{name}.erb"
+    File.open(layout, 'wb') { |io| io.write content }
+    yield
+  ensure
+    # Remove temp layout
+    File.unlink(layout) rescue nil
+    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
+  end
+
   class PadrinoTestApp < Padrino::Application; end
 
   context 'for application functionality' do
@@ -53,7 +65,7 @@ class TestApplication < Test::Unit::TestCase
       assert_equal "no layout", body
     end
 
-    should 'compatible with sinatra layout' do
+    should 'be compatible with sinatra layout' do
       mock_app do
         layout do
           "this is a <%= yield %>"
@@ -86,6 +98,46 @@ class TestApplication < Test::Unit::TestCase
 
         get "/"
         assert_equal "this is a rails way custom layout", body
+      end
+    end
+  end
+
+  context 'for application render functionality' do
+
+    should 'be compatible with sinatra render' do
+      mock_app do
+        get("/"){ render :erb, "<%= 1+2 %>" }
+      end
+      get "/"
+      assert_equal "3", body
+    end
+
+    should 'be compatible with sinatra views' do
+      with_view :index, "<%= 1+2 %>" do
+        mock_app do
+          get("/foo") { render :erb, :index }
+          get("/bar") { erb :index }
+          get("/dir") { "3" }
+        end
+        get "/foo"
+        assert_equal "3", body
+        get "/bar"
+        assert_equal "3", body
+        get "/dir"
+        assert_equal "3", body
+      end
+    end
+
+    should 'resolve template engine' do
+      with_view :index, "<%= 1+2 %>" do
+        mock_app do
+          get("/foo") { render :index }
+          get("/bar") { render "/index" }
+        end
+        get "/foo"
+        assert_equal "3", body
+        get "/bar"
+        assert_equal "3", body
       end
     end
   end

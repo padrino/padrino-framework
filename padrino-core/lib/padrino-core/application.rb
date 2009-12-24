@@ -140,13 +140,33 @@ module Padrino
     end
 
     private
-      def render(engine, data, options={}, locals={}, &block)
+      # Hijacking the sinatra render for do two thing:
+      # 
+      # * Use layout like rails do
+      # * Use render 'path/to/my/template'
+      # 
+      def render(engine, data=nil, options={}, locals={}, &block)
+        # If an engine is a string probably is a path so we try to resolve them
+        if data.nil?
+          data   = engine.to_sym
+          engine = resolve_template_engine(engine)
+        end
+        # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           layout = self.class.instance_variable_get(:@_layout) || :application
           options[:layout] = File.join('layouts', layout.to_s).to_sym
           logger.debug "Rendering layout #{options[:layout]}"
         end
         super
+      end
+
+      # Returns the template engine (i.e haml) to use for a given template_path
+      # resolve_template_engine('users/new') => :haml
+      def resolve_template_engine(template_path)
+        resolved_template_path = File.join(self.options.views, template_path.to_s + ".*")
+        template_file = Dir[resolved_template_path].first
+        raise "Template path '#{template_path}' could not be located in views!" unless template_file
+        template_engine = File.extname(template_file)[1..-1].to_sym
       end
   end
 end
