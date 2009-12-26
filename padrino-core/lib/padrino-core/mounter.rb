@@ -79,7 +79,7 @@ module Padrino
     def mount_core(*args)
       options = args.extract_options!
       app_class = args.size > 0 ? args.first.to_s.camelize : nil
-      options.reverse_merge!(:app_class => app_class, :app_file => Padrino.root('app/app.rb'), :app_root => Padrino.root)
+      options.reverse_merge!(:app_class => app_class)
       mount("core", options).to("/")
     end
 

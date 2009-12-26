@@ -5,6 +5,7 @@ module Padrino
       return false if loaded?
       @_called_from = first_caller
       load_required_gems # load bundler gems
+      require_dependencies("#{root}/**/app.rb") # load all apps by default
       require_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
