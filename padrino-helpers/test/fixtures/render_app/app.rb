@@ -1,41 +1,15 @@
-require 'sinatra/base'
-require 'haml'
+PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ENV = 'test' unless defined? PADRINO_ENV
+
+require 'padrino-core'
 
 class RenderUser
   attr_accessor :name
   def initialize(name); @name = name; end
 end
 
-class RenderDemo < Sinatra::Base
-  register Padrino::Helpers
-  
-  configure do
-    set :root, File.dirname(__FILE__)
-  end
-  
-  # haml_template
-  get '/render_haml' do
-    @template = 'haml'
-    haml_template 'haml/test'
-  end
-  
-  # erb_template
-  get '/render_erb' do
-    @template = 'erb'
-    erb_template 'erb/test'
-  end
-  
-  # render_template with explicit engine
-  get '/render_template/:engine' do
-    @template = params[:engine]
-    render_template "template/#{@template}_template", :template_engine => @template
-  end
-  
-  # render_template without explicit engine
-  get '/render_template' do
-    render_template "template/some_template"
-  end
-  
+class RenderDemo < Padrino::Application
+
   # partial with object
   get '/partial/object' do
     partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }

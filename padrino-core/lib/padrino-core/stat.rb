@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Padrino
   # What makes it especially suited for use in a any environment is that
   # any file will only be checked once and there will only be made one system
