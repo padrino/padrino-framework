@@ -1,5 +1,5 @@
 require 'thor'
-
+require 'padrino-gen' unless defined?(Padrino::Generators)
 module Padrino
   module Generators
 
