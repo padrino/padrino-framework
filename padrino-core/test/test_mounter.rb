@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/helper'
 
-class TestPadrinoMounter < Test::Unit::TestCase
+class TestMounter < Test::Unit::TestCase
 
   def setup
     Padrino.mounted_apps.clear

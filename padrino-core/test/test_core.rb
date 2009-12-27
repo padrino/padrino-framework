@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/helper'
 
-class TestPadrinoCore < Test::Unit::TestCase
+class TestCore < Test::Unit::TestCase
 
   context 'for core functionality' do
 
