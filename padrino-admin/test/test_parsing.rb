@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/helper'
 class ParsingTest < Test::Unit::TestCase
 
   should "Parse Nested Childs" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       foo:
         bar:
           name: Fred
@@ -13,7 +13,7 @@ class ParsingTest < Test::Unit::TestCase
   end
 
   should "Parse JS and Nested JS" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       nested:
         fn: !js function(){ alert('nested fn') }
       fn: !js function(){ alert('fn') }
@@ -25,11 +25,11 @@ class ParsingTest < Test::Unit::TestCase
         nested: %nested/fn
     YAML
     
-    assert_kind_of ExtJs::Variable, config["test_one"]
-    assert_kind_of ExtJs::Variable, config["test_one"]
-    assert_kind_of ExtJs::Variable, config["test_three"]["no_nested"]
-    assert_kind_of ExtJs::Variable, config["test_three"]["nested"]
-    assert_kind_of ExtJs::Variable, config["array"].first
+    assert_kind_of Padrino::ExtJs::Variable, config["test_one"]
+    assert_kind_of Padrino::ExtJs::Variable, config["test_one"]
+    assert_kind_of Padrino::ExtJs::Variable, config["test_three"]["no_nested"]
+    assert_kind_of Padrino::ExtJs::Variable, config["test_three"]["nested"]
+    assert_kind_of Padrino::ExtJs::Variable, config["array"].first
     
     assert_equal "function(){ alert('fn') }", config["test_one"]
     assert_equal "function(){ alert('nested fn') }", config["test_two"]
@@ -40,7 +40,7 @@ class ParsingTest < Test::Unit::TestCase
   end
 
   should "Parse a multinested YAML" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       buttons:
         - id: add
           text: Add Product
@@ -60,7 +60,7 @@ class ParsingTest < Test::Unit::TestCase
   end
 
   should "Parse array and hashes" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       a: a
       b: b
       c: c
@@ -72,7 +72,7 @@ class ParsingTest < Test::Unit::TestCase
   end
 
   should "Merge config" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       default:
         grid:
           editable: false
@@ -105,7 +105,7 @@ class ParsingTest < Test::Unit::TestCase
   end
 
   should "Merge a complex config" do
-    config = ExtJs::Config.load <<-YAML
+    config = Padrino::ExtJs::Config.load <<-YAML
       default:
         grid:
           editable: false
