@@ -59,7 +59,7 @@ module Padrino
 
     # Returns the root to the mounted apps base directory
     def mounted_root(*args)
-      File.join(Padrino.root, @mounted_root ||= "apps", *args)
+      Padrino.root(@mounted_root ||= "", *args)
     end
 
     # Returns the mounted padrino applications (MountedApp objects)
@@ -79,7 +79,7 @@ module Padrino
     def mount_core(*args)
       options = args.extract_options!
       app_class = args.size > 0 ? args.first.to_s.camelize : nil
-      options.reverse_merge!(:app_class => app_class)
+      options.reverse_merge!(:app_class => app_class, :app_file => Padrino.root("app", "app.rb"))
       mount("core", options).to("/")
     end
 

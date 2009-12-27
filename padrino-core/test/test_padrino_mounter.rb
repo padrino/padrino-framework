@@ -27,7 +27,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       mounter.to("/test")
       assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
-      assert_match %r{test/apps/test/app.rb}, mounter.app_file
+      assert_match %r{test/app.rb}, mounter.app_file
       assert_equal "/test", mounter.uri_root
       assert_nil mounter.app_root
     end
@@ -46,7 +46,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       assert_equal Test, mounter.app_obj
       assert_equal Padrino.root('app/app.rb'), mounter.app_file
       assert_equal "/", mounter.uri_root
-      assert_equal Padrino.root, mounter.app_root
+      assert_equal nil, mounter.app_root
     end
 
     should 'mount multiple apps' do
@@ -71,7 +71,7 @@ class TestPadrinoMounter < Test::Unit::TestCase
       Padrino.mounted_root = "apps"
       assert_equal Padrino.root("apps", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
       Padrino.mounted_root = nil
-      assert_equal Padrino.root("apps", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
+      assert_equal Padrino.root("test", "app.rb"), Padrino.mounted_root("test", "app.rb")
     end
 
     should 'correctly instantiate a new padrino application' do

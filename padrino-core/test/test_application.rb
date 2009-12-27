@@ -147,4 +147,46 @@ class TestApplication < Test::Unit::TestCase
       end
     end
   end
+
+  context 'for application i18n functionality' do
+
+    should 'have a default locale en and auto_locale disabled' do
+      mock_app do
+        assert_equal :en, locale
+        assert !auto_locale
+      end
+    end
+
+    should 'change default locale from settings' do
+      mock_app do
+        set :locale, :it
+        enable :auto_locale
+        assert_equal :it, locale
+        assert auto_locale
+      end
+    end
+
+    should 'set locale when auto_locale is enabled' do
+      mock_app do
+        enable :auto_locale
+        get("/:locale"){ I18n.locale.to_s }
+      end
+
+      %w(it de fr).each do |lang|
+        get("/#{lang}")
+        assert_equal lang, body
+      end
+    end
+
+    should 'set locale from browser languages when auto_locale is enabled' do
+      mock_app do
+        enable :auto_locale
+        get("/"){ I18n.locale.to_s }
+      end
+      get "/", {}, {'HTTP_ACCEPT_LANGUAGE' => 'ru,en;q=0.9'}
+      assert_equal "ru", body
+      get "/", {}, {'HTTP_ACCEPT_LANGUAGE' => 'it-IT'}
+      assert_equal "it", body
+    end
+  end
 end

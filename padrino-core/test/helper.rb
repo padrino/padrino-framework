@@ -23,7 +23,7 @@ module Kernel
   alias :silence_stdout :silence_logger
 end
 
-class Padrino::Application
+class Class
   # Allow assertions in request context
   include Test::Unit::Assertions
 end
