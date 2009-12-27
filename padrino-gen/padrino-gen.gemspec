@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.4.0"
+  s.version = "0.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-26}
+  s.date = %q{2009-12-27}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{nesquena@gmail.com}
@@ -34,6 +34,9 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/app/app.rb.tt",
      "lib/padrino-gen/generators/app/app/controllers/.empty_directory",
      "lib/padrino-gen/generators/app/app/helpers/.empty_directory",
+     "lib/padrino-gen/generators/app/app/public/images/.empty_directory",
+     "lib/padrino-gen/generators/app/app/public/javascripts/.empty_directory",
+     "lib/padrino-gen/generators/app/app/public/stylesheets/.empty_directory",
      "lib/padrino-gen/generators/app/app/views/.empty_directory",
      "lib/padrino-gen/generators/app/config.ru",
      "lib/padrino-gen/generators/app/config/apps.rb.tt",
@@ -42,9 +45,6 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/config/initializers/example.rb",
      "lib/padrino-gen/generators/app/config/urls.rb.tt",
      "lib/padrino-gen/generators/app/lib/.empty_directory",
-     "lib/padrino-gen/generators/app/public/images/.empty_directory",
-     "lib/padrino-gen/generators/app/public/javascripts/.empty_directory",
-     "lib/padrino-gen/generators/app/public/stylesheets/.empty_directory",
      "lib/padrino-gen/generators/app/tmp/.empty_directory",
      "lib/padrino-gen/generators/base.rb",
      "lib/padrino-gen/generators/components/actions.rb",
