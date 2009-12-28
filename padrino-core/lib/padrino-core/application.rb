@@ -75,7 +75,7 @@ module Padrino
           set :app_file, caller_files.first || $0 # Assume app file is first caller
           set :environment, PADRINO_ENV.to_sym
           set :raise_errors, true if development?
-          set :logging, false#!test?
+          set :logging, false # !test?
           set :sessions, true
           # Padrino specific
           set :reload, development?

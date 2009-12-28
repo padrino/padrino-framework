@@ -1,58 +1,48 @@
-require 'rubygems'
-require 'test/unit'
-require 'shoulda'
-require 'mocha'
-require 'rack/test'
-require 'webrat'
+ENV['PADRINO_ENV'] = 'test'
+PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'rubygems'
+require 'padrino-core'
+require 'test/unit'
+require 'rack/test'
+require 'rack'
+require 'shoulda'
+require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-admin'
 
-class Test::Unit::TestCase
-  include Rack::Test::Methods
-  include Webrat::Methods
-  include Webrat::Matchers
-
-  Webrat.configure do |config|
-    config.mode = :rack
-  end
-
-  def stop_time_for_test
-    time = Time.now
-    Time.stubs(:now).returns(time)
-    return time
-  end
-
-  # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {}, &block)
-    html = block && block.call
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
-  # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {}, &block)
-    html = block && block.call
-    attributes.merge!(:count => 0)
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
+module Kernel
   # Silences the output by redirecting to stringIO
   # silence_logger { ...commands... } => "...output..."
   def silence_logger(&block)
-    orig_stdout = $stdout
     $stdout = log_buffer = StringIO.new
     block.call
-    $stdout = orig_stdout
-    log_buffer.rewind && log_buffer.read
+    $stdout = STDOUT
+    log_buffer.string
+  end
+  alias :silence_stdout :silence_logger
+end
+
+class Class
+  # Allow assertions in request context
+  include Test::Unit::Assertions
+end
+
+class Test::Unit::TestCase
+  include Rack::Test::Methods
+
+  # Sets up a Sinatra::Base subclass defined with the block
+  # given. Used in setup or individual spec methods to establish
+  # the application.
+  def mock_app(base=Padrino::Application, &block)
+    @app = Sinatra.new(base, &block)
+  end
+  
+  def app
+    Rack::Lint.new(@app)
   end
 
   # Asserts that a file matches the pattern
@@ -60,12 +50,15 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
-end
-
-module Webrat
-  module Logging
-    def logger # :nodoc:
-      @logger = nil
+  
+  # Delegate other missing methods to response.
+  def method_missing(name, *args, &block)
+    if response && response.respond_to?(name)
+      response.send(name, *args, &block)
+    else
+      super
     end
   end
+
+  alias :response :last_response
 end

@@ -43,7 +43,7 @@ module Padrino
 
         # We map project modules for a given role or roles
         def roles_for(*roles, &block)
-          roles.any? { |role| raise AccessControlError, "Role #{role} must be a symbol!" unless role.is_a?(Symbol)  }
+          raise AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           @mappers ||= []
           @roles   ||= []
           @roles.concat(roles)
@@ -52,7 +52,7 @@ module Padrino
 
         # Returns all roles
         def roles
-          @roles.nil? ? [] : @roles.collect(&:to_s)
+          @roles.nil? ? [] : @roles
         end
 
         # Returns maps (allowed && denied actions). You can pass an custom object like an account to use internally.
@@ -66,7 +66,7 @@ module Padrino
     class Maps
       attr_reader :allowed, :denied, :role, :project_modules
 
-      def initialize(mappers, role, object=nil)
+      def initialize(mappers, role, object=nil) #:nodoc:
         @role            = role
         maps             = mappers.collect { |m|  m.call(object) }.reject { |m| !m.allowed?(role) }
         @allowed         = maps.collect(&:allowed).flatten.uniq
@@ -78,7 +78,7 @@ module Padrino
     class Mapper
       attr_reader :project_modules, :roles, :denied
 
-      def initialize(object, *roles, &block)#:nodoc:
+      def initialize(object, *roles, &block) #:nodoc:
         @project_modules = []
         @allowed         = []
         @denied          = []
@@ -159,7 +159,7 @@ module Padrino
     class Menu
       attr_reader :name, :options, :items, :path
 
-      def initialize(name, path=nil, options={}, &block)#:nodoc:
+      def initialize(name, path=nil, options={}, &block) #:nodoc:
         @name    = name
         @path    = path
         @options = options
