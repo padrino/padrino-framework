@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-27}
+  s.date = %q{2009-12-28}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/backend.rb",
      "padrino-admin.gemspec",
      "test/helper.rb",
-     "test/test_padrino_admin.rb",
      "test/test_parsing.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-admin}

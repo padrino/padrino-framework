@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2009-12-27}
+  s.date = %q{2009-12-28}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{nesquena@gmail.com}
@@ -52,9 +52,9 @@ Gem::Specification.new do |s|
      "test/fixtures/apps/simple.rb",
      "test/helper.rb",
      "test/test_application.rb",
+     "test/test_core.rb",
      "test/test_logger.rb",
-     "test/test_padrino_core.rb",
-     "test/test_padrino_mounter.rb",
+     "test/test_mounter.rb",
      "test/test_reloader_complex.rb",
      "test/test_reloader_simple.rb",
      "test/test_server.rb"

@@ -1,5 +1,8 @@
 module Padrino
   module AccessControl
+    
+    class AccessControlError < StandardError; end
+    
     # This Class map and get roles/projects for accounts
     # 
     #   Examples:
@@ -40,11 +43,11 @@ module Padrino
         
         # We map project modules for a given role or roles
         def roles_for(*roles, &block)
-          roles.each { |role| raise AccessControlError, "Role #{role} must be a symbol!" unless role.is_a?(Symbol)  }
+          roles.any? { |role| raise AccessControlError, "Role #{role} must be a symbol!" unless role.is_a?(Symbol)  }
           @mappers ||= []
           @roles   ||= []
           @roles.concat(roles)
-          @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
+          @mappers << lambda { |object| Mapper.new(object, *roles, &block) }
         end
         
         # Returns all roles
@@ -52,65 +55,74 @@ module Padrino
           @roles.nil? ? [] : @roles.collect(&:to_s)
         end
 
-        # Returns maps (allowed && denied actions) for the given account
-        def maps_for(account)
-          @@cache[account.id] ||= @mappers.collect { |m| m.call(account) }.
-                                           reject  { |m| !m.allowed? }
-          @@cache[account.id]
+        # Returns maps (allowed && denied actions). You can pass an custom object like an account to use internally.
+        def maps_for(role, object=nil)
+          key = object ? "#{role}-#{object.object_id}" : role
+          @@cache[key] ||= Maps.new(@mappers, role, object)
         end
+      end
+    end
+    
+    class Maps
+      attr_reader :allowed, :denied, :role, :project_modules
+      
+      def initialize(mappers, role, object=nil)
+        @role            = role
+        maps             = mappers.collect { |m|  m.call(object) }.reject { |m| !m.allowed?(role) }
+        @allowed         = maps.collect(&:allowed).flatten.uniq
+        @denied          = maps.collect(&:denied).flatten.uniq
+        @project_modules = maps.collect(&:project_modules).flatten.uniq
       end
     end
     
     class Mapper
-      attr_reader :project_modules, :roles
+      attr_reader :project_modules, :roles, :denied
       
-      def initialize(account, *roles, &block)#:nodoc:
+      def initialize(object, *roles, &block)#:nodoc:
         @project_modules = []
         @allowed         = []
         @denied          = []
         @roles           = roles
-        @account_id      = account.is_a?(Account) ? account.id : account
-        yield(self, Account.find(@account_id)) rescue yield(self)
+        object ? yield(self, object.dup) : yield(self)
       end
       
       # Create a new project module
-      def project_module(name, controller=nil, &block)
-        @project_modules << ProjectModule.new(name, controller, &block)
+      def project_module(name, path=nil, &block)
+        @project_modules << ProjectModule.new(name, path, &block)
       end
       
-      # Globally allow an action / controller for the current role
+      # Globally allow an paths for the current role
       def allow(path)
-        @allowed << path
+        @allowed << path unless @allowed.include?(path)
       end
       
-      # Globally deny an action / controllerfor the current role
+      # Globally deny an pathsfor the current role
       def deny(path)
-        @denied << path
+        @denied << path unless @allowed.include?(path)
       end
       
-      # Return true if current_account role is included in given roles
-      def allowed?
-        @roles.any? { |r| r.to_s.downcase == Account.find(@account_id).role.downcase }
+      # Return true if role is included in given roles
+      def allowed?(role)
+        @roles.any? { |r| r == role.to_s.downcase.to_sym }
       end
       
-      # Return denied actions/controllers
-      def denied
-        @denied.uniq
+      # Return allowed paths
+      def allowed
+        @project_modules.each { |pm| @allowed.concat(pm.allowed)  }
+        @allowed.uniq
       end
     end
     
     class ProjectModule
-      attr_reader :name, :menus, :url
+      attr_reader :name, :menus, :path
       
       def initialize(name, path=nil, options={}, &block)#:nodoc:
-        @name = name
-        @options = options
-        @allowed = []
-        @menus   = []
-        if path
-          @url      = path
-          @allowed << path
-        end
+        @name     = name
+        @options  = options
+        @allowed  = []
+        @menus    = []
+        @path     = path
+        @allowed << path if path
         yield self
       end
       
@@ -130,36 +142,31 @@ module Padrino
         @name.is_a?(Symbol) ? I18n.t("admin.menus.#{@name}", :default => @name.to_s.humanize) : @name
       end
       
-      # Return a unique id for the given project module
+      # Return symbol for the given project module
       def uid
-        @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '')
+        @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '').to_sym
       end
       
       # Return ExtJs Config for this project module
       def config
         options = @options.merge(:text => human_name)
         options.merge!(:menu => @menus.collect(&:config)) if @menus.size > 0
-        options.merge!(:handler =>  "function(){ Admin.app.load('#{url_for(@url.merge(:only_path => true))}') }".to_l) if @url
+        options.merge!(:handler => ExtJs::Variable.new("function(){ Admin.app.load('#{path}') }")) if @path
         options
       end
     end
     
     class Menu
-      attr_reader :name, :options, :items
+      attr_reader :name, :options, :items, :path
       
       def initialize(name, path=nil, options={}, &block)#:nodoc:
         @name    = name
-        @url     = path
+        @path    = path
         @options = options
         @allowed = []
         @items   = []        
-        @allowed << { :controller => recognize_path(path)[:controller] } if @url
+        @allowed << path if path
         yield self if block_given?
-      end
-      
-      # Return the url of this menu
-      def url
-        @url.is_a?(Hash) ? url_for(@url.merge(:only_path => true)) : @url
       end
       
       # Add a new submenu to the menu
@@ -169,7 +176,7 @@ module Padrino
       
       # Return allowed controllers
       def allowed
-        @items.each { |i| @allowed.concat i.allowed }
+        @items.each { |i| @allowed.concat(i.allowed) }
         @allowed.uniq
       end
       
@@ -180,23 +187,20 @@ module Padrino
       
       # Return a unique id for the given project module
       def uid
-        @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '')
+        @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '').to_sym
       end
       
       # Return ExtJs Config for this menu
       def config
-        if @url.blank? && @items.empty?
+        if @path.blank? && @items.empty?
           options = human_name
         else
           options = @options.merge(:text => human_name)
           options.merge!(:menu => @items.collect(&:config)) if @items.size > 0
-          options.merge!(:handler => "function(){ Admin.app.load('#{url}') }".to_l) if !@url.blank?
+          options.merge!(:handler => ExtJs::Variable.new("function(){ Admin.app.load('#{path}') }")) if @path
         end
         options
       end
-    end
-    
-    class AccessControlError < StandardError#:nodoc:
     end
   end
 end
