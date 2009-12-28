@@ -4,7 +4,7 @@ class TestAccessControl < Test::Unit::TestCase
   
   class AccessDemo < Padrino::AccessControl::Base
 
-    roles_for :admin do |role, categories|
+    roles_for :admin do |role, account|
       role.allow "/admin/base"
       role.deny  "/admin/accounts/details"
       role.deny  "/admin/accounts/details" # Only for check that we don't have two paths equal
@@ -19,34 +19,32 @@ class TestAccessControl < Test::Unit::TestCase
       end
     end
 
-    roles_for :editor, :admin do |role, categories|
-      next unless categories
+    roles_for :editor, :admin do |role, account|
       role.project_module :categories do |project|
-        categories.each do |category|
-          project.menu category.name, "/admin/categories/#{category.param}.js"
+        account.categories.each do |category|
+          project.menu category.name, "/admin/categories/#{category.id}.js"
         end
       end
     end
   end
 
   def setup
-    @categories  = %w{Post News Press}.map { |m| OpenStruct.new(:param => "#{rand(20)}-#{m}", :name => m) }
-    @admin_maps  = AccessDemo.maps_for(:admin,  @categories)
-    @editor_maps = AccessDemo.maps_for(:editor, @categories)
+    @admin_maps  = AccessDemo.maps_for(AdminAccount)
+    @editor_maps = AccessDemo.maps_for(EditorAccount)
   end
 
   context 'for authorization functionality' do
 
     should 'allow and deny paths for admin' do
       allowed = ["/admin/base", "/admin/settings", "/admin/accounts", "/admin/accounts/subaccounts"] +
-                @categories.collect { |c| "/admin/categories/#{c.param}.js" }
+                AdminAccount.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
       assert_equal ["/admin/accounts/details"], @admin_maps.denied
       assert_equal allowed, @admin_maps.allowed
     end
 
     should 'allow and deny paths for editor' do
       assert_equal [], @editor_maps.denied
-      assert_equal @categories.collect { |c| "/admin/categories/#{c.param}.js" }, @editor_maps.allowed
+      assert_equal EditorAccount.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
     end
   end
 
@@ -58,7 +56,7 @@ class TestAccessControl < Test::Unit::TestCase
     end
 
     should 'check a module config' do
-      menu = @categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.param}.js') }" } }
+      menu = EditorAccount.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
       assert_equal [{ :text => "Categories", :menu => menu }], @editor_maps.project_modules.collect(&:config)
     end
 

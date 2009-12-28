@@ -19,7 +19,7 @@ module Padrino
     #         end
     #       end
     # 
-    #       role.project_module :categories do |project|
+    #       role.project_module :categories do |project, current_account|
     #         current_account.categories.each do |cat|
     #           project.menu cat.name, "/admin/categories/#{cat.id}.js"
     #         end
@@ -36,18 +36,22 @@ module Padrino
     #   - Access to all actions EXCEPT <tt>details</tt> of controller "/admin/accounts"
     # 
     class Base
-      @@cache = {}
-      cattr_accessor :cache
 
       class << self
-
+        
+        def inherited(base)
+          base.send(:cattr_accessor, :cache)
+          base.send(:cache=, {})
+          super
+        end
+        
         # We map project modules for a given role or roles
         def roles_for(*roles, &block)
           raise AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           @mappers ||= []
           @roles   ||= []
           @roles.concat(roles)
-          @mappers << lambda { |object| Mapper.new(object, *roles, &block) }
+          @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
         end
 
         # Returns all roles
@@ -55,10 +59,13 @@ module Padrino
           @roles.nil? ? [] : @roles
         end
 
-        # Returns maps (allowed && denied actions). You can pass an custom object like an account to use internally.
-        def maps_for(role, object=nil)
-          key = object ? "#{role}-#{object.object_id}" : role
-          @@cache[key] ||= Maps.new(@mappers, role, object)
+        # Returns maps (allowed && denied actions) for the given account.
+        # An account can have access to two or many applications so for build a correct tree of maps it's 
+        # also necessary provide <tt>where</tt> options.
+        def maps_for(account)
+          raise AccessControlError, "You must provide an Account Class!" unless account.is_a?(Account)
+          raise AccessControlError, "Account must respond to :role!"     unless account.respond_to?(:role)
+          cache[account.id] ||= Maps.new(@mappers, account)
         end
       end
     end
@@ -66,9 +73,9 @@ module Padrino
     class Maps
       attr_reader :allowed, :denied, :role, :project_modules
 
-      def initialize(mappers, role, object=nil) #:nodoc:
+      def initialize(mappers, account) #:nodoc:
         @role            = role
-        maps             = mappers.collect { |m|  m.call(object) }.reject { |m| !m.allowed?(role) }
+        maps             = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
         @allowed         = maps.collect(&:allowed).flatten.uniq
         @denied          = maps.collect(&:denied).flatten.uniq
         @project_modules = maps.collect(&:project_modules).flatten.uniq
@@ -78,12 +85,13 @@ module Padrino
     class Mapper
       attr_reader :project_modules, :roles, :denied
 
-      def initialize(object, *roles, &block) #:nodoc:
+      def initialize(account, *roles, &block) #:nodoc:
         @project_modules = []
         @allowed         = []
         @denied          = []
         @roles           = roles
-        object ? yield(self, object.dup) : yield(self)
+        @account         = account.dup
+        yield(self, @account)
       end
 
       # Create a new project module
@@ -102,8 +110,8 @@ module Padrino
       end
 
       # Return true if role is included in given roles
-      def allowed?(role)
-        @roles.any? { |r| r == role.to_s.downcase.to_sym }
+      def allowed?
+        @roles.any? { |r| r == @account.role.to_s.downcase.to_sym }
       end
 
       # Return allowed paths

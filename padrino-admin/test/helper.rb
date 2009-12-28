@@ -26,6 +26,28 @@ module Kernel
   alias :silence_stdout :silence_logger
 end
 
+# Fake Category Model
+class Category
+  attr_reader :id, :name
+  def initialize(name)
+    @id, @name = rand(99), name
+  end
+end
+
+# Fake Account Model
+class Account
+  attr_reader :id, :name, :role, :categories
+  def initialize(name, role)
+    @id, @name, @role = rand(99), name, role
+    # Fake has_many association
+    @categories  = %w{Post News Press}.map { |name| Category.new(name) }
+  end
+end
+
+# We build some fake accounts
+AdminAccount  = Account.new("DAddYE", "admin")
+EditorAccount = Account.new("Luke",   "editor")
+
 class Class
   # Allow assertions in request context
   include Test::Unit::Assertions

@@ -26,8 +26,11 @@ Dir[File.dirname(__FILE__) + '/padrino-admin/**/*.rb'].each {|file| require file
 #   
 module Padrino
   class Application
-    cattr_reader :access_control
     @@access_control = Class.new(Padrino::AccessControl::Base)
+    cattr_reader :access_control
+
+    set :login_from, :sessions
+    helpers Padrino::AccessControl::Helpers
 
     # Delegator for roles
     def self.roles_for(*roles, &block)
@@ -35,4 +38,3 @@ module Padrino
     end
   end
 end
-
