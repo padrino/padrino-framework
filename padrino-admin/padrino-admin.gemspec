@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-admin}
-  s.version = "0.4.2"
+  s.version = "0.4.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
@@ -23,12 +23,13 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/padrino-admin.rb",
-     "lib/padrino-admin/access_control/base.rb",
+     "lib/padrino-admin/access_control.rb",
      "lib/padrino-admin/ext_js/config.rb",
      "lib/padrino-admin/generators/backend.rb",
      "padrino-admin.gemspec",
      "test/helper.rb",
      "test/test_access_control.rb",
+     "test/test_admin_application.rb",
      "test/test_parsing.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-admin}
