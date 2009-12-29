@@ -4,9 +4,10 @@ class TestAdminApplication < Test::Unit::TestCase
 
   should 'set basic roles' do
     mock_app do
+      enable :authentication
       set :app_name, :test_me
       # Do a simple mapping
-      roles_for :admin do |role, account|
+      access_control.roles_for :admin do |role, account|
         role.allow "/admin"
       end
       # Do test!

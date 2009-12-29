@@ -82,6 +82,7 @@ module Padrino
           set :app_name, self.to_s.underscore.to_sym
           set :default_builder, 'StandardFormBuilder'
           set :flash, defined?(Rack::Flash)
+          set :authentication, false
           # Padrino locale
           set :locale, :en
           set :translations, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
@@ -102,17 +103,18 @@ module Padrino
         # Requires the middleware and initializer modules to configure components
         def register_initializers
           use Padrino::RackLogger
-          use Padrino::Reloader              if reload?
-          use Rack::Flash                    if flash?
-          register DatabaseSetup             if defined?(DatabaseSetup)
+          use Padrino::Reloader   if reload?
+          use Rack::Flash         if flash?
+          register DatabaseSetup  if defined?(DatabaseSetup)
           @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
           Dir[@initializer_path].each { |file| register_initializer(file) }
         end
 
         # Registers all desired padrino extension helpers/routing
         def register_framework_extensions
-          register Padrino::Mailer   if padrino_mailer?
-          register Padrino::Helpers  if padrino_helpers?
+          register Padrino::Mailer        if padrino_mailer?
+          register Padrino::Helpers       if padrino_helpers?
+          register Padrino::AccessControl if authentication?
         end
 
         # Requires all files within the application load paths

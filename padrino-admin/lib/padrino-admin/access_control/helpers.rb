@@ -45,7 +45,7 @@ module Padrino
         if request.xhr?
           "alert('You don\'t have permission for this resource')"
         elsif options.redirect_failed_logins_to
-          redirect(redirect_failed_logins_to)
+          redirect(options.redirect_failed_logins_to)
         else
           halt 401, "You don't have permission for this resource"
         end

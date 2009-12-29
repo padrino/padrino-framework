@@ -1,40 +1,44 @@
 module Padrino
+  # This Class map and get roles/projects for accounts
+  # 
+  #   Examples:
+  #   
+  #     roles_for :administrator do |role, current_account|
+  #       role.allow "/admin/base"
+  #       role.deny  "/admin/accounts/details"
+  #     
+  #       role.project_module :administration do |project|
+  #         project.menu :general_settings, "/admin/settings" do |submenu|
+  #           submenu.add :accounts, "/admin/accounts" do |submenu|
+  #             submenu.add :sub_accounts, "/admin/accounts/subaccounts"
+  #           end
+  #         end
+  #       end
+  # 
+  #       role.project_module :categories do |project, current_account|
+  #         current_account.categories.each do |cat|
+  #           project.menu cat.name, "/admin/categories/#{cat.id}.js"
+  #         end
+  #       end
+  #     end
+  # 
+  #   If a user logged with role administrator or that have a project_module administrator can:
+  #   
+  #   - Access in all actions of "/admin/base" controller
+  #   - Denied access to ONLY action <tt>"/admin/accounts/details"</tt>
+  #   - Access to a project module called Administration
+  #   - Access to all actions of the controller "/admin/settings"
+  #   - Access to all actions of the controller "/admin/categories"
+  #   - Access to all actions EXCEPT <tt>details</tt> of controller "/admin/accounts"
+  #
   module AccessControl
+
+    def self.registered(app)
+      app.helpers Padrino::AccessControl::Helpers
+    end
 
     class AccessControlError < StandardError; end
 
-    # This Class map and get roles/projects for accounts
-    # 
-    #   Examples:
-    #   
-    #     roles_for :administrator do |role, current_account|
-    #       role.allow "/admin/base"
-    #       role.deny  "/admin/accounts/details"
-    #     
-    #       role.project_module :administration do |project|
-    #         project.menu :general_settings, "/admin/settings" do |submenu|
-    #           submenu.add :accounts, "/admin/accounts" do |submenu|
-    #             submenu.add :sub_accounts, "/admin/accounts/subaccounts"
-    #           end
-    #         end
-    #       end
-    # 
-    #       role.project_module :categories do |project, current_account|
-    #         current_account.categories.each do |cat|
-    #           project.menu cat.name, "/admin/categories/#{cat.id}.js"
-    #         end
-    #       end
-    #     end
-    # 
-    #   If a user logged with role administrator or that have a project_module administrator can:
-    #   
-    #   - Access in all actions of "/admin/base" controller
-    #   - Denied access to ONLY action <tt>"/admin/accounts/details"</tt>
-    #   - Access to a project module called Administration
-    #   - Access to all actions of the controller "/admin/settings"
-    #   - Access to all actions of the controller "/admin/categories"
-    #   - Access to all actions EXCEPT <tt>details</tt> of controller "/admin/accounts"
-    # 
     class Base
 
       class << self
