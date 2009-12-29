@@ -65,6 +65,7 @@ module Padrino
         I18n.locale = self.locale
         I18n.load_path += self.translations
         Sinatra::Request.extend(Padrino::Locale)
+        self.get(""){ redirect("#{options.uri_root}/") } if self.uri_root != "/"
         @_configured = true
       end
 
