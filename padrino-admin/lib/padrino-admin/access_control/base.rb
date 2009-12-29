@@ -157,50 +157,35 @@ module Padrino
           @roles.nil? ? [] : @roles
         end
 
-        # Returns maps (allowed && denied paths) for the given account.
-        # An account can have access to two or many applications so for build a correct tree of maps it's 
-        # also necessary provide <tt>where</tt> options.
-        def maps_for(account)
-          raise Padrino::AccessControlError, "You must provide an Account Class!" unless account.is_a?(Account)
-          raise Padrino::AccessControlError, "Account must respond to :role!"     unless account.respond_to?(:role)
-          cache[account.id] ||= Maps.new(@mappers, account)
-        end
-        
-        # Return auths (allowed && denied pahts) for unlogged accounts.
+        # Returns (allowed && denied paths).
+        # If an account given we also give allowed & denied paths for their role.
         def auths(account=nil)
-          unless cache[:any]
-            maps = maps_for(account) if account
-            cache[:any] = Auths.new(@authorizations, maps)
+          if account
+            cache[account.id] ||= Auths.new(@authorizations, @mappers, account)
+          else
+            cache[:any] ||= Auths.new(@authorizations)
           end
-          cache[:any]
         end
-      end
-    end
-
-    class Maps
-      attr_reader :allowed, :denied, :role, :project_modules
-
-      def initialize(mappers, account) #:nodoc:
-        @role            = role
-        maps             = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
-        @allowed         = maps.collect(&:allowed).flatten.uniq
-        @denied          = maps.collect(&:denied).flatten.uniq
-        @project_modules = maps.collect(&:project_modules).flatten.uniq
       end
     end
 
     class Auths
-      attr_reader :allowed, :denied
+      attr_reader :allowed, :denied, :project_modules
 
-      def initialize(authorizations, maps=nil)
+      def initialize(authorizations, mappers=nil, account=nil)
         @allowed = authorizations.collect(&:allowed).flatten
         @denied  = authorizations.collect(&:denied).flatten
-        if maps
-          @allowed.concat(maps.allowed)
-          @denied.concat(maps.denied)
+        if mappers
+          raise Padrino::AccessControlError, "Account must respond to :role!" unless account.respond_to?(:role)
+          maps = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
+          @allowed.concat(maps.collect(&:allowed).flatten)
+          @denied.concat(maps.collect(&:denied).flatten)
+          @project_modules = maps.collect(&:project_modules).flatten.uniq
+        else
+          @project_modules = []
         end
-        @allowed.uniq
-        @denied.uniq
+        @allowed.uniq!
+        @denied.uniq!
       end
     end
 

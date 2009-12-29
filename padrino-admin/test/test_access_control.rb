@@ -4,6 +4,11 @@ class TestAccessControl < Test::Unit::TestCase
   
   class AccessDemo < Padrino::AccessControl::Base
 
+    roles_for :any do |role|
+      role.allow "/sessions"
+      role.deny  "/special"
+    end
+
     roles_for :admin do |role, account|
       role.allow "/admin/base"
       role.deny  "/admin/accounts/details"
@@ -31,22 +36,34 @@ class TestAccessControl < Test::Unit::TestCase
   def setup
     @admin       = Account.admin
     @editor      = Account.editor
-    @admin_maps  = AccessDemo.maps_for(@admin)
-    @editor_maps = AccessDemo.maps_for(@editor)
+    @admin_maps  = AccessDemo.auths(@admin)
+    @editor_maps = AccessDemo.auths(@editor)
   end
 
   context 'for authorization functionality' do
 
+    should 'check auths without account' do
+      assert_equal ["/sessions"], AccessDemo.auths.allowed
+      assert_equal ["/special"],  AccessDemo.auths.denied
+    end
+
+    should 'check auths for an editor' do
+      assert_equal ["/special"], AccessDemo.auths(Account.editor).denied
+      assert_equal ["/sessions"] + 
+                   @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, 
+                   AccessDemo.auths(Account.editor).allowed
+    end
+
     should 'allow and deny paths for admin' do
-      allowed = ["/admin/base", "/admin/settings", "/admin/accounts", "/admin/accounts/subaccounts"] +
+      allowed = ["/sessions", "/admin/base", "/admin/settings", "/admin/accounts", "/admin/accounts/subaccounts"] +
                 @admin.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
-      assert_equal ["/admin/accounts/details"], @admin_maps.denied
+      assert_equal ["/special", "/admin/accounts/details"], @admin_maps.denied
       assert_equal allowed, @admin_maps.allowed
     end
 
     should 'allow and deny paths for editor' do
-      assert_equal [], @editor_maps.denied
-      assert_equal @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
+      assert_equal ["/special"], @editor_maps.denied
+      assert_equal ["/sessions"] + @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
     end
   end
 
