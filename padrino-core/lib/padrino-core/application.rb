@@ -152,7 +152,7 @@ module Padrino
       # * Use render 'path/to/my/template'
       # 
       def render(engine, data=nil, options={}, locals={}, &block)
-        @template_cache.clear if Padrino.env != :production
+        @template_cache.clear if Padrino.env != :production && @template_cache && @template_cache.respond_to?(:clear)
         # If an engine is a string probably is a path so we try to resolve them
         if data.nil?
           data   = engine.to_sym
