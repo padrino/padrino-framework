@@ -1,49 +1,136 @@
 module Padrino
+  
+  class Padrino::AccessControlError < StandardError; end
+  
   # This module give to a padrino application an access control functionality like:
-  # 
-  #   class AdminDemo < Padrino::Application
-  #     access_control.roles_for :administrator do |role, current_account|
-  #       role.allow "/admin/base"
-  #       role.deny  "/admin/accounts/details"
+  #   
+  #   class EcommerceDemo < Padrino::Application
+  #     enable :authentication
+  #     set :redirect_back_or_default, "/login" # or your page
   #     
-  #       role.project_module :administration do |project|
-  #         project.menu :general_settings, "/admin/settings" do |submenu|
-  #           submenu.add :accounts, "/admin/accounts" do |submenu|
-  #             submenu.add :sub_accounts, "/admin/accounts/subaccounts"
-  #           end
-  #         end
-  #       end
-  # 
-  #       role.project_module :categories do |project|
-  #         current_account.categories.each do |cat|
-  #           project.menu cat.name, "/admin/categories/#{cat.id}.js"
-  #         end
-  #       end
+  #     access_control.roles_for :any do
+  #       role.require_login "/cart"
+  #       role.require_login "/account"
+  #       role.allow "/account/create"
   #     end
   #   end
   # 
-  #   If a user logged with role administrator or that have a project_module administrator can:
+  # In the EcommerceDemo, we <tt>only</tt> require logins for all paths that start with "/cart" like:
+  # 
+  #   - "/cart/add"
+  #   - "/cart/empty"
+  #   - "/cart/checkout"
+  # 
+  # same thing for "/account" so we require a login for:
+  # 
+  #   - "/account"
+  #   - "/account/edit"
+  #   - "/account/update"
+  # 
+  # but if we call "/account/create" we don't need to be logged in our site for do that.
+  # In EcommerceDemo example we set <tt>redirect_back_or_default</tt> so if a <tt>unlogged</tt> 
+  # user try to access "/account/edit" will be redirected to "/login" when login is done will be 
+  # redirected to "/account/edit".
+  # 
+  # If we need something more complex aka roles/permissions we can do that in the same simple way
+  # 
+  #   class AdminDemo < Padrino::Application
+  #     enable :authentication
+  #     set :redirect_to_default, "/" # or your page
+  #     
+  #     access_control.roles_for :any do |role|
+  #       role.allow "/sessions"
+  #     end
   #   
-  #   - Access in all actions of "/admin/base" controller
-  #   - Denied access to ONLY action <tt>"/admin/accounts/details"</tt>
-  #   - Access to a project module called Administration
-  #   - Access to all actions of the controller "/admin/settings"
-  #   - Access to all actions of the controller "/admin/categories"
-  #   - Access to all actions EXCEPT <tt>details</tt> of controller "/admin/accounts"
+  #     access_control.roles_for :admin do |role, account|
+  #       role.allow "/"
+  #       role.deny  "/posts"
+  #     end
+  #     
+  #     access_control.roles_for :editor do |role, account|
+  #       role.allow "/posts"
+  #     end
+  #   end
+  # 
+  #   If a user logged with role admin can:
+  #   
+  #   - Access to all paths that start with "/session" like "/sessions/{new,create}"
+  #   - Access to any page except those that start with "/posts"
+  # 
+  #   If a user logged with role editor can:
+  # 
+  #   - Access to all paths that start with "/session" like "/sessions/{new,create}"
+  #   - Access <tt>only</tt> to paths that start with "/posts" like "/post/{new,edit,destroy}"
+  # 
+  # Finally we have another good fatures, the possibility in the same time we build role build also <tt>tree</tt>.
+  # Figure this scenario: in my admin every account need their own menu, so an Account with role editor have
+  # a menu different than an Account with role admin.
+  # 
+  # So:
+  # 
+  #   class AdminDemo < Padrino::Application
+  #     enable :authentication
+  #     set :redirect_to_default, "/" # or your page
+  #     
+  #     access_control.roles_for :any do |role|
+  #       role.allow "/sessions"
+  #     end
+  #     
+  #     access_control.roles_for :admin do |role, current_account|
+  #       
+  #       role.project_module :settings do |project|
+  #         project.menu :accounts, "/accounts" do |accounts|
+  #           accounts.add :new, "/accounts/new" do |account|
+  #             account.add :administrator, "/account/new/?role=administrator"               
+  #             account.add :editor,        "/account/new/?role=editor"
+  #           end
+  #         end
+  #         project.menu :spam_rules, "/manage_spam"
+  #       end
+  #       
+  #       role.project_module :categories do |project|
+  #         current_account.categories.each do |category|
+  #           project.menu category.name, "/categories/#{category.id}.js"
+  #         end
+  #       end
+  #     end
+  #     
+  #     access_control.roles_for :editor do |role, current_account|
+  #       
+  #       role.project_module :posts do |posts|
+  #         post.menu :list, "/posts"
+  #         post.menu :new,  "/posts/new"
+  #       end
+  #     end
+  # 
+  # In this example when we build our menu tree we are also defining roles so:
+  # 
+  # An Admin Account have access to:
+  # 
+  # - All paths that start with "/sessions"
+  # - All paths that start with "/accounts"
+  # - All paths that start with "/manage_spam"
+  # 
+  # An Editor Account have access to:
+  # 
+  # - All paths that start with "/posts"
+  # 
+  # Remember that you always deny a specific actions or allow globally others.
+  # 
+  # Remember that when you define role_for :a_role, you have also access to the Model Account.
   #
   module AccessControl
 
     def self.registered(app)
       app.helpers Padrino::AccessControl::Helpers
+      app.before { login_required }
     end
-
-    class AccessControlError < StandardError; end
 
     class Base
 
       class << self
         
-        def inherited(base)
+        def inherited(base) #:nodoc:
           base.send(:cattr_accessor, :cache)
           base.send(:cache=, {})
           super
@@ -51,11 +138,18 @@ module Padrino
         
         # We map project modules for a given role or roles
         def roles_for(*roles, &block)
-          raise AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
-          @mappers ||= []
-          @roles   ||= []
-          @roles.concat(roles)
-          @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
+          raise Padrino::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
+          raise Padrino::AccessControlError, "You can't merge :any with other roles"              if roles.size > 1 && roles.any? { |r| r == :any }
+          @mappers        ||= []
+          @roles          ||= []
+          @authorizations ||= []
+
+          if roles == [:any]
+            @authorizations << Authorization.new(&block)
+          else
+            @roles.concat(roles)
+            @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
+          end
         end
 
         # Returns all roles
@@ -63,13 +157,22 @@ module Padrino
           @roles.nil? ? [] : @roles
         end
 
-        # Returns maps (allowed && denied actions) for the given account.
+        # Returns maps (allowed && denied paths) for the given account.
         # An account can have access to two or many applications so for build a correct tree of maps it's 
         # also necessary provide <tt>where</tt> options.
         def maps_for(account)
-          raise AccessControlError, "You must provide an Account Class!" unless account.is_a?(Account)
-          raise AccessControlError, "Account must respond to :role!"     unless account.respond_to?(:role)
+          raise Padrino::AccessControlError, "You must provide an Account Class!" unless account.is_a?(Account)
+          raise Padrino::AccessControlError, "Account must respond to :role!"     unless account.respond_to?(:role)
           cache[account.id] ||= Maps.new(@mappers, account)
+        end
+        
+        # Return auths (allowed && denied pahts) for unlogged accounts.
+        def auths(account=nil)
+          unless cache[:any]
+            maps = maps_for(account) if account
+            cache[:any] = Auths.new(@authorizations, maps)
+          end
+          cache[:any]
         end
       end
     end
@@ -84,6 +187,40 @@ module Padrino
         @denied          = maps.collect(&:denied).flatten.uniq
         @project_modules = maps.collect(&:project_modules).flatten.uniq
       end
+    end
+
+    class Auths
+      attr_reader :allowed, :denied
+
+      def initialize(authorizations, maps=nil)
+        @allowed = authorizations.collect(&:allowed).flatten
+        @denied  = authorizations.collect(&:denied).flatten
+        if maps
+          @allowed.concat(maps.allowed)
+          @denied.concat(maps.denied)
+        end
+        @allowed.uniq
+        @denied.uniq
+      end
+    end
+
+    class Authorization
+      attr_reader :allowed, :denied
+
+      def initialize(&block)
+        @allowed = []
+        @denied  = []
+        yield self
+      end
+
+      def allow(path)
+        @allowed << path unless @allowed.include?(path)
+      end
+
+      def require_login(path)
+        @denied << path unless @denied.include?(path)
+      end
+      alias :deny :require_login
     end
 
     class Mapper

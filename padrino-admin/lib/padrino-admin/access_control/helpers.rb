@@ -27,9 +27,9 @@ module Padrino
       # 
       # For configure this role please refer to: <tt>Padrino::AccessControl::Base</tt>
       def allowed?
-        return false unless current_account
-        maps = access_control.maps_for(current_account)
-        maps.allowed.any? { |path| request.path_info =~ /^#{path}/ } && maps.denied.all? { |path| request.path_info !~ /^#{path}/ }
+        paths = access_control.auths(current_account)
+        raise Padrino::AccessControlError, "You need to define roles for use authorization! #{paths.inspect}" if paths.allowed.empty? && paths.denied.empty?
+        paths.allowed.any? { |path| request.path_info =~ /^#{path}/ } && paths.denied.all? { |path| request.path_info !~ /^#{path}/ }
       end
 
       # Returns a helper to pass in a <tt>before_filter</tt> for check if
@@ -37,22 +37,12 @@ module Padrino
       # 
       # By default this method is used in BackendController so is not necessary
       def login_required
-        store_location if options.store_location
-        return access_denied unless logged_in? && allowed?
+        store_location if options.respond_to?(:redirect_back_or_default)
+        return access_denied unless allowed?
       end
 
-      def access_denied #:nodoc:
-        if request.xhr?
-          "alert('You don\'t have permission for this resource')"
-        elsif options.redirect_failed_logins_to
-          redirect(options.redirect_failed_logins_to)
-        else
-          halt 401, "You don't have permission for this resource"
-        end
-        false
-      end
-
-      def store_location #:nodoc:
+      # Store in session[:return_to] the request.fullpath
+      def store_location
         session[:return_to] = request.fullpath
       end
 
@@ -64,6 +54,23 @@ module Padrino
       end
 
     private
+      def access_denied #:nodoc:
+        # If request a javascript we alert the user
+        if request.xhr?
+          "alert('You don\'t have permission for this resource')"
+        # If we request a normal page we redirect and we store request.full_path
+        elsif options.respond_to?(:redirect_back_or_default)
+          redirect_back_or_default(options.redirect_back_or_default)
+        # If we don't want redirect a user to back but always to a path
+        elsif options.respond_to?(:redirect_to_default)
+          redirect(options.redirect_to_default)
+        # If no match we halt with 401
+        else
+          halt 401, "You don't have permission for this resource"
+        end
+        false
+      end
+
       def session_name
         options.app_name.to_sym
       end
