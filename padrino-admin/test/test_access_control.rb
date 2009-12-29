@@ -33,13 +33,6 @@ class TestAccessControl < Test::Unit::TestCase
     end
   end
 
-  def setup
-    @admin       = Account.admin
-    @editor      = Account.editor
-    @admin_maps  = AccessDemo.auths(@admin)
-    @editor_maps = AccessDemo.auths(@editor)
-  end
-
   context 'for authorization functionality' do
 
     should 'check auths without account' do
@@ -47,40 +40,50 @@ class TestAccessControl < Test::Unit::TestCase
       assert_equal ["/special"],  AccessDemo.auths.denied
     end
 
+    should 'act as can can' do
+      assert AccessDemo.auths.can?("/sessions")
+      assert AccessDemo.auths.cannot?("/special")
+      assert ! AccessDemo.auths.can?("/special")
+    end
+
     should 'check auths for an editor' do
       assert_equal ["/special"], AccessDemo.auths(Account.editor).denied
       assert_equal ["/sessions"] + 
-                   @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, 
+                   Account.editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, 
                    AccessDemo.auths(Account.editor).allowed
     end
 
     should 'allow and deny paths for admin' do
       allowed = ["/sessions", "/admin/base", "/admin/settings", "/admin/accounts", "/admin/accounts/subaccounts"] +
-                @admin.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
-      assert_equal ["/special", "/admin/accounts/details"], @admin_maps.denied
-      assert_equal allowed, @admin_maps.allowed
+                Account.admin.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
+      assert_equal ["/special", "/admin/accounts/details"], AccessDemo.auths(Account.admin).denied
+      assert_equal allowed, AccessDemo.auths(Account.admin).allowed
     end
 
     should 'allow and deny paths for editor' do
-      assert_equal ["/special"], @editor_maps.denied
-      assert_equal ["/sessions"] + @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
+      assert_equal ["/special"], AccessDemo.auths(Account.editor).denied
+      assert_equal ["/sessions"] + Account.editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, AccessDemo.auths(Account.editor).allowed
     end
   end
 
   context 'for project modules functionality do' do
 
+    should 'have empty modules if no account given' do
+      assert_equal [], AccessDemo.auths.project_modules
+    end
+
     should 'check modules uids' do
-      assert_equal [:padrinosdashboard, :categories], @admin_maps.project_modules.collect(&:uid)
-      assert_equal [:categories], @editor_maps.project_modules.collect(&:uid)
+      assert_equal [:padrinosdashboard, :categories], AccessDemo.auths(Account.admin).project_modules.collect(&:uid)
+      assert_equal [:categories], AccessDemo.auths(Account.editor).project_modules.collect(&:uid)
     end
 
     should 'check a module config' do
-      menu = @editor.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
-      assert_equal [{ :text => "Categories", :menu => menu }], @editor_maps.project_modules.collect(&:config)
+      menu = Account.editor.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
+      assert_equal [{ :text => "Categories", :menu => menu }], AccessDemo.auths(Account.editor).project_modules.collect(&:config)
     end
 
     should 'check config handlers' do
-      assert_kind_of Padrino::ExtJs::Variable, @editor_maps.project_modules.collect(&:config).first[:menu].first[:handler]
+      assert_kind_of Padrino::ExtJs::Variable, AccessDemo.auths(Account.editor).project_modules.collect(&:config).first[:menu].first[:handler]
     end
   end
 end

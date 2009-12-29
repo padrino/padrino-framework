@@ -27,9 +27,7 @@ module Padrino
       # 
       # For configure this role please refer to: <tt>Padrino::AccessControl::Base</tt>
       def allowed?
-        paths = access_control.auths(current_account)
-        raise Padrino::AccessControlError, "You need to define roles for use authorization! #{paths.inspect}" if paths.allowed.empty? && paths.denied.empty?
-        paths.allowed.any? { |path| request.path_info =~ /^#{path}/ } && paths.denied.all? { |path| request.path_info !~ /^#{path}/ }
+        access_control.auths(current_account).can?(request.path_info)
       end
 
       # Returns a helper to pass in a <tt>before_filter</tt> for check if

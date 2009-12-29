@@ -12,7 +12,7 @@ class TestAdminApplication < Test::Unit::TestCase
         role.allow "/"
         role.deny  "/foo"
       end
-      
+
       # Prepare a basic page
       get("/login") do
         set_current_account(Account.admin)

@@ -140,6 +140,7 @@ module Padrino
         def roles_for(*roles, &block)
           raise Padrino::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           raise Padrino::AccessControlError, "You can't merge :any with other roles"              if roles.size > 1 && roles.any? { |r| r == :any }
+          
           @mappers        ||= []
           @roles          ||= []
           @authorizations ||= []
@@ -147,6 +148,7 @@ module Padrino
           if roles == [:any]
             @authorizations << Authorization.new(&block)
           else
+            raise Padrino::AccessControlError, "For use custom roles you need to define an Account Class" unless defined?(Account)
             @roles.concat(roles)
             @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
           end
@@ -176,7 +178,6 @@ module Padrino
         @allowed = authorizations.collect(&:allowed).flatten
         @denied  = authorizations.collect(&:denied).flatten
         if mappers
-          raise Padrino::AccessControlError, "Account must respond to :role!" unless account.respond_to?(:role)
           maps = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
           @allowed.concat(maps.collect(&:allowed).flatten)
           @denied.concat(maps.collect(&:denied).flatten)
@@ -187,6 +188,15 @@ module Padrino
         @allowed.uniq!
         @denied.uniq!
       end
+
+      def can?(request_path)
+        @allowed.any? { |path| request_path =~ /^#{path}/ } && !cannot?(request_path)
+      end
+
+      def cannot?(request_path)
+        @denied.all? { |path| request_path =~ /^#{path}/ }
+      end
+
     end
 
     class Authorization
