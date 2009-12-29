@@ -124,6 +124,7 @@ module Padrino
     def self.registered(app)
       app.helpers Padrino::AccessControl::Helpers
       app.before { login_required }
+      set :redirect_to_default, "/"
     end
 
     class Base
