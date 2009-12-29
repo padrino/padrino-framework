@@ -1,9 +1,8 @@
 module Padrino
-  # This Class map and get roles/projects for accounts
+  # This module give to a padrino application an access control functionality like:
   # 
-  #   Examples:
-  #   
-  #     roles_for :administrator do |role, current_account|
+  #   class AdminDemo < Padrino::Application
+  #     access_control.roles_for :administrator do |role, current_account|
   #       role.allow "/admin/base"
   #       role.deny  "/admin/accounts/details"
   #     
@@ -15,12 +14,13 @@ module Padrino
   #         end
   #       end
   # 
-  #       role.project_module :categories do |project, current_account|
+  #       role.project_module :categories do |project|
   #         current_account.categories.each do |cat|
   #           project.menu cat.name, "/admin/categories/#{cat.id}.js"
   #         end
   #       end
   #     end
+  #   end
   # 
   #   If a user logged with role administrator or that have a project_module administrator can:
   #   
