@@ -10,6 +10,7 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
+require 'dm-core'
 require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-admin'
@@ -26,27 +27,36 @@ module Kernel
   alias :silence_stdout :silence_logger
 end
 
+DataMapper.setup(:default, 'sqlite3::memory:')
+
 # Fake Category Model
 class Category
-  attr_reader :id, :name
-  def initialize(name)
-    @id, @name = rand(99), name
-  end
+  include DataMapper::Resource
+  property :id,   Serial
+  property :name, String
+  belongs_to :account
 end
 
 # Fake Account Model
 class Account
-  attr_reader :id, :name, :role, :categories
-  def initialize(name, role)
-    @id, @name, @role = rand(99), name, role
-    # Fake has_many association
-    @categories  = %w{Post News Press}.map { |name| Category.new(name) }
-  end
+  include DataMapper::Resource
+  property :id,   Serial
+  property :name, String
+  property :role, String
+  has n, :categories
+  def self.admin;  first(:role => "Admin");  end
+  def self.editor; first(:role => "Editor"); end
 end
 
+DataMapper.auto_migrate!
+
 # We build some fake accounts
-AdminAccount  = Account.new("DAddYE", "admin")
-EditorAccount = Account.new("Luke",   "editor")
+admin  = Account.create(:name => "DAddYE", :role => "Admin")
+editor = Account.create(:name => "Dexter", :role => "Editor")
+%w(News Press HowTo).each do |c| 
+  admin.categories.create(:name => c)
+  editor.categories.create(:name => c)
+end
 
 class Class
   # Allow assertions in request context

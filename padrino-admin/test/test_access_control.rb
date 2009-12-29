@@ -29,22 +29,24 @@ class TestAccessControl < Test::Unit::TestCase
   end
 
   def setup
-    @admin_maps  = AccessDemo.maps_for(AdminAccount)
-    @editor_maps = AccessDemo.maps_for(EditorAccount)
+    @admin       = Account.admin
+    @editor      = Account.editor
+    @admin_maps  = AccessDemo.maps_for(@admin)
+    @editor_maps = AccessDemo.maps_for(@editor)
   end
 
   context 'for authorization functionality' do
 
     should 'allow and deny paths for admin' do
       allowed = ["/admin/base", "/admin/settings", "/admin/accounts", "/admin/accounts/subaccounts"] +
-                AdminAccount.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
+                @admin.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq
       assert_equal ["/admin/accounts/details"], @admin_maps.denied
       assert_equal allowed, @admin_maps.allowed
     end
 
     should 'allow and deny paths for editor' do
       assert_equal [], @editor_maps.denied
-      assert_equal EditorAccount.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
+      assert_equal @editor.categories.collect { |c| "/admin/categories/#{c.id}.js" }.uniq, @editor_maps.allowed
     end
   end
 
@@ -56,7 +58,7 @@ class TestAccessControl < Test::Unit::TestCase
     end
 
     should 'check a module config' do
-      menu = EditorAccount.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
+      menu = @editor.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
       assert_equal [{ :text => "Categories", :menu => menu }], @editor_maps.project_modules.collect(&:config)
     end
 

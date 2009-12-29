@@ -69,9 +69,7 @@ module Padrino
       end
 
       def login_from_session #:nodoc:
-        Account.find(session[session_name]) if session[session_name]
-      rescue
-        nil
+        Account.first(:conditions => { :id => session[session_name] })
       end
     end
   end

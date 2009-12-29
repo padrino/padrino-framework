@@ -10,15 +10,14 @@ class TestAdminApplication < Test::Unit::TestCase
         role.allow "/admin"
       end
       # Do test!
-      assert_equal ["/admin"], access_control.maps_for(AdminAccount).allowed
+      assert_equal ["/admin"], access_control.maps_for(Account.admin).allowed
       assert_equal [:admin], access_control.roles
       # Prepare a basic page
       get("/admin") do
-        set_current_account(AdminAccount)
+        set_current_account(Account.admin)
         "logged_in:#{logged_in?}, allowed?:#{allowed?}"
       end
-      get("/login") do 
-        set_current_account(AdminAccount)
+      get("/login") do
         "logged_in:#{logged_in?}, allowed?:#{allowed?}"
       end
     end
