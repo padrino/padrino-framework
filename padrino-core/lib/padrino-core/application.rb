@@ -45,7 +45,7 @@ module Padrino
       def reload!
         reset_routes! # remove all existing user-defined application routes
         Padrino.load_dependency(self.app_file)  # reload the app file
-        load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) }
+        load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
       end
 
       # Resets application routes to only routes not defined by the user
@@ -117,21 +117,19 @@ module Padrino
           register Padrino::AccessControl if authentication?
         end
 
+        # Returns the load_paths for the application (relative to the application root)
+        def load_paths
+          @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "mailers/*.rb", "controllers/**/*.rb", "helpers/*.rb"]
+        end
+
         # Requires all files within the application load paths
         def require_load_paths
           load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
         end
 
-        # Returns the load_paths for the application (relative to the application root)
-        def load_paths
-          @load_paths ||= ["urls.rb", "config/urls.rb", "models/*.rb", "app/models/*.rb",
-                           "mailers/*.rb", "app/mailers/*.rb", "controllers/**/*.rb", 
-                           "app/controllers/**/*.rb", "helpers/*.rb", "app/helpers/*.rb"]
-        end
-
         # Returns the path to the views directory from root by returning the first that is found
         def find_view_path
-          @view_paths = ["views", "app/views"].collect { |path| File.join(self.root, path) }
+          @view_paths = ["views"].collect { |path| File.join(self.root, path) }
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
 
@@ -154,6 +152,7 @@ module Padrino
       # * Use render 'path/to/my/template'
       # 
       def render(engine, data=nil, options={}, locals={}, &block)
+        @template_cache.clear if Padrino.env != :production
         # If an engine is a string probably is a path so we try to resolve them
         if data.nil?
           data   = engine.to_sym
@@ -162,8 +161,10 @@ module Padrino
         # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
-          options[:layout] = File.join('layouts', layout.to_s).to_sym if layout
-          logger.debug "Rendering layout #{options[:layout]}"
+          if layout
+            options[:layout] = File.join('layouts', layout.to_s).to_sym
+            logger.debug "Rendering layout #{options[:layout]}"
+          end
         end
         super
       end

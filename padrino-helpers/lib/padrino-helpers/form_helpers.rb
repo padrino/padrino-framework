@@ -174,8 +174,8 @@ module Padrino
       # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
       # hidden_form_method_field('delete') => <input name="_method" value="delete" />
       def hidden_form_method_field(desired_method)
-        return '' if (desired_method =~ /get|post/)
-        original_method = desired_method.dup
+        return '' if (desired_method.to_s =~ /get|post/)
+        original_method = desired_method.to_s.dup
         desired_method.replace('post')
         hidden_field_tag(:_method, :value => original_method)
       end
