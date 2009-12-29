@@ -60,6 +60,7 @@ class Test::Unit::TestCase
   # given. Used in setup or individual spec methods to establish
   # the application.
   def mock_app(base=Padrino::Application, &block)
+    base.use Rack::Session::Cookie # Need this because Sinatra 0.9.4 have use Rack::Session::Cookie if sessions? && !test?
     @app = Sinatra.new(base, &block)
   end
   

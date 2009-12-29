@@ -50,7 +50,7 @@ module Padrino
 
       # Resets application routes to only routes not defined by the user
       def reset_routes!
-        @routes = Padrino::Application.dupe_routes
+        @routes = Padrino::Application.respond_to?(:dupe_routes) ? Padrino::Application.dupe_routes : {}
       end
 
       # Setup the application by registering initializers, load paths and logger
