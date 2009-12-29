@@ -35,6 +35,12 @@ class TestAccessControl < Test::Unit::TestCase
 
   context 'for authorization functionality' do
 
+    should 'check empty auths' do
+      empty = Class.new(Padrino::AccessControl::Base)
+      assert empty.auths.can?("/foo/bar")
+      assert ! empty.auths.cannot?("/foo/bar")
+    end
+
     should 'check auths without account' do
       assert_equal ["/sessions"], AccessDemo.auths.allowed
       assert_equal ["/special"],  AccessDemo.auths.denied
@@ -86,4 +92,5 @@ class TestAccessControl < Test::Unit::TestCase
       assert_kind_of Padrino::ExtJs::Variable, AccessDemo.auths(Account.editor).project_modules.collect(&:config).first[:menu].first[:handler]
     end
   end
+
 end

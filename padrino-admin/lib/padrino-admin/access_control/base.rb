@@ -124,7 +124,7 @@ module Padrino
     def self.registered(app)
       app.helpers Padrino::AccessControl::Helpers
       app.before { login_required }
-      set :redirect_to_default, "/"
+      app.set :redirect_to_default, "/"
     end
 
     class Base
@@ -132,8 +132,8 @@ module Padrino
       class << self
         
         def inherited(base) #:nodoc:
-          base.send(:cattr_accessor, :cache)
-          base.send(:cache=, {})
+          base.class_eval("@@cache={}; @authorizations=[]; @roles=[]; @mappers=[]")
+          base.send(:cattr_reader, :cache)
           super
         end
         
@@ -141,10 +141,6 @@ module Padrino
         def roles_for(*roles, &block)
           raise Padrino::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           raise Padrino::AccessControlError, "You can't merge :any with other roles"              if roles.size > 1 && roles.any? { |r| r == :any }
-          
-          @mappers        ||= []
-          @roles          ||= []
-          @authorizations ||= []
 
           if roles == [:any]
             @authorizations << Authorization.new(&block)
@@ -153,11 +149,6 @@ module Padrino
             @roles.concat(roles)
             @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
           end
-        end
-
-        # Returns all roles
-        def roles
-          @roles.nil? ? [] : @roles
         end
 
         # Returns (allowed && denied paths).
@@ -176,9 +167,12 @@ module Padrino
       attr_reader :allowed, :denied, :project_modules
 
       def initialize(authorizations, mappers=nil, account=nil)
-        @allowed = authorizations.collect(&:allowed).flatten
-        @denied  = authorizations.collect(&:denied).flatten
-        if mappers
+        @allowed, @denied = [], []
+        unless authorizations.empty?
+          @allowed = authorizations.collect(&:allowed).flatten
+          @denied  = authorizations.collect(&:denied).flatten
+        end
+        if mappers && !mappers.empty?
           maps = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
           @allowed.concat(maps.collect(&:allowed).flatten)
           @denied.concat(maps.collect(&:denied).flatten)
@@ -191,11 +185,13 @@ module Padrino
       end
 
       def can?(request_path)
+        return true if @allowed.empty?
         @allowed.any? { |path| request_path =~ /^#{path}/ } && !cannot?(request_path)
       end
 
       def cannot?(request_path)
-        @denied.all? { |path| request_path =~ /^#{path}/ }
+        return false if @denied.empty?
+        @denied.any? { |path| request_path =~ /^#{path}/ }
       end
 
     end

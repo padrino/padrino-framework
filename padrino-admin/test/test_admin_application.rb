@@ -27,7 +27,6 @@ class TestAdminApplication < Test::Unit::TestCase
     assert_equal 200, status
     
     get "/foo"
-    assert_equal 401, status
     assert_not_equal "foo", body
   end
 
