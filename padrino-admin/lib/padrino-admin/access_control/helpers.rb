@@ -74,7 +74,7 @@ module Padrino
       end
 
       def login_from_session #:nodoc:
-        Account.first(:conditions => { :id => session[session_name] })
+        Account.first(:conditions => { :id => session[session_name] }) if defined?(Account)
       end
     end
   end

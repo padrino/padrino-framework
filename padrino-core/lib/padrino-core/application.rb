@@ -161,8 +161,8 @@ module Padrino
         end
         # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
-          layout = self.class.instance_variable_get(:@_layout) || :application
-          options[:layout] = File.join('layouts', layout.to_s).to_sym
+          layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
+          options[:layout] = File.join('layouts', layout.to_s).to_sym if layout
           logger.debug "Rendering layout #{options[:layout]}"
         end
         super
