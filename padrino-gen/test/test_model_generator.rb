@@ -21,7 +21,9 @@ class TestModelGenerator < Test::Unit::TestCase
       response_success = silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
       response_duplicate = silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
       assert_match_in_file(/class User < ActiveRecord::Base/m, '/tmp/sample_app/app/models/user.rb')
-      assert_match /'user' model has already been generated!/, response_duplicate
+      # assert_match /'user' model has already been generated!/, response_duplicate
+      assert_match "identical\e[0m  mp/sample_app/app/models/user.rb", response_duplicate
+      assert_match "identical\e[0m  mp/sample_app/test/models/user_test.rb", response_duplicate
     end
 
     should "generate migration file versions properly" do
@@ -219,14 +221,14 @@ class TestModelGenerator < Test::Unit::TestCase
     end
   end
   
-  # context "the model destroy option" do
-  #   
-  #   should "destroy the model file" do
-  #     silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=testspec', '-d=activerecord']) }
-  #     silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-  #     silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
-  #     assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
-  #   end
-  # end
+  context "the model destroy option" do
+    
+    should "destroy the model file" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
+    end
+  end
 
 end

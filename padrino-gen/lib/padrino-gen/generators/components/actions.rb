@@ -43,7 +43,7 @@ module Padrino
             File.basename(f).match(/^(\d+)/)[0].to_i }.max.to_i || 0
           contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
           migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-          create_file(app_root_path('db/migrate/', migration_filename), contents)
+          create_file(app_root_path('db/migrate/', migration_filename), contents, :skip => true)
         end
 
         # For orm database components

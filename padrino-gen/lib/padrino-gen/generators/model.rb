@@ -31,10 +31,9 @@ module Padrino
           include_component_module_for(:orm, options[:root])
           include_component_module_for(:test, options[:root])
           migration_name = "create_#{name.pluralize.underscore}"
-          model_success = create_model_file(name, fields)
-          generate_model_test(name) if model_success
-          model_success ? create_model_migration(migration_name, name, fields) : 
-                          say("'#{name}' model has already been generated!")
+          create_model_file(name, fields)
+          generate_model_test(name)
+          create_model_migration(migration_name, name, fields)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

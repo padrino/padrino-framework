@@ -79,7 +79,7 @@ class TestControllerGenerator < Test::Unit::TestCase
   context "the controller destroy option" do
 
     should "destroy controller files" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon'])}
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
       assert_no_file_exists(@controller_path)
@@ -97,7 +97,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
     
     should "remove url routes" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon'])}
       silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
       assert_no_match_in_file(/map\(\:yoda\).to\(\"\/demo_items\/yoda\"\)/m,@route_path)
