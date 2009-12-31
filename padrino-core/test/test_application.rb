@@ -177,16 +177,5 @@ class TestApplication < Test::Unit::TestCase
         assert_equal lang, body
       end
     end
-
-    should 'set locale from browser languages when auto_locale is enabled' do
-      mock_app do
-        enable :auto_locale
-        get("/"){ I18n.locale.to_s }
-      end
-      get "/", {}, {'HTTP_ACCEPT_LANGUAGE' => 'ru,en;q=0.9'}
-      assert_equal "ru", body
-      get "/", {}, {'HTTP_ACCEPT_LANGUAGE' => 'it-IT'}
-      assert_equal "it", body
-    end
   end
 end

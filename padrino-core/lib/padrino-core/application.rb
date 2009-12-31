@@ -64,7 +64,6 @@ module Padrino
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
         I18n.locale = self.locale
         I18n.load_path += self.translations
-        Sinatra::Request.extend(Padrino::Locale)
         self.get(""){ redirect("#{options.uri_root}/") } if self.uri_root != "/"
         @_configured = true
       end
@@ -79,6 +78,7 @@ module Padrino
           set :logging, false # !test?
           set :sessions, true
           # Padrino specific
+          set :uri_root, "/"
           set :reload, development?
           set :app_name, self.to_s.underscore.to_sym
           set :default_builder, 'StandardFormBuilder'
@@ -185,11 +185,9 @@ module Padrino
       # * if params[:locale] is empty we use the first HTTP_ACCEPT_LANGUAGE
       def route_eval(&block)
         if options.auto_locale
-          languages = request.languages.dup
           if params[:locale]
-            languages.unshift(params[:locale])
+            I18n.locale = params[:locale].to_sym rescue options.locale
           end
-          I18n.locale = languages.first.to_sym rescue options.locale
         end
         super
       end
