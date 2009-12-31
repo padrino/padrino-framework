@@ -22,10 +22,12 @@ module Padrino
       argument :name, :desc => "The name of your padrino model"
       argument :fields, :desc => "The fields for the model", :type => :array, :default => []
       class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Copies over the base sinatra starting project
       def create_model
         if in_app_root?(options[:root])
+          self.behavior = :revoke if options[:destroy]
           include_component_module_for(:orm, options[:root])
           include_component_module_for(:test, options[:root])
           migration_name = "create_#{name.pluralize.underscore}"

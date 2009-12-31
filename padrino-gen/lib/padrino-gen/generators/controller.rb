@@ -22,12 +22,14 @@ module Padrino
       argument :name, :desc => "The name of your padrino controller"
       argument :fields, :desc => "The fields for the controller", :type => :array, :default => []
       class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Copies over the base sinatra starting project
       def create_controller
         if in_app_root?(options[:root])
           @app_name = fetch_app_name(options[:root])
           @actions = controller_actions(fields)
+          self.behavior = :revoke if options[:destroy]
           inject_into_file app_root_path("config/urls.rb"), controller_routes(name,fields), :after => "urls do\n"
           template "templates/controller.rb.tt", app_root_path("app/controllers", "#{name}.rb")
           template "templates/helper.rb.tt",     app_root_path("app/helpers", "#{name}_helper.rb")

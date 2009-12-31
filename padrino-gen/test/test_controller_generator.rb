@@ -75,4 +75,30 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
     
   end
+  
+  context "the controller destroy option" do
+    
+    should "destroy controller file" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
+      assert_no_file_exists(@controller_path)
+    end
+    
+    should "destroy controller test" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
+      assert_no_file_exists(@controller_test_path)
+    end
+    
+    should "destroy controller test" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec'])}
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
+      assert_no_file_exists('/tmp/sample_app/test/controllers/demo_items_controller_spec.rb')
+    end        
+  end
+  
+  
 end
