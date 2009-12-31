@@ -44,9 +44,21 @@ module Padrino
       module ModelGen
         # destroys model and associated files
         def destroy(name)
-          model_path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
-          test_path = app_root_path('app/test/models', "#{name.to_s.underscore}_test.rb")
-          remove_file(model_path)
+          path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
+          model_path = (File.exists?(path) ? path : nil)
+          path = app_root_path('test/models/', "#{name.to_s.underscore}_test.rb")
+          test_path = (File.exists?(path) ? path : nil)
+          path = app_root_path('test/models/', "#{name.to_s.underscore}_spec.rb")
+          spec_path = (File.exists?(path) ? path : nil)
+          migration_path =  Dir[app_root_path('db/migrate/*.rb')].select do |f| 
+            File.basename(f).match(/create_#{name.to_s.underscore}/)
+          end.first
+          [model_path, test_path, migration_path, spec_path].each do |file|
+            if file
+            remove_file(file)
+            say "Deleted #{file}..."
+            end
+          end
         end
       end
     end
