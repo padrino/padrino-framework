@@ -8,7 +8,7 @@ module Padrino
 
     class << self
       def load_paths
-        @load_paths ||= Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{app,mailer,controller,model,migration}.rb']
+        @load_paths ||= Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{app,mailer,controller,model,migration,destroy}.rb']
       end
 
       def mappings

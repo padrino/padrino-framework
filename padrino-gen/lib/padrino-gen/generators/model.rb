@@ -39,5 +39,17 @@ module Padrino
       end
     end
 
+  module Components
+    module Destroyers
+      module ModelGen
+        # destroys model and associated files
+        def destroy(name)
+          model_path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
+          test_path = app_root_path('app/test/models', "#{name.to_s.underscore}_test.rb")
+          remove_file(model_path)
+        end
+      end
+    end
+  end
   end
 end
