@@ -78,34 +78,24 @@ class TestControllerGenerator < Test::Unit::TestCase
 
   context "the controller destroy option" do
 
-    should "destroy controller file" do
+    should "destroy controller files" do
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
       assert_no_file_exists(@controller_path)
-    end
-
-    should "destroy controller test" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
       assert_no_file_exists(@controller_test_path)
-    end
-
-    should "destroy controller test" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec'])}
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
-      assert_no_file_exists('/tmp/sample_app/test/controllers/demo_items_controller_spec.rb')
-    end
-    
-    should "destroy controller helper" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec'])}
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
-      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
       assert_no_file_exists('/tmp/sample_app/app/helpers/demo_items_helper.rb')
     end
 
+    should "destroy controller files with rspec" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec'])}
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
+      silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d=true'])}
+      assert_no_file_exists(@controller_path)
+      assert_no_file_exists('/tmp/sample_app/app/helpers/demo_items_helper.rb')
+      assert_no_file_exists('/tmp/sample_app/test/controllers/demo_items_controller_spec.rb')
+    end
+    
     should "remove url routes" do
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }

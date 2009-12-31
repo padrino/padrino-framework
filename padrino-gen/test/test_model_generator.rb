@@ -218,5 +218,15 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user_test.rb')
     end
   end
+  
+  # context "the model destroy option" do
+  #   
+  #   should "destroy the model file" do
+  #     silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=testspec', '-d=activerecord']) }
+  #     silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+  #     silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+  #     assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
+  #   end
+  # end
 
 end

@@ -21,10 +21,12 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino mailer"
       class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Copies over the base sinatra starting project
       def create_mailer
         if in_app_root?(options[:root])
+          self.behavior = :revoke if options[:destroy]
           simple_name = name.to_s.gsub(/mailer/i, '')
           @mailer_basename = "#{simple_name.downcase.underscore}_mailer"
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
