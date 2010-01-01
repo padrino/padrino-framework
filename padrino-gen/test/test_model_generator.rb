@@ -229,7 +229,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
       assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
       assert_no_file_exists('/tmp/sample_app/test/models/user_test.rb')
-      assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_user.rb')
+      assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
     end
     
     should "destroy the model test file with rspec" do
@@ -238,6 +238,21 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
       assert_no_file_exists('/tmp/sample_app/test/models/user_spec.rb')
     end
+    
+    should "destroy the model migration" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      assert_no_file_exists('/tmp/sample_app/db/migrate/002_create_users.rb')
+    end
+    
+    should "assert migration exists" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_app']) }
+      assert_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
+    end
+    
   end
 
 end
