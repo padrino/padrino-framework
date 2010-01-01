@@ -472,7 +472,7 @@ within a view much easier. Quick example would be:
 
   # app/views/index.haml
   ...
-  = partial 'photo/_item', :object => @photo, :locals => { :foo => 'bar' }
+  = partial 'photo/item', :object => @photo, :locals => { :foo => 'bar' }
 
 and then the partial would be:
 
@@ -729,6 +729,12 @@ Usually the model file will generate files similar to the following:
   
 You can define as many models as you would like in a Padrino application using this generator.
 
+You can destroy models that you created via the destroy option and setting it to true. default is false.
+  
+  $ padrino-gen model User -d=true
+  
+This remove all created model files.
+
 === Migration Generator
 
 Padrino provides generator for quickly generating new migrations to change or manipulate the database schema.
@@ -750,6 +756,12 @@ You can also specify desired columns to be added to the migration file:
   
 The migration generator will then construct the migration file according to your ORM component chosen
 within <tt>db/migrate/xxx_add_fields_to_users.rb</tt> including the columns specified in the command.
+
+You can destroy migrations that you created via the destroy option and setting it to true. default is false.
+  
+  $ padrino-gen migration AddFieldsToUsers -d=true
+  
+This removes the migration file.
 
 === Controller Generator
 
@@ -776,6 +788,12 @@ test framework chosen during app generation. A default route will also be genera
 
 will create a url route for :index mapping to "/user/index" inside <tt>config/urls.rb</tt>
 
+You can destroy controllers that you created via the destroy option and setting it to true. default is false.
+
+    $ padrino-gen controller User -d=true
+
+This removes all created controller files.
+
 === Mailer Generator
 
 Padrino provides generator support for quickly creating new mailers within your Padrino application.
@@ -791,6 +809,12 @@ You can also specify desired delivery actions to be added to the mailer:
   $ padrino-gen mailer UserNotifier confirm_account welcome inactive_account
   
 The mailer generator will then construct the mailer file within <tt>app/mailers/user_notifier.rb</tt>
+
+You can destroy mailer that you created via the destroy option and setting it to true. default is false.
+  
+  $ padrino-gen mailer UserNotifer -d=true
+  
+This remove all created mailer files.
 
 == Admin Dashboard and Authentication (padrino-admin)
 

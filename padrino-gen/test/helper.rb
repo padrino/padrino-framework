@@ -59,6 +59,11 @@ class Test::Unit::TestCase
   def assert_match_in_file(pattern, file)
     File.exist?(file) ? assert_match(pattern, File.read(file)) : assert_file_exists(file)
   end
+  
+  def assert_no_match_in_file(pattern, file)
+    File.exists?(file) ? !assert_match(pattern, File.read(file)) : assert_file_exists(file)
+  end
+  
 end
 
 class Object

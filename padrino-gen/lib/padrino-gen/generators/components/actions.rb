@@ -39,11 +39,10 @@ module Padrino
           contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
           contents = contents.gsub(/!NAME!/, model_name.camelize).gsub(/!TABLE!/, model_name.underscore)
           contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
-          current_migration_number = Dir[app_root_path('db/migrate/*.rb')].map { |f| 
-            File.basename(f).match(/^(\d+)/)[0].to_i }.max.to_i || 0
+          current_migration_number = return_last_migration_number
           contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
           migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-          create_file(app_root_path('db/migrate/', migration_filename), contents)
+          create_file(app_root_path('db/migrate/', migration_filename), contents, :skip => true)
         end
 
         # For orm database components
@@ -64,12 +63,34 @@ module Padrino
           contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
           contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
           contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
-          current_migration_number = Dir[app_root_path('db/migrate/*.rb')].map { |f| 
-            File.basename(f).match(/^(\d+)/)[0].to_i }.max.to_i || 0
-         contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
+          current_migration_number = return_last_migration_number
+          contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
           migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
           # migration_filename = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{filename.underscore}.rb"
           create_file(app_root_path('db/migrate/', migration_filename), contents)
+        end
+
+        # For migration files
+        # returns the number of the latest(most current) migration file
+        def return_last_migration_number
+          Dir[app_root_path('db/migrate/*.rb')].map do |f|
+            File.basename(f).match(/^(\d+)/)[0].to_i
+          end.max.to_i || 0
+        end
+
+        #For model destroy option
+        #removes the initial migration file of model
+        def remove_model_migration(name)
+          remove_migration "Create" + name
+        end
+        
+        #For the removal of migration files
+        # removes the migration file based on the migration name
+        def remove_migration(name)
+          migration_path =  Dir[app_root_path('db/migrate/*.rb')].select do |f| 
+            File.basename(f).match(/#{name.to_s.underscore}/)
+          end.first
+          remove_file migration_path
         end
 
         # For testing components
@@ -98,26 +119,26 @@ module Padrino
         def indent_spaces(count)
           ' ' * count
         end
-        
+
         # For Controller action generation
         # Takes in fields for routes in the form of get:index post:test delete:yada and such
         def controller_actions(fields)
           field_tuples = fields.collect { |value| value.split(":") }
-          action_declarations = field_tuples.collect do |request, name| 
+          action_declarations = field_tuples.collect do |request, name|
             "#{request} :#{name} do\n  end\n"
-            end.join("\n  ")
+          end.join("\n  ")
         end
-        
+
         # For controller route generation
         # Takes in the fields and maps out an appropriate default route.
         # where controller is user and route is get:test, will add map(:test).to("/user/test")
         def controller_routes(name,fields)
           field_tuples = fields.collect { |value| value.split(":") }
-          routes = "\n" + field_tuples.collect do |request, route| 
+          routes = "\n" + field_tuples.collect do |request, route|
             "  map(:#{route}).to(\"/#{name}/#{route}\")"
-            end.join("\n") + "\n"
+          end.join("\n") + "\n"
         end
-        
+
       end
     end
   end

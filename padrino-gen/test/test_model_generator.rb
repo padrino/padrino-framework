@@ -21,7 +21,9 @@ class TestModelGenerator < Test::Unit::TestCase
       response_success = silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
       response_duplicate = silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
       assert_match_in_file(/class User < ActiveRecord::Base/m, '/tmp/sample_app/app/models/user.rb')
-      assert_match /'user' model has already been generated!/, response_duplicate
+      # assert_match /'user' model has already been generated!/, response_duplicate
+      assert_match "identical\e[0m  mp/sample_app/app/models/user.rb", response_duplicate
+      assert_match "identical\e[0m  mp/sample_app/test/models/user_test.rb", response_duplicate
     end
 
     should "generate migration file versions properly" do
@@ -217,6 +219,34 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/@user = User.new/m, '/tmp/sample_app/test/models/user_test.rb')
       assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_app/test/models/user_test.rb')
     end
+  end
+  
+  context "the model destroy option" do
+    
+    should "destroy the model file" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
+      assert_no_file_exists('/tmp/sample_app/test/models/user_test.rb')
+      assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
+    end
+    
+    should "destroy the model test file with rspec" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      assert_no_file_exists('/tmp/sample_app/test/models/user_spec.rb')
+    end
+    
+    should "destroy the model migration" do
+      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
+      silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      assert_no_file_exists('/tmp/sample_app/db/migrate/002_create_users.rb')
+    end
+        
   end
 
 end
