@@ -246,13 +246,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
       assert_no_file_exists('/tmp/sample_app/db/migrate/002_create_users.rb')
     end
-    
-    should "assert migration exists" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_app']) }
-      assert_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
-    end
-    
+        
   end
 
 end

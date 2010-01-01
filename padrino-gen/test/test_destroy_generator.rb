@@ -24,9 +24,9 @@ context "the destruction of models" do
     assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
   end
   
-  # should "destroy migration file" do
-  #   assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
-  # end
+  should "destroy migration file" do
+    assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
+  end
   
   should "destroy test file" do
     assert_no_file_exists('/tmp/sample_app/test/models/user_test.rb')
