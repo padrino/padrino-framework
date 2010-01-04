@@ -10,7 +10,6 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
-require 'dm-core'
 require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-admin'
@@ -25,37 +24,6 @@ module Kernel
     log_buffer.string
   end
   alias :silence_stdout :silence_logger
-end
-
-DataMapper.setup(:default, 'sqlite3::memory:')
-
-# Fake Category Model
-class Category
-  include DataMapper::Resource
-  property :id,   Serial
-  property :name, String
-  belongs_to :account
-end
-
-# Fake Account Model
-class Account
-  include DataMapper::Resource
-  property :id,   Serial
-  property :name, String
-  property :role, String
-  has n, :categories
-  def self.admin;  first(:role => "Admin");  end
-  def self.editor; first(:role => "Editor"); end
-end
-
-DataMapper.auto_migrate!
-
-# We build some fake accounts
-admin  = Account.create(:name => "DAddYE", :role => "Admin")
-editor = Account.create(:name => "Dexter", :role => "Editor")
-%w(News Press HowTo).each do |c| 
-  admin.categories.create(:name => c)
-  editor.categories.create(:name => c)
 end
 
 class Class
@@ -73,7 +41,7 @@ class Test::Unit::TestCase
     base.use Rack::Session::Cookie # Need this because Sinatra 0.9.4 have use Rack::Session::Cookie if sessions? && !test?
     @app = Sinatra.new(base, &block)
   end
-  
+
   def app
     Rack::Lint.new(@app)
   end
@@ -83,7 +51,7 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
-  
+
   # Delegate other missing methods to response.
   def method_missing(name, *args, &block)
     if response && response.respond_to?(name)

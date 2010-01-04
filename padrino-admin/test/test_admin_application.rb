@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/helper'
+require File.dirname(__FILE__) + '/fixtures/data_mapper'
 
 class TestAdminApplication < Test::Unit::TestCase
 
@@ -6,6 +7,7 @@ class TestAdminApplication < Test::Unit::TestCase
     mock_app do
       enable :authentication
       set    :app_name, :test_me
+      set    :use_orm, :data_mapper
 
       # Do a simple mapping
       access_control.roles_for :any do |role| 
@@ -22,7 +24,7 @@ class TestAdminApplication < Test::Unit::TestCase
         "foo"
       end
     end
-
+    
     get "/login"
     assert_equal 200, status
     
