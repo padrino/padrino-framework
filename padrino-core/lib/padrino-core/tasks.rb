@@ -78,6 +78,11 @@ module Padrino
           end
           options.boot
         end
+
+      protected
+        def self.banner(task)
+          "padrino-gen #{task.name}"
+        end
     end
   end
 end

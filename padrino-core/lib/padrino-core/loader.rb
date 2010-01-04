@@ -29,12 +29,6 @@ module Padrino
       Thread.current[:padrino_loaded]
     end
 
-    # Attempts to require all dependencies with bundler; if this fails, uses system wide gems
-    def load_required_gems
-      load_bundler_manifest
-      require_vendored_gems
-    end
-
     # Attempts to require all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     #
@@ -65,22 +59,20 @@ module Padrino
 
     protected
 
-    # Loads the bundler manifest Gemfile if it exists
-    def load_bundler_manifest
+    # Loads the vendored gems or system wide gems through Gemfile
+    def load_required_gems
+      require root('vendor', 'gems', 'environment')
+      Bundler.require_env(Padrino.env)
+      say! "=> Loaded bundled gems"
+    rescue LoadError
       require 'bundler'
-      say "=> Locating Gemfile for #{PADRINO_ENV}"
-      Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(PADRINO_ENV)
-      say " ... Loaded!"
-    rescue Bundler::ManifestFileNotFound, Bundler::DefaultManifestNotFound => e
-      say " ... Not Found"
-    end
-
-    # Require bundled gems if they exist
-    def require_vendored_gems
-      require_dependencies(root('/../vendor', 'gems', PADRINO_ENV))
-      say! " (Loading bundled gems)"
-    rescue LoadError => e
-      say! " (Loading system gems)"
+      say "=> Locating Gemfile for #{Padrino.env}"
+      if File.exist?(root("Gemfile"))
+        Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(Padrino.env)
+        say! " ... Loaded system gems"
+      else
+        say! " ... Not Found"
+      end
     end
 
     # Prints out a message to the stdout if not in test environment
