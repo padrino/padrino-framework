@@ -226,7 +226,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "destroy the model file" do
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d']) }
       assert_no_file_exists('/tmp/sample_app/app/models/user.rb')
       assert_no_file_exists('/tmp/sample_app/test/models/user_test.rb')
       assert_no_file_exists('/tmp/sample_app/db/migrate/001_create_users.rb')
@@ -235,7 +235,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "destroy the model test file with rspec" do
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d']) }
       assert_no_file_exists('/tmp/sample_app/test/models/user_spec.rb')
     end
     
@@ -243,7 +243,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_app']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d=true']) }
+      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_app', '-d']) }
       assert_no_file_exists('/tmp/sample_app/db/migrate/002_create_users.rb')
     end
         

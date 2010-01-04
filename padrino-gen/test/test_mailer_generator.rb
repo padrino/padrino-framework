@@ -46,7 +46,7 @@ class TestMailerGenerator < Test::Unit::TestCase
     should "destroy mailer file" do
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @mailgen.start(['demo', '-r=/tmp/sample_app']) }
-      silence_logger { @mailgen.start(['demo', '-r=/tmp/sample_app','-d=true']) }
+      silence_logger { @mailgen.start(['demo', '-r=/tmp/sample_app','-d']) }
       assert_no_dir_exists('/tmp/sample_app/app/views/demo_mailer')
       assert_no_file_exists('/tmp/sample_app/app/mailers/demo_mailer.rb')
       assert_no_file_exists('/tmp/sample_app/config/initializers/mailer.rb')

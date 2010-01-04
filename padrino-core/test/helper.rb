@@ -37,7 +37,7 @@ class Test::Unit::TestCase
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
   end
-  
+
   def app
     Rack::Lint.new(@app)
   end
@@ -47,7 +47,7 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
-  
+
   # Delegate other missing methods to response.
   def method_missing(name, *args, &block)
     if response && response.respond_to?(name)

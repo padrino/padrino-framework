@@ -171,7 +171,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon', '-d=sequel']) }
       migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", '-r=/tmp/sample_app']
       silence_logger { @mig_gen.start(migration_params) }
-      silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_app','-d=true']) }
+      silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_app','-d']) }
       assert_no_file_exists("/tmp/sample_app/db/migrate/001_remove_email_from_users.rb")
     end
     
@@ -181,7 +181,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
       migration_param2 = ['AddEmailFromUsers', "email:string", "age:integer", '-r=/tmp/sample_app']
       silence_logger { @mig_gen.start(migration_param2) }
       silence_logger { @mig_gen.start(migration_params) }
-      silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_app','-d=true']) }
+      silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_app','-d']) }
       assert_no_file_exists("/tmp/sample_app/db/migrate/002_remove_email_from_users.rb")
     end
     

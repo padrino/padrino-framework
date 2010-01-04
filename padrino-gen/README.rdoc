@@ -107,7 +107,7 @@ You can define as many models as you would like in a Padrino application using t
 
 You can destroy models that you created via the destroy option and setting it to true. default is false.
   
-  $ padrino-gen model User -d=true
+  $ padrino-gen model User -d
   
 This remove all created model files.
 
@@ -135,7 +135,7 @@ within <tt>db/migrate/xxx_add_fields_to_users.rb</tt> including the columns spec
 
 You can destroy migrations that you created via the destroy option and setting it to true. default is false.
   
-  $ padrino-gen migration AddFieldsToUsers -d=true
+  $ padrino-gen migration AddFieldsToUsers -d
   
 This removes the migration file.
 
@@ -166,7 +166,7 @@ test framework chosen during app generation. A default route will also be genera
   
 You can destroy controllers that you created via the destroy option and setting it to true. default is false.
 
-    $ padrino-gen controller User -d=true
+    $ padrino-gen controller User -d
 
 This removes all created controller files.
 
@@ -188,7 +188,7 @@ The mailer generator will then construct the mailer file within <tt>app/mailers/
 
 You can destroy mailer that you created via the destroy option and setting it to true. default is false.
   
-  $ padrino-gen mailer UserNotifer -d=true
+  $ padrino-gen mailer UserNotifer -d
   
 This remove all created mailer files.
 
