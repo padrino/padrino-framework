@@ -18,11 +18,16 @@ Required for Padrino to run:
   * SupportLite::OrderedHash
 
 =end
-if defined?(Extlib) # load if already using extlib
-  print "=> Loading Extlib ... "
-  require File.dirname(__FILE__) + '/support_lite/extlib_support'
-else # load active support by default
-  print "=> Loading ActiveSupport ... "
-  require File.dirname(__FILE__) + '/support_lite/as_support'
+@_padrino_support_loaded ||= false
+
+unless @_padrino_support_loaded
+  if defined?(Extlib) # load if already using extlib
+    require File.dirname(__FILE__) + '/support_lite/extlib_support'
+    puts "=> Loaded Extlib support... "
+  else # load active support by default
+    require File.dirname(__FILE__) + '/support_lite/as_support'
+    puts "=> Loaded ActiveSupport... "
+  end
 end
-puts "Loaded!"
+
+@_padrino_support_loaded = true

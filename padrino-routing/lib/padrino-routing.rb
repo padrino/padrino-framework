@@ -1,4 +1,3 @@
-# require 'padrino-core/support_lite'
 Dir[File.dirname(__FILE__) + '/padrino-routing/**/*.rb'].each {|file| require file }
 
 module Padrino

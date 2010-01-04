@@ -66,12 +66,11 @@ module Padrino
       say! "=> Loaded bundled gems"
     rescue LoadError
       require 'bundler'
-      say "=> Locating Gemfile for #{Padrino.env}"
       if File.exist?(root("Gemfile"))
         Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(Padrino.env)
-        say! " ... Loaded system gems"
+        say! "=> Located Gemfile for #{Padrino.env}"
       else
-        say! " ... Not Found"
+        say! "=> Gemfile for #{Padrino.env} not found!"
       end
     end
 
