@@ -7,7 +7,7 @@ require 'webrat'
 require 'extlib'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'support_helpers'
+
 require File.dirname(__FILE__) + '/../lib/padrino-helpers'
 
 class Test::Unit::TestCase
