@@ -4,11 +4,9 @@ require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
-require 'extlib'
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require File.dirname(__FILE__) + '/../lib/padrino-helpers'
+require 'support_helpers'
+require 'padrino-helpers'
 
 class Test::Unit::TestCase
   include Padrino::Helpers::OutputHelpers
