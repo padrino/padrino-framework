@@ -87,60 +87,57 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
   end
 
-  context 'for #time_in_words method' do
+  context 'for #time_ago_in_words method' do
     should "display today" do
-      assert_equal 'today', time_in_words(Time.now)
+      assert_equal 'less than a minute', time_ago_in_words(Time.now)
     end
     should "display yesterday" do
-      assert_equal 'yesterday', time_in_words(1.day.ago)
+      assert_equal '1 day', time_ago_in_words(1.day.ago)
     end
     should "display tomorrow" do
-      assert_equal 'tomorrow', time_in_words(1.day.from_now)
+      assert_equal '1 day', time_ago_in_words(1.day.from_now)
     end
     should "return future number of days" do
-      assert_equal 'in 4 days', time_in_words(4.days.from_now)
+      assert_equal '4 days', time_ago_in_words(4.days.from_now)
     end
     should "return past days ago" do
-      assert_equal '4 days ago', time_in_words(4.days.ago)
+      assert_equal '4 days', time_ago_in_words(4.days.ago)
     end
     should "return formatted archived date" do
-      assert_equal 100.days.ago.strftime('%A, %B %e'), time_in_words(100.days.ago)
+      assert_equal '3 months', time_ago_in_words(100.days.ago)
     end
     should "return formatted archived year date" do
-      assert_equal 500.days.ago.strftime('%A, %B %e, %Y'), time_in_words(500.days.ago)
+      assert_equal 'over 1 year', time_ago_in_words(500.days.ago)
     end
-  end
-
-  context 'for #relative_time_ago method' do
     should 'display now as a minute ago' do
-      assert_equal 'about a minute', relative_time_ago(1.minute.ago)
+      assert_equal '1 minute', time_ago_in_words(1.minute.ago)
     end
     should "display a few minutes ago" do
-      assert_equal '4 minutes', relative_time_ago(4.minute.ago)
+      assert_equal '4 minutes', time_ago_in_words(4.minute.ago)
     end
     should "display an hour ago" do
-      assert_equal 'about 1 hour', relative_time_ago(1.hour.ago + 5.minutes.ago.sec)
+      assert_equal 'about 1 hour', time_ago_in_words(1.hour.ago + 5.minutes.ago.sec)
     end
     should "display a few hours ago" do
-      assert_equal 'about 3 hours', relative_time_ago(3.hour.ago + 5.minutes.ago.sec)
+      assert_equal 'about 3 hours', time_ago_in_words(3.hour.ago + 5.minutes.ago.sec)
     end
     should "display a day ago" do
-      assert_equal '1 day', relative_time_ago(1.day.ago)
+      assert_equal '1 day', time_ago_in_words(1.day.ago)
     end
     should "display a few days ago" do
-      assert_equal '5 days', relative_time_ago(5.days.ago - 5.minutes.ago.sec)
+      assert_equal '5 days', time_ago_in_words(5.days.ago - 5.minutes.ago.sec)
     end
     should "display a month ago" do
-      assert_equal 'about 1 month', relative_time_ago(32.days.ago + 5.minutes.ago.sec)
+      assert_equal 'about 1 month', time_ago_in_words(32.days.ago + 5.minutes.ago.sec)
     end
     should "display a few months ago" do
-      assert_equal '6 months', relative_time_ago(180.days.ago - 5.minutes.ago.sec)
+      assert_equal '6 months', time_ago_in_words(180.days.ago - 5.minutes.ago.sec)
     end
     should "display a year ago" do
-      assert_equal 'about 1 year', relative_time_ago(365.days.ago - 5.minutes.ago.sec)
+      assert_equal 'about 1 year', time_ago_in_words(365.days.ago - 5.minutes.ago.sec)
     end
     should "display a few years ago" do
-      assert_equal 'over 7 years', relative_time_ago(2800.days.ago - 5.minutes.ago.sec)
+      assert_equal 'over 7 years', time_ago_in_words(2800.days.ago - 5.minutes.ago.sec)
     end
   end
 

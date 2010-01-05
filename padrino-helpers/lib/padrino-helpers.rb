@@ -1,6 +1,9 @@
 require 'padrino-core/support_lite'
 Dir[File.dirname(__FILE__) + '/padrino-helpers/**/*.rb'].each {|file| require file }
 
+# Load our locales
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]
+
 module Padrino
   module Helpers
     def self.registered(app)
