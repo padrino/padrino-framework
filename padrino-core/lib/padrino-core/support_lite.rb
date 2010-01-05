@@ -13,21 +13,27 @@ Required for Padrino to run:
   * Object#present?
   * Hash#slice, Hash#slice!
   * Hash#to_params
-  * Hash#symbolize_keys
+  * Hash#symbolize_keys, Hash.symbolize_keys!
   * Hash#reverse_merge, Hash#reverse_merge!
   * SupportLite::OrderedHash
 
 =end
-@_padrino_support_loaded ||= false
+require 'i18n'
+# Load our locales
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-core/locale/*.yml"]
 
-unless @_padrino_support_loaded
-  if defined?(Extlib) # load if already using extlib
-    require File.dirname(__FILE__) + '/support_lite/extlib_support'
-    puts "=> Loaded Extlib support... "
-  else # load active support by default
-    require File.dirname(__FILE__) + '/support_lite/as_support'
-    puts "=> Loaded ActiveSupport... "
+module Padrino
+  # Return the current support used.
+  # Can be one of: :extlib, :active_support
+  def self.support
+    @_padrino_support
   end
 end
 
-@_padrino_support_loaded = true
+if defined?(Extlib) # load if already using extlib
+  Padrino.instance_variable_set(:@_padrino_support, :extlib)
+  require File.dirname(__FILE__) + '/support_lite/extlib_support'
+else # load active support by default
+  Padrino.instance_variable_set(:@_padrino_support, :active_support)
+  require File.dirname(__FILE__) + '/support_lite/as_support'
+end

@@ -21,6 +21,10 @@ unless Hash.method_defined?(:symbolize_keys)
     def symbolize_keys
       Mash.new(self).symbolize_keys
     end
+
+    def symbolize_keys!
+      self.replace(symbolize_keys.to_hash)
+    end
   end
 end
 
@@ -76,6 +80,15 @@ unless Hash.method_defined?(:reverse_merge)
     def reverse_merge!(other_hash)
       replace(reverse_merge(other_hash))
     end
+
+    def deep_merge(other_hash)
+      target = dup
+      other_hash.each_pair do |k,v|
+        tv = target[k]
+        target[k] = tv.is_a?(Hash) && v.is_a?(Hash) ? tv.deep_merge(v) : v
+      end
+      target
+    end
   end
 end
 
@@ -102,15 +115,46 @@ unless String.method_defined?(:constantize)
 end
 
 ## Object#blank?
-unless Array.method_defined?(:blank?)
+unless Object.method_defined?(:blank?)
   require 'extlib/blank'
 end
 
 ## Object#present?
-unless Array.method_defined?(:present?)
+unless Object.method_defined?(:present?)
   class Object
     def present?
       !blank?
+    end
+  end
+end
+
+## Object#with_options
+unless Object.method_defined?(:with_options)
+  class SupportLite::OptionMerger #:nodoc:
+    instance_methods.each do |method|
+      undef_method(method) if method !~ /^(__|instance_eval|class|object_id)/
+    end
+
+    def initialize(context, options)
+      @context, @options = context, options
+    end
+
+    private
+      def method_missing(method, *arguments, &block)
+        if arguments.last.is_a?(Proc)
+          proc = arguments.pop
+          arguments << lambda { |*args| @options.deep_merge(proc.call(*args)) }
+        else
+          arguments << (arguments.last.respond_to?(:to_hash) ? @options.deep_merge(arguments.pop) : @options.dup)
+        end
+
+        @context.__send__(method, *arguments, &block)
+      end
+  end
+
+  class Object
+    def with_options(options)
+      yield SupportLite::OptionMerger.new(self, options)
     end
   end
 end

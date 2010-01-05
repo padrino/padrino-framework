@@ -5,7 +5,6 @@ module Padrino
       return false if loaded?
       @_called_from = first_caller
       load_required_gems # load bundler gems
-      require_dependencies("support_lite") # after we load the gem file we can know wich suport load
       require_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
       require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
       Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
@@ -63,12 +62,12 @@ module Padrino
     def load_required_gems
       require root('vendor', 'gems', 'environment')
       Bundler.require_env(Padrino.env)
-      say! "=> Loaded bundled gems"
+      say! "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
     rescue LoadError
       require 'bundler'
       if File.exist?(root("Gemfile"))
         Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(Padrino.env)
-        say! "=> Located Gemfile for #{Padrino.env}"
+        say! "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
       else
         say! "=> Gemfile for #{Padrino.env} not found!"
       end

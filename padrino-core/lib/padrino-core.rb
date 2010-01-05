@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'i18n'
 Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
 
 # Defines our PADRINO_ENV
