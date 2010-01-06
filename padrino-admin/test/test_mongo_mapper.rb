@@ -20,8 +20,10 @@ class TestMongoMapper < Test::Unit::TestCase
 
     should 'correctly authenticate an account' do
       account = Account.create(:email => "auth@lipsia.org", :role => "some", :password => "some", :password_confirmation => "some")
+      assert account.valid?
+      assert ! account.id.nil?
       assert_equal "some", account.password_clean
-      account_r = Account.authenticate("auth@lipsia.org", "some")
+      account_r = Account.first(:conditions => { :email => "auth@lipsia.org" })
       assert_equal account_r, account
     end
   end

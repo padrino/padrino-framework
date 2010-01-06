@@ -49,78 +49,56 @@ module Padrino
     #     end
     #
     module Controller
-      def self.column_store_for(model, &block)
-        ColumnStore.new(model, &block)
+      def self.column_store_for(model, config)
+        ColumnStore.new(model, config)
       end
 
       class ColumnStore #:nodoc:
         attr_reader :data
 
-        def initialize(model, &block) #:nodoc
+        def initialize(model, config) #:nodoc
           @model = model
-          @data = []
-          yield self
-        end
+          @data = config["columns"].map do |column|
 
-        # Method for add columns to the Column Model
-        def add(*args)
+            # Reformat our config
+            column["header"]     ||= column["method"].to_s
+            column["dataIndex"]  ||= column["method"]
+            column["sortable"]   ||= column["sortable"].nil? ? true : column["sortable"]
+            column["header"]       = @model.human_attribute_name(column["header"]) # try to translate with I18n the column name
 
-          # First we need to check that our method is a symbol
-          raise Padrino::ExtJs::ConfigError, "First args must be a symbol like: :name or :account.name" unless args[0].is_a?(Symbol)
-
-          # Construct our options
-          options = { :method => args[0] }
-
-          # If we have a second args that is not an hash maybe an header
-          options[:header]  = args[1].is_a?(String) || args[1].is_a?(Symbol) ? args[1].to_s : nil
-
-          args.each { |a| options.merge!(a) if a.is_a?(Hash)  }
-
-          # Add some defaults
-          options[:header]   ||= options[:method].to_s
-          options[:sortable]   = options[:sortable].nil? ? true : options[:sortable]
-
-          # Try to translate header
-          options[:header] = @model.human_attribute_name(options[:header].to_s)
-
-          # Reformat DataIndex
-          # 
-          # If we don't have nothing we use the method
-          options[:dataIndex] ||= options[:method]
-
-          data_indexes = Array(options[:dataIndex]).collect do |data_index|
-            case data_index
-              when String then data_index
-              when Symbol
-                if data_index.missing_methods.size == 1
-                  options[:name] ||= "#{@model.table_name.singularize}[#{data_index}]"
-                  data_index = "#{@model.table_name}.#{data_index}"
-                else
-                  columns = data_index.missing_methods
-                  options[:name] ||= columns.at(0) + "[" + columns[1..-1].collect(&:to_s).join("][") + "]"
-                  data_index = columns[0..-2].collect { |c| c.to_s.pluralize }.join(".") + "." + columns.at(-1).to_s
-                end
+            # Try to reformat the dataIndex
+            data_indexes = Array(column["dataIndex"]).collect do |data_index|
+              if data_index =~ /\./ # if we have some like categories.names we use this
+                cols = data_index.split(".")
+                column["name"] ||= cols[0] + "[" + cols[1..-1].join("][") + "]" # accounts.name will be => accounts[name]
+              else
+                column["name"] ||= "#{@model.table_name.singularize}[#{data_index}]"
+                data_index = "#{@model.table_name}.#{data_index}"
+              end
+              data_index
             end
-            data_index
+
+            # Now we join our data indexes
+            column["dataIndex"] = data_indexes.compact.uniq.join(",")
+
+            # Reformat mapping like a div id
+            column["mapping"] ||= column["name"].sub(/\[/,"_").sub(/\]$/, "").sub(/\]\[/,"_")
+
+            # Now is necessary for our columns an ID
+            # TODO: check duplicates here
+            column["id"] = column["mapping"]
+            
+
+            # Finally we can return our column
+            column
           end
-
-          options[:dataIndex] = data_indexes.compact.uniq.join(",")
-
-          # Reformat mapping like a div id
-          options[:mapping] ||= options[:name].sub(/\[/,"_").sub(/\]$/, "").sub(/\]\[/,"_")
-          
-          # Now is necessary for our columns an ID
-          # TODO: check duplicates here
-          options[:id] = options[:mapping]
-
-          @data << options
         end
 
         # Return an array config for build an Ext.grid.ColumnModel() config
         def column_fields
           @data.map do |data|
-            data.delete(:method)
-            data.delete(:mapping)
+            data.delete("method")
+            data.delete("mapping")
             data
           end
         end
@@ -128,8 +106,8 @@ module Padrino
         # Return an array config for build an Ext.data.GroupingStore()
         def store_fields
           @data.map do |data|
-            hash = { :name => data[:dataIndex], :mapping => data[:mapping] }
-            hash.merge!(:type => data[:renderer]) if  data[:renderer] && [:date, :datetime, :time_to_date].include?(data[:renderer])
+            hash = { :name => data["dataIndex"], :mapping => data["mapping"] }
+            hash.merge!(:type => data["renderer"]) if  data["renderer"] && [:date, :datetime, :time_to_date].include?(data["renderer"])
             hash
           end
         end
@@ -138,7 +116,7 @@ module Padrino
         def store_data_from(collection)
           collection.map do |c|
             @data.dup.inject({ "id" => c.id }) do |options, data|
-              options[data[:mapping]] = (c.instance_eval(data[:method].to_s) rescue I18n.t("padrino.admin.labels.not_found"))
+              options[data["mapping"]] = (c.instance_eval(data["method"]) rescue I18n.t("padrino.admin.labels.not_found"))
               options
             end
           end
