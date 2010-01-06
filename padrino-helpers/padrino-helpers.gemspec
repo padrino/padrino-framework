@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-helpers}
-  s.version = "0.4.4"
+  s.version = "0.4.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-04}
+  s.date = %q{2010-01-06}
   s.description = %q{Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/padrino-helpers/form_builder/standard_form_builder.rb",
      "lib/padrino-helpers/form_helpers.rb",
      "lib/padrino-helpers/format_helpers.rb",
+     "lib/padrino-helpers/locale/en.yml",
      "lib/padrino-helpers/output_helpers.rb",
      "lib/padrino-helpers/render_helpers.rb",
      "lib/padrino-helpers/tag_helpers.rb",
