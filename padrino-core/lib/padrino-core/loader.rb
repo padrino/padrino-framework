@@ -6,7 +6,8 @@ module Padrino
       @_called_from = first_caller
       load_required_gems # load bundler gems
       require_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
-      require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/*.rb") # load root app dependencies
+      load_apps_models # load all models of our apps
+      require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/**/*.rb") # load root app models
       Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
       Thread.current[:padrino_loaded] = true
     end
@@ -57,30 +58,34 @@ module Padrino
     alias :load_dependency :load_dependencies
 
     protected
-
-    # Loads the vendored gems or system wide gems through Gemfile
-    def load_required_gems
-      require root('vendor', 'gems', 'environment')
-      Bundler.require_env(Padrino.env)
-      say! "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
-    rescue LoadError
-      require 'bundler'
-      if File.exist?(root("Gemfile"))
-        Bundler::Dsl.load_gemfile(root("Gemfile")).require_env(Padrino.env)
-        say! "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
-      else
-        say! "=> Gemfile for #{Padrino.env} not found!"
+      # Loads the vendored gems or system wide gems through Gemfile
+      def load_required_gems
+        require root('vendor', 'gems', 'environment')
+        Bundler.require_env(Padrino.env)
+        say! "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
+      rescue LoadError
+        require 'bundler'
+        if File.exist?(root("Gemfile"))
+          Bundler::Bundle.load(root("Gemfile")).environment.require_env(Padrino.env)
+          say! "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
+        else
+          say! "=> Gemfile for #{Padrino.env} not found!"
+        end
       end
-    end
 
-    # Prints out a message to the stdout if not in test environment
-    def say(text)
-      print text if Padrino.env != :test
-    end
+      # Loads for each mounted applications their models
+      def load_apps_models
+        Padrino.mounted_apps.each { |mounted_app| load_dependencies("#{mounted_app.app_root}/models/**/*.rb")  }
+      end
+
+      # Prints out a message to the stdout if not in test environment
+      def say(text)
+        print text if Padrino.env != :test
+      end
     
-    # Puts out a message to the stdout if not in test environment
-    def say!(text)
-      puts text if Padrino.env != :test
-    end
+      # Puts out a message to the stdout if not in test environment
+      def say!(text)
+        puts text if Padrino.env != :test
+      end
   end
 end

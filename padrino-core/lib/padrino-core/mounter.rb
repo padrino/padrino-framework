@@ -10,7 +10,7 @@ module Padrino
       @name      = name.downcase
       @app_class = options[:app_class] || name.classify
       @app_file  = options[:app_file]  || locate_app_file
-      @app_root  = options[:app_root]
+      @app_root  = options[:app_root]  || File.dirname(@app_file)
       @app_obj   = self.app_object
     end
 
