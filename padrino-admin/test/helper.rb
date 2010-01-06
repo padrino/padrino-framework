@@ -1,29 +1,31 @@
 ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-
 require 'rubygems'
-require 'padrino-core'
 require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
-require 'padrino-core'
-require 'padrino-gen'
 require 'padrino-admin'
 
 module Kernel
   # Silences the output by redirecting to stringIO
   # silence_logger { ...commands... } => "...output..."
   def silence_logger(&block)
-    $stdout = log_buffer = StringIO.new
+    $stdout = $stderr = log_buffer = StringIO.new
     block.call
     $stdout = STDOUT
+    $stderr = STDERR
     log_buffer.string
   end
   alias :silence_stdout :silence_logger
+
+  def load_fixture(file)
+    Object.send(:remove_const, :Account) if defined?(Account)
+    file += ".rb" if file !~ /.rb$/
+    load File.join(File.dirname(__FILE__), "fixtures", file)
+    # silence_stdout {  }
+  end
 end
 
 class Class

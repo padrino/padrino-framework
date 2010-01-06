@@ -5,7 +5,17 @@ module Padrino
 
         # Here basic functions for interact with MongoMapper
         module Base
-          include Padrino::Admin::Adapters::Base
+          def self.included(base)
+            base.send :include, Padrino::Admin::Adapters::Base
+            base.send :include, InstanceMethods
+            base.extend ClassMethods
+          end
+          
+          module InstanceMethods
+          end
+          
+          module ClassMethods
+          end
         end
 
         # Here extension for account for DataMapper

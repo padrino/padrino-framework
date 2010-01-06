@@ -5,7 +5,49 @@ module Padrino
 
         # Here basic functions for interact with ActiveRecord
         module Base
-          include Padrino::Admin::Adapters::Base
+          def self.included(base)
+            base.send :include, Padrino::Admin::Adapters::Base
+            base.send :include, InstanceMethods
+            base.extend ClassMethods
+            base.class_eval do
+              named_scope :ext_search, lambda { |params|
+                conditions = nil
+
+                if !params[:query].blank? && !params[:fields].blank?
+                  filters = params[:fields].split(",").collect { |f| "#{f} LIKE ?" }.compact
+                  conditions = [filters.join(" OR ")].concat((1..filters.size).collect { "%#{params[:query]}%" })
+                end
+
+                { :conditions => conditions }
+              }
+              named_scope :ext_paginate, lambda { |params|
+                params.symbolize_keys!
+                order = params[:sort].blank? && params[:dir].blank? ? nil : "#{params[:sort]} #{params[:dir]}"
+                { :order => order, :limit => params[:limit], :offset => params[:start] }
+              }
+            end
+          end
+          
+          module InstanceMethods
+          end
+          
+          module ClassMethods
+            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". Example:
+            #   Person.human_attribute_name("first_name") # => "First name"
+            # This used to be depricated in favor of humanize, but is now preferred, because it automatically uses the I18n
+            # module now.
+            # Specify +options+ with additional translating options.
+            def human_attribute_name(attribute_key_name, options = {})
+              defaults = self_and_descendants.map do |klass|
+                :"#{klass.name.underscore}.#{attribute_key_name}"
+              end
+              defaults << options[:default] if options[:default]
+              defaults.flatten!
+              defaults << attribute_key_name.to_s.humanize
+              options[:count] ||= 1
+              I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:model, :attributes]))
+            end
+          end
         end
 
         # Here extension for account for ActiveRecord

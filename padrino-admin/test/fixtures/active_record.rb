@@ -3,7 +3,7 @@ require 'active_record'
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
 ActiveRecord::Schema.define do
-  create_table :ar_accounts do |t|
+  create_table :accounts, :force => true do |t|
     t.column :id,               :integer
     t.column :name,             :string
     t.column :role,             :string
@@ -13,5 +13,5 @@ ActiveRecord::Schema.define do
   end
 end
 
-class ArAccount < ActiveRecord::Base; end
-Padrino::Admin::Adapters.register(:active_record, ArAccount)
+class Account < ActiveRecord::Base; end
+Padrino::Admin::Adapters.register(:active_record)

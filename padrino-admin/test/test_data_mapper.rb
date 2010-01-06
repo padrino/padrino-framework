@@ -1,7 +1,10 @@
-require File.dirname(__FILE__) + '/helper'
-require File.dirname(__FILE__) + '/fixtures/data_mapper'
+require 'helper'
 
 class TestDataMapper < Test::Unit::TestCase
+
+  def setup
+    load_fixture 'data_mapper'
+  end
 
   context 'for datamapper functionality' do
 

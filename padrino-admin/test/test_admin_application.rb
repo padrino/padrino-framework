@@ -1,7 +1,10 @@
-require File.dirname(__FILE__) + '/helper'
-require File.dirname(__FILE__) + '/fixtures/data_mapper'
+require 'helper'
 
 class TestAdminApplication < Test::Unit::TestCase
+
+  def setup
+    load_fixture 'data_mapper'
+  end
 
   should 'set basic roles' do
     mock_app do

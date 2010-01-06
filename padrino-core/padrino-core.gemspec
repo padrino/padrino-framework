@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/padrino-core/application.rb",
      "lib/padrino-core/caller.rb",
      "lib/padrino-core/loader.rb",
+     "lib/padrino-core/locale/en.yml",
      "lib/padrino-core/logger.rb",
      "lib/padrino-core/mounter.rb",
      "lib/padrino-core/reloader.rb",

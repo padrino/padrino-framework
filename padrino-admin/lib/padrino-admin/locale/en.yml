@@ -1,0 +1,7 @@
+en:
+  padrino:
+    admin:
+      labels:
+        not_found: "Not found"
+      buttons:
+        save: "Save"
