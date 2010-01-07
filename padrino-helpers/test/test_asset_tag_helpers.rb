@@ -30,6 +30,10 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       actual_html = link_to('Sign up', '/register', :class => 'first', :id => 'linky')
       assert_has_tag('a#linky.first', :content => "Sign up", :href => '/register') { actual_html }
     end
+    should "display link element with anchor attribute" do
+      actual_html = link_to("Anchor", "/anchor", :anchor => :foo)
+      assert_has_tag('a', :content => "Anchor", :href => '/anchor#foo') { actual_html }
+    end
     should "display link element with void url and options" do
       actual_link = link_to('Sign up', :class => "test")
       assert_has_tag('a', :content => "Sign up", :href => 'javascript:void(0);', :class => 'test') { actual_link }
