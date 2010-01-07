@@ -3,7 +3,11 @@ module Padrino
   def self.logger
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
   end
-  
+
+  def self.logger_env=(env)
+    Thread.current[:padrino_logger] ||= Padrino::Logger.setup!(env)
+  end
+
   class Logger
 
     attr_accessor :level
@@ -65,8 +69,8 @@ module Padrino
 
 
     # Setup a new logger
-    def self.setup!
-      config = Config[Padrino.env] || Config[:test]
+    def self.setup!(env=nil)
+      config = Config[env || Padrino.env] || Config[:test]
       stream = case config[:stream]
         when :to_file
           FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))

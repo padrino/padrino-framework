@@ -12,6 +12,7 @@ end
 
 task :environment do
   require Padrino::Tasks::RakeFile.boot_file
+  Padrino.logger_env = :test
   Padrino.mounted_apps.each do |app|
     Padrino.require_dependency(app.app_file)
     app.app_object.setup_application!
