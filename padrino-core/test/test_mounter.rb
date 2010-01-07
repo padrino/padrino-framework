@@ -19,7 +19,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal "Test", mounter.app_class
       assert_equal "/path/to/test.rb", mounter.app_file
       assert_equal "/test", mounter.uri_root
-      assert_nil mounter.app_root
+      assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
     should 'check locate_app_file with __FILE__' do
@@ -29,7 +29,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal "Test", mounter.app_class
       assert_match %r{test/app.rb}, mounter.app_file
       assert_equal "/test", mounter.uri_root
-      assert_nil mounter.app_root
+      assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
     should 'mount an app' do
@@ -46,7 +46,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal Test, mounter.app_obj
       assert_equal Padrino.root('app/app.rb'), mounter.app_file
       assert_equal "/", mounter.uri_root
-      assert_equal nil, mounter.app_root
+      assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
     should 'mount multiple apps' do
