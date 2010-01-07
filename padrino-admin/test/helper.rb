@@ -23,8 +23,7 @@ module Kernel
   def load_fixture(file)
     Object.send(:remove_const, :Account) if defined?(Account)
     file += ".rb" if file !~ /.rb$/
-    load File.join(File.dirname(__FILE__), "fixtures", file)
-    # silence_stdout {  }
+    silence_stdout { load File.join(File.dirname(__FILE__), "fixtures", file) }
   end
 end
 

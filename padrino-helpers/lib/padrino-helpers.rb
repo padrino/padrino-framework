@@ -1,4 +1,6 @@
 require 'padrino-core/support_lite'
+require 'cgi'
+
 Dir[File.dirname(__FILE__) + '/padrino-helpers/**/*.rb'].each {|file| require file }
 
 # Load our locales

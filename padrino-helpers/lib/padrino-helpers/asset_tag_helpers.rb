@@ -17,15 +17,16 @@ module Padrino
       # parameters: name, url='javascript:void(0)', options={}, &block
       def link_to(*args, &block)
         options = args.extract_options!
+        anchor  = options[:anchor] ? "##{CGI.escape options.delete(:anchor).to_s}" : ""
         if block_given?
           url = args[0] || 'javascript:void(0);'
-          options.reverse_merge!(:href => url)
+          options.reverse_merge!(:href => url + anchor)
           link_content = capture_html(&block)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
           name, url = args[0], (args[1] || 'javascript:void(0);')
-          options.reverse_merge!(:href => url)
+          options.reverse_merge!(:href => url + anchor)
           content_tag(:a, name, options)
         end
       end
