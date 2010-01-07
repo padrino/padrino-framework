@@ -1,4 +1,5 @@
 require 'padrino-core'
+require 'tilt'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{access_control,adapters,ext_js,generators,utils}/*.rb'].each {|file| require file }

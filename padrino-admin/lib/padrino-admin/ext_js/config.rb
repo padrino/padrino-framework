@@ -127,13 +127,13 @@ module Padrino
       end
 
       # Load a new config from an yml file and return a parsed hash.
-      def self.load_file(path, binding=nil)
-        self.load(File.read(path), binding)
+      def self.load_file(path)
+        self.load(File.read(path))
       end
 
       # Load a new config from a yaml "string" and return a parsed hash.
-      def self.load(string, binding=nil)
-        self.new YAML.parse(ERB.new(string).result(binding))
+      def self.load(string)
+        self.new YAML.parse(string)
       end
 
     private
