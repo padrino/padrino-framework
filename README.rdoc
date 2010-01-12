@@ -848,7 +848,7 @@ Authentication:: Support for Account authentication, Account Permission managmen
 Scaffold:: You can simply create a new "admin interface" simply providing a Model
 Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
 
-== Admin Usage
+=== Admin Usage
 
 For create the admin application:
 
@@ -860,7 +860,7 @@ For create a new "scaffold" you need to provide only a Model for them like:
   
 That's all!!
 
-== Admin Authentication
+=== Admin Authentication
 
 Padrino Admin use a model Account for manage role, membership and permissions take the following example:
 
