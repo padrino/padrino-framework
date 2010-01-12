@@ -1,0 +1,3 @@
+=title "New Account"
+-form_for @account, url(:accounts_create, :format => :js), :remote => true do |f|
+  =partial 'accounts/form', :locals => { :f => f }

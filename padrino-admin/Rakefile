@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rake'
 
+GEM_VERSION = File.read(File.dirname(__FILE__) + '/VERSION')
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
@@ -11,9 +13,9 @@ begin
     gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-admin"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.add_runtime_dependency     "json_pure",       ">= 1.2.0"
-    gem.add_runtime_dependency     "padrino-core",    ">= 0.1.1"
+    gem.add_runtime_dependency     "padrino-core",    "= #{GEM_VERSION}"
+    gem.add_runtime_dependency     "padrino-gen",     "= #{GEM_VERSION}"
     gem.add_runtime_dependency     "tilt",            ">= 0.4"
-    gem.add_development_dependency "dm-core",         ">= 0.10.2"
     gem.add_development_dependency "haml",            ">= 2.2.1"
     gem.add_development_dependency "shoulda",         ">= 0"
     gem.add_development_dependency "mocha",           ">= 0.9.7"
@@ -29,6 +31,7 @@ end
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'test'
+  
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
@@ -36,6 +39,9 @@ end
 begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |test|
+    Dir[File.dirname(__FILE__) + "/../padrino-*/lib"].each do |padrino_gem|
+      test.libs << padrino_gem
+    end
     test.libs << 'test'
     test.pattern = 'test/**/test_*.rb'
     test.verbose = true
@@ -58,4 +64,21 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "padrino-admin #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+
+spec = Gem::Specification.new do |s| 
+  s.name              = "foo"
+  s.version           = "1.0.1"
+  s.author            = "Davide D'Agostino"
+  s.email             = "d.dagostino@lipsiasoft.com"
+  s.homepage          = "http://www.lipsiadmin.com"
+  s.rubyforge_project = "lipsiadmin"
+  s.platform          = Gem::Platform::RUBY
+  s.summary           = "Lipsiadmin is a new revolutionary admin for your projects.Lipsiadmin is based on Ext Js 2.0. framework (with prototype adapter) and is ready for Rails 2.0. This admin is for newbie developper but also for experts, is not entirely written in javascript because the aim of developper wose build in a agile way web/site apps so we use extjs in a new intelligent way a mixin of 'old' html and new ajax functions, for example ext manage the layout of page, grids, tree and errors, but form are in html code."
+  s.files             = FileList["CHANGELOG", "README.rdoc", "MIT-LICENSE", "Rakefile", "init.rb", "{lipsiadmin_generators,lib,resources,tasks}/**/*"].to_a
+  s.has_rdoc          = true
+  s.requirements << "ImageMagick"
+  s.add_dependency('haml')
+  s.add_dependency('rails', '>= 2.2.1')
 end

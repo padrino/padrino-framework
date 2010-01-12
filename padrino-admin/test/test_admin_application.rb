@@ -10,7 +10,7 @@ class TestAdminApplication < Test::Unit::TestCase
     mock_app do
       enable :authentication
       set    :app_name, :test_me
-      set    :use_orm, :data_mapper
+      set    :use_orm, :datamapper
 
       # Do a simple mapping
       access_control.roles_for :any do |role| 

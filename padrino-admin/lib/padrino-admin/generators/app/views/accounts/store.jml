@@ -1,0 +1,9 @@
+columns:
+  - method: name.upcase
+    header: Name Upcase
+    dataIndex: name
+  - method: surname
+  - method: email
+    header: E-mail
+    sortable: false
+  - method: role

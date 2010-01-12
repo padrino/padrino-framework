@@ -11,24 +11,48 @@ module Padrino
       def self.register(adapter, klass=nil)
         klass ||= Account
         case adapter
-          when :active_record
+          when :activerecord
             ActiveRecord::Base.send(:include, Padrino::Admin::Adapters::Ar::Base)
             klass.send(:include, Padrino::Admin::Adapters::Ar::Account)
-          when :data_mapper
+          when :datamapper
             DataMapper::Model.descendants.each { |d| d.send(:include, Padrino::Admin::Adapters::Dm::Base) }
             klass.send(:include, Padrino::Admin::Adapters::Dm::Account)
-          when :mongo_mapper
-            MongoMapper::Document.append_inclusions(Padrino::Admin::Adapters::Mm::Base)
-            klass.send(:include, Padrino::Admin::Adapters::Mm::Account)
+          # Not yet finished
+          # when :mongomapper
+          #   MongoMapper::Document.append_inclusions(Padrino::Admin::Adapters::Mm::Base)
+          #   klass.send(:include, Padrino::Admin::Adapters::Mm::Account)
           else
             raise Padrino::Admin::AdapterError, "The adapter #{adapter.inspect} is not supported, available adapters are: " + 
-                                                ":active_record, :data_mapper, :mongo_mapper"
+                                                ":activerecord, :datamapper, :mongomapper"
         end
       end
 
       # Here standard extension
       module Base
-        # TODO
+        def self.included(base)
+          base.send :include, InstanceMethods
+          base.extend ClassMethods
+        end
+
+        module InstanceMethods
+        end
+
+        module ClassMethods
+          # This method generate store and column config.
+          # for lazinies hands instead supply:
+          # 
+          #   Model.column_store("./../views/model/store.jml")
+          # 
+          # you can:
+          # 
+          #   Model.column_store(options.views, "models/store")
+          def column_store(*args)
+            path   = File.join(*args)
+            path   = Dir[path + ".{jml,jaml}"].first.to_s if path !~ /(\.jml|\.jaml)$/
+            config = YAML.load_file(path)
+            Padrino::ExtJs::ColumnStore.new(self, config)
+          end
+        end
       end
       # Here extension for account
       # 
@@ -54,7 +78,7 @@ module Padrino
         module ClassMethods
           # This method it's for authentication purpose
           def authenticate(email, password)
-            account = first(:conditions => { :email => email })
+            account = first(:conditions => { :email => email }) if email.present?
             account && account.password_clean == password ? account : nil
           end
         end

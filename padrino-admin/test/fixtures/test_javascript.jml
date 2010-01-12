@@ -1,0 +1,81 @@
+# Set grouping view
+#   var gw = new Ext.grid.GroupingView({ forceFit: false }); 
+gw: !groupingView
+  forceFit: false
+
+# Set app title
+#   Admin.app.setTitle('List Ecommerces');
+eval: !title List Ecommerces
+
+# Set grid toolbar
+#   var tbar = new Ext.Toolbar({
+#     buttons: [{
+#       handler: add,
+#       text: Admin.locale.buttons.add,
+#       disabled: false,
+#       cls: "x-btn-text-icon add",
+#       id: "add"
+#     },{
+#       handler: edit,
+#       text: Admin.locale.buttons.edit,
+#       disabled: true,
+#       cls: "x-btn-text-icon edit",
+#       id: "edit"
+#     },{
+#       handler: remove,
+#       text: Admin.locale.buttons.remove,
+#       disabled: true,
+#       cls: "x-btn-text-icon remove",
+#       id: "remove"
+#     }]
+#   });
+tbar: !toolbar # you can provide => {except: edit} or {only: [edit, add]}
+
+# Set our selection model
+#   var sm = new Ext.grid.CheckboxSelectionModel();
+sm: !checkBoxSelectionModel;
+
+# Grouping Store
+store: !groupingStore
+  url: /admin/ecommerces.json
+  reader: !jsonReader
+    fields: <%= @store.store_fields %>
+
+# Paging toolbar
+bbar: !pagingToolbar
+
+# Grid
+gridPanel:
+  Ext.grid.GridPanel:
+    bbar: bbar
+    clicksToEdit: 1
+    cm: cm
+    region: "center"
+    sm: sm
+    viewConfig: { "forceFit":true }
+    plugins: [new Ext.grid.Search()]
+    border: false
+    tbar: tbar
+    id: "grid-ecommerces"
+    bodyBorder: false
+    store: store
+    view: gw
+
+# Fix an issue with some browser
+eval: "gridPanel.on('dblclick', function() { setTimeout(function() { edit() }, 200);"
+
+# Enable disable toolbar buttons when necessary
+eval: |
+  gridPanelCheckboxSelectionModel.on('selectionchange', function(){
+    var n = gridPanelCheckboxSelectionModel.getSelected();
+    var btns = gridPanelToolbar.items.map;
+    if(!n){
+      btns.remove.disable();
+      btns.edit.disable();
+      return;
+    } else {
+      btns.remove.enable();
+      btns.edit.enable();
+      return;
+    }
+  });

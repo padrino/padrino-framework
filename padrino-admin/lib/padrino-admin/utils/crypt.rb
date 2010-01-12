@@ -24,6 +24,7 @@ module Padrino
           cipher
         end
       end
+
     end
   end
 end

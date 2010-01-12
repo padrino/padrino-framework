@@ -1,0 +1,71 @@
+en:
+  admin:
+    labels:
+      not_found: "Not found"
+      none: "Nothing"
+      add: "Add"
+      remove: "Remove"
+      upload_file: "Upload File"
+      upload_files: "Upload Files"
+      upload_image: "Upload Image"
+      upload_images: "Upload Images"
+    buttons:
+      save: "Save"
+    tabs:
+      general: "General"
+    titles:
+      welcome: "Welcome"
+    general:
+      list: "List {{model}}"
+      editForm: "Edit {{model}} {{value}}"
+      newForm: "New {{model}}"
+      cantDelete: "You cannot delete {{record}} record."
+      page: "Page"
+      of: "of"
+    sessions:
+      wrong: "Wrong email or password"
+      logout: "Correctly Logged Out"
+    menus:
+      account: "Account"
+      list: "List"
+      new: "New"
+      help: "Help"
+    texts: 
+      order_updated: Order updated!
+    javascripts:
+      buttons:
+        add: "Add"
+        edit: "Edit"
+        remove: "Delete"
+        back: "Back"
+        save: "Save"
+        close: "Close"
+        select: "Select"
+        help: "Help"
+        send: "Send"
+      help:
+        title: "Support request"
+        description: "Say us what problem do you have and how we can reproduce it"
+        compliments: "Your request was correctly delivered."
+      labels:
+        all: "All "
+        search: "Search"
+      messages:
+        compliments: 
+          title: "Congratulations"
+          message: "Your data are correctly saved."
+        wait:
+          title: "Sending Data"
+          message: "Sending data to server..."
+        confirm:
+          title: "Are you sure ?"
+          message: "Are you sure to destroy {0} element/s ?"
+        alert:
+          title: "Attention"
+          message: "There are some connection issues.<br />Contact tecnical support."
+          notConfigured: "This fatures is not ready yet.<br />Contact tecnical support."
+          notSelected: "You must select at least one record"
+    print:
+      footer: 
+        page: "Page"
+        page_of: "of"

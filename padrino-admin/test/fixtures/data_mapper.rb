@@ -21,7 +21,7 @@ class Account
   def self.editor; first(:role => "Editor"); end
 end
 
-Padrino::Admin::Adapters.register(:data_mapper)
+Padrino::Admin::Adapters.register(:datamapper)
 DataMapper.auto_migrate!
 
 # We build some fake accounts

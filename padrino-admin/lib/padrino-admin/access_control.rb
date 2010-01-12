@@ -6,7 +6,8 @@ module Padrino
   #   
   #   class EcommerceDemo < Padrino::Application
   #     enable :authentication
-  #     set :redirect_back_or_default, "/login" # or your page
+  #     set :login_page, "/login" # or your login page
+  #     enable :store_location # if you want know what is the page that need authentication
   #     set :use_orm, :active_record # or :data_mapper, :mongo_mapper
   # 
   #     access_control.roles_for :any do
@@ -37,7 +38,7 @@ module Padrino
   # 
   #   class AdminDemo < Padrino::Application
   #     enable :authentication
-  #     set :redirect_to_default, "/" # or your page
+  #     set :login_page, "/sessions/new" # or your page
   #     
   #     access_control.roles_for :any do |role|
   #       role.allow "/sessions"
@@ -123,9 +124,8 @@ module Padrino
   module AccessControl
 
     def self.registered(app)
-      app.helpers Padrino::AccessControl::Helpers
+      app.helpers Padrino::Admin::Helpers
       app.before { login_required }
-      app.set :redirect_to_default, "/"
       if app.respond_to?(:use_orm)
         Padrino::Admin::Adapters.register(app.use_orm)
       else
@@ -134,9 +134,9 @@ module Padrino
     end
 
     class Base
-
       class << self
-        
+        attr_reader :roles
+
         def inherited(base) #:nodoc:
           base.class_eval("@@cache={}; @authorizations=[]; @roles=[]; @mappers=[]")
           base.send(:cattr_reader, :cache)
@@ -192,11 +192,13 @@ module Padrino
 
       def can?(request_path)
         return true if @allowed.empty?
+        request_path = "/" if request_path.blank?
         @allowed.any? { |path| request_path =~ /^#{path}/ } && !cannot?(request_path)
       end
 
       def cannot?(request_path)
         return false if @denied.empty?
+        request_path = "/" if request_path.blank?
         @denied.any? { |path| request_path =~ /^#{path}/ }
       end
 

@@ -32,140 +32,154 @@ module Padrino
       end
     end
 
-    # This class it's used for write in a new and simple way json.
-    # 
-    # In ExtJs framework generally each component have a configuration written in json.
-    # 
-    # Write this config in ruby it's not the best choice think this example:
-    # 
-    #   # A Generic grid config in JavaScript:
-    #   var gridPanel = new Ext.grid.GridPanel({
-    #     bbar: gridPanelPagingToolbar,
-    #     clicksToEdit: 1,
-    #     cm: gridPanelColumnModel,
-    #     region: "center",
-    #     sm: gridPanelCheckboxSelectionModel,
-    #     viewConfig: {"forceFit":true},
-    #     plugins: [new Ext.grid.Search()],
-    #     border: false,
-    #     tbar: gridPanelToolbar,
-    #     id: "grid-accounts",
-    #     bodyBorder: false,
-    #     store: gridPanelGroupingStore,
-    #     view: gridPanelGroupingView
-    #   });
-    # 
-    #   # A Gneric grid config in Ruby:
-    #   { :bbar => Padrino::ExtJs::Variable.new('gridPanelPagingToolbar'), :clicksToEdit => 1, 
-    #     :cm => Padrino::ExtJs::Variable.new('gridPanelColumnModel'), :region => "center",
-    #     :sm => Padrino::ExtJs::Variable.new('gridPanelCheckboxSelectionModel'),
-    #     :viewConfig => { :forceFit => true }, plugins => [Padrino::ExtJs::Variable.new('new Ext.grid.Search()'].
-    #     :border => false ... more more code...
-    # 
-    # As you can see writing json in pure ruby (in this case with hash) require much time and is
-    # <tt>less</tt> readable.
-    # 
-    # For this reason we build an ExtJs Config, that basically it's an yaml file with
-    # some new great functions so the example above will be:
-    # 
-    #   # A Generic grid config in ExtJs Config:
-    #   gridPanel:
-    #     bbar: !js gridPanelPagingToolbar
-    #     clicksToEdit: 1,
-    #     cm: !js gridPanelColumnModel
-    #     region: center
-    #     sm: !js gridPanelCheckboxSelectionModel
-    #     viewConfig:
-    #       forceFit: true
-    #     plugins: [!js new Ext.grid.Search()]
-    #     border: false
-    #     tbar: !js gridPanelToolbar
-    #     id: grid-accounts
-    #     bodyBorder: false
-    #     store: !js gridPanelGroupingStore
-    #     view: !js gridPanelGroupingView
-    # 
-    # Now you see that it's more readable, simple and coincise!
-    # 
-    # But our ExtJs config can act also as an xml or an erb partial. See this code:
-    # 
-    #   # A template
-    #   tempate:
-    #     tbar:
-    #       here: a custom config
-    #     grid:
-    #       viewConfig:
-    #         forceFit: true
-    #       plugins: [!js new Ext.grid.Search()]
-    #       border: false  
-    # 
-    # We can "grep" this config in our template with:
-    #   
-    #   # A generic grid
-    #   gridPanel:
-    #     <<: %template/grid
-    #     border: true
-    # 
-    # The result will be:
-    # 
-    #   gridPanel:
-    #     viewConfig:
-    #       forceFit: true
-    #     plugins: [!js new Ext.grid.Search()]
-    #     border: true # overidden
-    # 
-    # See our test for more complex examples.
-    # 
-    class Config < Hash
+    # Json Pretty Printer.
+    # Thanks to http://github.com/techcrunch/json_printer
+    class JsonPrinter
+      attr_reader :buf, :indent
 
-      # Initialize a new config parsing an Hash
-      def initialize(data)
-        @data   = data
-        parsed  = parse(@data)
-        super
-        replace parsed
+      # ==== Arguments
+      # obj<Object>::
+      #   The object to be rendered into JSON.  This object and all of its 
+      #   associated objects must be either nil, true, false, a String, a Symbol,
+      #   a Numeric, an Array, or a Hash.
+      #
+      # ==== Returns
+      # <String>::
+      #   The pretty-printed JSON ecoding of the given <i>obj</i>.  This string
+      #   can be parsed by any compliant JSON parser without modification.
+      #
+      # ==== Examples
+      # See <tt>JsonPrinter</tt> docs.
+      #
+      def self.render(obj, indent=1)
+        indent = " "*indent
+        new(obj, indent).buf
       end
 
-      # Load a new config from an yml file and return a parsed hash.
-      def self.load_file(path)
-        self.load(File.read(path))
-      end
 
-      # Load a new config from a yaml "string" and return a parsed hash.
-      def self.load(string)
-        self.new YAML.parse(string)
-      end
-
-    private
-      def parse(node=nil, key=nil)
-        case node.value
-          when String
-            if node.value =~ /^%{1}(.*)/
-              node = parse(@data.select($1).first)
-            end
-            node.respond_to?(:transform) ? node.transform : node
-          when Hash
-            parsed = {}
-            node.value.each do |k,v| 
-              if k.value == "<<"
-                node = parse(v)
-                if node.is_a?(Hash)
-                  node.merge!(parsed)
-                end
-                parsed = node
-              else
-                parsed[k.value] = parse(v)
-              end
-            end
-            parsed
-          when Array
-            parsed = []
-            node.value.each do |v|
-              node = parse(v)
-              node.is_a?(Array) ? parsed.concat(node) : parsed.push(node)
-            end
-            parsed
+      private
+        # Execute the JSON rendering of <i>obj</i>, storing the result in the 
+        # <tt>buf</tt>.
+        #
+        def initialize(obj, indent="")
+          @buf = ""
+          @indent = indent
+          render(obj)
         end
+
+        # Increase the indentation level.
+        #
+        def indent_out
+          @indent << " "
+        end
+
+        # Decrease the indendation level.
+        #
+        def indent_in
+          @indent.slice!(-1, 1)
+        end
+
+        # Append the given <i>str</i> to the <tt>buf</tt>.
+        #
+        def print(str)
+          @buf << str
+        end
+
+        # Recursive rendering method.  Primitive values, like nil, true, false, 
+        # numbers, symbols, and strings are converted to JSON and appended to the
+        # buffer.  Enumerables are treated specially to generate pretty whitespace.
+        #
+        def render(obj)
+          # We can't use a case statement here becuase "when Hash" doesn't work for
+          # ActiveSupport::OrderedHash - respond_to?(:values) is a more reliable
+          # indicator of hash-like behavior.
+          if NilClass === obj
+            print("null")
+
+          elsif TrueClass === obj
+            print("true")
+
+          elsif FalseClass === obj
+            print("false")
+
+          elsif String === obj
+            print(escape_json_string(obj))
+
+          elsif Symbol === obj
+            print("\"#{obj}\"")
+
+          elsif Numeric === obj
+            print(obj.to_s)
+
+          elsif Time === obj
+            print(obj.to_s)
+
+          elsif obj.respond_to?(:keys)
+            print("{")
+            indent_out
+            last_key = obj.keys.last
+            obj.each do |(key, val)|
+              render(key)
+              case val
+              when Hash, Array
+                indent_out
+                print(":\n#{indent}")
+                render(val)
+                indent_in
+              else
+                print(": ")
+                render(val)
+              end
+              print(",\n#{indent}") unless key == last_key
+            end
+            indent_in
+            print("}")
+
+          elsif Array === obj
+            print("[")
+            indent_out
+            last_index = obj.size - 1
+            obj.each_with_index do |elem, index|
+              render(elem)
+              print(",\n#{indent}") unless index == last_index
+            end
+            indent_in
+            print("]")
+
+          else
+            raise "unrenderable object: #{obj.inspect}"
+          end
+        end
+
+        # Special JSON character escape cases.
+        ESCAPED_CHARS = {
+          "\010" =>  '\b',
+          "\f"   =>  '\f',
+          "\n"   =>  '\n',
+          "\r"   =>  '\r',
+          "\t"   =>  '\t',
+          '"'    =>  '\"',
+          '\\'   =>  '\\\\',
+          '>'    =>  '\u003E',
+          '<'    =>  '\u003C',
+          '&'    =>  '\u0026'}
+
+        # String#to_json extracted from ActiveSupport, using interpolation for speed.
+        #
+        def escape_json_string(str)
+          begin
+            "\"#{
+            str.gsub(/[\010\f\n\r\t"\\><&]/) { |s| ESCAPED_CHARS[s] }.
+                gsub(/([\xC0-\xDF][\x80-\xBF]|
+                       [\xE0-\xEF][\x80-\xBF]{2}|
+                       [\xF0-\xF7][\x80-\xBF]{3})+/nx) do |s|
+                  s.unpack("U*").pack("n*").unpack("H*")[0].gsub(/.{4}/, '\\\\u\&')
+                end
+            }\""
+          rescue Encoding::CompatibilityError
+            rawbytes = str.dup.force_encoding 'ASCII-8BIT'
+            escape_json_string(rawbytes)
+          end
       end
     end
   end

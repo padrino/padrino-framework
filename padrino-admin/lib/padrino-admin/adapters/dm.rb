@@ -15,9 +15,23 @@ module Padrino
           module InstanceMethods
             # This method allow us to don't see deprecations
             def new_record?; new?; end
+
+            # Returns a String, which Padrino uses for constructing an URL to this object. 
+            # The default implementation returns this record‘s id as a String, or nil if this record‘s unsaved.
+            def to_param
+              # We can't use alias_method here, because method 'id' optimizes itself on the fly.
+              (id = self.id) ? id.to_s : nil # Be sure to stringify the id for routes
+            end
+
+            # Update attributes is deprecated but for compatibility with AR we support them.
+            def update_attributes(attributes = {})
+              update(attributes)
+            end
           end
-          
+
           module ClassMethods
+            attr_accessor :_table_name
+
             def self_and_descendants #:nodoc:
               klass = self
               classes = [klass]
@@ -50,7 +64,7 @@ module Padrino
 
             # Return the name of the sql table
             def table_name
-              storage_names[:default]
+              self.name.downcase.pluralize # storage_names[:default] this some times give an error
             end
 
             # Perform a basic fulltext search/ordering for the given columns
@@ -61,8 +75,6 @@ module Padrino
             # In this example we search in columns name, surname, company the string daddye and then we order by
             # column +name+
             def ext_search(params)
-              params.symbolize_keys!
-
               # We need a basic query
               query = {}
 
@@ -78,14 +90,12 @@ module Padrino
             end
 
             def ext_paginate(params)
-              params.symbolize_keys!
-
               # We need a basic query
               query = {}
 
               # First we need to sort our record
-              if params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/
-                query[:order] = [params[:sort].to_sym.send(params[:dir].to_s.downcase)]
+              if params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/i
+                query[:order] = [params[:sort].to_s.gsub(/#{table_name}\./i,'').to_sym.send(params[:dir].to_s.downcase)]
               end
 
               # Now time to limit/offset it

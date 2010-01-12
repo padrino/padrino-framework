@@ -13,7 +13,7 @@ module Padrino
               named_scope :ext_search, lambda { |params|
                 conditions = nil
 
-                if !params[:query].blank? && !params[:fields].blank?
+                if params[:query].present? && params[:fields].present?
                   filters = params[:fields].split(",").collect { |f| "#{f} LIKE ?" }.compact
                   conditions = [filters.join(" OR ")].concat((1..filters.size).collect { "%#{params[:query]}%" })
                 end
@@ -47,6 +47,12 @@ module Padrino
               options[:count] ||= 1
               I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:model, :attributes]))
             end
+
+            # Alias method for get columns
+            def properties
+              columns
+            end
+
           end
         end
 

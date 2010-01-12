@@ -9,4 +9,4 @@ class Account
 end
 
 Account.collection.remove
-Padrino::Admin::Adapters.register(:mongo_mapper)
+Padrino::Admin::Adapters.register(:mongomapper)

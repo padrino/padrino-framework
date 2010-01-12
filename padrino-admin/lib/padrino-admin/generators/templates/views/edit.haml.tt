@@ -1,0 +1,3 @@
+=title "Edit <%= @model_name %>"
+-form_for @<%= @model_singular %>, url(:<%= @model_plural %>_update, :id => @<%= @model_singular %>.id, :format => :js), :method => :put, :remote => true do |f|
+  =partial '<%= @model_plural %>/form', :locals => { :f => f }

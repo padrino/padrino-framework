@@ -1,0 +1,37 @@
+<%= @app_name %>.controllers :<%= @model_plural %> do
+
+  get :index, :respond_to => [:js, :json] do
+    @store = <%= @model_name %>.column_store(options.views, "<%= @model_plural %>/store")
+    case content_type
+      when :js    then render '<%= @model_plural %>/grid.js'
+      when :json  then @store.store_data(params)
+    end
+  end
+
+  get :new do
+    @<%= @model_singular %> = <%= @model_name %>.new
+    render '<%= @model_plural %>/new'
+  end
+
+  post :create, :respond_to => :js do
+    @<%= @model_singular %> = <%= @model_name %>.create(params[:<%= @model_singular %>])
+    show_messages_for(@<%= @model_singular %>)
+  end
+
+  get :edit, :with => :id do
+    @<%= @model_singular %> = <%= @model_name %>.first(:conditions => { :id => params[:id] })
+    render '<%= @model_plural %>/edit'
+  end
+
+  put :update, :with => :id, :respond_to => :js do
+    @<%= @model_singular %> = <%= @model_name %>.first(:conditions => { :id => params[:id] })
+    @<%= @model_singular %>.update_attributes(params[:<%= @model_singular %>])
+    show_messages_for(@<%= @model_singular %>)
+  end
+
+  delete :destroy, :respond_to => :json do
+    <%= @model_plural %> = <%= @model_name %>.all(:conditions => { :id => params[:ids].split(",") })
+    errors = <%= @model_plural %>.map { |<%= @model_singular %>| I18n.t("admin.general.cantDelete", :record => <%= @model_singular %>.id) unless <%= @model_singular %>.destroy }.compact
+    { :success => errors.empty?, :msg => errors.join("<br />") }.to_json
+  end
+end

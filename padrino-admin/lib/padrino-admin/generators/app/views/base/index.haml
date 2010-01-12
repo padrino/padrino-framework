@@ -1,0 +1,21 @@
+%html
+  %head
+    %title="Welcome to #{options.app_name.titleize}"
+    =stylesheet_link_tag :ext, :standard, :admin
+  %body
+    #loading-mask
+    #loading
+      .loading-indicator
+        =image_tag("backend/logo-loader.png") + "Loading..."
+    / include everything after the loading indicator
+    =javascript_include_tag :prototype, :effects, :dragdrop, :controls, :ext, :locale
+    =javascript_include_tag "admin.js?small=#{params[:small].to_i}"
+    -unless params[:small]
+      #header
+        #logo=link_to options.app_name.titleize, "/"
+        #logout=link_to "Logout #{current_account.email}", url_for(:sessions_destroy)
+              
+    %iframe{ :id => "ajax-iframe", :name => "ajax-iframe" }
+    %form{ :id => "history-form", :class => "x-hidden" }
+      =hidden_field_tag "x-history-field", :id => "x-history-field"
+      %iframe{ :id => "x-history-frame" }

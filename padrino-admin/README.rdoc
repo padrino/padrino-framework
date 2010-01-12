@@ -1,22 +1,24 @@
 = padrino-admin
 
-== Installation
+Padrino Admin is a builtin interface for manage your site. It's similar to a Django Admin.
 
-To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
+== Fatures
 
-  $ sudo gem install padrino --source http://gemcutter.org
-  
-This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
+Padrino Admin support (or will) these fatures:
 
-You can also install only the padrino-admin gem for more fine-grained use:
+authentication:: we provide a full useful access control interface based on role/permissions.
+scaffold:: give us a model and we build a entire
+grids:: where you can search, sort ... edit your records.
+file uploads:: builtin ajax interface for attach one, n attachments to a model.
 
-  $ sudo gem install padrino-admin --source http://gemcutter.org
-  
 == Usage
 
-Not implemented yet.
+Padrino admin it's very simple to use see:
+
+$ 
+
+== 
 
 == Copyright
 
-Copyright (c) 2009 Padrino. See LICENSE for details.
+Copyright (c) 2010 Padrino. See LICENSE for details.

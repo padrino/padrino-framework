@@ -1,0 +1,559 @@
+Ext.BLANK_IMAGE_URL = '<%= image_path("ext/default/s.gif") %>'; 
+Ext.namespace('Admin');
+Ext.namespace('Admin.util.Format');
+
+Admin.app = function(){
+  // Our pretty simple cache
+  var cache = {};
+  var oldUrl = undefined;
+  return {
+    // Init our app
+    init : function(){
+      // Cookie provider
+      Ext.state.Manager.setProvider(
+        new Ext.state.CookieProvider({
+          expires: new Date(new Date().getTime()+(1000*60*60*24*365))
+        })
+      );
+
+      // We want save cookies only for grids
+      Ext.override(Ext.Component,      { stateful:false });
+      Ext.override(Ext.grid.GridPanel, { stateful:true  });
+      Ext.QuickTips.init();
+
+      // Used for direclty load some specific page
+      if (window.location.search){
+        var loadUrl = Ext.urlDecode(window.location.search.substring(1)).load;
+      } else if (window.location.href.split('#')[1]) {
+        var loadUrl = window.location.href.split('#')[1];
+      }
+
+      // Used for history the browsing
+      Ext.History.init();
+      Ext.History.on('change', function(token){ if( token != Admin.app.oldUrl) { Admin.app.load(token) } });
+
+      this.cache = {};
+      var header;
+
+      <% if params[:small] != "1" %>
+      var header = new Ext.Panel({
+        contentEl: 'header',
+        region: 'north',
+        border: false,
+        bbar: <%= admin_menu %>
+      });
+      <% end %>
+
+      this.contentDynamic = new Ext.Panel({
+        id:'dynamic',
+        region:'center',
+        border:false,
+        bodyStyle: 'background: #FFF url(../images/admin/bg-content.png) repeat-x top;',
+        title: this.title() ? '&nbsp;' : '',
+        layout:'fit'
+      });
+
+      this.viewport = new Ext.Viewport({
+        layout:'border',
+        items: header ? [header, this.contentDynamic] : [this.contentDynamic]
+      });
+
+      this.load(loadUrl ? loadUrl : '<%= url_for(:dashboard) %>');
+      setTimeout(function(){
+        Ext.get('loading').remove();
+        Ext.get('loading-mask').fadeOut({remove:true});
+      }, 250);
+    }, // init
+
+    smallView : function(){
+      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).small : false;
+    }, // smalloallProductsGroupingStore
+
+    toolbar: function(){
+      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).toolbar!="0" : true;
+    }, // hideToolbar
+
+    title: function(){
+      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).title!="0" : true;
+    }, // hideTite
+
+    load : function(url){
+      var ext  = (/[.]/.exec(url)) ? /[^.]+$/.exec(url) : 'html';
+
+      // Now we need to store the url in the history
+      if (!this.smallView()){
+        Ext.History.add(url, true);
+        this.oldUrl = url;
+      }
+      // Now give a reply based on request
+      if (ext.length == 1 && ext[0].toLowerCase() == 'js') {
+        // Clean the html and scripts if requested
+        this.cleanScripts(); 
+        this.clean();
+        // We append the js into the head so we can easy inspect errors
+        var hd = document.getElementsByTagName("head")[0];
+        var s  = document.createElement("script");
+        s.src  = url;
+        s.type = 'text/javascript';
+        // Now we can append the child.
+        hd.appendChild(s);
+      } else if (ext == 'html'){
+        // Clean the html and scripts if requested
+        this.mask();
+        Ext.Ajax.request({
+          url: url,
+          headers: { 'Accept': 'text/html' },
+          success: function(response) { Admin.app.update(response.responseText) }
+        });
+      } else {
+        Admin.showAlert(Admin.locale.messages.alert.message);
+      }
+    }, // load
+
+    back: function(){
+      if (Admin.app.smallView()){
+        window.location.reload(true);
+      } else {
+        Ext.History.back();
+      }
+    },// back
+
+    update : function(html){
+      this.cleanScripts();
+      this.clean();
+      var el = this.contentDynamic.body.update(html);
+      this.inspectContent(el, html);
+    }, // update
+
+    cleanScripts: function(){
+      Ext.select('head > script').each(function(el){ el.remove(); });
+    }, // cleanScripts
+
+    clean : function(){
+      this.mask();
+      this.contentDynamic.items.each(function(i){ i.destroy(); });
+      this.contentDynamic.removeAll(true);
+      this.contentDynamic.body.update(''); // Another check ;)
+      this.contentDynamic.doLayout();
+    }, // clean
+
+    addItem : function(item){
+      this.contentDynamic.add(item);
+      this.contentDynamic.doLayout();
+    }, // addItem
+
+    submitForm : function(){
+      Admin.app.mask(Admin.locale.messages.wait.message);
+      Admin.app.contentDynamic.findByType('tabpanel').each(function(tabpanel){
+        cache.activeTab = tabpanel.activeTab.id;
+      });
+      Ext.select('form[data-remote=true]').each(function(form){ Ext.Ajax.request({ form: form }) });
+    }, // submitForms
+
+    setTitle: function(title){
+      this.contentDynamic.setTitle(title);
+    }, // SetTitle
+    
+    inspectContent: function(el, originalHtml){
+      try {
+
+        // Reformat ajax forms
+        el.select('form[data-remote=true]').each(function(form){
+          form.dom.onsubmit = function(){ Admin.app.submitForm(); return false };
+        });
+
+        // Search for tabs in the page
+        var tabs = el.select('div[tabbed=true]');
+
+        if (tabs.elements.length > 0){
+          // Build Tabs
+          var items = tabs.elements.collect(function(tab){
+            return { id: tab.id+'-tabbed', contentEl: tab.id, title: tab.title };
+          });
+
+          // Get ActiveTab
+          var activeTab = (cache.activeTab || 0);
+
+          // We select the first form in the dom
+          var form = el.select('form[data-remote=true]').first();
+
+          // We need this for IE8
+          var formId = Ext.id(form, 'ajax-form-');
+
+          var tabConfig = {
+            applyTo: formId,
+            activeTab: activeTab,
+            border:false,
+            items: items,
+            deferredRender: false, 
+            layoutOnTabChange: true,
+            enableTabScroll: true,
+            defaults: { autoScroll:true, layout:'fit' }
+          };
+
+          if (this.toolbar()){
+            Ext.apply(tabConfig, {
+              bbar: [{ 
+                text: Admin.locale.buttons.back, 
+                cls: 'x-btn-text-icon back', 
+                handler: Admin.app.back 
+              }, '->',{ 
+                text: Admin.locale.buttons.save, 
+                cls: 'x-btn-text-icon save', 
+                handler: Admin.app.submitForm 
+              }]
+            });
+          }
+
+          // We can build the tabPanel
+          this.tabPanel = new Ext.TabPanel(tabConfig);
+
+          // Now we add the tab panel to our main container
+          this.addItem(this.tabPanel);
+
+          // Need to use this because some times we add tabs from inline scripts
+          this.tabPanel.on('add', function(container, tab){ if (tab.id == activeTab) { Admin.app.tabPanel.setActiveTab(activeTab); } });
+        }
+
+        // Now we can load scripts an eval scripts from the original html
+        var re = /(?:<script([^>]*)?>)((\n|\r|.)*?)(?:<\/script>)/ig;
+        var srcRe = /\ssrc=([\'\"])(.*?)\1/i;
+        var typeRe = /\stype=([\'\"])(.*?)\1/i;
+
+        var match;
+        while(match = re.exec(originalHtml)){
+          var attrs = match[1];
+          var srcMatch = attrs ? attrs.match(srcRe) : false;
+          if(srcMatch && srcMatch[2]){
+            // We append the js into the head so we can easy inspect errors
+            var hd = document.getElementsByTagName("head")[0];
+            var s  = document.createElement("script");
+            s.src  = srcMatch[2];
+            s.type = 'text/javascript';
+            // Now we can append the child.
+            hd.appendChild(s);
+          }else if(match[2] && match[2].length > 0){
+            if(window.execScript) {
+              window.execScript(match[2]);
+            } else {
+              window.eval(match[2]);
+            }
+          }
+        }
+
+        this.unmask();
+        // Empty our cache
+        cache = {};
+      } catch(e){
+        throw this.error(e)
+      }
+    },//inspectContent
+
+    error: function(e){
+      if (typeof console != 'undefined') { 
+        console.error(e);
+      } else {
+        Admin.showAlert(e);
+      }
+    }, // error
+
+    openHelp: function(){
+      var form = new Ext.FormPanel({
+        baseCls: 'x-plain',
+        labelAlign: 'top',
+        items: [{
+          xtype:'textarea',
+          anchor: '100% 100%',
+          allowBlank: false,
+          fieldLabel: Admin.locale.help.description,
+          name: 'message'
+        }]
+      });
+
+      var formDialog = new Ext.Window({
+        id: 'help-window',
+        title: Admin.locale.help.title,
+        items: form, 
+        width: 500,
+        height: 300,
+        minWidth: 300,
+        minHeight: 150,
+        modal: true,
+        bodyStyle:'padding:5px;',
+        layout: 'fit'
+      });
+
+      formDialog.addButton(Admin.locale.buttons.send, function(){
+        form.getForm().submit({
+          url: '/admin/base/support_request',
+          method: 'POST',
+          waitMsg: Admin.locale.messages.wait.message,
+          success: function(form, action){
+            if (action.result.success == true) { 
+              formDialog.close();
+            };
+            Ext.MessageBox.alert(Admin.locale.messages.compliments.title, Admin.locale.help.compliments);
+          },
+          failure: function(form, action) {
+            if (action.result) {
+              Admin.showAlert(action.result.msg);
+            }
+          }
+        });
+      }, this);
+
+      formDialog.addButton(Admin.locale.buttons.close, formDialog.close, formDialog);
+      formDialog.show();
+    }, // openHelp
+
+    doLayout : function(){
+      this.contentDynamic.doLayout();
+    }, //doLayout
+
+    mask : function(text){
+      if (this.contentDynamic){
+        if (text == null || text.length == 0) { text = Ext.LoadMask.prototype.msg; }
+        this.contentDynamic.el.mask(text);
+      }
+    }, // mask
+
+    unmask : function(){
+      if (this.contentDynamic){
+        this.contentDynamic.el.unmask();
+      }
+    }, // unmask
+
+    collapseBoxes : function(current){
+      var el = current.up().down('div.x-box-collapsible');
+      var currentEl = Ext.get(el);
+      currentEl.isDisplayed() ? currentEl.slideOut('t', {duration:.2, useDisplay:true}) : currentEl.slideIn('t', {duration:.2, useDisplay:true});
+      Ext.select('div.x-box-collapsible').each(function(el){
+        if (el.isDisplayed() && el.dom.id!=currentEl.id){ el.slideOut('t', {duration:.2, useDisplay:true}); }
+      });
+    } //collapseBoxes
+  } // return
+}();
+
+Admin.grid = Ext.extend(Ext.grid.GridPanel, {
+  title: 'Grid',
+  baseUrl: '',
+  region: "center",
+  viewConfig: { forceFit: true },
+  border: false,
+  bodyBorder: false,
+  buttons: ['add', 'edit', 'remove'],
+  search: true,
+  plugins: [],
+  view: new Ext.grid.GroupingView({ forceFit: true }),
+  sm: new Ext.grid.CheckboxSelectionModel(),
+  column_fields: [],
+  store_fields: [],
+  initComponent: function(){
+    Admin.app.setTitle(this.title);
+    this.title = undefined; // We need only page title not grid title
+    // Column Model
+    this.column_fields.unshift(new Ext.grid.CheckboxSelectionModel());
+    this.cm = new Ext.grid.ColumnModel({ columns: this.column_fields });
+    // Toolbar
+    if (this.buttons.length > 0 || this.search){ this.tbar = new Ext.Toolbar() };
+    Ext.each(this.buttons, function(button){
+      switch(button){
+        case 'add':
+          this.tbar.addButton({
+            handler: this.addRecord,
+            text: Admin.locale.buttons.add,
+            disabled: false,
+            scope: this,
+            cls: "x-btn-text-icon add",
+            id: "add"
+          });
+          break;
+        case 'edit':
+          this.tbar.addButton({
+            handler: this.editRecord,
+            text: Admin.locale.buttons.edit,
+            disabled: true,
+            scope: this,
+            cls: "x-btn-text-icon edit",
+            id: "edit"
+          });
+          break
+        case 'remove':
+          this.tbar.addButton({
+            handler: this.removeRecord,
+            text: Admin.locale.buttons.remove,
+            disabled: true,
+            scope: this,
+            cls: "x-btn-text-icon remove",
+            id: "remove"
+          });
+      }
+    }, this);
+    this.buttons = undefined; // Remove all bbar buttons, we don't want them in the bottom of grid.
+    // Now we need to add some handlers for activate/deactivate buttons
+    this.sm.on('selectionchange', function(){
+      var n = this.sm.getSelected();
+      var btns = this.getTopToolbar().items.map;
+      if(!n){
+        if (btns.remove){ btns.remove.disable() };
+        if (btns.edit){ btns.edit.disable() };
+      } else {
+        if (btns.remove){ btns.remove.enable() };
+        if (btns.edit){ btns.edit.enable() };
+      }
+    }, this);
+    // Add search functions
+    if (this.search){ this.plugins = [new Ext.grid.Search()] };
+    // Add dblclick
+    this.on("dblclick", function() {
+      if (this.getTopToolbar().items.map.edit){ this.editRecord() }
+    }, this);
+    // Build our store
+    this.store = new Ext.data.GroupingStore({
+      remoteSort: true,
+      proxy: new Ext.data.HttpProxy({ url: this.baseUrl +'.json' }),
+      baseParams: {"_method":"GET"},
+      reader: new Ext.data.JsonReader({
+        fields: this.store_fields,
+        root: "results",
+        totalProperty: "count",
+        id: "id"
+      })
+    });
+    this.store.on('beforeload', function(){ Admin.app.mask(); });
+    this.store.on('load', function(){ Admin.app.unmask(); });
+    // Build bbar
+    this.bbar = new Ext.PagingToolbar({
+      pageSize: 50,
+      displayInfo: true,
+      store: this.store
+    });
+    Admin.grid.superclass.initComponent.call(this);
+    this.store.load();
+  },
+
+  addRecord: function(){
+    Admin.app.load(this.baseUrl + '/new');
+  },
+
+  editRecord: function(){
+    Admin.app.load(this.baseUrl + '/edit/' + this.sm.getSelected().id);
+  },
+
+  removeRecord: function(){
+    Ext.Msg.confirm(Admin.locale.messages.confirm.title, String.format(Admin.locale.messages.confirm.message, this.sm.getCount()), function(btn, text){
+      if (btn == 'yes'){
+        Admin.app.mask();
+        var records = this.sm.getSelections();
+        var store   = this.store;
+        Ext.Ajax.request({
+          url: this.baseUrl + '/destroy.json',
+          params: { ids: records.map(function(r){ return r.id }).join(",") },
+          method: 'DELETE',
+          success: function(result, request){
+            var resultValue = Ext.decode(result.responseText);
+            console.log(resultValue.msg);
+            Admin.app.unmask();
+            store.reload();
+            if (!resultValue.success){
+              Ext.MessageBox.alert(Admin.locale.messages.alert.title, resultValue.msg);
+            }
+          },                
+          failure: function(result, request) {
+            Admin.app.unmask();
+            store.reload();
+            Admin.showAlert(Admin.locale.messages.alert.message);
+          }
+        });
+      }
+    }, this);
+  }
+});
+
+Admin.window = Ext.extend(Ext.Window, {
+  width: 700,
+  height: 300,
+  layout: 'fit',
+  autoScroll: true,
+  modal: true,
+  maximizable: true,
+  bodyStyle: 'background-color:#FFF',
+  grid: undefined,
+  form: false,
+  url: '',
+  iframeId: Ext.id('','iframe-'),
+  initComponent: function(){
+    Admin.window.superclass.initComponent.call(this);
+    this.addEvents('selected');
+    this.addEvents('saved');
+    this.addButton({
+      text: Admin.locale.buttons.close,
+      handler: this[this.closeAction].createDelegate(this, [])
+    });
+    if (this.grid){
+      this.addButton({
+        text: Admin.locale.buttons.select,
+        handler: this.closeWithSelections.createDelegate(this, [])}
+      );
+    }
+    if (this.form){
+      this.addButton({
+        text: Admin.locale.buttons.save,
+        handler: this.saveForm.createDelegate(this, [])}
+      );
+    }
+    this.html = '<iframe id="'+this.iframeId+'" class="windowed" src="/admin/base/?small=1&toolbar='+(this.form?0:1)+'&load='+this.url+'" frameBorder="0" width="100%" height="100%" />';
+  }, // initComponent
+  
+  afterShow : function(afterShow){
+    Admin.window.superclass.afterShow.call(this);
+    this.contentWindow = Ext.fly(this.iframeId).dom.contentWindow;
+  }, // onRender
+  
+  getSelections: function(){
+    return this.contentWindow[this.grid].getSelectionModel().getSelections();
+  }, // getSelections
+  
+  closeWithSelections: function(){
+    if (this.getSelections().length > 0){
+      this.fireEvent('selected', this, this.getSelections());
+      this[this.closeAction]();
+    } else { 
+      Admin.showAlert(Admin.locale.messages.alert.notSelected); 
+    }
+  }, // closeWithSelections
+  
+  saveForm: function(){
+    this.contentWindow.Admin.app.submitForm();
+    this.fireEvent('saved', this);
+  } // saveForm
+});
+
+Admin.comboBox = Ext.extend(Ext.form.ComboBox, {
+  displayField:'title',
+  typeAhead: false,
+  loadingText: 'Searching...',
+  pageSize: 10,
+  autoWidth:true,
+  hideTrigger:true,
+  itemSelector: 'div.search-item',
+  initComponent : function(){
+    Admin.comboBox.superclass.initComponent.call(this);
+    if (this.autoWidth){
+      Admin.app.contentDynamic.on('resize', this.fitContent, this);
+      this.on('render', this.fitContent, this);
+    }
+  }, // initComponent
+  fitContent : function() {
+    this.el.setStyle({display:'none'});
+    var size = this.el.parent().parent().getSize();
+    this.onResize(size.width, size.height);
+    this.el.setStyle({display:'inline'});
+  }
+});
+
+Admin.showAlert = function(msg){
+  Ext.Msg.alert(Admin.locale.messages.alert.title, msg || Admin.locale.messages.alert.message);
+}
+
+Ext.onReady(Admin.app.init, Admin.app, true);
