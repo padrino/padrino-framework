@@ -32,6 +32,8 @@ module Padrino
         app_obj.set :app_name, app_data.name
         app_obj.set :app_file, app_data.app_file unless File.exist?(app_obj.app_file)
         app_obj.set :root,     app_data.app_root unless app_data.app_root.blank?
+        # We need to initialize here the app.
+        app_obj.setup_application!
         run app_obj
       end
     end

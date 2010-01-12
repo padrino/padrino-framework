@@ -20,7 +20,6 @@ padrino_gems = [
   "padrino-gen",
   "padrino-helpers",
   "padrino-mailer",
-  "padrino-routing",
   "padrino"
 ]
 
@@ -52,9 +51,7 @@ end
 
 desc "Clean pkg and other stuff"
 task :uninstall do
-  GEM_PATHS.each do |gem|
-    sh "gem uninstall #{gem} -a"
-  end
+  sh "gem search --no-version padrino | grep padrino | xargs sudo gem uninstall -a"
 end
 
 desc "Displays the current version"

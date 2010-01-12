@@ -1,9 +1,6 @@
 ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-
 require 'rubygems'
 require 'padrino-core'
 require 'test/unit'

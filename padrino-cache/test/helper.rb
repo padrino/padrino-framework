@@ -5,10 +5,6 @@ require 'mocha'
 require 'rack/test'
 require 'webrat'
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-
-require 'padrino-helpers'
 require 'padrino-cache'
 
 class Test::Unit::TestCase

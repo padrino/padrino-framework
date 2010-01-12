@@ -5,9 +5,8 @@ module Padrino
       return false if loaded?
       @_called_from = first_caller
       load_required_gems # load bundler gems
-      require_dependencies("#{root}/config/apps.rb", "#{root}/config/database.rb") # load configuration
-      load_apps_models # load all models of our apps
       require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/**/*.rb") # load root app models
+      require_dependencies("#{root}/config/database.rb", "#{root}/config/apps.rb") # load configuration
       Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
       Thread.current[:padrino_loaded] = true
     end
@@ -71,11 +70,6 @@ module Padrino
         else
           say! "=> Gemfile for #{Padrino.env} not found!"
         end
-      end
-
-      # Loads for each mounted applications their models
-      def load_apps_models
-        Padrino.mounted_apps.each { |mounted_app| load_dependencies("#{mounted_app.app_root}/models/**/*.rb")  }
       end
 
       # Prints out a message to the stdout if not in test environment

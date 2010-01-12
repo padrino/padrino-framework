@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-07}
+  s.date = %q{2010-01-12}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{nesquena@gmail.com}
@@ -72,6 +72,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_runtime_dependency(%q<i18n>, [">= 0.3.2"])
+      s.add_runtime_dependency(%q<usher>, [">= 0.6.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.11.8"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_runtime_dependency(%q<bundler>, [">= 0.5.0"])
@@ -82,6 +83,7 @@ Gem::Specification.new do |s|
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<i18n>, [">= 0.3.2"])
+      s.add_dependency(%q<usher>, [">= 0.6.2"])
       s.add_dependency(%q<thor>, [">= 0.11.8"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<bundler>, [">= 0.5.0"])
@@ -93,6 +95,7 @@ Gem::Specification.new do |s|
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
     s.add_dependency(%q<i18n>, [">= 0.3.2"])
+    s.add_dependency(%q<usher>, [">= 0.6.2"])
     s.add_dependency(%q<thor>, [">= 0.11.8"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<bundler>, [">= 0.5.0"])

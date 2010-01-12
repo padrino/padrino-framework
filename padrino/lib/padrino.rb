@@ -2,4 +2,4 @@
 require 'padrino-core'
 require 'padrino-helpers'
 require 'padrino-mailer'
-require 'padrino-routing'
+require 'padrino-admin'

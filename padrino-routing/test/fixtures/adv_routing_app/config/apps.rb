@@ -1,1 +1,0 @@
-Padrino.mount_core("adv_routing_demo", :app_file => Padrino.root('app.rb'))

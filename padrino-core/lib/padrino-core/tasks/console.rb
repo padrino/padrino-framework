@@ -7,7 +7,7 @@ end
 def applications
   puts "==== List of Mounted Applications ====\n\n"
   Padrino.mounted_apps.each do |app|
-    puts " * '#{app.name}' mapped to '#{app.uri_root}'"
+    puts " * %-10s mapped to      %s" % [app.name, app.uri_root]
   end
   puts
   Padrino.mounted_apps.collect { |app| "#{app.name} => #{app.uri_root}" }

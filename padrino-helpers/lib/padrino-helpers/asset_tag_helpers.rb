@@ -18,6 +18,7 @@ module Padrino
       def link_to(*args, &block)
         options = args.extract_options!
         anchor  = options[:anchor] ? "##{CGI.escape options.delete(:anchor).to_s}" : ""
+        options["data-remote"] = "true" if options.delete(:remote)
         if block_given?
           url = args[0] || 'javascript:void(0);'
           options.reverse_merge!(:href => url + anchor)
@@ -76,47 +77,46 @@ module Padrino
       end
 
       protected
+        # stylesheet_tag('style', :media => 'screen')
+        def stylesheet_tag(source, options={})
+          options = options.dup.reverse_merge!(:href => stylesheet_path(source), :media => 'screen', :rel => 'stylesheet', :type => 'text/css')
+          tag(:link, options)
+        end
 
-      # stylesheet_tag('style', :media => 'screen')
-      def stylesheet_tag(source, options={})
-        options = options.dup.reverse_merge!(:href => stylesheet_path(source), :media => 'screen', :rel => 'stylesheet', :type => 'text/css')
-        tag(:link, options)
-      end
+        # javascript_tag 'application', :src => '/javascripts/base/application.js'
+        def javascript_tag(source, options={})
+          options = options.dup.reverse_merge!(:src => javascript_path(source), :type => 'text/javascript', :content => "")
+          tag(:script, options)
+        end
 
-      # javascript_tag 'application', :src => '/javascripts/base/application.js'
-      def javascript_tag(source, options={})
-        options = options.dup.reverse_merge!(:src => javascript_path(source), :type => 'text/javascript', :content => "")
-        tag(:script, options)
-      end
+        # Returns the javascript_path appending the default javascripts path if necessary
+        def javascript_path(source)
+          return source if source =~ /^http/
+          source = source.to_s.gsub(/\.js$/, '')
+          source_name = source; source_name << ".js" unless source =~ /\.js/
+          result_path = source_name if source =~ %r{^/} # absolute path
+          result_path ||= uri_root_path("javascripts", source_name)
+          stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
+          "#{result_path}?#{stamp}"
+        end
 
-      # Returns the javascript_path appending the default javascripts path if necessary
-      def javascript_path(source)
-        return source if source =~ /^http/
-        source.gsub!(/\.js$/, '')
-        source_name = source; source_name << ".js" unless source =~ /\.js\w{2,4}$/
-        result_path = source_name if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("javascripts", source_name)
-        stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
-        "#{result_path}?#{stamp}"
-      end
+        # Returns the stylesheet_path appending the default stylesheets path if necessary
+        def stylesheet_path(source)
+          return source if source =~ /^http/
+          source = source.to_s.gsub(/\.css$/, '')
+          source_name = source; source_name << ".css" unless source =~ /\.css/
+          result_path = source_name if source =~ %r{^/} # absolute path
+          result_path ||= uri_root_path("stylesheets", source_name)
+          stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
+          "#{result_path}?#{stamp}"
+        end
 
-      # Returns the stylesheet_path appending the default stylesheets path if necessary
-      def stylesheet_path(source)
-        return source if source =~ /^http/
-        source.gsub!(/\.css$/, '')
-        source_name = source; source_name << ".css" unless source =~ /\.css$/
-        result_path = source_name if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("stylesheets", source_name)
-        stamp = File.exist?(result_path) ? File.mtime(result_path) : Time.now.to_i
-        "#{result_path}?#{stamp}"
-      end
-
-      # Returns the uri root of the application, defaulting to '/'
-      # @example uri_root('javascripts')
-      def uri_root_path(*paths)
-        root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
-        File.join(root_uri || '/', *paths)
-      end
+        # Returns the uri root of the application, defaulting to '/'
+        # @example uri_root('javascripts')
+        def uri_root_path(*paths)
+          root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
+          File.join(root_uri || '/', *paths)
+        end
     end
   end
 end

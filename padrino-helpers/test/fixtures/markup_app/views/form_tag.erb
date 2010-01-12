@@ -1,5 +1,4 @@
 <% form_tag '/simple', :class => 'simple-form' do %>
-  <%= error_messages_for(nil) %>
   <%= hidden_field_tag :session_id, :value => "__secret__" %>
   <% field_set_tag do %>
     <%= label_tag :username %>

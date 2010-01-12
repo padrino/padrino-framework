@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-06}
+  s.date = %q{2010-01-12}
   s.description = %q{The Godfather of Sinatra provides a full-stack agnostic framework on top of Sinatra}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -47,8 +47,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<padrino-core>, ["= 0.5.0"])
       s.add_runtime_dependency(%q<padrino-helpers>, ["= 0.5.0"])
       s.add_runtime_dependency(%q<padrino-mailer>, ["= 0.5.0"])
-      s.add_runtime_dependency(%q<padrino-routing>, ["= 0.5.0"])
       s.add_runtime_dependency(%q<padrino-gen>, ["= 0.5.0"])
+      s.add_runtime_dependency(%q<padrino-admin>, ["= 0.5.0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
@@ -59,8 +59,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<padrino-core>, ["= 0.5.0"])
       s.add_dependency(%q<padrino-helpers>, ["= 0.5.0"])
       s.add_dependency(%q<padrino-mailer>, ["= 0.5.0"])
-      s.add_dependency(%q<padrino-routing>, ["= 0.5.0"])
       s.add_dependency(%q<padrino-gen>, ["= 0.5.0"])
+      s.add_dependency(%q<padrino-admin>, ["= 0.5.0"])
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
@@ -72,8 +72,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<padrino-core>, ["= 0.5.0"])
     s.add_dependency(%q<padrino-helpers>, ["= 0.5.0"])
     s.add_dependency(%q<padrino-mailer>, ["= 0.5.0"])
-    s.add_dependency(%q<padrino-routing>, ["= 0.5.0"])
     s.add_dependency(%q<padrino-gen>, ["= 0.5.0"])
+    s.add_dependency(%q<padrino-admin>, ["= 0.5.0"])
   end
 end
 

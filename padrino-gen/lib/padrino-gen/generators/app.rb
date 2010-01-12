@@ -19,7 +19,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
 
       argument :name, :desc => "The name of your padrino project"
-      argument :path, :desc => "The path to create your padrino project"
+      argument :path, :desc => "The path to create your padrino project", :default => "."
       class_option :run_bundler, :aliases => '-b', :default => false, :type => :boolean
 
       # Definitions for the available customizable components
@@ -28,6 +28,12 @@ module Padrino
       component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr]
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs]
       component_option :renderer, "template engine",    :aliases => '-r', :choices => [:erb, :haml]
+
+      # Show help if no argv given
+      def self.start(given_args=ARGV, config={})
+        given_args = ["-h"] if given_args.empty?
+        super
+      end
 
       # Copies over the Padrino base application App
       def setup_app

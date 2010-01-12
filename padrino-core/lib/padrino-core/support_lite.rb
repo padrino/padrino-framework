@@ -20,7 +20,7 @@ Required for Padrino to run:
 =end
 require 'i18n'
 # Load our locales
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-core/locale/*.yml"]
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]
 
 module Padrino
   # Return the current support used.

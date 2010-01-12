@@ -189,7 +189,7 @@ The list of defined helpers in the 'form helpers' category:
   * Constructs a field_set to group fields with given options
   * <tt>field_set_tag(:class => 'office-set') { }</tt>
   * <tt>field_set_tag("Office", :class => 'office-set') { }</tt>
-* <tt>error_messages_for(record, options={})</tt>
+* <tt>error_messages_for(:record, options={})</tt>
   * Constructs list html for the errors for a given object
   * <tt>error_messages_for @user</tt>
 * <tt>label_tag(name, options={}, &block)</tt>
@@ -485,4 +485,4 @@ See the wiki article for additional information: <...WIKI...>
 
 == Copyright
 
-Copyright (c) 2009 Padrino. See LICENSE for details.
+Copyright (c) 2010 Padrino. See LICENSE for details.

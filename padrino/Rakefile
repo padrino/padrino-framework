@@ -6,10 +6,9 @@ subgems = [
   ["padrino-core", "= #{GEM_VERSION}"],
   ["padrino-helpers", "= #{GEM_VERSION}"],
   ["padrino-mailer", "= #{GEM_VERSION}"],
-  ["padrino-routing", "= #{GEM_VERSION}"],
   ["padrino-gen", "= #{GEM_VERSION}"],
+  ["padrino-admin", "= #{GEM_VERSION}"]
   # ["padrino-cache", "= #{GEM_VERSION}"],
-  # ["padrino-admin", "= #{GEM_VERSION}"],
 ]
 
 begin

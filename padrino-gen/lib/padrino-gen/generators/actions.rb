@@ -84,7 +84,7 @@ module Padrino
       end
       
       # Constructs a path from the specified app root
-      # build_target_path("app/mailers", "#{@mailer_basename}.rb")
+      # app_root_path("app/mailers", "#{@mailer_basename}.rb")
       def app_root_path(*paths)
         settings = paths.extract_options!
         File.join(settings[:root] || options[:root] || '.', *paths)

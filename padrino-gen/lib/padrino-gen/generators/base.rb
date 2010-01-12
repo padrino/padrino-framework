@@ -11,7 +11,6 @@ module Padrino
 
       class_option :root, :aliases => '-r', :default => nil, :type => :string
 
-      # Copies over the base sinatra starting project
       def load_boot
         if in_app_root?(options[:root])
           require(options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb')

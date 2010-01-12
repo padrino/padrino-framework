@@ -1,8 +1,0 @@
-clear_sources
-source 'http://gemcutter.org'
- 
-# Base requirements
-gem 'sinatra', :require_as => 'sinatra/base'
- 
-# Component requirements
-gem 'haml'

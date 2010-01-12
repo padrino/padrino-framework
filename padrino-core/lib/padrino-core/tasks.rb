@@ -41,7 +41,8 @@ module Padrino
       desc "rake", "Execute rake tasks in {Padrino.root}/lib/tasks"
       method_option :boot,        :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :environment, :type => :string, :aliases => "-e", :required => true, :default => :development
-      def rake(task)
+      method_option :task_list,   :type => :string, :aliases => "-T"
+      def rake(task="")
         require 'padrino-core/support_lite'
         boot = check_boot
         return unless boot

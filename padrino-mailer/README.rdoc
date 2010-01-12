@@ -94,4 +94,4 @@ See the wiki article for additional information: <...WIKI...>
 
 == Copyright
 
-Copyright (c) 2009 Padrino. See LICENSE for details.
+Copyright (c) 2010 Padrino. See LICENSE for details.

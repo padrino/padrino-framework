@@ -9,11 +9,11 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   def setup
-    error_stub = stub(:full_messages => ["1", "2"], :none? => false)
+    error_stub = stub(:full_messages => ["1", "2"], :count => 2)
     role_types = [stub(:name => 'Admin', :id => 1), stub(:name => 'Moderate', :id => 2),  stub(:name => 'Limited', :id => 3)]
     @user = stub(:errors => error_stub, :class => 'User', :first_name => "Joe", :session_id => 54)
     @user.stubs(:role_types => role_types, :role => "1")
-    @user_none = stub(:errors => stub(:none? => true), :class => 'User')
+    @user_none = stub(:errors => stub(:count => 0), :class => 'User')
   end
 
   def standard_builder(object=@user)
@@ -130,25 +130,25 @@ class TestFormBuilder < Test::Unit::TestCase
 
     should "display correct form html with valid record" do
       actual_html = standard_builder.error_messages(:header_message => "Demo form cannot be saved")
-      assert_has_tag('div.field-errors p', :content => "Demo form cannot be saved") { actual_html }
-      assert_has_tag('div.field-errors ul.errors-list li', :content => "1") { actual_html }
-      assert_has_tag('div.field-errors ul.errors-list li', :content => "2") { actual_html }
+      assert_has_tag('div.field-errors h2', :content => "Demo form cannot be saved") { actual_html }
+      assert_has_tag('div.field-errors ul li', :content => "1") { actual_html }
+      assert_has_tag('div.field-errors ul li', :content => "2") { actual_html }
     end
 
     should "display correct form in haml" do
       visit '/haml/form_for'
-      assert_have_selector '#demo div.field-errors p', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul.errors-list li', :content => "This is a fake error"
-      assert_have_selector '#demo2 div.field-errors p', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul.errors-list li', :content => "This is a fake error"
+      assert_have_selector '#demo div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
     end
 
     should "display correct form in erb" do
       visit '/erb/form_for'
-      assert_have_selector '#demo div.field-errors p', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul.errors-list li', :content => "This is a fake error"
-      assert_have_selector '#demo2 div.field-errors p', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul.errors-list li', :content => "This is a fake error"
+      assert_have_selector '#demo div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
     end
   end
 
@@ -551,13 +551,13 @@ class TestFormBuilder < Test::Unit::TestCase
 
     should "display correct check box block in haml" do
       visit '/haml/form_for'
-      assert_have_selector '#demo2 p label', :for => 'markup_user_remember_me', :content => "Remember Me: "
+      assert_have_selector '#demo2 p label', :for => 'markup_user_remember_me', :content => "Remember me: "
       assert_have_selector '#demo2 p input.checker', :type => 'checkbox', :name => 'markup_user[remember_me]'
     end
 
     should "display correct check box block in erb" do
       visit '/erb/form_for'
-      assert_have_selector '#demo2 p label', :for => 'markup_user_remember_me', :content => "Remember Me: "
+      assert_have_selector '#demo2 p label', :for => 'markup_user_remember_me', :content => "Remember me: "
       assert_have_selector '#demo2 p input.checker', :type => 'checkbox', :name => 'markup_user[remember_me]'
     end
   end

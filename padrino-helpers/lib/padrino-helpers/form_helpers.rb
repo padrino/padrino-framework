@@ -25,6 +25,7 @@ module Padrino
       def form_tag(url, options={}, &block)
         options.reverse_merge!(:method => 'post', :action => url)
         options[:enctype] = "multipart/form-data" if options.delete(:multipart)
+        options["data-remote"] = "true" if options.delete(:remote)
         inner_form_html = hidden_form_method_field(options[:method]) + capture_html(&block)
         concat_content content_tag('form', inner_form_html, options)
       end
@@ -40,16 +41,47 @@ module Padrino
         concat_content content_tag('fieldset', field_set_content, options)
       end
 
-      # Constructs list html for the errors for a given object
-      # error_messages_for @user
-      def error_messages_for(record, options={})
-        return "" if record.blank? or record.errors.none?
-        options.reverse_merge!(:header_message => "The #{record.class.to_s.downcase} could not be saved!")
-        error_messages = record.errors.full_messages
-        error_items = error_messages.collect { |er| content_tag(:li, er) }.join("\n")
-        error_html = content_tag(:p, options.delete(:header_message))
-        error_html << content_tag(:ul, error_items, :class => 'errors-list')
-        content_tag(:div, error_html, :class => 'field-errors')
+      # Constructs list html for the errors for a given symbol
+      # error_messages_for :user
+      def error_messages_for(*params)
+        options = params.extract_options!.symbolize_keys
+        objects = params.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
+        count   = objects.inject(0) {|sum, object| sum + object.errors.count }
+
+        unless count.zero?
+          html = {}
+          [:id, :class].each do |key|
+            if options.include?(key)
+              value = options[key]
+              html[key] = value unless value.blank?
+            else
+              html[key] = 'field-errors'
+            end
+          end
+
+          options[:object_name] ||= params.first.class
+
+          I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
+            header_message = if options.include?(:header_message)
+              options[:header_message]
+            else
+              object_name = options[:object_name].to_s.gsub('_', ' ')
+              object_name = I18n.t(object_name, :default => object_name, :scope => :models, :count => 1)
+              locale.t :header, :count => count, :model => object_name
+            end
+            message = options.include?(:message) ? options[:message] : locale.t(:body)
+            error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, msg) } }.join
+
+            contents = ''
+            contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
+            contents << content_tag(:p, message) unless message.blank?
+            contents << content_tag(:ul, error_messages)
+
+            content_tag(:div, contents, html)
+          end
+        else
+          ''
+        end
       end
 
       # Constructs a label tag from the given options
@@ -152,43 +184,42 @@ module Padrino
       end
 
       protected
-
-      # Returns an array of option items for a select field based on the given collection
-      # fields is an array containing the fields to display from each item in the collection
-      def options_from_collection(collection, fields)
-        return '' if collection.blank?
-        collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
-      end
-
-      # Returns the options tags for a select based on the given option items
-      def options_for_select(option_items, selected_value=nil)
-        return '' if option_items.blank?
-        option_items.collect do |caption, value|
-          value ||= caption
-          content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
+        # Returns an array of option items for a select field based on the given collection
+        # fields is an array containing the fields to display from each item in the collection
+        def options_from_collection(collection, fields)
+          return '' if collection.blank?
+          collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
         end
-      end
 
-      # returns the hidden method field for 'put' and 'delete' forms
-      # Only 'get' and 'post' are allowed within browsers;
-      # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
-      # hidden_form_method_field('delete') => <input name="_method" value="delete" />
-      def hidden_form_method_field(desired_method)
-        return '' if (desired_method.to_s =~ /get|post/)
-        original_method = desired_method.to_s.dup
-        desired_method.replace('post')
-        hidden_field_tag(:_method, :value => original_method)
-      end
+        # Returns the options tags for a select based on the given option items
+        def options_for_select(option_items, selected_value=nil)
+          return '' if option_items.blank?
+          option_items.collect do |caption, value|
+            value ||= caption
+            content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
+          end
+        end
 
-      # Returns the FormBuilder class to use based on all available setting sources
-      # If explicitly defined, returns that, otherwise returns defaults
-      # configured_form_builder_class(nil) => StandardFormBuilder
-      def configured_form_builder_class(explicit_builder=nil)
-        default_builder = self.respond_to?(:options) && self.options.default_builder
-        configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
-        configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
-        configured_builder
-      end
+        # returns the hidden method field for 'put' and 'delete' forms
+        # Only 'get' and 'post' are allowed within browsers;
+        # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
+        # hidden_form_method_field('delete') => <input name="_method" value="delete" />
+        def hidden_form_method_field(desired_method)
+          return '' if (desired_method.to_s =~ /get|post/)
+          original_method = desired_method.to_s.dup
+          desired_method.to_s.replace('post')
+          hidden_field_tag(:_method, :value => original_method)
+        end
+
+        # Returns the FormBuilder class to use based on all available setting sources
+        # If explicitly defined, returns that, otherwise returns defaults
+        # configured_form_builder_class(nil) => StandardFormBuilder
+        def configured_form_builder_class(explicit_builder=nil)
+          default_builder = self.respond_to?(:options) && self.options.default_builder
+          configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
+          configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
+          configured_builder
+        end
     end
   end
 end

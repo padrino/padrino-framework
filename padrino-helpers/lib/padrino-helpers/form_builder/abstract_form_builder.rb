@@ -18,7 +18,7 @@ module Padrino
 
         # f.label :username, :caption => "Nickname"
         def label(field, options={})
-          options.reverse_merge!(:caption => "#{field.to_s.titleize}: ")
+          options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
           @template.label_tag(field_id(field), options)
         end
 
@@ -30,26 +30,26 @@ module Padrino
 
         # f.text_field :username, :value => "(blank)", :id => 'username'
         def text_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
           @template.text_field_tag field_name(field), options
         end
 
         # f.text_area :summary, :value => "(enter summary)", :id => 'summary'
         def text_area(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
           @template.text_area_tag field_name(field), options
         end
 
         # f.password_field :password, :id => 'password'
         def password_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
           @template.password_field_tag field_name(field), options
         end
 
         # f.select :color, :options => ['red', 'green'], :include_blank => true
         # f.select :color, :collection => @colors, :fields => [:name, :id]
         def select(field, options={})
-          options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
+          options.reverse_merge!(:id => field_id(field), :selected => field_value(field), :class => field_error(field, options))
           @template.select_tag field_name(field), options
         end
 
@@ -71,7 +71,7 @@ module Padrino
 
         # f.file_field :photo, :class => 'avatar'
         def file_field(field, options={})
-          options.reverse_merge!(:id => field_id(field))
+          options.reverse_merge!(:id => field_id(field), :class => field_error(field, options))
           @template.file_field_tag field_name(field), options
         end
 
@@ -86,53 +86,63 @@ module Padrino
         end
 
         protected
+          # Returns the known field types for a formbuilder
+          def self.field_types
+            [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
+          end
 
-        # Returns the known field types for a formbuilder
-        def self.field_types
-          [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
-        end
+          # Returns the object's models name
+          #   => user_assignment
+          def object_name
+            object.is_a?(Symbol) ? object : object.class.to_s.underscore.gsub('/', '-')
+          end
 
-        # Returns the object's models name
-        #   => user_assignment
-        def object_name
-          object.is_a?(Symbol) ? object : object.class.to_s.underscore.gsub('/', '-')
-        end
+          # Returns true if the value matches the value in the field
+          # field_has_value?(:gender, 'male')
+          def values_matches_field?(field, value)
+            value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
+          end
 
-        # Returns true if the value matches the value in the field
-        # field_has_value?(:gender, 'male')
-        def values_matches_field?(field, value)
-          value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
-        end
+          # Returns the value for the object's field
+          # field_value(:username) => "Joey"
+          def field_value(field)
+            @object && @object.respond_to?(field) ? @object.send(field) : ""
+          end
 
-        # Returns the value for the object's field
-        # field_value(:username) => "Joey"
-        def field_value(field)
-          @object && @object.respond_to?(field) ? @object.send(field) : ""
-        end
+          def field_error(field, options)
+            if @object && @object.respond_to?(:errors) && @object.errors.respond_to?(:on) && @object.errors.on(field)
+              options[:class] = ["x-form-text", "x-form-invalid", options[:class]].compact.join(" ")
+            end
+          end
 
-        # Returns the name for the given field
-        # field_name(:username) => "user[username]"
-        def field_name(field)
-          "#{object_name}[#{field}]"
-        end
+          # Returns the name for the given field
+          # field_name(:username) => "user[username]"
+          def field_name(field)
+            "#{object_name}[#{field}]"
+          end
 
-        # Returns the id for the given field
-        # field_id(:username) => "user_username"
-        # field_id(:gender, :male) => "user_gender_male"
-        def field_id(field, value=nil)
-          value.blank? ? "#{object_name}_#{field}" : "#{object_name}_#{field}_#{value}"
-        end
+          # Returns the human name of the field. Look that use builtin I18n.
+          def field_human_name(field)
+            I18n.translate("#{object_name}.#{field}", :count => 1, :default => field.to_s.humanize, :scope => [:model, :attributes])
+          end
 
-        # explicit_object is either a symbol or a record
-        # Returns a new record of the type specified in the object
-        def build_object(object_or_symbol)
-          object_or_symbol.is_a?(Symbol) ? object_class(object_or_symbol).new : object_or_symbol
-        end
+          # Returns the id for the given field
+          # field_id(:username) => "user_username"
+          # field_id(:gender, :male) => "user_gender_male"
+          def field_id(field, value=nil)
+            value.blank? ? "#{object_name}_#{field}" : "#{object_name}_#{field}_#{value}"
+          end
 
-        # Returns the class type for the given object
-        def object_class(explicit_object)
-          explicit_object.is_a?(Symbol) ? explicit_object.to_s.classify.constantize : explicit_object.class
-        end
+          # explicit_object is either a symbol or a record
+          # Returns a new record of the type specified in the object
+          def build_object(object_or_symbol)
+            object_or_symbol.is_a?(Symbol) ? object_class(object_or_symbol).new : object_or_symbol
+          end
+
+          # Returns the class type for the given object
+          def object_class(explicit_object)
+            explicit_object.is_a?(Symbol) ? explicit_object.to_s.classify.constantize : explicit_object.class
+          end
       end
     end
   end

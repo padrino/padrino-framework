@@ -2,11 +2,8 @@
 
 == ROADMAP FOR STABLE RELEASE
 
-* [padrino-gen/core] Support for padrino rake db:migrate etc...
-* [padrino-gen] Support destroying existing generated files
 * [padrino-gen] Support for mounting subapplications
 * [padrino-gen] Support creation of controller/mailer/models/etc for specified app
-* [padrino-admin] Code Base
 
 === GENERAL
 

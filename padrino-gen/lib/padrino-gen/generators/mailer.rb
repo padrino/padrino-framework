@@ -23,7 +23,12 @@ module Padrino
       class_option :root, :aliases => '-r', :default => nil, :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
-      # Copies over the base sinatra starting project
+      # Show help if no argv given
+      def self.start(given_args=ARGV, config={})
+        given_args = ["-h"] if given_args.empty?
+        super
+      end
+
       def create_mailer
         if in_app_root?(options[:root])
           self.behavior = :revoke if options[:destroy]

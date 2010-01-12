@@ -21,10 +21,27 @@ class TestSimpleReloader < Test::Unit::TestCase
         assert_equal 404, status
       end
     end
+
+    should 'keep sinatra routes' do
+      mock_app do
+        get("/"){ "ok" }
+      end
+      get "/"
+      assert_equal 200, status
+      get "/__sinatra__/404.png"
+      assert_equal 200, status
+      assert_equal "image/png", response["Content-Type"]
+      @app.reset_routes!
+      get "/"
+      assert_equal 404, status
+      get "/__sinatra__/404.png"
+      assert_equal 200, status
+      assert_equal "image/png", response["Content-Type"]
+    end
   end
-
+  
   context 'for simple reload functionality' do
-
+  
     should 'correctly instantiate SimpleDemo fixture' do
       Padrino.mounted_apps.clear
       Padrino.mount_core("simple_demo")
@@ -32,7 +49,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert SimpleDemo.reload?
       assert_match %r{fixtures/apps/simple.rb}, SimpleDemo.app_file
     end
-
+  
     should 'correctly reload SimpleDemo fixture' do
       @app = SimpleDemo
       get "/"
@@ -44,7 +61,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       sleep 1.2 # We need at least a cooldown of 1 sec.
       get "/"
       assert_equal new_phrase, body
-
+  
       # Now we need to prevent to commit a new changed file so we revert it
       File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
     end
