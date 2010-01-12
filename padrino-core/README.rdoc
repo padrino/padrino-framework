@@ -225,23 +225,23 @@ You can then reference the urls using the same url_for method:
 
 With Padrino you can simply respond to a given format see example:
 
-# app/controllers/example.rb
-SimpleApp.controllers :admin do
-  get :show, :with => :id, :respond_to => :js do
-    "Im /admin/show/#{params[:id]}.#{params[:format]}"
-  end
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with => :id, :respond_to => :js do
+      "Im /admin/show/#{params[:id]}.#{params[:format]}"
+    end
 
-  get :other, with => [:id, :name], respond_to => [:html, :json] do
-    case content_type
-      when :js    then ... end
-      when :json  then ... end
+    get :other, with => [:id, :name], respond_to => [:html, :json] do
+      case content_type
+        when :js    then ... end
+        when :json  then ... end
+      end
     end
   end
-end
 
-<%= link_to 'admin show page', url_for(:admin_show, :id => 25, :format => :js) %>
-<%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
-<%= link_to 'admin other json page', url_for(:admin_index, :id => 25, :name => :foo, :format => :json) %>
+  <%= link_to 'admin show page', url_for(:admin_show, :id => 25, :format => :js) %>
+  <%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
+  <%= link_to 'admin other json page', url_for(:admin_index, :id => 25, :name => :foo, :format => :json) %>
 
 === Rendering
 
