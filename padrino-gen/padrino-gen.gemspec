@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.5.0"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
@@ -43,7 +43,6 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/config/boot.rb",
      "lib/padrino-gen/generators/app/config/initializers/.empty_directory",
      "lib/padrino-gen/generators/app/config/initializers/example.rb",
-     "lib/padrino-gen/generators/app/config/urls.rb.tt",
      "lib/padrino-gen/generators/app/lib/.empty_directory",
      "lib/padrino-gen/generators/app/tmp/.empty_directory",
      "lib/padrino-gen/generators/base.rb",
@@ -98,7 +97,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.5.0"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 1.0.0"])
       s.add_runtime_dependency(%q<thor>, [">= 0.11.8"])
       s.add_runtime_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
@@ -109,7 +108,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_dependency(%q<padrino-core>, ["= 0.5.0"])
+      s.add_dependency(%q<padrino-core>, ["= 1.0.0"])
       s.add_dependency(%q<thor>, [">= 0.11.8"])
       s.add_dependency(%q<bundler>, [">= 0.5.0"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
@@ -121,7 +120,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-    s.add_dependency(%q<padrino-core>, ["= 0.5.0"])
+    s.add_dependency(%q<padrino-core>, ["= 1.0.0"])
     s.add_dependency(%q<thor>, [">= 0.11.8"])
     s.add_dependency(%q<bundler>, [">= 0.5.0"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
