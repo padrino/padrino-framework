@@ -34,7 +34,6 @@ class TestAppGenerator < Test::Unit::TestCase
       silence_logger { @app.start(['sample_app', '/tmp', '--script=none']) }
       assert_match_in_file(/class SampleApp < Padrino::Application/m, '/tmp/sample_app/app/app.rb')
       assert_match_in_file(/Padrino.mount_core\("SampleApp"\)/m, '/tmp/sample_app/config/apps.rb')
-      assert_match_in_file(/SampleApp.urls do/m, '/tmp/sample_app/config/urls.rb')
     end
 
     should "create components file containing options chosen with defaults" do

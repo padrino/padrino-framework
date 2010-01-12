@@ -1,18 +1,81 @@
 = padrino-core
 
+Padrino is the godfather of Sinatra.
+
+== Preface
+
+Padrino is a ruby framework build upon the {Sinatra Microframework}[http://www.sinatrarb.com].
+
+Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
+  
+The extreme simplicity of this framework is quite refreshing. We have been using Sinatra a great deal
+for recent projects. First for small and simple json and xml web services and then even
+for more complex full-featured applications. 
+
+This gem represents an attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
+
+== Introduction
+
+Many people love Sinatra's simplicity and lightweight but often quickly come to miss a great deal
+of functionality provided by other web frameworks such as Rails when building non-trivial applications.
+
+The obvious question in these cases might be "Why not just use rails then?". This can often be a viable option
+but still Rails is quite a large framework with a 'take it or leave it' attitude.
+
+Personally, we have come to love the philosophy of Sinatra which acts as a thin layer on top of rack 
+often allowing middleware to do most of the work and pulling in additional complexity only when required. 
+
+Our goal with this framework is to match the essence of Sinatra and at the same time create a standard library
+of tools, helpers and components that will make Sinatra suitable for more complex applications.
+
+Here is a small list of what Padrino provides:
+
+Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
+MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
+Routing:: Full url named route, named params, respond_to suppor
+Tag Helpers:: helpers such as: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>, ...
+Asset Helpers:: helpers such as: <tt>link_to</tt>, <tt>image_tag</tt>, <tt>javascript_include_tag</tt>, ...
+Form Helpers:: with builder support such as: <tt>form_tag</tt>, <tt>form_for</tt>, <tt>field_set_tag</tt>, <tt>text_field</tt>, ...
+Text Helpers:: useful formatting extensions like: <tt>relative_time_ago</tt>, <tt>js_escape_html</tt>, <tt>sanitize_html</tt>
+Mailer:: fast, tiny, delivery support for send templating emails (like ActionMailer do)
+Admin:: an ajax admin that displays your records in sortable grids, tree, windows ... as a desktop app can do.
+Logging:: Padrino provide a logger that can interact with your orm or any other library
+Reloading:: With padrino is not necessary like other framework start and restart your server for see changes.
+I18n:: Padrino has a full support of I18n and can autoset locale.
+
+Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
+or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
+
+Note that all work has been created to be compatible with haml, erb, and erubis and that this gem is intended to be 
+template-agnostic in providing helpers wherever possible.
+
+Please help me brainstorm and fork the project if you have any ideas to contribute.
+
 == Installation
 
-To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
+To install the padrino framework, simply grab the latest version from gemcutter:
 
   $ sudo gem install padrino --source http://gemcutter.org
   
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
+Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
 
 == Usage
 
-For a comprehensive overview of the whole padrino-framework, check out the 
-{Padrino Framework README}[http://github.com/padrino/padrino-framework/blob/master/README.rdoc]
+Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of 
+additional tools and helpers to extend the foundation. This README and Padrino documentation in general will focus
+on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
+usage of Sinatra itself. Resources for Sinatra are listed below:
+
+* {Sinatra Introduction}[http://www.sinatrarb.com/intro.html]
+* {Sinatra Book}[http://www.sinatrarb.com/book.html]
+* {Sinatra Github Repo}[http://github.com/sinatra/sinatra]
+
+Below is a guide to how this gem enhances the Sinatra framework as part of a 'full-stack' padrino application.
+For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the README for that 
+individual gem or gems.
+
+== Enhanced Base Application (padrino-core)
 
 Sinatra has support for classes which can be extended to create an application: <tt>Sinatra::Base</tt> and <tt>Sinatra::Application</tt>
 These classes can be extended in order to create a Sinatra web application. These classes provide support for all the basic
@@ -35,11 +98,170 @@ Let us first take a look at the simplest possible Padrino application:
   Padrino.load!
 
   class SimpleApp < Padrino::Application
-    get '/ do
+    get '/' do
       'Hello world'
     end
+    
+    # and for read better we can divide with controllers
+    controller '/admin' do
+      get '/foo' do
+        'Im /admin/foo
+      end
+    end
   end
-  
+
+=== Controllers
+
+Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
+within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
+
+  # Simple Example
+  SimpleApp.controllers do
+    get "/test" do
+      "Text to return"
+    end
+  end
+
+== Advanced Routing Support
+
+Padrino provides support for advanced routing functionality not available within Sinatra. This routing
+supports named route aliases and easy access to url paths. The benefits of this is that instead of having to 
+hard-code route urls into every area of your application, now we can just define the urls in a 
+single spot and then attach an alias which can be used to refer to the url throughout the application.
+
+=== Padrino Routing
+
+Urls mapped here can then be defined within a controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index do
+      ...
+    end
+
+    get :account do
+      # access params[:name] and params[:index]
+    end
+  end
+
+and finally referenced anywhere in the application:
+
+  # app/views/example.haml
+  = link_to "Index", url_for(:index)
+  = link_to "Account", url_for(:account, :id => 1, :name => 'first')
+
+=== Inline Route Alias Definitions
+
+The routing plugin also supports inline route definitions in which the url and the named alias
+are defined together within the controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index, :map => '/index' do
+      ...
+    end
+
+    get :account, :map => '/the/accounts/:name/and/:id' do
+      # access params[:name] and params[:index]
+    end
+  end
+
+Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
+
+=== Namespaced Route Aliases
+
+There is also support for namespaced routes which are organized into a larger grouping:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show do
+      "Im /admin/show"
+    end
+
+    get :index, :map => "/admin/:id" do
+      "Im /admin/#{params[:id]}"
+    end
+  end
+
+You can then reference the urls using the same url_for method: 
+
+  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
+  <%= link_to 'admin index page', url_for(:admin_index, :id => 25) %>
+
+If you don't want named routes you can
+
+  # app/controllers/example.rb
+  SimpleApp.controllers "/admin" do
+    get "/show" do
+      "Im /admin/show"
+    end
+
+    get "other/:id" do
+      "Im /admin/#{params[:id]}"
+    end
+  end
+
+=== Named Params
+
+With Padrino you can use named params!! See these examples
+
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with => :id do
+      "Im /admin/show/#{params[:id]}"
+    end
+
+    get :other, with => [:id, :name]  do
+      "Im /admin/#{params[:id]}/#{params[:name]}"
+    end
+  end
+
+You can then reference the urls using the same url_for method: 
+
+  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
+  <%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
+
+=== Respond To
+
+With Padrino you can simply respond to a given format see example:
+
+# app/controllers/example.rb
+SimpleApp.controllers :admin do
+  get :show, :with => :id, :respond_to => :js do
+    "Im /admin/show/#{params[:id]}.#{params[:format]}"
+  end
+
+  get :other, with => [:id, :name], respond_to => [:html, :json] do
+    case content_type
+      when :js    then ... end
+      when :json  then ... end
+    end
+  end
+end
+
+<%= link_to 'admin show page', url_for(:admin_show, :id => 25, :format => :js) %>
+<%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
+<%= link_to 'admin other json page', url_for(:admin_index, :id => 25, :name => :foo, :format => :json) %>
+
+=== Rendering
+
+Unlike Sinatra Padrino support template auto lookup so:
+
+  # look for 'account/index.{erb,haml,...}
+  render 'account/index'
+
+=== Layout
+
+With Padrino you can (like rails do) use for your custom layout, disable it
+
+  class SimpleApp < Padrino::Application
+    
+    # Disable layouts
+    disable layout
+    
+    # Use the layout located in views/layouts/custom.haml
+    layout :custom
+
 === Gemfile Dependency Resolution
   
 While this is a fully operational Padrino application in itself, let us take a look at Padrino's expanded capabilites. First, 
@@ -97,18 +319,6 @@ directory following this convention:
 Initializers are automatically required and 'registered' during the application startup process. Note that
 the name of the module must be the name of the file appended with 'Initializer' (i.e sample.rb => SampleInitializer)
 
-=== Controllers
-
-Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
-within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
-
-  # controllers/example.rb
-  SimpleApp.controllers do
-    get "/test" do
-      "Text to return"
-    end
-  end
-  
 === Application Logging
 
 Padrino also supports robust logging capabilities. By default, logging information will
@@ -200,6 +410,9 @@ The following commands are available:
   # Bootup the Padrino console (irb)
   $ padrino console
   
+  # Run/List tasks
+  $ padrino rake
+
 Using these commands can simplify common tasks making development that much smoother.
 
 == Copyright

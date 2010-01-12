@@ -1,23 +1,61 @@
 = padrino-admin
 
-Padrino Admin is a builtin interface for manage your site. It's similar to a Django Admin.
+Padrino has a beautiful Ajax Admin, with these fatures:
 
-== Fatures
+Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper and activerecord)
+Authentication:: Support for Account authentication, Account Permission managment
+Scaffold:: You can simply create a new "admin interface" simply providing a Model
+Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
 
-Padrino Admin support (or will) these fatures:
+== Admin Usage
 
-authentication:: we provide a full useful access control interface based on role/permissions.
-scaffold:: give us a model and we build a entire
-grids:: where you can search, sort ... edit your records.
-file uploads:: builtin ajax interface for attach one, n attachments to a model.
+For create the admin application:
 
-== Usage
+  path/to/your/project$ padrino-gen admin
 
-Padrino admin it's very simple to use see:
+For create a new "scaffold" you need to provide only a Model for them like:
 
-$ 
+  path/to/your/project$ padrino-gen admin_page Post
+  
+That's all!!
 
-== 
+== Admin Authentication
+
+Padrino Admin use a model Account for manage role, membership and permissions take the following example:
+
+  access_control.roles_for :any do |role|
+    role.allow "/sessions"
+    # role.deny "/deny/this/always"
+  end
+
+  access_control.roles_for :admin do |role, account|
+    role.allow "/"
+
+    role.project_module :accounts do |project|
+      project.menu :list, "/admin/accounts.js"
+      project.menu :new,  "/admin/accounts/new"
+    end
+  end
+
+  access_control.roles_for :editor do |role, account|
+    role.project_module :posts do |project|
+      project.menu :list, "/admin/posts.js"
+      project.menu :new,  "/admin/posts/new"
+    end
+
+    role.project_module :comments do |project|
+      project.menu :list, "/admin/comments.js"
+      project.menu :new,  "/admin/comments/new"
+    end
+  end
+
+In this example we <tt>grant</tt> "/session" (and each subpaths like /sessions/new) for all users logged and unlogged.
+
+Account with role <tt>admin</tt> can manage <tt>only</tt> accounts because have access to "/admin/accounts/**" paths
+Account with role <tt>editor</tt> can manage <tt>only</tt> post/comments because have access to "/admin/posts/**", "/admin/posts/**" paths
+
+Another good fature of Padrino admin is that when you define a <tt>Project Module</tt> role you also build the Menu Tree of the Admin. 
+Trust us that in future you appreciate so much this feature.
 
 == Copyright
 

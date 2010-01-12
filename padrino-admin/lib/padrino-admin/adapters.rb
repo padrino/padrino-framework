@@ -18,9 +18,9 @@ module Padrino
             DataMapper::Model.descendants.each { |d| d.send(:include, Padrino::Admin::Adapters::Dm::Base) }
             klass.send(:include, Padrino::Admin::Adapters::Dm::Account)
           # Not yet finished
-          # when :mongomapper
-          #   MongoMapper::Document.append_inclusions(Padrino::Admin::Adapters::Mm::Base)
-          #   klass.send(:include, Padrino::Admin::Adapters::Mm::Account)
+          when :mongomapper
+            MongoMapper::Document.append_inclusions(Padrino::Admin::Adapters::Mm::Base)
+            klass.send(:include, Padrino::Admin::Adapters::Mm::Account)
           else
             raise Padrino::Admin::AdapterError, "The adapter #{adapter.inspect} is not supported, available adapters are: " + 
                                                 ":activerecord, :datamapper, :mongomapper"

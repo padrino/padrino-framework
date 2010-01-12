@@ -96,6 +96,7 @@ module Padrino
         @router ||= Usher.new(:request_methods => [:request_method, :host, :port, :scheme], 
                               :ignore_trailing_delimiters => true,
                               :generator => Usher::Util::Generators::URL.new)
+        block_given? ? yield(@router) : @router
       end
       alias :urls :router
 

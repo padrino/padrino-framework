@@ -1,10 +1,7 @@
-# Define your named routes inside config/urls.rb or define them inline
-# You can also use unnamed routes by defining them directly
-
 <%= @app_name %>.controllers do
-  # get :index do
+  # get :index, :map => "/foo/bar" do
   #   session[:foo] = "bar"
-  #   haml_template 'index'
+  #   render 'index'
   # end
   
   # get :sample, :map => "/sample/url" do

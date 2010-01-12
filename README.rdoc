@@ -4,25 +4,15 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-This gem has been designed to enhance and build upon the {Sinatra Microframework}[http://www.sinatrarb.com].
+Padrino is a ruby framework build upon the {Sinatra Microframework}[http://www.sinatrarb.com].
+
 Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
-The canonical example of how to create an entire simple web application with Sinatra is something like:
-
-  # myapp.rb
-  require 'rubygems'
-  require 'sinatra'
-  get '/' do
-    'Hello world!'
-  end
-  
-and then to run the application:
-
-  $ ruby myapp.rb
   
 The extreme simplicity of this framework is quite refreshing. We have been using Sinatra a great deal
 for recent projects. First for small and simple json and xml web services and then even
-for more complex full-featured applications. This gem represents an attempt to make it as fun and easy
-as possible to code increasingly advanced web applications in Sinatra.
+for more complex full-featured applications. 
+
+This gem represents an attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
 
 == Introduction
 
@@ -31,23 +21,27 @@ of functionality provided by other web frameworks such as Rails when building no
 
 The obvious question in these cases might be "Why not just use rails then?". This can often be a viable option
 but still Rails is quite a large framework with a 'take it or leave it' attitude.
+
 Personally, we have come to love the philosophy of Sinatra which acts as a thin layer on top of rack 
 often allowing middleware to do most of the work and pulling in additional complexity only when required. 
 
-My goal with this extension is to match the essence of Sinatra and at the same time create a standard library
+Our goal with this framework is to match the essence of Sinatra and at the same time create a standard library
 of tools, helpers and components that will make Sinatra suitable for more complex applications.
 
 Here is a small list of what Padrino provides:
 
 Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
 MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
-Routing:: Full url named route support to avoid hardcoding route url paths (<tt>map</tt>, <tt>url_for</tt>)
+Routing:: Full url named route, named params, respond_to suppor
 Tag Helpers:: helpers such as: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>, ...
 Asset Helpers:: helpers such as: <tt>link_to</tt>, <tt>image_tag</tt>, <tt>javascript_include_tag</tt>, ...
 Form Helpers:: with builder support such as: <tt>form_tag</tt>, <tt>form_for</tt>, <tt>field_set_tag</tt>, <tt>text_field</tt>, ...
 Text Helpers:: useful formatting extensions like: <tt>relative_time_ago</tt>, <tt>js_escape_html</tt>, <tt>sanitize_html</tt>
 Mailer:: fast, tiny, delivery support for send templating emails (like ActionMailer do)
 Admin:: an ajax admin that displays your records in sortable grids, tree, windows ... as a desktop app can do.
+Logging:: Padrino provide a logger that can interact with your orm or any other library
+Reloading:: With padrino is not necessary like other framework start and restart your server for see changes.
+I18n:: Padrino has a full support of I18n and can autoset locale.
 
 Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
@@ -104,11 +98,170 @@ Let us first take a look at the simplest possible Padrino application:
   Padrino.load!
 
   class SimpleApp < Padrino::Application
-    get '/ do
+    get '/' do
       'Hello world'
     end
+    
+    # and for read better we can divide with controllers
+    controller '/admin' do
+      get '/foo' do
+        'Im /admin/foo
+      end
+    end
   end
-  
+
+== Advanced Routing Support
+
+Padrino provides support for advanced routing functionality not available within Sinatra. This routing
+supports named route aliases and easy access to url paths. The benefits of this is that instead of having to 
+hard-code route urls into every area of your application, now we can just define the urls in a 
+single spot and then attach an alias which can be used to refer to the url throughout the application.
+
+=== Padrino Routing
+
+Urls mapped here can then be defined within a controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index do
+      ...
+    end
+
+    get :account do
+      # access params[:name] and params[:index]
+    end
+  end
+
+and finally referenced anywhere in the application:
+
+  # app/views/example.haml
+  = link_to "Index", url_for(:index)
+  = link_to "Account", url_for(:account, :id => 1, :name => 'first')
+
+=== Controllers
+
+Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
+within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
+
+  # Simple Example
+  SimpleApp.controllers do
+    get "/test" do
+      "Text to return"
+    end
+  end
+
+=== Inline Route Alias Definitions
+
+The routing plugin also supports inline route definitions in which the url and the named alias
+are defined together within the controller:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index, :map => '/index' do
+      ...
+    end
+
+    get :account, :map => '/the/accounts/:name/and/:id' do
+      # access params[:name] and params[:index]
+    end
+  end
+
+Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
+
+=== Namespaced Route Aliases
+
+There is also support for namespaced routes which are organized into a larger grouping:
+
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show do
+      "Im /admin/show"
+    end
+
+    get :index, :map => "/admin/:id" do
+      "Im /admin/#{params[:id]}"
+    end
+  end
+
+You can then reference the urls using the same url_for method: 
+
+  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
+  <%= link_to 'admin index page', url_for(:admin_index, :id => 25) %>
+
+If you don't want named routes you can
+
+  # app/controllers/example.rb
+  SimpleApp.controllers "/admin" do
+    get "/show" do
+      "Im /admin/show"
+    end
+
+    get "other/:id" do
+      "Im /admin/#{params[:id]}"
+    end
+  end
+
+=== Named Params
+
+With Padrino you can use named params!! See these examples
+
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with => :id do
+      "Im /admin/show/#{params[:id]}"
+    end
+
+    get :other, with => [:id, :name]  do
+      "Im /admin/#{params[:id]}/#{params[:name]}"
+    end
+  end
+
+You can then reference the urls using the same url_for method: 
+
+  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
+  <%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
+
+=== Respond To
+
+With Padrino you can simply respond to a given format see example:
+
+# app/controllers/example.rb
+SimpleApp.controllers :admin do
+  get :show, :with => :id, :respond_to => :js do
+    "Im /admin/show/#{params[:id]}.#{params[:format]}"
+  end
+
+  get :other, with => [:id, :name], respond_to => [:html, :json] do
+    case content_type
+      when :js    then ... end
+      when :json  then ... end
+    end
+  end
+end
+
+<%= link_to 'admin show page', url_for(:admin_show, :id => 25, :format => :js) %>
+<%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
+<%= link_to 'admin other json page', url_for(:admin_index, :id => 25, :name => :foo, :format => :json) %>
+
+=== Rendering
+
+Unlike Sinatra Padrino support template auto lookup so:
+
+  # look for 'account/index.{erb,haml,...}
+  render 'account/index'
+
+=== Layout
+
+With Padrino you can (like rails do) use for your custom layout, disable it
+
+  class SimpleApp < Padrino::Application
+    
+    # Disable layouts
+    disable layout
+    
+    # Use the layout located in views/layouts/custom.haml
+    layout :custom
+
 === Gemfile Dependency Resolution
   
 While this is a fully operational Padrino application in itself, let us take a look at Padrino's expanded capabilites. First, 
@@ -166,18 +319,6 @@ directory following this convention:
 Initializers are automatically required and 'registered' during the application startup process. Note that
 the name of the module must be the name of the file appended with 'Initializer' (i.e sample.rb => SampleInitializer)
 
-=== Controllers
-
-Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
-within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
-
-  # controllers/example.rb
-  SimpleApp.controllers do
-    get "/test" do
-      "Text to return"
-    end
-  end
-  
 === Application Logging
 
 Padrino also supports robust logging capabilities. By default, logging information will
@@ -269,6 +410,9 @@ The following commands are available:
   # Bootup the Padrino console (irb)
   $ padrino console
   
+  # Run/List tasks
+  $ padrino rake
+
 Using these commands can simplify common tasks making development that much smoother.
 
 == Application Extensions and Helpers (padrino-helpers)
@@ -479,127 +623,6 @@ and then the partial would be:
   # app/views/photo/_item.haml
   # Access to collection counter with <partial_name>_counter i.e item_counter
   # Access the object with the partial_name i.e item
-
-== Advanced Routing Support (padrino-routing)
-
-Padrino provides support for advanced routing functionality not available within Sinatra. This routing
-supports named route aliases and easy access to url paths. The benefits of this is that instead of having to 
-hard-code route urls into every area of your application, now we can just define the urls in a 
-single spot and then attach an alias which can be used to refer to the url throughout the application.
-
-For a detailed look at all of padrino routing functionality, check out the documentation within the 
-{padrino-routing README}[http://github.com/padrino/padrino-framework/tree/master/padrino-routing/].
-The following is a whirlwind guide through useful route extensions provided by this gem.
-
-=== Simple Route Aliases
-
-The simplest example of route aliases is to construct named aliases representing a url, and then use
-the alias to reference the url within the application:
-
-  class SimpleApp < Padrino::Application
-     # Define the named route mappings
-     map(:account).to("/the/accounts/:name/and/:id")
-     map(:accounts).to("/the/accounts/index")
-     
-     # Configure the routes using the named alias
-    get :account  do
-      "name: params[:name] - id: params[:id]"
-    end
-    get :accounts do
-      "I am the body for the url /the/accounts/index"
-    end
-  end
-  
-=== Padrino Routing Conventions
-  
-The convention within a Padrino application is to store 'external' route alias mappings within a special
-urls file located at <tt>urls.rb</tt> or <tt>config/urls.rb</tt>. A url routing file might look like:
-
-  # config/urls.rb
-  SimpleApp.urls do
-    map(:index).to("/index")
-    map(:account).to("/the/accounts/:name/and/:id")
-  end
-    
-Urls mapped here can then be defined within a controller:
-
-  # app/controllers/example.rb
-  SimpleApp.controllers do
-    get :index do
-      ...
-    end
-    
-    get :account do
-      # access params[:name] and params[:index]
-    end
-  end
-  
-and finally referenced anywhere in the application:
-
-  # app/views/example.haml
-  = link_to "Index", url_for(:index)
-  = link_to "Account", url_for(:account, :id => 1, :name => 'first')
-  
-=== Inline Route Alias Definitions
-
-The routing plugin also supports inline route definitions in which the url and the named alias
-are defined together within the controller:
-
-  # app/controllers/example.rb
-  SimpleApp.controllers do
-    get :index, :map => '/index' do
-      ...
-    end
-    
-    get :account, :map => '/the/accounts/:name/and/:id' do
-      # access params[:name] and params[:index]
-    end
-  end
-  
-Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
-
-=== Namespaced Route Aliases
-
-There is also support for namespaced routes which are organized into a larger grouping:
-
-  # /app/routes/example.rb
-  SimpleApp.controllers do
-    map :admin do |namespace|
-      namespace.map(:show).to("/admin/:id/show")
-    end
-
-    namespace :admin do
-      get :show do
-        "admin show for #{params[:id]}"
-      end
-
-      get :index, :map => "/admin/:id/index" do
-        "admin destroy for #{params[:id]}"
-      end
-    end
-  end
-  
-You can then reference the urls using the same url_for method: 
-
-  <%= link_to 'admin show page', url_for(:admin, :show, :id => 25) %>
-  <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
-  
-=== Controller Namespaces
-
-In addition to regular namespacing, as a shortcut you can have a controller serve as a namespace as well:
-
-   # /app/routes/admin.rb
-  SimpleApp.controllers :admin do
-    get :index, :map => "/admin/:id/index" do
-      "admin destroy for #{params[:id]}"
-    end
-  end
-  
-This will put all named routes within this controller block into the 'admin' namespace and then can be referenced:
-
-  <%= link_to 'admin index page', url_for(:admin, :index, :id => 25) %>
-  
-Note that controller namespaces are simply a shortcut for standard namespaces and do not differ in any other way.
 
 == Simple Mailer Support (padrino-mailer)
 
@@ -818,7 +841,62 @@ This remove all created mailer files.
 
 == Admin Dashboard and Authentication (padrino-admin)
 
-...COMING SOON...
+Padrino has a beautiful Ajax Admin, with these fatures:
+
+Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper and activerecord)
+Authentication:: Support for Account authentication, Account Permission managment
+Scaffold:: You can simply create a new "admin interface" simply providing a Model
+Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
+
+== Admin Usage
+
+For create the admin application:
+
+  path/to/your/project$ padrino-gen admin
+
+For create a new "scaffold" you need to provide only a Model for them like:
+
+  path/to/your/project$ padrino-gen admin_page Post
+  
+That's all!!
+
+== Admin Authentication
+
+Padrino Admin use a model Account for manage role, membership and permissions take the following example:
+
+  access_control.roles_for :any do |role|
+    role.allow "/sessions"
+    # role.deny "/deny/this/always"
+  end
+
+  access_control.roles_for :admin do |role, account|
+    role.allow "/"
+
+    role.project_module :accounts do |project|
+      project.menu :list, "/admin/accounts.js"
+      project.menu :new,  "/admin/accounts/new"
+    end
+  end
+
+  access_control.roles_for :editor do |role, account|
+    role.project_module :posts do |project|
+      project.menu :list, "/admin/posts.js"
+      project.menu :new,  "/admin/posts/new"
+    end
+
+    role.project_module :comments do |project|
+      project.menu :list, "/admin/comments.js"
+      project.menu :new,  "/admin/comments/new"
+    end
+  end
+
+In this example we <tt>grant</tt> "/session" (and each subpaths like /sessions/new) for all users logged and unlogged.
+
+Account with role <tt>admin</tt> can manage <tt>only</tt> accounts because have access to "/admin/accounts/**" paths
+Account with role <tt>editor</tt> can manage <tt>only</tt> post/comments because have access to "/admin/posts/**", "/admin/posts/**" paths
+
+Another good fature of Padrino admin is that when you define a <tt>Project Module</tt> role you also build the Menu Tree of the Admin. 
+Trust us that in future you appreciate so much this feature.
 
 == Painless Page and Fragment Caching (padrino-cache)
 
