@@ -8,18 +8,18 @@ require File.dirname(__FILE__) + '/versioner'
 
 include FileUtils
 
-ROOT = Pathname(__FILE__).dirname.expand_path
-GEM_NAME = 'padrino-framework'
+ROOT        = Pathname(__FILE__).dirname.expand_path
+GEM_NAME    = 'padrino-framework'
 GEM_VERSION = ROOT.join('VERSION').read.chomp
-VERSIONER = Versioner.new(GEM_VERSION, Dir[File.dirname(__FILE__) + '/**/VERSION'])
+VERSIONER   = Versioner.new(GEM_VERSION, Dir[File.dirname(__FILE__) + '/**/VERSION'])
 
 padrino_gems = [
   "padrino-core",
   "padrino-cache",
-  "padrino-admin",
   "padrino-gen",
   "padrino-helpers",
   "padrino-mailer",
+  "padrino-admin",
   "padrino"
 ]
 
