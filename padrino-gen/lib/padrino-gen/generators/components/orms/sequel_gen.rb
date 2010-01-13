@@ -9,9 +9,9 @@ module Padrino
           module DatabaseSetup
             def self.registered(app)
               Sequel::Model.plugin(:schema)
-              app.configure(:development) { Sequel.connect("sqlite://your_dev_db_here", :loggers => [logger]) }
-              app.configure(:production)  { Sequel.connect("sqlite://your_production_db_here", :loggers => [logger]) }
-              app.configure(:test)        { Sequel.connect("sqlite://your_test_db_here", :loggers => [logger]) }
+              app.configure(:development) { Sequel.connect("sqlite3://" + Padrino.root('db', "development.db"), :loggers => [logger]) }
+              app.configure(:production)  { Sequel.connect("sqlite3://" + Padrino.root('db', "production.db"), :loggers => [logger]) }
+              app.configure(:test)        { Sequel.connect("sqlite3://" + Padrino.root('db', "test.db"), :loggers => [logger]) }
             end
           end
           SEQUEL

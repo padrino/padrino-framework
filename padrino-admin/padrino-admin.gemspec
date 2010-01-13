@@ -316,6 +316,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/locale/extjs/en.yml",
      "lib/padrino-admin/utils/crypt.rb",
      "lib/padrino-admin/utils/literal.rb",
+     "padrino-admin.gemspec",
      "test/fixtures/active_record.rb",
      "test/fixtures/data_mapper.rb",
      "test/fixtures/mongo_mapper.rb",

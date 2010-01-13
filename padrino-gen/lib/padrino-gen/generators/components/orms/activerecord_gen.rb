@@ -12,21 +12,21 @@ module Padrino
               app.configure :development do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => "your_dev_db_here"
+                  :database => Padrino.root('db', "development.db")
                 )
               end
 
               app.configure :production do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => "your_production_db_here"
+                  :database => Padrino.root('db', "production.db")
                 )
               end
 
               app.configure :test do
                 ActiveRecord::Base.establish_connection(
                   :adapter => 'sqlite3',
-                  :database => "your_test_db_here"
+                  :database => Padrino.root('db', "test.db")
                 )
               end
             end
