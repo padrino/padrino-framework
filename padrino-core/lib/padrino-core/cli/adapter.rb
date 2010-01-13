@@ -1,7 +1,6 @@
 module Padrino
-  module Tasks
+  module Cli
     module Adapter
-
       class << self
         # Start for the given options a rackup handler
         def start(options)

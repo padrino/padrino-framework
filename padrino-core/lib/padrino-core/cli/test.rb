@@ -1,7 +1,6 @@
 module Padrino
-  module Tasks
+  module Cli
     module Test
-
       class << self
 
         # This method executes tests found for the given app.
@@ -14,8 +13,8 @@ module Padrino
           cmd = "ruby -rubygems -I.:lib -e'%w( #{tests.join(' ')} ).each { |file| require file }'"
           system cmd
         end
-
       end
+
     end
   end
 end
