@@ -29,8 +29,9 @@ module Padrino
           directory("app/", File.join(options[:path]))
           template "templates/models/account.rb.tt", app_root_path("/app/models/account.rb")
           append_file app_root_path("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
+          say "Your admin now is installed. Setup your db data and add an account then you can login."
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?
         end
       end
 
