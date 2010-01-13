@@ -21,6 +21,7 @@ module Padrino
             require_dependencies 'dm-core', 'dm-validations'
             create_file("config/database.rb", DM)
             empty_directory('app/models')
+            empty_directory('db')
           end
 
           DM_MODEL = (<<-MODEL).gsub(/^ {10}/, '')

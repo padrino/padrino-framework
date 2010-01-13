@@ -55,6 +55,7 @@ module Padrino
             create_file("config/database.rb", AR)
             create_file("Rakefile", RAKE.gsub(/APP_CLASS/, @class_name))
             empty_directory('app/models')
+            empty_directory('db')
           end
 
           AR_MODEL = (<<-MODEL).gsub(/^ {10}/, '')
