@@ -20,7 +20,6 @@ module Padrino
             require_dependencies 'sequel'
             create_file("config/database.rb", SEQUEL)
             empty_directory('app/models')
-            empty_directory('db')
           end
 
           SQ_MODEL = (<<-MODEL).gsub(/^ {10}/, '')
