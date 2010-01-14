@@ -4,6 +4,11 @@
 
 * [padrino-gen] Support for mounting subapplications
 * [padrino-gen] Support creation of controller/mailer/models/etc for specified app
+* [padrino-admin] Complete admin with file uploads and activerecord/mongomapper adapter
+* [padrino-helpers] DateTime helpers
+* [padrino-helpers] Number helpers
+* [padrino-core] Code Optimizations
+* [ALL] Documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 
 === GENERAL
 

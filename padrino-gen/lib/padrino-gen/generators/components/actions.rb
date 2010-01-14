@@ -78,19 +78,19 @@ module Padrino
           end.max.to_i || 0
         end
 
-        #For model destroy option
-        #removes the initial migration file of model
+        # For model destroy option
+        # removes the initial migration file of model
         def remove_model_migration(name)
           remove_migration "Create" + name
         end
         
-        #For the removal of migration files
+        # For the removal of migration files
         # removes the migration file based on the migration name
         def remove_migration(name)
           migration_path =  Dir[app_root_path('db/migrate/*.rb')].select do |f| 
             File.basename(f).match(/#{name.to_s.underscore}/)
           end.first
-          remove_file migration_path
+          remove_file migration_path if migration_path && File.exist?(migration_path)
         end
 
         # For testing components

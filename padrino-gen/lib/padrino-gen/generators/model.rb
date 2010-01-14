@@ -23,6 +23,7 @@ module Padrino
       argument :fields, :desc => "The fields for the model", :type => :array, :default => []
       class_option :root, :aliases => '-r', :default => nil, :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
+      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
 
       # Show help if no argv given
       def self.start(given_args=ARGV, config={})
@@ -39,7 +40,7 @@ module Padrino
           migration_name = "create_#{name.pluralize.underscore}"
           create_model_file(name, fields)
           generate_model_test(name)
-          create_model_migration(migration_name, name, fields)
+          create_model_migration(migration_name, name, fields) unless options[:skip_migration]
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end
