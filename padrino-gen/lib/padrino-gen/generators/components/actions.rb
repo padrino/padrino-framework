@@ -9,7 +9,7 @@ module Padrino
         TEST
 
         # Adds all the specified gems into the Gemfile for bundler
-        # require_dependencies 'activerecord'
+        # require_dependencies 'active_record'
         # require_dependencies 'mocha', 'bacon', :only => :testing
         def require_dependencies(*gem_names)
           options = gem_names.extract_options!
