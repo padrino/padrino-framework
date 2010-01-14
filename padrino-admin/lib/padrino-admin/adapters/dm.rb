@@ -80,7 +80,7 @@ module Padrino
             # 
             # In this example we search in columns name, surname, company the string daddye and then we order by
             # column +name+
-            def ext_search(params)
+            def ext_search(params, query={})
 
               # We build a base struct for have some good results
               result = ExtSearch.new(0, [])
@@ -96,7 +96,7 @@ module Padrino
               end
 
               # Now we can perform a count
-              result.count count(query)
+              result.count = count(query)
 
               # First we need to sort our record
               if params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/i
@@ -109,6 +109,7 @@ module Padrino
 
               # Now we can perform ording/limiting
               result.records = all(query)
+              result
             end
           end
         end
