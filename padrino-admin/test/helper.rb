@@ -6,6 +6,14 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
+
+# We try to load the vendored padrino-core if exist
+%w(core gen).each do |gem|
+  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
+    $LOAD_PATH.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
+  end
+end
+
 require 'padrino-admin'
 
 module Kernel

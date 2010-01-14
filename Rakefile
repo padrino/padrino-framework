@@ -15,7 +15,6 @@ VERSIONER   = Versioner.new(GEM_VERSION, Dir[File.dirname(__FILE__) + '/**/VERSI
 
 padrino_gems = [
   "padrino-core",
-  "padrino-cache",
   "padrino-gen",
   "padrino-helpers",
   "padrino-mailer",
@@ -94,6 +93,17 @@ namespace :version do
       require 'versionomy' unless defined?(Versionomy) # gem install versionomy
     end
   end
+end
+
+desc "Create main README.rdoc"
+task :readme do
+  copyright = "== Copyright\n\nCopyright (c) 2010 Padrino. See LICENSE for details."
+  readme = %w(core gen helpers admin mailer cache).collect do |gem|
+    File.read("padrino-#{gem}/README.rdoc").gsub(copyright,"").strip
+  end
+  readme << copyright
+  File.open("README.rdoc", "w"){ |f| f.puts readme.join("\n\n") }
+  puts "Created correctly README.rdoc"
 end
 
 desc "Release all padrino gems"

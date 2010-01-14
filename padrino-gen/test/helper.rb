@@ -4,8 +4,18 @@ require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
+require 'thor'
+
+# We try to load the vendored padrino-core if exist
+%w(core).each do |gem|
+  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
+    $LOAD_PATH.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
+  end
+end
 
 require 'padrino-gen'
+
+Padrino::Generators::Cli.start
 
 class Test::Unit::TestCase
   include Rack::Test::Methods

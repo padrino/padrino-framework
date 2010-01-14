@@ -11,23 +11,6 @@ module Padrino
       Thread.current[:padrino_loaded] = true
     end
 
-    # Method used for load dependencies and correct support_lite
-    def load_required_gems!
-      require root('vendor', 'gems', 'environment')
-      Bundler.require_env(Padrino.env)
-      require 'padrino-core/support_lite'
-      puts "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}" if Padrino.env != :test
-    rescue LoadError
-      require 'bundler'
-      if File.exist?(root("Gemfile"))
-        Bundler::Bundle.load(root("Gemfile")).environment.require_env(Padrino.env)
-        require 'padrino-core/support_lite'
-        puts "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}" if Padrino.env != :test
-      else
-        puts "=> Gemfile for #{Padrino.env} not found!" if Padrino.env != :test
-      end
-    end
-
     # Method for reloading required applications and their files
     def reload!
       return unless Stat.changed?

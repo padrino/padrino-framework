@@ -19,6 +19,7 @@ Required for Padrino to run:
 
 =end
 require 'i18n'
+
 # Load our locales
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]
 

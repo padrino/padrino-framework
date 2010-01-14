@@ -1,4 +1,4 @@
-= padrino-core
+= Padrino (padrino-core)
 
 Padrino is the godfather of Sinatra.
 

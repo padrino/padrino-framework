@@ -1,15 +1,6 @@
-= padrino-gen
+= Agnostic Application Generators (padrino-gen)
 
-== Installation
-
-To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
-
-  $ sudo gem install padrino --source http://gemcutter.org
-  
-This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
-  
-== Overview
+=== Overview
 
 Padrino comes preloaded with flexible code generators powered in part by the excellent Thor gem
 (incidentally also used in the Rails 3 generators). These generators are intended to allow for easy code generation
@@ -18,7 +9,7 @@ as possible, supporting a myriad of test frameworks, js libraries, mocking libra
 
 See the wiki article for additional information: <...WIKI...>
 
-=== Application Generator ===
+=== Application Generator
 
 Padrino provides generator support for quickly creating new Padrino applications. This provides many benefits
 such as constructing the recommended Padrino application structure, auto-generating a Gemfile listing
@@ -78,7 +69,7 @@ This would be achieved through forking our project and reading through the code 
 the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
 for additional component types not originally included (although helping us maintain them would also be appreciated).
 
-=== Model Generator ===
+=== Model Generator
 
 Padrino provides generator support for quickly creating new models within your Padrino application. Note that
 the models (and migrations) generated are specifically tailored towards the ORM component and testing framework
@@ -111,7 +102,7 @@ You can destroy models that you created via the destroy option and setting it to
   
 This remove all created model files.
 
-=== Migration Generator ===
+=== Migration Generator
 
 Padrino provides generator for quickly generating new migrations to change or manipulate the database schema.
 These migrations generated will be tailored towards the ORM chosen when generating the application.
@@ -139,7 +130,7 @@ You can destroy migrations that you created via the destroy option and setting i
   
 This removes the migration file.
 
-=== Controller Generator ===
+=== Controller Generator
 
 Padrino provides generator support for quickly creating new controllers within your Padrino application. Note that
 the controller tests are generated specifically tailored towards the testing framework chosen 
@@ -170,7 +161,7 @@ You can destroy controllers that you created via the destroy option and setting 
 
 This removes all created controller files.
 
-=== Mailer Generator ===
+=== Mailer Generator
 
 Padrino provides generator support for quickly creating new mailers within your Padrino application.
 Very important to note that mailer generators are intended primarily to work within applications 

@@ -1,4 +1,6 @@
-= padrino-admin
+= Admin Dashboard and Authentication (padrino-admin)
+
+=== Overview
 
 Padrino has a beautiful Ajax Admin, with these fatures:
 
@@ -28,7 +30,10 @@ Your admin now is "complete", you can start your server with <tt>padrino start</
 
 For create a new "scaffold" you need to provide only a Model for them like:
 
+  fun-test$ padrino-gen model post --skip-migration // edit your post.rb model and add some fields
+  fun-test$ padrino-gen rake dm:auto:migrate
   fun-test$ padrino-gen admin_page Post
+  fun-test$ padrino start // and go to yourserver.local/admin
   
 That's all!!
 

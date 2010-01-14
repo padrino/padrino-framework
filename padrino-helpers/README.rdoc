@@ -1,23 +1,11 @@
-= padrino-helpers
+= Application Extensions and Helpers (padrino-helpers)
+
+=== Overview
 
 This component provides a great deal of view helpers related to html markup generation.
 There are helpers for generating tags, forms, links, images, and more. Most of the basic
 methods should be very familiar to anyone who has used rails view helpers.
 
-== Installation
-
-To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
-
-  $ sudo gem install padrino --source http://gemcutter.org
-  
-This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
-
-You can also install only the padrino-helpers gem for more fine-grained use:
-
-  $ sudo gem install padrino-helpers --source http://gemcutter.org
-
-== Usage
 
 === Output Helpers
 

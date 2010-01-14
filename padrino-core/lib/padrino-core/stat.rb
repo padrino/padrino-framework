@@ -30,7 +30,7 @@ module Padrino
 
       # A safe Kernel::load, issuing the hooks depending on the results
       def safe_load(file, mtime)
-        Padrino.say! "=> Reloading #{file}"
+        logger.debug "Reloading #{file}"
         load(file)
         file
       rescue LoadError, SyntaxError => ex

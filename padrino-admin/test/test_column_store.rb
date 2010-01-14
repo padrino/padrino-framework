@@ -27,13 +27,13 @@ class TestController < Test::Unit::TestCase
   end
 
   should 'have correct store fields' do
-    result = "[{\"mapping\":\"account_name\",\"name\":\"accounts.name\"},{\"mapping\":\"account_surname\",\"name\":\"accounts.surname\"},{\"mapping\":\"category_name\",\"name\":\"category.name\"},{\"mapping\":\"account_email\",\"name\":\"accounts.email\"},{\"mapping\":\"account_role\",\"name\":\"accounts.role\"}]"
+    result = "[{\"name\":\"accounts.name\",\"mapping\":\"account_name\"},{\"name\":\"accounts.surname\",\"mapping\":\"account_surname\"},{\"name\":\"category.name\",\"mapping\":\"category_name\"},{\"name\":\"accounts.email\",\"mapping\":\"account_email\"},{\"name\":\"accounts.role\",\"mapping\":\"account_role\"}]"
     assert_equal result, @column_store.store_fields
     assert_equal result, @column_store_direct.store_fields
   end
 
   should 'store data' do
-    result = "{\"count\":2,\"results\":[{\"account_surname\":\"Not found\",\"account_email\":\"d.dagostino@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":1,\"account_role\":\"Admin\",\"account_name\":\"DADDYE\"},{\"account_surname\":\"Not found\",\"account_email\":\"editor@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":2,\"account_role\":\"Editor\",\"account_name\":\"DEXTER\"}]}"
+    result = "{\"results\":[{\"account_surname\":\"Not found\",\"account_email\":\"d.dagostino@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":1,\"account_role\":\"Admin\",\"account_name\":\"DADDYE\"},{\"account_surname\":\"Not found\",\"account_email\":\"editor@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":2,\"account_role\":\"Editor\",\"account_name\":\"DEXTER\"}],\"count\":2}"
     assert_equal result, @column_store.store_data(:fields => "name,role", :query => "d", :sort => :name, :dir => :asc, :limit => 2, :offset => 0)
     assert_equal result, @column_store_direct.store_data(:fields => "name,role", :query => "d", :sort => :name, :dir => :asc, :limit => 2, :offset => 0)
   end

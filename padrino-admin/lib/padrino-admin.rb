@@ -1,7 +1,7 @@
 require 'tilt'
 require 'thor'
 require 'padrino-core'
-require 'padrino-gen' unless defined?(Padrino::Generators)
+require 'padrino-gen'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,adapters,ext_js,generators,utils}/*.rb'].each {|file| require file }

@@ -1,23 +1,12 @@
-= padrino-mailer
+= Simple Mailer Support (padrino-mailer)
+
+=== Overview
 
 This component uses an enhanced version of the excellent <tt>pony</tt> library (vendored) for a powerful but simple
 mailer system within Padrino (and Sinatra). There is full support for using an html content type as well as for file attachments.
 The MailerPlugin has many similarities to ActionMailer but is much lighterweight and (arguably) easier to use.
 
-== Installation
-
-To install the 'full-stack' padrino framework, simply grab the latest version from gemcutter:
-
-  $ sudo gem install padrino --source http://gemcutter.org
-  
-This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your existing Sinatra projects or build new Padrino applications.
-
-You can also install only the padrino-mailer gem for more fine-grained use:
-
-  $ sudo gem install padrino-mailer --source http://gemcutter.org
-  
-== Usage
+=== Usage
 
 Let's take a look at using the MailerPlugin in an application. By default, MailerPlugin uses the built-in sendmail
 functionality on the server. However, smtp is also supported using the following configuration:
