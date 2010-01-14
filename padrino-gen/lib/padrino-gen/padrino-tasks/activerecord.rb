@@ -126,34 +126,34 @@ if defined?(ActiveRecord)
     end
 
 
-    desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking db:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false."
+    desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false."
     task :migrate => :environment do
       ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
       ActiveRecord::Migrator.migrate("db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
-      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
 
     namespace :migrate do
       desc  'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with VERSION=x.'
       task :redo => :environment do
         if ENV["VERSION"]
-          Rake::Task["db:migrate:down"].invoke
-          Rake::Task["db:migrate:up"].invoke
+          Rake::Task["ar:migrate:down"].invoke
+          Rake::Task["ar:migrate:up"].invoke
         else
-          Rake::Task["db:rollback"].invoke
-          Rake::Task["db:migrate"].invoke
+          Rake::Task["ar:rollback"].invoke
+          Rake::Task["ar:migrate"].invoke
         end
       end
 
       desc 'Resets your database using your migrations for the current environment'
-      task :reset => ["db:drop", "db:create", "db:migrate"]
+      task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
       desc 'Runs the "up" for a given migration VERSION.'
       task :up => :environment do
         version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
         raise "VERSION is required" unless version
         ActiveRecord::Migrator.run(:up, "db/migrate/", version)
-        Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
       end
 
       desc 'Runs the "down" for a given migration VERSION.'
@@ -161,7 +161,7 @@ if defined?(ActiveRecord)
         version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
         raise "VERSION is required" unless version
         ActiveRecord::Migrator.run(:down, "db/migrate/", version)
-        Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
       end
     end
 
@@ -169,18 +169,18 @@ if defined?(ActiveRecord)
     task :rollback => :environment do
       step = ENV['STEP'] ? ENV['STEP'].to_i : 1
       ActiveRecord::Migrator.rollback('db/migrate/', step)
-      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
 
     desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
     task :forward => :environment do
       step = ENV['STEP'] ? ENV['STEP'].to_i : 1
       ActiveRecord::Migrator.forward('db/migrate/', step)
-      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
 
     desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
-    task :reset => [ 'db:drop', 'db:setup' ]
+    task :reset => [ 'ar:drop', 'ar:setup' ]
 
     desc "Retrieves the charset for the current environment's database"
     task :charset => :environment do
@@ -224,13 +224,13 @@ if defined?(ActiveRecord)
           pending_migrations.each do |pending_migration|
             puts '  %4d %s' % [pending_migration.version, pending_migration.name]
           end
-          abort %{Run "rake db:migrate" to update your database then try again.}
+          abort %{Run "rake ar:migrate" to update your database then try again.}
         end
       end
     end
 
     desc 'Create the database, load the schema, and initialize with the seed data'
-    task :setup => [ 'db:create', 'db:schema:load', 'db:seed' ]
+    task :setup => [ 'ar:create', 'ar:schema:load', 'ar:seed' ]
 
     namespace :schema do
       desc "Create a db/schema.rb file that can be portably used against any DB supported by AR"
@@ -239,7 +239,7 @@ if defined?(ActiveRecord)
         File.open(ENV['SCHEMA'] || Padrino.root("db", "schema.rb"), "w") do |file|
           ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
         end
-        Rake::Task["db:schema:dump"].reenable
+        Rake::Task["ar:schema:dump"].reenable
       end
 
       desc "Load a schema.rb file into the database"
@@ -248,7 +248,7 @@ if defined?(ActiveRecord)
         if File.exists?(file)
           load(file)
         else
-          raise %{#{file} doesn't exist yet. Run "rake db:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
+          raise %{#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
         end
       end
     end

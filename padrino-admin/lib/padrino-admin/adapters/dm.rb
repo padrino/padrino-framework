@@ -27,6 +27,12 @@ module Padrino
             def update_attributes(attributes = {})
               update(attributes)
             end
+
+            # Method for get only fields with errors
+            def errors_keys
+              errors.keys
+            end
+
           end
 
           module ClassMethods
@@ -75,6 +81,10 @@ module Padrino
             # In this example we search in columns name, surname, company the string daddye and then we order by
             # column +name+
             def ext_search(params)
+
+              # We build a base struct for have some good results
+              result = ExtSearch.new(0, [])
+
               # We need a basic query
               query = {}
 
@@ -85,13 +95,8 @@ module Padrino
                 query[:conditions] = [fields.join(" OR ")].concat(1.upto(fields.length).collect { "%#{params[:query]}%" })
               end
 
-              # Now we can perform a search
-              all(query)
-            end
-
-            def ext_paginate(params)
-              # We need a basic query
-              query = {}
+              # Now we can perform a count
+              result.count count(query)
 
               # First we need to sort our record
               if params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/i
@@ -100,10 +105,10 @@ module Padrino
 
               # Now time to limit/offset it
               query[:limit]  = params[:limit].to_i  if params[:limit].to_i > 0
-              query[:offset] = params[:offset].to_i if params[:offset].to_i > 0
+              query[:offset] = params[:offset].to_i if params[:start].to_i > 0
 
               # Now we can perform ording/limiting
-              all(query)
+              result.records = all(query)
             end
           end
         end

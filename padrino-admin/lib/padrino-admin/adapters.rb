@@ -6,6 +6,8 @@ module Padrino
 
     class AdapterError < StandardError; end
 
+    class ExtSearch < Struct.new(:count, :records); end
+
     module Adapters
       # This method it's used for register for the specified ORM the extensions.
       def self.register(adapter, klass=nil)

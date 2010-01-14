@@ -32,7 +32,7 @@ module Padrino
             end
             message = escape_javascript(options.include?(:message) ? options[:message] : locale.t(:body))
             error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, escape_javascript(msg)) } }.join
-            error_highlighter = objects.map {|object| object.errors.keys.map{ |k| "$('#{object.class.to_s.downcase}_#{k}').addClassName('x-form-invalid');" } }.join("\n")
+            error_highlighter = objects.map {|object| object.errors_keys.map{ |k| "$('#{object.class.to_s.downcase}_#{k}').addClassName('x-form-invalid');" } }.join("\n")
 
             contents = ''
             contents << content_tag(:p, message) if message.present?

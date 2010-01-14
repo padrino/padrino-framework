@@ -9,28 +9,16 @@ module Padrino
             base.send :include, Padrino::Admin::Adapters::Base
             base.send :include, InstanceMethods
             base.extend ClassMethods
-            base.class_eval do
-              named_scope :ext_search, lambda { |params|
-                conditions = nil
+          end
 
-                if params[:query].present? && params[:fields].present?
-                  filters = params[:fields].split(",").collect { |f| "#{f} LIKE ?" }.compact
-                  conditions = [filters.join(" OR ")].concat((1..filters.size).collect { "%#{params[:query]}%" })
-                end
+          module InstanceMethods
 
-                { :conditions => conditions }
-              }
-              named_scope :ext_paginate, lambda { |params|
-                params.symbolize_keys!
-                order = params[:sort].blank? && params[:dir].blank? ? nil : "#{params[:sort]} #{params[:dir]}"
-                { :order => order, :limit => params[:limit], :offset => params[:start] }
-              }
+            # Method for get only fields with errors
+            def errors_keys
+              errors.map { |k,v| k.to_sym }.uniq
             end
           end
-          
-          module InstanceMethods
-          end
-          
+
           module ClassMethods
             # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". Example:
             #   Person.human_attribute_name("first_name") # => "First name"
@@ -51,6 +39,33 @@ module Padrino
             # Alias method for get columns
             def properties
               columns
+            end
+
+            def ext_search(params, query={})
+
+              # We build a base struct for have some good results
+              result = ExtSearch.new(0, [])
+
+              # We need a basic query
+              query = {}
+
+              # Search conditions
+              if params[:query].present? && params[:fields].present?
+                filters = params[:fields].split(",").collect { |f| "#{f} LIKE ?" }.compact
+                query[:conditions] = [filters.join(" OR ")].concat((1..filters.size).collect { "%#{params[:query]}%" })
+              end
+
+              result.count = count(query)
+
+              # Order conditions
+              query[:order] = params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/i ? "#{params[:sort]} #{params[:dir]}" : nil
+
+              # Now time to limit/offset it
+              query[:limit]  = params[:limit].to_i  if params[:limit].to_i > 0
+              query[:offset] = params[:offset].to_i if params[:start].to_i > 0
+
+              result.records = all(query)
+              result
             end
 
           end

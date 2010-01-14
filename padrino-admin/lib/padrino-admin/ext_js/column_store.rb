@@ -90,10 +90,8 @@ module Padrino
         # Some can tell me that this method made two identical queries one for count one for paginate.
         # We don't use the select count because in some circumstances require much time than select *.
         params[:limit]     ||= 50
-        collection           = @model.all(options).ext_search(params)
-        collection_count     = collection.length
-        collection_paginated = collection.ext_paginate(params)
-        { :results => store_data_from(collection_paginated), :count => collection_count }.to_json
+        collection           = @model.ext_search(params, options)
+        { :results => store_data_from(collection.records), :count => collection.count }.to_json
       end
 
       private
