@@ -865,6 +865,8 @@ Now follow admin instructions so:
 * run padrino rake dm:migrate
 * run padrino rake seed
 
+Your admin now is "complete", you can start your server with <tt>padrino start</tt> and point your browser to /admin!
+
 For create a new "scaffold" you need to provide only a Model for them like:
 
   fun-test$ padrino-gen admin_page Post

@@ -49,6 +49,8 @@ module Padrino
           say "   - run padrino rake #{orm_short}:migrate"
           say "   - run padrino rake seed"
           say ""
+          say "Your admin now is 'complete', you can start your server with padrino start and point your browser to /admin!"
+          say ""
           say "That's all"
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?
