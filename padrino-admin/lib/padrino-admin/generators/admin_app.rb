@@ -32,7 +32,10 @@ module Padrino
             else true
           end
 
-          raise SystemExit, "A the moment we only support #{supported_orm.join(" or ")}. Sorry!" unless supported_orm.include?(@orm)
+          unless supported_orm.include?(@orm)
+            say "<= A the moment we only support #{supported_orm.join(" or ")}. Sorry!"
+            raise SystemExit
+          end
 
           self.behavior = :revoke if options[:destroy]
           directory("app/", File.join(options[:path]))
