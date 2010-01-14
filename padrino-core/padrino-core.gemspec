@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.6.0"
+  s.version = "0.6.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-12}
+  s.date = %q{2010-01-14}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{nesquena@gmail.com}
@@ -28,6 +28,11 @@ Gem::Specification.new do |s|
      "lib/padrino-core.rb",
      "lib/padrino-core/application.rb",
      "lib/padrino-core/caller.rb",
+     "lib/padrino-core/cli.rb",
+     "lib/padrino-core/cli/adapter.rb",
+     "lib/padrino-core/cli/console.rb",
+     "lib/padrino-core/cli/rake.rb",
+     "lib/padrino-core/cli/test.rb",
      "lib/padrino-core/images/404.png",
      "lib/padrino-core/images/500.png",
      "lib/padrino-core/loader.rb",
@@ -42,11 +47,6 @@ Gem::Specification.new do |s|
      "lib/padrino-core/support_lite/as_support.rb",
      "lib/padrino-core/support_lite/extlib_support.rb",
      "lib/padrino-core/tasks.rb",
-     "lib/padrino-core/tasks/adapter.rb",
-     "lib/padrino-core/tasks/console.rb",
-     "lib/padrino-core/tasks/helpers.rb",
-     "lib/padrino-core/tasks/rake_tasks.rb",
-     "lib/padrino-core/tasks/test.rb",
      "lib/padrino-core/version.rb",
      "padrino-core.gemspec",
      "test/fixtures/apps/.components",
