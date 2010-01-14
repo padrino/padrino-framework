@@ -1,4 +1,4 @@
-<%= @app_name %>.controllers :<%= @model_plural %> do
+Admin.controllers :<%= @model_plural %> do
 
   get :index, :respond_to => [:js, :json] do
     @store = <%= @model_name %>.column_store(options.views, "<%= @model_plural %>/store")
