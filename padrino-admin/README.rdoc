@@ -9,13 +9,24 @@ Ajax Uploads:: You can upload file, manage them and attach them to any model in 
 
 === Admin Usage
 
+Create a project:
+
+  $ padrino-gen app fun-test
+  $ cd fun-test
+
 For create the admin application:
 
-  path/to/your/project$ padrino-gen admin
+  fun-test$ padrino-gen admin
+
+Now follow admin instructions so:
+
+* edit your config/database.rb
+* run padrino rake dm:migrate
+* run padrino rake seed
 
 For create a new "scaffold" you need to provide only a Model for them like:
 
-  path/to/your/project$ padrino-gen admin_page Post
+  fun-test$ padrino-gen admin_page Post
   
 That's all!!
 

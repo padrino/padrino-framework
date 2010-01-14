@@ -114,11 +114,5 @@ task :test do
   end
 end
 
-# Alternate testing method, load all tests and run them at once
-# Keep this because this test running method exposes test flaws sometimes not found with 'test'
-require 'rake/testtask'
-Rake::TestTask.new(:test_alt) do |test|
-  test.libs << 'test'
-  test.pattern = 'padrino-*/test/**/test_*.rb'
-  test.verbose = true
-end
+desc "Execute a fresh install removing all padrino version and then reinstall all gems"
+task :fresh => [:uninstall, :install, :clean]

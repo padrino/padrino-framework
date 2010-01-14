@@ -843,20 +843,31 @@ This remove all created mailer files.
 
 Padrino has a beautiful Ajax Admin, with these fatures:
 
-Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper and activerecord)
+Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper)
 Authentication:: Support for Account authentication, Account Permission managment
 Scaffold:: You can simply create a new "admin interface" simply providing a Model
 Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
 
 === Admin Usage
 
+Create a project:
+
+  $ padrino-gen app fun-test
+  $ cd fun-test
+
 For create the admin application:
 
-  path/to/your/project$ padrino-gen admin
+  fun-test$ padrino-gen admin
+
+Now follow admin instructions so:
+
+* edit your config/database.rb
+* run padrino rake dm:migrate
+* run padrino rake seed
 
 For create a new "scaffold" you need to provide only a Model for them like:
 
-  path/to/your/project$ padrino-gen admin_page Post
+  fun-test$ padrino-gen admin_page Post
   
 That's all!!
 
