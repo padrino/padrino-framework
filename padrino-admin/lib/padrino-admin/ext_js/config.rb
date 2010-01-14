@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'yaml'
 require 'erb'
-require 'json/pure'
+require 'json/pure' unless defined?(JSON) || defined?(JSON::Pure)
 
 module Padrino
   module ExtJs
