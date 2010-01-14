@@ -107,7 +107,7 @@ task :readme do
 end
 
 desc "Release all padrino gems"
-task :publish do
+task :publish => :readme do
   puts "Pushing to GitHub..."
   system("git push")
   puts "Pushing to Gemcutter..."
