@@ -39,7 +39,7 @@ module Padrino
           self.behavior = :revoke if options[:destroy]
           directory("app/", File.join(options[:path]))
           template "templates/models/account.rb.tt", app_root_path("/app/models/account.rb")
-          template "templates/db/seeds.rb", app_root_path("/db/seeds.rb")
+          template "templates/db/seeds.rb.tt", app_root_path("/db/seeds.rb")
           append_file app_root_path("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
 
           say ""

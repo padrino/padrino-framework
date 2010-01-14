@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-13}
+  s.date = %q{2010-01-14}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -304,6 +304,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/app/views/javascripts/locale.js.erb",
      "lib/padrino-admin/generators/app/views/sessions/new.haml",
      "lib/padrino-admin/generators/templates/controller.rb.tt",
+     "lib/padrino-admin/generators/templates/db/seeds.rb",
      "lib/padrino-admin/generators/templates/models/account.rb.tt",
      "lib/padrino-admin/generators/templates/views/_form.haml.tt",
      "lib/padrino-admin/generators/templates/views/edit.haml.tt",
