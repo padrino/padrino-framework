@@ -26,14 +26,6 @@ module Padrino
           @app_path = options[:path]
           @orm = fetch_component_choice(:orm, options[:root]).to_sym rescue :datamapper
 
-          orm_short = case @orm
-            when :datamapper    then :dm
-            when :activerecord  then :ar
-            when :mongomapper   then :mm
-            when :couchdb       then :cd
-            when :sequel        then :sq
-          end
-
           say "A the moment we only support datamapper. Sorry!" and exit unless @orm == :datamapper
 
           self.behavior = :revoke if options[:destroy]
@@ -46,7 +38,7 @@ module Padrino
           say "Your admin now is installed, now follow this steps:"
           say ""
           say "   - edit your config/database.rb"
-          say "   - run padrino rake #{orm_short}:migrate"
+          say "   - run padrino rake -T and run db creation according to your orm"
           say "   - run padrino rake seed"
           say ""
           say "That's all"
