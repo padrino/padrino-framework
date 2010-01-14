@@ -1,7 +1,7 @@
 require 'usher'
 require 'sinatra/base'
 
-Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file unless file =~ /support_lite/ }
 
 # Defines our PADRINO_ENV
 PADRINO_ENV = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development" unless defined?(PADRINO_ENV)
@@ -31,3 +31,10 @@ module Padrino
     builder
   end
 end
+
+# When we require this file is necessary check if we have a gemfile o bundled gems, 
+# this because we load ExtLib or ActiveSupport if some of our dependencies
+# just require them. This prevent for example to load ActiveSupport
+# when we require only 'dm-core'.
+Padrino.load_required_gems!
+

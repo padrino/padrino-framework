@@ -862,7 +862,7 @@ For create the admin application:
 Now follow admin instructions so:
 
 * edit your config/database.rb
-* run padrino rake dm:migrate
+* run padrino rake dm:auto:migrate
 * run padrino rake seed
 
 Your admin now is "complete", you can start your server with <tt>padrino start</tt> and point your browser to /admin!

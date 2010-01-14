@@ -4,11 +4,28 @@ module Padrino
     def load!
       return false if loaded?
       @_called_from = first_caller
-      load_required_gems # load bundler gems
+      # load_required_gems # load bundler gems
       require_dependencies("#{root}/lib/**/*.rb", "#{root}/models/**/*.rb") # load root app models
       require_dependencies("#{root}/config/database.rb", "#{root}/config/apps.rb") # load configuration
       Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
       Thread.current[:padrino_loaded] = true
+    end
+
+    # Method used for load dependencies and correct support_lite
+    def load_required_gems!
+      require root('vendor', 'gems', 'environment')
+      Bundler.require_env(Padrino.env)
+      require 'padrino-core/support_lite'
+      puts "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}" if Padrino.env != :test
+    rescue LoadError
+      require 'bundler'
+      if File.exist?(root("Gemfile"))
+        Bundler::Bundle.load(root("Gemfile")).environment.require_env(Padrino.env)
+        require 'padrino-core/support_lite'
+        puts "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}" if Padrino.env != :test
+      else
+        puts "=> Gemfile for #{Padrino.env} not found!" if Padrino.env != :test
+      end
     end
 
     # Method for reloading required applications and their files
@@ -56,30 +73,5 @@ module Padrino
     end
     alias :load_dependency :load_dependencies
 
-    protected
-      # Loads the vendored gems or system wide gems through Gemfile
-      def load_required_gems
-        require root('vendor', 'gems', 'environment')
-        Bundler.require_env(Padrino.env)
-        say! "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
-      rescue LoadError
-        require 'bundler'
-        if File.exist?(root("Gemfile"))
-          Bundler::Bundle.load(root("Gemfile")).environment.require_env(Padrino.env)
-          say! "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
-        else
-          say! "=> Gemfile for #{Padrino.env} not found!"
-        end
-      end
-
-      # Prints out a message to the stdout if not in test environment
-      def say(text)
-        print text if Padrino.env != :test
-      end
-    
-      # Puts out a message to the stdout if not in test environment
-      def say!(text)
-        puts text if Padrino.env != :test
-      end
   end
 end

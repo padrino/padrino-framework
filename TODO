@@ -30,19 +30,11 @@
 
 === IDEAS
 
-* Respond_to support? a way to respond to multiple content formats (xml, json, html) within a single action (?)
-  - http://github.com/mynyml/rack-respond_to
-* Mustache template rendering (classes / views using forms, markup) in render/helpers
 * Implement before/after filters which run on only specified routes [ before :only => [:show, "/account"] { ... } ]
 * Route 'resource' mapping: map(:user).resource (creates RESTful route aliases for resource)
-* Internationalization baked in (http://r18n.rubyforge.org/#sinatra)
 * Asynchronous commands baked in (http://github.com/deadprogrammer/spork)
-* Capistrano deploy tasks baked in (http://github.com/nakajima/capinatra)
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
 * Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
-* Use better logger in Padrino application (replace Logger with vendored Log4R for more flexibility)
-* Support for an asset_auto_include type system where certain css/js are included on certain templates (?)
-* Replace all alias_method_chain with (http://github.com/Gimi/overridable)
 * Replace custom console with modified version of (http://github.com/sickill/racksh/blob/master/README.markdown)
 * Tableless module which can be included to make a class into a database-less model

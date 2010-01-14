@@ -28,6 +28,7 @@ module Padrino
   def self.support
     @_padrino_support
   end
+
 end
 
 if defined?(Extlib) # load if already using extlib

@@ -1,15 +1,13 @@
 #!/usr/bin/env ruby
 %w[rubygems thor].each { |gem| require gem }
-require File.dirname(__FILE__) + "/../lib/padrino-gen"
+$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
 
-Padrino::Generators::Base.start(ARGV)
-Padrino::Generators.lockup!
-
-generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
-generator_class = Padrino::Generators.mappings[generator_kind]
-
-if generator_class
-  generator_class.start(ARGV)
-else
-  puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(", ")})"
+# We try to load the vendored padrino-core if exist
+if File.exist?(File.dirname(__FILE__) + "/../../padrino-core/lib")
+  $LOAD_PATH.unshift File.dirname(__FILE__) + "/../../padrino-core/lib"
 end
+
+require 'padrino-gen'
+
+# We need our config boot because we need to load registered generators so:
+Padrino::Generators::Cli.start(ARGV)
