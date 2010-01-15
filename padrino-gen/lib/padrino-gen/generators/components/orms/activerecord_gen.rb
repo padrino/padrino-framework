@@ -51,7 +51,7 @@ module Padrino
 
 
           def setup_orm
-            require_dependencies 'activerecord'
+            require_dependencies 'active_record'
             create_file("config/database.rb", AR)
             create_file("Rakefile", RAKE.gsub(/APP_CLASS/, @class_name))
             empty_directory('app/models')

@@ -105,7 +105,7 @@ class TestAppGenerator < Test::Unit::TestCase
     should "properly generate for activerecord" do
       buffer = silence_logger { @app.start(['sample_app', '/tmp', '--orm=activerecord', '--script=none']) }
       assert_match /Applying.*?activerecord.*?orm/, buffer
-      assert_match_in_file(/gem 'activerecord'/, '/tmp/sample_app/Gemfile')
+      assert_match_in_file(/gem 'active_record'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/Migrate the database/, '/tmp/sample_app/Rakefile')
       assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_app/config/database.rb')
       assert_dir_exists('/tmp/sample_app/app/models')

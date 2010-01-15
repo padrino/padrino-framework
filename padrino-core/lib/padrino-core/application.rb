@@ -337,8 +337,8 @@ module Padrino
           host_name(options.delete(:host)) if options.key?(:host)
 
           # Sinatra defaults
-          define_method "\#{verb} \#{path}", &block
-          unbound_method = instance_method("\#{verb} \#{path}")
+          define_method "#{verb} #{path}", &block
+          unbound_method = instance_method("#{verb} #{path}")
           block =
             if block.arity != 0
               lambda { unbound_method.bind(self).call(*@block_params) }
