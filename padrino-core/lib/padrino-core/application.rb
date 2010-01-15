@@ -4,39 +4,6 @@ module Padrino
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   class Application < Sinatra::Application
 
-    # Return the request format, this is useful when we need to respond to a given content_type like:
-    # 
-    #   get :index, :respond_to => :any do
-    #     case content_type
-    #       when :js    then ...
-    #       when :json  then ...
-    #       when :html  then ...
-    #     end
-    #   end
-    def content_type(type=nil, params={})
-      type.nil? ? @_content_type : super(type, params)
-    end
-
-    
-    # Instance method for url generation like:
-    # 
-    #   url(:show, :id => 1)
-    #   url(:show, :name => :test)
-    #   url("/show/:id/:name", :id => 1, :name => foo)
-    # 
-    def url(name, *params)
-      self.class.url(name, *params)
-    end
-    alias :url_for :url
-
-    # This is mostly just a helper so request.path_info isn't changed when
-    # serving files from the public directory
-    def static_file?(path)
-      public_dir = File.expand_path(options.public)
-      path = File.expand_path(File.join(public_dir, unescape(path)))
-      path[0, public_dir.length] == public_dir && File.file?(path)
-    end
-
     class << self
       def inherited(subclass)
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
@@ -355,18 +322,49 @@ module Padrino
 
     end
 
+    # Return the request format, this is useful when we need to respond to a given content_type like:
+    # 
+    #   get :index, :respond_to => :any do
+    #     case content_type
+    #       when :js    then ...
+    #       when :json  then ...
+    #       when :html  then ...
+    #     end
+    #   end
+    def content_type(type=nil, params={})
+      type.nil? ? @_content_type : super(type, params)
+    end
+
+    # Instance method for url generation like:
+    # 
+    #   url(:show, :id => 1)
+    #   url(:show, :name => :test)
+    #   url("/show/:id/:name", :id => 1, :name => foo)
+    # 
+    def url(name, *params)
+      self.class.url(name, *params)
+    end
+    alias :url_for :url
+
+    # This is mostly just a helper so request.path_info isn't changed when
+    # serving files from the public directory
+    def static_file?(path_info)
+      return false if (public_dir = options.public).nil?
+      public_dir = File.expand_path(public_dir)
+
+      path = File.expand_path(public_dir + unescape(path_info))
+      return false if path[0, public_dir.length] != public_dir
+      return false unless File.file?(path)
+      return path
+    end
+
     private
-      # TODO: remove this when sinatra 1.0 will be released
-      # Compatibility with sinatra 0.9.4
+
+      # Method for deliver static files
       def static!
-        return if (public_dir = options.public).nil?
-        public_dir = File.expand_path(public_dir)
-
-        path = File.expand_path(public_dir + unescape(request.path_info))
-        return if path[0, public_dir.length] != public_dir
-        return unless File.file?(path)
-
-        send_file path, :disposition => nil
+        if path = static_file?(request.path_info)
+          send_file(path, :disposition => nil)
+        end
       end
 
       # Compatibility with usher
