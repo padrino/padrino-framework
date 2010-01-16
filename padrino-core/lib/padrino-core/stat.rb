@@ -1,12 +1,14 @@
 require 'pathname'
 
 module Padrino
+  ##
   # What makes it especially suited for use in a any environment is that
   # any file will only be checked once and there will only be made one system
   # call stat(2).
   #
   # Please note that this will not reload files in the background, it does so
   # only when actively called.
+  # 
   module Stat
     class << self
       CACHE  = {}
@@ -28,7 +30,9 @@ module Padrino
         changed
       end
 
+      ##
       # A safe Kernel::load, issuing the hooks depending on the results
+      # 
       def safe_load(file, mtime)
         logger.debug "Reloading #{file}"
         load(file)
@@ -41,7 +45,7 @@ module Padrino
 
       def rotation
         files = [$0, *$LOADED_FEATURES].uniq
-        paths = ['./', *$LOAD_PATH].uniq
+        paths = ['./', *$:].uniq
 
         files.map{ |file|
           next if file =~ /\.(so|bundle)$/                   # cannot reload compiled files
@@ -54,9 +58,11 @@ module Padrino
         }.compact
       end
 
+      ##
       # Takes a relative or absolute +file+ name, a couple possible +paths+ that
       # the +file+ might reside in. Returns the full path and File::Stat for the
       # path.
+      # 
       def figure_path(file, paths)
         found = CACHE[file]
         found = file if !found and Pathname.new(file).absolute?

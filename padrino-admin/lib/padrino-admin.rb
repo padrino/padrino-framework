@@ -11,5 +11,7 @@ Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Ba
 String.send(:include, Padrino::Admin::Utils::Crypt)
 String.send(:include, Padrino::Admin::Utils::Literal)
 
+CarrierWave.root = Padrino.root if defined?(CarrierWave)
+
 # Load our locales
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]

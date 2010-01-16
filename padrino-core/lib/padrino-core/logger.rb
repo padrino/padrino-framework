@@ -16,7 +16,7 @@ module Padrino
     attr_reader   :log
     attr_reader   :init_args
 
-    # ==== Notes
+    ##
     # Ruby (standard) logger levels:
     # 
     # :fatal:: An unhandleable error that results in a program crash
@@ -34,7 +34,7 @@ module Padrino
 
     @@mutex = {}
 
-    # ==== Notes
+    ##
     # Configuration for a given environment, possible options are:
     # 
     # :log_level:: Once of [:fatal, :error, :warn, :info, :debug]
@@ -61,6 +61,7 @@ module Padrino
     #   :production  => { :log_level => :warn, :stream => :to_file }
     #   :development => { :log_level => :debug, :stream => :stdout }
     #   :test        => { :log_level => :fatal, :stream => :null }
+    # 
     Config = {
       :production  => { :log_level => :warn, :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
@@ -68,7 +69,9 @@ module Padrino
     } unless const_defined?(:Config)
 
 
+    ##
     # Setup a new logger
+    # 
     def self.setup!(env=nil)
       config = Config[env || Padrino.env] || Config[:test]
       stream = case config[:stream]
@@ -85,6 +88,7 @@ module Padrino
 
     public
 
+    ##
     # To initialize the logger you create a new object, proxies to set_log.
     #
     # ==== Options can be:
@@ -109,7 +113,9 @@ module Padrino
       @format_message    = options[:format_message] || "%-5s - [%s] \"%s\""
     end
 
+    ##
     # Flush the entire buffer to the log object.
+    # 
     def flush
       return unless @buffer.size > 0
       @mutex.synchronize do
@@ -117,21 +123,19 @@ module Padrino
       end
     end
 
+    ##
     # Close and remove the current log object.
+    # 
     def close
       flush
       @log.close if @log.respond_to?(:close) && !@log.tty?
       @log = nil
     end
 
+    ##
     # Appends a message to the log. The methods yield to an optional block and
     # the output of this block will be appended to the message.
     #
-    # ==== Parameters
-    # message:: The message to be logged. Defaults to nil.
-    #
-    # ==== Returns
-    # message:: The resulting message added to the log file.
     def push(message = nil, level = nil)
       self << @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
     end
@@ -143,7 +147,9 @@ module Padrino
       message
     end
 
+    ##
     # Generate the logging methods for Padrino.logger for each log level.
+    # 
     Levels.each_pair do |name, number|
       class_eval <<-LEVELMETHODS, __FILE__, __LINE__
 
@@ -191,13 +197,17 @@ module Padrino
 
   end
   
+  ##
   # RackLogger forwards every request to an +app+ given, and
   # logs a line in the Apache common log format to the +logger+, or
   # rack.errors by default.
+  # 
   class RackLogger
+    ##
     # Common Log Format: http://httpd.apache.org/docs/1.3/logs.html#common
     # "lilith.local - - GET / HTTP/1.1 500 -"
     #  %{%s - %s %s %s%s %s - %d %s %0.4f}
+    # 
     FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
 
     def initialize(app)
@@ -242,7 +252,9 @@ end
 
 module Kernel
 
+  ##
   # Define a logger available every where in our app
+  # 
   def logger
     Padrino.logger
   end

@@ -8,7 +8,7 @@ require 'webrat'
 # We try to load the vendored padrino-core if exist
 %w(core).each do |gem|
   if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
-    $LOAD_PATH.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
+    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
   end
 end
 

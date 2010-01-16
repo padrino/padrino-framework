@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 %w[rubygems thor].each { |gem| require gem }
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+$:.unshift File.dirname(__FILE__) + "/../lib"
 
 # We try to load the vendored padrino-core if exist
 if File.exist?(File.dirname(__FILE__) + "/../../padrino-core/lib")
-  $LOAD_PATH.unshift File.dirname(__FILE__) + "/../../padrino-core/lib"
+  $:.unshift File.dirname(__FILE__) + "/../../padrino-core/lib"
 end
 
 require 'padrino-gen'

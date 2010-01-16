@@ -1,31 +1,33 @@
-=begin
-
-This file determines if extlib or activesupport are already loaded, and then ensures
-the required objects and methods exist for Padrino to use.
-
-Required for Padrino to run:
-
-  * Class#cattr_accessor
-  * Module#alias_method_chain
-  * String#inflectors (classify, underscore, camelize, etc)
-  * Array#extract_options!
-  * Object#blank?
-  * Object#present?
-  * Hash#slice, Hash#slice!
-  * Hash#to_params
-  * Hash#symbolize_keys, Hash.symbolize_keys!
-  * Hash#reverse_merge, Hash#reverse_merge!
-  * SupportLite::OrderedHash
-
-=end
+##
+# This file determines if extlib or activesupport are already loaded, and then ensures
+# the required objects and methods exist for Padrino to use.
+# 
+# Required for Padrino to run:
+# 
+#   * Class#cattr_accessor
+#   * Module#alias_method_chain
+#   * String#inflectors (classify, underscore, camelize, etc)
+#   * Array#extract_options!
+#   * Object#blank?
+#   * Object#present?
+#   * Hash#slice, Hash#slice!
+#   * Hash#to_params
+#   * Hash#symbolize_keys, Hash.symbolize_keys!
+#   * Hash#reverse_merge, Hash#reverse_merge!
+#   * SupportLite::OrderedHash
+# 
 require 'i18n'
 
+##
 # Load our locales
+# 
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]
 
 module Padrino
+  ##
   # Return the current support used.
   # Can be one of: :extlib, :active_support
+  # 
   def self.support
     @_padrino_support
   end

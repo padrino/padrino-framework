@@ -1,28 +1,34 @@
 module Padrino
   class ApplicationSetupError < RuntimeError; end
+  ##
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
+  # 
   class Application < Sinatra::Application
 
     class << self
       def inherited(subclass)
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         subclass.default_configuration!
-        Padrino.require_dependencies(File.join(subclass.root, "/models/**/*.rb"))
+        Padrino.set_load_paths File.join(subclass.root, "/models")
+        Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
         super # Loading the subclass
         subclass.default_filters!
         subclass.default_routes!
       end
 
+      ##
       # Hooks into when a new instance of the application is created
       # This is used because putting the configuration into inherited doesn't
       # take into account overwritten app settings inside subclassed definitions
-      # Only performs the setup first time application is initialized
+      # Only performs the setup first time application is initialized.
+      # 
       def new(*args, &bk)
         setup_application!
         super
       end
 
+      ##
       # Method for organize in a better way our routes like:
       # 
       #   controller :admin do
@@ -58,7 +64,9 @@ module Padrino
       end
       alias :controllers :controller
 
-      # Usher router
+      ##
+      # Usher router, for fatures and configurations see: http://github.com/joshbuddy/usher
+      # 
       def router
         @router ||= Usher.new(:request_methods => [:request_method, :host, :port, :scheme], 
                               :ignore_trailing_delimiters => true,
@@ -67,6 +75,7 @@ module Padrino
       end
       alias :urls :router
 
+      ##
       # Instance method for url generation like:
       # 
       #   url(:show, :id => 1)
@@ -85,6 +94,7 @@ module Padrino
       end
       alias :url_for :url
 
+      ##
       # With this method we can use layout like rails do or if a block given like sinatra
       # By default we look in your/app/views/layouts/application.(haml|erb|etc)
       # 
@@ -93,26 +103,33 @@ module Padrino
       #   layout :custom
       # 
       # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
+      # 
       def layout(name=:layout, &block)
         return super if block_given?
         @_layout = name
       end
 
+      ##
       # Reloads the application files from all defined load paths
+      # 
       def reload!
         reset_routes! # remove all existing user-defined application routes
         Padrino.load_dependency(self.app_file)  # reload the app file
         load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
       end
 
+      ##
       # Resets application routes to only routes not defined by the user
+      # 
       def reset_routes!
         router.reset!
         default_routes!
       end
 
+      ##
       # Setup the application by registering initializers, load paths and logger
       # Invoked automatically when an application is first instantiated
+      # 
       def setup_application!
         return if @_configured
         self.register_framework_extensions
@@ -126,7 +143,9 @@ module Padrino
       end
 
       protected
+        ##
         # Defines default settings for Padrino application
+        # 
         def default_configuration!
           # Overwriting Sinatra defaults
           set :app_file, caller_files.first || $0 # Assume app file is first caller
@@ -150,6 +169,9 @@ module Padrino
           set :padrino_helpers, defined?(Padrino::Helpers)
         end
 
+        ##
+        # We need to add almost __sinatra__ images.
+        # 
         def default_routes!
           # images resources
           get "/__sinatra__/:image.png" do
@@ -158,7 +180,9 @@ module Padrino
           end
         end
 
+        ##
         # This filter it's used for know the format of the request, and automatically set the content type.
+        # 
         def default_filters!
           before do
             unless options.static? && options.public? && (request.get? || request.head?) && static_file?(request.path_info)
@@ -169,15 +193,19 @@ module Padrino
           end
         end
 
+        ##
         # Calculates any required paths after app_file and root have been properly configured
         # Executes as part of the setup_application! method
+        # 
         def calculate_paths
           raise ApplicationSetupError.new("Please define 'app_file' option for #{self.name} app!") unless self.app_file
           set :views, find_view_path if find_view_path
           set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
         end
 
+        ##
         # Requires the middleware and initializer modules to configure components
+        # 
         def register_initializers
           use Padrino::RackLogger
           use Padrino::Reloader   if reload?
@@ -187,31 +215,41 @@ module Padrino
           Dir[@initializer_path].each { |file| register_initializer(file) }
         end
 
+        ##
         # Registers all desired padrino extension helpers
+        # 
         def register_framework_extensions
           register Padrino::Mailer        if padrino_mailer?
           register Padrino::Helpers       if padrino_helpers?
           register Padrino::AccessControl if authentication?
         end
 
+        ##
         # Returns the load_paths for the application (relative to the application root)
+        # 
         def load_paths
           @load_paths ||= ["urls.rb", "config/urls.rb", "mailers/*.rb", "controllers/**/*.rb", "helpers/*.rb"]
         end
 
+        ##
         # Requires all files within the application load paths
+        # 
         def require_load_paths
           load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
         end
 
+        ##
         # Returns the path to the views directory from root by returning the first that is found
+        # 
         def find_view_path
           @view_paths = ["views"].collect { |path| File.join(self.root, path) }
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
 
+        ##
         # Registers an initializer with the application
         # register_initializer('/path/to/initializer')
+        # 
         def register_initializer(file_path)
           Padrino.require_dependencies(file_path)
           file_class = File.basename(file_path, '.rb').camelize
@@ -222,6 +260,7 @@ module Padrino
         end
 
       private
+        ##
         # Rewrite default because now routes can be:
         # 
         #   get :index                                    # => "/"
@@ -322,6 +361,7 @@ module Padrino
 
     end
 
+    ##
     # Return the request format, this is useful when we need to respond to a given content_type like:
     # 
     #   get :index, :respond_to => :any do
@@ -331,10 +371,12 @@ module Padrino
     #       when :html  then ...
     #     end
     #   end
+    # 
     def content_type(type=nil, params={})
       type.nil? ? @_content_type : super(type, params)
     end
 
+    ##
     # Instance method for url generation like:
     # 
     #   url(:show, :id => 1)
@@ -346,8 +388,10 @@ module Padrino
     end
     alias :url_for :url
 
+    ##
     # This is mostly just a helper so request.path_info isn't changed when
     # serving files from the public directory
+    # 
     def static_file?(path_info)
       return false if (public_dir = options.public).nil?
       public_dir = File.expand_path(public_dir)
@@ -360,14 +404,20 @@ module Padrino
 
     private
 
-      # Method for deliver static files
+      ##
+      # Method for deliver static files, Sinatra 0.10.x or 1.0.x have this method
+      # but for now we use this (because we need a compatibility with 0.9.x) and also
+      # because we just have +static_file?+ method.
+      # 
       def static!
         if path = static_file?(request.path_info)
           send_file(path, :disposition => nil)
         end
       end
 
+      ##
       # Compatibility with usher
+      # 
       def route!(base=self.class, pass_block=nil)
         # TODO: remove this when sinatra 1.0 will be released
         if Sinatra::VERSION =~ /^0\.9/
@@ -397,10 +447,13 @@ module Padrino
         end
       end
       
-      # When we set :auto_locale, true then:
+      ##
+      # When we set :auto_locale, true then if we use param locale like:
       # 
-      # * if we pass "/:locale/some/foo" we automatically set teh I18n locale to params[:locale]
-      # * if params[:locale] is empty we use the first HTTP_ACCEPT_LANGUAGE
+      #   get "/:locale/some/foo" do; ...; end
+      # 
+      # we automatically set the I18n locale to params[:locale]
+      # 
       def route_eval(&block)
         if options.auto_locale
           if params[:locale]
@@ -410,10 +463,12 @@ module Padrino
         super
       end
 
-      # Hijacking the sinatra render for do two thing:
+      ##
+      # Hijacking the sinatra render for do three thing:
       # 
       # * Use layout like rails do
-      # * Use render 'path/to/my/template'
+      # * Use render 'path/to/my/template' (without symbols)
+      # * Use render 'path/to/my/template' (with auto enegine lookup)
       # 
       def render(engine, data=nil, options={}, locals={}, &block)
         # TODO: remove these @template_cache.respond_to?(:clear) when sinatra 1.0 will be released
@@ -434,8 +489,10 @@ module Padrino
         super
       end
 
+      ##
       # Returns the template engine (i.e haml) to use for a given template_path
       # resolve_template_engine('users/new') => :haml
+      # 
       def resolve_template_engine(template_path)
         resolved_template_path = File.join(self.options.views, template_path.to_s + ".*")
         template_file = Dir[resolved_template_path].first
