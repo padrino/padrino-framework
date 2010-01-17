@@ -18,6 +18,14 @@ module Kernel
     log_buffer.string
   end
   alias :silence_stdout :silence_logger
+
+  def silence_warnings
+    old_verbose, $VERBOSE = $VERBOSE, nil
+    yield
+  ensure
+    $VERBOSE = old_verbose
+  end unless respond_to?(:silence_warnings)
+
 end
 
 class Class
