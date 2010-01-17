@@ -131,7 +131,7 @@ module Padrino
         # 
         # Basically we need only to perform:
         # 
-        # * Validations (email, password)
+        # * Validations (email, password, role)
         # * Generate crypted_password on save
         # 
         module Account

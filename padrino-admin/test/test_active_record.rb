@@ -39,7 +39,7 @@ class TestActiveRecord < Test::Unit::TestCase
     should 'have errors_keys' do
       account = Account.new
       account.valid?
-      assert_equal [:email, :password, :password_confirmation], account.errors_keys
+      assert_equal [:email, :role, :password, :password_confirmation], account.errors_keys
     end
 
     should 'have table name' do
