@@ -16,7 +16,7 @@ class TestController < Test::Unit::TestCase
           sortable: false
         - method: role
     YAML
-    @column_store = Padrino::ExtJs::ColumnStore.new(Account, config)
+    @column_store = Padrino::Admin::ColumnStore.new(Account, config)
     @column_store_direct = Account.column_store("test/fixtures/test_column_store.jml")
   end
 
@@ -27,13 +27,13 @@ class TestController < Test::Unit::TestCase
   end
 
   should 'have correct store fields' do
-    result = "[{\"name\":\"accounts.name\",\"mapping\":\"account_name\"},{\"name\":\"accounts.surname\",\"mapping\":\"account_surname\"},{\"name\":\"category.name\",\"mapping\":\"category_name\"},{\"name\":\"accounts.email\",\"mapping\":\"account_email\"},{\"name\":\"accounts.role\",\"mapping\":\"account_role\"}]"
+    result = "[{\"mapping\":\"account_name\",\"name\":\"accounts.name\"},{\"mapping\":\"account_surname\",\"name\":\"accounts.surname\"},{\"mapping\":\"category_name\",\"name\":\"category.name\"},{\"mapping\":\"account_email\",\"name\":\"accounts.email\"},{\"mapping\":\"account_role\",\"name\":\"accounts.role\"}]"
     assert_equal result, @column_store.store_fields
     assert_equal result, @column_store_direct.store_fields
   end
 
   should 'store data' do
-    result = "{\"results\":[{\"account_surname\":\"Not found\",\"account_email\":\"d.dagostino@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":1,\"account_role\":\"Admin\",\"account_name\":\"DADDYE\"},{\"account_surname\":\"Not found\",\"account_email\":\"editor@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":2,\"account_role\":\"Editor\",\"account_name\":\"DEXTER\"}],\"count\":2}"
+    result = "{\"count\":2,\"results\":[{\"account_surname\":\"Not found\",\"account_email\":\"d.dagostino@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":1,\"account_role\":\"Admin\",\"account_name\":\"DADDYE\"},{\"account_surname\":\"Not found\",\"account_email\":\"editor@lipsiasoft.com\",\"category_name\":\"Not found\",\"id\":2,\"account_role\":\"Editor\",\"account_name\":\"DEXTER\"}]}"
     assert_equal result, @column_store.store_data(:fields => "name,role", :query => "d", :sort => :name, :dir => :asc, :limit => 2, :offset => 0)
     assert_equal result, @column_store_direct.store_data(:fields => "name,role", :query => "d", :sort => :name, :dir => :asc, :limit => 2, :offset => 0)
   end

@@ -91,7 +91,7 @@ class TestAccessControl < Test::Unit::TestCase
     end
 
     should 'check config handlers' do
-      assert_kind_of Padrino::ExtJs::Variable, @access.auths(Account.editor).project_modules.collect(&:config).first[:menu].first[:handler]
+      assert_kind_of Padrino::Admin::Config::Variable, @access.auths(Account.editor).project_modules.collect(&:config).first[:menu].first[:handler]
     end
   end
 

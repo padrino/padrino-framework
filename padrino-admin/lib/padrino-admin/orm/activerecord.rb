@@ -1,46 +1,74 @@
 module Padrino
   module Admin
-    module Adapters
-      module Ar
-
+    module Orm
+      module ActiveRecord
+        ##
         # Here basic functions for interact with ActiveRecord
+        # 
         module Base
-          def self.included(base)
-            base.send :include, Padrino::Admin::Adapters::Base
+
+          def self.included(base) #:nodoc:
+            base.send :include, Padrino::Admin::Orm::Abstract::Base
             base.send :include, InstanceMethods
             base.extend ClassMethods
           end
 
           module InstanceMethods
-
+            ##
             # Method for get only fields with errors
+            # 
             def errors_keys
               errors.map { |k,v| k.to_sym }.uniq
             end
-          end
+          end # InstanceMethods
 
           module ClassMethods
-            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". Example:
+            ##
+            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". 
+            # 
+            # Example:
             #   Person.human_attribute_name("first_name") # => "First name"
-            # This used to be depricated in favor of humanize, but is now preferred, because it automatically uses the I18n
-            # module now.
+            # 
             # Specify +options+ with additional translating options.
-            def human_attribute_name(attribute_key_name, options = {})
-              defaults = self_and_descendants.map do |klass|
-                :"#{klass.name.underscore}.#{attribute_key_name}"
-              end
-              defaults << options[:default] if options[:default]
-              defaults.flatten!
-              defaults << attribute_key_name.to_s.humanize
-              options[:count] ||= 1
-              I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:model, :attributes]))
+            # 
+            def human_attribute_name(field, options = {})
+              options.reverse_merge!(:count => 1, :default => field.to_s.humanize, :scope => [:model, :attributes])
+              I18n.translate("#{self.name.underscore}.#{field}", options)
             end
 
-            # Alias method for get columns
+            ##
+            # Alias method for get columns names
+            # 
             def properties
               columns
             end
 
+            ##
+            # Return :activerecord
+            # 
+            def orm
+              :activerecord
+            end
+
+            ##
+            # Method for perorm a full text search / sorting in ExtJS grids.
+            # 
+            # For build a query you can provide for +params+:
+            # 
+            # query:: word do search will be converted to "%word%"
+            # fields:: where you want search
+            # sort:: field to sort
+            # dir:: one of ASC/DESC
+            # limit:: limit your results 
+            # start:: offset of your resluts
+            # 
+            # For +query+ we mean standard adapter options such as +include+, +joins+ ...
+            # 
+            # So a +ext_search+ can be:
+            # 
+            #   Account.ext_search({:query => "foo", fileds="name,surname,categories.name", :sort => "name", 
+            #                       :dir => "asc", :limit => 50, :offset => 10 }, { :joins => :categories })
+            # 
             def ext_search(params, query={})
 
               # We build a base struct for have some good results
@@ -68,14 +96,21 @@ module Padrino
               result
             end
 
-          end
-        end
+          end # ClassMethods
+        end # Base
 
-        # Here extension for account for ActiveRecord
+        ##
+        # Here extension for Account for ActiveRecord
+        # 
+        # Basically we need only to perform:
+        # 
+        # * Validations (email, password)
+        # * Generate crypted_password on save
+        # 
         module Account
-          # Extend our class when included
-          def self.included(base)
-            base.send :include, Padrino::Admin::Adapters::AccountUtils
+
+          def self.included(base) #:nodoc:
+            base.send :include, Padrino::Admin::Orm::Abstract::Account
             base.send :attr_accessor, :password
             # Validations
             base.validates_presence_of     :email
@@ -89,8 +124,8 @@ module Padrino
             # Callbacks
             base.before_save :generate_password
           end
-        end
-      end
-    end
-  end
-end
+        end # Account
+      end # ActiveRecord
+    end # Orm
+  end # Admin
+end # Padrino

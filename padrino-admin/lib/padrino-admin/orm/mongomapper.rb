@@ -1,29 +1,44 @@
 module Padrino
   module Admin
-    module Adapters
-      module Mm
-
+    module Orm
+      module MongoMapper
+        ##
         # Here basic functions for interact with MongoMapper
+        # 
         module Base
-          def self.included(base)
-            base.send :include, Padrino::Admin::Adapters::Base
+
+          def self.included(base) #:nodoc:
+            base.send :include, Padrino::Admin::Orm::Abstract::Base
             base.send :include, InstanceMethods
             base.extend ClassMethods
           end
-          
-          module InstanceMethods
-          end
-          
-          module ClassMethods
-          end
-        end
 
-        # Here extension for account for DataMapper
+          module InstanceMethods
+          end # InstanceMethods
+
+          module ClassMethods
+            ##
+            # Return :activerecord
+            # 
+            def orm
+              :mongomapper
+            end
+          end # ClassMethods
+        end # Base
+
+        ##
+        # Here extension for Account for MongoMapper
+        # 
+        # Basically we need only to perform:
+        # 
+        # * Validations (email, password)
+        # * Generate crypted_password on save
+        # 
         module Account
-          # Extend our class when included
-          def self.included(base)
+
+          def self.included(base) #:nodoc:
             super
-            base.send :include, Padrino::Admin::Adapters::AccountUtils
+            base.send :include, Padrino::Admin::Orm::Abstract::Account
             base.send :attr_accessor, :password, :password_confirmation
             # Properties
             base.key :email,            String
@@ -42,8 +57,8 @@ module Padrino
             # Callbacks
             base.before_save :generate_password
           end
-        end
-      end
-    end
-  end
-end
+        end # Account
+      end # MongoMapper
+    end # Orm
+  end # Admin
+end # Padrino

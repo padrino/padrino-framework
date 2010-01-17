@@ -1,22 +1,29 @@
 module Padrino
   module Admin
     module Helpers
-      # Returns true if <tt>current_account</tt> is logged and active.
+      ##
+      # Returns true if +current_account+ is logged and active.
+      # 
       def logged_in?
         !current_account.nil?
       end
 
+      ##
       # Returns the current_account, it's an instance of <tt>Account</tt> model
+      # 
       def current_account
         @current_account ||= login_from_session
       end
 
-      # Return the admin menu
+      ##
+      #  Return the admin menu
+      # 
       def admin_menu
         return "[]" unless current_account
         access_control.auths(current_account).project_modules.collect(&:config).to_json
       end
 
+      ##
       # Ovverride the current_account, you must provide an instance of Account Model
       # 
       #   Examples:
@@ -28,29 +35,37 @@ module Padrino
         @current_account      = account
       end
 
-      # Returns true if the <tt>current_account</tt> is allowed to see the requested path
+      ##
+      # Returns true if the +current_account+ is allowed to see the requested path
       # 
-      # For configure this role please refer to: <tt>Padrino::AccessControl::Base</tt>
+      # For configure this role please refer to: +Padrino::AccessControl::Base+
+      # 
       def allowed?
         access_control.auths(current_account).can?(request.path_info)
       end
 
-      # Returns a helper to pass in a <tt>before_filter</tt> for check if
-      # an account are: <tt>logged_in?</tt> and <tt>allowed?</tt>
+      ##
+      # Returns a helper to pass in a +before_filter+ for check if
+      # an account are: +logged_in?+ and +allowed?+
       # 
       # By default this method is used in BackendController so is not necessary
+      # 
       def login_required
         store_location! if store_location
         return access_denied unless allowed?
       end
 
+      ##
       # Store in session[:return_to] the request.fullpath
+      # 
       def store_location!
         session[:return_to] = request.fullpath
       end
 
+      ##
       # Redirect the account to the page that requested an authentication or
       # if the account is not allowed/logged return it to a default page
+      # 
       def redirect_back_or_default(default)
         redirect_to(session[:return_to] || default)
         session[:return_to] = nil
@@ -72,7 +87,7 @@ module Padrino
       end
 
       def login_page
-        options.login_page rescue nil # for some reason on sinatra 9.4.x respond_to?(:login_page) didn't work
+        options.login_page rescue nil # on sinatra 9.4.x respond_to?(:login_page) didn't work
       end
 
       def store_location
@@ -83,9 +98,9 @@ module Padrino
         options.app_name.to_sym
       end
 
-      def login_from_session #:nodoc:
+      def login_from_session
         Account.first(:conditions => { :id => session[session_name] }) if defined?(Account)
       end
-    end
-  end
-end
+    end # Helpers
+  end # Admin
+end # Padrino

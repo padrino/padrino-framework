@@ -14,4 +14,5 @@ ActiveRecord::Schema.define do
 end
 
 class Account < ActiveRecord::Base; end
-Padrino::Admin::Adapters.register(:activerecord)
+
+Padrino::Admin::Orm.register!

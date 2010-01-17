@@ -5,7 +5,7 @@ module Padrino
       module Literal
         # This method return a json literal variable
         def to_l
-          Padrino::ExtJs::Variable.new(self)
+          Padrino::Admin::Config::Variable.new(self)
         end
       end
     end

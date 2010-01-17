@@ -1,7 +1,0 @@
-nested:
-  fn: !js function(){ alert('nested fn') }
-fn: !js function(){ alert('fn') }
-array: [!js function(){ alert('array') }, perfect]
-test_one: %fn
-test_two: %nested/fn
-test_three: <%= @foo %>

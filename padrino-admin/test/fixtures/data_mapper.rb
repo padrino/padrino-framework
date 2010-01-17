@@ -1,5 +1,6 @@
 require 'dm-core'
 require 'dm-validations'
+require 'dm-aggregates'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 
@@ -21,7 +22,7 @@ class Account
   def self.editor; first(:role => "Editor"); end
 end
 
-Padrino::Admin::Adapters.register(:datamapper)
+Padrino::Admin::Orm.register!
 DataMapper.auto_migrate!
 
 # We build some fake accounts

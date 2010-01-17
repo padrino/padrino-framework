@@ -4,14 +4,26 @@ require 'padrino-core'
 require 'padrino-gen'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,adapters,ext_js,generators,utils}/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,generators,utils}/*.rb'].each {|file| require file }
 
-Padrino::Application.send(:cattr_accessor, :access_control)
-Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Base))
+##
+# We need to apply Padrino::Admin::Utils::Extensions
+# 
 String.send(:include, Padrino::Admin::Utils::Crypt)
 String.send(:include, Padrino::Admin::Utils::Literal)
 
+##
+# We need to add to Padrino::Application a +access_control+ class
+# 
+Padrino::Application.send(:cattr_accessor, :access_control)
+Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Base))
+
+##
+# If CarrierWave is defined we set the root directory
+# 
 CarrierWave.root = Padrino.root if defined?(CarrierWave)
 
-# Load our locales
+##
+# Load our Padrino::Admin locales
+# 
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]

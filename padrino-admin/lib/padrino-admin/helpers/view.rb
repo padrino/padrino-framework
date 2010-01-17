@@ -1,6 +1,7 @@
 module Padrino
   module Admin
     module Helpers
+      ##
       # Set the title of the page.
       # 
       # An interesting thing wose that this helper 
@@ -14,7 +15,9 @@ module Padrino
         content_tag(:script, "Admin.app.setTitle(#{title.to_json})", :type => "text/javascript")
       end
 
+      ##
       # This method work like error_message_for but use an Ext.Message.show({..})
+      # 
       def show_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
         count   = objects.inject(0) {|sum, object| sum + object.errors.count }
@@ -57,6 +60,7 @@ module Padrino
         end
       end
 
+      ##
       # This method add tab for in your view.
       # 
       # First argument is the name and title of the tab, an interesting thing wose that this helper 
@@ -70,8 +74,8 @@ module Padrino
       # 
       # Third argument is an hash that accepts:
       # 
-      # <tt>:id</tt>::    The id of the tab
-      # <tt>:style</tt>:: Custom style of the tab
+      # :id:: The id of the tab
+      # :style:: Custom style of the tab
       # 
       def tab(name, padding=true, options={}, &block)
         options[:id]    ||= name.to_s.downcase.gsub(/[^a-z0-9]+/, '_').gsub(/-+$/, '').gsub(/^-+$/, '')
@@ -83,6 +87,7 @@ module Padrino
         concat_content content_tag(:div, container, options)
       end
 
+      ##
       # This method generates a new ExtJs BoxComponent.
       # 
       #   Examples:
@@ -132,7 +137,6 @@ module Padrino
           </div>
         HTML
       end
-
-    end
-  end
-end
+    end # Helpers
+  end # Admin
+end # Padrino

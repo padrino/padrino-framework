@@ -1,92 +1,104 @@
 module Padrino
   module Admin
-    module Adapters
-      module Dm
-
+    module Orm
+      module DataMapper
+        ##
         # Here basic functions for interact with DataMapper
+        # 
         module Base
 
-          def self.included(base)
-            base.send :include, Padrino::Admin::Adapters::Base
+          def self.included(base) #:nodoc:
+            base.send :include, Padrino::Admin::Orm::Abstract::Base
             base.send :include, InstanceMethods
             base.extend ClassMethods
           end
           
           module InstanceMethods
-            # This method allow us to don't see deprecations
+            ##
+            # This is an alias method to allow us to don't see deprecations 
+            # and keep compatibility with new DataMapper versions
+            # 
             def new_record?; new?; end
 
+            ##
             # Returns a String, which Padrino uses for constructing an URL to this object. 
-            # The default implementation returns this record‘s id as a String, or nil if this record‘s unsaved.
+            # The default implementation returns this record‘s id as a String, 
+            # or nil if this record‘s unsaved.
+            # 
             def to_param
               # We can't use alias_method here, because method 'id' optimizes itself on the fly.
               (id = self.id) ? id.to_s : nil # Be sure to stringify the id for routes
             end
 
-            # Update attributes is deprecated but for compatibility with AR we support them.
+            ##
+            # Update attributes is deprecated but for compatibility with other ORM we support them.
+            # 
             def update_attributes(attributes = {})
               update(attributes)
             end
 
+            ##
             # Method for get only fields with errors
+            # 
             def errors_keys
               errors.keys
             end
-
-          end
+          end # InstanceMethods
 
           module ClassMethods
-            attr_accessor :_table_name
-
-            def self_and_descendants #:nodoc:
-              klass = self
-              classes = [klass]
-              while klass != klass.base_class  
-                classes << klass = klass.superclass
-              end
-              classes
-            rescue
-              # OPTIMIZE this rescue is to fix this test: ./test/cases/reflection_test.rb:56:in `test_human_name_for_column'
-              # Appearantly the method base_class causes some trouble.
-              # It now works for sure.
-              [self]
-            end
-
-            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". Example:
+            ##
+            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". 
+            # 
+            # Example:
             #   Person.human_attribute_name("first_name") # => "First name"
-            # This used to be depricated in favor of humanize, but is now preferred, because it automatically uses the I18n
-            # module now.
+            # 
             # Specify +options+ with additional translating options.
-            def human_attribute_name(attribute_key_name, options = {})
-              defaults = self_and_descendants.map do |klass|
-                :"#{klass.name.underscore}.#{attribute_key_name}"
-              end
-              defaults << options[:default] if options[:default]
-              defaults.flatten!
-              defaults << attribute_key_name.to_s.humanize
-              options[:count] ||= 1
-              I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:model, :attributes]))
+            # 
+            def human_attribute_name(field, options = {})
+              options.reverse_merge!(:count => 1, :default => field.to_s.humanize, :scope => [:model, :attributes])
+              I18n.translate("#{self.name.underscore}.#{field}", options)
             end
 
-            # Return the name of the sql table
+            ##
+            # Return the name of the Table
+            # 
+            # Because in some unkown circumstances +storage_names[:default]+ give us an wrong value
+            # we use the class name for get the value
+            # 
             def table_name
-              self.name.downcase.pluralize # storage_names[:default] this some times give an error
+              self.name.underscore.pluralize
             end
 
-            # Perform a basic fulltext search/ordering for the given columns
+            ##
+            # Return :activerecord
             # 
-            # +params+ is an hash like that:
-            #   { :sort => "name", :dir => "ASC", :fields=>"name,surname,company", :query => 'daddye' }
+            def orm
+              :datamapper
+            end
+
+            ##
+            # Method for perorm a full text search / sorting in ExtJS grids.
             # 
-            # In this example we search in columns name, surname, company the string daddye and then we order by
-            # column +name+
+            # For build a query you can provide for +params+:
+            # 
+            # query:: word do search will be converted to "%word%"
+            # fields:: where you want search
+            # sort:: field to sort
+            # dir:: one of ASC/DESC
+            # limit:: limit your results 
+            # start:: offset of your resluts
+            # 
+            # For +query+ we mean standard adapter options such as +links+ ...
+            # 
+            # So a +ext_search+ can be:
+            # 
+            #   Account.ext_search({:query => "foo", fileds="name,surname,categories.name", :sort => "name", 
+            #                       :dir => "asc", :limit => 50, :offset => 10 }, { :links => :categories })
+            # 
             def ext_search(params, query={})
 
               # We build a base struct for have some good results
               result = ExtSearch.new(0, [])
-
-              # We need a basic query
-              query = {}
 
               if params[:query].present? && params[:fields].present?
                 # Here we build some like: ["name LIKE ?", "surname LIKE ?"]
@@ -111,16 +123,23 @@ module Padrino
               result.records = all(query)
               result
             end
-          end
-        end
+          end # ClassMethods
+        end # Base
 
-        # Here extension for account for DataMapper
+        ##
+        # Here extension for Account for MongoMapper
+        # 
+        # Basically we need only to perform:
+        # 
+        # * Validations (email, password)
+        # * Generate crypted_password on save
+        # 
         module Account
-          # Extend our class when included
-          def self.included(base)
+
+          def self.included(base) #:nodoc:
             super
-            base.send :include, Padrino::Admin::Adapters::AccountUtils
-            base.send :include, DataMapper::Validate
+            base.send :include, Padrino::Admin::Orm::Abstract::Account
+            base.send :include, ::DataMapper::Validate
             base.send :attr_accessor, :password, :password_confirmation
             # Properties
             base.property :email,            String
@@ -140,8 +159,8 @@ module Padrino
             # Callbacks
             base.before :save, :generate_password
           end
-        end
-      end
-    end
-  end
-end
+        end # Account
+      end # DataMapper
+    end # Orm
+  end # Admin
+end # Padrino

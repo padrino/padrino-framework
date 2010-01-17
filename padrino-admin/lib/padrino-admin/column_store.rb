@@ -1,6 +1,8 @@
 module Padrino
-  module ExtJs
+  module Admin
+    ##
     # Return column config, and store config/data for ExtJS ColumnModel and Store
+    # 
     class ColumnStore
       attr_reader :data
 
@@ -34,6 +36,7 @@ module Padrino
           column["mapping"] ||= column["name"].sub(/\[/,"_").sub(/\]$/, "").sub(/\]\[/,"_")
 
           # Now is necessary for our columns an ID
+          # 
           # TODO: check duplicates here
           column["id"] = column["mapping"]
 
@@ -42,7 +45,9 @@ module Padrino
         end
       end
 
+      ##
       # Return an array config for build an Ext.grid.ColumnModel() config
+      # 
       def column_fields
         data = @data.map do |data|
           data     = data.dup
@@ -57,7 +62,9 @@ module Padrino
         JSON.pretty_generate(data)
       end
 
+      ##
       # Return an array config for build an Ext.data.GroupingStore()
+      # 
       def store_fields
         data = @data.map do |data|
           type = parse_store_renderer(data["renderer"])
@@ -68,7 +75,9 @@ module Padrino
         JSON.pretty_generate(data)
       end
 
+      ##
       # Return data for a custom collection for the ExtJS Ext.data.GroupingStore() json
+      # 
       def store_data_from(collection)
         collection.map do |c|
           @data.dup.inject({ "id" => c.id }) do |options, data|
@@ -78,12 +87,12 @@ module Padrino
         end
       end
 
+      ##
       # Return a searched and paginated data collection for the ExtJS Ext.data.GroupingStore() json
       # You can pass options like:
       # 
-      #   Examples
+      #   Examples:
       #   
-      #     store_data(params, :conditions => "found = 1")
       #     store_data(params, :include => :posts)
       # 
       def store_data(params={}, options={})
@@ -134,7 +143,6 @@ module Padrino
             when "upcase"       then { :renderer => "Ext.util.Format.uppercase".to_l }
           end
         end
-
-    end
-  end
-end
+    end # ColumnStore
+  end # Admin
+end # Padrino
