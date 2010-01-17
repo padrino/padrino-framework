@@ -16,5 +16,5 @@ module Padrino
       @files ||= []
     end
 
-  end
-end
+  end # Tasks
+end # Padrino

@@ -1,9 +1,31 @@
 module Padrino
 
+  ##
+  # Returns the padrino logger
+  # 
+  # Examples:
+  # 
+  #   logger.debug "foo"
+  #   logger.warn "bar"
+  # 
   def self.logger
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
   end
 
+  ##
+  # Change the padrino logging configuration env.
+  # 
+  # By Padrino standards we log for this env:
+  # 
+  #   :production  => { :log_level => :warn,  :stream => :to_file }
+  #   :development => { :log_level => :debug, :stream => :stdout }
+  #   :test        => { :log_level => :fatal, :stream => :null }
+  # 
+  # So in if we are in +production+ but we want stop +warn+ for a certain task we can:
+  # 
+  #   logger_env :test
+  #   do_some_with_warn
+  # 
   def self.logger_env=(env)
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!(env)
   end
@@ -247,8 +269,8 @@ module Padrino
       end
       '-'
     end
-  end
-end
+  end # Logger
+end # Padrino
 
 module Kernel
 
@@ -258,4 +280,4 @@ module Kernel
   def logger
     Padrino.logger
   end
-end
+end # Kernel

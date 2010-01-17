@@ -85,6 +85,6 @@ module Padrino
       rescue Errno::ENOENT, Errno::ENOTDIR
         CACHE.delete(file) and false
       end
-    end
-  end
-end
+    end # self
+  end # Stat
+end # Padrino

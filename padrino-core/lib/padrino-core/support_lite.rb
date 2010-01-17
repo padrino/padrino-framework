@@ -32,7 +32,7 @@ module Padrino
     @_padrino_support
   end
 
-end
+end # Padrino
 
 if defined?(Extlib) # load if already using extlib
   Padrino.instance_variable_set(:@_padrino_support, :extlib)

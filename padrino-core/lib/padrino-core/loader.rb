@@ -105,6 +105,5 @@ module Padrino
       $:.concat(paths)
       $:.uniq!
     end
-
-  end
-end
+  end # self
+end # Padrino

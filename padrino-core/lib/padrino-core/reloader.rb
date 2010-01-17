@@ -28,6 +28,6 @@ module Padrino
 
       @app.call(env)
     end
-  end
-end
+  end # Reloader
+end # Padrino
 

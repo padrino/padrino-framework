@@ -95,6 +95,6 @@ module Padrino
                  "cannot be accessed by the current user!"
           end
         end
-    end
-  end
-end
+    end # Base
+  end # Cli
+end # Padrino

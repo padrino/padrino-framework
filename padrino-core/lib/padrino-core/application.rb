@@ -359,7 +359,7 @@ module Padrino
           route
         end
 
-    end
+    end # self
 
     ##
     # Return the request format, this is useful when we need to respond to a given content_type like:
@@ -499,6 +499,5 @@ module Padrino
         raise "Template path '#{template_path}' could not be located in views!" unless template_file
         template_engine = File.extname(template_file)[1..-1].to_sym
       end
-  end
-
-end
+  end # Application
+end # Padrino

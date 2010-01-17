@@ -44,4 +44,4 @@ module Padrino
       map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
       reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }
   end
-end
+end # Padrino

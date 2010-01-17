@@ -122,5 +122,5 @@ module Padrino
     def mount(name, options={})
       Mounter.new(name, options)
     end
-  end
-end
+  end # Mounter
+end # Padrino

@@ -1,10 +1,22 @@
 module Padrino
 
+  ##
+  # Run the Padrino apps as a self-hosted server using:
+  # thin, mongrel, webrick in that order.
+  # 
+  # Examples:
+  # 
+  #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
+  #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "localhost", port: "3000", adapter: "mongrel"
+  # 
   def self.run!(*args)
     Padrino.load! unless Padrino.loaded?
     Server.build(*args)
   end
 
+  ##
+  # This module build a Padrino server
+  # 
   module Server
 
     class LoadError < RuntimeError; end
@@ -49,5 +61,5 @@ module Padrino
         end
         raise LoadError, "Server handler (#{servers.join(',')}) not found."
       end
-  end
-end
+  end # Server
+end # Padrino
