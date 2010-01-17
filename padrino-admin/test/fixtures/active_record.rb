@@ -11,8 +11,19 @@ ActiveRecord::Schema.define do
     t.column :salt,             :string
     t.column :email,            :string
   end
+
+  create_table :categories, :force => true do |t|
+    t.column :name, :string
+    t.column :account_id, :integer
+  end
 end
 
-class Account < ActiveRecord::Base; end
+class Account < ActiveRecord::Base
+  has_many :categories
+end
+
+class Category < ActiveRecord::Base
+  belongs_to :account
+end
 
 Padrino::Admin::Orm.register!

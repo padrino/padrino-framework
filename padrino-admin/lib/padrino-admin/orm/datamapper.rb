@@ -117,7 +117,7 @@ module Padrino
 
               # Now time to limit/offset it
               query[:limit]  = params[:limit].to_i  if params[:limit].to_i > 0
-              query[:offset] = params[:offset].to_i if params[:start].to_i > 0
+              query[:offset] = params[:start].to_i  if params[:start].to_i > 0
 
               # Now we can perform ording/limiting
               result.records = all(query)

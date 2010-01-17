@@ -29,7 +29,8 @@ module Kernel
   alias :silence_stdout :silence_logger
 
   def load_fixture(file)
-    Object.send(:remove_const, :Account) if defined?(Account)
+    Object.send(:remove_const, :Account)  if defined?(Account)
+    Object.send(:remove_const, :Category) if defined?(Category)
     file += ".rb" if file !~ /.rb$/
     silence_stdout { load File.join(File.dirname(__FILE__), "fixtures", file) }
   end

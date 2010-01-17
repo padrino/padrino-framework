@@ -74,9 +74,6 @@ module Padrino
               # We build a base struct for have some good results
               result = ExtSearch.new(0, [])
 
-              # We need a basic query
-              query = {}
-
               # Search conditions
               if params[:query].present? && params[:fields].present?
                 filters = params[:fields].split(",").collect { |f| "#{f} LIKE ?" }.compact
@@ -90,7 +87,7 @@ module Padrino
 
               # Now time to limit/offset it
               query[:limit]  = params[:limit].to_i  if params[:limit].to_i > 0
-              query[:offset] = params[:offset].to_i if params[:start].to_i > 0
+              query[:offset] = params[:start].to_i  if params[:start].to_i > 0
 
               result.records = all(query)
               result

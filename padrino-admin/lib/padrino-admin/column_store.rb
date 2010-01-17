@@ -48,7 +48,9 @@ module Padrino
       ##
       # Return an array config for build an Ext.grid.ColumnModel() config
       # 
-      def column_fields
+      # If +json+ false we return the Hash object, else a JSON pretty printed string
+      # 
+      def column_fields(json=true)
         data = @data.map do |data|
           data     = data.dup
           editor   = parse_column_editor(data.delete("editor"))
@@ -59,20 +61,22 @@ module Padrino
           data.delete("mapping")
           data
         end
-        JSON.pretty_generate(data)
+        json ? JSON.pretty_generate(data) : data
       end
 
       ##
       # Return an array config for build an Ext.data.GroupingStore()
       # 
-      def store_fields
+      # If +json+ false we return the Hash object, else a JSON pretty printed string
+      # 
+      def store_fields(json=true)
         data = @data.map do |data|
           type = parse_store_renderer(data["renderer"])
           hash = { :name => data["dataIndex"] , :mapping => data["mapping"] }
           hash.merge!(type) if type
           hash
         end
-        JSON.pretty_generate(data)
+        json ? JSON.pretty_generate(data) : data
       end
 
       ##
@@ -91,6 +95,8 @@ module Padrino
       # Return a searched and paginated data collection for the ExtJS Ext.data.GroupingStore() json
       # You can pass options like:
       # 
+      # If options has key +json+ false we return the Hash object, else a JSON string
+      # 
       #   Examples:
       #   
       #     store_data(params, :include => :posts)
@@ -98,9 +104,11 @@ module Padrino
       def store_data(params={}, options={})
         # Some can tell me that this method made two identical queries one for count one for paginate.
         # We don't use the select count because in some circumstances require much time than select *.
-        params[:limit]     ||= 50
-        collection           = @model.ext_search(params, options)
-        { :results => store_data_from(collection.records), :count => collection.count }.to_json
+        params[:limit] ||= 50
+        json             = params.has_key?(:json) ? params.delete(:json) : true
+        collection       = @model.ext_search(params, options)
+        result           = { :results => store_data_from(collection.records), :count => collection.count }
+        json ? result.to_json : result
       end
 
       private
