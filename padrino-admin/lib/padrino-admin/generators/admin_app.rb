@@ -8,13 +8,13 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen backend"; end
+      def self.banner; "padrino-gen admin"; end
 
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
 
-      desc "Description:\n\n\tpadrino-gen controller generates a new Padrino Admin"
+      desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin"
 
       class_option :root,    :aliases => '-r', :default => ".",     :type    => :string
       class_option :path,    :aliases => '-p', :type    => :string, :default => "admin"
@@ -52,14 +52,19 @@ module Padrino
           end
           
           unless options[:destroy]
-            say ""
-            say "Your admin now is installed, now follow this steps:"
-            say ""
-            say "   - edit your config/database.rb"
-            say "   - run padrino rake -T and run db creation according to your orm"
-            say "   - run padrino rake seed"
-            say ""
-            say "That's all"
+            say (<<-TEXT).gsub(/ {12}/,'')
+
+            -----------------------------------------------------------------
+            Your admin now is installed, now follow this steps:
+
+              - edit your config/database.rb
+              - run padrino rake -T and run db creation according to your orm
+              - run padrino rake seed
+
+            That's all
+            -----------------------------------------------------------------
+
+            TEXT
           end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?

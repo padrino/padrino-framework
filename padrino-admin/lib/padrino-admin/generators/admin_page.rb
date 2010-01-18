@@ -8,13 +8,13 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen backend_page [Model]"; end
+      def self.banner; "padrino-gen admin_page [Model]"; end
 
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
 
-      desc "Description:\n\n\tpadrino-gen backend_page YourModel"
+      desc "Description:\n\n\tpadrino-gen admin_page YourModel"
       argument :model, :desc => "The name of your model"
       class_option :admin_path, :aliases => '-p', :type => :string, :default => "admin"
       class_option :root,       :aliases => '-r', :type => :string

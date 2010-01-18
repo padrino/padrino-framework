@@ -29,6 +29,9 @@ module Padrino
       # We need to TRY to load boot because some of our app dependencies maybe have 
       # custom generators, so is necessary know who are.
       def load_boot
+        require 'padrino-gen/generators/actions'
+        Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
+
         if options[:root]
           require File.join(options[:root], 'config/boot.rb') if File.exist?(File.join(options[:root], 'config/boot.rb'))
         else
@@ -37,9 +40,6 @@ module Padrino
       end
 
       def setup
-        require 'padrino-gen/generators/actions'
-        Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
-
         Padrino::Generators.lockup!
 
         generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?

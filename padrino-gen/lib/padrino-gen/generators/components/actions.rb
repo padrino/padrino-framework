@@ -24,7 +24,9 @@ module Padrino
           gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
           include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
           options.merge!(:content => include_text, :after => after_pattern)
-          inject_into_file('Gemfile', options[:content], :after => options[:after])
+          if behavior == :revoke || !File.read(app_root_path('Gemfile')).include?(options[:content])
+            inject_into_file(app_root_path('Gemfile'), options[:content], :after => options[:after])
+          end
         end
 
         # For orm database components
@@ -51,23 +53,26 @@ module Padrino
         #              :add => lambda { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
         #              :remove => lambda { |field, kind| "remove_column :#{table_name}, :#{field}" }
         def output_migration_file(filename, name, columns, options={})
-          change_format = options[:change_format]
-          migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
-          direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
-          tuples = direction ? columns.collect { |value| value.split(":") } : []
-          tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
-          add_columns    = tuples.collect(&options[:add]).join("\n    ")
-          remove_columns = tuples.collect(&options[:remove]).join("\n    ")
-          forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?
-          back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
-          contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
-          contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
-          contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
-          current_migration_number = return_last_migration_number
-          contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
-          migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-          # migration_filename = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{filename.underscore}.rb"
-          create_file(app_root_path('db/migrate/', migration_filename), contents)
+          if behavior == :revoke
+            remove_migration(filename)
+          else
+            change_format = options[:change_format]
+            migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
+            direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
+            tuples = direction ? columns.collect { |value| value.split(":") } : []
+            tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
+            add_columns    = tuples.collect(&options[:add]).join("\n    ")
+            remove_columns = tuples.collect(&options[:remove]).join("\n    ")
+            forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?
+            back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
+            contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
+            contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
+            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
+            current_migration_number = return_last_migration_number
+            contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
+            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            create_file(app_root_path('db/migrate/', migration_filename), contents)
+          end
         end
 
         # For migration files
