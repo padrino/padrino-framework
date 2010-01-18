@@ -50,7 +50,7 @@ module Padrino
           if options[:destroy] || !File.read(app_root_path("config/apps.rb")).include?("Padrino.mount(\"Admin\").to(\"/#{@app_path}\")")
             append_file app_root_path("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
           end
-          
+
           unless options[:destroy]
             say (<<-TEXT).gsub(/ {12}/,'')
 

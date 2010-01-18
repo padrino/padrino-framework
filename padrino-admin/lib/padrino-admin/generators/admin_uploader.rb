@@ -13,7 +13,6 @@ module Padrino
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
-      include Padrino::Generators::Components::Actions
 
       desc "Description:\n\n\tpadrino-gen admin_uploader Name"
       argument :name, :desc => "The name of your uploader"
@@ -33,7 +32,11 @@ module Padrino
           @name           = name.classify
           @app_root       = File.join(options[:root] || '.', options[:admin_path])
           self.behavior   = :revoke if options[:destroy]
-          require_dependencies("carrierwave")
+
+          if options[:destroy] || !File.read(app_root_path("GemFile")).include?("carrierwave")
+            append_file app_root_path("Gemfile"),  "\n\n# Uploader requirements\ngem 'carrierwave'"
+          end
+
           template "templates/uploader.rb.tt", app_root_path("/app/models/#{name.underscore}_uploader.rb")
           say (<<-TEXT).gsub(/ {10}/,'')
 
