@@ -38,6 +38,9 @@ module Padrino
           end
 
           template "templates/uploader.rb.tt", app_root_path("/app/models/#{name.underscore}_uploader.rb")
+
+          return if self.behavior == :revoke
+
           say (<<-TEXT).gsub(/ {10}/,'')
 
           -----------------------------------------------------
