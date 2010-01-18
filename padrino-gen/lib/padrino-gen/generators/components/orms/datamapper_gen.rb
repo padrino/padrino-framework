@@ -35,7 +35,6 @@ module Padrino
 
           def create_model_file(name, fields)
             model_path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
-            return false if File.exist?(model_path)
             model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
             field_tuples = fields.collect { |value| value.split(":") }
             field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
