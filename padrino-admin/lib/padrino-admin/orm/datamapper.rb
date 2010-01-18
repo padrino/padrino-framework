@@ -110,9 +110,27 @@ module Padrino
               # Now we can perform a count
               result.count = count(query)
 
-              # First we need to sort our record
+              # First we need to sort our record but we have some problems if we sort for associated tables.
+              # 
+              # see: http://www.mail-archive.com/datamapper@googlegroups.com/msg01310.html
+              # 
+              # I can get these values:
+              # 
+              # * accounts.name
+              # * accounts.posts.name
+              # * accounts.posts.categories.name
+              # 
+              # We need to transform in some like [DataMapper::Query::Direction.new(Account.properties[:name], :asc)]
+              # 
               if params[:sort].present? && params[:dir].to_s =~ /^(asc|desc)$/i
-                query[:order] = [params[:sort].to_s.gsub(/#{table_name}\./i,'').to_sym.send(params[:dir].to_s.downcase)]
+                values    = params[:sort].to_s.sub(/^#{table_name}\./, "").split(".").collect(&:to_sym)
+                property  = values.delete_at(-1) # the last value is always a property
+                relation  = values.inject(self) do |relation, value| 
+                  raise "Unknow relation #{value} for #{relation}" unless relation.relationships[value]
+                  relation.send(value)
+                end
+                target = relation.respond_to?(:model) ? relation.model.properties[property] : relation.properties[property]
+                query[:order] = [::DataMapper::Query::Direction.new(target, params[:dir].to_s.downcase.to_sym)]
               end
 
               # Now time to limit/offset it

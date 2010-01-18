@@ -4,6 +4,7 @@ columns:
     dataIndex: name
   - method: surname
   - method: category.name
+    dataIndex: categories.name
   - method: email
     header: E-mail
     sortable: false

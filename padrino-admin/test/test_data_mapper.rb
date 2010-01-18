@@ -57,7 +57,8 @@ class TestDataMapper < Test::Unit::TestCase
     should 'search correctly fields' do
       accounts, categories = {}, {}
 
-      Account.all.each { |a| a.destroy }
+      Account.auto_migrate!
+      Category.auto_migrate!
 
       %w(gino paoli mario venuti franco).each do |name|
         accounts[name] = Account.create(:email => "#{name}@foo.com", :role => name, :password => "some", :password_confirmation => "some")
@@ -83,8 +84,8 @@ class TestDataMapper < Test::Unit::TestCase
 
       # Perform some extended search
       # TODO: find a way for fix this DM issue.
-      # assert_equal [accounts["venuti"]], Account.ext_search({ :query => "rap", :fields => "categories.name" }, :links => [:categories]).records
-      # assert_equal [accounts["franco"], accounts["mario"]], Account.ext_search({:start => 3, :limit => 2, :sort => "categories.name", :dir => "desc"}, :links => [:categories]).records
+      assert_equal [accounts["venuti"]], Account.ext_search({ :query => "rap", :fields => "categories.name" }, :links => [Account.relationships[:categories].inverse]).records
+      assert_equal [accounts["franco"], accounts["mario"]], Account.ext_search({:start => 3, :limit => 2, :sort => "categories.name", :dir => "desc"}, :links => [Account.relationships[:categories].inverse]).records
     end
   end
 end

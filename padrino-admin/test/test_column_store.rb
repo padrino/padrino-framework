@@ -11,6 +11,7 @@ class TestController < Test::Unit::TestCase
           dataIndex: name
         - method: surname
         - method: category.name
+          dataIndex: categories.name
         - method: email
           header: E-mail
           sortable: false
@@ -36,7 +37,7 @@ class TestController < Test::Unit::TestCase
        "header"=>"Category.name",
        "sortable"=>true,
        "id"=>"category_name",
-       "dataIndex"=>"category.name"},
+       "dataIndex"=>"categories.name"},
       {"name"=>"account[email]",
        "header"=>"E-mail",
        "sortable"=>false,
@@ -56,7 +57,7 @@ class TestController < Test::Unit::TestCase
     result = [
       {:mapping=>"account_name", :name=>"accounts.name"},
       {:mapping=>"account_surname", :name=>"accounts.surname"},
-      {:mapping=>"category_name", :name=>"category.name"},
+      {:mapping=>"category_name", :name=>"categories.name"},
       {:mapping=>"account_email", :name=>"accounts.email"},
       {:mapping=>"account_role", :name=>"accounts.role"}
     ]

@@ -20,7 +20,7 @@ module Padrino
           # Try to reformat the dataIndex
           data_indexes = Array(column["dataIndex"]).collect do |data_index|
             if data_index =~ /\./ # if we have some like categories.names we use this
-              cols = data_index.split(".")
+              cols = data_index.split(".").collect(&:singularize)
               column["name"] ||= cols[0] + "[" + cols[1..-1].join("][") + "]" # accounts.name will be => accounts[name]
             else
               column["name"] ||= "#{table_name.singularize}[#{data_index}]"
