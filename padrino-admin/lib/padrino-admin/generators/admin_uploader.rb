@@ -38,15 +38,15 @@ module Padrino
           say (<<-TEXT).gsub(/ {10}/,'')
 
           -----------------------------------------------------
-          Now attach in models that need #{name} some like:
-
-            mount_on :my_attachment, #{@name}Uploader
-
-          Add a column in your models called ex (for AR):
+          1) Add a column in your models called ex (for AR):
 
             add_column :youtablename, :my_attachment, :string
 
-          Make sure you have +CarrierWave+ installed, if not:
+          2) Now attach in models that need #{name} some like:
+
+            mount_uploader :my_attachment, #{@name}Uploader
+
+          3) Make sure you have +CarrierWave+ installed, if not:
 
             sudo gem install carrierwave
 
