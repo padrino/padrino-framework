@@ -42,6 +42,10 @@ module Padrino
 
             mount_on :my_attachment, #{@name}Uploader
 
+          Add a column in your models called ex (for AR):
+
+            add_column :youtablename, :my_attachment, :string
+
           Make sure you have +CarrierWave+ installed, if not:
 
             sudo gem install carrierwave
