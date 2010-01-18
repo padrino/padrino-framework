@@ -19,8 +19,7 @@ module Padrino
 
           def setup_renderer
             require_dependencies 'haml'
-            create_file 'config/initializers/sass.rb', SASS_INIT
-            empty_directory 'public/stylesheets/sass'
+            create_file app_root_path('/config/initializers/sass.rb'), SASS_INIT
           end
         end
 
