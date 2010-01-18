@@ -34,17 +34,21 @@ module Padrino
         # options => { :base => "....text...", :up => "..text...",
         #             :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
         def output_model_migration(filename, name, columns, options={})
-          model_name = name.to_s.pluralize
-          field_tuples = fields.collect { |value| value.split(":") }
-          field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
-          column_declarations = field_tuples.collect(&options[:column_format]).join("\n      ")
-          contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
-          contents = contents.gsub(/!NAME!/, model_name.camelize).gsub(/!TABLE!/, model_name.underscore)
-          contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
-          current_migration_number = return_last_migration_number
-          contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
-          migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-          create_file(app_root_path('db/migrate/', migration_filename), contents, :skip => true)
+          if behavior == :revoke
+            remove_migration(name)
+          else
+            model_name = name.to_s.pluralize
+            field_tuples = fields.collect { |value| value.split(":") }
+            field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
+            column_declarations = field_tuples.collect(&options[:column_format]).join("\n      ")
+            contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
+            contents = contents.gsub(/!NAME!/, model_name.camelize).gsub(/!TABLE!/, model_name.underscore)
+            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
+            current_migration_number = return_last_migration_number
+            contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
+            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            create_file(app_root_path('db/migrate/', migration_filename), contents, :skip => true)
+          end
         end
 
         # For orm database components
@@ -54,7 +58,7 @@ module Padrino
         #              :remove => lambda { |field, kind| "remove_column :#{table_name}, :#{field}" }
         def output_migration_file(filename, name, columns, options={})
           if behavior == :revoke
-            remove_migration(filename)
+            remove_migration(name)
           else
             change_format = options[:change_format]
             migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
@@ -92,10 +96,15 @@ module Padrino
         # For the removal of migration files
         # removes the migration file based on the migration name
         def remove_migration(name)
-          migration_path =  Dir[app_root_path('db/migrate/*.rb')].select do |f| 
-            File.basename(f).match(/#{name.to_s.underscore}/)
-          end.first
-          remove_file migration_path if migration_path && File.exist?(migration_path)
+          migration_path =  Dir[app_root_path('db/migrate/*.rb')].find do |f| 
+            File.basename(f) =~ /#{name.to_s.underscore}/
+          end
+          return unless migration_path
+          if behavior == :revoke # we need to reverse the operation for revoke
+            create_file migration_path
+          else
+            remove_file migration_path
+          end
         end
 
         # For testing components

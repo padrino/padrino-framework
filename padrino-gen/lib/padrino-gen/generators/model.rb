@@ -33,7 +33,6 @@ module Padrino
 
       def create_model
         if in_app_root?(options[:root])
-          remove_model_migration(name) if options[:destroy]
           self.behavior = :revoke if options[:destroy]
           include_component_module_for(:orm, options[:root])
           include_component_module_for(:test, options[:root])

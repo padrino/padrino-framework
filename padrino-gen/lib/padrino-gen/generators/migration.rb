@@ -30,11 +30,10 @@ module Padrino
         super
       end
 
-      def create_model
+      def create_migration
         if in_app_root?(options[:root])
-          remove_migration(name) if options[:destroy]
-          include_component_module_for(:orm, options[:root])
           self.behavior = :revoke if options[:destroy]
+          include_component_module_for(:orm, options[:root])
           create_migration_file(name, name, columns)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
