@@ -40,7 +40,7 @@ module Padrino
           -----------------------------------------------------
           Now attach in models that need #{name} some like:
 
-            mount_on :my_attachment, #{@name}
+            mount_on :my_attachment, #{@name}Uploader
 
           Make sure you have +CarrierWave+ installed, if not:
 
