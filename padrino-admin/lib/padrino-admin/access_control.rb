@@ -127,9 +127,11 @@ module Padrino
     # Method used by Padrino::Application when we register the extension
     # 
     def self.registered(app)
+      app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
       app.helpers Padrino::Admin::Helpers
       app.before { login_required }
-      Padrino::Admin::Orm.register!
+      app.use Padrino::Admin::Middleware::FlashMiddleware, app.session_id  # make sure that is the same of session_name in helpers
+      Padrino::Admin::Orm.extend_account!
     end
 
     class Base
@@ -296,7 +298,7 @@ module Padrino
         @menus    = []
         @path     = path
         @allowed << path if path
-        yield self
+        yield self if block_given?
       end
 
       ##
@@ -334,7 +336,7 @@ module Padrino
       def config
         options = @options.merge(:text => human_name)
         options.merge!(:menu => @menus.collect(&:config)) if @menus.size > 0
-        options.merge!(:handler => Config::Variable.new("function(){ Admin.app.load('#{path}') }")) if @path
+        options.merge!(:handler => Padrino::Admin::Config::Variable.new("function(){ Admin.app.load('#{path}') }")) if @path
         options
       end
     end # ProjectModule

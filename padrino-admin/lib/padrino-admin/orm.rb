@@ -9,12 +9,17 @@ module Padrino
       # Method used for register the orm extensions.
       # 
       def self.register!
-        # Register Orm extension
         ::DataMapper::Model.append_inclusions(Padrino::Admin::Orm::DataMapper::Base)      if defined?(::DataMapper)
         ::ActiveRecord::Base.send(:include, Padrino::Admin::Orm::ActiveRecord::Base)      if defined?(::ActiveRecord)
         ::MongoMapper::Document.append_inclusions(Padrino::Admin::Orm::MongoMapper::Base) if defined?(::MongoMapper)
+        # Extend also account model
+        self.extend_account!
+      end
 
-        # Now extend our Account class if present
+      ##
+      # This method it's used for extend Account Model (if present)
+      # 
+      def self.extend_account!
         if defined?(Account) && Account.respond_to?(:orm)
           case Account.orm
             when :activerecord then Account.send(:include, Padrino::Admin::Orm::ActiveRecord::Account)

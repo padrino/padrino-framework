@@ -16,39 +16,35 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin"
 
-      class_option :root,    :aliases => '-r', :default => ".",     :type    => :string
+      class_option :root, :desc => "The root destination",    :aliases => '-r', :default => ".",     :type    => :string
       class_option :path,    :aliases => '-p', :type    => :string, :default => "admin"
       class_option :destroy, :aliases => '-d', :default => false,   :type    => :boolean
 
       # Copies over the Padrino base admin application
       def create_admin
-        if in_app_root?(options[:root])
+        self.destination_root = options[:root]
+        if in_app_root?
           @app_path = options[:path]
-          @orm = fetch_component_choice(:orm, options[:root]).to_sym rescue :datamapper
-          supported_orm = [:datamapper, :activerecord]
-          skip_migration = case @orm
-            when :activerecord then false
-            when :sequel       then false
-            else true
-          end
 
-          unless supported_orm.include?(@orm)
+          unless supported_orm.include?(orm(options[:root]))
             say "<= A the moment we only support #{supported_orm.join(" or ")}. Sorry!"
             raise SystemExit
           end
 
           self.behavior = :revoke if options[:destroy]
-          directory("app/", File.join(options[:path]))
+          directory("app/", destination_root(options[:path]))
 
           Padrino::Generators::Model.dup.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
-            "-r=#{options[:root]}", "-s=#{skip_migration}", "-d=#{options[:destroy]}"
+            "-r=#{options[:root]}", "-s=#{skip_migrations(options[:root])}", "-d=#{options[:destroy]}"
           ])
 
-          template "templates/db/seeds.rb.tt", app_root_path("/db/seeds.rb")
+          insert_into_gemfile("haml")
 
-          if options[:destroy] || !File.read(app_root_path("config/apps.rb")).include?("Padrino.mount(\"Admin\").to(\"/#{@app_path}\")")
-            append_file app_root_path("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
+          template "templates/page/db/seeds.rb.tt", destination_root("/db/seeds.rb")
+
+          if options[:destroy] || !File.read(destination_root("config/apps.rb")).include?("Padrino.mount(\"Admin\").to(\"/#{@app_path}\")")
+            append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
           end
 
           unless options[:destroy]

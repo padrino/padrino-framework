@@ -39,6 +39,7 @@ en:
         remove: "Delete"
         back: "Back"
         save: "Save"
+        save_and_back: "Save & Back"
         close: "Close"
         select: "Select"
         help: "Help"

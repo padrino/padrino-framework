@@ -12,7 +12,7 @@ module Padrino
             base.send :include, InstanceMethods
             base.extend ClassMethods
           end
-          
+
           module InstanceMethods
             ##
             # This is an alias method to allow us to don't see deprecations 
@@ -43,6 +43,7 @@ module Padrino
             def errors_keys
               errors.keys
             end
+
           end # InstanceMethods
 
           module ClassMethods
@@ -140,6 +141,35 @@ module Padrino
               # Now we can perform ording/limiting
               result.records = all(query)
               result
+            end
+
+            ##
+            # The aim of this method is act DM as AR, so when you define a many-to-many relation like:
+            # 
+            #   has n, :images
+            #   has n, :images, :through => Resource
+            # 
+            # you have two new methods:
+            # 
+            #   images_ids
+            #   images_ids=(*ids)
+            #
+            def has(cardinality, name, *args)
+              relationship = super(cardinality, name, *args)
+              if relationship.is_a?(::DataMapper::Associations::ManyToMany::Relationship) ||
+                 relationship.is_a?(::DataMapper::Associations::OneToMany::Relationship)
+
+                class_eval <<-RUBY, __FILE__, __LINE__ + 1
+                  def #{name.to_s.singular}_ids
+                    #{name}.collect(&:id)
+                  end
+
+                  def #{name.to_s.singular}_ids=(*ids)
+                    self.#{name} = #{relationship.child_model.name}.all(:id => ids.flatten)
+                  end
+                RUBY
+              end
+              relationship
             end
           end # ClassMethods
         end # Base

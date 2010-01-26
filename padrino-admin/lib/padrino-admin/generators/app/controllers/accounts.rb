@@ -32,6 +32,6 @@ Admin.controllers :accounts do
   delete :destroy, :respond_to => :json do
     accounts = Account.all(:conditions => { :id => params[:ids].split(",") })
     errors   = accounts.map { |account| I18n.t("admin.general.cantDelete", :record => account.id) unless account.destroy }.compact
-    { :success => errors.empty?, :msg => errors.join("<br />") }.to_json
+    render :success => errors.empty?, :msg => errors.join("<br />")
   end
 end

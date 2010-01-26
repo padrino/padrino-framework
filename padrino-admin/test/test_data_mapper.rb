@@ -40,6 +40,13 @@ class TestDataMapper < Test::Unit::TestCase
       assert_respond_to Account, :count
     end
 
+    should 'have category_ids' do
+      account = Account.first
+      assert_respond_to account, :category_ids
+      assert_respond_to account, :category_ids=
+      assert_equal [1, 3, 5], account.category_ids
+    end
+
     should 'have errors_keys' do
       account = Account.new
       account.valid?

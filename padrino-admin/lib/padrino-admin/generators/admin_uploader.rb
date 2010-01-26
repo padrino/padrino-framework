@@ -8,55 +8,48 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen admin_uploader [Name]"; end
+      def self.banner; "padrino-gen admin_uploader"; end
 
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
 
       desc "Description:\n\n\tpadrino-gen admin_uploader Name"
-      argument :name, :desc => "The name of your uploader"
-      class_option :admin_path, :aliases => '-p', :type => :string, :default => "admin"
-      class_option :root,       :aliases => '-r', :type => :string
-      class_option :destroy,    :aliases => '-d', :default => false, :type => :boolean
-
-      # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super
-      end
+      class_option :admin_path, :desc => "Path where is stored your admin app", :aliases => '-p', :type => :string, :default => "admin"
+      class_option :root,       :desc => "The root destination",                :aliases => '-r', :type => :string, :default => "."
+      class_option :destroy,    :desc => "Destroy the uploader",                :aliases => '-d', :default => false, :type => :boolean
 
       # Create controller for admin
       def create_controller
-        if in_app_root?(options[:root])
-          @name           = name.classify
-          @app_root       = File.join(options[:root] || '.', options[:admin_path])
+        self.destination_root = options[:root]
+        if in_app_root?
+          @app_root       = File.join(options[:root], options[:admin_path])
           self.behavior   = :revoke if options[:destroy]
 
-          if options[:destroy] || !File.read(app_root_path("GemFile")).include?("carrierwave")
-            append_file app_root_path("Gemfile"),  "\n\n# Uploader requirements\ngem 'carrierwave'"
+          if options[:destroy] || !File.read(destination_root("GemFile")).include?("carrierwave")
+            append_file destination_root("Gemfile"),  "\n\n# Uploader requirements\ngem 'carrierwave'"
           end
 
-          template "templates/uploader.rb.tt", app_root_path("/app/models/#{name.underscore}_uploader.rb")
+          copy_file "templates/uploader/controller.rb",      destination_root(options[:admin_path], "/controllers/uploads.rb")
+          copy_file "templates/uploader/views/grid.js.erb",  destination_root(options[:admin_path], "/views/uploads/grid.js.erb")
+          copy_file "templates/uploader/views/store.jml",    destination_root(options[:admin_path], "/views/uploads/store.jml")
+          copy_file "templates/uploader/models/upload.rb",   destination_root("app", "models", "upload.rb")
+          copy_file "templates/uploader/models/uploader.rb", destination_root("lib", "uploader.rb")
+
+          Padrino::Generators::Migration.dup.start([
+            "upload", "file:string", "created_at:datetime",
+            "-r=#{options[:root]}", "-d=#{options[:destroy]}"
+          ]) unless skip_migrations(options[:root])
+
+          add_permission(options[:admin_path], "role.project_module :uploads, \"/admin/uploads.js\"")
 
           return if self.behavior == :revoke
 
           say (<<-TEXT).gsub(/ {10}/,'')
 
           -----------------------------------------------------
-          1) Add a column in your models called ex (for AR):
-
-            add_column :youtablename, :my_attachment, :string
-
-          2) Now attach in models that need #{name} some like:
-
-            mount_uploader :my_attachment, #{@name}Uploader
-
-          3) Make sure you have +CarrierWave+ installed, if not:
-
-            sudo gem install carrierwave
-
-          Rember to upgrade your database !!!
+          1) Run migrations
+          2) That's all!!
           -----------------------------------------------------
 
           TEXT

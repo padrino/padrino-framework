@@ -6,4 +6,4 @@ var grid = new Admin.grid({
   store_fields: <%%= @store.store_fields %>
 });
 
-Admin.app.addItem(grid);
+Admin.app.addItem(grid, '<%%= params[:small] %>');

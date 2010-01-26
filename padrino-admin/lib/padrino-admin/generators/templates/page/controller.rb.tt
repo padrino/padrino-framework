@@ -32,6 +32,6 @@ Admin.controllers :<%= @model_plural %> do
   delete :destroy, :respond_to => :json do
     <%= @model_plural %> = <%= @model_name %>.all(:conditions => { :id => params[:ids].split(",") })
     errors = <%= @model_plural %>.map { |<%= @model_singular %>| I18n.t("admin.general.cantDelete", :record => <%= @model_singular %>.id) unless <%= @model_singular %>.destroy }.compact
-    { :success => errors.empty?, :msg => errors.join("<br />") }.to_json
+    render :success => errors.empty?, :msg => errors.join("<br />")
   end
 end

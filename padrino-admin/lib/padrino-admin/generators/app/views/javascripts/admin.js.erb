@@ -1,14 +1,15 @@
-Ext.BLANK_IMAGE_URL = '<%= image_path("ext/default/s.gif") %>'; 
+Ext.BLANK_IMAGE_URL = '<%= image_path("ext/default/s.gif") %>';
+Ext.Updater.defaults.showLoadIndicator = false;
 Ext.namespace('Admin');
-Ext.namespace('Admin.util.Format');
 
+// This is our event manager
+Admin.events = new Ext.util.Observable(); 
+
+// That is the main app
 Admin.app = function(){
-  // Our pretty simple cache
-  var cache = {};
-  var oldUrl = undefined;
   return {
     // Init our app
-    init : function(){
+    init: function(){
       // Cookie provider
       Ext.state.Manager.setProvider(
         new Ext.state.CookieProvider({
@@ -18,107 +19,116 @@ Admin.app = function(){
 
       // We want save cookies only for grids
       Ext.override(Ext.Component,      { stateful:false });
-      Ext.override(Ext.grid.GridPanel, { stateful:true  });
+      // Ext.override(Ext.grid.GridPanel, { stateful:true  });
       Ext.QuickTips.init();
 
       // Used for direclty load some specific page
+      var loadUrl = undefined;
       if (window.location.search){
-        var loadUrl = Ext.urlDecode(window.location.search.substring(1)).load;
+        loadUrl = Ext.urlDecode(window.location.search.substring(1)).load;
       } else if (window.location.href.split('#')[1]) {
-        var loadUrl = window.location.href.split('#')[1];
+        loadUrl = window.location.href.split('#')[1];
       }
 
       // Used for history the browsing
       Ext.History.init();
-      Ext.History.on('change', function(token){ if( token != Admin.app.oldUrl) { Admin.app.load(token) } });
+      Ext.History.on('change', function(token){ Admin.app.load(token) });
 
-      this.cache = {};
-      var header;
+      // Build some events
+      Admin.events.addEvents('itemAdded', 'contentLoaded');
 
-      <% if params[:small] != "1" %>
+      // Our header
       var header = new Ext.Panel({
         contentEl: 'header',
         region: 'north',
         border: false,
         bbar: <%= admin_menu %>
       });
-      <% end %>
 
+      // Our main container
       this.contentDynamic = new Ext.Panel({
         id:'dynamic',
         region:'center',
+        activeItem: 0,
         border:false,
-        bodyStyle: 'background: #FFF url(../images/admin/bg-content.png) repeat-x top;',
-        title: this.title() ? '&nbsp;' : '',
-        layout:'fit'
+        frame: true,
+        bodyCssClass: 'dynamic',
+        buttonAlign: 'left',
+        buttons: [{
+          id:'back',
+          text: Admin.locale.buttons.back,
+          cls: 'x-btn-text-icon back',
+          handler: this.back
+        },'->',{
+          id:'save',
+          text: Admin.locale.buttons.save,
+          hidden: true,
+          cls: 'x-btn-text-icon save'
+        }],
+        layout:'card'
       });
 
+      // Our viewport
       this.viewport = new Ext.Viewport({
         layout:'border',
-        items: header ? [header, this.contentDynamic] : [this.contentDynamic]
+        items: [header, this.contentDynamic]
       });
 
-      this.load(loadUrl ? loadUrl : '<%= url_for(:dashboard) %>');
+      loadUrl ? this.load(loadUrl) : this.loadPage('<%= url(:dashboard) %>');
+
       setTimeout(function(){
         Ext.get('loading').remove();
         Ext.get('loading-mask').fadeOut({remove:true});
       }, 250);
     }, // init
 
-    smallView : function(){
-      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).small : false;
-    }, // smalloallProductsGroupingStore
-
-    toolbar: function(){
-      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).toolbar!="0" : true;
-    }, // hideToolbar
-
-    title: function(){
-      return window.location.search ? Ext.urlDecode(window.location.search.substring(1)).title!="0" : true;
-    }, // hideTite
-
-    load : function(url){
+    load: function(url){
       var ext  = (/[.]/.exec(url)) ? /[^.]+$/.exec(url) : 'html';
 
-      // Now we need to store the url in the history
-      if (!this.smallView()){
-        Ext.History.add(url, true);
-        this.oldUrl = url;
-      }
       // Now give a reply based on request
       if (ext.length == 1 && ext[0].toLowerCase() == 'js') {
-        // Clean the html and scripts if requested
-        this.cleanScripts(); 
+        // Clean the html and scripts
+        this.cleanScripts();
         this.clean();
-        // We append the js into the head so we can easy inspect errors
-        var hd = document.getElementsByTagName("head")[0];
-        var s  = document.createElement("script");
-        s.src  = url;
-        s.type = 'text/javascript';
-        // Now we can append the child.
-        hd.appendChild(s);
+        Ext.History.add(url, true);
+        Ext.Ajax.request({ url: url, nocache:true });
       } else if (ext == 'html'){
-        // Clean the html and scripts if requested
-        this.mask();
-        Ext.Ajax.request({
-          url: url,
-          headers: { 'Accept': 'text/html' },
-          success: function(response) { Admin.app.update(response.responseText) }
-        });
+        this.loadWidget(url);
       } else {
         Admin.showAlert(Admin.locale.messages.alert.message);
       }
     }, // load
 
-    back: function(){
-      if (Admin.app.smallView()){
-        window.location.reload(true);
-      } else {
-        Ext.History.back();
-      }
-    },// back
+    loadPage: function(url){
+      // Clean the html and scripts
+      this.cleanScripts();
+      this.clean();
+      this.contentDynamic.load({ url: url, scripts: true, callback:this.inspectContent, scope:this, nocache:true });
+    }, // loadPage
 
-    update : function(html){
+    loadWidget: function(url, id){
+      var win = undefined;
+      if (id) { Ext.WindowMgr.each(function(w) { if (w.id == id) { win = w; return false } }, this) };
+      if (win){
+        win.toFront();
+      } else {
+        var win = new Admin.window({ id: id });
+        win.show(); win.hide();
+        win.load({
+          url: url,
+          scripts: true,
+          callback: Admin.app.inspectContent,
+          scope: win,
+          nocache: true 
+        });
+      }
+    },
+
+    back: function(){
+      Ext.History.back();
+    }, // back
+
+    update: function(html){
       this.cleanScripts();
       this.clean();
       var el = this.contentDynamic.body.update(html);
@@ -129,201 +139,117 @@ Admin.app = function(){
       Ext.select('head > script').each(function(el){ el.remove(); });
     }, // cleanScripts
 
-    clean : function(){
-      this.mask();
-      this.contentDynamic.items.each(function(i){ i.destroy(); });
+    clean: function(){
+      this.saveButtons(false);
+      this.contentDynamic.items.each(function(item){ item.destroy });
       this.contentDynamic.removeAll(true);
-      this.contentDynamic.body.update(''); // Another check ;)
-      this.contentDynamic.doLayout();
+      this.contentDynamic.body.update('');
     }, // clean
 
-    addItem : function(item){
-      this.contentDynamic.add(item);
-      this.contentDynamic.doLayout();
+    saveButtons: function(show, id){
+      var btns = this.contentDynamic.fbar.items.map;
+      if (show){
+        btns.save.show();
+        btns.save.handler = function(){ Admin.app.submitForm(id) };
+      } else {
+        btns.save.hide();
+        btns.save.handler = undefined;
+      }
+    }, // saveButtons
+
+    addItem: function(item, small){
+      // If we are loading a small item we don't need to add them to our container
+      if (small && small!=''){
+        Admin.events.fireEvent('customItemAdded', item);
+      } else {
+        this.contentDynamic.add(item);
+        this.contentDynamic.layout.setActiveItem(0);
+        this.contentDynamic.doLayout(true, true);
+      }
+      Admin.events.fireEvent('itemAdded', item)
     }, // addItem
 
-    submitForm : function(){
-      Admin.app.mask(Admin.locale.messages.wait.message);
-      Admin.app.contentDynamic.findByType('tabpanel').each(function(tabpanel){
-        cache.activeTab = tabpanel.activeTab.id;
-      });
-      Ext.select('form[data-remote=true]').each(function(form){ Ext.Ajax.request({ form: form }) });
+    submitForm: function(id){
+      var form = Ext.fly(id);
+      form.mask(Admin.locale.messages.wait.message);
+      Ext.Ajax.request({ form: form, callback: function(){ Ext.fly(id).unmask() } });
     }, // submitForms
 
     setTitle: function(title){
       this.contentDynamic.setTitle(title);
-    }, // SetTitle
-    
-    inspectContent: function(el, originalHtml){
-      try {
+    }, // setTitle
 
-        // Reformat ajax forms
-        el.select('form[data-remote=true]').each(function(form){
-          form.dom.onsubmit = function(){ Admin.app.submitForm(); return false };
+    inspectContent: function(el, success, response){
+      // Go away if no success
+      if (!success) return;
+
+      // Reformat ajax forms
+      el.select('form[data-remote=true]').each(function(form){
+        var id = Ext.id(form, 'ajax-form-');
+        form.dom.onsubmit = function(){ Admin.app.submitForm(id); return false };
+      });
+
+      // Search for tabs in the page
+      var tabs = el.select('div[tabbed=true]');
+
+      // We select the first form in the dom
+      var form = el.select('form[data-remote=true]').first();
+
+      // We need to parse our title
+      var title = el.select('span[title]').first();
+      if (title) this.setTitle(title.getAttribute("title"));
+
+      // If we have a form we need some save buttons
+      if (form) this.saveButtons(true, form.id);
+
+      // Build our tab panel if we have a form and tabs
+      if (tabs.elements.length > 0 && form){
+        // Build Tabs
+        var items = []
+        Ext.each(tabs.elements, function(tab){
+          tab.id = Ext.id('', tab.id +'-tab-');
+          items.push({ id: tab.id + '-tab-id-', contentEl: tab.id, title: tab.title });
         });
 
-        // Search for tabs in the page
-        var tabs = el.select('div[tabbed=true]');
+        // We can build the tabPanel
+        this.tabPanel = new Ext.TabPanel({
+          applyTo: form,
+          activeTab: 0,
+          border:false,
+          items: items,
+          layoutOnTabChange: true,
+          enableTabScroll: true,
+          defaults: { autoScroll:true, layout:'fit' }
+        });
 
-        if (tabs.elements.length > 0){
-          // Build Tabs
-          var items = tabs.elements.collect(function(tab){
-            return { id: tab.id+'-tabbed', contentEl: tab.id, title: tab.title };
-          });
-
-          // Get ActiveTab
-          var activeTab = (cache.activeTab || 0);
-
-          // We select the first form in the dom
-          var form = el.select('form[data-remote=true]').first();
-
-          // We need this for IE8
-          var formId = Ext.id(form, 'ajax-form-');
-
-          var tabConfig = {
-            applyTo: formId,
-            activeTab: activeTab,
-            border:false,
-            items: items,
-            deferredRender: false, 
-            layoutOnTabChange: true,
-            enableTabScroll: true,
-            defaults: { autoScroll:true, layout:'fit' }
-          };
-
-          if (this.toolbar()){
-            Ext.apply(tabConfig, {
-              bbar: [{ 
-                text: Admin.locale.buttons.back, 
-                cls: 'x-btn-text-icon back', 
-                handler: Admin.app.back 
-              }, '->',{ 
-                text: Admin.locale.buttons.save, 
-                cls: 'x-btn-text-icon save', 
-                handler: Admin.app.submitForm 
-              }]
-            });
-          }
-
-          // We can build the tabPanel
-          this.tabPanel = new Ext.TabPanel(tabConfig);
-
-          // Now we add the tab panel to our main container
-          this.addItem(this.tabPanel);
-
-          // Need to use this because some times we add tabs from inline scripts
-          this.tabPanel.on('add', function(container, tab){ if (tab.id == activeTab) { Admin.app.tabPanel.setActiveTab(activeTab); } });
-        }
-
-        // Now we can load scripts an eval scripts from the original html
-        var re = /(?:<script([^>]*)?>)((\n|\r|.)*?)(?:<\/script>)/ig;
-        var srcRe = /\ssrc=([\'\"])(.*?)\1/i;
-        var typeRe = /\stype=([\'\"])(.*?)\1/i;
-
-        var match;
-        while(match = re.exec(originalHtml)){
-          var attrs = match[1];
-          var srcMatch = attrs ? attrs.match(srcRe) : false;
-          if(srcMatch && srcMatch[2]){
-            // We append the js into the head so we can easy inspect errors
-            var hd = document.getElementsByTagName("head")[0];
-            var s  = document.createElement("script");
-            s.src  = srcMatch[2];
-            s.type = 'text/javascript';
-            // Now we can append the child.
-            hd.appendChild(s);
-          }else if(match[2] && match[2].length > 0){
-            if(window.execScript) {
-              window.execScript(match[2]);
-            } else {
-              window.eval(match[2]);
-            }
-          }
-        }
-
-        this.unmask();
-        // Empty our cache
-        cache = {};
-      } catch(e){
-        throw this.error(e)
+        this.tabPanel.render();
       }
+
+      this.fireEvent('contentLoaded');
     },//inspectContent
 
+    fireEvent: function(event){
+      Admin.events.fireEvent(event);
+    }, // fireEvent
+
     error: function(e){
-      if (typeof console != 'undefined') { 
-        console.error(e);
-      } else {
-        Admin.showAlert(e);
-      }
+      (typeof console != 'undefined') ? console.error(e) : Admin.showAlert(e)
     }, // error
 
-    openHelp: function(){
-      var form = new Ext.FormPanel({
-        baseCls: 'x-plain',
-        labelAlign: 'top',
-        items: [{
-          xtype:'textarea',
-          anchor: '100% 100%',
-          allowBlank: false,
-          fieldLabel: Admin.locale.help.description,
-          name: 'message'
-        }]
-      });
-
-      var formDialog = new Ext.Window({
-        id: 'help-window',
-        title: Admin.locale.help.title,
-        items: form, 
-        width: 500,
-        height: 300,
-        minWidth: 300,
-        minHeight: 150,
-        modal: true,
-        bodyStyle:'padding:5px;',
-        layout: 'fit'
-      });
-
-      formDialog.addButton(Admin.locale.buttons.send, function(){
-        form.getForm().submit({
-          url: '/admin/base/support_request',
-          method: 'POST',
-          waitMsg: Admin.locale.messages.wait.message,
-          success: function(form, action){
-            if (action.result.success == true) { 
-              formDialog.close();
-            };
-            Ext.MessageBox.alert(Admin.locale.messages.compliments.title, Admin.locale.help.compliments);
-          },
-          failure: function(form, action) {
-            if (action.result) {
-              Admin.showAlert(action.result.msg);
-            }
-          }
-        });
-      }, this);
-
-      formDialog.addButton(Admin.locale.buttons.close, formDialog.close, formDialog);
-      formDialog.show();
-    }, // openHelp
-
-    doLayout : function(){
-      this.contentDynamic.doLayout();
+    doLayout: function(){
+      this.contentDynamic.doLayout(true, true);
     }, //doLayout
 
-    mask : function(text){
-      if (this.contentDynamic){
-        if (text == null || text.length == 0) { text = Ext.LoadMask.prototype.msg; }
-        this.contentDynamic.el.mask(text);
-      }
+    mask: function(text){
+      if (text == null || text.length == 0) { text = Ext.LoadMask.prototype.msg; }
+      this.contentDynamic.el.mask(text);
     }, // mask
 
-    unmask : function(){
-      if (this.contentDynamic){
-        this.contentDynamic.el.unmask();
-      }
+    unmask: function(){
+      this.contentDynamic.el.unmask();
     }, // unmask
 
-    collapseBoxes : function(current){
+    collapseBoxes: function(current){
       var el = current.up().down('div.x-box-collapsible');
       var currentEl = Ext.get(el);
       currentEl.isDisplayed() ? currentEl.slideOut('t', {duration:.2, useDisplay:true}) : currentEl.slideIn('t', {duration:.2, useDisplay:true});
@@ -340,22 +266,22 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
   region: "center",
   viewConfig: { forceFit: true },
   border: false,
-  bodyBorder: false,
   buttons: ['add', 'edit', 'remove'],
   search: true,
   plugins: [],
-  view: new Ext.grid.GroupingView({ forceFit: true }),
-  sm: new Ext.grid.CheckboxSelectionModel(),
   column_fields: [],
   store_fields: [],
+  window: undefined,
+
   initComponent: function(){
-    Admin.app.setTitle(this.title);
-    this.title = undefined; // We need only page title not grid title
-    // Column Model
+    // Prepare our View/Cm/Sm
+    this.view = new Ext.grid.GroupingView({ forceFit: true }),
+    this.sm = new Ext.grid.CheckboxSelectionModel(),
     this.column_fields.unshift(new Ext.grid.CheckboxSelectionModel());
     this.cm = new Ext.grid.ColumnModel({ columns: this.column_fields });
     // Toolbar
     if (this.buttons.length > 0 || this.search){ this.tbar = new Ext.Toolbar() };
+    // Add Buttons
     Ext.each(this.buttons, function(button){
       switch(button){
         case 'add':
@@ -392,7 +318,7 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
     this.buttons = undefined; // Remove all bbar buttons, we don't want them in the bottom of grid.
     // Now we need to add some handlers for activate/deactivate buttons
     this.sm.on('selectionchange', function(){
-      var n = this.sm.getSelected();
+      var n = this.getSelectionModel().getSelected();
       var btns = this.getTopToolbar().items.map;
       if(!n){
         if (btns.remove){ btns.remove.disable() };
@@ -420,31 +346,36 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
         id: "id"
       })
     });
-    this.store.on('beforeload', function(){ Admin.app.mask(); });
-    this.store.on('load', function(){ Admin.app.unmask(); });
+    this.store.on('beforeload', function(){ this.el.mask(); }, this);
+    this.store.on('load', function(){ this.el.unmask(); }, this);
     // Build bbar
     this.bbar = new Ext.PagingToolbar({
       pageSize: 50,
       displayInfo: true,
       store: this.store
     });
+    // Call our superclass
     Admin.grid.superclass.initComponent.call(this);
-    this.store.load();
-  },
+    // Now we can load our records
+    this.on('render', function(){ this.store.load() }, this);
+  }, // initComponent
 
   addRecord: function(){
-    Admin.app.load(this.baseUrl + '/new');
-  },
+    Admin.app.loadWidget(this.baseUrl + '/new');
+  }, // addRecord
 
   editRecord: function(){
-    Admin.app.load(this.baseUrl + '/edit/' + this.sm.getSelected().id);
-  },
+    Ext.each(this.getSelectionModel().getSelections(), function(selection){
+      var id  = this.baseUrl + '-edit-' + selection.id;
+      Admin.app.loadWidget(this.baseUrl + '/edit/' + selection.id);
+    }, this)
+  }, // editRecord
 
   removeRecord: function(){
-    Ext.Msg.confirm(Admin.locale.messages.confirm.title, String.format(Admin.locale.messages.confirm.message, this.sm.getCount()), function(btn, text){
+    Ext.Msg.confirm(Admin.locale.messages.confirm.title, String.format(Admin.locale.messages.confirm.message, this.getSelectionModel().getCount()), function(btn, text){
       if (btn == 'yes'){
         Admin.app.mask();
-        var records = this.sm.getSelections();
+        var records = this.getSelectionModel().getSelections();
         var store   = this.store;
         Ext.Ajax.request({
           url: this.baseUrl + '/destroy.json',
@@ -452,7 +383,6 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
           method: 'DELETE',
           success: function(result, request){
             var resultValue = Ext.decode(result.responseText);
-            console.log(resultValue.msg);
             Admin.app.unmask();
             store.reload();
             if (!resultValue.success){
@@ -467,53 +397,71 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
         });
       }
     }, this);
-  }
-});
+  } // removeRecord
+}); // Admin.grid
 
 Admin.window = Ext.extend(Ext.Window, {
   width: 700,
-  height: 300,
   layout: 'fit',
   autoScroll: true,
-  modal: true,
   maximizable: true,
   bodyStyle: 'background-color:#FFF',
   grid: undefined,
-  form: false,
-  url: '',
-  iframeId: Ext.id('','iframe-'),
+  item: undefined,
+
   initComponent: function(){
+    this.addEvents('contentLoaded');
+    this.index = 0;
     Admin.window.superclass.initComponent.call(this);
-    this.addEvents('selected');
-    this.addEvents('saved');
+    this.on('contentLoaded', this.center, this);
+    this.on('contentLoaded', this.show, this);
+    this.adminWindow = true;
+    if (this.item || this.grid) this.add(this.item || this.grid);
     this.addButton({
       text: Admin.locale.buttons.close,
       handler: this[this.closeAction].createDelegate(this, [])
     });
     if (this.grid){
+      this.border = false;
       this.addButton({
         text: Admin.locale.buttons.select,
         handler: this.closeWithSelections.createDelegate(this, [])}
       );
     }
-    if (this.form){
+  }, // initComponent
+
+  addItem: function(item){ // this method is for a compatibility with Admin.app.addItem
+    this.add(item);
+    this.doLayout(true, true);
+  },
+
+  saveButtons: function(show, id){
+    var btns = this.fbar.items.map;
+    if (show){
       this.addButton({
         text: Admin.locale.buttons.save,
-        handler: this.saveForm.createDelegate(this, [])}
-      );
+        handler: function(){ Admin.app.submitForm(id) }
+      });
     }
-    this.html = '<iframe id="'+this.iframeId+'" class="windowed" src="/admin/base/?small=1&toolbar='+(this.form?0:1)+'&load='+this.url+'" frameBorder="0" width="100%" height="100%" />';
-  }, // initComponent
-  
-  afterShow : function(afterShow){
-    Admin.window.superclass.afterShow.call(this);
-    this.contentWindow = Ext.fly(this.iframeId).dom.contentWindow;
-  }, // onRender
-  
+  }, // saveButtons
+
+  show: function(){
+    Ext.WindowMgr.each(function(win) { if (win.adminWindow) this.index++ }, this);
+    Admin.window.superclass.show.call(this);
+  }, // show
+
+  center: function(){
+   var xy = this.el.getAlignToXY(this.container, 'c-c');
+   this.setPagePosition(xy[0]+(this.index*10), xy[1]+(this.index*10));
+   return this;
+  }, // center
+
+  unmask: Ext.emptyFn, // this method is for a compatibility with Admin.app.unmask
+
   getSelections: function(){
-    return this.contentWindow[this.grid].getSelectionModel().getSelections();
+    return this.grid.getSelectionModel().getSelections();
   }, // getSelections
-  
+
   closeWithSelections: function(){
     if (this.getSelections().length > 0){
       this.fireEvent('selected', this, this.getSelections());
@@ -521,35 +469,7 @@ Admin.window = Ext.extend(Ext.Window, {
     } else { 
       Admin.showAlert(Admin.locale.messages.alert.notSelected); 
     }
-  }, // closeWithSelections
-  
-  saveForm: function(){
-    this.contentWindow.Admin.app.submitForm();
-    this.fireEvent('saved', this);
-  } // saveForm
-});
-
-Admin.comboBox = Ext.extend(Ext.form.ComboBox, {
-  displayField:'title',
-  typeAhead: false,
-  loadingText: 'Searching...',
-  pageSize: 10,
-  autoWidth:true,
-  hideTrigger:true,
-  itemSelector: 'div.search-item',
-  initComponent : function(){
-    Admin.comboBox.superclass.initComponent.call(this);
-    if (this.autoWidth){
-      Admin.app.contentDynamic.on('resize', this.fitContent, this);
-      this.on('render', this.fitContent, this);
-    }
-  }, // initComponent
-  fitContent : function() {
-    this.el.setStyle({display:'none'});
-    var size = this.el.parent().parent().getSize();
-    this.onResize(size.width, size.height);
-    this.el.setStyle({display:'inline'});
-  }
+  } // closeWithSelections
 });
 
 Admin.showAlert = function(msg){

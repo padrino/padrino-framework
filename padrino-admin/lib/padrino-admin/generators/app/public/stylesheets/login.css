@@ -4,9 +4,9 @@ img  { border:none; }
 h2   { color:#525151; font-size:18px; margin:0px 0px 15px 0px; padding:0; }
 a    { color:#525151; }
 /*Login Page*/
-#wrapper { top:0; left:0; background: transparent url('../images/backend/background.png') repeat-x scroll center center; height:100%; width:100%; position:absolute; }
-#login-box { margin:0; padding:0px; position:absolute; width:413px; height:478px; background-image: url('../images/backend/bg-login.png'); top:50%; left:50%; margin-top:-239px; margin-left:-220px; }
-#intro-box { margin:0; padding:0px; position:absolute; width:413px; height:478px; background-image: url('../images/backend/bg_intro.png'); top:50%; left:50%; margin-top:-239px; margin-left:-220px; }
+#wrapper { top:0; left:0; background: transparent url('../images/admin/background.png') repeat-x scroll center center; height:100%; width:100%; position:absolute; }
+#login-box { margin:0; padding:0px; position:absolute; width:413px; height:478px; background-image: url('../images/admin/bg-login.png'); top:50%; left:50%; margin-top:-239px; margin-left:-220px; }
+#intro-box { margin:0; padding:0px; position:absolute; width:413px; height:478px; background-image: url('../images/admin/bg_intro.png'); top:50%; left:50%; margin-top:-239px; margin-left:-220px; }
 #logo-small { position:absolute; top:10px; left:100%; margin-left:-110px; }
 #logo-credit { position:absolute; top:10px; left:100%; margin-left:-225px; }
 #content { text-align:left; margin:150px 20px 0px 100px; }

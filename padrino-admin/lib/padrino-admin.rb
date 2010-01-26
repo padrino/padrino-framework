@@ -4,7 +4,7 @@ require 'padrino-core'
 require 'padrino-gen'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,generators,utils}/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,generators,middleware,utils}/*.rb'].each {|file| require file }
 
 ##
 # We need to apply Padrino::Admin::Utils::Extensions
@@ -27,3 +27,8 @@ CarrierWave.root = Padrino.root if defined?(CarrierWave)
 # Load our Padrino::Admin locales
 # 
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
+
+##
+# Load our databases extensions
+# 
+Padrino::Admin::Orm.register!

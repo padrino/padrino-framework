@@ -12,15 +12,17 @@ module Padrino
       # 
       def title(title)
         title = I18n.t("admin.titles.#{title}", :default => title.to_s) if title.is_a?(Symbol)
-        content_tag(:script, "Admin.app.setTitle(#{title.to_json})", :type => "text/javascript")
+        tag(:span, :title => title)
       end
 
       ##
       # This method work like error_message_for but use an Ext.Message.show({..})
       # 
       def show_messages_for(*objects)
-        options = objects.extract_options!.symbolize_keys
-        count   = objects.inject(0) {|sum, object| sum + object.errors.count }
+        options       = objects.extract_options!.symbolize_keys
+        count         = objects.inject(0) {|sum, object| sum + object.errors.count }
+        error_cleaner = objects.map{|object| object.class.properties.map{|k| "if ($('#{object.class.to_s.downcase}_#{k.name}')) $('#{object.class.to_s.downcase}_#{k.name}').removeClassName('x-form-invalid');" } }.join("\n")
+
         unless count.zero?
           html = {}
           options[:object_name] ||= objects.first.class
@@ -36,13 +38,12 @@ module Padrino
             message = escape_javascript(options.include?(:message) ? options[:message] : locale.t(:body))
             error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, escape_javascript(msg)) } }.join
             error_highlighter = objects.map {|object| object.errors_keys.map{ |k| "$('#{object.class.to_s.downcase}_#{k}').addClassName('x-form-invalid');" } }.join("\n")
-
             contents = ''
             contents << content_tag(:p, message) if message.present?
             contents << content_tag(:ul, error_messages, :class => :list)
             
             (<<-JAVASCRIPT).gsub(/ {14}/, '')
-              Admin.app.unmask();
+              #{error_cleaner}
               Ext.Msg.show({
                 title: '#{header_message}',
                 msg: '<ul>#{contents}</ul>',
@@ -54,7 +55,7 @@ module Padrino
           end
         else
           (<<-JAVASCRIPT).gsub(/ {12}/, '')
-            Admin.app.unmask();
+            #{error_cleaner}
             Ext.Msg.alert(Admin.locale.messages.compliments.title, Admin.locale.messages.compliments.message);
           JAVASCRIPT
         end
@@ -101,41 +102,173 @@ module Padrino
       # * :collapsible => false
       # * :start => :close
       # 
-      def box(title=nil, subtitle=nil, options={}, &block)
+      def box(title=nil, options={}, &block)
         title = I18n.t("admin.boxs.#{title.to_s.downcase}", :default => title.to_s.humanize) if title.is_a?(Symbol)
+        subtitle = options.delete(:subtitle)
         options[:style] ||= "width:100%;"
         options[:start] ||= :open
-        concat_content <<-HTML
-          <div class="x-box" style="#{options[:style]}">
-            <div class="x-box-tl">
-              <div class="x-box-tr">
-                <div class="x-box-tc">&nbsp;</div>
+        concat_content (<<-HTML).gsub(/ {10}/, '')
+          <div class="#{options[:class]}" style="options[:margin]">
+            <div class="x-box">
+              <div class="x-box-tl">
+                <div class="x-box-tr">
+                  <div class="x-box-tc">&nbsp;</div>
+                </div>
               </div>
-            </div>
-            <div class="x-box-ml">
-              <div class="x-box-mr">
-                <div class="x-box-mc">
-                  <div id="x-body-title" style="#{"cursor:pointer" if options[:collapsible]}" onclick="#{"Backend.app.collapseBoxes(this);" if options[:collapsible]}">
-                    #{"<h3 style=\"margin-bottom:0px;padding-bottom:0px;float:left;\">"+title+"</h3>" if title.present?}
-                    #{"<div style=\"float:right\"><em>"+subtitle+"</em></div>" if subtitle.present?}
-                    #{"<br class=\"clear\" />" if title.present? || subtitle.present?}
-                    #{"<div style=\"font-size:0px\">&nbsp;</div>" if title.present? || subtitle.present?}
-                  </div>
-                  <div class="#{"x-box-collapsible" if options[:collapsible]}" style="width:99%;#{"display:none" if options[:collapsible] && options[:start] == :close}">
-                    #{"<div style=\"font-size:10px\">&nbsp;</div>" if title.present? || subtitle.present?}
-                    #{capture_html(&block)}
-                    #{"<div style=\"text-align:right;margin-top:10px\">#{submit_tag(I18n.t("lipsiadmin.buttons.save"), :onclick=>"Backend.app.submitForm()")}</div>" if options[:submit]}
+              <div class="x-box-ml">
+                <div class="x-box-mr">
+                  <div class="x-box-mc">
+                    <div id="x-body-title" style="#{"cursor:pointer" if options[:collapsible]}" onclick="#{"Backend.app.collapseBoxes(this);" if options[:collapsible]}">
+                      #{"<h3 style=\"margin-bottom:0px;padding-bottom:0px;float:left;\">"+title+"</h3>" if title.present?}
+                      #{"<div style=\"float:right\"><em>"+subtitle+"</em></div>" if subtitle.present?}
+                      #{"<br class=\"clear\" />" if title.present? || subtitle.present?}
+                      #{"<div style=\"font-size:0px\">&nbsp;</div>" if title.present? || subtitle.present?}
+                    </div>
+                    <div class="#{"x-box-collapsible" if options[:collapsible]}" style="width:99%;#{"display:none" if options[:collapsible] && options[:start] == :close}">
+                      #{"<div style=\"font-size:10px\">&nbsp;</div>" if title.present? || subtitle.present?}
+                      #{capture_html(&block)}
+                      #{"<div style=\"text-align:right;margin-top:10px\">#{submit_tag(I18n.t("lipsiadmin.buttons.save"), :onclick=>"Backend.app.submitForm()")}</div>" if options[:submit]}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="x-box-bl">
-              <div class="x-box-br">
-                <div class="x-box-bc">&nbsp;</div>
+              <div class="x-box-bl">
+                <div class="x-box-br">
+                  <div class="x-box-bc">&nbsp;</div>
+                </div>
               </div>
             </div>
           </div>
         HTML
+      end
+
+      ##
+      # Open a Standard window that can contain a grid. Works like a select_tag.
+      # 
+      # Options can be:
+      # 
+      # :with:: name of the association. Ex: :images.
+      # :url:: the url of the gird, by default we autogenerate them using +:with+ ex: url(:images_index, :format => :js)
+      # :show:: value to display, if it's a symbol we tranform them using +with+ ex: :name, will be: data["images.name"]
+      # :get:: value to store in our db, Default: +:id+
+      # :grid:: the name of the var of Admin.grid. Default :grid
+      # :item:: the name of container. This necessary in cases where our grid it's in another container.
+      # :update:: javascript function to handle when the user close grid with some selections. Default autogenerated.
+      # :prompt:: text or html tag to prompt. Default is autogenerated.
+      # :prompt_destroy:: text or html tag to prompt for clear current selections. Default is autogenerated.
+      # :function:: name of the function. Default is autogenerated.
+      # :multiple:: if true returns a collections of +:value+. Default false.
+      # 
+      # Example multiple values:
+      #   # Generate:
+      #   # <script type="text/javascript">
+      #   #   function showAccountImages(){
+      #   #     Ext.Ajax.request({ 
+      #   #       url: '/admin/images.js',
+      #   #       scripts: false,
+      #   #       success: function(response){
+      #   #         try { eval(response.responseText) } catch(e) { Admin.app.error(e) };
+      #   #         var win = new Admin.window({ grid: grid, width: 800, height: 600 });
+      #   #         win.on('selected', function(win, selections){ ... });
+      #   #         win.show();
+      #   #       }
+      #   #     });
+      #   #   }
+      #   # </script>
+      #   # <ul id="account_images">
+      #   #   <li>
+      #   #     <span id="display">Foo</span>
+      #   #     <input type="hidden" name="account[image_ids][]" value = "1" />
+      #   #     <a href="#" onclick="this.up('li').destroy(); return false">Remove</a>
+      #   #   </li>
+      #   #   <li>
+      #   #     <span id="display">Bar</span>
+      #   #     <input type="hidden" name="account[image_ids][]" value = "2" />
+      #   #     <a href="#" onclick="this.up('li').destroy(); return false">Remove</a>
+      #   #   </li>
+      #   # </ul>
+      #   # <a href="#" onclick="showAccountImages(); return false">Show Images</a>
+      #   open_grid :account, :image_ids, :with => :images, :show => :name, :get => :id, :multiple => true
+      # 
+      def open_window_grid(object_name, method, options={})
+
+        # We need plural version of our association
+        controller = options[:multiple] ? options[:with] : "#{options[:with].to_s.pluralize}".to_sym
+
+        # Now we need our association
+        association = instance_variable_get("@#{object_name}").send(options[:with])
+
+        # Parsing not mandatory options
+        options[:url]            ||= url("#{controller}_index".to_sym, :format => :js, :small => true)
+        options[:grid]           ||= :grid
+        options[:item]           ||= :undefined
+        options[:get]            ||= :id
+        options[:prompt]         ||= image_tag("admin/new.gif", :style => "vertical-align:bottom;padding:2px")
+        options[:function]       ||= "show#{object_name.to_s.capitalize}#{options[:with].to_s.capitalize}"
+
+        # Here we build our html template
+        input_name  = "#{object_name}[#{method}]"
+        input_name += "[]" if options[:multiple]
+
+        template = (<<-HTML).gsub(/ {10}/, "")
+          <li>
+            <span class="display">{0}</span>
+            <input type="hidden" name="#{input_name}" value="{1}">
+            <a href="#" onclick="this.up(\\'li\\').remove(); return false" class="closebutton">&nbsp;</a>
+          </li>
+        HTML
+
+        # We create a collection of <li>
+        collection = Array(association).map do |item| 
+          template.gsub("{0}", item.send(options[:show]).to_s).
+                   gsub("{1}", item.send(options[:get]).to_s)
+        end
+
+        # And we add our link for add new records
+        collection << content_tag(:li, link_to(options[:prompt], "#", :onclick => "#{options[:function]}(); return false;"), :class => :clean)
+
+        # Now we have the final container
+        container = content_tag(:ul, collection.join.gsub("\\",""), :id => "#{object_name}_#{method}", :class => "open-window-grid")
+
+        # We need to refactor some values
+        show   = "data['#{controller}.#{options[:show]}']" if options[:show].is_a?(Symbol)
+        get    = options[:get].is_a?(Symbol) && options[:get] != :id ? "data['#{controller}.#{options[:get]}']" : options[:get]
+
+        update_function = if options[:multiple]
+          (<<-JAVASCRIPT).gsub(/ {12}/, "")
+            Ext.each(selections, function(selection){
+              var template = String.format('#{template.gsub(/\n/,"")}', selection.#{show}, selection.#{get});
+              Ext.fly('#{object_name}_#{method}').insertHtml('afterBegin', template);
+            });
+          JAVASCRIPT
+        else
+          (<<-JAVASCRIPT).gsub(/ {12}/, "")
+            var selection = selections.first();
+            var template = String.format('#{template.gsub(/\n/,"")}', selection.#{show}, selection.#{get});
+            Ext.fly('#{object_name}_#{method}').update(template);
+          JAVASCRIPT
+        end
+
+        # Now we build the update function (if not present)
+        javascript = (<<-JAVASCRIPT).gsub(/ {10}/, '')
+          function #{options[:function]}(){
+            Ext.Ajax.request({ 
+              url: '#{options[:url]}',
+              scripts: false,
+              success: function(response){
+                try { eval(response.responseText) } catch(e) { Admin.app.error(e) };
+                var win = new Admin.window({ grid: #{options[:grid]}, item: #{options[:item]}, width: 800, height: 600 });
+                win.on('selected', function(win, selections){
+                  #{update_function}
+                });
+                win.show();
+              }
+            });
+          }
+        JAVASCRIPT
+
+        # Now we return our html code
+        [content_tag(:script, javascript, :type => 'text/javascript'), container, tag(:div, :class => :clear)].join("\n")
       end
     end # Helpers
   end # Admin

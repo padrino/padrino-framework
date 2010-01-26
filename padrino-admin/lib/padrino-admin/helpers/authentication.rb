@@ -30,9 +30,9 @@ module Padrino
       #   
       #     current_account = Account.last
       # 
-      def set_current_account(account)
-        session[session_name] = account.id rescue nil
-        @current_account      = account
+      def set_current_account(account=nil)
+        session[options.session_id] = account ? account.id : nil
+        @current_account = account
       end
 
       ##
@@ -94,12 +94,8 @@ module Padrino
         options.store_location rescue false
       end
 
-      def session_name
-        options.app_name.to_sym
-      end
-
       def login_from_session
-        Account.first(:conditions => { :id => session[session_name] }) if defined?(Account)
+        Account.first(:conditions => { :id => session[options.session_id] }) if defined?(Account)
       end
     end # Helpers
   end # Admin
