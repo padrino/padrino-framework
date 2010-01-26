@@ -75,6 +75,22 @@ Account with role <tt>editor</tt> can manage <tt>only</tt> post/comments because
 Another good fature of Padrino admin is that when you define a <tt>Project Module</tt> role you also build the Menu Tree of the Admin. 
 Trust us that in future you appreciate so much this feature.
 
+=== Admin Uploads
+
+Padrino admin has a builtin upload managment that leave you to be free as possible.
+
+  fun-test$ padrino-gen admin_uploader
+  fun-test$ rake dm:auto:upgrade # or ar:migrate
+
+Finish! Now you can browse into your admin and you can see a new menu called +upload+ where you can see all your uploads,
+upload other file, delete ...
+
+All upload definitions are defined in lib/uploader.rb, here you can preproces your attachments (like resize) or manage versions.
+
+See http://github.com/jnicklas/carrierwave
+
+... here some example howto attach uploads to any model ...
+
 == Copyright
 
 Copyright (c) 2010 Padrino. See LICENSE for details.
