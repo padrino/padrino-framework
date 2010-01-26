@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-admin}
-  s.version = "0.6.3"
+  s.version = "0.6.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-25}
+  s.date = %q{2010-01-26}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{nesquena@gmail.com}
   s.extra_rdoc_files = [
@@ -38,6 +38,39 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/app/public/flash/charts.swf",
      "lib/padrino-admin/generators/app/public/flash/clippy.swf",
      "lib/padrino-admin/generators/app/public/flash/expressinstall.swf",
+     "lib/padrino-admin/generators/app/public/flash/swfupload.swf",
+     "lib/padrino-admin/generators/app/public/images/admin/back.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/background.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-content.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-hd-slate.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-hd.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-intro.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-login.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-menu-slate.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg-menu.png",
+     "lib/padrino-admin/generators/app/public/images/admin/bg.png",
+     "lib/padrino-admin/generators/app/public/images/admin/btn-login.png",
+     "lib/padrino-admin/generators/app/public/images/admin/cancel.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/categories.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/close.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/close.png",
+     "lib/padrino-admin/generators/app/public/images/admin/delete.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/download.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/duplicate.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/edit.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/export.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/hd-bg.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/image.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/loader.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/logo-loader.png",
+     "lib/padrino-admin/generators/app/public/images/admin/logo-small.png",
+     "lib/padrino-admin/generators/app/public/images/admin/new.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/no-image.png",
+     "lib/padrino-admin/generators/app/public/images/admin/preview.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/print.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/save.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/support.gif",
+     "lib/padrino-admin/generators/app/public/images/admin/up.gif",
      "lib/padrino-admin/generators/app/public/images/ext/default/box/corners-blue.gif",
      "lib/padrino-admin/generators/app/public/images/ext/default/box/corners.gif",
      "lib/padrino-admin/generators/app/public/images/ext/default/box/l-blue.gif",
@@ -259,6 +292,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/app/public/javascripts/effects.js",
      "lib/padrino-admin/generators/app/public/javascripts/ext.js",
      "lib/padrino-admin/generators/app/public/javascripts/prototype.js",
+     "lib/padrino-admin/generators/app/public/javascripts/swfupload.js",
      "lib/padrino-admin/generators/app/public/stylesheets/admin.css",
      "lib/padrino-admin/generators/app/public/stylesheets/ext.css",
      "lib/padrino-admin/generators/app/public/stylesheets/login.css",
@@ -273,10 +307,23 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/app/views/javascripts/admin.js.erb",
      "lib/padrino-admin/generators/app/views/javascripts/locale.js.erb",
      "lib/padrino-admin/generators/app/views/sessions/new.haml",
+     "lib/padrino-admin/generators/templates/page/controller.rb.tt",
+     "lib/padrino-admin/generators/templates/page/db/seeds.rb.tt",
+     "lib/padrino-admin/generators/templates/page/views/_form.haml.tt",
+     "lib/padrino-admin/generators/templates/page/views/edit.haml.tt",
+     "lib/padrino-admin/generators/templates/page/views/grid.js.erb.tt",
+     "lib/padrino-admin/generators/templates/page/views/new.haml.tt",
+     "lib/padrino-admin/generators/templates/page/views/store.jml.tt",
+     "lib/padrino-admin/generators/templates/uploader/controller.rb",
+     "lib/padrino-admin/generators/templates/uploader/models/upload.rb",
+     "lib/padrino-admin/generators/templates/uploader/models/uploader.rb",
+     "lib/padrino-admin/generators/templates/uploader/views/grid.js.erb",
+     "lib/padrino-admin/generators/templates/uploader/views/store.jml",
      "lib/padrino-admin/helpers/authentication.rb",
      "lib/padrino-admin/helpers/view.rb",
      "lib/padrino-admin/locale/admin/en.yml",
      "lib/padrino-admin/locale/extjs/en.yml",
+     "lib/padrino-admin/middleware/flash_middleware.rb",
      "lib/padrino-admin/orm.rb",
      "lib/padrino-admin/orm/abstract.rb",
      "lib/padrino-admin/orm/activerecord.rb",
@@ -309,8 +356,8 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json_pure>, [">= 1.2.0"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.6.3"])
-      s.add_runtime_dependency(%q<padrino-gen>, ["= 0.6.3"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.6.4"])
+      s.add_runtime_dependency(%q<padrino-gen>, ["= 0.6.4"])
       s.add_runtime_dependency(%q<tilt>, [">= 0.4"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
@@ -319,8 +366,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
       s.add_dependency(%q<json_pure>, [">= 1.2.0"])
-      s.add_dependency(%q<padrino-core>, ["= 0.6.3"])
-      s.add_dependency(%q<padrino-gen>, ["= 0.6.3"])
+      s.add_dependency(%q<padrino-core>, ["= 0.6.4"])
+      s.add_dependency(%q<padrino-gen>, ["= 0.6.4"])
       s.add_dependency(%q<tilt>, [">= 0.4"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 0"])
@@ -330,8 +377,8 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<json_pure>, [">= 1.2.0"])
-    s.add_dependency(%q<padrino-core>, ["= 0.6.3"])
-    s.add_dependency(%q<padrino-gen>, ["= 0.6.3"])
+    s.add_dependency(%q<padrino-core>, ["= 0.6.4"])
+    s.add_dependency(%q<padrino-gen>, ["= 0.6.4"])
     s.add_dependency(%q<tilt>, [">= 0.4"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 0"])

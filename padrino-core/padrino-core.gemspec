@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.6.3"
+  s.version = "0.6.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-01-15}
+  s.date = %q{2010-01-26}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{nesquena@gmail.com}
@@ -40,7 +40,6 @@ Gem::Specification.new do |s|
      "lib/padrino-core/logger.rb",
      "lib/padrino-core/mounter.rb",
      "lib/padrino-core/reloader.rb",
-     "lib/padrino-core/routing.rb",
      "lib/padrino-core/server.rb",
      "lib/padrino-core/stat.rb",
      "lib/padrino-core/support_lite.rb",
@@ -53,9 +52,13 @@ Gem::Specification.new do |s|
      "test/fixtures/apps/.gitignore",
      "test/fixtures/apps/complex.rb",
      "test/fixtures/apps/simple.rb",
+     "test/fixtures/dependencies/a.rb",
+     "test/fixtures/dependencies/b.rb",
+     "test/fixtures/dependencies/c.rb",
      "test/helper.rb",
      "test/test_application.rb",
      "test/test_core.rb",
+     "test/test_dependencies.rb",
      "test/test_logger.rb",
      "test/test_mounter.rb",
      "test/test_reloader_complex.rb",

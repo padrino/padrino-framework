@@ -18,7 +18,7 @@ module Padrino
           DM
 
           def setup_orm
-            require_dependencies 'dm-core', 'dm-validations', 'dm-aggregates'
+            require_dependencies 'dm-core', 'dm-validations', 'dm-aggregates', 'dm-timestamps'
             create_file("config/database.rb", DM)
             empty_directory('app/models')
           end
