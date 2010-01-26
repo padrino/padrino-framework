@@ -11,7 +11,6 @@ def shell
 end
 
 task :environment do
-  Padrino.logger_env = :test
   Padrino.mounted_apps.each do |app|
     Padrino.require_dependency(app.app_file)
     app.app_object.setup_application!

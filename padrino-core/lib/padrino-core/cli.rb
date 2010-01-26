@@ -41,6 +41,7 @@ module Padrino
       method_option :environment, :type => :string, :aliases => "-e", :required => true, :default => :development
       method_option :task_list,   :type => :string, :aliases => "-T"  # Only for accept rake
       def rake(task="")
+        ENV['PADRINO_LOG_LEVEL'] ||= "test"
         boot = check_boot
         return unless boot
         require 'rake'

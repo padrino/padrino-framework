@@ -1,3 +1,6 @@
+# Defines our PADRINO_LOG_LEVEL
+PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
+
 module Padrino
 
   ##
@@ -10,24 +13,6 @@ module Padrino
   # 
   def self.logger
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
-  end
-
-  ##
-  # Change the padrino logging configuration env.
-  # 
-  # By Padrino standards we log for this env:
-  # 
-  #   :production  => { :log_level => :warn,  :stream => :to_file }
-  #   :development => { :log_level => :debug, :stream => :stdout }
-  #   :test        => { :log_level => :fatal, :stream => :null }
-  # 
-  # So in if we are in +production+ but we want stop +warn+ for a certain task we can:
-  # 
-  #   logger_env :test
-  #   do_some_with_warn
-  # 
-  def self.logger_env=(env)
-    Thread.current[:padrino_logger] ||= Padrino::Logger.setup!(env)
   end
 
   class Logger
@@ -85,17 +70,17 @@ module Padrino
     #   :test        => { :log_level => :fatal, :stream => :null }
     # 
     Config = {
-      :production  => { :log_level => :warn, :stream => :to_file },
+      :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     } unless const_defined?(:Config)
 
-
     ##
     # Setup a new logger
     # 
-    def self.setup!(env=nil)
-      config = Config[env || Padrino.env] || Config[:test]
+    def self.setup!
+      config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
+      config = Config[config_level]
       stream = case config[:stream]
         when :to_file
           FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
