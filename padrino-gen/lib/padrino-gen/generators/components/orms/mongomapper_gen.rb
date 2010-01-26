@@ -6,25 +6,12 @@ module Padrino
         module MongomapperGen
 
           MONGO = (<<-MONGO).gsub(/^ {10}/, '')
-          class MongoDBConnectionFailure < RuntimeError; end
+          MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
 
-          module DatabaseSetup
-            def self.registered(app)
-              app.configure :development do
-                MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
-                MongoMapper.database = 'your_dev_db_here'
-              end
-
-              app.configure :production do
-                MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
-                MongoMapper.database = 'your_production_db_here'
-              end
-
-              app.configure :test do
-                MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
-                MongoMapper.database = 'your_test_db_here'
-              end
-            end
+          case Padrino.env
+            when :development then MongoMapper.database = 'your_db_development'
+            when :production  then MongoMapper.database = 'your_db_production'
+            when :test        then MongoMapper.database = 'your_db_test'
           end
           MONGO
 

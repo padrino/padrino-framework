@@ -15,7 +15,7 @@ if defined?(ActiveRecord)
           #  development:
           #    database: blog_development
           #    <<: *defaults
-          next unless config['database']
+          next unless config[:database]
           # Only connect to local databases
           local_database?(config) { create_database(config) }
         end
@@ -29,12 +29,13 @@ if defined?(ActiveRecord)
 
     def create_database(config)
       begin
-        if config['adapter'] =~ /sqlite/
-          if File.exist?(config['database'])
-            $stderr.puts "#{config['database']} already exists"
+        if config[:adapter] =~ /sqlite/
+          if File.exist?(config[:database])
+            $stderr.puts "#{config[:database]} already exists"
           else
             begin
               # Create the SQLite database
+              Dir.mkdir File.dirname(config[:database])
               ActiveRecord::Base.establish_connection(config)
               ActiveRecord::Base.connection
             rescue
@@ -48,38 +49,38 @@ if defined?(ActiveRecord)
           ActiveRecord::Base.connection
         end
       rescue
-        case config['adapter']
+        case config[:adapter]
         when 'mysql'
           @charset   = ENV['CHARSET']   || 'utf8'
           @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
-          creation_options = {:charset => (config['charset'] || @charset), :collation => (config['collation'] || @collation)}
+          creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
           begin
-            ActiveRecord::Base.establish_connection(config.merge('database' => nil))
-            ActiveRecord::Base.connection.create_database(config['database'], creation_options)
+            ActiveRecord::Base.establish_connection(config.merge(:database => nil))
+            ActiveRecord::Base.connection.create_database(config[:database], creation_options)
             ActiveRecord::Base.establish_connection(config)
           rescue Mysql::Error => sqlerr
             if sqlerr.errno == Mysql::Error::ER_ACCESS_DENIED_ERROR
               print "#{sqlerr.error}. \nPlease provide the root password for your mysql installation\n>"
               root_password = $stdin.gets.strip
-              grant_statement = "GRANT ALL PRIVILEGES ON #{config['database']}.* " \
-                "TO '#{config['username']}'@'localhost' " \
-                "IDENTIFIED BY '#{config['password']}' WITH GRANT OPTION;"
+              grant_statement = "GRANT ALL PRIVILEGES ON #{config[:database]}.* " \
+                "TO '#{config[:username]}'@'localhost' " \
+                "IDENTIFIED BY '#{config[:password]}' WITH GRANT OPTION;"
               ActiveRecord::Base.establish_connection(config.merge(
-                  'database' => nil, 'username' => 'root', 'password' => root_password))
-              ActiveRecord::Base.connection.create_database(config['database'], creation_options)
+                  :database => nil, 'username' => 'root', 'password' => root_password))
+              ActiveRecord::Base.connection.create_database(config[:database], creation_options)
               ActiveRecord::Base.connection.execute grant_statement
               ActiveRecord::Base.establish_connection(config)
             else
               $stderr.puts sqlerr.error
-              $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config['charset'] || @charset}, collation: #{config['collation'] || @collation}"
-              $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config['charset']
+              $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
+              $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
             end
           end
         when 'postgresql'
           @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
           begin
-            ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres', 'schema_search_path' => 'public'))
-            ActiveRecord::Base.connection.create_database(config['database'], config.merge('encoding' => @encoding))
+            ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', 'schema_search_path' => 'public'))
+            ActiveRecord::Base.connection.create_database(config[:database], config.merge('encoding' => @encoding))
             ActiveRecord::Base.establish_connection(config)
           rescue
             $stderr.puts $!, *($!.backtrace)
@@ -87,7 +88,7 @@ if defined?(ActiveRecord)
           end
         end
       else
-        $stderr.puts "#{config['database']} already exists"
+        $stderr.puts "#{config[:database]} already exists"
       end
     end
 
@@ -96,12 +97,12 @@ if defined?(ActiveRecord)
       task :all => :environment do
         ActiveRecord::Base.configurations.each_value do |config|
           # Skip entries that don't have a database key
-          next unless config['database']
+          next unless config[:database]
           begin
             # Only connect to local databases
             local_database?(config) { drop_database(config) }
           rescue Exception => e
-            puts "Couldn't drop #{config['database']} : #{e.inspect}"
+            puts "Couldn't drop #{config[:database]} : #{e.inspect}"
           end
         end
       end
@@ -113,15 +114,15 @@ if defined?(ActiveRecord)
       begin
         drop_database(config)
       rescue Exception => e
-        puts "Couldn't drop #{config['database']} : #{e.inspect}"
+        puts "Couldn't drop #{config[:database]} : #{e.inspect}"
       end
     end
 
     def local_database?(config, &block)
-      if %w( 127.0.0.1 localhost ).include?(config['host']) || config['host'].blank?
+      if %w( 127.0.0.1 localhost ).include?(config[:host]) || config[:host].blank?
         yield
       else
-        puts "This task only modifies local databases. #{config['database']} is on a remote host."
+        puts "This task only modifies local databases. #{config[:database]} is on a remote host."
       end
     end
 
@@ -185,7 +186,7 @@ if defined?(ActiveRecord)
     desc "Retrieves the charset for the current environment's database"
     task :charset => :environment do
       config = ActiveRecord::Base.configurations[Padrino.env || 'development']
-      case config['adapter']
+      case config[:adapter]
       when 'mysql'
         ActiveRecord::Base.establish_connection(config)
         puts ActiveRecord::Base.connection.charset
@@ -200,7 +201,7 @@ if defined?(ActiveRecord)
     desc "Retrieves the collation for the current environment's database"
     task :collation => :environment do
       config = ActiveRecord::Base.configurations[Padrino.env || 'development']
-      case config['adapter']
+      case config[:adapter]
       when 'mysql'
         ActiveRecord::Base.establish_connection(config)
         puts ActiveRecord::Base.connection.collation
@@ -294,19 +295,19 @@ if defined?(ActiveRecord)
   end
 
   def drop_database(config)
-    case config['adapter']
+    case config[:adapter]
     when 'mysql'
       ActiveRecord::Base.establish_connection(config)
-      ActiveRecord::Base.connection.drop_database config['database']
+      ActiveRecord::Base.connection.drop_database config[:database]
     when /^sqlite/
       require 'pathname'
-      path = Pathname.new(config['database'])
+      path = Pathname.new(config[:database])
       file = path.absolute? ? path.to_s : Padrino.root(path)
 
       FileUtils.rm(file)
     when 'postgresql'
-      ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres', 'schema_search_path' => 'public'))
-      ActiveRecord::Base.connection.drop_database config['database']
+      ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', 'schema_search_path' => 'public'))
+      ActiveRecord::Base.connection.drop_database config[:database]
     end
   end
 
@@ -315,8 +316,8 @@ if defined?(ActiveRecord)
   end
 
   def set_firebird_env(config)
-    ENV["ISC_USER"]     = config["username"].to_s if config["username"]
-    ENV["ISC_PASSWORD"] = config["password"].to_s if config["password"]
+    ENV["ISC_USER"]     = config[:username].to_s if config[:username]
+    ENV["ISC_PASSWORD"] = config[:password].to_s if config[:password]
   end
 
   def firebird_db_string(config)

@@ -210,7 +210,6 @@ module Padrino
           use Padrino::RackLogger
           use Padrino::Reloader   if reload?
           use Rack::Flash         if flash?
-          register DatabaseSetup  if defined?(DatabaseSetup)
           @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
           Dir[@initializer_path].each { |file| register_initializer(file) }
         end

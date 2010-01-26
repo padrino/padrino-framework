@@ -6,13 +6,12 @@ module Padrino
         module CouchrestGen
 
           COUCHREST = (<<-COUCHREST).gsub(/^ {10}/, '')
-          module DatabaseSetup
-            def self.registered(app)
-              app.configure(:development) { set :couchdb, CouchRest.database!("your_dev_db_here") }
-              app.configure(:production)  { set :couchdb, CouchRest.database!("your_production_db_here") }
-              app.configure(:test)        { set :couchdb, CouchRest.database!("your_test_db_here") }
-            end
+          case Padrino.env
+            when :development then COUCHDB = "your_db_name_development"
+            when :production  then COUCHDB = "your_db_name_production"
+            when :test        then COUCHDB = "your_db_name_test"
           end
+          CouchRest.database!(COUCHDB)
           COUCHREST
 
           def setup_orm
@@ -25,7 +24,7 @@ module Padrino
           class !NAME! < CouchRest::ExtendedDocument
             include CouchRest::Validation
 
-            use_database app { couchdb }
+            use_database COUCHDB
 
             unique_id :id
             # property <name>

@@ -6,31 +6,50 @@ module Padrino
         module ActiverecordGen
 
           AR = (<<-AR).gsub(/^ {10}/, '')
-          module DatabaseSetup
-            def self.registered(app)
-              app.configure { ActiveRecord::Base.logger = logger }
-              app.configure :development do
-                ActiveRecord::Base.establish_connection(
-                  :adapter => 'sqlite3',
-                  :database => Padrino.root('db', "development.db")
-                )
-              end
+          ##
+          # You can use other adapters like:
+          # 
+          #   ActiveRecord::Base.configurations[:development] = {
+          #     :adapter  => "mysql",
+          #     :host     => "localhost",
+          #     :username => "myuser",
+          #     :password => "mypass",
+          #     :database => "somedatabase"
+          #   )
+          #
+          ActiveRecord::Base.configurations[:development] = {
+            :adapter => 'sqlite3',
+            :database => Padrino.root('db', "development.db")
+          }
 
-              app.configure :production do
-                ActiveRecord::Base.establish_connection(
-                  :adapter => 'sqlite3',
-                  :database => Padrino.root('db', "production.db")
-                )
-              end
+          ActiveRecord::Base.configurations[:production] = {
+            :adapter => 'sqlite3',
+            :database => Padrino.root('db', "production.db")
+          }
 
-              app.configure :test do
-                ActiveRecord::Base.establish_connection(
-                  :adapter => 'sqlite3',
-                  :database => Padrino.root('db', "test.db")
-                )
-              end
-            end
-          end
+          ActiveRecord::Base.configurations[:test] = {
+            :adapter => 'sqlite3',
+            :database => Padrino.root('db', "test.db")
+          }
+
+          # Setup our logger
+          ActiveRecord::Base.logger = logger
+
+          # Include Active Record class name as root for JSON serialized output.
+          ActiveRecord::Base.include_root_in_json = true
+
+          # Store the full class name (including module namespace) in STI type column.
+          ActiveRecord::Base.store_full_sti_class = true
+
+          # Use ISO 8601 format for JSON serialized times and dates.
+          ActiveSupport.use_standard_json_time_format = true
+
+          # Don't escape HTML entities in JSON, leave that for the #json_escape helper.
+          # if you're including raw json in an HTML page.
+          ActiveSupport.escape_html_entities_in_json = false
+
+          # Now we can estabilish connection with our db
+          ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
           AR
 
           RAKE = (<<-RAKE).gsub(/^ {10}/, '')
@@ -96,7 +115,7 @@ module Padrino
           def create_model_migration(migration_name, name, columns)
             output_model_migration(migration_name, name, columns,
                  :base => AR_MIGRATION,
-                 :column_format => lambda { |field, kind| "t.column :#{field}, :#{kind.underscore.gsub(/_/, '')}"  },
+                 :column_format => lambda { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
                  :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
           end
 
@@ -109,7 +128,7 @@ module Padrino
           def create_migration_file(migration_name, name, columns)
             output_migration_file(migration_name, name, columns,
                 :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
-                :add => lambda { |field, kind| "t.column :#{field}, :#{kind.underscore.gsub(/_/, '')}" },
+                :add => lambda { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
                 :remove => lambda { |field, kind| "t.remove :#{field}" })
           end
 

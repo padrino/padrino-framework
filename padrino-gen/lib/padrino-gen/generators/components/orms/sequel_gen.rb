@@ -6,13 +6,11 @@ module Padrino
         module SequelGen
 
           SEQUEL = (<<-SEQUEL).gsub(/^ {10}/, '')
-          module DatabaseSetup
-            def self.registered(app)
-              Sequel::Model.plugin(:schema)
-              app.configure(:development) { Sequel.connect("sqlite3://" + Padrino.root('db', "development.db"), :loggers => [logger]) }
-              app.configure(:production)  { Sequel.connect("sqlite3://" + Padrino.root('db', "production.db"), :loggers => [logger]) }
-              app.configure(:test)        { Sequel.connect("sqlite3://" + Padrino.root('db', "test.db"), :loggers => [logger]) }
-            end
+          Sequel::Model.plugin(:schema)
+          case Padrino.env
+            when :development then Sequel.connect("sqlite3://" + Padrino.root('db', "development.db"), :loggers => [logger])
+            when :production  then Sequel.connect("sqlite3://" + Padrino.root('db', "production.db"),  :loggers => [logger])
+            when :test        then Sequel.connect("sqlite3://" + Padrino.root('db', "test.db"),        :loggers => [logger])
           end
           SEQUEL
 
