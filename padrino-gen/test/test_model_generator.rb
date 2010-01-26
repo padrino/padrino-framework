@@ -52,7 +52,6 @@ class TestModelGenerator < Test::Unit::TestCase
       migration_file_path = "/tmp/sample_app/db/migrate/001_create_users.rb"
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :users/m, migration_file_path)
-      assert_match_in_file(/# t.column :age, :integer[\n\s]+?end/m, migration_file_path)
       assert_match_in_file(/drop_table :users/m, migration_file_path)
     end
 
@@ -63,10 +62,9 @@ class TestModelGenerator < Test::Unit::TestCase
       migration_file_path = "/tmp/sample_app/db/migrate/001_create_people.rb"
       assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/# t.column :age, :integer/m, migration_file_path)
-      assert_match_in_file(/t.column :name, :string/m,   migration_file_path)
-      assert_match_in_file(/t.column :age, :integer/m,   migration_file_path)
-      assert_match_in_file(/t.column :email, :string/m,  migration_file_path)
+      assert_match_in_file(/t.string :name/m,   migration_file_path)
+      assert_match_in_file(/t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/t.string :email/m,  migration_file_path)
       assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
@@ -77,7 +75,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon', '-d=couchrest']) }
       silence_logger { @model_gen.start(['user', '-r=/tmp/sample_app']) }
       assert_match_in_file(/class User < CouchRest::ExtendedDocument/m, '/tmp/sample_app/app/models/user.rb')
-      assert_match_in_file(/use_database app \{ couchdb \}/m, '/tmp/sample_app/app/models/user.rb')
+      assert_match_in_file(/use_database COUCHDB/m, '/tmp/sample_app/app/models/user.rb')
       assert_match_in_file(/# property <name>[\s\n]+?end/m, '/tmp/sample_app/app/models/user.rb')
     end
 
@@ -85,7 +83,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon', '-d=couchrest']) }
       silence_logger { @model_gen.start(['person', "name:string", "age", "email:string", '-r=/tmp/sample_app']) }
       assert_match_in_file(/class Person < CouchRest::ExtendedDocument/m, '/tmp/sample_app/app/models/person.rb')
-      assert_match_in_file(/use_database app \{ couchdb \}/m, '/tmp/sample_app/app/models/person.rb')
+      assert_match_in_file(/use_database COUCHDB/m, '/tmp/sample_app/app/models/person.rb')
       assert_match_in_file(/property :name/m, '/tmp/sample_app/app/models/person.rb')
       assert_match_in_file(/property :age/m, '/tmp/sample_app/app/models/person.rb')
       assert_match_in_file(/property :email/m, '/tmp/sample_app/app/models/person.rb')

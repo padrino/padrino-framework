@@ -35,7 +35,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
       silence_logger { @mig_gen.start(['add_email_to_user', "email:string", '-r=/tmp/sample_app']) }
       migration_file_path = "/tmp/sample_app/db/migrate/001_add_email_to_user.rb"
       assert_match_in_file(/class AddEmailToUser/m, migration_file_path)
-      assert_match_in_file(/t.column :email, :string/, migration_file_path)
+      assert_match_in_file(/t.string :email/, migration_file_path)
       assert_match_in_file(/t.remove :email/, migration_file_path)
     end
 
@@ -66,8 +66,8 @@ class TestMigrationGenerator < Test::Unit::TestCase
       response_success = silence_logger { @mig_gen.start(migration_params) }
       migration_file_path = "/tmp/sample_app/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/class AddEmailToUsers/m, migration_file_path)
-      assert_match_in_file(/change_table :users.*?t\.column :email, :string/m, migration_file_path)
-      assert_match_in_file(/t\.column :age, :integer/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.string :email/m, migration_file_path)
+      assert_match_in_file(/t\.integer :age/m, migration_file_path)
       assert_match_in_file(/change_table :users.*?t\.remove :email/m, migration_file_path)
       assert_match_in_file(/t\.remove :age/m, migration_file_path)
     end
@@ -80,8 +80,8 @@ class TestMigrationGenerator < Test::Unit::TestCase
       assert_match_in_file(/class RemoveEmailFromUsers/m, migration_file_path)
       assert_match_in_file(/change_table :users.*?t\.remove :email/m, migration_file_path)
       assert_match_in_file(/t\.remove :age/m, migration_file_path)
-      assert_match_in_file(/change_table :users.*?t\.column :email, :string/m, migration_file_path)
-      assert_match_in_file(/t\.column :age, :integer/m, migration_file_path)
+      assert_match_in_file(/change_table :users.*?t\.string :email/m, migration_file_path)
+      assert_match_in_file(/t\.integer :age/m, migration_file_path)
     end
   end
 

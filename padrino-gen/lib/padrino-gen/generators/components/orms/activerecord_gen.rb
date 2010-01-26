@@ -102,8 +102,6 @@ module Padrino
 
           AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^ {6}/, '')
           create_table :!TABLE! do |t|
-            # t.column <name>, <type>
-            # t.column :age, :integer
             !FIELDS!
           end
           MIGRATION
