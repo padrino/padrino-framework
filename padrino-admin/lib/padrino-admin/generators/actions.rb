@@ -4,8 +4,8 @@ module Padrino
       ##
       # Tell us if for our orm we need migrations
       # 
-      def skip_migrations(root)
-        skip_migration = case orm(root)
+      def skip_migrations
+        skip_migration = case orm
           when :activerecord then false
           when :sequel       then false
           else true
@@ -15,8 +15,8 @@ module Padrino
       ##
       # Tell us which orm we are using
       # 
-      def orm(root)
-        fetch_component_choice(:orm, root).to_sym rescue :datamapper
+      def orm
+        fetch_component_choice(:orm).to_sym rescue :datamapper
       end
 
       ##

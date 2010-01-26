@@ -26,7 +26,7 @@ module Padrino
         if in_app_root?
           @app_path = options[:path]
 
-          unless supported_orm.include?(orm(options[:root]))
+          unless supported_orm.include?(orm)
             say "<= A the moment we only support #{supported_orm.join(" or ")}. Sorry!"
             raise SystemExit
           end
@@ -36,7 +36,7 @@ module Padrino
 
           Padrino::Generators::Model.dup.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
-            "-r=#{options[:root]}", "-s=#{skip_migrations(options[:root])}", "-d=#{options[:destroy]}"
+            "-r=#{options[:root]}", "-s=#{skip_migrations}", "-d=#{options[:destroy]}"
           ])
 
           insert_into_gemfile("haml")

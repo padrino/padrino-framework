@@ -1,5 +1,7 @@
 columns:
-  - method: file
+  - method: file.to_s
+    dataIndex: uploads.file
+    header: File
   - method: size
     renderer: file_size
     sortable: false

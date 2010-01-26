@@ -33,13 +33,33 @@ module Padrino
           copy_file "templates/uploader/controller.rb",      destination_root(options[:admin_path], "/controllers/uploads.rb")
           copy_file "templates/uploader/views/grid.js.erb",  destination_root(options[:admin_path], "/views/uploads/grid.js.erb")
           copy_file "templates/uploader/views/store.jml",    destination_root(options[:admin_path], "/views/uploads/store.jml")
-          copy_file "templates/uploader/models/upload.rb",   destination_root("app", "models", "upload.rb")
-          copy_file "templates/uploader/models/uploader.rb", destination_root("lib", "uploader.rb")
+          copy_file "templates/uploader/lib/uploader.rb",    destination_root("lib", "uploader.rb")
 
-          Padrino::Generators::Migration.dup.start([
+          Padrino::Generators::Model.dup.start([
             "upload", "file:string", "created_at:datetime",
-            "-r=#{options[:root]}", "-d=#{options[:destroy]}"
-          ]) unless skip_migrations(options[:root])
+            "-r=#{options[:root]}", "-s=#{skip_migrations}", "-d=#{options[:destroy]}"
+          ])
+
+          inject_into_file destination_root("app", "models", "upload.rb"), :before => "end" do
+            (<<-RUBY).gsub(/ {14}/, '  ')
+              mount_uploader :file, Uploader
+
+              def size
+                file.size if file
+              end
+
+              def content_type
+                file.content_type if file
+              end
+            RUBY
+          end
+
+          # Only for datamapper
+          if orm == :datamapper
+            inject_into_file destination_root("app", "models", "upload.rb"), :after => "property :file, String" do
+              ", :auto_validation => false"
+            end
+          end
 
           add_permission(options[:admin_path], "role.project_module :uploads, \"/admin/uploads.js\"")
 
