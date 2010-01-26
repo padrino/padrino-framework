@@ -52,7 +52,7 @@ module Padrino
       # 
       #   # => "/admin"
       #   # => "/admin/show/1"
-      #   
+      # 
       def controller(*extensions, &block)
         if block_given?
           @_controller, original = extensions, @_controller
@@ -358,7 +358,6 @@ module Padrino
           route.name(name) if name
           route
         end
-
     end # self
 
     ##
@@ -393,13 +392,15 @@ module Padrino
     # serving files from the public directory
     # 
     def static_file?(path_info)
-      return false if (public_dir = options.public).nil?
-      public_dir = File.expand_path(public_dir)
+      [options.public, Padrino.root("shared/public")].find do |folder|
+        next if folder.nil?
+        public_dir = File.expand_path(folder)
 
-      path = File.expand_path(public_dir + unescape(path_info))
-      return false if path[0, public_dir.length] != public_dir
-      return false unless File.file?(path)
-      return path
+        path = File.expand_path(public_dir + unescape(path_info))
+        next if path[0, public_dir.length] != public_dir
+        next unless File.file?(path)
+        return path
+      end
     end
 
     private
@@ -473,6 +474,8 @@ module Padrino
       def render(engine, data=nil, options={}, locals={}, &block)
         # TODO: remove these @template_cache.respond_to?(:clear) when sinatra 1.0 will be released
         @template_cache.clear if Padrino.env != :production && @template_cache && @template_cache.respond_to?(:clear)
+        # If engine is an hash we convert to json
+        return engine.to_json if engine.is_a?(Hash)
         # If an engine is a string probably is a path so we try to resolve them
         if data.nil?
           data   = engine.to_sym

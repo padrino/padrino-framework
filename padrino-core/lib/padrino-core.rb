@@ -54,6 +54,7 @@ module Padrino
       %w(
         lib
         models
+        shared
       ).map { |dir| root(dir) }
     end
 

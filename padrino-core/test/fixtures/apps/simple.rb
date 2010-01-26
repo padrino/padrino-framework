@@ -15,4 +15,10 @@ SimpleDemo.controllers do
   end
 end
 
-Padrino.load! # Replace this with Parino.run! unless Padrino.loaded? if you want to run the app standalone
+## If you want use this as a standalone app uncomment:
+# 
+# Padrino.mount_core("SimpleDemo")
+# Padrino.run! unless Padrino.loaded? # If you enable reloader prevent to re-run the app
+# 
+
+Padrino.load!
