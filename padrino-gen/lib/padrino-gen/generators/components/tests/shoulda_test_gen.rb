@@ -36,9 +36,9 @@ module Padrino
           TEST
 
           # Generates a controller test given the controllers name
-          def generate_controller_test(name, root)
+          def generate_controller_test(name)
             shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file File.join(root, "test/controllers/#{name}_controller_test.rb"), shoulda_contents, :skip => true
+            create_file destination_root("test/controllers/#{name}_controller_test.rb"), shoulda_contents, :skip => true
           end
 
           SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
@@ -56,7 +56,7 @@ module Padrino
 
           def generate_model_test(name)
             shoulda_contents = SHOULDA_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file app_root_path("test/models/#{name.to_s.downcase}_test.rb"), shoulda_contents, :skip => true
+            create_file destination_root("test/models/#{name.to_s.downcase}_test.rb"), shoulda_contents, :skip => true
           end
 
         end

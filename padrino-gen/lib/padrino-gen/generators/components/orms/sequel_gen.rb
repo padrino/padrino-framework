@@ -29,7 +29,7 @@ module Padrino
           MODEL
 
           def create_model_file(name, fields)
-            model_path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
+            model_path = destination_root('app/models/', "#{name.to_s.underscore}.rb")
             model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
             create_file(model_path, model_contents)
           end

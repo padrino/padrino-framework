@@ -21,7 +21,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino migration"
       argument :columns, :desc => "The columns for the migration", :type => :array, :default => []
-      class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
@@ -31,9 +31,10 @@ module Padrino
       end
 
       def create_migration
-        if in_app_root?(options[:root])
+        self.destination_root = options[:root]
+        if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          include_component_module_for(:orm, options[:root])
+          include_component_module_for(:orm)
           create_migration_file(name, name, columns)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?

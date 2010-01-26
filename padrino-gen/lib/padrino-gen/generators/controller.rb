@@ -21,7 +21,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino controller"
       argument :fields, :desc => "The fields for the controller", :type => :array, :default => []
-      class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
@@ -31,16 +31,17 @@ module Padrino
       end
 
       def create_controller
-        if in_app_root?(options[:root])
+        self.destination_root = options[:root]
+        if in_app_root?
           @app_name = fetch_app_name(options[:root])
           @actions = controller_actions(fields)
           self.behavior = :revoke if options[:destroy]
-          # inject_into_file app_root_path("config/urls.rb"), controller_routes(name,fields), :after => "urls do\n"
-          template "templates/controller.rb.tt", app_root_path("app/controllers", "#{name}.rb")
-          template "templates/helper.rb.tt",     app_root_path("app/helpers", "#{name}_helper.rb")
-          empty_directory app_root_path("app/views/#{name}")
-          include_component_module_for(:test, options[:root])
-          generate_controller_test(name, options[:root] || '.')
+          # inject_into_file destination_root("config/urls.rb"), controller_routes(name,fields), :after => "urls do\n"
+          template "templates/controller.rb.tt", destination_root("app/controllers", "#{name}.rb")
+          template "templates/helper.rb.tt",     destination_root("app/helpers", "#{name}_helper.rb")
+          empty_directory destination_root("app/views/#{name}")
+          include_component_module_for(:test)
+          generate_controller_test(name)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

@@ -15,14 +15,33 @@ module Padrino
         self.class.send(:include, generator_module_for(choice, component))
         send("setup_#{component}") if respond_to?("setup_#{component}")
       end
-      
+
+      # Returns the related module for a given component and option
+      # generator_module_for('rr', :mock)
+      def generator_module_for(choice, component)
+        "Padrino::Generators::Components::#{component.to_s.capitalize.pluralize}::#{choice.to_s.capitalize}Gen".constantize
+      end
+
       # Includes the component module for the given component and choice
       # Determines the choice using .components file
       # include_component_module_for(:mock)
       # include_component_module_for(:mock, 'rr')
-      def include_component_module_for(component, root=nil, choice=nil)
-        choice = fetch_component_choice(component, root) unless choice
+      def include_component_module_for(component, choice=nil)
+        choice = fetch_component_choice(component) unless choice
         self.class.send(:include, generator_module_for(choice, component))
+      end
+
+      
+      # Returns the component choice stored within the .component file of an application
+      # fetch_component_choice(:mock)
+      def fetch_component_choice(component)
+        retrieve_component_config(destination_root('.components'))[component]
+      end
+
+      # Loads the component config back into a hash
+      # i.e retrieve_component_config(...) => { :mock => 'rr', :test => 'riot', ... }
+      def retrieve_component_config(target)
+        YAML.load_file(target)
       end
 
       # Prompts the user if necessary until a valid choice is returned for the component
@@ -43,12 +62,6 @@ module Padrino
         self.class.available_choices_for(component).include? choice.to_sym
       end
 
-      # Returns the related module for a given component and option
-      # generator_module_for('rr', :mock)
-      def generator_module_for(choice, component)
-        "Padrino::Generators::Components::#{component.to_s.capitalize.pluralize}::#{choice.to_s.capitalize}Gen".constantize
-      end
-
       # Creates a component_config file at the destination containing all component options
       # Content is a yamlized version of a hash containing component name mapping to chosen value
       def store_component_config(destination)
@@ -59,38 +72,45 @@ module Padrino
         end
       end
 
-      # Loads the component config back into a hash
-      # i.e retrieve_component_config(...) => { :mock => 'rr', :test => 'riot', ... }
-      def retrieve_component_config(target)
-        YAML.load_file(target)
+      # Returns the root for this thor class (also aliased as destination root).
+      def destination_root(*paths)
+        File.join(@destination_stack.last, paths)
       end
-      
-      # Returns the component choice stored within the .component file of an application
-      # fetch_component_choice(:mock)
-      def fetch_component_choice(component, root=nil)
-        comp_path = root ? File.join(root, '.components') : '.components'
-        retrieve_component_config(comp_path)[component]
-      end
-      
+
       # Returns true if inside a Padrino application
-      def in_app_root?(root=nil)
-        root ? File.exist?(File.join(root, 'config/boot.rb')) : File.exist?('config/boot.rb')
+      def in_app_root?
+        File.exist?(destination_root('config/boot.rb'))
       end
-      
+
       # Returns the app_name for the application at root
       def fetch_app_name(root=nil)
         app_path = root ? File.join(root, 'app/app.rb') : 'app/app.rb'
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
-      
-      # Constructs a path from the specified app root
-      # app_root_path("app/mailers", "#{@mailer_basename}.rb")
-      def app_root_path(*paths)
-        settings = paths.extract_options!
-        File.join(settings[:root] || options[:root] || '.', *paths)
+
+      # Adds all the specified gems into the Gemfile for bundler
+      # require_dependencies 'active_record'
+      # require_dependencies 'mocha', 'bacon', :only => :testing
+      def require_dependencies(*gem_names)
+        options = gem_names.extract_options!
+        gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
+      end
+
+      # Inserts a required gem into the Gemfile to add the bundler dependency
+      # insert_into_gemfile(name)
+      # insert_into_gemfile(name, :only => :testing, :require_as => 'foo')
+      def insert_into_gemfile(name, options={})
+        after_pattern = options[:only] ? "#{options[:only].to_s.capitalize} requirements\n" : "Component requirements\n"
+        gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
+        include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
+        options.merge!(:content => include_text, :after => after_pattern)
+        if behavior == :revoke || !File.read(destination_root('Gemfile')).include?(options[:content])
+          inject_into_file('Gemfile', options[:content], :after => options[:after])
+        end
       end
 
       module ClassMethods
+
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported
         # component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]

@@ -3,31 +3,9 @@ module Padrino
     module Components
       module Actions
         BASE_TEST_HELPER = (<<-TEST).gsub(/^ {8}/, '')
-        RACK_ENV = 'test' unless defined?(RACK_ENV)
+        PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
         require File.dirname(__FILE__) + "/../config/boot"
-        Bundler.require_env(:testing)
         TEST
-
-        # Adds all the specified gems into the Gemfile for bundler
-        # require_dependencies 'active_record'
-        # require_dependencies 'mocha', 'bacon', :only => :testing
-        def require_dependencies(*gem_names)
-          options = gem_names.extract_options!
-          gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
-        end
-
-        # Inserts a required gem into the Gemfile to add the bundler dependency
-        # insert_into_gemfile(name)
-        # insert_into_gemfile(name, :only => :testing, :require_as => 'foo')
-        def insert_into_gemfile(name, options={})
-          after_pattern = options[:only] ? "#{options[:only].to_s.capitalize} requirements\n" : "Component requirements\n"
-          gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
-          include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
-          options.merge!(:content => include_text, :after => after_pattern)
-          if behavior == :revoke || !File.read(app_root_path('Gemfile')).include?(options[:content])
-            inject_into_file(app_root_path('Gemfile'), options[:content], :after => options[:after])
-          end
-        end
 
         # For orm database components
         # Generates the model migration file created when generating a new model
@@ -37,6 +15,7 @@ module Padrino
           if behavior == :revoke
             remove_migration(name)
           else
+            return if migration_exist?(filename)
             model_name = name.to_s.pluralize
             field_tuples = fields.collect { |value| value.split(":") }
             field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
@@ -47,7 +26,7 @@ module Padrino
             current_migration_number = return_last_migration_number
             contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
             migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-            create_file(app_root_path('db/migrate/', migration_filename), contents, :skip => true)
+            create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
 
@@ -60,6 +39,7 @@ module Padrino
           if behavior == :revoke
             remove_migration(name)
           else
+            return if migration_exist?(filename)
             change_format = options[:change_format]
             migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
@@ -75,16 +55,21 @@ module Padrino
             current_migration_number = return_last_migration_number
             contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
             migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
-            create_file(app_root_path('db/migrate/', migration_filename), contents)
+            create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
 
         # For migration files
         # returns the number of the latest(most current) migration file
         def return_last_migration_number
-          Dir[app_root_path('db/migrate/*.rb')].map do |f|
+          Dir[destination_root('db/migrate/*.rb')].map do |f|
             File.basename(f).match(/^(\d+)/)[0].to_i
           end.max.to_i || 0
+        end
+
+        # Return true if the migration already exist
+        def migration_exist?(filename)
+          Dir[destination_root("db/migrate/*_#{filename.underscore}.rb")].size > 0
         end
 
         # For model destroy option
@@ -96,7 +81,7 @@ module Padrino
         # For the removal of migration files
         # removes the migration file based on the migration name
         def remove_migration(name)
-          migration_path =  Dir[app_root_path('db/migrate/*.rb')].find do |f| 
+          migration_path =  Dir[destination_root('db/migrate/*.rb')].find do |f| 
             File.basename(f) =~ /#{name.to_s.underscore}/
           end
           return unless migration_path
@@ -123,8 +108,8 @@ module Padrino
         # => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
         def insert_mocking_include(library_name, options={})
           options.reverse_merge!(:indent => 2, :after => /class.*?\n/, :path => "test/test_config.rb")
-          return unless File.exist?(File.join(self.destination_root, options[:path]))
-          include_text = indent_spaces(options[:indent]) + "include #{library_name}\n"
+          return unless File.exist?(destination_root(options[:path]))
+          include_text = indent_spaces(2) + "include #{library_name}\n"
           inject_into_file(options[:path], include_text, :after => options[:after])
         end
 

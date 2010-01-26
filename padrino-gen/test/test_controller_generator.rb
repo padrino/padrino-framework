@@ -20,7 +20,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
 
     should "generate controller within existing application" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/SampleApp.controllers do/m, @controller_path)
       assert_match_in_file(/SampleApp.helpers do/m, '/tmp/sample_app/app/helpers/demo_items_helper.rb')
@@ -28,31 +28,31 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
 
     should "generate controller test for bacon" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for riot" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=riot']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=riot']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for testspec" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=testspec']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=testspec']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for rspec" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=rspec']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       assert_match_in_file(/describe "DemoItemsController" do/m, '/tmp/sample_app/test/controllers/demo_items_controller_spec.rb')
     end
 
     should "generate controller test for shoulda" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda']) }
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=shoulda']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
       expected_pattern = /class DemoItemsControllerTest < Test::Unit::TestCase/m
       assert_match_in_file(expected_pattern, @controller_test_path)
@@ -61,14 +61,14 @@ class TestControllerGenerator < Test::Unit::TestCase
     # Controller action generation
 
     should "generate actions for get:test post:yada" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items', "get:test","post:yada",'-r=/tmp/sample_app']) }
       assert_match_in_file(/get :test do\n  end\n/m,@controller_path)
       assert_match_in_file(/post :yada do\n  end\n/m,@controller_path)
     end
 
     should "generate url routes for get:yoda post:yada" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=shoulda'])}
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=shoulda'])}
       silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }
       # assert_match_in_file(/map\(\:yoda\).to\(\"\/demo_items\/yoda\"\)/m,@route_path)
       # assert_match_in_file(/map\(\:yada\).to\(\"\/demo_items\/yada\"\)/m,@route_path)
@@ -79,7 +79,7 @@ class TestControllerGenerator < Test::Unit::TestCase
   context "the controller destroy option" do
 
     should "destroy controller files" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon'])}
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon'])}
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d'])}
       assert_no_file_exists(@controller_path)
@@ -88,7 +88,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
 
     should "destroy controller files with rspec" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=rspec'])}
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=rspec'])}
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d'])}
       assert_no_file_exists(@controller_path)
@@ -97,7 +97,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     end
     
     should "remove url routes" do
-      silence_logger { @app.start(['sample_app', '/tmp', '--script=none', '-t=bacon'])}
+      silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon'])}
       silence_logger { @contgen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_app']) }
       silence_logger { @contgen.start(['demo_items','-r=/tmp/sample_app','-d'])}
       # assert_no_match_in_file(/map\(\:yoda\).to\(\"\/demo_items\/yoda\"\)/m,@route_path)

@@ -1,5 +1,6 @@
 clear_sources
 source 'http://gemcutter.org'
+
 # Project requirements
 gem 'sinatra'
 gem 'padrino'

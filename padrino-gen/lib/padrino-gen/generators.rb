@@ -24,7 +24,7 @@ module Padrino
       # Include related modules
       include Thor::Actions
 
-      class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => nil, :type => :string
 
       # We need to TRY to load boot because some of our app dependencies maybe have 
       # custom generators, so is necessary know who are.
@@ -32,10 +32,14 @@ module Padrino
         require 'padrino-gen/generators/actions'
         Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
 
-        if options[:root]
-          require File.join(options[:root], 'config/boot.rb') if File.exist?(File.join(options[:root], 'config/boot.rb'))
-        else
-          require 'config/boot.rb' if File.exist?('config/boot.rb')
+        begin
+          if options[:root]
+            require File.join(options[:root], 'config/boot.rb') if File.exist?(File.join(options[:root], 'config/boot.rb'))
+          else
+            require 'config/boot.rb' if File.exist?('config/boot.rb')
+          end
+        rescue Exception => e
+          puts "=> Problem loading config/boot.rb"
         end
       end
 

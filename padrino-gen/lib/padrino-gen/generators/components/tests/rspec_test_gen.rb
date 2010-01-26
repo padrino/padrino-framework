@@ -33,9 +33,9 @@ module Padrino
 
           # TODO move to spec directory to follow convention
           # Generates a controller test given the controllers name
-          def generate_controller_test(name, root)
+          def generate_controller_test(name)
             rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file File.join(root, "test/controllers/#{name}_controller_spec.rb"), rspec_contents, :skip => true
+            create_file destination_root("test/controllers/#{name}_controller_spec.rb"), rspec_contents, :skip => true
           end
 
           RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
@@ -51,7 +51,7 @@ module Padrino
 
           def generate_model_test(name)
             rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file app_root_path("test/models/#{name.to_s.downcase}_spec.rb"), rspec_contents, :skip => true
+            create_file destination_root("test/models/#{name.to_s.downcase}_spec.rb"), rspec_contents, :skip => true
           end
 
         end

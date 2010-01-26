@@ -21,7 +21,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino model"
       argument :fields, :desc => "The fields for the model", :type => :array, :default => []
-      class_option :root, :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
 
@@ -32,10 +32,11 @@ module Padrino
       end
 
       def create_model
-        if in_app_root?(options[:root])
+        self.destination_root = options[:root]
+        if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          include_component_module_for(:orm, options[:root])
-          include_component_module_for(:test, options[:root])
+          include_component_module_for(:orm)
+          include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
           create_model_file(name, fields)
           generate_model_test(name)

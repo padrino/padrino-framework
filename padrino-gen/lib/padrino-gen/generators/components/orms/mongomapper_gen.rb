@@ -44,7 +44,7 @@ module Padrino
           MODEL
 
           def create_model_file(name, fields)
-            model_path = app_root_path('app/models/', "#{name.to_s.underscore}.rb")
+            model_path = destination_root('app/models/', "#{name.to_s.underscore}.rb")
             field_tuples = fields.collect { |value| value.split(":") }
             column_declarations = field_tuples.collect { |field, kind| "key :#{field}, #{kind.camelize}" }.join("\n  ")
             model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.camelize)

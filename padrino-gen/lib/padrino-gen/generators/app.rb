@@ -9,7 +9,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.dirname(__FILE__); end
-      def self.banner; "padrino-gen project [name] [path] [options]"; end
+      def self.banner; "padrino-gen project [name] [options]"; end
 
       # Include related modules
       include Thor::Actions
@@ -19,15 +19,16 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
 
       argument :name, :desc => "The name of your padrino project"
-      argument :path, :desc => "The path to create your padrino project", :default => "."
+
       class_option :run_bundler, :aliases => '-b', :default => false, :type => :boolean
+      class_option :root, :desc => "The root destination",        :aliases => '-r', :default => ".",   :type => :string
 
       # Definitions for the available customizable components
       component_option :orm,      "database engine",    :aliases => '-d', :choices => [:datamapper, :mongomapper, :activerecord, :sequel, :couchrest]
       component_option :test,     "testing framework",  :aliases => '-t', :choices => [:bacon, :shoulda, :rspec, :testspec, :riot]
       component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr]
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs]
-      component_option :renderer, "template engine",    :aliases => '-r', :choices => [:erb, :haml]
+      component_option :renderer, "template engine",    :aliases => '-e', :choices => [:erb, :haml]
 
       # Show help if no argv given
       def self.start(given_args=ARGV, config={})
@@ -37,9 +38,9 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_app
-        self.destination_root = File.join(path, name)
         @class_name = name.classify
-        directory("app/", self.destination_root)
+        self.destination_root = File.join(options[:root], name)
+        directory("app/", destination_root)
         store_component_config('.components')
       end
 
