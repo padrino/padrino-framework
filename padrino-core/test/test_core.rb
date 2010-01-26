@@ -30,7 +30,7 @@ class TestCore < Test::Unit::TestCase
     end
 
     should 'have load paths' do
-      assert_equal [Padrino.root('lib'), Padrino.root('models')], Padrino.load_paths
+      assert_equal [Padrino.root('lib'), Padrino.root('models'), Padrino.root('shared')], Padrino.load_paths
     end
 
     should 'raise application error if I instantiate a new padrino application without mounted apps' do

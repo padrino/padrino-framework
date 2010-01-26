@@ -38,7 +38,7 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_app
-        @class_name = name.classify
+        @class_name = name.underscore.classify
         self.destination_root = File.join(options[:root], name)
         directory("app/", destination_root)
         store_component_config('.components')
