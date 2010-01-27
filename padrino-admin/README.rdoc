@@ -89,7 +89,52 @@ All upload definitions are defined in lib/uploader.rb, here you can preproces yo
 
 See http://github.com/jnicklas/carrierwave
 
-... here some example howto attach uploads to any model ...
+==== Attach Many Uploads to a Model
+
+If you want attach in a model ex: Account many uploads you can do that in a simple way add a habtm relation!
+
+  # app/models/account.rb
+  has n, :uploads
+
+or for ActiveRecord
+
+  # app/models/account.rb
+  has_and_belongs_to_many :uploads
+
+Now edit the form and add these lines:
+
+  # admin/views/accounts/_form.haml
+  %tr
+    %td=f.label :uploads
+    %td=open_window_grid :account, :upload_ids, :with => :uploads, :get => :id, :show => :file, :multiple => true, :item => :panel
+
++open_window_grid+ is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
+
+open window grid for +:account+ model in method +:upload_ids+ with the help of controller +:uploads+ and 
+get as a value the +:id+ and display +:file+.
+
++:multiple+ indicate that we need more than one +:id+.
++:item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
+
+See: http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145
+
+That's all! Now run mingrations and browse accounts for see our uploader.
+
+==== Attach One Upload to a Model
+
+The process is the same as above you need only define in your model:
+
+  # app/models/account.rb
+  belongs_to :upload
+
+and add this to your account form:
+
+  # admin/views/accounts/_form.haml
+  %tr
+    %td=f.label :upload
+    %td=open_window_grid :account, :upload_id, :with => :uploads, :get => :id, :show => :file, :item => :panel
+
+Remember to run migrations before start your server.
 
 == Copyright
 

@@ -389,6 +389,32 @@ An application can explicitly enable / disable reloading through the use of opti
   
 By default, reloading is enabled in development and disabled in the test and production environments.
 
+If you wnat to build a standalone app you need to take some precautions see example:
+
+  # simple_demo.rb
+  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+  require 'padrino-core'
+
+  class SimpleDemo < Padrino::Application
+    set :reload, true
+
+    get "/" do
+      "This is a simple Demo!!!"
+    end
+  end
+
+  Padrino.mount_core("SimpleDemo")
+
+  Padrino.run! unless Padrino.loaded? # If you enable reloader prevent to re-run the app 
+
+  Padrino.load!
+
+Now you can run simple_demo.rb with:
+
+  $ ruby simple_demo.rb
+
+Browse http://localhost:3000 edit your file and refresh your page for see changes!
+
 === Terminal Commands
 
 Padrino also comes equipped with multiple useful terminal commands which can be activated to perform
@@ -414,6 +440,29 @@ The following commands are available:
   $ padrino rake
 
 Using these commands can simplify common tasks making development that much smoother.
+
+=== Special Folders
+
+Padrino load these paths:
+
+  project/lib
+  project/models
+  project/shared/lib
+  project/shared/models
+  project/each_app/models
+
+This mean that you are free to store for example +models+ where you prefer, if you have two or more apps with same
+models you can use project/shared/models or root/models.
+
+If you have only one app you still use project/app/models (this is the default padrino-gen choice)
+
+Remember that if you need to load other paths you can use:
+
+  Padrino.set_load_paths("path/one")
+
+and if you need to load dependencies use:
+
+  Padrino.require_dependencies("path/one/**/*.rb")
 
 == Copyright
 
