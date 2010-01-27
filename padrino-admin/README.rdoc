@@ -116,7 +116,7 @@ get as a value the :+id+ and display :+file+.
 :+multiple+ indicate that we need more than one :+id+.
 :+item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
 
-See Views[http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145] for more docs.
+See view helpers[http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145] for more docs.
 
 That's all! Now run mingrations and browse accounts for see our uploader.
 

@@ -389,7 +389,7 @@ An application can explicitly enable / disable reloading through the use of opti
   
 By default, reloading is enabled in development and disabled in the test and production environments.
 
-If you wnat to build a standalone app you need to take some precautions see example:
+If you want to build a standalone app you need to take some precautions see example:
 
   # simple_demo.rb
   PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
@@ -452,9 +452,9 @@ Padrino load these paths:
   project/each_app/models
 
 This mean that you are free to store for example +models+ where you prefer, if you have two or more apps with same
-models you can use project/shared/models or root/models.
+models you can use +project/shared/models+ or +root/models+.
 
-If you have only one app you still use project/app/models (this is the default padrino-gen choice)
+If you have only one app you still use +project/app/models+ (this is the default padrino-gen choice)
 
 Remember that if you need to load other paths you can use:
 
@@ -1232,15 +1232,15 @@ Now edit the form and add these lines:
     %td=f.label :uploads
     %td=open_window_grid :account, :upload_ids, :with => :uploads, :get => :id, :show => :file, :multiple => true, :item => :panel
 
-+open_window_grid+ is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
+*open_window_grid* is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
 
-open window grid for +:account+ model in method +:upload_ids+ with the help of controller +:uploads+ and 
-get as a value the +:id+ and display +:file+.
+open window grid for :+account+ model in method :+upload_ids+ with the help of controller :+uploads+ and 
+get as a value the :+id+ and display :+file+.
 
-+:multiple+ indicate that we need more than one +:id+.
-+:item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
+:+multiple+ indicate that we need more than one :+id+.
+:+item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
 
-See: http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145
+See view helpers[http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145] for more docs.
 
 That's all! Now run mingrations and browse accounts for see our uploader.
 

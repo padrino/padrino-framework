@@ -389,7 +389,7 @@ An application can explicitly enable / disable reloading through the use of opti
   
 By default, reloading is enabled in development and disabled in the test and production environments.
 
-If you wnat to build a standalone app you need to take some precautions see example:
+If you want to build a standalone app you need to take some precautions see example:
 
   # simple_demo.rb
   PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
@@ -452,9 +452,9 @@ Padrino load these paths:
   project/each_app/models
 
 This mean that you are free to store for example +models+ where you prefer, if you have two or more apps with same
-models you can use project/shared/models or root/models.
+models you can use +project/shared/models+ or +root/models+.
 
-If you have only one app you still use project/app/models (this is the default padrino-gen choice)
+If you have only one app you still use +project/app/models+ (this is the default padrino-gen choice)
 
 Remember that if you need to load other paths you can use:
 
