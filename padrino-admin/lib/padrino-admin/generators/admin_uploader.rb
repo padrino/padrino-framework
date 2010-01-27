@@ -67,10 +67,12 @@ module Padrino
 
           say (<<-TEXT).gsub(/ {10}/,'')
 
-          -----------------------------------------------------
-          1) Run migrations
-          2) That's all!!
-          -----------------------------------------------------
+          --------------------------------------------------------
+          Your admin uploader is installed, now follow this steps:
+
+            1) Run migrations
+            2) That's all!!
+          --------------------------------------------------------
 
           TEXT
         else

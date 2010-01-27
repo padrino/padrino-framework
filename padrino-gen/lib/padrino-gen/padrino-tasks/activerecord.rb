@@ -524,4 +524,6 @@ if defined?(ActiveRecord)
     end
 
   end
+
+  ActiveRecord::Migration.send :include, AutoMigrations
 end

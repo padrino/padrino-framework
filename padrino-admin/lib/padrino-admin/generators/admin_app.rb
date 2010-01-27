@@ -53,11 +53,8 @@ module Padrino
             -----------------------------------------------------------------
             Your admin now is installed, now follow this steps:
 
-              - edit your config/database.rb
-              - run padrino rake -T and run db creation according to your orm
-              - run padrino rake seed
-
-            That's all
+              1) Run migrations
+              2) That's all!!
             -----------------------------------------------------------------
 
             TEXT
