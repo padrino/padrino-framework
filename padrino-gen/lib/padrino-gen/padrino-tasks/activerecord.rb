@@ -251,6 +251,16 @@ if defined?(ActiveRecord)
           raise %{#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
         end
       end
+
+      desc "Create migration from schema.rb"
+      task :to_migration => :environment do
+        AutoMigrations.schema_to_migration
+      end
+
+      desc "Create migration from schema.rb and reset migrations log"
+      task :to_migration_with_reset => :environment do
+        AutoMigrations.schema_to_migration(true)
+      end
     end
 
     namespace :structure do
@@ -296,18 +306,6 @@ if defined?(ActiveRecord)
       task :upgrade => :environment do
         AutoMigrations.run
       end 
-    end
-
-    namespace :schema do
-      desc "Create migration from schema.rb"
-      task :to_migration => :environment do
-        AutoMigrations.schema_to_migration
-      end
-
-      desc "Create migration from schema.rb and reset migrations log"
-      task :to_migration_with_reset => :environment do
-        AutoMigrations.schema_to_migration(true)
-      end
     end
 
   end
