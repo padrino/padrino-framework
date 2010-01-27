@@ -452,9 +452,9 @@ Padrino load these paths:
   project/each_app/models
 
 This mean that you are free to store for example +models+ where you prefer, if you have two or more apps with same
-models you can use +project/shared/models+ or +root/models+.
+models you can use +project/shared/models+ or +root+/+models+.
 
-If you have only one app you still use +project/app/models+ (this is the default padrino-gen choice)
+If you have only one app you still use +project+/+app+/+models+ (this is the default padrino-gen choice)
 
 Remember that if you need to load other paths you can use:
 
