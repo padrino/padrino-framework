@@ -52,27 +52,9 @@ module Padrino
           ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
           AR
 
-          RAKE = (<<-RAKE).gsub(/^ {10}/, '')
-          require 'sinatra/base'
-          require 'active_record'
-
-          namespace :db do
-            desc "Migrate the database"
-            task(:migrate) do
-              load File.dirname(__FILE__) + '/config/boot.rb'
-              APP_CLASS.new
-              ActiveRecord::Base.logger = Logger.new(STDOUT)
-              ActiveRecord::Migration.verbose = true
-              ActiveRecord::Migrator.migrate( File.dirname(__FILE__) + "/db/migrate")
-            end
-          end
-          RAKE
-
-
           def setup_orm
             require_dependencies 'active_record'
             create_file("config/database.rb", AR)
-            create_file("Rakefile", RAKE.gsub(/APP_CLASS/, @class_name))
             empty_directory('app/models')
           end
 
