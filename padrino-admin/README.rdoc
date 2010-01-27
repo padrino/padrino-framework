@@ -108,15 +108,15 @@ Now edit the form and add these lines:
     %td=f.label :uploads
     %td=open_window_grid :account, :upload_ids, :with => :uploads, :get => :id, :show => :file, :multiple => true, :item => :panel
 
-+open_window_grid+ is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
+*open_window_grid* is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
 
-open window grid for +:account+ model in method +:upload_ids+ with the help of controller +:uploads+ and 
-get as a value the +:id+ and display +:file+.
+open window grid for :+account+ model in method :+upload_ids+ with the help of controller :+uploads+ and 
+get as a value the :+id+ and display :+file+.
 
-+:multiple+ indicate that we need more than one +:id+.
-+:item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
+:+multiple+ indicate that we need more than one :+id+.
+:+item+ tell to the grid who is the container, we need to explicit this because we have two container in our upload.js
 
-See: http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145
+See Views[http://github.com/padrino/padrino-framework/blob/master/padrino-admin/lib/padrino-admin/helpers/view.rb#L145] for more docs.
 
 That's all! Now run mingrations and browse accounts for see our uploader.
 
