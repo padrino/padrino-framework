@@ -10,11 +10,15 @@ module Padrino
           # You can use other adapters like:
           # 
           #   ActiveRecord::Base.configurations[:development] = {
-          #     :adapter  => "mysql",
-          #     :host     => "localhost",
-          #     :username => "myuser",
-          #     :password => "mypass",
-          #     :database => "somedatabase"
+          #     :adapter   => 'mysql',
+          #     :encoding  => 'utf8',
+          #     :reconnect => false,
+          #     :database  => 'your_database',
+          #     :pool      => 5,
+          #     :username  => 'root',
+          #     :password  => '',
+          #     :host      => 'localhost',
+          #     :socket    => '/tmp/mysql.sock'
           #   )
           #
           ActiveRecord::Base.configurations[:development] = {
