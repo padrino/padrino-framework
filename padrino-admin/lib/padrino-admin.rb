@@ -2,6 +2,7 @@ require 'tilt'
 require 'thor'
 require 'padrino-core'
 require 'padrino-gen'
+require 'padrino-helpers'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,generators,middleware,utils}/*.rb'].each {|file| require file }
@@ -22,6 +23,11 @@ Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Ba
 # If CarrierWave is defined we set the root directory
 # 
 CarrierWave.root = Padrino.root if defined?(CarrierWave)
+
+##
+# Extend Abastract Form builder
+# 
+Padrino::Helpers::FormBuilder::AbstractFormBuilder.send(:include, Padrino::Admin::Helpers::AbstractFormBuilder)
 
 ##
 # Load our Padrino::Admin locales

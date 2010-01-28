@@ -270,6 +270,13 @@ module Padrino
         # Now we return our html code
         [content_tag(:script, javascript, :type => 'text/javascript'), container, tag(:div, :class => :clear)].join("\n")
       end
+
+      module AbstractFormBuilder
+        # f.open_window_grid :upload_ids, :brand_ids, :with => :brands, :get => :id, :show => :name
+        def open_window_grid(field, options={})
+          @template.open_window_grid object_name, field, options
+        end
+      end
     end # Helpers
   end # Admin
 end # Padrino
