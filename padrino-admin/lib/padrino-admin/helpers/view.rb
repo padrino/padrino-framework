@@ -41,7 +41,7 @@ module Padrino
             contents = ''
             contents << content_tag(:p, message) if message.present?
             contents << content_tag(:ul, error_messages, :class => :list)
-            
+
             (<<-JAVASCRIPT).gsub(/ {14}/, '')
               #{error_cleaner}
               Ext.Msg.show({

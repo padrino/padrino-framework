@@ -50,6 +50,7 @@ upload.on('fileUploadComplete', function(){ grid.store.reload() });
 
 var panel = new Ext.Panel({
   layout: 'border',
+  border: false,
   items: [grid, upload]
 });
 

@@ -422,7 +422,6 @@ Admin.window = Ext.extend(Ext.Window, {
       handler: this[this.closeAction].createDelegate(this, [])
     });
     if (this.grid){
-      this.border = false;
       this.addButton({
         text: Admin.locale.buttons.select,
         handler: this.closeWithSelections.createDelegate(this, [])}
