@@ -33,6 +33,7 @@ module Padrino
         Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
 
         begin
+          ENV['PADRINO_LOG_LEVEL'] ||= "test"
           if options[:root]
             require File.join(options[:root], 'config/boot.rb') if File.exist?(File.join(options[:root], 'config/boot.rb'))
           else
