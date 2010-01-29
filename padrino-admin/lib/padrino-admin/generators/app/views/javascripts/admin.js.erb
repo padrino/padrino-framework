@@ -91,6 +91,14 @@ Admin.app = function(){
         this.cleanScripts();
         this.clean();
         Ext.History.add(url, true);
+        // Enable this for debug errors:
+        // // We append the js into the head so we can easy inspect errors
+        // var hd = document.getElementsByTagName("head")[0];
+        // var s  = document.createElement("script");
+        // s.src  = url;
+        // s.type = 'text/javascript';
+        // // Now we can append the child.
+        // hd.appendChild(s);
         Ext.Ajax.request({ url: url, nocache:true });
       } else if (ext == 'html'){
         this.loadWidget(url);
@@ -264,7 +272,6 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
   title: 'Grid',
   baseUrl: '',
   region: "center",
-  viewConfig: { forceFit: true },
   border: false,
   buttons: ['add', 'edit', 'remove'],
   search: true,
@@ -275,65 +282,50 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
 
   initComponent: function(){
     // Prepare our View/Cm/Sm
-    this.view = new Ext.grid.GroupingView({ forceFit: true }),
-    this.sm = new Ext.grid.CheckboxSelectionModel(),
-    this.column_fields.unshift(new Ext.grid.CheckboxSelectionModel());
-    this.cm = new Ext.grid.ColumnModel({ columns: this.column_fields });
+    this.view = new Ext.grid.GroupingView({ forceFit: true });
+    this.selModel = new Ext.grid.CheckboxSelectionModel();
+    this.column_fields.unshift(this.selModel);
+    this.colModel = new Ext.grid.ColumnModel({ columns: this.column_fields });
     // Toolbar
     if (this.buttons.length > 0 || this.search){ this.tbar = new Ext.Toolbar() };
     // Add Buttons
     Ext.each(this.buttons, function(button){
       switch(button){
         case 'add':
-          this.tbar.addButton({
+          this.btnAdd = this.tbar.addButton({
             handler: this.addRecord,
             text: Admin.locale.buttons.add,
             disabled: false,
             scope: this,
             cls: "x-btn-text-icon add",
-            id: "add"
+            name: "add"
           });
           break;
         case 'edit':
-          this.tbar.addButton({
+          this.btnEdit = this.tbar.addButton({
             handler: this.editRecord,
             text: Admin.locale.buttons.edit,
             disabled: true,
             scope: this,
             cls: "x-btn-text-icon edit",
-            id: "edit"
+            name: "edit"
           });
-          break
+          break;
         case 'remove':
-          this.tbar.addButton({
+          this.btnRemove = this.tbar.addButton({
             handler: this.removeRecord,
             text: Admin.locale.buttons.remove,
             disabled: true,
             scope: this,
             cls: "x-btn-text-icon remove",
-            id: "remove"
+            name: "remove"
           });
+          break;
       }
     }, this);
     this.buttons = undefined; // Remove all bbar buttons, we don't want them in the bottom of grid.
-    // Now we need to add some handlers for activate/deactivate buttons
-    this.sm.on('selectionchange', function(){
-      var n = this.getSelectionModel().getSelected();
-      var btns = this.getTopToolbar().items.map;
-      if(!n){
-        if (btns.remove){ btns.remove.disable() };
-        if (btns.edit){ btns.edit.disable() };
-      } else {
-        if (btns.remove){ btns.remove.enable() };
-        if (btns.edit){ btns.edit.enable() };
-      }
-    }, this);
     // Add search functions
     if (this.search){ this.plugins = [new Ext.grid.Search()] };
-    // Add dblclick
-    this.on("dblclick", function() {
-      if (this.getTopToolbar().items.map.edit){ this.editRecord() }
-    }, this);
     // Build our store
     this.store = new Ext.data.GroupingStore({
       remoteSort: true,
@@ -346,8 +338,6 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
         id: "id"
       })
     });
-    this.store.on('beforeload', function(){ this.el.mask(); }, this);
-    this.store.on('load', function(){ this.el.unmask(); }, this);
     // Build bbar
     this.bbar = new Ext.PagingToolbar({
       pageSize: 50,
@@ -356,8 +346,23 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
     });
     // Call our superclass
     Admin.grid.superclass.initComponent.call(this);
-    // Now we can load our records
+    // Now we need to add some handlers for activate/deactivate buttons
     this.on('render', function(){ this.store.load() }, this);
+    this.selModel.on('selectionchange', function(){
+      var n = this.selModel.getSelected();
+      if(!n){
+        if (this.btnRemove){ this.btnRemove.disable() };
+        if (this.btnEdit){ this.btnEdit.disable() };
+      } else {
+        if (this.btnRemove){ this.btnRemove.enable() };
+        if (this.btnEdit){ this.btnEdit.enable() };
+      }
+    }, this);
+    this.on("dblclick", function() {
+      if (this.btnEdit){ this.editRecord() }
+    }, this);
+    this.store.on('beforeload', function(){ this.el.mask(); }, this);
+    this.store.on('load', function(){ this.el.unmask(); }, this);
   }, // initComponent
 
   addRecord: function(){
@@ -365,7 +370,7 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
   }, // addRecord
 
   editRecord: function(){
-    var selections = this.getSelectionModel().getSelections();
+    var selections = this.selModel.getSelections();
     if (selections.length > 10) {
       Admin.showAlert(Admin.locale.messages.alert.tooMany);
     } else {
@@ -380,7 +385,7 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
     Ext.Msg.confirm(Admin.locale.messages.confirm.title, String.format(Admin.locale.messages.confirm.message, this.getSelectionModel().getCount()), function(btn, text){
       if (btn == 'yes'){
         Admin.app.mask();
-        var records = this.getSelectionModel().getSelections();
+        var records = this.selModel.getSelections();
         var store   = this.store;
         Ext.Ajax.request({
           url: this.baseUrl + '/destroy.json',
