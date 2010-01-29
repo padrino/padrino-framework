@@ -71,16 +71,9 @@ module Padrino
       #   tab :settings do
       #     ...
       # 
-      # The second argument specify if is necessary 10px of padding inside the tab, default is +true+
-      # 
-      # Third argument is an hash that accepts:
-      # 
-      # :id:: The id of the tab
-      # :style:: Custom style of the tab
-      # 
-      def tab(name, padding=true, options={}, &block)
+      def tab(name, options={}, &block)
         options[:id]    ||= name.to_s.downcase.gsub(/[^a-z0-9]+/, '_').gsub(/-+$/, '').gsub(/^-+$/, '')
-        options[:style] ||= "padding:10px;#{options[:style]}" if padding
+        options[:style]  = "padding:10px;#{options[:style]}"
         options[:title]  = name.is_a?(Symbol) ? I18n.t("admin.tabs.#{name.to_s.downcase}", :default => name.to_s.humanize) : name
         options[:tabbed] = true
         options[:class]  = "x-hide-display"
