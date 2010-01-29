@@ -219,10 +219,10 @@ Admin.app = function(){
           items: items,
           layoutOnTabChange: true,
           enableTabScroll: true,
-          defaults: { autoScroll:true, layout:'fit', autoWidth: true }
+          defaults: { autoScroll:true, layout:'fit' }
         });
 
-        this.tabPanel.render();
+        this.addItem(this.tabPanel);
       }
 
       this.fireEvent('contentLoaded');
@@ -365,10 +365,15 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
   }, // addRecord
 
   editRecord: function(){
-    Ext.each(this.getSelectionModel().getSelections(), function(selection){
-      var id  = this.baseUrl + '-edit-' + selection.id;
-      Admin.app.loadWidget(this.baseUrl + '/edit/' + selection.id);
-    }, this)
+    var selections = this.getSelectionModel().getSelections();
+    if (selections.length > 10) {
+      Admin.showAlert(Admin.locale.messages.alert.tooMany);
+    } else {
+      Ext.each(selections, function(selection){
+        var id  = this.baseUrl + '-edit-' + selection.id;
+        Admin.app.loadWidget(this.baseUrl + '/edit/' + selection.id);
+      }, this);
+    }
   }, // editRecord
 
   removeRecord: function(){
@@ -403,7 +408,6 @@ Admin.grid = Ext.extend(Ext.grid.GridPanel, {
 Admin.window = Ext.extend(Ext.Window, {
   width: 700,
   layout: 'fit',
-  autoScroll: true,
   maximizable: true,
   bodyStyle: 'background-color:#FFF',
   grid: undefined,

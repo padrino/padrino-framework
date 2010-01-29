@@ -37,6 +37,7 @@ class TestDataMapper < Test::Unit::TestCase
       assert_respond_to account, :new_record?
       assert_respond_to account, :to_param
       assert_respond_to account, :update_attributes
+      assert_respond_to Account, :properties
       assert_respond_to Account, :count
     end
 
@@ -51,6 +52,12 @@ class TestDataMapper < Test::Unit::TestCase
       account = Account.new
       account.valid?
       assert_equal [:email, :role, :password, :password_confirmation], account.errors_keys
+    end
+
+    should 'have columns names' do
+      property = Account.properties.first
+      assert_respond_to property, :name
+      assert_equal :id, property.name
     end
 
     should 'have table name' do

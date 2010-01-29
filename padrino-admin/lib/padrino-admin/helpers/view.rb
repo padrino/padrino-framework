@@ -21,7 +21,7 @@ module Padrino
       def show_messages_for(*objects)
         options       = objects.extract_options!.symbolize_keys
         count         = objects.inject(0) {|sum, object| sum + object.errors.count }
-        error_cleaner = objects.map{|object| object.class.properties.map{|k| "if ($('#{object.class.to_s.downcase}_#{k.name}')) $('#{object.class.to_s.downcase}_#{k.name}').removeClassName('x-form-invalid');" } }.join("\n")
+        error_cleaner = objects.map{|object| object.class.properties.map {|k| "var x = parent.body.select('*[id=#{object.class.to_s.downcase}_#{k.name}]').first(); if (x) { x.removeClass('x-form-invalid') };" } }.join("\n")
 
         unless count.zero?
           html = {}
@@ -37,12 +37,13 @@ module Padrino
             end
             message = escape_javascript(options.include?(:message) ? options[:message] : locale.t(:body))
             error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, escape_javascript(msg)) } }.join
-            error_highlighter = objects.map {|object| object.errors_keys.map{ |k| "$('#{object.class.to_s.downcase}_#{k}').addClassName('x-form-invalid');" } }.join("\n")
+            error_highlighter = objects.map {|object| object.errors_keys.map{ |k| "var x = parent.body.select('*[id=#{object.class.to_s.downcase}_#{k}]').first(); x.addClass('x-form-invalid');" } }.join("\n")
             contents = ''
             contents << content_tag(:p, message) if message.present?
             contents << content_tag(:ul, error_messages, :class => :list)
 
             (<<-JAVASCRIPT).gsub(/ {14}/, '')
+              var parent = Ext.WindowMgr.getActive();
               #{error_cleaner}
               Ext.Msg.show({
                 title: '#{header_message}',
@@ -55,6 +56,7 @@ module Padrino
           end
         else
           (<<-JAVASCRIPT).gsub(/ {12}/, '')
+            var parent = Ext.WindowMgr.getActive();
             #{error_cleaner}
             Ext.Msg.alert(Admin.locale.messages.compliments.title, Admin.locale.messages.compliments.message);
           JAVASCRIPT
@@ -218,7 +220,8 @@ module Padrino
         end
 
         # And we add our link for add new records
-        collection << content_tag(:li, link_to(options[:prompt], "#", :onclick => "#{options[:function]}(); return false;"), :class => :clean)
+        li_link = content_tag(:li, link_to(options[:prompt], "#", :onclick => "#{options[:function]}(); return false;"), :class => :clean)
+        collection << li_link
 
         # Now we have the final container
         container = content_tag(:ul, collection.join.gsub("\\",""), :id => "#{object_name}_#{method}", :class => "open-window-grid")
@@ -227,30 +230,33 @@ module Padrino
         show   = "data['#{controller}.#{options[:show]}']" if options[:show].is_a?(Symbol)
         get    = options[:get].is_a?(Symbol) && options[:get] != :id ? "data['#{controller}.#{options[:get]}']" : options[:get]
 
+        # Updater handler
         update_function = if options[:multiple]
           (<<-JAVASCRIPT).gsub(/ {12}/, "")
+            var parent = win.parent.body.select("*[id=#{object_name}_#{method}]").first();
             Ext.each(selections, function(selection){
               var template = String.format('#{template.gsub(/\n/,"")}', selection.#{show}, selection.#{get});
-              Ext.fly('#{object_name}_#{method}').insertHtml('afterBegin', template);
+              parent.insertHtml('afterBegin', template);
             });
           JAVASCRIPT
         else
           (<<-JAVASCRIPT).gsub(/ {12}/, "")
             var selection = selections.first();
-            var template = String.format('#{template.gsub(/\n/,"")}', selection.#{show}, selection.#{get});
-            Ext.fly('#{object_name}_#{method}').update(template);
+            var template = String.format('#{template.gsub(/\n/,"")}', selection.#{show}, selection.#{get}) + '#{li_link}';
+            win.parent.body.select("*[id=#{object_name}_#{method}]").first().update(template);
           JAVASCRIPT
         end
 
         # Now we build the update function (if not present)
         javascript = (<<-JAVASCRIPT).gsub(/ {10}/, '')
           function #{options[:function]}(){
+            var me = Ext.WindowMgr.getActive();
             Ext.Ajax.request({ 
               url: '#{options[:url]}',
               scripts: false,
               success: function(response){
                 try { eval(response.responseText) } catch(e) { Admin.app.error(e) };
-                var win = new Admin.window({ grid: #{options[:grid]}, item: #{options[:item]}, width: 800, height: 600 });
+                var win = new Admin.window({ grid: #{options[:grid]}, item: #{options[:item]}, width: 800, height:600, modal: true, parent:me });
                 win.on('selected', function(win, selections){
                   #{update_function}
                 });

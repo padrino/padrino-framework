@@ -66,6 +66,7 @@ en:
           message: "There are some connection issues.<br />Contact tecnical support."
           notConfigured: "This fatures is not ready yet.<br />Contact tecnical support."
           notSelected: "You must select at least one record"
+          tooMany: "You have selected too many records. Maximum is 10!"
     print:
       footer: 
         page: "Page"
