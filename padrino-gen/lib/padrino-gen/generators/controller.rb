@@ -34,9 +34,9 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           @app_name = fetch_app_name(options[:root])
-          @actions = controller_actions(fields)
+          @actions  = controller_actions(fields)
+          @controller = name
           self.behavior = :revoke if options[:destroy]
-          # inject_into_file destination_root("config/urls.rb"), controller_routes(name,fields), :after => "urls do\n"
           template "templates/controller.rb.tt", destination_root("app/controllers", "#{name}.rb")
           template "templates/helper.rb.tt",     destination_root("app/helpers", "#{name}_helper.rb")
           empty_directory destination_root("app/views/#{name}")
