@@ -42,7 +42,7 @@ module Padrino
     #
     def set_encoding
       unless RUBY_VERSION >= '1.9'
-        $KCODE = 'UTF8' if $KCODE == 'NONE' || $KCODE.blank?
+        $KCODE = 'U' if $KCODE == 'NONE' || $KCODE.blank?
       end
       nil
     end

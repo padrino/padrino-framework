@@ -188,7 +188,7 @@ module Padrino
             unless options.static? && options.public? && (request.get? || request.head?) && static_file?(request.path_info)
               request.path_info =~ /\.([^\.\/]+)$/
               @_content_type = ($1 || :html).to_sym
-              content_type(@_content_type) rescue content_type('application/octet-stream')
+              content_type(@_content_type, :charset => 'utf-8') rescue content_type('application/octet-stream')
             end
           end
         end
@@ -296,7 +296,7 @@ module Padrino
               path += "/" unless path =~ /\/$/
               path += Array(params).collect(&:inspect).join("/")
             end
-            
+
             # Now we need to parse our respond_to
             if format = options.delete(:respond_to)
               path += case format
@@ -309,10 +309,10 @@ module Padrino
                 else ".{:format,#{format}}"
               end
             end
-            
+
             # Build our controller
             controller = Array(@_controller).collect(&:to_s)
-            
+
             unless controller.empty?
               # Now we need to add our controller path only if not mapped directly
               if map.blank?
@@ -325,7 +325,7 @@ module Padrino
                 name = "#{controller_name}_#{name}".to_sym unless controller_name.blank?
               end
             end
-            
+
             # We need to have a path that start with / in some circumstances and that don't end with /
             if path != "(/)" && path != "/"
               path = "/" + path if path !~ /^\//
