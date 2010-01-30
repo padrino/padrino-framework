@@ -391,15 +391,13 @@ module Padrino
     # serving files from the public directory
     # 
     def static_file?(path_info)
-      [options.public, Padrino.root("shared/public")].find do |folder|
-        next if folder.nil?
-        public_dir = File.expand_path(folder)
+      return if (public_dir = options.public).nil?
+      public_dir = File.expand_path(public_dir)
 
-        path = File.expand_path(public_dir + unescape(path_info))
-        next if path[0, public_dir.length] != public_dir
-        next unless File.file?(path)
-        return path
-      end
+      path = File.expand_path(public_dir + unescape(path_info))
+      return if path[0, public_dir.length] != public_dir
+      return unless File.file?(path)
+      return path
     end
 
     private

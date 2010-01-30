@@ -13,7 +13,7 @@ class Uploader < CarrierWave::Uploader::Base
   # This is a sensible default for uploaders that are meant to be mounted:
 
   def root
-    "shared/public"
+    "app/public"
   end
 
   def store_dir
