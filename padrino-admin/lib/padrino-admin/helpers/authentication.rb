@@ -67,7 +67,7 @@ module Padrino
       # if the account is not allowed/logged return it to a default page
       # 
       def redirect_back_or_default(default)
-        redirect_to(session[:return_to] || default)
+        redirect(session[:return_to] || default)
         session[:return_to] = nil
       end
 
