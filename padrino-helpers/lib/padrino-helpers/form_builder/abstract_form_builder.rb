@@ -12,8 +12,9 @@ module Padrino
         end
 
         # f.error_messages
-        def error_messages(options={})
-          @template.error_messages_for(@object, options)
+        def error_messages(*params)
+          params.unshift object_name.to_sym
+          @template.error_messages_for(*params)
         end
 
         # f.label :username, :caption => "Nickname"
@@ -111,7 +112,7 @@ module Padrino
 
           def field_error(field, options)
             if @object && @object.respond_to?(:errors) && @object.errors.respond_to?(:on) && @object.errors.on(field)
-              options[:class] = ["x-form-text", "x-form-invalid", options[:class]].compact.join(" ")
+              ["x-form-invalid", options[:class]].compact.join(" ")
             end
           end
 

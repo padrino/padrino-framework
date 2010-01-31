@@ -1,10 +1,3 @@
-/*
- * Lipsiasadmin
- * Copyright(c) 2007-2008, LipsiaSoft s.r.l.
- * info@lipsiasoft.com
- * 
- * http://www.lipsiasoft.com
- */
 body               { font-size:12px; font-family:"Myriad Pro","Myriad Web","Tahoma","Helvetica","Arial",sans-serif; padding:0; margin:0; color:#222; }
 table              { font-size:12px; font-family:"Myriad Pro","Myriad Web","Tahoma","Helvetica","Arial",sans-serif; }
 table.form         { padding:10px; }
@@ -63,5 +56,7 @@ input,textarea{margin:0;font:normal 12px tahoma,arial,helvetica,sans-serif;width
 input,textarea{padding:1px 3px;background:#fff url(../images/ext/default/form/text-bg.gif) repeat-x 0 0;border:1px solid #B5B8C8;}
 input{height:22px;line-height:18px;vertical-align:middle;}
 /* Errors */
-.errorExplanation{font-size:13px;padding:10px;width:300px;border:2px solid #B64134;margin:0 auto; background-color:#E5BD69;}
-.errorExplanation h1{font-size:15px;}
+.field-errors{border:2px solid red;background-color:#ECEBC3;padding:10px;margin-top:5px;margin-bottom:5px;}
+.field-errors h2{font-size:1.2em}
+.field-errors ul{list-style-type: disc;margin-left:25px;margin-top:10px;display:block;}
+.field-errors ul li{margin-left:0px;padding-top:5px;margin:0px;}
