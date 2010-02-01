@@ -5,7 +5,8 @@ require 'padrino-gen'
 require 'padrino-helpers'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,generators,middleware,utils}/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,middleware,utils}/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page, admin_uploader}.rb'].each {|file| require file }
 
 ##
 # We need to apply Padrino::Admin::Utils::Extensions
