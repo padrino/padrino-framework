@@ -68,6 +68,11 @@ module Padrino
       ##
       # Usher router, for fatures and configurations see: http://github.com/joshbuddy/usher
       # 
+      # Examples:
+      # 
+      #   router.add_route('/greedy/{!:greed,.*}')
+      #   router.recognize_path('/simple')
+      # 
       def router
         @router ||= Usher.new(:request_methods => [:request_method, :host, :port, :scheme], 
                               :ignore_trailing_delimiters => true,

@@ -781,6 +781,9 @@ The list of defined helpers in the 'asset helpers' category:
 * <tt>link_to(*args, &block)</tt>
   * Creates a link element with given name, url and options
   * <tt>link_to 'click me', '/dashboard', :class => 'linky'</tt>
+  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :if => @foo.present?</tt>
+  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :unless => @foo.blank?</tt>
+  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :unless => :current</tt>
   * <tt>link_to('/dashboard', :class => 'blocky') { ...content... }</tt>
 * <tt>mail_to(email, caption=nil, mail_options={})</tt>
   * Creates a mailto link tag to the specified email_address
@@ -830,7 +833,7 @@ The list of defined helpers in the 'form helpers' category:
   * <tt>field_set_tag("Office", :class => 'office-set') { }</tt>
 * <tt>error_messages_for(:record, options={})</tt>
   * Constructs list html for the errors for a given object
-  * <tt>error_messages_for @user</tt>
+  * <tt>error_messages_for :user</tt>
 * <tt>label_tag(name, options={}, &block)</tt>
   * Constructs a label tag from the given options
   * <tt>label_tag :username, :class => 'long-label'</tt>
