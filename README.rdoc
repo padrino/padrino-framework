@@ -1230,7 +1230,7 @@ Now edit the form and add these lines:
   # admin/views/accounts/_form.haml
   %tr
     %td=f.label :uploads
-    %td=open_window_grid :account, :upload_ids, :with => :uploads, :get => :id, :show => :file, :multiple => true, :item => :panel
+    %td=f.open_window_grid :upload_ids, :with => :uploads, :get => :id, :show => :file, :multiple => true, :item => :panel
 
 *open_window_grid* is a padrino-admin method that open an extjs window contains your +grids+ so in this case:
 
@@ -1256,7 +1256,7 @@ and add this to your account form:
   # admin/views/accounts/_form.haml
   %tr
     %td=f.label :upload
-    %td=open_window_grid :account, :upload_id, :with => :uploads, :get => :id, :show => :file, :item => :panel
+    %td=f.open_window_grid :upload_id, :with => :uploads, :get => :id, :show => :file, :item => :panel
 
 Remember to run migrations before start your server.
 

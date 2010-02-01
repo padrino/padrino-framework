@@ -1,5 +1,6 @@
 module Padrino
-  class ApplicationSetupError < RuntimeError; end
+  class ApplicationSetupError < RuntimeError #:nodoc:
+  end
   ##
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.

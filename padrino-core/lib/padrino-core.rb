@@ -5,7 +5,8 @@ require 'sinatra/base'
 PADRINO_ENV = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development" unless defined?(PADRINO_ENV)
 
 module Padrino
-  class ApplicationLoadError < RuntimeError; end
+  class ApplicationLoadError < RuntimeError #:nodoc:
+  end
 
   class << self
     ##

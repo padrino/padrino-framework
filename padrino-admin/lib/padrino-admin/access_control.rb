@@ -1,6 +1,7 @@
 module Padrino
 
-  class AccessControlError < StandardError; end
+  class AccessControlError < StandardError #:nodoc:
+  end
 
   ##
   # This module give to a padrino application an access control functionality like:

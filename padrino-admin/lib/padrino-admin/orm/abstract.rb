@@ -1,6 +1,7 @@
 module Padrino
   module Admin
-    class OrmError < StandardError; end
+    class OrmError < StandardError #:nodoc:
+    end
 
     module Orm
       module Abstract

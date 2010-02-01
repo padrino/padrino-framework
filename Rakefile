@@ -1,9 +1,11 @@
 # Simple release is: rake version:bump:minor publish
 
 require 'pathname'
-require "rake/clean"
-require "rake/gempackagetask"
+require 'rake/clean'
+require 'rake/rdoctask'
+require 'rake/gempackagetask'
 require 'fileutils'
+require 'sdoc'
 require File.dirname(__FILE__) + '/versioner'
 
 include FileUtils
@@ -61,6 +63,26 @@ end
 desc "Commits all staged files"
 task :commit, [:message] do |t, args|
   system("git commit -a -m \"#{args.message}\"")
+end
+
+desc "Generate documentation for the Rails framework"
+Rake::RDocTask.new do |rdoc|
+  rdoc.rdoc_dir = 'doc/rdoc'
+  rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
+  rdoc.title    = "Padrino Framework Documentation"
+
+  rdoc.rdoc_files.include('padrino-core/lib/{*.rb,padrino-core}/*.rb')
+  rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/cli.rb')
+  rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/support_lite.rb')
+  rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/server.rb')
+  rdoc.rdoc_files.include('padrino-core/README.rdoc')
+  rdoc.rdoc_files.include('padrino-admin/lib/*.rb')
+  rdoc.rdoc_files.include('padrino-admin/lib/padrino-admin/{*.rb,helpers,middleware,orm,utils}/*.rb')
+  rdoc.rdoc_files.include('padrino-admin/README.rdoc')
+  rdoc.rdoc_files.include('padrino-helpers/lib/**/*.rb')
+  rdoc.rdoc_files.include('padrino-helpers/README.rdoc')
+  rdoc.rdoc_files.include('padrino-mailer/lib/**/*.rb')
+  rdoc.rdoc_files.include('padrino-mailer/README.rdoc')
 end
 
 namespace :version do
