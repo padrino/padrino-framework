@@ -120,6 +120,7 @@ Admin.app = function(){
       if (win){
         win.toFront();
       } else {
+        Admin.app.mask();
         var win = new Admin.window({ id: id });
         win.show(); win.hide();
         win.load({
@@ -233,6 +234,7 @@ Admin.app = function(){
         this.addItem(this.tabPanel);
       }
 
+      Admin.app.unmask();
       this.fireEvent('contentLoaded');
     },//inspectContent
 
