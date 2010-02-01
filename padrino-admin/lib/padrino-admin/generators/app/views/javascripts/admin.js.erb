@@ -99,7 +99,8 @@ Admin.app = function(){
         // s.type = 'text/javascript';
         // // Now we can append the child.
         // hd.appendChild(s);
-        Ext.Ajax.request({ url: url, nocache:true });
+        Admin.app.mask();
+        Ext.Ajax.request({ url: url, nocache:true, callback:this.unmask, scope:this });
       } else if (ext == 'html'){
         this.loadWidget(url);
       } else {
