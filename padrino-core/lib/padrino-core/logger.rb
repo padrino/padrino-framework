@@ -234,7 +234,7 @@ module Padrino
       now = Time.now
       length = extract_content_length(header)
 
-      logger.warn FORMAT % [
+      logger.debug FORMAT % [
         env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
         env["REMOTE_USER"] || "-",
         env["REQUEST_METHOD"],

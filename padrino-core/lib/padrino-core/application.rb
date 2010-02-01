@@ -16,6 +16,7 @@ module Padrino
         super # Loading the subclass
         subclass.default_filters!
         subclass.default_routes!
+        subclass.default_errors!
       end
 
       ##
@@ -195,6 +196,22 @@ module Padrino
               request.path_info =~ /\.([^\.\/]+)$/
               @_content_type = ($1 || :html).to_sym
               content_type(@_content_type, :charset => 'utf-8') rescue content_type('application/octet-stream')
+            end
+          end
+        end
+
+        ##
+        # This log errors for production environments
+        # 
+        def default_errors!
+          configure :production do
+            error ::Exception do
+              exception = request.env['sinatra.error']
+              logger.error exception
+              exception.backtrace.each { |line| logger << "  #{line}" }
+              response.status = 500
+              content_type 'text/html'
+              '<h1>Internal Server Error</h1>'
             end
           end
         end
