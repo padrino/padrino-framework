@@ -144,16 +144,16 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/a.js"
     assert_equal "js", body
-    assert_equal 'application/javascript', response["Content-Type"]
+    assert_equal 'application/javascript;charset=utf-8', response["Content-Type"]
     get "/a.json"
     assert_equal "json", body
-    assert_equal 'application/json', response["Content-Type"]
+    assert_equal 'application/json;charset=utf-8', response["Content-Type"]
     get "/a.foo"
     assert_equal "foo", body
     assert_equal 'application/octet-stream', response["Content-Type"]
     get "/a"
     assert_equal "html", body
-    assert_equal 'text/html', response["Content-Type"]
+    assert_equal 'text/html;charset=utf-8', response["Content-Type"]
   end
 
   should 'use controllers' do

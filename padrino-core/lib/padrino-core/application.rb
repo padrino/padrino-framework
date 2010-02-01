@@ -206,9 +206,8 @@ module Padrino
         def default_errors!
           configure :production do
             error ::Exception do
-              exception = request.env['sinatra.error']
-              logger.error exception
-              exception.backtrace.each { |line| logger << "  #{line}" }
+              boom = env['sinatra.error']
+              logger.error ["#{boom.class} - #{boom.message}:", *boom.backtrace].join("\n ")
               response.status = 500
               content_type 'text/html'
               '<h1>Internal Server Error</h1>'

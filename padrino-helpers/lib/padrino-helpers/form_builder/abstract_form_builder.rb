@@ -13,7 +13,7 @@ module Padrino
 
         # f.error_messages
         def error_messages(*params)
-          params.unshift object_name.to_sym
+          params.unshift object
           @template.error_messages_for(*params)
         end
 

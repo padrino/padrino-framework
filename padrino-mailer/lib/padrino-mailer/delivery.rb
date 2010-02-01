@@ -15,7 +15,6 @@ module Padrino
 
         def mail(options)
           raise(ArgumentError, ":to is required") unless options[:to]
-
           via = options.delete(:via)
           if via.nil?
             transport build_tmail(options)
@@ -31,7 +30,7 @@ module Padrino
         def build_tmail(options)
           mail = TMail::Mail.new
           mail.to = options[:to]
-          mail.from = options[:from] || 'pony@unknown'
+          mail.from = options[:from] || 'padrino@unknown'
           mail.subject = options[:subject]
           mail.body = options[:body] || ""
           mail.set_content_type 'text', options[:type] || 'plain', {'charset'=> options[:charset] || 'utf-8'}
@@ -63,6 +62,7 @@ module Padrino
         end
 
         def transport_via_sendmail(tmail, options={})
+          logger.debug "Sending email via sendmail: #{tmail}"
           IO.popen('-', 'w+') do |pipe|
             if pipe
               pipe.write(tmail.to_s)
@@ -73,6 +73,7 @@ module Padrino
         end
 
         def transport_via_smtp(tmail, options={:smtp => {}})
+          logger.debug "Sending email via smtp: #{tmail}"
           default_options = {:smtp => { :host => 'localhost', :port => '25', :domain => 'localhost.localdomain' }}
           o = default_options[:smtp].merge(options[:smtp])
           smtp = Net::SMTP.new(o[:host], o[:port])
