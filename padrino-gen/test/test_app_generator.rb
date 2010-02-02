@@ -154,23 +154,23 @@ class TestAppGenerator < Test::Unit::TestCase
     should "properly generate for jquery" do
       buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=jquery']) }
       assert_match /Applying.*?jquery.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/jquery.js')
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/jquery.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for prototype" do
       buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=prototype']) }
       assert_match /Applying.*?prototype.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/protopak.js')
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/lowpro.js')
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/protopak.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/lowpro.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
 
     should "properly generate for rightjs" do
       buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=rightjs']) }
       assert_match /Applying.*?rightjs.*?script/, buffer
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/right.js')
-      assert_file_exists('/tmp/sample_app/app/public/javascripts/application.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/right.js')
+      assert_file_exists('/tmp/sample_app/public/javascripts/application.js')
     end
   end
 

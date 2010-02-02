@@ -160,6 +160,7 @@ module Padrino
           set :raise_errors, true if development?
           set :logging, false # !test?
           set :sessions, true
+          set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
           set :uri_root, "/"
           set :reload, development?
@@ -192,11 +193,9 @@ module Padrino
         # 
         def default_filters!
           before do
-            unless options.static? && options.public? && (request.get? || request.head?) && static_file?(request.path_info)
-              request.path_info =~ /\.([^\.\/]+)$/
-              @_content_type = ($1 || :html).to_sym
-              content_type(@_content_type, :charset => 'utf-8') rescue content_type('application/octet-stream')
-            end
+            request.path_info =~ /\.([^\.\/]+)$/
+            @_content_type = ($1 || :html).to_sym
+            content_type(@_content_type, :charset => 'utf-8') rescue content_type('application/octet-stream')
           end
         end
 
@@ -504,7 +503,8 @@ module Padrino
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
           if layout
-            options[:layout] = Dir["#{self.options.views}/#{layout}.*"].size == 0 ? File.join('layouts', layout.to_s).to_sym : layout.to_sym
+            # We look first for views/layout_name.ext then then for views/layouts/layout_name.ext
+            options[:layout] = Dir["#{self.options.views}/#{layout}.*"].present? ? layout.to_sym : File.join('layouts', layout.to_s).to_sym
             logger.debug "Rendering layout #{options[:layout]}"
           end
         end

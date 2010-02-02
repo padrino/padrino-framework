@@ -33,6 +33,7 @@ module Padrino
 
           self.behavior = :revoke if options[:destroy]
           directory("app/", destination_root(options[:path]))
+          directory("assets/", destination_root("public", options[:path]))
 
           Padrino::Generators::Model.dup.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",

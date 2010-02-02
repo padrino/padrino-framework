@@ -139,6 +139,9 @@ task :publish => :readme do
 end
 
 desc "Run tests for all padrino stack gems"
+task :default => :test
+
+desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
   GEM_PATHS[0..-2].each do |gem_info|
