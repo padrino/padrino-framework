@@ -3,19 +3,14 @@ class Uploader < CarrierWave::Uploader::Base
   # Include RMagick or ImageScience support
   #   include CarrierWave::RMagick
   #   include CarrierWave::ImageScience
-  include CarrierWave::MiniMagick
+  #   include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader
   storage :file
   #     storage :s3
 
-  # Override the directory where uploaded files will be stored
+  # Override the directory where uploaded files will be stored (default is /public/uploads)
   # This is a sensible default for uploaders that are meant to be mounted:
-
-  def root
-    "app/public"
-  end
-
   def store_dir
     "uploads"
   end
@@ -29,16 +24,16 @@ class Uploader < CarrierWave::Uploader::Base
   #       "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   #     end
   # Process files as they are uploaded.
-  process :resize_to_fit => [640, 480]
+  # process :resize_to_fit => [640, 480]
   #
   #     def scale(width, height)
   #       # do something
   #     end
 
   # Create different versions of your uploaded files
-  version :thumb do
-    process :resize_to_fit => [128, 128]
-  end
+  # version :thumb do
+  #   process :resize_to_fit => [128, 128]
+  # end
 
   # Add a white list of extensions which are allowed to be uploaded,
   # for images you might use something like this:

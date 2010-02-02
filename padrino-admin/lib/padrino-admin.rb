@@ -6,7 +6,7 @@ require 'padrino-helpers'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,middleware,utils}/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page, admin_uploader}.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page,admin_uploader}.rb'].each {|file| require file }
 
 ##
 # We need to apply Padrino::Admin::Utils::Extensions
@@ -23,7 +23,7 @@ Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Ba
 ##
 # If CarrierWave is defined we set the root directory
 # 
-CarrierWave.root = Padrino.root if defined?(CarrierWave)
+CarrierWave.root = Padrino.root("public") if defined?(CarrierWave)
 
 ##
 # Extend Abastract Form builder
