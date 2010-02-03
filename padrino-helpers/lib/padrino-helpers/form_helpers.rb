@@ -46,7 +46,6 @@ module Padrino
       def error_messages_for(*params)
         options = params.extract_options!.symbolize_keys
         objects = params.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
-        objects.each {|object| object.valid? if object.respond_to?(:valid?) }
         count   = objects.inject(0) {|sum, object| sum + object.errors.count }
 
         unless count.zero?
@@ -217,7 +216,7 @@ module Padrino
         # If explicitly defined, returns that, otherwise returns defaults
         # configured_form_builder_class(nil) => StandardFormBuilder
         def configured_form_builder_class(explicit_builder=nil)
-          default_builder = self.respond_to?(:options) && self.options.default_builder
+          default_builder    = self.respond_to?(:options) && self.options.default_builder
           configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
           configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
           configured_builder

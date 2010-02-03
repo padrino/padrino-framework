@@ -137,7 +137,7 @@ module Padrino
           # explicit_object is either a symbol or a record
           # Returns a new record of the type specified in the object
           def build_object(object_or_symbol)
-            object_or_symbol.is_a?(Symbol) ? object_class(object_or_symbol).new : object_or_symbol
+            object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
           end
 
           # Returns the class type for the given object
