@@ -46,6 +46,7 @@ module Padrino
       def error_messages_for(*params)
         options = params.extract_options!.symbolize_keys
         objects = params.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
+        objects.each {|object| object.valid? if object.respond_to?(:valid?) }
         count   = objects.inject(0) {|sum, object| sum + object.errors.count }
 
         unless count.zero?

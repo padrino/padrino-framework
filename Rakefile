@@ -149,5 +149,7 @@ task :test do
   end
 end
 
+task :default => :test
+
 desc "Execute a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]

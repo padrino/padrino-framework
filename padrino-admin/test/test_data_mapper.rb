@@ -37,6 +37,7 @@ class TestDataMapper < Test::Unit::TestCase
       assert_respond_to account, :new_record?
       assert_respond_to account, :to_param
       assert_respond_to account, :update_attributes
+      assert_respond_to account, :valid?
       assert_respond_to Account, :properties
       assert_respond_to Account, :count
     end
