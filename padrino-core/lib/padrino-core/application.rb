@@ -12,6 +12,7 @@ module Padrino
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         subclass.default_configuration!
         Padrino.set_load_paths File.join(subclass.root, "/models")
+        Padrino.require_dependencies File.join(subclass.root, "/models.rb")
         Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
         super # Loading the subclass
         subclass.default_filters!
@@ -248,7 +249,7 @@ module Padrino
         # Returns the load_paths for the application (relative to the application root)
         # 
         def load_paths
-          @load_paths ||= ["urls.rb", "config/urls.rb", "mailers/*.rb", "controllers/**/*.rb", "helpers/*.rb"]
+          @load_paths ||= ["urls.rb", "config/urls.rb", "mailers/*.rb", "controllers/**/*.rb", "controllers.rb", "helpers/*.rb"]
         end
 
         ##
