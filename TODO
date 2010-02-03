@@ -1,37 +1,27 @@
 = TODO
 
-== ROADMAP FOR STABLE RELEASE
+== ROADMAP FOR 1.0
 
 * [padrino-gen] Support for mounting subapplications
 * [padrino-gen] Support creation of controller/mailer/models/etc for specified app
-* [padrino-admin] Complete admin with file uploads and activerecord/mongomapper adapter
+* [padrino-admin] Complete admin with mongomapper adapter
 * [padrino-helpers] DateTime helpers
 * [padrino-helpers] Number helpers
 * [padrino-core] Code Optimizations
-* [ALL] Documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 
 === GENERAL
 
-* Fix documentation (README, wiki) for each gem (overview in padrino and standalone usage in each subgem)
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
 * Decide what to do about initializers (where do they go single app, multiple apps)
-* Port over plugins for sequel, activerecord, and datamapper (and create equivalents for couchdb and mongo)
-  - http://github.com/merb/merb_datamapper/ + http://github.com/zapnap/mogo/
-  - http://github.com/merb/merb_sequel + http://github.com/rtomayko/sinatra-sequel/
-  - http://github.com/merb/merb_activerecord + http://github.com/bmizerany/sinatra-activerecord/
-  * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
-  * Add support for working migrations with AR, DM, Sequel (rake db:migrate or thor)
+* support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
 
 === TESTING / POLISHING
 
 * Test that controller, mailer, migration and model generators work properly
-* Make sure reloader middleware works for urls, models, controllers, views and all application files
-* Verify logging works properly and can be accessed from any controller (and with specified severity)
 
 === IDEAS
 
 * Implement before/after filters which run on only specified routes [ before :only => [:show, "/account"] { ... } ]
-* Route 'resource' mapping: map(:user).resource (creates RESTful route aliases for resource)
 * Asynchronous commands baked in (http://github.com/deadprogrammer/spork)
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
 * Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
