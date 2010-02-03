@@ -31,18 +31,14 @@ module Padrino
       # 
       def add_access_control_permission(admin, controller)
         permission = indent(6, access_control(controller))
-        if options[:destroy] || !File.read(destination_root("#{admin}/app.rb")).include?(permission)
-          inject_into_file destination_root("#{admin}/app.rb"),  permission, :after => "access_control.roles_for :admin do |role, account|\n"
-        end
+        inject_into_file destination_root("#{admin}/app.rb"),  permission, :after => "access_control.roles_for :admin do |role, account|\n"
       end
 
       ##
       # Add a simple permission (allow/deny) to our app.rb
       # 
       def add_permission(admin, permission)
-        if options[:destroy] || !File.read(destination_root("#{admin}/app.rb")).include?(permission)
-          inject_into_file destination_root("#{admin}/app.rb"),  indent(6, "\n#{permission}\n"), :after => "access_control.roles_for :admin do |role, account|\n"
-        end
+        inject_into_file destination_root("#{admin}/app.rb"),  indent(6, "\n#{permission}\n"), :after => "access_control.roles_for :admin do |role, account|\n"
       end
 
       ##

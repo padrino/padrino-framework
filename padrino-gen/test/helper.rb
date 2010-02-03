@@ -4,7 +4,7 @@ require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
-require 'thor'
+require 'thor/group'
 
 # We try to load the vendored padrino-core if exist
 %w(core).each do |gem|

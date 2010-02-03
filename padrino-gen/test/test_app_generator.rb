@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/helper'
-require 'thor'
+require 'thor/group'
 require 'fakeweb'
 
 class TestAppGenerator < Test::Unit::TestCase

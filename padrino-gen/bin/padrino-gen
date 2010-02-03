@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-%w[rubygems thor].each { |gem| require gem }
+%w[rubygems thor/group].each { |gem| require gem }
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
 # We try to load the vendored padrino-core if exist

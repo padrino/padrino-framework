@@ -1,5 +1,3 @@
-require 'thor'
-
 module Padrino
   module Generators
     class App < Thor::Group

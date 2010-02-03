@@ -1,5 +1,5 @@
 require 'tilt'
-require 'thor'
+require 'thor/group'
 require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-helpers'

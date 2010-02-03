@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/helper'
-require 'thor'
+require 'thor/group'
 
 class TestModelGenerator < Test::Unit::TestCase
   def setup

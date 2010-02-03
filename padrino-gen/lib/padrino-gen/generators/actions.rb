@@ -104,9 +104,7 @@ module Padrino
         gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
         include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
         options.merge!(:content => include_text, :after => after_pattern)
-        if behavior == :revoke || !File.read(destination_root('Gemfile')).include?(options[:content])
-          inject_into_file('Gemfile', options[:content], :after => options[:after])
-        end
+        inject_into_file('Gemfile', options[:content], :after => options[:after])
       end
 
       module ClassMethods
