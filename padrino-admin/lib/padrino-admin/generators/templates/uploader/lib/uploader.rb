@@ -21,10 +21,10 @@ class Uploader < CarrierWave::Uploader::Base
   end
 
   ##
-  # Directory where uploaded temp files will be stored (default is /public/temp)
+  # Directory where uploaded temp files will be stored (default is [root]/tmp)
   # 
   def cache_dir
-    "tmp"
+    Padrino.root("tmp")
   end
 
   ##

@@ -144,6 +144,7 @@ module Padrino
       # 
       # :with:: name of the association. Ex: :images.
       # :url:: the url of the gird, by default we autogenerate them using +:with+ ex: url(:images_index, :format => :js)
+      # :controller:: the name of the controller that contains the gird, by default is +:with+
       # :show:: value to display, if it's a symbol we tranform them using +with+ ex: :name, will be: data["images.name"]
       # :get:: value to store in our db, Default: +:id+
       # :grid:: the name of the var of Admin.grid. Default :grid
@@ -188,7 +189,8 @@ module Padrino
       def open_window_grid(object_name, method, options={})
 
         # We need plural version of our association
-        controller = options[:multiple] ? options[:with] : "#{options[:with].to_s.pluralize}".to_sym
+        options[:controller] ||= options[:with]
+        controller = options[:multiple] ? options[:controller] : "#{options[:controller].to_s.pluralize}".to_sym
 
         # Now we need our association
         association = instance_variable_get("@#{object_name}").send(options[:with])
@@ -205,6 +207,10 @@ module Padrino
         input_name  = "#{object_name}[#{method}]"
         input_name += "[]" if options[:multiple]
 
+        # We need always some defaults values
+        defaults = hidden_field_tag(input_name, :value => "")
+
+        # Now a reusable (also from extjs) template
         template = (<<-HTML).gsub(/ {10}/, "")
           <li>
             <span class="display">{0}</span>
@@ -224,7 +230,7 @@ module Padrino
         collection << li_link
 
         # Now we have the final container
-        container = content_tag(:ul, collection.join.gsub("\\",""), :id => "#{object_name}_#{method}", :class => "open-window-grid")
+        container = content_tag(:ul, defaults + collection.join.gsub("\\",""), :id => "#{object_name}_#{method}", :class => "open-window-grid")
 
         # We need to refactor some values
         show   = "data['#{controller}.#{options[:show]}']" if options[:show].is_a?(Symbol)
