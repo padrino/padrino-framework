@@ -208,7 +208,7 @@ module Padrino
         input_name += "[]" if options[:multiple]
 
         # We need always some defaults values
-        defaults = hidden_field_tag(input_name, :value => "")
+        defaults = hidden_field_tag(input_name)
 
         # Now a reusable (also from extjs) template
         template = (<<-HTML).gsub(/ {10}/, "")
