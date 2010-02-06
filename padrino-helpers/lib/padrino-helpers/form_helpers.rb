@@ -50,7 +50,7 @@ module Padrino
 
         unless count.zero?
           html = {}
-          [:id, :class].each do |key|
+          [:id, :class, :style].each do |key|
             if options.include?(key)
               value = options[key]
               html[key] = value unless value.blank?

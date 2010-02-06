@@ -57,7 +57,7 @@ module Padrino
           AR
 
           def setup_orm
-            require_dependencies 'active_record'
+            require_dependencies 'activerecord', :require_as => 'active_record'
             create_file("config/database.rb", AR)
             empty_directory('app/models')
           end

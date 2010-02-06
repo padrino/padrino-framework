@@ -30,20 +30,20 @@ module Padrino
       # condition padrino return true/false if the request.path_info match the given url
       # 
       def link_to(*args, &block)
-        options    = args.extract_options!
-        anchor  = options[:anchor] ? "##{CGI.escape options.delete(:anchor).to_s}" : ""
+        options = args.extract_options!
+        anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
         options["data-remote"] = "true" if options.delete(:remote)
         if block_given?
-          url = args[0] || 'javascript:void(0);'
-          options.reverse_merge!(:href => url + anchor)
+          url = args[0] ? args[0] + anchor.to_s : anchor || 'javascript:void(0);'
+          options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
           return name unless parse_conditions(url, options)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
-          name, url = args[0], (args[1] || 'javascript:void(0);')
+          name, url = args[0], (args[1] ? args[1] + anchor.to_s : anchor || 'javascript:void(0);')
           return name unless parse_conditions(url, options)
-          options.reverse_merge!(:href => url + anchor)
+          options.reverse_merge!(:href => url)
           content_tag(:a, name, options)
         end
       end
