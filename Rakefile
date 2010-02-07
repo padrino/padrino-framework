@@ -48,6 +48,7 @@ task :clean do
       FileUtils.rm_rf "pkg"
     end
   end
+  FileUtils.rm_rf "doc"
 end
 
 desc "Clean pkg and other stuff"
@@ -129,13 +130,22 @@ task :readme do
 end
 
 desc "Release all padrino gems"
-task :publish => :readme do
-  puts "Pushing to GitHub..."
-  system("git push")
+task :publish do
   puts "Pushing to Gemcutter..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
   end
+  puts "Pushing to RubyForge..."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake_command("rubyforge:release") }
+  end
+  rake_command("rdoc")
+  config = YAML.load(File.read(File.expand_path('~/.rubyforge/user-config.yml')))
+  host = "#{config['username']}@rubyforge.org"
+  remote_dir = "/var/www/gforge-projects/padrino"
+  sh %{rsync --archive --verbose --delete doc/rdoc/ #{host}:#{remote_dir}}
+  puts "Clean tmp pkg doc ..."
+  rake_command("clean")
 end
 
 desc "Run tests for all padrino stack gems"

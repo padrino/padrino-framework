@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.date = %q{2010-01-14}
   s.description = %q{Caching support for memcached, page and fragment}
-  s.email = %q{nesquena@gmail.com}
+  s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
     "README.rdoc"
   ]

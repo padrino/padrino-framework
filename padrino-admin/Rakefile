@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'sdoc'
 
 GEM_VERSION = File.read(File.dirname(__FILE__) + '/VERSION')
 
@@ -9,9 +10,10 @@ begin
     gem.name = "padrino-admin"
     gem.summary = "Admin Dashboard for Padrino"
     gem.description = "Admin View for Padrino applications"
-    gem.email = "nesquena@gmail.com"
+    gem.email = "padrinorb@gmail.com"
     gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-admin"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
+    gem.rubyforge_project = 'padrino-admin'
     gem.add_runtime_dependency     "json_pure",       ">= 1.2.0"
     gem.add_runtime_dependency     "padrino-core",    "= #{GEM_VERSION}"
     gem.add_runtime_dependency     "padrino-gen",     "= #{GEM_VERSION}"
@@ -25,6 +27,7 @@ begin
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new { |r| r.doc_task = :none }
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
