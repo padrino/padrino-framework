@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Orm::Abstract::Account</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Admin::Orm::Abstract::Account</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../../files/padrino-admin/lib/padrino-admin/orm/abstract_rb.html">padrino-admin/lib/padrino-admin/orm/abstract.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+Accoun Extensions
+</p>
+<p>
+An <a href="Account.html">Account</a> must have these column/fields:
+</p>
+<table>
+<tr><td valign="top">role:</td><td>String
+
+</td></tr>
+<tr><td valign="top">email:</td><td>String (used as login)
+
+</td></tr>
+<tr><td valign="top">crypted_password:</td><td>String
+
+</td></tr>
+<tr><td valign="top">salt:</td><td>String
+
+</td></tr>
+</table>
+<p>
+We add to <a href="Account.html">Account</a> model some methods:
+</p>
+<table>
+<tr><td valign="top">Account.authenticate(email, password):</td><td>check if exist an account for the given email and return it if password
+match
+
+</td></tr>
+<tr><td valign="top">account.password_clean:</td><td>return the decrypted password of an <a href="Account.html">Account</a>
+instance
+
+</td></tr>
+</table>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Account/ClassMethods.html">Padrino::Admin::Orm::Abstract::Account::ClassMethods</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Account/InstanceMethods.html">Padrino::Admin::Orm::Abstract::Account::InstanceMethods</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>    

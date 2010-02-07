@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Orm::DataMapper::Base::ClassMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Admin::Orm::DataMapper::Base::ClassMethods</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../../../files/padrino-admin/lib/padrino-admin/orm/datamapper_rb.html">padrino-admin/lib/padrino-admin/orm/datamapper.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000115">ext_search</a></li>
+        
+        <li><a href="#M000117">has</a></li>
+        
+        <li><a href="#M000112">human_attribute_name</a></li>
+        
+        <li><a href="#M000114">orm</a></li>
+        
+        <li><a href="#M000113">table_name</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000115"></a><b>ext_search</b>(params, query={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Method for perorm a full text search / sorting in ExtJS grids.
+</p>
+<p>
+For build a query you can provide for <tt>params</tt>:
+</p>
+<table>
+<tr><td valign="top">query:</td><td>word do search will be converted to &#8220;%word%&#8220;
+
+</td></tr>
+<tr><td valign="top">fields:</td><td>where you want search
+
+</td></tr>
+<tr><td valign="top">sort:</td><td>field to sort
+
+</td></tr>
+<tr><td valign="top">dir:</td><td>one of ASC/DESC
+
+</td></tr>
+<tr><td valign="top">limit:</td><td>limit your results
+
+</td></tr>
+<tr><td valign="top">start:</td><td>offset of your resluts
+
+</td></tr>
+</table>
+<p>
+For <tt>query</tt> we mean standard adapter options such as <tt>links</tt>
+&#8230;
+</p>
+<p>
+So a <tt><a href="ClassMethods.html#M000115">ext_search</a></tt> can be:
+</p>
+<pre>
+  Account.ext_search({:query =&gt; &quot;foo&quot;, fileds=&quot;name,surname,categories.name&quot;, :sort =&gt; &quot;name&quot;,
+                      :dir =&gt; &quot;asc&quot;, :limit =&gt; 50, :offset =&gt; 10 }, { :links =&gt; :categories })
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000115_source')" id="l_M000115_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L99" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000115_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 99</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ext_search</span>(<span class="ruby-identifier">params</span>, <span class="ruby-identifier">query</span>={})
+
+              <span class="ruby-comment cmt"># We build a base struct for have some good results</span>
+              <span class="ruby-identifier">result</span> = <span class="ruby-constant">ExtSearch</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>, [])
+
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:query</span>].<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:fields</span>].<span class="ruby-identifier">present?</span>
+                <span class="ruby-comment cmt"># Here we build some like: [&quot;name LIKE ?&quot;, &quot;surname LIKE ?&quot;]</span>
+                <span class="ruby-identifier">fields</span>  = <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:fields</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;,&quot;</span>).<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;#{f.strip.downcase} LIKE ?&quot;</span> }
+                <span class="ruby-comment cmt"># Here we build some like: [&quot;name LIKE ? OR surname LIKE ?&quot;, &quot;%foo%&quot;, &quot;%foo%&quot;]</span>
+                <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:conditions</span>] = [<span class="ruby-identifier">fields</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; OR &quot;</span>)].<span class="ruby-identifier">concat</span>(<span class="ruby-value">1</span>.<span class="ruby-identifier">upto</span>(<span class="ruby-identifier">fields</span>.<span class="ruby-identifier">length</span>).<span class="ruby-identifier">collect</span> { <span class="ruby-node">&quot;%#{params[:query]}%&quot;</span> })
+              <span class="ruby-keyword kw">end</span>
+
+              <span class="ruby-comment cmt"># Now we can perform a count</span>
+              <span class="ruby-identifier">result</span>.<span class="ruby-identifier">count</span> = <span class="ruby-identifier">count</span>(<span class="ruby-identifier">query</span>)
+
+              <span class="ruby-comment cmt"># First we need to sort our record but we have some problems if we sort for associated tables.</span>
+              <span class="ruby-comment cmt"># </span>
+              <span class="ruby-comment cmt"># see: http://www.mail-archive.com/datamapper@googlegroups.com/msg01310.html</span>
+              <span class="ruby-comment cmt"># </span>
+              <span class="ruby-comment cmt"># I can get these values:</span>
+              <span class="ruby-comment cmt"># </span>
+              <span class="ruby-comment cmt"># * accounts.name</span>
+              <span class="ruby-comment cmt"># * accounts.posts.name</span>
+              <span class="ruby-comment cmt"># * accounts.posts.categories.name</span>
+              <span class="ruby-comment cmt"># </span>
+              <span class="ruby-comment cmt"># We need to transform in some like [DataMapper::Query::Direction.new(Account.properties[:name], :asc)]</span>
+              <span class="ruby-comment cmt"># </span>
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:sort</span>].<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:dir</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^(asc|desc)$/i</span>
+                <span class="ruby-identifier">values</span>    = <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:sort</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-node">/^#{table_name}\./</span>, <span class="ruby-value str">&quot;&quot;</span>).<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;.&quot;</span>).<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:to_sym</span>)
+                <span class="ruby-identifier">property</span>  = <span class="ruby-identifier">values</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-value">-1</span>) <span class="ruby-comment cmt"># the last value is always a property</span>
+                <span class="ruby-identifier">relation</span>  = <span class="ruby-identifier">values</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-keyword kw">self</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">relation</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> 
+                  <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Unknow relation #{value} for #{relation}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">relation</span>.<span class="ruby-identifier">relationships</span>[<span class="ruby-identifier">value</span>]
+                  <span class="ruby-identifier">relation</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">value</span>)
+                <span class="ruby-keyword kw">end</span>
+                <span class="ruby-identifier">target</span> = <span class="ruby-identifier">relation</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:model</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">relation</span>.<span class="ruby-identifier">model</span>.<span class="ruby-identifier">properties</span>[<span class="ruby-identifier">property</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">relation</span>.<span class="ruby-identifier">properties</span>[<span class="ruby-identifier">property</span>]
+                <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:order</span>] = [<span class="ruby-operator">::</span><span class="ruby-constant">DataMapper</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">Direction</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">target</span>, <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:dir</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">to_sym</span>)]
+              <span class="ruby-keyword kw">end</span>
+
+              <span class="ruby-comment cmt"># Now time to limit/offset it</span>
+              <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:limit</span>]  = <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:limit</span>].<span class="ruby-identifier">to_i</span>  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:limit</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+              <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:offset</span>] = <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:start</span>].<span class="ruby-identifier">to_i</span>  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:start</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+
+              <span class="ruby-comment cmt"># Now we can perform ording/limiting</span>
+              <span class="ruby-identifier">result</span>.<span class="ruby-identifier">records</span> = <span class="ruby-identifier">all</span>(<span class="ruby-identifier">query</span>)
+              <span class="ruby-identifier">result</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000117"></a><b>has</b>(cardinality, name, *args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+The aim of this method is act DM as AR, so when you define a many-to-many
+relation like:
+</p>
+<pre>
+  has n, :images
+  has n, :images, :through =&gt; Resource
+</pre>
+<p>
+you have two new methods:
+</p>
+<pre>
+  images_ids
+  images_ids=(*ids)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000117_source')" id="l_M000117_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L157" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000117_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 157</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">has</span>(<span class="ruby-identifier">cardinality</span>, <span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+              <span class="ruby-identifier">relationship</span> = <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">cardinality</span>, <span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">relationship</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">DataMapper</span><span class="ruby-operator">::</span><span class="ruby-constant">Associations</span><span class="ruby-operator">::</span><span class="ruby-constant">ManyToMany</span><span class="ruby-operator">::</span><span class="ruby-constant">Relationship</span>) <span class="ruby-operator">||</span>
+                 <span class="ruby-identifier">relationship</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">DataMapper</span><span class="ruby-operator">::</span><span class="ruby-constant">Associations</span><span class="ruby-operator">::</span><span class="ruby-constant">OneToMany</span><span class="ruby-operator">::</span><span class="ruby-constant">Relationship</span>)
+
+                <span class="ruby-identifier">class_eval</span> <span class="ruby-value str">&quot;def \#{name.to_s.singular}_ids\n\#{name}.collect(&amp;:id)\nend\n\ndef \#{name.to_s.singular}_ids=(*ids)\nself.\#{name} = \#{relationship.child_model.name}.all(:id =&gt; ids.flatten)\nend\n&quot;</span>, <span class="ruby-keyword kw">__FILE__</span>, <span class="ruby-keyword kw">__LINE__</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+              <span class="ruby-keyword kw">end</span>
+              <span class="ruby-identifier">relationship</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000112"></a><b>human_attribute_name</b>(field, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Transforms attribute key names into a more humane format, such as
+&#8220;First name&#8221; instead of &#8220;first_name&#8220;.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  Person.human_attribute_name(&quot;first_name&quot;) # =&gt; &quot;First name&quot;
+</pre>
+<p>
+Specify <tt>options</tt> with additional translating options.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000112_source')" id="l_M000112_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L58" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000112_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 58</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">human_attribute_name</span>(<span class="ruby-identifier">field</span>, <span class="ruby-identifier">options</span> = {})
+              <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:count</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">field</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">humanize</span>, <span class="ruby-identifier">:scope</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">:model</span>, <span class="ruby-identifier">:attributes</span>])
+              <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">translate</span>(<span class="ruby-node">&quot;#{self.name.underscore}.#{field}&quot;</span>, <span class="ruby-identifier">options</span>)
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000114"></a><b>orm</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return :activerecord
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000114_source')" id="l_M000114_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L76" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000114_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 76</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">orm</span>
+              <span class="ruby-identifier">:datamapper</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000113"></a><b>table_name</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return the name of the Table
+</p>
+<p>
+Because in some unkown circumstances +storage_names[:default]+ give us an
+wrong value we use the class name for get the value
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000113_source')" id="l_M000113_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L69" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000113_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 69</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">table_name</span>
+              <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">pluralize</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>README.rdoc</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />README.rdoc</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-core/README.rdoc</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Wed Feb 03 00:24:53 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><h1><a href="../../classes/Padrino.html">Padrino</a> (padrino-core)</h1>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> is the godfather of
+Sinatra.
+</p>
+<h2>Preface</h2>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> is a ruby framework build
+upon the <a href="http://www.sinatrarb.com">Sinatra Microframework</a>.
+</p>
+<p>
+Sinatra is a DSL for quickly creating web applications in Ruby with minimal
+effort.
+</p>
+<p>
+The extreme simplicity of this framework is quite refreshing. We have been
+using Sinatra a great deal for recent projects. First for small and simple
+json and xml web services and then even for more complex full-featured
+applications.
+</p>
+<p>
+This gem represents an attempt to make it as fun and easy as possible to
+code increasingly advanced web applications in Sinatra.
+</p>
+<h2>Introduction</h2>
+<p>
+Many people love Sinatra&#8217;s simplicity and lightweight but often
+quickly come to miss a great deal of functionality provided by other web
+frameworks such as Rails when building non-trivial applications.
+</p>
+<p>
+The obvious question in these cases might be &#8220;Why not just use rails
+then?&#8221;. This can often be a viable option but still Rails is quite a
+large framework with a &#8216;take it or leave it&#8217; attitude.
+</p>
+<p>
+Personally, we have come to love the philosophy of Sinatra which acts as a
+thin layer on top of rack often allowing middleware to do most of the work
+and pulling in additional complexity only when required.
+</p>
+<p>
+Our goal with this framework is to match the essence of Sinatra and at the
+same time create a standard library of tools, helpers and components that
+will make Sinatra suitable for more complex applications.
+</p>
+<p>
+Here is a small list of what <a
+href="../../classes/Padrino.html">Padrino</a> provides:
+</p>
+<table>
+<tr><td valign="top">Generators:</td><td>for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or
+<tt>padrino start</tt> on command line
+
+</td></tr>
+<tr><td valign="top">MultiApp:</td><td>unlike other ruby frameworks <a
+href="../../classes/Padrino.html">Padrino</a> is principally designed for
+mounting multiple apps at the same time.
+
+</td></tr>
+<tr><td valign="top">Routing:</td><td>Full url named route, named params, respond_to suppor
+
+</td></tr>
+<tr><td valign="top">Tag Helpers:</td><td>helpers such as: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>,
+&#8230;
+
+</td></tr>
+<tr><td valign="top">Asset Helpers:</td><td>helpers such as: <tt>link_to</tt>, <tt>image_tag</tt>,
+<tt>javascript_include_tag</tt>, &#8230;
+
+</td></tr>
+<tr><td valign="top">Form Helpers:</td><td>with builder support such as: <tt>form_tag</tt>, <tt>form_for</tt>,
+<tt>field_set_tag</tt>, <tt>text_field</tt>, &#8230;
+
+</td></tr>
+<tr><td valign="top">Text Helpers:</td><td>useful formatting extensions like: <tt>relative_time_ago</tt>,
+<tt>js_escape_html</tt>, <tt>sanitize_html</tt>
+
+</td></tr>
+<tr><td valign="top">Mailer:</td><td>fast, tiny, delivery support for send templating emails (like ActionMailer
+do)
+
+</td></tr>
+<tr><td valign="top">Admin:</td><td>an ajax admin that displays your records in sortable grids, tree, windows
+&#8230; as a desktop app can do.
+
+</td></tr>
+<tr><td valign="top">Logging:</td><td><a href="../../classes/Padrino.html">Padrino</a> provide a logger that can
+interact with your orm or any other library
+
+</td></tr>
+<tr><td valign="top">Reloading:</td><td>With padrino is not necessary like other framework start and restart your
+server for see changes.
+
+</td></tr>
+<tr><td valign="top">I18n:</td><td><a href="../../classes/Padrino.html">Padrino</a> has a full support of I18n
+and can autoset locale.
+
+</td></tr>
+</table>
+<p>
+Keep in mind, the user will be able to pull in these components seperately
+and leave out those that are not required or use them altogether for a
+comprehensive upgrade to Sinatra (a full-stack <a
+href="../../classes/Padrino.html">Padrino</a> application).
+</p>
+<p>
+Note that all work has been created to be compatible with haml, erb, and
+erubis and that this gem is intended to be template-agnostic in providing
+helpers wherever possible.
+</p>
+<p>
+Please help me brainstorm and fork the project if you have any ideas to
+contribute.
+</p>
+<h2>Installation</h2>
+<p>
+To install the padrino framework, simply grab the latest version from
+gemcutter:
+</p>
+<pre>
+  $ sudo gem install padrino --source http://gemcutter.org
+</pre>
+<p>
+This will install the necessary padrino gems to get you started. Now you
+are ready to use this gem to enhance your sinatra projects or to create new
+<a href="../../classes/Padrino.html">Padrino</a> applications.
+</p>
+<h2>Usage</h2>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> is a framework which
+builds on the existing functionality and Sinatra and provides a variety of
+additional tools and helpers to extend the foundation. This README and <a
+href="../../classes/Padrino.html">Padrino</a> documentation in general will
+focus on the enhancements to the core Sinatra functionality. To use <a
+href="../../classes/Padrino.html">Padrino</a>, one should be familiar with
+the basic usage of Sinatra itself. Resources for Sinatra are listed below:
+</p>
+<ul>
+<li><a href="http://www.sinatrarb.com/intro.html">Sinatra Introduction</a>
+
+</li>
+<li><a href="http://www.sinatrarb.com/book.html">Sinatra Book</a>
+
+</li>
+<li><a href="http://github.com/sinatra/sinatra">Sinatra Github Repo</a>
+
+</li>
+</ul>
+<p>
+Below is a guide to how this gem enhances the Sinatra framework as part of
+a &#8216;full-stack&#8217; padrino application. For information on how to
+use a specific gem in isolation within an existing Sinatra project,
+checkout the README for that individual gem or gems.
+</p>
+<h2>Enhanced Base Application (padrino-core)</h2>
+<p>
+Sinatra has support for classes which can be extended to create an
+application: <tt>Sinatra::Base</tt> and <tt>Sinatra::Application</tt> These
+classes can be extended in order to create a Sinatra web application. These
+classes provide support for all the basic functionality afforded by
+Sinatra.
+</p>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> has support for an
+enhanced base application class <tt>Padrino::Application</tt>.
+<tt>Padrino::Application</tt> expands the capabilities of
+Sinatra::Application and automatically provides the resulting application
+access to all of the padrino framework&#8217;s functionalities.
+</p>
+<p>
+Similar in spirit to Sinatra itself, <a
+href="../../classes/Padrino.html">Padrino</a> application layout is
+extremely flexible and can be as small as a single file. However, <a
+href="../../classes/Padrino.html">Padrino</a> provides many extensions
+which improve upon the ability to construct more complex applications.
+</p>
+<h3>Simple Application Definition</h3>
+<p>
+Let us first take a look at the simplest possible <a
+href="../../classes/Padrino.html">Padrino</a> application:
+</p>
+<pre>
+  # app.rb
+  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+  require 'padrino'
+  Padrino.load!
+
+  class SimpleApp &lt; Padrino::Application
+    get '/' do
+      'Hello world'
+    end
+
+    # and for read better we can divide with controllers
+    controller '/admin' do
+      get '/foo' do
+        'Im /admin/foo
+      end
+    end
+  end
+</pre>
+<h3>Controllers</h3>
+<p>
+Suppose we wanted to add additional routes to our <a
+href="../../classes/Padrino.html">Padrino</a> application, and we want to
+organize the routes within a more structured layout. Simply add a
+<tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file
+as such:
+</p>
+<pre>
+  # Simple Example
+  SimpleApp.controllers do
+    get &quot;/test&quot; do
+      &quot;Text to return&quot;
+    end
+  end
+</pre>
+<h2>Advanced Routing Support</h2>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> provides support for
+advanced routing functionality not available within Sinatra. This routing
+supports named route aliases and easy access to url paths. The benefits of
+this is that instead of having to hard-code route urls into every area of
+your application, now we can just define the urls in a single spot and then
+attach an alias which can be used to refer to the url throughout the
+application.
+</p>
+<h3><a href="../../classes/Padrino.html">Padrino</a> Routing</h3>
+<p>
+Urls mapped here can then be defined within a controller:
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index do
+      ...
+    end
+
+    get :account do
+      # access params[:name] and params[:index]
+    end
+  end
+</pre>
+<p>
+and finally referenced anywhere in the application:
+</p>
+<pre>
+  # app/views/example.haml
+  = link_to &quot;Index&quot;, url_for(:index)
+  = link_to &quot;Account&quot;, url_for(:account, :id =&gt; 1, :name =&gt; 'first')
+</pre>
+<h3>Inline Route Alias Definitions</h3>
+<p>
+The routing plugin also supports inline route definitions in which the url
+and the named alias are defined together within the controller:
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers do
+    get :index, :map =&gt; '/index' do
+      ...
+    end
+
+    get :account, :map =&gt; '/the/accounts/:name/and/:id' do
+      # access params[:name] and params[:index]
+    end
+  end
+</pre>
+<p>
+Routes defined inline this way can be accessed and treated the same way as
+traditional named aliases.
+</p>
+<h3>Namespaced Route Aliases</h3>
+<p>
+There is also support for namespaced routes which are organized into a
+larger grouping:
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show do
+      &quot;Im /admin/show&quot;
+    end
+
+    get :index, :map =&gt; &quot;/admin/:id&quot; do
+      &quot;Im /admin/#{params[:id]}&quot;
+    end
+  end
+</pre>
+<p>
+You can then reference the urls using the same url_for method:
+</p>
+<pre>
+  &lt;%= link_to 'admin show page', url_for(:admin_show, :id =&gt; 25) %&gt;
+  &lt;%= link_to 'admin index page', url_for(:admin_index, :id =&gt; 25) %&gt;
+</pre>
+<p>
+If you don&#8217;t want named routes you can
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers &quot;/admin&quot; do
+    get &quot;/show&quot; do
+      &quot;Im /admin/show&quot;
+    end
+
+    get &quot;other/:id&quot; do
+      &quot;Im /admin/#{params[:id]}&quot;
+    end
+  end
+</pre>
+<h3>Named Params</h3>
+<p>
+With <a href="../../classes/Padrino.html">Padrino</a> you can use named
+params!! See these examples
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with =&gt; :id do
+      &quot;Im /admin/show/#{params[:id]}&quot;
+    end
+
+    get :other, with =&gt; [:id, :name]  do
+      &quot;Im /admin/#{params[:id]}/#{params[:name]}&quot;
+    end
+  end
+</pre>
+<p>
+You can then reference the urls using the same url_for method:
+</p>
+<pre>
+  &lt;%= link_to 'admin show page', url_for(:admin_show, :id =&gt; 25) %&gt;
+  &lt;%= link_to 'admin other page', url_for(:admin_index, :id =&gt; 25, :name =&gt; :foo) %&gt;
+</pre>
+<h3>Respond To</h3>
+<p>
+With <a href="../../classes/Padrino.html">Padrino</a> you can simply
+respond to a given format see example:
+</p>
+<pre>
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with =&gt; :id, :respond_to =&gt; :js do
+      &quot;Im /admin/show/#{params[:id]}.#{params[:format]}&quot;
+    end
+
+    get :other, with =&gt; [:id, :name], respond_to =&gt; [:html, :json] do
+      case content_type
+        when :js    then ... end
+        when :json  then ... end
+      end
+    end
+  end
+
+  &lt;%= link_to 'admin show page', url_for(:admin_show, :id =&gt; 25, :format =&gt; :js) %&gt;
+  &lt;%= link_to 'admin other page', url_for(:admin_index, :id =&gt; 25, :name =&gt; :foo) %&gt;
+  &lt;%= link_to 'admin other json page', url_for(:admin_index, :id =&gt; 25, :name =&gt; :foo, :format =&gt; :json) %&gt;
+</pre>
+<h3>Rendering</h3>
+<p>
+Unlike Sinatra <a href="../../classes/Padrino.html">Padrino</a> support
+template auto lookup so:
+</p>
+<pre>
+  # look for 'account/index.{erb,haml,...}
+  render 'account/index'
+</pre>
+<h3>Layout</h3>
+<p>
+With <a href="../../classes/Padrino.html">Padrino</a> you can (like rails
+do) use for your custom layout, disable it
+</p>
+<pre>
+  class SimpleApp &lt; Padrino::Application
+
+    # Disable layouts
+    disable layout
+
+    # Use the layout located in views/layouts/custom.haml
+    layout :custom
+</pre>
+<h3>Gemfile Dependency Resolution</h3>
+<p>
+While this is a fully operational <a
+href="../../classes/Padrino.html">Padrino</a> application in itself, let us
+take a look at Padrino&#8217;s expanded capabilites. First, we can create
+Gemfile within the application root. This will contain a list of all the
+dependencies for our application.
+</p>
+<pre>
+  # /Gemfile
+  clear_sources
+  source 'http://gemcutter.org'
+  gem 'sinatra',     :require_as =&gt; 'sinatra/base'
+  gem 'rack-flash'
+</pre>
+<p>
+This manifest file uses the standard <tt>bundler</tt> gem syntax of which
+details can be found in the <a
+href="http://github.com/wycats/bundler">Bundler README</a> This gem allows
+us to place all our dependencies into a single file. <a
+href="../../classes/Padrino.html">Padrino</a> will then automatically
+require all necessary files (if they exist on the system).
+</p>
+<p>
+If the dependencies are not on the system, you can automatically vendor all
+necessary gems using the <tt>gem bundle</tt> command within the application
+root. Note that this is all possible without any further effort than adding
+the Gemfile (or having this generated automatically with generators
+explained later).
+</p>
+<h3>Auto Load Paths</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> also intelligently
+supports requiring useful files within your application automatically and
+provides functionality for easily splitting up your application into
+separate files. <a href="../../classes/Padrino.html">Padrino</a>
+automatically requires <tt>config/database.rb</tt> as a convention for
+establishing database connection. Also, any files within the <tt>lib</tt>
+folder will be required automatically by <a
+href="../../classes/Padrino.html">Padrino</a>.
+</p>
+<p>
+This is powered by the fact that <a
+href="../../classes/Padrino.html">Padrino</a> will automatically load (and
+reload) any directory patterns within the &#8216;load path&#8217;.
+Additional directory patterns can be added to the load path as needed by
+simply appending to the <tt>load_paths</tt> within your application:
+</p>
+<pre>
+  # app.rb
+  class SimpleApp &lt; Padrino::Application
+    load_paths &lt;&lt; [&quot;app/special/*.rb&quot;, &quot;some_file.rb&quot;]
+  end
+</pre>
+<p>
+This will instruct <a href="../../classes/Padrino.html">Padrino</a> to
+autoload these files (and reload them when changes are detected). By
+default, the load path contains certain paths known to contain important
+files such as controllers, mailers, models, urls, and helpers.
+</p>
+<h3>Initializers</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> also has support for
+&#8216;initializers&#8217; which are important setup steps or configuration
+within an application that should occur during the bootup process. To
+construct initializers, simply add a file to the
+<tt>config/initializers<tt> directory following this convention:
+</p>
+<pre>
+  # config/initializers/example.rb
+  module ExampleInitializer
+    def self.registered(app)
+      # Manipulate 'app' here to register components or adjust configuration
+      app.set :environment, :production # just an example configuration change
+      app.use Hassle # or even enable middleware
+    end
+  end
+</pre>
+<p>
+Initializers are automatically required and &#8216;registered&#8217; during
+the application startup process. Note that the name of the module must be
+the name of the file appended with &#8216;Initializer&#8217; (i.e sample.rb
+=> SampleInitializer)
+</p>
+<h3>Application Logging</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> also supports robust
+logging capabilities. By default, logging information will go to the STDOUT
+in development (for use in a console) and in an environment-specific log
+file <tt>log/development.log</tt> in test and production environments.
+</p>
+<p>
+You can modify the logging behavior or disable logging altogether:
+</p>
+<pre>
+  # app.rb
+  class SimpleApp &lt; Padrino::Application
+    disable :logging     # Turns off logging
+    enable  :log_to_file # Forces logging to be written to a file
+  end
+</pre>
+<p>
+To use the logger within a <a href="../../classes/Padrino.html">Padrino</a>
+application, simply refer to the <tt>logger</tt> method accessible within
+your app and any controller or views:
+</p>
+<pre>
+  # controllers/example.rb
+  SimpleApp.controllers do
+    get(&quot;/test&quot;) { logger.info &quot;This is a test&quot; }
+  end
+</pre>
+<p>
+The logger automatically supports severity through the use of
+<tt>logger.info</tt>, <tt>logger.warn</tt>, <tt>logger.error</tt>, et al.
+For more information about the logger, check out the <a
+href="http://www.ruby-doc.org/stdlib/libdoc/logger/rdoc/">Logger RDOC</a>
+</p>
+<h3>Mounting Applications</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> applications are all
+automatically mountable into other <a
+href="../../classes/Padrino.html">Padrino</a> projects. This means that a
+given <a href="../../classes/Padrino.html">Padrino</a> project directory
+can easily mount multiple applications. This allows for better organization
+of complex applications, re-usable applications that can be applied (i.e
+admin, auth, blog) and even more flexibility.
+</p>
+<p>
+You can think of mountable applications as a &#8216;full-featured&#8217;
+merb slice or rails engine. Instead of a separate construct, any
+application can simply be packaged and mounted into another project.
+</p>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> stores application
+mounting information by default within <tt>config/apps.rb</tt>. This file
+is intended to keep all information regarding what applications are mounted
+to which uri&#8217;s. An <tt>apps.rb</tt> file has the following structure:
+</p>
+<pre>
+  Padrino.mount(&quot;blog&quot;).to(&quot;/blog&quot;)
+  Padrino.mount(&quot;website&quot;).to(&quot;/website&quot;)
+</pre>
+<p>
+This would mount two applications onto the <a
+href="../../classes/Padrino.html">Padrino</a> project, one served from the
+&#8217;/blog&#8217; uri namespace and the other served from the
+&#8217;/website&#8217; uri namespace. Often a <a
+href="../../classes/Padrino.html">Padrino</a> project directory requires a
+single &#8216;core&#8217; application which is served from the uri root.
+This can be easily configured using:
+</p>
+<pre>
+  Padrino.mount_core(&quot;app_name&quot;) # mounts app with class AppName, in file &lt;tt&gt;app/app.rb&lt;/tt&gt;
+  Padrino.mount_core(&quot;app_name&quot;, :app_file =&gt; Padrino.root('app.rb')) # now with file in &lt;tt&gt;app.rb&lt;/tt&gt;
+</pre>
+<p>
+This will mount a &#8216;core&#8217; application with class AppName from
+the file &#8216;app.rb&#8217; to the uri root which will act as a primary
+application.
+</p>
+<h3>Development Reloader</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> applications also have the
+enabled ability to automatically reload all changing application files
+without the need to restart the server. Through the use of a customized
+Rack middleware, all files on the &#8216;load path&#8217; are monitored and
+reloaded whenever changes are applied.
+</p>
+<p>
+This makes rapid development much easier and provides a better alternative
+to &#8216;shotgun&#8217; or &#8216;rerun&#8217; which require the
+application server to be restarted which makes requests take much longer to
+complete.
+</p>
+<p>
+An application can explicitly enable / disable reloading through the use of
+options:
+</p>
+<pre>
+  # app.rb
+  class SimpleApp &lt; Padrino::Application
+    disable :reload # reload is disabled in all environments
+    enable  :reload # enabled in all environments
+  end
+</pre>
+<p>
+By default, reloading is enabled in development and disabled in the test
+and production environments.
+</p>
+<p>
+If you want to build a standalone app you need to take some precautions see
+example:
+</p>
+<pre>
+  # simple_demo.rb
+  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+  require 'padrino-core'
+
+  class SimpleDemo &lt; Padrino::Application
+    set :reload, true
+
+    get &quot;/&quot; do
+      &quot;This is a simple Demo!!!&quot;
+    end
+  end
+
+  Padrino.mount_core(&quot;SimpleDemo&quot;)
+
+  Padrino.run! unless Padrino.loaded? # If you enable reloader prevent to re-run the app
+
+  Padrino.load!
+</pre>
+<p>
+Now you can run simple_demo.rb with:
+</p>
+<pre>
+  $ ruby simple_demo.rb
+</pre>
+<p>
+Browse <a href="http://localhost:3000">localhost:3000</a> edit your file
+and refresh your page for see changes!
+</p>
+<h3>Terminal Commands</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> also comes equipped with
+multiple useful terminal commands which can be activated to perform common
+tasks such as starting / stopping the application, executing the unit tests
+or activating an irb session.
+</p>
+<p>
+The following commands are available:
+</p>
+<pre>
+  # starts the app server (non-daemonized)
+  $ padrino start
+  # starts the app server (daemonized) with given port, environment and adapter
+  $ padrino start -d -p 3000 -e development -a thin
+
+  # Stops a daemonized app server
+  $ padrino stop
+
+  # Run all the unit tests
+  $ padrino test
+
+  # Bootup the Padrino console (irb)
+  $ padrino console
+
+  # Run/List tasks
+  $ padrino rake
+</pre>
+<p>
+Using these commands can simplify common tasks making development that much
+smoother.
+</p>
+<h3>Special Folders</h3>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> load these paths:
+</p>
+<pre>
+  project/lib
+  project/models
+  project/shared/lib
+  project/shared/models
+  project/each_app/models
+</pre>
+<p>
+This mean that you are free to store for example <tt>models</tt> where you
+prefer, if you have two or more apps with same models you can use
+<tt>project</tt>/<tt>shared</tt>/<tt>models</tt> or
+<tt>root</tt>/<tt>models</tt>.
+</p>
+<p>
+If you have only one app you still use
+<tt>project</tt>/<tt>app</tt>/<tt>models</tt> (this is the default
+padrino-gen choice)
+</p>
+<p>
+Remember that if you need to load other paths you can use:
+</p>
+<pre>
+  Padrino.set_load_paths(&quot;path/one&quot;)
+</pre>
+<p>
+and if you need to load dependencies use:
+</p>
+<pre>
+  Padrino.require_dependencies(&quot;path/one/**/*.rb&quot;)
+</pre>
+<h2>Copyright</h2>
+<p>
+Copyright &#169; 2010 <a href="../../classes/Padrino.html">Padrino</a>. See
+LICENSE for details.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

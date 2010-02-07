@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Utils::Crypt</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Admin::Utils::Crypt</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-admin/lib/padrino-admin/utils/crypt_rb.html">padrino-admin/lib/padrino-admin/utils/crypt.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+This util it&#8217;s used for encrypt/decrypt password. We want password
+decryptable because generally for our sites we have: password_lost. We
+prefer send original password instead reset them.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000122">decrypt</a></li>
+        
+        <li><a href="#M000123">encrypt</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000122"></a><b>decrypt</b>(password)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Decrypts the current string using the current key and algorithm specified
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000122_source')" id="l_M000122_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/abaa29cc38c6f7f028f13ba2fb1ac4242adb3910/padrino-admin/lib/padrino-admin/utils/crypt.rb#L9" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000122_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/utils/crypt.rb, line 9</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">decrypt</span>(<span class="ruby-identifier">password</span>)
+          <span class="ruby-identifier">cipher</span> = <span class="ruby-identifier">build_cipher</span>(<span class="ruby-identifier">:decrypt</span>, <span class="ruby-identifier">password</span>)
+          <span class="ruby-identifier">cipher</span>.<span class="ruby-identifier">update</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">'m'</span>)[<span class="ruby-value">0</span>]) <span class="ruby-operator">+</span> <span class="ruby-identifier">cipher</span>.<span class="ruby-identifier">final</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000123"></a><b>encrypt</b>(password)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Encrypts the current string using the current key and algorithm specified
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000123_source')" id="l_M000123_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/abaa29cc38c6f7f028f13ba2fb1ac4242adb3910/padrino-admin/lib/padrino-admin/utils/crypt.rb#L15" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000123_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/utils/crypt.rb, line 15</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">encrypt</span>(<span class="ruby-identifier">password</span>)
+          <span class="ruby-identifier">cipher</span> = <span class="ruby-identifier">build_cipher</span>(<span class="ruby-identifier">:encrypt</span>, <span class="ruby-identifier">password</span>)
+          [<span class="ruby-identifier">cipher</span>.<span class="ruby-identifier">update</span>(<span class="ruby-keyword kw">self</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">cipher</span>.<span class="ruby-identifier">final</span>].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">'m'</span>).<span class="ruby-identifier">chomp</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

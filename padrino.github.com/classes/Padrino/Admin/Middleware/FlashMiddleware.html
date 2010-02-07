@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Middleware::FlashMiddleware</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Admin::Middleware::FlashMiddleware</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-admin/lib/padrino-admin/middleware/flash_middleware_rb.html">padrino-admin/lib/padrino-admin/middleware/flash_middleware.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Object
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+FlashSessionCookieMiddleware
+</p>
+<pre>
+  passing your session in the URI, when it should be in the cookie
+</pre>
+<p>
+This code only works in following cases:
+</p>
+<ul>
+<li>passing the session as the variable for &#8216;session_key&#8217; (it is
+best to set this to your app&#8217;s session cookie name
+
+</li>
+<li>the value is URI escaped once, (don&#8217;t do it explicetally if using
+rails helpers, they do it for you)
+
+</li>
+<li>Loading this middleware before session_store middleware
+
+</li>
+</ul>
+<p>
+Note, this could work also after session_store middleware (or others).
+However, these could already have modified the cooky values, and this
+module could become unstable because of that, and it&#8217;s functioning
+can not be guaranteed.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000088">call</a></li>
+        
+        <li><a href="#M000087">new</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000087"></a><b>new</b>(app, session_key = 'session_id')
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000087_source')" id="l_M000087_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/middleware/flash_middleware.rb#L21" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000087_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/middleware/flash_middleware.rb, line 21</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">app</span>, <span class="ruby-identifier">session_key</span> = <span class="ruby-value str">'session_id'</span>)
+          <span class="ruby-ivar">@app</span> = <span class="ruby-identifier">app</span>
+          <span class="ruby-ivar">@session_key</span> = <span class="ruby-identifier">session_key</span>.<span class="ruby-identifier">to_s</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000088"></a><b>call</b>(env)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000088_source')" id="l_M000088_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/middleware/flash_middleware.rb#L26" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000088_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/middleware/flash_middleware.rb, line 26</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">env</span>)
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">env</span>[<span class="ruby-value str">'HTTP_USER_AGENT'</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^(Adobe|Shockwave) Flash/</span>
+            <span class="ruby-identifier">params</span> = <span class="ruby-operator">::</span><span class="ruby-constant">Rack</span><span class="ruby-operator">::</span><span class="ruby-constant">Request</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">env</span>).<span class="ruby-identifier">params</span>
+            <span class="ruby-identifier">env</span>[<span class="ruby-value str">'rack.session'</span>][<span class="ruby-ivar">@session_key</span>.<span class="ruby-identifier">to_sym</span>] = <span class="ruby-identifier">params</span>[<span class="ruby-ivar">@session_key</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">params</span>[<span class="ruby-ivar">@session_key</span>].<span class="ruby-identifier">nil?</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-ivar">@app</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">env</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

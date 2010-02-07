@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Mailer::Base</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Mailer::Base</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-mailer/lib/padrino-mailer/base_rb.html">padrino-mailer/lib/padrino-mailer/base.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Object
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000217">body</a></li>
+        
+        <li><a href="#M000219">deliver</a></li>
+        
+        <li><a href="#M000215">mail_fields</a></li>
+        
+        <li><a href="#M000221">method_missing</a></li>
+        
+        <li><a href="#M000216">new</a></li>
+        
+        <li><a href="#M000220">respond_to?</a></li>
+        
+        <li><a href="#M000218">template_path</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>mail_attributes</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000219"></a><b>deliver</b>(mail_name, *args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Delivers the specified message for mail_name to the intended recipients
+mail_name corresponds to the name of a defined method within the mailer
+class SampleMailer.deliver(:birthday_message)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000219_source')" id="l_M000219_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L57" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000219_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 57</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">deliver</span>(<span class="ruby-identifier">mail_name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-identifier">mail_object</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">mail_name</span>)
+        <span class="ruby-identifier">mail_object</span>.<span class="ruby-identifier">method</span>(<span class="ruby-identifier">mail_name</span>).<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-constant">MailObject</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">mail_object</span>.<span class="ruby-identifier">mail_attributes</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">smtp_settings</span>).<span class="ruby-identifier">deliver</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000215"></a><b>mail_fields</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the available mail fields when composing a message
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000215_source')" id="l_M000215_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L24" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000215_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 24</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">mail_fields</span>
+        [<span class="ruby-identifier">:to</span>, <span class="ruby-identifier">:from</span>, <span class="ruby-identifier">:subject</span>, <span class="ruby-identifier">:type</span>, <span class="ruby-identifier">:charset</span>, <span class="ruby-identifier">:via</span>, <span class="ruby-identifier">:attachments</span>]
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000221"></a><b>method_missing</b>(method_sym, *arguments, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Handles method missing for a mailer class. Delivers a message based on the
+method being called i.e deliver_birthday_message(22) invokes
+birthday_message(22) to setup mail object
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000221_source')" id="l_M000221_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L70" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000221_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 70</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">method_sym</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">arguments</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">method_sym</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/deliver_(.*)/</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">deliver</span>(<span class="ruby-identifier">$1</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">arguments</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">super</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000216"></a><b>new</b>(mail_name=nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000216_source')" id="l_M000216_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L30" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000216_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 30</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">mail_name</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-ivar">@mail_name</span> = <span class="ruby-identifier">mail_name</span>
+        <span class="ruby-ivar">@mail_attributes</span> = {}
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000220"></a><b>respond_to?</b>(method_sym, include_private = false)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if a mail exists with the name being delivered
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000220_source')" id="l_M000220_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L64" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000220_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 64</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">method_sym</span>, <span class="ruby-identifier">include_private</span> = <span class="ruby-keyword kw">false</span>)
+        <span class="ruby-identifier">method_sym</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/deliver_(.*)/</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">method_defined?</span>(<span class="ruby-identifier">$1</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">super</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000217"></a><b>body</b>(body_value)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Assigns the body key to the mail attributes either with the rendered body
+from a template or the given string value
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000217_source')" id="l_M000217_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L41" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000217_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 41</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">body</span>(<span class="ruby-identifier">body_value</span>)
+        <span class="ruby-ivar">@mail_attributes</span>[<span class="ruby-identifier">:body</span>] = <span class="ruby-constant">Tilt</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">template_path</span>).<span class="ruby-identifier">render</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">body_value</span>.<span class="ruby-identifier">symbolize_keys</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">body_value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+        <span class="ruby-ivar">@mail_attributes</span>[<span class="ruby-identifier">:body</span>] = <span class="ruby-identifier">body_value</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">body_value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000218"></a><b>template_path</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the path to the email template searched for using glob pattern
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000218_source')" id="l_M000218_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/469974fd20250c184bb46bd167383f8bee36bea8/padrino-mailer/lib/padrino-mailer/base.rb#L47" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000218_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/base.rb, line 47</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">template_path</span>
+        <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">views_path</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;/&quot;</span>).<span class="ruby-identifier">last</span>, <span class="ruby-node">&quot;#{@mail_name}.*&quot;</span>)].<span class="ruby-identifier">first</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

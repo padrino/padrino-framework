@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Mailer::Delivery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Mailer::Delivery</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-mailer/lib/padrino-mailer/delivery_rb.html">padrino-mailer/lib/padrino-mailer/delivery.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000228">build_tmail</a></li>
+        
+        <li><a href="#M000224">mail</a></li>
+        
+        <li><a href="#M000229">sendmail_binary</a></li>
+        
+        <li><a href="#M000230">transport</a></li>
+        
+        <li><a href="#M000233">transport_via_sendmail</a></li>
+        
+        <li><a href="#M000234">transport_via_smtp</a></li>
+        
+        <li><a href="#M000232">via_options</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000228"></a><b>build_tmail</b>(options)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000228_source')" id="l_M000228_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L30" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000228_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 30</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">build_tmail</span>(<span class="ruby-identifier">options</span>)
+          <span class="ruby-identifier">mail</span> = <span class="ruby-constant">TMail</span><span class="ruby-operator">::</span><span class="ruby-constant">Mail</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">to</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:to</span>]
+          <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">from</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:from</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">'padrino@unknown'</span>
+          <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">subject</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:subject</span>]
+          <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">body</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:body</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
+          <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">set_content_type</span> <span class="ruby-value str">'text'</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:type</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">'plain'</span>, {<span class="ruby-value str">'charset'</span>=<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:charset</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">'utf-8'</span>}
+          (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:attachments</span>] <span class="ruby-operator">||</span> []).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">body</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">attachment</span> = <span class="ruby-constant">TMail</span><span class="ruby-operator">::</span><span class="ruby-constant">Mail</span>.<span class="ruby-identifier">new</span>
+            <span class="ruby-identifier">attachment</span>.<span class="ruby-identifier">transfer_encoding</span> = <span class="ruby-value str">&quot;base64&quot;</span>
+            <span class="ruby-identifier">attachment</span>.<span class="ruby-identifier">body</span> = <span class="ruby-constant">Base64</span>.<span class="ruby-identifier">encode64</span>(<span class="ruby-identifier">body</span>)
+            <span class="ruby-comment cmt"># attachment.set_content_type # TODO: if necessary</span>
+            <span class="ruby-identifier">attachment</span>.<span class="ruby-identifier">set_content_disposition</span> <span class="ruby-value str">&quot;attachment&quot;</span>, <span class="ruby-value str">&quot;filename&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>
+            <span class="ruby-identifier">mail</span>.<span class="ruby-identifier">parts</span>.<span class="ruby-identifier">push</span> <span class="ruby-identifier">attachment</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">mail</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000224"></a><b>mail</b>(options)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000224_source')" id="l_M000224_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L16" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000224_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 16</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mail</span>(<span class="ruby-identifier">options</span>)
+          <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;:to is required&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:to</span>]
+          <span class="ruby-identifier">via</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:via</span>)
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">via</span>.<span class="ruby-identifier">nil?</span>
+            <span class="ruby-identifier">transport</span> <span class="ruby-identifier">build_tmail</span>(<span class="ruby-identifier">options</span>)
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">via_options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">via</span>.<span class="ruby-identifier">to_s</span>)
+              <span class="ruby-identifier">send</span>(<span class="ruby-node">&quot;transport_via_#{via}&quot;</span>, <span class="ruby-identifier">build_tmail</span>(<span class="ruby-identifier">options</span>), <span class="ruby-identifier">options</span>)
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;:via must be either smtp or sendmail&quot;</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000229"></a><b>sendmail_binary</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000229_source')" id="l_M000229_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L48" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000229_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 48</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sendmail_binary</span>
+          <span class="ruby-ivar">@sendmail_binary</span> <span class="ruby-operator">||=</span> <span class="ruby-value">`which sendmail`</span>.<span class="ruby-identifier">chomp</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000230"></a><b>transport</b>(tmail)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000230_source')" id="l_M000230_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L52" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000230_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 52</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transport</span>(<span class="ruby-identifier">tmail</span>)
+          <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">executable?</span> <span class="ruby-identifier">sendmail_binary</span>
+            <span class="ruby-identifier">transport_via_sendmail</span>(<span class="ruby-identifier">tmail</span>)
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">transport_via_smtp</span>(<span class="ruby-identifier">tmail</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000233"></a><b>transport_via_sendmail</b>(tmail, options={})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000233_source')" id="l_M000233_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L64" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000233_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 64</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transport_via_sendmail</span>(<span class="ruby-identifier">tmail</span>, <span class="ruby-identifier">options</span>={})
+          <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Sending email via sendmail: #{tmail}&quot;</span>
+          <span class="ruby-constant">IO</span>.<span class="ruby-identifier">popen</span>(<span class="ruby-value str">'-'</span>, <span class="ruby-value str">'w+'</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pipe</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">pipe</span>
+              <span class="ruby-identifier">pipe</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">tmail</span>.<span class="ruby-identifier">to_s</span>)
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">exec</span>(<span class="ruby-identifier">sendmail_binary</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">tmail</span>.<span class="ruby-identifier">to</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000234"></a><b>transport_via_smtp</b>(tmail, options={:smtp =&gt; {}})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000234_source')" id="l_M000234_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L75" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000234_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 75</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transport_via_smtp</span>(<span class="ruby-identifier">tmail</span>, <span class="ruby-identifier">options</span>={<span class="ruby-identifier">:smtp</span> =<span class="ruby-operator">&gt;</span> {}})
+          <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Sending email via smtp: #{tmail}&quot;</span>
+          <span class="ruby-identifier">default_options</span> = {<span class="ruby-identifier">:smtp</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-identifier">:host</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'localhost'</span>, <span class="ruby-identifier">:port</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'25'</span>, <span class="ruby-identifier">:domain</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'localhost.localdomain'</span> }}
+          <span class="ruby-identifier">o</span> = <span class="ruby-identifier">default_options</span>[<span class="ruby-identifier">:smtp</span>].<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:smtp</span>])
+          <span class="ruby-identifier">smtp</span> = <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">SMTP</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">o</span>[<span class="ruby-identifier">:host</span>], <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:port</span>])
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:tls</span>]
+            <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;You may need: gem install smtp_tls&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:enable_starttls</span>)
+            <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">enable_starttls</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:auth</span>)
+            <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">start</span>(<span class="ruby-identifier">o</span>[<span class="ruby-identifier">:domain</span>], <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:user</span>], <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:pass</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:password</span>], <span class="ruby-identifier">o</span>[<span class="ruby-identifier">:auth</span>])
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">start</span>(<span class="ruby-identifier">o</span>[<span class="ruby-identifier">:domain</span>])
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">send_message</span> <span class="ruby-identifier">tmail</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">tmail</span>.<span class="ruby-identifier">from</span>, <span class="ruby-identifier">tmail</span>.<span class="ruby-identifier">to</span>
+          <span class="ruby-identifier">smtp</span>.<span class="ruby-identifier">finish</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000232"></a><b>via_options</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000232_source')" id="l_M000232_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/067a8de51d61ba880f35576492861df2bc9adb1e/padrino-mailer/lib/padrino-mailer/delivery.rb#L60" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000232_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/delivery.rb, line 60</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">via_options</span>
+          <span class="ruby-node">%w(sendmail smtp)</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

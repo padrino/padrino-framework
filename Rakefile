@@ -48,7 +48,7 @@ task :clean do
       FileUtils.rm_rf "pkg"
     end
   end
-  FileUtils.rm_rf "doc"
+  FileUtils.rm_rf "padrino.github.com"
 end
 
 desc "Clean pkg and other stuff"
@@ -68,10 +68,10 @@ end
 
 desc "Generate documentation for the Rails framework"
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'doc/rdoc'
+  rdoc.rdoc_dir = 'padrino.github.com'
   rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
   rdoc.title    = "Padrino Framework Documentation"
-
+  rdoc.main = 'padrino-core/README.rdoc'
   rdoc.rdoc_files.include('padrino-core/lib/{*.rb,padrino-core}/*.rb')
   rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/cli.rb')
   rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/support_lite.rb')
@@ -131,15 +131,20 @@ end
 
 desc "Release all padrino gems"
 task :publish do
-  puts "Pushing to Gemcutter..."
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake_command("gemcutter:release") }
-  end
-  puts "Pushing to RubyForge..."
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake_command("rubyforge:release") }
-  end
+  # puts "Pushing to Gemcutter..."
+  # GEM_PATHS.each do |dir|
+  #   Dir.chdir(dir) { rake_command("gemcutter:release") }
+  # end
+  # puts "Pushing to RubyForge..."
+  # GEM_PATHS.each do |dir|
+  #   Dir.chdir(dir) { rake_command("rubyforge:release") }
+  # end
   rake_command("rdoc")
+  sh 'git init'
+  sh 'git add *'
+  sh 'git commit -m "Updated docs."'
+  sh 'git remote add origin git@github.com:padrino/padrino.github.com.git'
+  sh 'git push origin master'
   config = YAML.load(File.read(File.expand_path('~/.rubyforge/user-config.yml')))
   host = "#{config['username']}@rubyforge.org"
   remote_dir = "/var/www/gforge-projects/padrino"

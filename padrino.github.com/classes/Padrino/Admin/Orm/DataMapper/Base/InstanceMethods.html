@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Orm::DataMapper::Base::InstanceMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Admin::Orm::DataMapper::Base::InstanceMethods</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../../../files/padrino-admin/lib/padrino-admin/orm/datamapper_rb.html">padrino-admin/lib/padrino-admin/orm/datamapper.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000111">errors_keys</a></li>
+        
+        <li><a href="#M000108">new_record?</a></li>
+        
+        <li><a href="#M000109">to_param</a></li>
+        
+        <li><a href="#M000110">update_attributes</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000111"></a><b>errors_keys</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Method for get only fields with errors
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000111_source')" id="l_M000111_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L43" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000111_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 43</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">errors_keys</span>
+              <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">keys</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000108"></a><b>new_record?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+This is an alias method to allow us to don&#8217;t see deprecations and
+keep compatibility with new <a href="../../DataMapper.html">DataMapper</a>
+versions
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000108_source')" id="l_M000108_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L21" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000108_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 21</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">new_record?</span>; <span class="ruby-identifier">new?</span>; <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000109"></a><b>to_param</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns a String, which <a href="../../../../../Padrino.html">Padrino</a>
+uses for constructing an URL to this object. The default implementation
+returns this record‘s id as a String, or nil if this record‘s unsaved.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000109_source')" id="l_M000109_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L28" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000109_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 28</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_param</span>
+              <span class="ruby-comment cmt"># We can't use alias_method here, because method 'id' optimizes itself on the fly.</span>
+              (<span class="ruby-identifier">id</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">id</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-comment cmt"># Be sure to stringify the id for routes</span>
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000110"></a><b>update_attributes</b>(attributes = {})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Update attributes is deprecated but for compatibility with other ORM we
+support them.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000110_source')" id="l_M000110_source">show</a>
+                        
+                        | <a href="http://github.com/padrino/padrino-framework/blob/b278696d9730d4e7fb9630fa8a6551392feb13de/padrino-admin/lib/padrino-admin/orm/datamapper.rb#L36" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000110_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/orm/datamapper.rb, line 36</span>
+            <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update_attributes</span>(<span class="ruby-identifier">attributes</span> = {})
+              <span class="ruby-identifier">update</span>(<span class="ruby-identifier">attributes</span>)
+            <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    
