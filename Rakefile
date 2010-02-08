@@ -48,7 +48,6 @@ task :clean do
       FileUtils.rm_rf "pkg"
     end
   end
-  FileUtils.rm_rf "padrino.github.com"
 end
 
 desc "Clean pkg and other stuff"
@@ -129,27 +128,31 @@ task :readme do
   puts "Created correctly README.rdoc"
 end
 
+desc "Publish doc on padrino.github.com"
+task :publish_doc do
+  puts "Publishing doc on padrino.github.com ..."
+  rake_command("readme")
+  sh 'git clone git@github.com:padrino/padrino.github.com.git'
+  rake_command("rdoc")
+  Dir.chdir('padrino.github.com') do
+    sh 'git add *'
+    sh 'git commit -m "Updated docs."'
+    sh 'git push origin master'
+  end
+  FileUtils.rm_rf "padrino.github.com"
+end
+
 desc "Release all padrino gems"
 task :publish do
-  # puts "Pushing to Gemcutter..."
-  # GEM_PATHS.each do |dir|
-  #   Dir.chdir(dir) { rake_command("gemcutter:release") }
-  # end
-  # puts "Pushing to RubyForge..."
-  # GEM_PATHS.each do |dir|
-  #   Dir.chdir(dir) { rake_command("rubyforge:release") }
-  # end
-  rake_command("rdoc")
-  sh 'git init'
-  sh 'git add *'
-  sh 'git commit -m "Updated docs."'
-  sh 'git remote add origin git@github.com:padrino/padrino.github.com.git'
-  sh 'git push origin master'
-  config = YAML.load(File.read(File.expand_path('~/.rubyforge/user-config.yml')))
-  host = "#{config['username']}@rubyforge.org"
-  remote_dir = "/var/www/gforge-projects/padrino"
-  sh %{rsync --archive --verbose --delete doc/rdoc/ #{host}:#{remote_dir}}
-  puts "Clean tmp pkg doc ..."
+  puts "Pushing to Gemcutter..."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake_command("gemcutter:release") }
+  end
+  puts "Pushing to RubyForge..."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake_command("rubyforge:release") }
+  end
+  rake_command("publish_doc")
   rake_command("clean")
 end
 
