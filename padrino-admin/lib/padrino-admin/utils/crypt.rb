@@ -1,3 +1,5 @@
+require 'openssl'
+
 module Padrino
   module Admin
     module Utils

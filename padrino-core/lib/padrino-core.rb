@@ -68,9 +68,9 @@ module Padrino
       Bundler.require :default, Padrino.env
       puts "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
     rescue LoadError
-      require 'bundler'
-      Bundler.setup
       if File.exist?(root("Gemfile"))
+        require 'bundler'
+        Bundler.setup
         Bundler.require :default, Padrino.env
         Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
         puts "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
