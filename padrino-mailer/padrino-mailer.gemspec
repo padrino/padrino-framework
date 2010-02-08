@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-mailer}
-  s.version = "0.7.4"
+  s.version = "0.7.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-08}
+  s.date = %q{2010-02-09}
   s.description = %q{Mailer system for padrino allowing easy delivery of application emails}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.4"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.5"])
       s.add_runtime_dependency(%q<tilt>, [">= 0.2"])
       s.add_runtime_dependency(%q<tmail>, [">= 1.2"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
@@ -59,7 +59,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_dependency(%q<padrino-core>, ["= 0.7.4"])
+      s.add_dependency(%q<padrino-core>, ["= 0.7.5"])
       s.add_dependency(%q<tilt>, [">= 0.2"])
       s.add_dependency(%q<tmail>, [">= 1.2"])
       s.add_dependency(%q<shoulda>, [">= 0"])
@@ -70,7 +70,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-    s.add_dependency(%q<padrino-core>, ["= 0.7.4"])
+    s.add_dependency(%q<padrino-core>, ["= 0.7.5"])
     s.add_dependency(%q<tilt>, [">= 0.2"])
     s.add_dependency(%q<tmail>, [">= 1.2"])
     s.add_dependency(%q<shoulda>, [">= 0"])
