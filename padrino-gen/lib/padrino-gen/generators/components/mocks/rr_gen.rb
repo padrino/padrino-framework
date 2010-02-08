@@ -5,7 +5,7 @@ module Padrino
         
         module RrGen
           def setup_mock
-            require_dependencies 'rr', :group => :testing
+            require_dependencies 'rr', :group => :test
             insert_mocking_include "RR::Adapters::RRMethods", :path => "test/test_config.rb"
           end
         end

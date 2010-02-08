@@ -9,7 +9,6 @@ class TestCore < Test::Unit::TestCase
       assert_respond_to Padrino, :env
       assert_respond_to Padrino, :application
       assert_respond_to Padrino, :set_encoding
-      assert_respond_to Padrino, :require_dependencies!
       assert_respond_to Padrino, :load!
       assert_respond_to Padrino, :reload!
       assert_respond_to Padrino, :version

@@ -90,7 +90,7 @@ module Padrino
 
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
-      # require_dependencies 'mocha', 'bacon', :group => :testing
+      # require_dependencies 'mocha', 'bacon', :group => :test
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
@@ -98,7 +98,7 @@ module Padrino
 
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
-      # insert_into_gemfile(name, :group => :testing, :require => 'foo')
+      # insert_into_gemfile(name, :group => :test, :require => 'foo')
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         gem_options = options.slice(:group, :require).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
