@@ -130,16 +130,20 @@ end
 
 desc "Publish doc on padrino.github.com"
 task :publish_doc do
-  puts "Publishing doc on padrino.github.com ..."
-  rake_command("readme")
-  sh 'git clone git@github.com:padrino/padrino.github.com.git'
-  rake_command("rdoc")
-  Dir.chdir('padrino.github.com') do
-    sh 'git add *'
-    sh 'git commit -m "Updated docs."'
-    sh 'git push origin master'
+  begin
+    puts "Publishing doc on padrino.github.com ..."
+    rake_command("readme")
+    sh 'git clone git@github.com:padrino/padrino.github.com.git'
+    rake_command("rdoc")
+    Dir.chdir('padrino.github.com') do
+      sh 'git add *'
+      sh 'git commit -m "Updated docs."'
+      sh 'git push origin master'
+    end
+    FileUtils.rm_rf "padrino.github.com"
+  rescue Exception => e
+    puts e.message
   end
-  FileUtils.rm_rf "padrino.github.com"
 end
 
 desc "Release all padrino gems"
