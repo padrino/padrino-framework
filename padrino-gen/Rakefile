@@ -18,7 +18,7 @@ begin
     gem.add_runtime_dependency     "sinatra",       ">= 0.9.2"
     gem.add_runtime_dependency     "padrino-core",  "= #{GEM_VERSION}"
     gem.add_runtime_dependency     "thor",          ">= 0.13.0"
-    gem.add_runtime_dependency     "bundler",       ">= 0.8.1"
+    gem.add_runtime_dependency     "bundler",       ">= 0.9.3"
     gem.add_development_dependency "haml",          ">= 2.2.1"
     gem.add_development_dependency "shoulda",       ">= 0"
     gem.add_development_dependency "mocha",         ">= 0.9.7"

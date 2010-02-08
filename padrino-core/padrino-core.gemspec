@@ -78,32 +78,32 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
+      s.add_runtime_dependency(%q<sinatra>, [">= 0.9.4"])
       s.add_runtime_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_runtime_dependency(%q<usher>, [">= 0.6.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
-      s.add_runtime_dependency(%q<bundler>, [">= 0.8.1"])
+      s.add_runtime_dependency(%q<bundler>, [">= 0.9.2"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
-      s.add_dependency(%q<sinatra>, [">= 0.9.2"])
+      s.add_dependency(%q<sinatra>, [">= 0.9.4"])
       s.add_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_dependency(%q<usher>, [">= 0.6.2"])
       s.add_dependency(%q<thor>, [">= 0.13.0"])
-      s.add_dependency(%q<bundler>, [">= 0.8.1"])
+      s.add_dependency(%q<bundler>, [">= 0.9.2"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_dependency(%q<rack-test>, [">= 0.5.0"])
       s.add_dependency(%q<webrat>, [">= 0.5.1"])
     end
   else
-    s.add_dependency(%q<sinatra>, [">= 0.9.2"])
+    s.add_dependency(%q<sinatra>, [">= 0.9.4"])
     s.add_dependency(%q<i18n>, [">= 0.3.2"])
     s.add_dependency(%q<usher>, [">= 0.6.2"])
     s.add_dependency(%q<thor>, [">= 0.13.0"])
-    s.add_dependency(%q<bundler>, [">= 0.8.1"])
+    s.add_dependency(%q<bundler>, [">= 0.9.2"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
     s.add_dependency(%q<rack-test>, [">= 0.5.0"])

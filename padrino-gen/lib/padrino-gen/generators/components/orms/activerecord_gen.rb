@@ -57,7 +57,8 @@ module Padrino
           AR
 
           def setup_orm
-            require_dependencies 'activerecord', :require_as => 'active_record'
+            require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
+            require_dependencies 'activerecord', :require => 'active_record'
             create_file("config/database.rb", AR)
             empty_directory('app/models')
           end

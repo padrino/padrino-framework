@@ -15,7 +15,7 @@ module Padrino
           TEST
 
           def setup_test
-            require_dependencies 'test/spec', :only => :testing
+            require_dependencies 'test/spec', :group => :testing
             insert_test_suite_setup TESTSPEC_SETUP
           end
 

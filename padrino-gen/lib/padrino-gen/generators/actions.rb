@@ -90,7 +90,7 @@ module Padrino
 
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
-      # require_dependencies 'mocha', 'bacon', :only => :testing
+      # require_dependencies 'mocha', 'bacon', :group => :testing
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
@@ -98,10 +98,10 @@ module Padrino
 
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
-      # insert_into_gemfile(name, :only => :testing, :require_as => 'foo')
+      # insert_into_gemfile(name, :group => :testing, :require => 'foo')
       def insert_into_gemfile(name, options={})
-        after_pattern = options[:only] ? "#{options[:only].to_s.capitalize} requirements\n" : "Component requirements\n"
-        gem_options = options.slice(:only, :require_as).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
+        after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
+        gem_options = options.slice(:group, :require).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
         include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
         options.merge!(:content => include_text, :after => after_pattern)
         inject_into_file('Gemfile', options[:content], :after => options[:after])

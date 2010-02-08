@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/actions.rb",
      "lib/padrino-gen/generators/app.rb",
      "lib/padrino-gen/generators/app/.gitignore",
-     "lib/padrino-gen/generators/app/Gemfile",
      "lib/padrino-gen/generators/app/app/.empty_directory",
      "lib/padrino-gen/generators/app/app/app.rb.tt",
      "lib/padrino-gen/generators/app/app/controllers/.empty_directory",

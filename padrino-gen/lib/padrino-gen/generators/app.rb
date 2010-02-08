@@ -40,6 +40,7 @@ module Padrino
         self.destination_root = File.join(options[:root], name)
         directory("app/", destination_root)
         store_component_config('.components')
+        template "templates/Gemfile.tt", destination_root("Gemfile")
       end
 
       # For each component, retrieve a valid choice and then execute the associated generator
@@ -54,7 +55,7 @@ module Padrino
       def bundle_dependencies
         if options[:run_bundle]
           say "Bundling application dependencies using bundler..."
-          in_root { run 'gem bundle' }
+          in_root { run 'bundle install' }
         end
       end
     end

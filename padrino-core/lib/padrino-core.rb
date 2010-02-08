@@ -63,14 +63,15 @@ module Padrino
     # Method used for require dependencies and correct support_lite
     # 
     def require_dependencies!
-      require root('vendor', 'gems', 'environment')
-      Bundler.require_env(Padrino.env)
+      require root('.bundle/environment.rb')
       Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
+      Bundler.require :default, Padrino.env
       puts "=> Loaded bundled gems for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
     rescue LoadError
       require 'bundler'
+      Bundler.setup
       if File.exist?(root("Gemfile"))
-        Bundler::Bundle.load(root("Gemfile")).environment.require_env(Padrino.env)
+        Bundler.require :default, Padrino.env
         Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
         puts "=> Located Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
       else
