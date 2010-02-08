@@ -1,6 +1,8 @@
 module Padrino
   module Generators
 
+    DEV_PATH = File.expand_path("../../../", File.dirname(__FILE__))
+
     class << self
       def load_paths
         @load_paths ||= Dir[File.dirname(__FILE__) + '/generators/{app,mailer,controller,model,migration}.rb']

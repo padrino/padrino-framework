@@ -26,10 +26,6 @@ module Padrino
           @app_root       = File.join(options[:root], options[:admin_path])
           self.behavior   = :revoke if options[:destroy]
 
-          if options[:destroy] || !File.read(destination_root("GemFile")).include?("carrierwave")
-            append_file destination_root("Gemfile"),  "\n\n# Uploader requirements\ngem 'carrierwave'"
-          end
-
           copy_file "templates/uploader/controller.rb",      destination_root(options[:admin_path], "/controllers/uploads.rb")
           copy_file "templates/uploader/views/grid.js.erb",  destination_root(options[:admin_path], "/views/uploads/grid.js.erb")
           copy_file "templates/uploader/views/store.jml",    destination_root(options[:admin_path], "/views/uploads/store.jml")
@@ -53,6 +49,9 @@ module Padrino
               end
             RUBY
           end
+
+          # Add a carrierwave dependency
+          insert_into_gemfile("carrierwave")
 
           # Only for datamapper
           if orm == :datamapper

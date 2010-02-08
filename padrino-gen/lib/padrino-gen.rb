@@ -1,3 +1,4 @@
+require 'thor/group'
 require 'padrino-core/support_lite'
 require 'padrino-core/version'
 require 'padrino-gen/generators'

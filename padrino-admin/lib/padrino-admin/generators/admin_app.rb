@@ -41,12 +41,8 @@ module Padrino
           ])
 
           insert_into_gemfile("haml")
-
           template "templates/page/db/seeds.rb.tt", destination_root("/db/seeds.rb")
-
-          if options[:destroy] || !File.read(destination_root("config/apps.rb")).include?("Padrino.mount(\"Admin\").to(\"/#{@app_path}\")")
-            append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
-          end
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
 
           unless options[:destroy]
             say (<<-TEXT).gsub(/ {12}/,'')

@@ -55,8 +55,7 @@ module Padrino
         Handlers.each do |server_name|
           begin
             return Rack::Handler.get(server_name.downcase)
-          rescue LoadError
-          rescue NameError
+          rescue Exception
           end
         end
         raise LoadError, "Server handler (#{servers.join(',')}) not found."
