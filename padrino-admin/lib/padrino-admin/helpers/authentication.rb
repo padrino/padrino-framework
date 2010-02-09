@@ -38,7 +38,7 @@ module Padrino
       ##
       # Returns true if the +current_account+ is allowed to see the requested path
       # 
-      # For configure this role please refer to: +Padrino::AccessControl::Base+
+      # For configure this role please refer to: +Padrino::Admin::AccessControl::Base+
       # 
       def allowed?
         access_control.auths(current_account).can?(request.path_info)

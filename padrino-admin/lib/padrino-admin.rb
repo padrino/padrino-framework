@@ -18,7 +18,7 @@ String.send(:include, Padrino::Admin::Utils::Literal)
 # We need to add to Padrino::Application a +access_control+ class
 # 
 Padrino::Application.send(:cattr_accessor, :access_control)
-Padrino::Application.send(:access_control=, Class.new(Padrino::AccessControl::Base))
+Padrino::Application.send(:access_control=, Class.new(Padrino::Admin::AccessControl::Base))
 
 ##
 # If CarrierWave is defined we set the root directory

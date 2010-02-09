@@ -15,6 +15,14 @@ module Padrino
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
   end
 
+  ##
+  # Extensions to the built in Ruby logger.
+  # 
+  # ==== Examples
+  # 
+  #   logger.debug "foo"
+  #   logger.warn  "bar"
+  # 
   class Logger
 
     attr_accessor :level
@@ -31,6 +39,7 @@ module Padrino
     # :warn:: A warning
     # :info:: generic (useful) information about system operation
     # :debug:: low-level information for developers
+    # 
     Levels = {
       :fatal => 7,
       :error => 6,
@@ -109,6 +118,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # 
     def initialize(options={})
       @buffer            = []
       @auto_flush        = options.has_key?(:auto_flush) ? options[:auto_flush] : true
@@ -147,6 +157,9 @@ module Padrino
       self << @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
     end
 
+    ##
+    # Directly append message to the log.
+    # 
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
       @buffer << message
@@ -202,63 +215,60 @@ module Padrino
       LEVELMETHODS
     end
 
-  end
-  
-  ##
-  # RackLogger forwards every request to an +app+ given, and
-  # logs a line in the Apache common log format to the +logger+, or
-  # rack.errors by default.
-  # 
-  class RackLogger
     ##
-    # Common Log Format: http://httpd.apache.org/docs/1.3/logs.html#common
-    # "lilith.local - - GET / HTTP/1.1 500 -"
-    #  %{%s - %s %s %s%s %s - %d %s %0.4f}
+    # RackLogger forwards every request to an +app+ given, and
+    # logs a line in the Apache common log format to the +logger+, or
+    # rack.errors by default.
     # 
-    FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
+    class Rack
+      ##
+      # Common Log Format: http://httpd.apache.org/docs/1.3/logs.html#common
+      # "lilith.local - - GET / HTTP/1.1 500 -"
+      #  %{%s - %s %s %s%s %s - %d %s %0.4f}
+      # 
+      FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
 
-    def initialize(app)
-      @app = app
-    end
-
-    def call(env)
-      began_at = Time.now
-      status, header, body = @app.call(env)
-      log(env, status, header, began_at)
-      [status, header, body]
-    end
-
-    private
-
-    def log(env, status, header, began_at)
-      now = Time.now
-      length = extract_content_length(header)
-
-      logger.debug FORMAT % [
-        env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
-        env["REMOTE_USER"] || "-",
-        env["REQUEST_METHOD"],
-        env["PATH_INFO"],
-        env["QUERY_STRING"].empty? ? "" : "?"+env["QUERY_STRING"],
-        env["HTTP_VERSION"],
-        status.to_s[0..3],
-        length,
-        now - began_at ]
-    end
-
-    def extract_content_length(headers)
-      headers.each do |key, value|
-        if key.downcase == 'content-length'
-          return value.to_s == '0' ? '-' : value
-        end
+      def initialize(app)
+        @app = app
       end
-      '-'
-    end
+
+      def call(env)
+        began_at = Time.now
+        status, header, body = @app.call(env)
+        log(env, status, header, began_at)
+        [status, header, body]
+      end
+
+      private
+        def log(env, status, header, began_at)
+          now = Time.now
+          length = extract_content_length(header)
+
+          logger.debug FORMAT % [
+            env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
+            env["REMOTE_USER"] || "-",
+            env["REQUEST_METHOD"],
+            env["PATH_INFO"],
+            env["QUERY_STRING"].empty? ? "" : "?"+env["QUERY_STRING"],
+            env["HTTP_VERSION"],
+            status.to_s[0..3],
+            length,
+            now - began_at ]
+        end
+
+        def extract_content_length(headers)
+          headers.each do |key, value|
+            if key.downcase == 'content-length'
+              return value.to_s == '0' ? '-' : value
+            end
+          end
+          '-'
+        end
+    end # Rack
   end # Logger
 end # Padrino
 
 module Kernel #:nodoc:
-
   ##
   # Define a logger available every where in our app
   # 

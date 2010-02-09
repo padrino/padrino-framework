@@ -241,9 +241,9 @@ module Padrino
         # Requires the middleware and initializer modules to configure components
         # 
         def register_initializers
-          use Padrino::RackLogger
-          use Padrino::Reloader   if reload?
-          use Rack::Flash         if flash?
+          use Padrino::Logger::Rack
+          use Padrino::Reloader::Rack  if reload?
+          use Rack::Flash              if flash?
           @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
           Dir[@initializer_path].each { |file| register_initializer(file) }
         end
@@ -254,7 +254,7 @@ module Padrino
         def register_framework_extensions
           register Padrino::Mailer        if padrino_mailer?
           register Padrino::Helpers       if padrino_helpers?
-          register Padrino::AccessControl if authentication?
+          register Padrino::Admin::AccessControl if authentication?
         end
 
         ##

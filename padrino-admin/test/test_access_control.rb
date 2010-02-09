@@ -4,7 +4,7 @@ class TestAccessControl < Test::Unit::TestCase
 
   def setup
     load_fixture 'data_mapper'
-    @access = Class.new(Padrino::AccessControl::Base)
+    @access = Class.new(Padrino::Admin::AccessControl::Base)
 
     @access.roles_for :any do |role|
       role.allow "/sessions"
@@ -38,7 +38,7 @@ class TestAccessControl < Test::Unit::TestCase
   context 'for authorization functionality' do
 
     should 'check empty auths' do
-      empty = Class.new(Padrino::AccessControl::Base)
+      empty = Class.new(Padrino::Admin::AccessControl::Base)
       assert empty.auths.can?("/foo/bar")
       assert ! empty.auths.cannot?("/foo/bar")
     end

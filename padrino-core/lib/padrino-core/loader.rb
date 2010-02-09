@@ -11,7 +11,7 @@ module Padrino
       require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # load root libs
       require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # load root models
       require_dependencies("#{root}/config/database.rb", "#{root}/config/apps.rb") # load configuration
-      Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
+      Reloader::Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
       Thread.current[:padrino_loaded] = true
     end
 
@@ -19,8 +19,8 @@ module Padrino
     # Method for reloading required applications and their files
     # 
     def reload!
-      return unless Stat.changed?
-      Stat.reload! # detects the modified files
+      return unless Reloader::Stat.changed?
+      Reloader::Stat.reload! # detects the modified files
       Padrino.mounted_apps.each { |m| m.app_object.reload! } # finally we reload all files for each app
     end
 

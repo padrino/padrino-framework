@@ -36,12 +36,9 @@ module Padrino
   # line / method information; the resulting array contains filenames only.
   # 
   def self.caller_files
-    caller_locations.map { |file,line| file }
-  end
-
-  def self.caller_locations
     caller(1).
       map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
-      reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }
+      reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
+      map    { |file,line| file }
   end
 end # Padrino
