@@ -19,7 +19,7 @@ module Padrino
           #     :password  => '',
           #     :host      => 'localhost',
           #     :socket    => '/tmp/mysql.sock'
-          #   )
+          #   }
           #
           ActiveRecord::Base.configurations[:development] = {
             :adapter => 'sqlite3',
