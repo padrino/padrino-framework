@@ -50,7 +50,7 @@ module Padrino
             ##
             # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". 
             # 
-            # Example:
+            # ==== Examples
             #   Person.human_attribute_name("first_name") # => "First name"
             # 
             # Specify +options+ with additional translating options.

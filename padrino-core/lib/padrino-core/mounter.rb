@@ -3,7 +3,7 @@ module Padrino
   # Represents a particular mounted padrino application
   # Stores the name of the application (app folder name) and url mount path
   # 
-  # Example:
+  # ==== Examples
   # 
   #   Mounter.new("blog_app", :app_class => "Blog").to("/blog")
   #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
@@ -22,7 +22,8 @@ module Padrino
     ##
     # Registers the mounted application onto Padrino
     # 
-    # Example:
+    # ==== Examples
+    # 
     #   Mounter.new("blog_app").to("/blog")
     # 
     def to(mount_url)
@@ -102,7 +103,7 @@ module Padrino
     ##
     # Mounts the core application onto Padrino project with given app settings (file, class, root)
     # 
-    # Examples:
+    # ==== Examples
     # 
     #   Padrino.mount_core("Blog")
     #   Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")

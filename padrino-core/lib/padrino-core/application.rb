@@ -70,7 +70,7 @@ module Padrino
       ##
       # Usher router, for fatures and configurations see: http://github.com/joshbuddy/usher
       # 
-      # Examples:
+      # ==== Examples
       # 
       #   router.add_route('/greedy/{!:greed,.*}')
       #   router.recognize_path('/simple')

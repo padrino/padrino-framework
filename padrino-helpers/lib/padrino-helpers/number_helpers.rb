@@ -25,14 +25,15 @@ module Padrino
       #     %n  The number
       #
       # ==== Examples
-      #  number_to_currency(1234567890.50)                    # => $1,234,567,890.50
-      #  number_to_currency(1234567890.506)                   # => $1,234,567,890.51
-      #  number_to_currency(1234567890.506, :precision => 3)  # => $1,234,567,890.506
-      #
-      #  number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "")
-      #  # => &pound;1234567890,50
-      #  number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "", :format => "%n %u")
-      #  # => 1234567890,50 &pound;
+      # 
+      #   number_to_currency(1234567890.50)                    # => $1,234,567,890.50
+      #   number_to_currency(1234567890.506)                   # => $1,234,567,890.51
+      #   number_to_currency(1234567890.506, :precision => 3)  # => $1,234,567,890.506
+      #   
+      #   number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "")
+      #   # => &pound;1234567890,50
+      #   number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "", :format => "%n %u")
+      #   # => 1234567890,50 &pound;
       # 
       def number_to_currency(number, options = {})
         options.symbolize_keys!
@@ -69,10 +70,11 @@ module Padrino
       # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
-      #  number_to_percentage(100)                                        # => 100.000%
-      #  number_to_percentage(100, :precision => 0)                       # => 100%
-      #  number_to_percentage(1000, :delimiter => '.', :separator => ',') # => 1.000,000%
-      #  number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
+      # 
+      #   number_to_percentage(100)                                        # => 100.000%
+      #   number_to_percentage(100, :precision => 0)                       # => 100%
+      #   number_to_percentage(1000, :delimiter => '.', :separator => ',') # => 1.000,000%
+      #   number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
       # 
       def number_to_percentage(number, options = {})
         options.symbolize_keys!
@@ -104,18 +106,20 @@ module Padrino
       # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
       #
       # ==== Examples
-      #  number_with_delimiter(12345678)                        # => 12,345,678
-      #  number_with_delimiter(12345678.05)                     # => 12,345,678.05
-      #  number_with_delimiter(12345678, :delimiter => ".")     # => 12.345.678
-      #  number_with_delimiter(12345678, :separator => ",")     # => 12,345,678
-      #  number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
-      #  # => 98 765 432,98
+      # 
+      #   number_with_delimiter(12345678)                        # => 12,345,678
+      #   number_with_delimiter(12345678.05)                     # => 12,345,678.05
+      #   number_with_delimiter(12345678, :delimiter => ".")     # => 12.345.678
+      #   number_with_delimiter(12345678, :separator => ",")     # => 12,345,678
+      #   number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
+      #   # => 98 765 432,98
       #
       # You can still use <tt>number_with_delimiter</tt> with the old API that accepts the
       # +delimiter+ as its optional second and the +separator+ as its
       # optional third parameter:
-      #  number_with_delimiter(12345678, " ")                     # => 12 345.678
-      #  number_with_delimiter(12345678.05, ".", ",")             # => 12.345.678,05
+      # 
+      #   number_with_delimiter(12345678, " ")                     # => 12 345.678
+      #   number_with_delimiter(12345678.05, ".", ",")             # => 12.345.678,05
       # 
       def number_with_delimiter(number, *args)
         options = args.extract_options!
@@ -147,20 +151,23 @@ module Padrino
       # You can customize the format in the +options+ hash.
       #
       # ==== Options
+      # 
       # * <tt>:precision</tt>  - Sets the level of precision (defaults to 3).
       # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
       # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
-      #  number_with_precision(111.2345)                    # => 111.235
-      #  number_with_precision(111.2345, :precision => 2)   # => 111.23
-      #  number_with_precision(13, :precision => 5)         # => 13.00000
-      #  number_with_precision(389.32314, :precision => 0)  # => 389
-      #  number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
-      #  # => 1.111,23
+      # 
+      #   number_with_precision(111.2345)                    # => 111.235
+      #   number_with_precision(111.2345, :precision => 2)   # => 111.23
+      #   number_with_precision(13, :precision => 5)         # => 13.00000
+      #   number_with_precision(389.32314, :precision => 0)  # => 389
+      #   number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
+      #   # => 1.111,23
       #
       # You can still use <tt>number_with_precision</tt> with the old API that accepts the
       # +precision+ as its optional second parameter:
+      #   
       #   number_with_precision(number_with_precision(111.2345, 2)   # => 111.23
       # 
       def number_with_precision(number, *args)
@@ -207,25 +214,28 @@ module Padrino
       # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
-      #  number_to_human_size(123)                                          # => 123 Bytes
-      #  number_to_human_size(1234)                                         # => 1.2 KB
-      #  number_to_human_size(12345)                                        # => 12.1 KB
-      #  number_to_human_size(1234567)                                      # => 1.2 MB
-      #  number_to_human_size(1234567890)                                   # => 1.1 GB
-      #  number_to_human_size(1234567890123)                                # => 1.1 TB
-      #  number_to_human_size(1234567, :precision => 2)                     # => 1.18 MB
-      #  number_to_human_size(483989, :precision => 0)                      # => 473 KB
-      #  number_to_human_size(1234567, :precision => 2, :separator => ',')  # => 1,18 MB
+      # 
+      #   number_to_human_size(123)                                          # => 123 Bytes
+      #   number_to_human_size(1234)                                         # => 1.2 KB
+      #   number_to_human_size(12345)                                        # => 12.1 KB
+      #   number_to_human_size(1234567)                                      # => 1.2 MB
+      #   number_to_human_size(1234567890)                                   # => 1.1 GB
+      #   number_to_human_size(1234567890123)                                # => 1.1 TB
+      #   number_to_human_size(1234567, :precision => 2)                     # => 1.18 MB
+      #   number_to_human_size(483989, :precision => 0)                      # => 473 KB
+      #   number_to_human_size(1234567, :precision => 2, :separator => ',')  # => 1,18 MB
       #
       # Zeros after the decimal point are always stripped out, regardless of the
       # specified precision:
-      #  helper.number_to_human_size(1234567890123, :precision => 5)        # => "1.12283 TB"
-      #  helper.number_to_human_size(524288000, :precision=>5)              # => "500 MB"
+      #   
+      #   helper.number_to_human_size(1234567890123, :precision => 5)        # => "1.12283 TB"
+      #   helper.number_to_human_size(524288000, :precision=>5)              # => "500 MB"
       #
       # You can still use <tt>number_to_human_size</tt> with the old API that accepts the
       # +precision+ as its optional second parameter:
-      #  number_to_human_size(1234567, 2)    # => 1.18 MB
-      #  number_to_human_size(483989, 0)     # => 473 KB
+      # 
+      #   number_to_human_size(1234567, 2)    # => 1.18 MB
+      #   number_to_human_size(483989, 0)     # => 473 KB
       # 
       def number_to_human_size(number, *args)
         return nil if number.nil?

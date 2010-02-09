@@ -5,7 +5,7 @@ module Padrino
       ##
       # Creates a div to display the flash of given type if it exists
       # 
-      # Examples:
+      # ==== Examples
       # 
       #   flash_tag(:notice, :class => 'flash', :id => 'flash-notice')
       def flash_tag(kind, options={})
@@ -18,7 +18,7 @@ module Padrino
       ##
       # Creates a link element with given name, url and options
       # 
-      # Examples:
+      # ==== Examples
       # 
       #   link_to 'click me', '/dashboard', :class => 'linky'
       #   link_to 'click me', '/dashboard', :if => @foo.present?
@@ -51,7 +51,7 @@ module Padrino
       ##
       # Creates a mail link element with given name and caption
       # 
-      # Examples:
+      # ==== Examples
       #   mail_to "me@demo.com"             => <a href="mailto:me@demo.com">me@demo.com</a>
       #   mail_to "me@demo.com", "My Email" => <a href="mailto:me@demo.com">My Email</a>
       # 
@@ -65,7 +65,7 @@ module Padrino
       ##
       # Creates a meta element with the content and given options
       # 
-      # Examples:
+      # ==== Examples
       # 
       #   meta_tag "weblog,news", :name => "keywords"                         => <meta name="keywords" content="weblog,news">
       #   meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"  => <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -78,7 +78,7 @@ module Padrino
       ##
       # Creates an image element with given url and options
       # 
-      # Example:
+      # ==== Examples
       # 
       #   image_tag('icons/avatar.png')
       # 
@@ -92,7 +92,7 @@ module Padrino
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public+ 
       # like app/public/stylesheets for inclusion. You can provide also a full path.
       # 
-      # Example:
+      # ==== Examples
       # 
       #   stylesheet_link_tag 'style', 'application', 'layout'
       # 
@@ -106,7 +106,7 @@ module Padrino
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public+ 
       # like app/public/javascript for inclusion. You can provide also a full path.
       # 
-      # Example:
+      # ==== Examples
       # 
       #   javascript_include_tag 'application', :extjs
       # 
@@ -119,7 +119,7 @@ module Padrino
       # Returns the path to the image, either relative or absolute. We search it in your +appname.public+ 
       # like app/public/images for inclusion. You can provide also a full path.
       # 
-      # Example:
+      # ==== Examples
       # 
       #   image_path("foo.jpg") => "yourapp/public/images/foo.jpg" 
       # 

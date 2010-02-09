@@ -4,7 +4,7 @@ module Padrino
   # Run the Padrino apps as a self-hosted server using:
   # thin, mongrel, webrick in that order.
   # 
-  # Examples:
+  # ==== Examples
   # 
   #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
   #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "localhost", port: "3000", adapter: "mongrel"

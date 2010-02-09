@@ -3,14 +3,17 @@ require File.dirname(__FILE__) + '/abstract_form_builder' unless defined?(Abstra
 module Padrino
   module Helpers
     module FormBuilder
-      class StandardFormBuilder < AbstractFormBuilder
+      class StandardFormBuilder < AbstractFormBuilder #:nodoc:
 
-        # text_field_block(:username, { :class => 'long' }, { :class => 'wide-label' })
-        # text_area_block(:summary, { :class => 'long' }, { :class => 'wide-label' })
-        # password_field_block(:password, { :class => 'long' }, { :class => 'wide-label' })
-        # file_field_block(:photo, { :class => 'long' }, { :class => 'wide-label' })
-        # check_box_block(:remember_me, { :class => 'long' }, { :class => 'wide-label' })
-        # select_block(:color, :options => ['green', 'black'])
+        ##
+        # StandardFormBuilder
+        # 
+        #   text_field_block(:username, { :class => 'long' }, { :class => 'wide-label' })
+        #   text_area_block(:summary, { :class => 'long' }, { :class => 'wide-label' })
+        #   password_field_block(:password, { :class => 'long' }, { :class => 'wide-label' })
+        #   file_field_block(:photo, { :class => 'long' }, { :class => 'wide-label' })
+        #   check_box_block(:remember_me, { :class => 'long' }, { :class => 'wide-label' })
+        #   select_block(:color, :options => ['green', 'black'])
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
           class_eval <<-EOF
           def #{field_type}_block(field, options={}, label_options={})

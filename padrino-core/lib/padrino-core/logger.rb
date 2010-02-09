@@ -6,7 +6,7 @@ module Padrino
   ##
   # Returns the padrino logger
   # 
-  # Examples:
+  # ==== Examples
   # 
   #   logger.debug "foo"
   #   logger.warn "bar"
@@ -55,7 +55,7 @@ module Padrino
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
     # 
-    # Example:
+    # ==== Examples
     # 
     #   Padrino::Logger::Config[:development] = { :log_level => :debug, :to_file }
     #   # or you can edit our defaults
@@ -98,7 +98,7 @@ module Padrino
     ##
     # To initialize the logger you create a new object, proxies to set_log.
     #
-    # ==== Options can be:
+    # ==== Options
     # 
     # :stream:: Either an IO object or a name of a logfile. Defaults to $stdout
     # :log_level::

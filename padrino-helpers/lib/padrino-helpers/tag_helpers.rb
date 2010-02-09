@@ -1,17 +1,27 @@
 module Padrino
   module Helpers
     module TagHelpers
+      ##
       # Creates an html input field with given type and options
-      # input_tag :text, :class => "test"
+      # 
+      # ==== Examples
+      # 
+      #   input_tag :text, :class => "test"
+      # 
       def input_tag(type, options = {})
         options.reverse_merge!(:type => type)
         tag(:input, options)
       end
 
+      ##
       # Creates an html tag with given name, content and options
-      # content_tag(:p, "hello", :class => 'light')
-      # content_tag(:p, :class => 'dark') do ... end
-      # parameters: content_tag(name, content=nil, options={}, &block)
+      # 
+      # ==== Examples
+      # 
+      #   content_tag(:p, "hello", :class => 'light')
+      #   content_tag(:p, :class => 'dark') do ... end
+      #   content_tag(name, content=nil, options={}, &block)
+      # 
       def content_tag(*args, &block)
         name = args.first
         options = args.extract_options!
@@ -20,9 +30,14 @@ module Padrino
         block_is_template?(block) ? concat_content(tag_result) : tag_result
       end
 
+      ##
       # Creates an html tag with the given name and options
-      # tag(:br, :style => 'clear:both')
-      # tag(:p, :content => "hello", :class => 'large')
+      # 
+      # ==== Examples
+      # 
+      #   tag(:br, :style => 'clear:both')
+      #   tag(:p, :content => "hello", :class => 'large')
+      # 
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
         identity_tag_attributes.each { |attr| options[attr] = attr.to_s if options[attr]  }

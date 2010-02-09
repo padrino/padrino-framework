@@ -13,7 +13,7 @@ module Padrino
     ##
     # Helper method for file references.
     #
-    # Example:
+    # ==== Examples
     #   # Referencing a file in config called settings.yml
     #   Padrino.root("config", "settings.yml")
     #   # returns PADRINO_ROOT + "/config/setting.yml"

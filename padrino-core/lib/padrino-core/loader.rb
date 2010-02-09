@@ -55,7 +55,7 @@ module Padrino
     # 
     # With +require_dependencies+ we don't have this problem.
     # 
-    # Example:
+    # ==== Examples
     #   # For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     # 

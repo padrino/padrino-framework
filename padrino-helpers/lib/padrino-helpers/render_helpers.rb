@@ -1,9 +1,14 @@
 module Padrino
   module Helpers
     module RenderHelpers
+      ##
       # Partials implementation which includes collections support
-      # partial 'photo/_item', :object => @photo
-      # partial 'photo/_item', :collection => @photos
+      # 
+      # ==== Examples
+      # 
+      #   partial 'photo/_item', :object => @photo
+      #   partial 'photo/_item', :collection => @photos
+      # 
       def partial(template, options={})
         options.reverse_merge!(:locals => {}, :layout => false)
         path = template.to_s.split(File::SEPARATOR)

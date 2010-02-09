@@ -1,7 +1,7 @@
 module Padrino
   module Helpers
     module FormBuilder
-      class AbstractFormBuilder
+      class AbstractFormBuilder #:nodoc:
         attr_accessor :template, :object
 
         def initialize(template, object)
