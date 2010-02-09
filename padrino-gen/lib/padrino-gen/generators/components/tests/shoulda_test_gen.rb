@@ -15,7 +15,7 @@ module Padrino
           TEST
 
           def setup_test
-            require_dependencies 'shoulda', :group => :test
+            require_dependencies 'shoulda', :group => 'test'
             insert_test_suite_setup SHOULDA_SETUP
           end
 

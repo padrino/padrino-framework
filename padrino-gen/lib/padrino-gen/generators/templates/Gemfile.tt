@@ -8,12 +8,12 @@ gem 'thin' # or mongrel
 # Component requirements
 
 # Test requirements
-gem 'rack-test', :require => 'rack/test', :group => :test
+gem 'rack-test', :require => 'rack/test', :group => 'test'
 
 <%- if options.dev? -%>
 # Vendored Padrino
 %w(core gen helpers mailer admin).each do |gem|
-  gem 'padrino-' + gem, :path => "<%= Padrino::Generators::DEV_PATH %>/padrino-" + gem
+  gem 'padrino-' + gem, :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + gem
 end
 <%- else -%>
 # Padrino

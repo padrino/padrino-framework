@@ -15,7 +15,7 @@ module Padrino
           TEST
 
           def setup_test
-            require_dependencies 'riot', :group => :test
+            require_dependencies 'riot', :group => 'test'
             insert_test_suite_setup RIOT_SETUP
           end
 
