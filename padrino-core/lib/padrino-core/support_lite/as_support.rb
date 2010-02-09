@@ -1,6 +1,8 @@
 # This requires necessary pieces of ActiveSupport for the dependencies required by Padrino
 
-## ActiveSupport::Deprecation
+## ActiveSupport#Version
+require 'active_support/version'
+## ActiveSupport#Deprecation
 unless defined?(ActiveSupport::Deprecation)
   require 'active_support/core_ext/kernel' unless Kernel.method_defined?(:silence_warnings)
   require 'active_support/core_ext/module' unless Module.method_defined?(:mattr_accessor)
@@ -24,8 +26,11 @@ require 'active_support/core_ext/blank' unless Object.method_defined?(:blank?)
 require 'active_support/core_ext/array' unless Array.method_defined?(:extract_options!)
 ## Module#alias_method_chain
 require 'active_support/core_ext/module' unless Module.method_defined?(:alias_method_chain)
-## SupportLite::OrderedHash
+## SupportLite#OrderedHash
 require 'active_support/ordered_hash' unless defined?(ActiveSupport::OrderedHash)
+## Float#round
+require 'active_support/core_ext/float/rounding'
+
 unless defined?(SupportLite::OrderedHash)
   module SupportLite
     OrderedHash = ::ActiveSupport::OrderedHash

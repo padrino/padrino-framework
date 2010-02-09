@@ -16,6 +16,7 @@ module Padrino
       app.helpers Padrino::Helpers::FormHelpers
       app.helpers Padrino::Helpers::FormatHelpers
       app.helpers Padrino::Helpers::RenderHelpers
+      app.helpers Padrino::Helpers::NumberHelpers
     end
   end
 end

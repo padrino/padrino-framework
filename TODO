@@ -6,7 +6,6 @@
 * [padrino-gen] Support creation of controller/mailer/models/etc for specified app
 * [padrino-admin] Complete admin with mongomapper adapter
 * [padrino-helpers] DateTime helpers
-* [padrino-helpers] Number helpers
 * [padrino-core] Code Optimizations
 
 === GENERAL

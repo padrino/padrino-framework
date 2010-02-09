@@ -5,6 +5,8 @@ require 'mocha'
 require 'rack/test'
 require 'webrat'
 
+# require 'extlib' # test with extlib
+
 # We try to load the vendored padrino-core if exist
 %w(core).each do |gem|
   if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")

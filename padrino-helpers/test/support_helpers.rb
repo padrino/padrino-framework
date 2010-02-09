@@ -1,6 +1,5 @@
 require 'padrino-core/support_lite'
 unless Fixnum.method_defined?(:days)
-  # We don't add active_support/core_ext/object/misc because override some extlib defaults
   if Padrino.support == :extlib
     class Object
       # A duck-type assistant method. For example, Active Support extends Date
