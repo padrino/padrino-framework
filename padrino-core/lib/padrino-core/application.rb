@@ -8,7 +8,7 @@ module Padrino
   class Application < Sinatra::Application
 
     class << self
-      def inherited(subclass)
+      def inherited(subclass) #:nodoc:
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         subclass.default_configuration!
         Padrino.set_load_paths File.join(subclass.root, "/models")
@@ -86,6 +86,8 @@ module Padrino
       ##
       # Instance method for url generation like:
       # 
+      # ==== Examples
+      # 
       #   url(:show, :id => 1)
       #   url(:show, :name => :test)
       #   url("/show/:id/:name", :id => 1, :name => foo)
@@ -120,6 +122,12 @@ module Padrino
       ##
       # Reloads the application files from all defined load paths
       # 
+      # This method is used from our Padrino Reloader.
+      # 
+      # ==== Examples
+      # 
+      #   MyApp.reload!
+      # 
       def reload!
         reset_routes! # remove all existing user-defined application routes
         Padrino.load_dependency(self.app_file)  # reload the app file
@@ -128,6 +136,10 @@ module Padrino
 
       ##
       # Resets application routes to only routes not defined by the user
+      # 
+      # ==== Examples
+      # 
+      #   MyApp.reset_routes!
       # 
       def reset_routes!
         router.reset!
@@ -284,6 +296,8 @@ module Padrino
         ##
         # Rewrite default because now routes can be:
         # 
+        # ==== Examples
+        # 
         #   get :index                                    # => "/"
         #   get :index, :map => "/"                       # => "/"
         #   get :show,  :map => "/show-me"                # => "/show-me"
@@ -384,6 +398,8 @@ module Padrino
     ##
     # Return the request format, this is useful when we need to respond to a given content_type like:
     # 
+    # ==== Examples
+    # 
     #   get :index, :respond_to => :any do
     #     case content_type
     #       when :js    then ...
@@ -398,6 +414,8 @@ module Padrino
 
     ##
     # Instance method for url generation like:
+    # 
+    # ==== Examples
     # 
     #   url(:show, :id => 1)
     #   url(:show, :name => :test)
@@ -469,6 +487,8 @@ module Padrino
       
       ##
       # When we set :auto_locale, true then if we use param locale like:
+      # 
+      # ==== Examples
       # 
       #   get "/:locale/some/foo" do; ...; end
       # 

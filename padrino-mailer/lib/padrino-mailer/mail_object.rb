@@ -5,7 +5,6 @@ module Padrino
     # A mail_object requires the mail attributes and the delivery_settings
     # 
     class MailObject
-
       ##
       # Initialize a new MailObject
       # 
@@ -52,6 +51,6 @@ module Padrino
         def send_mail(delivery_attributes)
           Delivery.mail(delivery_attributes) && true
         end
-      end
-  end
-end
+    end # MailObject
+  end # Mailer
+end # Padrino

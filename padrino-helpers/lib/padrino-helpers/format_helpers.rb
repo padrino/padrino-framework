@@ -1,7 +1,6 @@
 module Padrino
   module Helpers
     module FormatHelpers
-
       ## 
       # Returns escaped text to protect against malicious content
       # 
@@ -215,7 +214,6 @@ module Padrino
       def js_escape_html(html_content)
         "\"#{escape_javascript(html_content)}\""
       end
-
-    end
-  end
-end
+    end # FormatHelpers
+  end # Helpers
+end # Padrino

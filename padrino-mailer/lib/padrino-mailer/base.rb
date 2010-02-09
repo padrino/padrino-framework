@@ -1,21 +1,21 @@
 module Padrino
-  ##
-  # This is the abstract class that other mailers will inherit from in order to send mail
-  # 
-  # You can set the default delivery settings through:
-  # 
-  #   Padrino::Mailer::Base.smtp_settings = {
-  #     :host   => 'smtp.yourserver.com',
-  #     :port   => '25',
-  #     :user   => 'user',
-  #     :pass   => 'pass',
-  #     :auth   => :plain # :plain, :login, :cram_md5, no auth by default
-  #     :domain => "localhost.localdomain" # the HELO domain provided by the client to the server
-  #   }
-  # 
-  # and then all delivered mail will use these settings unless otherwise specified.
-  # 
   module Mailer
+    ##
+    # This is the abstract class that other mailers will inherit from in order to send mail
+    # 
+    # You can set the default delivery settings through:
+    # 
+    #   Padrino::Mailer::Base.smtp_settings = {
+    #     :host   => 'smtp.yourserver.com',
+    #     :port   => '25',
+    #     :user   => 'user',
+    #     :pass   => 'pass',
+    #     :auth   => :plain # :plain, :login, :cram_md5, no auth by default
+    #     :domain => "localhost.localdomain" # the HELO domain provided by the client to the server
+    #   }
+    # 
+    # and then all delivered mail will use these settings unless otherwise specified.
+    # 
     class Base
       ##
       # Returns the available mail fields when composing a message
@@ -84,6 +84,6 @@ module Padrino
       def self.method_missing(method_sym, *arguments, &block)
         method_sym.to_s =~ /deliver_(.*)/ ? self.deliver($1, *arguments) : super
       end
-    end
-  end
-end
+    end # Base
+  end # Mailer
+end # Padrino

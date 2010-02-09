@@ -51,6 +51,6 @@ module Padrino
         def identity_tag_attributes
           [:checked, :disabled, :selected, :multiple]
         end
-    end
-  end
-end
+    end # TagHelpers
+  end # Helpers
+end # Padrino

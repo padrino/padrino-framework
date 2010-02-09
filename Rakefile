@@ -67,7 +67,7 @@ end
 
 desc "Generate documentation for the Rails framework"
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'padrino.github.com'
+  rdoc.rdoc_dir = 'doc'
   rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
   rdoc.title    = "Padrino Framework Documentation"
   rdoc.main = 'padrino-core/README.rdoc'
@@ -132,14 +132,16 @@ desc "Publish doc on padrino.github.com"
 task :publish_doc do
   puts "Publishing doc on padrino.github.com ..."
   rake_command("readme")
-  `git clone git@github.com:padrino/padrino.github.com.git`
+  sh 'git clone git@github.com:padrino/padrino.github.com.git'
   rake_command("rdoc")
+  FileUtils.cp_r("doc/.", "padrino.github.com")
   Dir.chdir('padrino.github.com') do
-    `git add *`
-    `git commit -m "Updated docs."`
-    `git push origin master`
+    sh 'git add *'
+    sh 'git commit -m "Updated docs."'
+    sh 'git push origin master'
   end
   FileUtils.rm_rf "padrino.github.com"
+  FileUtils.rm_rf "doc"
 end
 
 desc "Release all padrino gems"
@@ -152,7 +154,6 @@ task :publish do
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("rubyforge:release") }
   end
-  rake_command("publish_doc")
   rake_command("clean")
 end
 

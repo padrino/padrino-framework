@@ -304,6 +304,6 @@ module Padrino
           configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
           configured_builder
         end
-    end
-  end
-end
+    end # FormHelpers
+  end # Helpers
+end # Padrino

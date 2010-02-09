@@ -117,6 +117,6 @@ module Padrino
         ensure
           @_out_buf = old_buffer
         end
-    end
-  end
-end
+    end # OutputHelpers
+  end # Helpers
+end # Padrino

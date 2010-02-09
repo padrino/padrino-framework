@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/abstract_form_builder' unless defined?(Abstra
 
 module Padrino
   module Helpers
-    module FormBuilder
+    module FormBuilder #:nodoc:
       class StandardFormBuilder < AbstractFormBuilder #:nodoc:
 
         ##
@@ -36,7 +36,7 @@ module Padrino
           submit_html = self.image_submit(source, options)
           @template.content_tag(:p, submit_html)
         end
-      end
-    end
-  end
-end
+      end # StandardFormBuilder
+    end # FormBuilder
+  end # Helpers
+end # Padrino

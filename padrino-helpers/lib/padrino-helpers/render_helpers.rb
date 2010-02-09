@@ -32,6 +32,6 @@ module Padrino
         end
       end
       alias :render_partial :partial
-    end
-  end
-end
+    end # RenderHelpers
+  end # Helpers
+end # Padrino

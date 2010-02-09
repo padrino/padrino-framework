@@ -1,6 +1,6 @@
 module Padrino
   module Helpers
-    module FormBuilder
+    module FormBuilder #:nodoc:
       class AbstractFormBuilder #:nodoc:
         attr_accessor :template, :object
 
@@ -144,7 +144,7 @@ module Padrino
           def object_class(explicit_object)
             explicit_object.is_a?(Symbol) ? explicit_object.to_s.classify.constantize : explicit_object.class
           end
-      end
-    end
-  end
-end
+      end # AbstractFormBuilder
+    end # FormBuilder
+  end # Helpers
+end # Padrino

@@ -1,7 +1,7 @@
 require 'bigdecimal'
 
 module Padrino
-  module Helpers #:nodoc:
+  module Helpers
     ##
     # Provides methods for converting numbers into formatted strings.
     # Methods are provided for phone numbers, currency, percentage,
@@ -127,13 +127,6 @@ module Padrino
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
-        unless args.empty?
-          ActiveSupport::Deprecation.warn('number_with_delimiter takes an option hash ' +
-            'instead of separate delimiter and precision arguments.', caller)
-          delimiter = args[0] || defaults[:delimiter]
-          separator = args[1] || defaults[:separator]
-        end
-
         delimiter ||= (options[:delimiter] || defaults[:delimiter])
         separator ||= (options[:separator] || defaults[:separator])
 
@@ -178,12 +171,6 @@ module Padrino
         precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
                                                                         :raise => true) rescue {}
         defaults           = defaults.merge(precision_defaults)
-
-        unless args.empty?
-          ActiveSupport::Deprecation.warn('number_with_precision takes an option hash ' +
-            'instead of a separate precision argument.', caller)
-          precision = args[0] || defaults[:precision]
-        end
 
         precision ||= (options[:precision] || defaults[:precision])
         separator ||= (options[:separator] || defaults[:separator])
@@ -246,12 +233,6 @@ module Padrino
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}
         defaults = defaults.merge(human)
-
-        unless args.empty?
-          ActiveSupport::Deprecation.warn('number_to_human_size takes an option hash ' +
-            'instead of a separate precision argument.', caller)
-          precision = args[0] || defaults[:precision]
-        end
 
         precision ||= (options[:precision] || defaults[:precision])
         separator ||= (options[:separator] || defaults[:separator])

@@ -90,6 +90,6 @@ module Padrino
           smtp.finish
         end
       end
-    end
-  end
-end
+    end # Delivery
+  end # Mailer
+end # Padrino

@@ -1,7 +1,6 @@
 module Padrino
   module Helpers
     module AssetTagHelpers
-
       ##
       # Creates a div to display the flash of given type if it exists
       # 
@@ -184,6 +183,6 @@ module Padrino
             true
           end
         end
-    end
-  end
-end
+    end # AssetTagHelpers
+  end # Helpers
+end # Padrino
