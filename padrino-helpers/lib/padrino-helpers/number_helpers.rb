@@ -10,6 +10,7 @@ module Padrino
     # Verbatim copy of Rails Number helper
     # 
     module NumberHelpers
+      ##
       # Formats a +number+ into a currency string (e.g., $13.65). You can customize the format
       # in the +options+ hash.
       #
@@ -32,6 +33,7 @@ module Padrino
       #  # => &pound;1234567890,50
       #  number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "", :format => "%n %u")
       #  # => 1234567890,50 &pound;
+      # 
       def number_to_currency(number, options = {})
         options.symbolize_keys!
 
@@ -57,6 +59,7 @@ module Padrino
         end
       end
 
+      ##
       # Formats a +number+ as a percentage string (e.g., 65%). You can customize the
       # format in the +options+ hash.
       #
@@ -70,6 +73,7 @@ module Padrino
       #  number_to_percentage(100, :precision => 0)                       # => 100%
       #  number_to_percentage(1000, :delimiter => '.', :separator => ',') # => 1.000,000%
       #  number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
+      # 
       def number_to_percentage(number, options = {})
         options.symbolize_keys!
 
@@ -91,6 +95,7 @@ module Padrino
         end
       end
 
+      ##
       # Formats a +number+ with grouped thousands using +delimiter+ (e.g., 12,324). You can
       # customize the format in the +options+ hash.
       #
@@ -111,6 +116,7 @@ module Padrino
       # optional third parameter:
       #  number_with_delimiter(12345678, " ")                     # => 12 345.678
       #  number_with_delimiter(12345678.05, ".", ",")             # => 12.345.678,05
+      # 
       def number_with_delimiter(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -136,6 +142,7 @@ module Padrino
         end
       end
 
+      ##
       # Formats a +number+ with the specified level of <tt>:precision</tt> (e.g., 112.32 has a precision of 2).
       # You can customize the format in the +options+ hash.
       #
@@ -155,6 +162,7 @@ module Padrino
       # You can still use <tt>number_with_precision</tt> with the old API that accepts the
       # +precision+ as its optional second parameter:
       #   number_with_precision(number_with_precision(111.2345, 2)   # => 111.23
+      # 
       def number_with_precision(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -186,6 +194,7 @@ module Padrino
 
       STORAGE_UNITS = [:byte, :kb, :mb, :gb, :tb].freeze
 
+      ##
       # Formats the bytes in +size+ into a more understandable representation
       # (e.g., giving it 1500 yields 1.5 KB). This method is useful for
       # reporting file sizes to users. This method returns nil if
@@ -217,6 +226,7 @@ module Padrino
       # +precision+ as its optional second parameter:
       #  number_to_human_size(1234567, 2)    # => 1.18 MB
       #  number_to_human_size(483989, 0)     # => 473 KB
+      # 
       def number_to_human_size(number, *args)
         return nil if number.nil?
 
