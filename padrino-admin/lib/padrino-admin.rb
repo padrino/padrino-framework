@@ -8,6 +8,18 @@ Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,middleware,utils}/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page,admin_uploader}.rb'].each {|file| require file }
 
+module Padrino
+  ##
+  # Padrino::Admin is beautiful Ajax Admin, with these fatures:
+  # 
+  # Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper and activerecord)
+  # Authentication:: Support for Account authentication, Account Permission managment
+  # Scaffold:: You can simply create a new "admin interface" simply providing a Model
+  # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
+  # 
+  module Admin; end
+end
+
 ##
 # We need to apply Padrino::Admin::Utils::Extensions
 # 

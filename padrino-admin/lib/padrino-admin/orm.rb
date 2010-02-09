@@ -1,6 +1,14 @@
 module Padrino
   module Admin
 
+    ##
+    # Extend your orm adding these functions:
+    # 
+    # * Translatable columns names (if not just support them)
+    # * Full text search
+    # * Pagination
+    # * Extend Account Model with: role, validation, permission, authentication
+    # 
     module Orm
 
       class ExtSearch < Struct.new(:count, :records); end

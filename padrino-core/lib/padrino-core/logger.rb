@@ -216,7 +216,7 @@ module Padrino
     end
 
     ##
-    # RackLogger forwards every request to an +app+ given, and
+    # Padrino::Loggger::Rack forwards every request to an +app+ given, and
     # logs a line in the Apache common log format to the +logger+, or
     # rack.errors by default.
     # 

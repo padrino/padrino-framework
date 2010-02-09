@@ -13,7 +13,7 @@ module Padrino
       # 
       #   { "function": "alert('Test')" }
       # 
-      # But if in our javascript need to "eval" this function is not possible because
+      # But if in our javascript we need to "eval" this function is not possible because
       # it's a string.
       # 
       # Using Padrino::Config::Variable the result will be:
