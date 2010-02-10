@@ -134,7 +134,7 @@ task :publish_doc do
   rake_command("readme")
   sh 'git clone git@github.com:padrino/padrino.github.com.git'
   rake_command("rdoc")
-  FileUtils.cp_r("doc/.", "padrino.github.com")
+  FileUtils.cp_r("doc/.", "padrino.github.com/api")
   Dir.chdir('padrino.github.com') do
     sh 'git add *'
     sh 'git commit -m "Updated docs."'
