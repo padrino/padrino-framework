@@ -15,7 +15,7 @@ module Padrino
           column["header"]     ||= column["method"].to_s
           column["dataIndex"]  ||= column["method"]
           column["sortable"]   ||= column["sortable"].nil? ? true : column["sortable"]
-          column["header"]       = @model.human_attribute_name(column["header"]) # try to translate with I18n the column name
+          column["header"]       = @model.human_local_attribute_name(column["header"]) # try to translate with I18n the column name
 
           # Try to reformat the dataIndex
           data_indexes = Array(column["dataIndex"]).collect do |data_index|

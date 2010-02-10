@@ -5,16 +5,6 @@ en:
       none: "Nothing"
       add: "Add"
       remove: "Remove"
-      upload_file: "Upload File"
-      upload_files: "Upload Files"
-      upload_image: "Upload Image"
-      upload_images: "Upload Images"
-    buttons:
-      save: "Save"
-    tabs:
-      general: "General"
-    titles:
-      welcome: "Welcome"
     general:
       list: "List {{model}}"
       editForm: "Edit {{model}} {{value}}"
@@ -29,9 +19,6 @@ en:
       account: "Account"
       list: "List"
       new: "New"
-      help: "Help"
-    texts: 
-      order_updated: Order updated!
     javascripts:
       buttons:
         add: "Add"
@@ -39,7 +26,6 @@ en:
         remove: "Delete"
         back: "Back"
         save: "Save"
-        save_and_back: "Save & Back"
         close: "Close"
         select: "Select"
         help: "Help"
@@ -62,8 +48,4 @@ en:
           message: "There are some connection issues.<br />Contact technical support."
           notConfigured: "This fatures is not ready yet.<br />Contact technical support."
           notSelected: "You must select at least one record"
-          tooMany: "You have selected too many records. Maximum is 10!"
-    print:
-      footer: 
-        page: "Page"
-        page_of: "of"
+          tooMany: "Sie haben zu viele Datensätze ausgewählt. Das Maximum ist 10!"

@@ -93,7 +93,6 @@ module Padrino
       # 
       # Defaults:
       # 
-      # * :submit => false
       # * :collapsible => false
       # * :start => :close
       # 
@@ -122,7 +121,6 @@ module Padrino
                     <div class="#{"x-box-collapsible" if options[:collapsible]}" style="width:99%;#{"display:none" if options[:collapsible] && options[:start] == :close}">
                       #{"<div style=\"font-size:10px\">&nbsp;</div>" if title.present? || subtitle.present?}
                       #{capture_html(&block)}
-                      #{"<div style=\"text-align:right;margin-top:10px\">#{submit_tag(I18n.t("lipsiadmin.buttons.save"), :onclick=>"Backend.app.submitForm()")}</div>" if options[:submit]}
                     </div>
                   </div>
                 </div>

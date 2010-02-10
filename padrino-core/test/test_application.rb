@@ -150,19 +150,9 @@ class TestApplication < Test::Unit::TestCase
 
   context 'for application i18n functionality' do
 
-    should 'have a default locale en and auto_locale disabled' do
+    should 'have auto_locale disabled' do
       mock_app do
-        assert_equal :en, locale
         assert !auto_locale
-      end
-    end
-
-    should 'change default locale from settings' do
-      mock_app do
-        set :locale, :it
-        enable :auto_locale
-        assert_equal :it, locale
-        assert auto_locale
       end
     end
 

@@ -38,8 +38,11 @@ class TestDataMapper < Test::Unit::TestCase
       assert_respond_to account, :to_param
       assert_respond_to account, :update_attributes
       assert_respond_to account, :valid?
+      assert_respond_to Account, :human_local_attribute_name
+      assert_respond_to Account, :human_local_name
       assert_respond_to Account, :properties
       assert_respond_to Account, :count
+      assert_respond_to Account, :orm
     end
 
     should 'have category_ids' do

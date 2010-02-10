@@ -48,16 +48,31 @@ module Padrino
 
           module ClassMethods
             ##
-            # Transforms attribute key names into a more humane format, such as "First name" instead of "first_name". 
+            # Transforms attribute key names into a more humane and localizable format, such as "First name" instead of "first_name". 
             # 
             # ==== Examples
-            #   Person.human_attribute_name("first_name") # => "First name"
+            #   # Do: I18n.translate("models.person.attributes.first_name")
+            #   Person.human_local_attribute_name("first_name") # => "First name"
             # 
             # Specify +options+ with additional translating options.
             # 
-            def human_attribute_name(field, options = {})
-              options.reverse_merge!(:count => 1, :default => field.to_s.humanize, :scope => [:model, :attributes])
-              I18n.translate("#{self.name.underscore}.#{field}", options)
+            def human_local_attribute_name(field, options = {})
+              options.reverse_merge!(:count => 1, :default => field.to_s.humanize, :scope => :models)
+              I18n.translate("#{self.name.underscore}.attributes.#{field}", options)
+            end
+
+            ##
+            # Transform table name into a more humane and localizable format, such as "Blog Posts" instead of "BlogPost". 
+            # 
+            # ==== Examples
+            #   # Do: I18n.translate("models.person.name")
+            #   Person.human_local_name # => "Persona"
+            # 
+            # Specify +options+ with additional translating options.
+            # 
+            def human_local_name(options = {})
+              options.reverse_merge!(:count => 1, :default => self.name.humanize, :scope => :models)
+              I18n.translate("#{self.name.underscore}.name", options)
             end
 
             ##

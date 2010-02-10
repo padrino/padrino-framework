@@ -124,7 +124,7 @@ module Padrino
 
           # Returns the human name of the field. Look that use builtin I18n.
           def field_human_name(field)
-            I18n.translate("#{object_name}.#{field}", :count => 1, :default => field.to_s.humanize, :scope => [:model, :attributes])
+            I18n.translate("#{object_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => [:models])
           end
 
           # Returns the id for the given field

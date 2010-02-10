@@ -157,8 +157,8 @@ module Padrino
         self.register_initializers
         self.require_load_paths
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
-        I18n.locale = self.locale
         I18n.load_path += self.locale_path
+        I18n.reload!
         @_configured = true
       end
 
@@ -182,7 +182,6 @@ module Padrino
           set :flash, defined?(Rack::Flash)
           set :authentication, false
           # Padrino locale
-          set :locale, :en
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
           set :auto_locale, false
           # Plugin specific

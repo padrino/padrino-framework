@@ -1,0 +1,147 @@
+de:
+  extjs:
+    dateFormat: "d.m.Y"
+    dateTimeFormat: "d.m.Y G:i"
+    ddText: "{0} selektierten Datensatz/-sätze"
+    closeText: "Schliesse diesen Tab"
+    invalidText: "Der Wert in diesem Feld ist ungültig"
+    msg: "Lade..."
+    emptyText: ""
+    splitRegion:
+      splitTip: "Ziehen um Größe zu verändern."
+      collapsibleSplitTip: "Ziehen um Größe zu verändern. Doppelklick zum verstecken."
+    messageBox:
+      ok: "OK"
+      yesse: "Ja"
+      cancel: "Abbruch"
+      none: "Nein"
+    datePicker:
+      todayText: "Heute"
+      minText: "Dieses Datum ist vor dem Minimum-Datum"
+      maxText: "Dieses Datum ist nach dem Maximum-Datum"
+      disabledDaysText: ""
+      disabledDatesText: ""
+      nextText: 'Nächsten Monat (Control+Rechts)'
+      prevText: 'Vorherigen Monat(Control+Links)'
+      monthYearText: 'Wähle ein Monat (Control+Auf/Runter um Jahre zu ändern)'
+      todayTip: "{0} (Leertaste)"
+      format: "d.m.y"
+      cancelText: "Abbruch"
+      okText: "&#160;OK&#160;"
+      startDay: 0
+    grid:
+      gridView:
+        sortAscText: "Sortiere aufsteigend"
+        sortDescText: "Sortiere absteigend"
+        lockText: "Sperren Spalte"
+        unlockText: "Spaltesperre aufheben"
+        columnsText: "Spalte"
+      groupingView:
+        emptyGroupText: '(Nichts)'
+        groupByText: 'Gruppiere mit diesem Feld'
+        showGroupsText: 'Anzeige in Gruppen'
+      propertyColumnModel:
+        nameText: "Name"
+        valueText: "Wert"
+        dateFormat: "m/j/Y"
+    search:
+      searchText: "Suche"
+      searchTipText: "Füge ein Wort ein oder drücke Suchen"
+      selectAllText: "Selektiere alle"
+      minCharsTipText: "Füge mindestens {0} Zeichen ein"
+    pagingToolbar:
+      beforePageText: "Seite"
+      afterPageText: "von {0}"
+      firstText: "Erste Seite"
+      prevText: "Vorherige Seite"
+      nextText: "Nächste Seite"
+      lastText: "Letzte Seite"
+      refreshText: "Auffrischen"
+      displayMsg: "Anzeige {0} - {1} von {2}"
+      emptyMsg: 'Keine Daten zum Anzeigen'
+    form:
+      textField:
+        minLengthText: "Die minimale Eingabelänge für dieses Feld ist {0}"
+        maxLengthText: "Die maximale Eingabelänge für dieses Feld ist {0}"
+        blankText: "Dieses Feld wird benötigt"
+        regexText: ""
+        emptyText: ""
+      numberField:
+        minText: "Der minimale Wert für dieses Feld ist {0}"
+        maxText: "Der maximale Wert für dieses Feld ist {0}"
+        nanText: "{0} ist nicht eine gültige Zahl"
+      dateField:
+        disabledDaysText: "Nicht verfügbar"
+        disabledDatesText: "Nicht verfügbar"
+        minText: "Das Datum in diesem Feld muss nach dem {0} sein"
+        maxText: "Das Datum in diesem Feld muss vor dem {0} sein"
+        invalidText: "{0} ist kein gültiges Datum - es muss in dem Format sein: {1}"
+        format: "d.m.y"
+        altFormats: "d.m.Y|m/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d"
+      comboBox:
+        loadingText: "Lade..."
+        valueNotFoundText: ""
+      vTypes:
+        emailText: 'Dieses Feld soll eine E-Mail Adresse in dem Format "user@domain.com" sein'
+        urlText: 'Dieses Feld soll eine URL in dem Format "http://www.domain.com" sein'
+        alphaText: 'Dieses Feld soll nur Buchstaben und _ enthalten'
+        alphanumText: 'Dieses Feld soll nur Buchstaben, Nummern und  _ enthalten'
+      htmlEditor:
+        createLinkText: 'Bitte gebe die URL für den Link ein:'
+        buttonTips:
+          bold:
+            title: 'Fett (Ctrl+B)'
+            text: 'Stelle den selektierten Text fett dar.'
+            cls: 'x-html-editor-tip'
+          italic:
+            title: 'Italic (Ctrl+I)'
+            text: 'Stelle den selektierten Text italic dar.'
+            cls: 'x-html-editor-tip'
+          underline:
+            title: 'Untertrichen (Ctrl+U)'
+            text: 'Unterstreicht den selektierten Text.'
+            cls: 'x-html-editor-tip'
+          increasefontsize:
+            title: 'Vergrößern Text'
+            text: 'Vergrößert die Schriftgröße.'
+            cls: 'x-html-editor-tip'
+          decreasefontsize:
+            title: 'Verkleinern Text'
+            text: 'Verkleinert die Schriftgröße.'
+            cls: 'x-html-editor-tip'
+          backcolor:
+            title: 'Text Hintergrund Farbe'
+            text: 'Ändert Hintergrundfarbe des selektierten Textes'
+            cls: 'x-html-editor-tip'
+          forecolor:
+            title: 'Text Schrift Farbe'
+            text: 'Ändert die Farbe des selektierten Textes'
+            cls: 'x-html-editor-tip'
+          justifyleft:
+            title: 'Text linksbündig anordnen'
+            text: 'Stelle text linksbündig dar'
+            cls: 'x-html-editor-tip'
+          justifycenter:
+            title: 'Zentriere Text'
+            text: 'Zentriert den Text in dem Editor.'
+            cls: 'x-html-editor-tip'
+          justifyright:
+            title: 'Text rechtsbündig anordnen'
+            text: 'Stelle text rechtsbündig dar.'
+            cls: 'x-html-editor-tip'
+          insertunorderedlist:
+            title: 'Gliederungs-Liste'
+            text: 'Beginnt eine Gliederungsliste.'
+            cls: 'x-html-editor-tip'
+          insertorderedlist:
+            title: 'Nummerierte Liste'
+            text: 'Beginnt eine nummerierte Liste.'
+            cls: 'x-html-editor-tip'
+          createlink:
+            title: 'Hyperlink'
+            text: 'Stelle selektierten Text als Hyperlink dar.'
+            cls: 'x-html-editor-tip'
+          sourceedit:
+            title: 'Quelle Editieren'
+            text: 'Wechsel zur Quelle im Editierungs-Modus.'
+            cls: 'x-html-editor-tip'

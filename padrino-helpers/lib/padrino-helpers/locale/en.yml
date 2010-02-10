@@ -94,24 +94,10 @@ en:
       almost_x_years:
         one:   "almost 1 year"
         other: "almost {{count}} years"
-    prompts:
-      year:   "Year"
-      month:  "Month"
-      day:    "Day"
-      hour:   "Hour"
-      minute: "Minute"
-      second: "Seconds"
-
   models:
     errors:
       template:
         header:
           one:    "1 error prohibited this {{model}} from being saved"
           other:  "{{count}} errors prohibited this {{model}} from being saved"
-        # The variable :count is also available
         body: "There were problems with the following fields:"
-
-  support:
-    select:
-      # default value for :prompt => true in FormOptionsHelper
-      prompt: "Please select"

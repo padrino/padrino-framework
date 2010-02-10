@@ -1,0 +1,30 @@
+de:
+  date:
+    formats:
+      # Benutze die strftime Parameter f¸r die Formatierung
+      # Wenn keine Formate angegeben wurde, wird "default" benutzt.
+      # Du kannst andere Formate hier bieten, wenn Du willst.
+      default: "&d.&m.%Y"
+      short: "%b %d"
+      long: "%B %d, %Y"
+
+    day_names: [Sontag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag]
+    abbr_day_names: [Son, Mon, Die, Mit, Don, Fre, Sam]
+    month_names: [~, Januar, Februar, Marz, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+    abbr_month_names: [~, Jan, Feb, Mar, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez]
+    order: [ day, :month, :year ]
+
+  time:
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      short: "%d %b %H:%M"
+      long: "%B %d, %Y %H:%M"
+    am: "am"
+    pm: "pm"
+
+# Benutzt in array.to_sentence.
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " und "
+      last_word_connector: ", und "

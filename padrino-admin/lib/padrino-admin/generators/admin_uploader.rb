@@ -51,7 +51,7 @@ module Padrino
           end
 
           # Add a carrierwave dependency
-          insert_into_gemfile("carrierwave")
+          inject_into_file("Gemfile", "\n# Uploader requirements\n# gem 'mini_magick'\ngem 'carrierwave'\n", :before => "\n# Padrino")
 
           # Only for datamapper
           if orm == :datamapper
