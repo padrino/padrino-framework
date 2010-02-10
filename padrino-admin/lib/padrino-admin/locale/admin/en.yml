@@ -24,7 +24,7 @@ en:
       of: "of"
     sessions:
       wrong: "Wrong email or password"
-      logout: "Correctly Logged Out"
+      logout: "Successfully Logged Out"
     menus:
       account: "Account"
       list: "List"
@@ -44,17 +44,13 @@ en:
         select: "Select"
         help: "Help"
         send: "Send"
-      help:
-        title: "Support request"
-        description: "Say us what problem do you have and how we can reproduce it"
-        compliments: "Your request was correctly delivered."
       labels:
         all: "All "
         search: "Search"
       messages:
         compliments: 
           title: "Congratulations"
-          message: "Your data are correctly saved."
+          message: "Your data was saved successfully."
         wait:
           title: "Sending Data"
           message: "Sending data to server..."
@@ -63,8 +59,8 @@ en:
           message: "Are you sure to destroy {0} element/s ?"
         alert:
           title: "Attention"
-          message: "There are some connection issues.<br />Contact tecnical support."
-          notConfigured: "This fatures is not ready yet.<br />Contact tecnical support."
+          message: "There are some connection issues.<br />Contact technical support."
+          notConfigured: "This fatures is not ready yet.<br />Contact technical support."
           notSelected: "You must select at least one record"
           tooMany: "You have selected too many records. Maximum is 10!"
     print:
