@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-helpers}
-  s.version = "0.7.5"
+  s.version = "0.7.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-09}
+  s.date = %q{2010-02-10}
   s.description = %q{Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/padrino-helpers/form_helpers.rb",
      "lib/padrino-helpers/format_helpers.rb",
      "lib/padrino-helpers/locale/en.yml",
+     "lib/padrino-helpers/number_helpers.rb",
      "lib/padrino-helpers/output_helpers.rb",
      "lib/padrino-helpers/render_helpers.rb",
      "lib/padrino-helpers/tag_helpers.rb",
@@ -64,6 +65,7 @@ Gem::Specification.new do |s|
      "test/test_form_builder.rb",
      "test/test_form_helpers.rb",
      "test/test_format_helpers.rb",
+     "test/test_number_helpers.rb",
      "test/test_output_helpers.rb",
      "test/test_render_helpers.rb",
      "test/test_tag_helpers.rb"
@@ -81,7 +83,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.5"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.6"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
@@ -89,7 +91,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_dependency(%q<padrino-core>, ["= 0.7.5"])
+      s.add_dependency(%q<padrino-core>, ["= 0.7.6"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
@@ -98,7 +100,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-    s.add_dependency(%q<padrino-core>, ["= 0.7.5"])
+    s.add_dependency(%q<padrino-core>, ["= 0.7.6"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
