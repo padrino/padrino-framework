@@ -1,5 +1,6 @@
 it:
   extjs:
+    search: "Cerca"
     dateFormat: "d/m/Y"
     dateTimeFormat: "d/m/Y G:i"
     ddText: "{0} righe selezionate"

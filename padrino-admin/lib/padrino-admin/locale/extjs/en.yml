@@ -1,5 +1,6 @@
 en:
   extjs:
+    search: "Search"
     dateFormat: "m/d/Y"
     dateTimeFormat: "m/d/Y G:i"
     ddText: "{0} selected row(s)"

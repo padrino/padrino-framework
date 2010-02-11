@@ -22,7 +22,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     should "generate controller within existing application" do
       silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @contgen.start(['demo_items', '-r=/tmp/sample_app']) }
-      assert_match_in_file(/SampleApp.controllers do/m, @controller_path)
+      assert_match_in_file(/SampleApp.controllers :demo_items do/m, @controller_path)
       assert_match_in_file(/SampleApp.helpers do/m, '/tmp/sample_app/app/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_app/app/views/demo_items')
     end
