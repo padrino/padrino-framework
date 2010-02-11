@@ -10,10 +10,10 @@ rescue LoadError
   # Fallback on doing the resolve at runtime.
   require 'rubygems'
   require 'bundler'
-  Bundler.setup
+  Bundler.setup(:default, PADRINO_ENV)
 end
 
-Bundler.require :default, PADRINO_ENV
+Bundler.require(:default, PADRINO_ENV)
 puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
 
 Padrino.load!
