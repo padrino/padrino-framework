@@ -17,7 +17,7 @@ module Padrino
       method_option :boot,        :type => :string,  :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :daemonize,   :type => :boolean, :aliases => "-d"
       def start
-        require File.dirname(__FILE__) + "/cli/adapter"
+        require File.dirname(__FILE__) + "/adapter"
         boot = check_boot
         return unless boot
         require boot
@@ -26,13 +26,13 @@ module Padrino
 
       desc "stop", "Stops the Padrino application"
       def stop
-        require File.dirname(__FILE__) + "/cli/adapter"
+        require File.dirname(__FILE__) + "/adapter"
         Padrino::Cli::Adapter.stop
       end
 
       desc "test", "Executes all the Padrino test files"
       def test
-        require File.dirname(__FILE__) + "/cli/test"
+        require File.dirname(__FILE__) + "/test"
         Padrino::Cli::Test.start
       end
 
@@ -48,7 +48,7 @@ module Padrino
         require boot
         puts "=> Executing Rake..."
         Rake.application.init
-        load(File.dirname(__FILE__) + "/cli/rake.rb")
+        load(File.dirname(__FILE__) + "/rake.rb")
         Rake.application.top_level
       end
 
@@ -56,7 +56,7 @@ module Padrino
       method_option :boot,        :type => :string, :aliases => "-b", :required => true, :default => "config/boot.rb"
       method_option :environment, :type => :string, :aliases => "-e", :required => true, :default => :development
       def console
-        require File.dirname(__FILE__) + "/version"
+        require File.dirname(__FILE__) + "/../version"
         boot = check_boot
         return unless boot
         ARGV.clear
@@ -64,7 +64,7 @@ module Padrino
         require 'irb'
         require "irb/completion"
         require boot
-        require File.dirname(__FILE__) + '/cli/console'
+        require File.dirname(__FILE__) + '/console'
         IRB.start
       end
 

@@ -2,6 +2,6 @@
 %w[rubygems thor].each { |gem| require gem }
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
-require "padrino-core/cli"
+require "padrino-core/cli/base"
 arguments = ARGV.any? ? ARGV : ['-h']
 Padrino::Cli::Base.start(arguments)

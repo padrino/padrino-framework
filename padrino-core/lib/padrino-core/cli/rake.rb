@@ -1,6 +1,4 @@
 require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
 require File.dirname(__FILE__) + '/../tasks'
 
 Dir["lib/tasks/**/*.rake"].each { |ext| load(ext) }
