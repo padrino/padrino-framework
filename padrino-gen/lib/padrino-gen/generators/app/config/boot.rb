@@ -5,7 +5,6 @@ PADRINO_ROOT = File.dirname(__FILE__) + '/..' unless defined? PADRINO_ROOT
 begin
   # Require the preresolved locked set of gems.
   require File.expand_path('../../.bundle/environment', __FILE__)
-  require 'padrino'
 rescue LoadError
   # Fallback on doing the resolve at runtime.
   require 'rubygems'
