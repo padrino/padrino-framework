@@ -75,12 +75,14 @@ module Padrino
           MTIMES[file] = mtime
         end
 
+        ##
+        # Search Ruby files in your +Padrino.root+ and monitor them for changes.
+        # 
         def rotation
-          files = [$0, *$LOADED_FEATURES].uniq
-          paths = ['./', *$:].uniq
+          files = Dir[Padrino.root("/**/*.rb")]
+          paths = [Padrino.root] # For now we set only our root.
 
           files.map{ |file|
-            next if file =~ /\.(so|bundle)$/ # cannot reload compiled files
             found, stat = figure_path(file, paths)
             next unless found && stat && mtime = stat.mtime
 
@@ -121,4 +123,3 @@ module Padrino
     end # Stat
   end # Reloader
 end # Padrino
-
