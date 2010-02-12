@@ -63,13 +63,29 @@ module Padrino
       ##
       # Constructs list html for the errors for a given symbol
       # 
+      # ==== Options
+      #
+      # * <tt>:header_tag</tt> - Used for the header of the error div (default: "h2").
+      # * <tt>:id</tt> - The id of the error div (default: "errorExplanation").
+      # * <tt>:class</tt> - The class of the error div (default: "errorExplanation").
+      # * <tt>:object</tt> - The object (or array of objects) for which to display errors,
+      #   if you need to escape the instance variable convention.
+      # * <tt>:object_name</tt> - The object name to use in the header, or any text that you prefer.
+      #   If <tt>:object_name</tt> is not set, the name of the first object will be used.
+      # * <tt>:header_message</tt> - The message in the header of the error div.  Pass +nil+
+      #   or an empty string to avoid the header message altogether. (Default: "X errors
+      #   prohibited this object from being saved").
+      # * <tt>:message</tt> - The explanation message after the header message and before
+      #   the error list.  Pass +nil+ or an empty string to avoid the explanation message
+      #   altogether. (Default: "There were problems with the following fields:").
+      # 
       # ==== Examples
       # 
       #   error_messages_for :user
       # 
-      def error_messages_for(*params)
-        options = params.extract_options!.symbolize_keys
-        objects = params.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
+      def error_messages_for(*objects)
+        options = objects.extract_options!.symbolize_keys
+        objects = objects.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
         count   = objects.inject(0) {|sum, object| sum + object.errors.count }
 
         unless count.zero?
@@ -83,7 +99,7 @@ module Padrino
             end
           end
 
-          options[:object_name] ||= params.first.class
+          options[:object_name] ||= objects.first.class
 
           I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
             header_message = if options.include?(:header_message)

@@ -1,6 +1,5 @@
 it:
   extjs:
-    search: "Cerca"
     dateFormat: "d/m/Y"
     dateTimeFormat: "d/m/Y G:i"
     ddText: "{0} righe selezionate"
@@ -45,11 +44,11 @@ it:
         nameText: "Nome"
         valueText: "Valore"
         dateFormat: "j/m/Y"
-      search:
-        searchText: "Cerca"
-        searchTipText: "Inserisci una parola o premi cerca"
-        selectAllText: "Seleziona Tutto"
-        minCharsTipText: "Inserisci almeno {0} caratteri"
+    search:
+      searchText: "Cerca"
+      searchTipText: "Inserisci una parola o premi cerca"
+      selectAllText: "Seleziona Tutto"
+      minCharsTipText: "Inserisci almeno {0} caratteri"
     pagingToolbar:
       beforePageText: "Pagina"
       afterPageText: "di {0}"

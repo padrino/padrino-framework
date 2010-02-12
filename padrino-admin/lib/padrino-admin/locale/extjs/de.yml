@@ -1,6 +1,5 @@
 de:
   extjs:
-    search: "Suche"
     dateFormat: "d.m.Y"
     dateTimeFormat: "d.m.Y G:i"
     ddText: "{0} selektierten Datensatz/-sätze"

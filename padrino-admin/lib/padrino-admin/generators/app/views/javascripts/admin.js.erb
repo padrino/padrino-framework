@@ -182,7 +182,7 @@ Admin.app = function(){
     submitForm: function(id){
       var form = Ext.fly(id);
       form.mask(Admin.locale.messages.wait.message);
-      Ext.Ajax.request({ form: form, callback: function(){ Ext.fly(id).unmask() } });
+      Ext.Ajax.request({ form: form, callback: function(){ Ext.fly(id).unmask() }, method: form.dom.method });
     }, // submitForms
 
     setTitle: function(title){

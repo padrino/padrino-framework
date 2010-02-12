@@ -16,16 +16,53 @@ module Padrino
       end
 
       ##
-      # This method work like error_message_for but use an Ext.Message.show({..})
+      # This method work like error_message_for but use an Ext.Message.show({..}).
       # 
-      def show_messages_for(*objects)
-        options       = objects.extract_options!.symbolize_keys
-        count         = objects.inject(0) {|sum, object| sum + object.errors.count }
-        error_cleaner = objects.map{|object| object.class.properties.map {|k| "var x = parent.body.select('*[id=#{object.class.to_s.downcase}_#{k.name}]').first(); if (x) { x.removeClass('x-form-invalid') };" } }.join("\n")
+      # It can return a list of errors like error_messages_for do but also (if no errors occours)
+      # a great message box that indicate the success of the action.
+      # 
+      # ==== Options
+      #
+      # * <tt>:url</tt> - Used for change the <form.action>
+      # * <tt>:method</tt> - Used for change the <form.method>
+      # * <tt>:header_tag</tt> - Used for the header of the error div (default: "h2").
+      # * <tt>:id</tt> - The id of the error div (default: "errorExplanation").
+      # * <tt>:class</tt> - The class of the error div (default: "errorExplanation").
+      # * <tt>:object</tt> - The object (or array of objects) for which to display errors,
+      #   if you need to escape the instance variable convention.
+      # * <tt>:object_name</tt> - The object name to use in the header, or any text that you prefer.
+      #   If <tt>:object_name</tt> is not set, the name of the first object will be used.
+      # * <tt>:header_message</tt> - The message in the header of the error div.  Pass +nil+
+      #   or an empty string to avoid the header message altogether. (Default: "X errors
+      #   prohibited this object from being saved").
+      # * <tt>:message</tt> - The explanation message after the header message and before
+      #   the error list.  Pass +nil+ or an empty string to avoid the explanation message
+      #   altogether. (Default: "There were problems with the following fields:").
+      # 
+      # ==== Examples
+      # 
+      #   # Show an window with errors or "congratulations" and point form.action to:
+      #   # <form action="/admin/accounts/update/123.js" method="put">
+      #   show_messages_for :account
+      # 
+      #   # Show an window with errors or "congratulations" and point form.action to:
+      #   # <form action="/admin/accounts/create.js" method="create">
+      #   show_messages_for :account, :url => url(:accounts_create), :method => :create
+      # 
+      def show_messages_for(object, options={})
+        object          = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
+        count           = object.errors.count
+        error_cleaner   = object.class.properties.map { |field|
+          (<<-JAVASCRIPT).gsub(/ {12}/, '')
+            parent.body.select('*[id=#{object.class.name.underscore}_#{field.name}]').each(function(field){
+              field.removeClass('x-form-invalid');
+            });
+          JAVASCRIPT
+        }.join("\n")
 
         unless count.zero?
           html = {}
-          options[:object_name] ||= objects.first.class
+          options[:object_name] ||= object.class
 
           I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
             header_message = if options.include?(:header_message)
@@ -36,8 +73,14 @@ module Padrino
               escape_javascript(locale.t :header, :count => count, :model => object_name)
             end
             message = escape_javascript(options.include?(:message) ? options[:message] : locale.t(:body))
-            error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, escape_javascript(msg)) } }.join
-            error_highlighter = objects.map {|object| object.errors_keys.map{ |k| "var x = parent.body.select('*[id=#{object.class.to_s.downcase}_#{k}]').first(); x.addClass('x-form-invalid');" } }.join("\n")
+            error_messages    = object.errors.full_messages.map { |msg| content_tag(:li, escape_javascript(msg)) }.join
+            error_highlighter = object.errors_keys.map { |column|
+              (<<-JAVASCRIPT).gsub(/ {16}/, '')
+                parent.body.select('*[id=#{object.class.name.underscore}_#{column}]').each(function(field){
+                  field.addClass('x-form-invalid');
+                });
+              JAVASCRIPT
+            }.join("\n")
             contents = ''
             contents << content_tag(:p, message) if message.present?
             contents << content_tag(:ul, error_messages, :class => :list)
@@ -47,7 +90,7 @@ module Padrino
               #{error_cleaner}
               Ext.Msg.show({
                 title: '#{header_message}',
-                msg: '<ul>#{contents}</ul>',
+                msg: '#{contents}',
                 buttons: Ext.Msg.OK,
                 minWidth: 400 
               });
@@ -55,8 +98,13 @@ module Padrino
             JAVASCRIPT
           end
         else
+          options[:url]     ||= url("#{object.class.name.underscore.pluralize}_update".to_sym, :id => object.id, :format => :js)
+          options[:method]  ||= "put"
           (<<-JAVASCRIPT).gsub(/ {12}/, '')
-            var parent = Ext.WindowMgr.getActive();
+            var parent  = Ext.WindowMgr.getActive();
+            var form    = parent.body.select('form').first().dom;
+            form.action = '#{options[:url]}';
+            form.method = '#{options[:method]}';
             #{error_cleaner}
             Ext.Msg.alert(Admin.locale.messages.compliments.title, Admin.locale.messages.compliments.message);
           JAVASCRIPT
