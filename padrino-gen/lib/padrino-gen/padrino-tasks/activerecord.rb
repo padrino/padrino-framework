@@ -35,7 +35,7 @@ if defined?(ActiveRecord)
           else
             begin
               # Create the SQLite database
-              Dir.mkdir File.dirname(config[:database])
+              Dir.mkdir File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
               ActiveRecord::Base.establish_connection(config)
               ActiveRecord::Base.connection
             rescue

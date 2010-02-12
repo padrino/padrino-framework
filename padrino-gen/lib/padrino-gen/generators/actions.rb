@@ -28,6 +28,7 @@ module Padrino
       # include_component_module_for(:mock, 'rr')
       def include_component_module_for(component, choice=nil)
         choice = fetch_component_choice(component) unless choice
+        return if choice.to_s == 'none'
         self.class.send(:include, generator_module_for(choice, component))
       end
 
