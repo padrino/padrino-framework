@@ -78,7 +78,7 @@ class TestAppGenerator < Test::Unit::TestCase
 
   context "a generator for mock component" do
     should "properly generate for rr" do
-      buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--mock=rr', '--script=none']) }
+      buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--mock=rr', '--test=riot', '--script=none']) }
       assert_match /Applying.*?rr.*?mock/, buffer
       assert_match_in_file(/gem 'rr'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/Riot.rr/m, '/tmp/sample_app/test/test_config.rb')
