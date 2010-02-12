@@ -81,7 +81,7 @@ class TestAppGenerator < Test::Unit::TestCase
       buffer = silence_logger { @app.start(['sample_app', '--root=/tmp', '--mock=rr', '--script=none']) }
       assert_match /Applying.*?rr.*?mock/, buffer
       assert_match_in_file(/gem 'rr'/, '/tmp/sample_app/Gemfile')
-      assert_match_in_file(/include RR::Adapters::RRMethods/m, '/tmp/sample_app/test/test_config.rb')
+      assert_match_in_file(/Riot.rr/m, '/tmp/sample_app/test/test_config.rb')
     end
 
     should "properly generate default for mocha" do
