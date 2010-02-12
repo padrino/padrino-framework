@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.7.9"
+  s.version = "0.7.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-11}
+  s.date = %q{2010-02-12}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -100,7 +100,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.9"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.7.10"])
       s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
       s.add_runtime_dependency(%q<bundler>, [">= 0.9.3"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
@@ -111,7 +111,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_dependency(%q<padrino-core>, ["= 0.7.9"])
+      s.add_dependency(%q<padrino-core>, ["= 0.7.10"])
       s.add_dependency(%q<thor>, [">= 0.13.0"])
       s.add_dependency(%q<bundler>, [">= 0.9.3"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
@@ -123,7 +123,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-    s.add_dependency(%q<padrino-core>, ["= 0.7.9"])
+    s.add_dependency(%q<padrino-core>, ["= 0.7.10"])
     s.add_dependency(%q<thor>, [">= 0.13.0"])
     s.add_dependency(%q<bundler>, [">= 0.9.3"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
