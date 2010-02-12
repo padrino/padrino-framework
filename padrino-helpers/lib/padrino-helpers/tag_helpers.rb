@@ -46,8 +46,10 @@ module Padrino
         base_tag << (open_tag ? ">" : (content ? ">#{content}</#{name}>" : " />"))
       end
 
-      protected
+      private
+        ##
         # Returns a list of attributes which can only contain an identity value (i.e selected)
+        # 
         def identity_tag_attributes
           [:checked, :disabled, :selected, :multiple]
         end

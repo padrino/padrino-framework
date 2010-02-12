@@ -65,19 +65,19 @@ module Padrino
       # 
       # ==== Options
       #
-      # * <tt>:header_tag</tt> - Used for the header of the error div (default: "h2").
-      # * <tt>:id</tt> - The id of the error div (default: "errorExplanation").
-      # * <tt>:class</tt> - The class of the error div (default: "errorExplanation").
-      # * <tt>:object</tt> - The object (or array of objects) for which to display errors,
-      #   if you need to escape the instance variable convention.
-      # * <tt>:object_name</tt> - The object name to use in the header, or any text that you prefer.
-      #   If <tt>:object_name</tt> is not set, the name of the first object will be used.
-      # * <tt>:header_message</tt> - The message in the header of the error div.  Pass +nil+
-      #   or an empty string to avoid the header message altogether. (Default: "X errors
-      #   prohibited this object from being saved").
-      # * <tt>:message</tt> - The explanation message after the header message and before
-      #   the error list.  Pass +nil+ or an empty string to avoid the explanation message
-      #   altogether. (Default: "There were problems with the following fields:").
+      # :header_tag:: Used for the header of the error div (default: "h2").
+      # :id:: The id of the error div (default: "errorExplanation").
+      # :class:: The class of the error div (default: "errorExplanation").
+      # :object:: The object (or array of objects) for which to display errors,
+      # if you need to escape the instance variable convention.
+      # :object_name:: The object name to use in the header, or any text that you prefer.
+      # If +:object_name+ is not set, the name of the first object will be used.
+      # :header_message:: The message in the header of the error div.  Pass +nil+
+      # or an empty string to avoid the header message altogether. (Default: "X errors
+      # prohibited this object from being saved").
+      # :message:: The explanation message after the header message and before
+      # the error list.  Pass +nil+ or an empty string to avoid the explanation message
+      # altogether. (Default: "There were problems with the following fields:").
       # 
       # ==== Examples
       # 
@@ -283,37 +283,50 @@ module Padrino
         input_tag(:image, options)
       end
 
-      protected
-        # Returns an array of option items for a select field based on the given collection
-        # fields is an array containing the fields to display from each item in the collection
-        def options_from_collection(collection, fields)
-          return '' if collection.blank?
-          collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
-        end
+      ##
+      # Returns an array of option items for a select field based on the given collection
+      # fields is an array containing the fields to display from each item in the collection
+      # 
+      def options_from_collection(collection, fields)
+        return '' if collection.blank?
+        collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
+      end
 
-        # Returns the options tags for a select based on the given option items
-        def options_for_select(option_items, selected_value=nil)
-          return '' if option_items.blank?
-          option_items.collect do |caption, value|
-            value ||= caption
-            content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
-          end
+      #
+      # Returns the options tags for a select based on the given option items
+      # 
+      def options_for_select(option_items, selected_value=nil)
+        return '' if option_items.blank?
+        option_items.collect do |caption, value|
+          value ||= caption
+          content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
         end
+      end
 
-        # returns the hidden method field for 'put' and 'delete' forms
-        # Only 'get' and 'post' are allowed within browsers;
-        # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
-        # hidden_form_method_field('delete') => <input name="_method" value="delete" />
-        def hidden_form_method_field(desired_method)
-          return '' if (desired_method.to_s =~ /get|post/)
-          original_method = desired_method.to_s.dup
-          desired_method.to_s.replace('post')
-          hidden_field_tag(:_method, :value => original_method)
-        end
+      ##
+      # Returns the hidden method field for 'put' and 'delete' forms
+      # Only 'get' and 'post' are allowed within browsers;
+      # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
+      # 
+      # ==== Examples
+      # 
+      #   # Generate: <input name="_method" value="delete" />
+      #   hidden_form_method_field('delete')
+      # 
+      def hidden_form_method_field(desired_method)
+        return '' if (desired_method.to_s =~ /get|post/)
+        original_method = desired_method.to_s.dup
+        desired_method.to_s.replace('post')
+        hidden_field_tag(:_method, :value => original_method)
+      end
 
+      private
+        ##
         # Returns the FormBuilder class to use based on all available setting sources
-        # If explicitly defined, returns that, otherwise returns defaults
-        # configured_form_builder_class(nil) => StandardFormBuilder
+        # If explicitly defined, returns that, otherwise returns defaults.
+        # 
+        #   configured_form_builder_class(nil) => StandardFormBuilder
+        # 
         def configured_form_builder_class(explicit_builder=nil)
           default_builder    = self.respond_to?(:options) && self.options.default_builder
           configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'

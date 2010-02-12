@@ -40,7 +40,7 @@ CarrierWave.root = Padrino.root("public") if defined?(CarrierWave)
 ##
 # Extend Abastract Form builder
 # 
-Padrino::Helpers::FormBuilder::AbstractFormBuilder.send(:include, Padrino::Admin::Helpers::AbstractFormBuilder)
+Padrino::Helpers::FormBuilder::AbstractFormBuilder.send(:include, Padrino::Admin::Helpers::ViewHelpers::AbstractFormBuilder)
 
 ##
 # Load our Padrino::Admin locales

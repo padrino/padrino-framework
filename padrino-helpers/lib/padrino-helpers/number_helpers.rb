@@ -7,7 +7,7 @@ module Padrino
     # Methods are provided for phone numbers, currency, percentage,
     # precision, positional notation, and file size.
     # 
-    # Verbatim copy of Rails Number helper
+    # Verbatim copy of Rails Number Helpers
     # 
     module NumberHelpers
       ##
@@ -15,11 +15,12 @@ module Padrino
       # in the +options+ hash.
       #
       # ==== Options
-      # * <tt>:precision</tt>  -  Sets the level of precision (defaults to 2).
-      # * <tt>:unit</tt>       - Sets the denomination of the currency (defaults to "$").
-      # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
-      # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to ",").
-      # * <tt>:format</tt>     - Sets the format of the output string (defaults to "%u%n"). The field types are:
+      # 
+      # :precision:: Sets the level of precision (defaults to 2).
+      # :unit::      Sets the denomination of the currency (defaults to "$").
+      # :separator:: Sets the separator between the units (defaults to ".").
+      # :delimiter:: Sets the thousands delimiter (defaults to ",").
+      # :format::    Sets the format of the output string (defaults to "%u%n"). The field types are:
       #
       #     %u  The currency unit
       #     %n  The number
@@ -65,9 +66,10 @@ module Padrino
       # format in the +options+ hash.
       #
       # ==== Options
-      # * <tt>:precision</tt>  - Sets the level of precision (defaults to 3).
-      # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
-      # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
+      # 
+      # :precision:: Sets the level of precision (defaults to 3).
+      # :separator:: Sets the separator between the units (defaults to ".").
+      # :delimiter:: Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
       # 
@@ -102,8 +104,9 @@ module Padrino
       # customize the format in the +options+ hash.
       #
       # ==== Options
-      # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to ",").
-      # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
+      # 
+      # :delimiter:: Sets the thousands delimiter (defaults to ",").
+      # :separator:: Sets the separator between the units (defaults to ".").
       #
       # ==== Examples
       # 
@@ -145,9 +148,9 @@ module Padrino
       #
       # ==== Options
       # 
-      # * <tt>:precision</tt>  - Sets the level of precision (defaults to 3).
-      # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
-      # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
+      # :precision:: Sets the level of precision (defaults to 3).
+      # :separator:: Sets the separator between the units (defaults to ".").
+      # :delimiter:: Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
       # 
@@ -196,9 +199,10 @@ module Padrino
       # format in the +options+ hash.
       #
       # ==== Options
-      # * <tt>:precision</tt>  - Sets the level of precision (defaults to 1).
-      # * <tt>:separator</tt>  - Sets the separator between the units (defaults to ".").
-      # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
+      # 
+      # :precision:: Sets the level of precision (defaults to 1).
+      # :separator:: Sets the separator between the units (defaults to ".").
+      # :delimiter:: Sets the thousands delimiter (defaults to "").
       #
       # ==== Examples
       # 

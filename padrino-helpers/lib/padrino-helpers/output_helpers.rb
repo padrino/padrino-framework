@@ -77,40 +77,64 @@ module Padrino
         }.join
       end
 
-      protected
+      private
+        ##
         # Retrieves content_blocks stored by content_for or within yield_content
-        # content_blocks[:name] => ['...', '...']
+        # 
+        # ==== Examples
+        # 
+        #   content_blocks[:name] => ['...', '...']
+        # 
         def content_blocks
           @content_blocks ||= Hash.new {|h,k| h[k] = [] }
         end
 
+        ##
         # Used to capture the html from a block of erb code
-        # capture_erb(&block) => '...html...'
+        # 
+        # ==== Examples
+        # 
+        #   capture_erb(&block) => '...html...'
+        # 
         def capture_erb(*args, &block)
           erb_with_output_buffer { block_given? && block.call(*args) }
         end
 
+        ##
         # Concats directly to an erb template
-        # erb_concat("Direct to buffer")
+        # 
+        # ==== Examples
+        # 
+        #   erb_concat("Direct to buffer")
+        # 
         def erb_concat(text)
           @_out_buf << text if has_erb_buffer?
         end
 
+        ##
         # Returns true if an erb buffer is detected
-        # has_erb_buffer? => true
+        # 
+        # ==== Examples
+        # 
+        #   has_erb_buffer? => true
+        # 
         def has_erb_buffer?
           !@_out_buf.nil?
         end
 
+        ##
         # Used to determine if a block is called from ERB.
         # NOTE: This doesn't actually work yet because the variable __in_erb_template
         # hasn't been defined in ERB. We need to find a way to fix this.
+        # 
         def block_is_erb?(block)
           has_erb_buffer? || block && eval('defined? __in_erb_template', block)
         end
 
+        ##
         # Used to direct the buffer for the erb capture
-        def erb_with_output_buffer(buf = '') #:nodoc:
+        # 
+        def erb_with_output_buffer(buf = '')
           @_out_buf, old_buffer = buf, @_out_buf
           yield
           @_out_buf

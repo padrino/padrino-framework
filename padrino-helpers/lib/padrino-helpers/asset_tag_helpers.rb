@@ -7,6 +7,7 @@ module Padrino
       # ==== Examples
       # 
       #   flash_tag(:notice, :class => 'flash', :id => 'flash-notice')
+      # 
       def flash_tag(kind, options={})
         flash_text = flash[kind]
         return '' if flash_text.blank?
@@ -127,52 +128,71 @@ module Padrino
         src =~ %r{^\s*(/|http)} ? src : uri_root_path('images', src)
       end
 
-      protected
-        # stylesheet_tag('style', :media => 'screen')
-        def stylesheet_tag(source, options={})
-          options = options.dup.reverse_merge!(:href => stylesheet_path(source), :media => 'screen', :rel => 'stylesheet', :type => 'text/css')
-          tag(:link, options)
-        end
+      ##
+      # Generate a +link+ tag for stylesheet.
+      # 
+      # ==== Examples
+      # 
+      #   stylesheet_tag('style', :media => 'screen')
+      # 
+      def stylesheet_tag(source, options={})
+        options = options.dup.reverse_merge!(:href => stylesheet_path(source), :media => 'screen', :rel => 'stylesheet', :type => 'text/css')
+        tag(:link, options)
+      end
+      ##
+      # Generate a link +script+ for javascript.
+      # 
+      # ==== Examples
+      # 
+      #   javascript_tag 'application', :src => '/javascripts/base/application.js'
+      # 
+      def javascript_tag(source, options={})
+        options = options.dup.reverse_merge!(:src => javascript_path(source), :type => 'text/javascript', :content => "")
+        tag(:script, options)
+      end
 
-        # javascript_tag 'application', :src => '/javascripts/base/application.js'
-        def javascript_tag(source, options={})
-          options = options.dup.reverse_merge!(:src => javascript_path(source), :type => 'text/javascript', :content => "")
-          tag(:script, options)
-        end
+      ##
+      # Returns the javascript_path appending the default javascripts path if necessary
+      # 
+      def javascript_path(source)
+        return source if source =~ /^http/
+        source        = source.to_s.gsub(/\.js$/, '')
+        source_name   = source; source_name << ".js" unless source =~ /\.js/
+        result_path   = source_name if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("javascripts", source_name)
+        return result_path if result_path =~ /\?/
+        public_path = Padrino.root("public", result_path)
+        stamp = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
+        "#{result_path}?#{stamp}"
+      end
 
-        # Returns the javascript_path appending the default javascripts path if necessary
-        def javascript_path(source)
-          return source if source =~ /^http/
-          source        = source.to_s.gsub(/\.js$/, '')
-          source_name   = source; source_name << ".js" unless source =~ /\.js/
-          result_path   = source_name if source =~ %r{^/} # absolute path
-          result_path ||= uri_root_path("javascripts", source_name)
-          return result_path if result_path =~ /\?/
-          public_path = Padrino.root("public", result_path)
-          stamp = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
-          "#{result_path}?#{stamp}"
-        end
+      ##
+      # Returns the stylesheet_path appending the default stylesheets path if necessary
+      # 
+      def stylesheet_path(source)
+        return source if source =~ /^http/
+        source        = source.to_s.gsub(/\.css$/, '')
+        source_name   = source; source_name << ".css" unless source =~ /\.css/
+        result_path   = source_name if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path("stylesheets", source_name)
+        return result_path if result_path =~ /\?/
+        public_path   = Padrino.root("public", result_path)
+        stamp         = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
+        "#{result_path}?#{stamp}"
+      end
 
-        # Returns the stylesheet_path appending the default stylesheets path if necessary
-        def stylesheet_path(source)
-          return source if source =~ /^http/
-          source        = source.to_s.gsub(/\.css$/, '')
-          source_name   = source; source_name << ".css" unless source =~ /\.css/
-          result_path   = source_name if source =~ %r{^/} # absolute path
-          result_path ||= uri_root_path("stylesheets", source_name)
-          return result_path if result_path =~ /\?/
-          public_path   = Padrino.root("public", result_path)
-          stamp         = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
-          "#{result_path}?#{stamp}"
-        end
-
-        # Returns the uri root of the application, defaulting to '/'
+      private
+        ##
+        # Returns the uri root of the application.'
+        # 
         def uri_root_path(*paths)
           root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
           File.join(root_uri || '/', *paths)
         end
 
+        ##
         # Parse link_to options for give correct conditions
+        # 
         def parse_conditions(url, options)
           if options.has_key?(:if)
             condition = options.delete(:if)

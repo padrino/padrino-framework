@@ -11,6 +11,13 @@ module Padrino
     # 
     module Orm
 
+      ##
+      # ExtSearch it's the result of an ext_search
+      # 
+      #   result = Account.ext_search(..)
+      #   result.count
+      #   result.records
+      # 
       class ExtSearch < Struct.new(:count, :records); end
 
       ##

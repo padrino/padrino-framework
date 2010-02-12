@@ -14,6 +14,7 @@ module Padrino
         #   file_field_block(:photo, { :class => 'long' }, { :class => 'wide-label' })
         #   check_box_block(:remember_me, { :class => 'long' }, { :class => 'wide-label' })
         #   select_block(:color, :options => ['green', 'black'])
+        # 
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
           class_eval <<-EOF
           def #{field_type}_block(field, options={}, label_options={})
