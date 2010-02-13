@@ -1,5 +1,6 @@
 require 'usher'
 require 'sinatra/base'
+
 Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
 
 # Defines our PADRINO_ENV
@@ -14,6 +15,7 @@ module Padrino
     # Helper method for file references.
     #
     # ==== Examples
+    # 
     #   # Referencing a file in config called settings.yml
     #   Padrino.root("config", "settings.yml")
     #   # returns PADRINO_ROOT + "/config/setting.yml"

@@ -15,7 +15,7 @@ end
 
 # Load apps
 Padrino.mounted_apps.each do |app|
-  puts "=> Loading Application #{app.name}"
+  puts "=> Loading Application #{app.app_object}"
   Padrino.require_dependency(app.app_file)
   app.app_object.setup_application!
 end

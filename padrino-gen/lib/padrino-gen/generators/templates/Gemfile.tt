@@ -1,7 +1,6 @@
 source 'http://gemcutter.org'
 
 # Project requirements
-gem 'sinatra', :require => 'sinatra/base'
 gem 'rack-flash'
 gem 'thin' # or mongrel
 

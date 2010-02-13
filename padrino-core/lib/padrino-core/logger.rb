@@ -249,7 +249,7 @@ module Padrino
             env["REMOTE_USER"] || "-",
             env["REQUEST_METHOD"],
             env["PATH_INFO"],
-            env["QUERY_STRING"].empty? ? "" : "?"+env["QUERY_STRING"],
+            env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
             env["HTTP_VERSION"],
             status.to_s[0..3],
             length,

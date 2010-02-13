@@ -114,10 +114,10 @@ module Padrino
         # Also builds the available_choices hash of which component choices are supported
         # component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
         def component_option(name, caption, options = {})
-          (@component_types ||= []) << name # TODO use ordered hash and combine with choices below
-          (@available_choices ||= Hash.new({}))[name] = options[:choices]
+          (@component_types   ||= []) << name # TODO use ordered hash and combine with choices below
+          (@available_choices ||= Hash.new)[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
-          class_option name, :default => options[:choices].first, :aliases => options[:aliases], :desc => description
+          class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
         end
 
         # Returns the compiled list of component types which can be specified

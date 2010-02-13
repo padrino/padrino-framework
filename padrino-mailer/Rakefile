@@ -18,7 +18,7 @@ begin
     gem.add_runtime_dependency     "padrino-core",  "= #{GEM_VERSION}"
     gem.add_runtime_dependency     "tilt",          ">= 0.2"
     gem.add_runtime_dependency     "tmail",         ">= 1.2"
-    gem.add_development_dependency "shoulda",       ">= 0"
+    gem.add_development_dependency "shoulda",       ">= 2.10.3"
     gem.add_development_dependency "haml",          ">= 2.2.1"
     gem.add_development_dependency "mocha",         ">= 0.9.7"
     gem.add_development_dependency "rack-test",     ">= 0.5.0"

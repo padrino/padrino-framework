@@ -16,7 +16,6 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_app')
       assert_file_exists('/tmp/sample_app/app')
       assert_file_exists('/tmp/sample_app/config/boot.rb')
-      assert_dir_exists('/tmp/sample_app/app/models')
       assert_file_exists('/tmp/sample_app/test/test_config.rb')
     end
 
@@ -39,11 +38,11 @@ class TestAppGenerator < Test::Unit::TestCase
     should "create components file containing options chosen with defaults" do
       silence_logger { @app.start(['sample_app', '--root=/tmp']) }
       components_chosen = YAML.load_file('/tmp/sample_app/.components')
-      assert_equal 'datamapper', components_chosen[:orm]
+      assert_equal 'none', components_chosen[:orm]
       assert_equal 'bacon', components_chosen[:test]
       assert_equal 'mocha', components_chosen[:mock]
-      assert_equal 'jquery', components_chosen[:script]
-      assert_equal 'erb', components_chosen[:renderer]
+      assert_equal 'none', components_chosen[:script]
+      assert_equal 'haml', components_chosen[:renderer]
     end
 
     should "create components file containing options chosen" do
@@ -69,7 +68,6 @@ class TestAppGenerator < Test::Unit::TestCase
 
     should "output gem files for base app" do
       silence_logger { @app.start(['sample_app', '--root=/tmp', '--script=none']) }
-      assert_match_in_file(/gem 'sinatra'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/gem 'padrino'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/gem 'rack-flash'/, '/tmp/sample_app/Gemfile')
       assert_match_in_file(/gem 'rack-test'/, '/tmp/sample_app/Gemfile')

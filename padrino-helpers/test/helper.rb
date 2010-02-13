@@ -5,8 +5,6 @@ require 'mocha'
 require 'rack/test'
 require 'webrat'
 
-# require 'extlib' # test with extlib
-
 # We try to load the vendored padrino-core if exist
 %w(core).each do |gem|
   if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
@@ -14,8 +12,13 @@ require 'webrat'
   end
 end
 
-require 'support_helpers'
 require 'padrino-helpers'
+
+# We need some extension for do our tests
+require 'active_support/core_ext/date'
+require 'active_support/core_ext/time'
+require 'active_support/core_ext/numeric'
+require 'active_support/duration'
 
 class Test::Unit::TestCase
   include Padrino::Helpers::OutputHelpers

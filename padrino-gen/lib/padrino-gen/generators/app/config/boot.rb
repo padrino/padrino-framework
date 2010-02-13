@@ -13,6 +13,6 @@ rescue LoadError
 end
 
 Bundler.require(:default, PADRINO_ENV)
-puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env} with #{Padrino.support.to_s.humanize}"
+puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env}"
 
 Padrino.load!
