@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-admin}
-  s.version = "0.8.0"
+  s.version = "0.8.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-13}
+  s.date = %q{2010-02-14}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -342,11 +342,15 @@ Gem::Specification.new do |s|
      "test/fixtures/data_mapper.rb",
      "test/fixtures/mongo_mapper.rb",
      "test/fixtures/test_column_store.jml",
+     "test/generators/test_admin_app_generator.rb",
+     "test/generators/test_admin_page_generator.rb",
+     "test/generators/test_admin_uploader_generator.rb",
      "test/helper.rb",
      "test/test_access_control.rb",
      "test/test_active_record.rb",
      "test/test_admin_application.rb",
      "test/test_column_store.rb",
+     "test/test_config.rb",
      "test/test_data_mapper.rb",
      "test/test_mongo_mapper.rb"
   ]
@@ -363,9 +367,9 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json_pure>, [">= 1.2.0"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.8.0"])
-      s.add_runtime_dependency(%q<padrino-gen>, ["= 0.8.0"])
-      s.add_runtime_dependency(%q<padrino-helpers>, ["= 0.8.0"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.8.1"])
+      s.add_runtime_dependency(%q<padrino-gen>, ["= 0.8.1"])
+      s.add_runtime_dependency(%q<padrino-helpers>, ["= 0.8.1"])
       s.add_runtime_dependency(%q<tilt>, [">= 0.4"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
@@ -374,9 +378,9 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
       s.add_dependency(%q<json_pure>, [">= 1.2.0"])
-      s.add_dependency(%q<padrino-core>, ["= 0.8.0"])
-      s.add_dependency(%q<padrino-gen>, ["= 0.8.0"])
-      s.add_dependency(%q<padrino-helpers>, ["= 0.8.0"])
+      s.add_dependency(%q<padrino-core>, ["= 0.8.1"])
+      s.add_dependency(%q<padrino-gen>, ["= 0.8.1"])
+      s.add_dependency(%q<padrino-helpers>, ["= 0.8.1"])
       s.add_dependency(%q<tilt>, [">= 0.4"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 0"])
@@ -386,9 +390,9 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<json_pure>, [">= 1.2.0"])
-    s.add_dependency(%q<padrino-core>, ["= 0.8.0"])
-    s.add_dependency(%q<padrino-gen>, ["= 0.8.0"])
-    s.add_dependency(%q<padrino-helpers>, ["= 0.8.0"])
+    s.add_dependency(%q<padrino-core>, ["= 0.8.1"])
+    s.add_dependency(%q<padrino-gen>, ["= 0.8.1"])
+    s.add_dependency(%q<padrino-helpers>, ["= 0.8.1"])
     s.add_dependency(%q<tilt>, [">= 0.4"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 0"])
