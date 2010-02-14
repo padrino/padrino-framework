@@ -108,6 +108,27 @@ module Padrino
         inject_into_file('Gemfile', options[:content], :after => options[:after])
       end
 
+      ## Return true if our project has test component
+      def test?
+        fetch_component_choice(:test).to_s != 'none'
+      end
+
+      ## Raise SystemExit if the app is inexistent
+      def check_app_existence(app)
+        unless File.exist?(destination_root(app))
+          say
+          say "================================================================="
+          say "We didn't found #{app.underscore.classify}! Available apps are:"
+          say "================================================================="
+          Padrino.mounted_apps.each do |app|
+            say " - #{app.app_object}"
+          end
+          say "================================================================="
+          say
+          raise SystemExit
+        end
+      end
+
       module ClassMethods
 
         # Defines a class option to allow a component to be chosen and add to component type list

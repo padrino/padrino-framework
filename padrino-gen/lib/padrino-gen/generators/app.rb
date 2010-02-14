@@ -1,33 +1,25 @@
 module Padrino
   module Generators
+
     class App < Thor::Group
 
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:app, self)
 
       # Define the source template root
-      def self.source_root; File.dirname(__FILE__); end
-      def self.banner; "padrino-gen project [name] [options]"; end
+      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.banner; "padrino-gen project [name]"; end
 
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
-      include Padrino::Generators::Components::Actions
 
-      desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
+      desc "Description:\n\n\tpadrino-gen project generate a new Padrino application"
 
-      argument :name, :desc => "The name of your padrino project"
+      argument :name, :desc => "The name of your padrino application"
 
-      class_option :run_bundler,  :desc => "Run 'bundle install'",            :aliases => '-b', :default => false, :type => :boolean
-      class_option :root,         :desc => "The root destination",            :aliases => '-r', :default => ".",   :type => :string
-      class_option :dev,          :desc => "Use padrino from a git checkout",                   :default => false, :type => :boolean
-
-      # Definitions for the available customizable components
-      component_option :orm,      "database engine",    :aliases => '-d', :choices => [:datamapper, :mongomapper, :activerecord, :sequel, :couchrest], :default => :none
-      component_option :test,     "testing framework",  :aliases => '-t', :choices => [:bacon, :shoulda, :rspec, :testspec, :riot]
-      component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr]
-      component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs], :default => :none
-      component_option :renderer, "template engine",    :aliases => '-e', :choices => [:haml, :erb]
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :destroy, :aliases => '-d', :default => false,   :type    => :boolean
 
       # Show help if no argv given
       def self.start(given_args=ARGV, config={})
@@ -35,30 +27,30 @@ module Padrino
         super
       end
 
-      # Copies over the Padrino base application App
-      def setup_app
+      # Copies over the Padrino base admin application
+      def create_app
+        self.destination_root = options[:root]
         @class_name = name.underscore.classify
-        self.destination_root = File.join(options[:root], name)
-        directory("app/", destination_root)
-        store_component_config('.components')
-        template "templates/Gemfile.tt", destination_root("Gemfile")
-      end
+        if in_app_root?
+          directory("app/", destination_root(name))
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@class_name}\").to(\"/#{name.underscore}\")"
+          
+          return if self.behavior == :revoke
+          say (<<-TEXT).gsub(/ {10}/,'')
 
-      # For each component, retrieve a valid choice and then execute the associated generator
-      def setup_components
-        self.class.component_types.each do |comp|
-          choice = resolve_valid_choice(comp)
-          execute_component_setup(comp, choice)
+          =================================================================
+          Your #{@class_name} Application now is installed. 
+          It's available on /#{name.underscore}
+          You can setup a new path editing config/apps.rb
+          =================================================================
+
+          TEXT
+        else
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?
         end
       end
 
-      # Bundle all required components using bundler and Gemfile
-      def bundle_dependencies
-        if options[:run_bundle]
-          say "Bundling application dependencies using bundler..."
-          in_root { run 'bundle install' }
-        end
-      end
     end
+
   end
 end

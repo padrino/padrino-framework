@@ -37,7 +37,7 @@ module Padrino
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
           create_model_file(name, fields)
-          generate_model_test(name) unless fetch_component_choice(:test).to_s == 'none'
+          generate_model_test(name) if test?
           create_model_migration(migration_name, name, fields) unless options[:skip_migration]
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?

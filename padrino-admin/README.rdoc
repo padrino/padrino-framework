@@ -13,7 +13,7 @@ Ajax Uploads:: You can upload file, manage them and attach them to any model in 
 
 Create a project:
 
-  $ padrino-gen app fun-test
+  $ padrino-gen project fun-test
   $ cd fun-test
 
 For create the admin application:

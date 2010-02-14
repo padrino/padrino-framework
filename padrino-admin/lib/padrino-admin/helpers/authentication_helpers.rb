@@ -57,10 +57,10 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the request.fullpath
+        # Store in session[:return_to] the env['HTTP_REFERER']
         # 
         def store_location!
-          session[:return_to] = request.fullpath
+          session[:return_to] = env['HTTP_REFERER']
         end
 
         ##
@@ -68,15 +68,15 @@ module Padrino
         # if the account is not allowed/logged return it to a default page
         # 
         def redirect_back_or_default(default)
-          redirect(session[:return_to] || default)
-          session[:return_to] = nil
+          return_to = session.delete(:return_to)
+          redirect(return_to || default)
         end
 
         private
           def access_denied
             # If request a javascript we alert the user
-            if request.xhr?
-              "alert('You don\'t have permission for this resource')"
+            if request.xhr? || content_type == :js
+              halt 401, "alert('Protected resource')"
             # If we have a login_page we redirect the user
             elsif login_page
               redirect(login_page)
@@ -84,7 +84,6 @@ module Padrino
             else
               halt 401, "You don't have permission for this resource"
             end
-            false
           end
 
           def login_page

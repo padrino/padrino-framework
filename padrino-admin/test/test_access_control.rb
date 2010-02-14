@@ -31,6 +31,7 @@ class TestAccessControl < Test::Unit::TestCase
         account.categories.each do |category|
           project.menu category.name, "/admin/categories/#{category.id}.js"
         end
+        project.menu :foo
       end
     end
   end
@@ -86,8 +87,8 @@ class TestAccessControl < Test::Unit::TestCase
     end
 
     should 'check a module config' do
-      menu = Account.editor.categories.collect { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
-      assert_equal [{ :text => "Categories", :menu => menu }], @access.auths(Account.editor).project_modules.collect(&:config)
+      menu = Account.editor.categories.map { |c| { :text => c.name, :handler => "function(){ Admin.app.load('/admin/categories/#{c.id}.js') }" } }
+      assert_equal [{ :text => "Categories", :menu => menu + ["Foo"] }], @access.auths(Account.editor).project_modules.collect(&:config)
     end
 
     should 'check config handlers' do

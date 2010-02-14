@@ -15,7 +15,8 @@ end
 
 require 'padrino-gen'
 
-Padrino::Generators::Cli.start
+Padrino::Generators.setup!
+Padrino::Generators.lockup!
 
 class Test::Unit::TestCase
   include Rack::Test::Methods
@@ -50,28 +51,27 @@ class Test::Unit::TestCase
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
   end
-  
+
   # assert_file_exists('/tmp/app')
   def assert_file_exists(file_path)
     assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"
   end
-  alias assert_dir_exists assert_file_exists
-  
+  alias :assert_dir_exists :assert_file_exists
+
   # assert_no_file_exists('/tmp/app')
   def assert_no_file_exists(file_path)
     assert !File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
   end
-  alias assert_no_dir_exists assert_no_file_exists
+  alias :assert_no_dir_exists :assert_no_file_exists
 
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     File.exist?(file) ? assert_match(pattern, File.read(file)) : assert_file_exists(file)
   end
-  
+
   def assert_no_match_in_file(pattern, file)
     File.exists?(file) ? !assert_match(pattern, File.read(file)) : assert_file_exists(file)
   end
-  
 end
 
 class Object

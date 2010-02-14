@@ -73,7 +73,6 @@ module Padrino
     # 
     #   class AdminDemo < Padrino::Application
     #     enable :authentication
-    #     set :redirect_to_default, "/" # or your page
     #     
     #     access_control.roles_for :any do |role|
     #       role.allow "/sessions"
@@ -177,10 +176,10 @@ module Padrino
       end # Base
 
       class Auths #:nodoc:
-        attr_reader :allowed, :denied, :project_modules
+        attr_reader :account, :allowed, :denied, :project_modules
 
         def initialize(authorizations, mappers=nil, account=nil) #:nodoc:
-          @allowed, @denied = [], []
+          @allowed, @denied, @account = [], [], account
           unless authorizations.empty?
             @allowed = authorizations.collect(&:allowed).flatten
             @denied  = authorizations.collect(&:denied).flatten
@@ -207,10 +206,11 @@ module Padrino
         end
 
         ##
-        # Return true if the requested path (like request.path_info) is +not+ allowed.
+        # Return false if we don't have +denied+ path +or+ if we have a logged account and empty project modules.
+        # Return true if the requested path (like request.path_info) is +not+ allowed
         # 
         def cannot?(request_path)
-          return false if @denied.empty?
+          return false if @denied.empty? || (@project_modules.empty? && @account)
           request_path = "/" if request_path.blank?
           @denied.any? { |path| request_path =~ /^#{path}/ }
         end
@@ -376,13 +376,6 @@ module Padrino
         # 
         def human_name
           @name.is_a?(Symbol) ? I18n.t("admin.menus.#{@name}", :default => @name.to_s.humanize) : @name
-        end
-
-        ##
-        # Return a unique id for the given project module
-        # 
-        def uid
-          @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '').to_sym
         end
 
         ##

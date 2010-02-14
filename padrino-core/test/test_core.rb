@@ -12,11 +12,14 @@ class TestCore < Test::Unit::TestCase
       assert_respond_to Padrino, :load!
       assert_respond_to Padrino, :reload!
       assert_respond_to Padrino, :version
+      assert_respond_to Padrino, :bundle
     end
 
     should 'validate global helpers' do
       assert_equal :test, Padrino.env
       assert_match /\/test/, Padrino.root
+      assert_equal nil, Padrino.bundle
+      assert_not_nil Padrino.version
     end
 
     should 'set correct utf-8 encoding' do

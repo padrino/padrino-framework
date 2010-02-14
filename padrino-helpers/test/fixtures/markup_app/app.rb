@@ -55,6 +55,7 @@ end
 
 class Errors < Array
   def initialize; self << [:fake, :second, :third]; end
+  def on(fake); true if fake == :email; end
   def full_messages
     ["This is a fake error", "This is a second fake error", "This is a third fake error"]
   end

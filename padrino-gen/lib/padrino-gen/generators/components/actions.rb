@@ -72,12 +72,6 @@ module Padrino
           Dir[destination_root("db/migrate/*_#{filename.underscore}.rb")].size > 0
         end
 
-        # For model destroy option
-        # removes the initial migration file of model
-        def remove_model_migration(name)
-          remove_migration "Create" + name
-        end
-        
         # For the removal of migration files
         # removes the migration file based on the migration name
         def remove_migration(name)
@@ -85,10 +79,8 @@ module Padrino
             File.basename(f) =~ /#{name.to_s.underscore}/
           end
           return unless migration_path
-          if behavior == :revoke # we need to reverse the operation for revoke
-            create_file migration_path
-          else
-            remove_file migration_path
+          if behavior == :revoke 
+            create_file migration_path # we use create to reverse the operation of a revoke
           end
         end
 
@@ -125,19 +117,9 @@ module Padrino
           field_tuples = fields.collect { |value| value.split(":") }
           action_declarations = field_tuples.collect do |request, name|
             "#{request} :#{name} do\n  end\n"
-          end.join("\n  ")
+          end
+          action_declarations.join("\n  ")
         end
-
-        # For controller route generation
-        # Takes in the fields and maps out an appropriate default route.
-        # where controller is user and route is get:test, will add map(:test).to("/user/test")
-        def controller_routes(name,fields)
-          field_tuples = fields.collect { |value| value.split(":") }
-          routes = "\n" + field_tuples.collect do |request, route|
-            "  map(:#{route}).to(\"/#{name}/#{route}\")"
-          end.join("\n") + "\n"
-        end
-
       end
     end
   end

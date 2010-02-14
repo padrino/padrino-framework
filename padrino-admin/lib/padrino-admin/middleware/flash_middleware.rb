@@ -4,7 +4,7 @@ module Padrino
   module Admin
     module Middleware
       ##
-      # FlashSessionCookieMiddleware help you passing your session in the URI, when it should be in the cookie.
+      # FlashMiddleware help you passing your session in the URI, when it should be in the cookie.
       # 
       # This code it's only performed when:
       # 

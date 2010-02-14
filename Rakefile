@@ -43,9 +43,7 @@ desc "Clean pkg and other stuff"
 task :clean do
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) do
-      FileUtils.rm_rf "doc"
-      FileUtils.rm_rf "tmp"
-      FileUtils.rm_rf "pkg"
+      %w(doc tmp pkg coverage).each { |dir| FileUtils.rm_rf dir }
     end
   end
 end
@@ -163,12 +161,10 @@ task :default => :test
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
-  GEM_PATHS[0..-2].each do |gem_info|
-    Dir.chdir(File.join(ROOT, gem_info)) { rake_command "test" }
+  GEM_PATHS[0..-2].each do |gem|
+    Dir.chdir(File.join(ROOT, gem)) { rake_command "test" }
   end
 end
-
-task :default => :test
 
 desc "Execute a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]

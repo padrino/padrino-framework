@@ -129,10 +129,12 @@ class TestFormBuilder < Test::Unit::TestCase
     end
 
     should "display correct form html with valid record" do
-      actual_html = standard_builder.error_messages(:header_message => "Demo form cannot be saved")
-      assert_has_tag('div.field-errors h2', :content => "Demo form cannot be saved") { actual_html }
-      assert_has_tag('div.field-errors ul li', :content => "1") { actual_html }
-      assert_has_tag('div.field-errors ul li', :content => "2") { actual_html }
+      actual_html = standard_builder.error_messages(:header_message => "Demo form cannot be saved", :style => "foo:bar", :class => "mine")
+      assert_has_tag('#field-errors h2', :content => "Demo form cannot be saved") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "1") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "2") { actual_html }
+      assert_has_tag('#field-errors', :style => "foo:bar") { actual_html }
+      assert_has_tag('#field-errors', :class => "mine") { actual_html }
     end
 
     should "display correct form in haml" do
@@ -141,6 +143,7 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
       assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
       assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'x-form-invalid'
     end
 
     should "display correct form in erb" do
@@ -149,6 +152,7 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
       assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
       assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'x-form-invalid'
     end
   end
 

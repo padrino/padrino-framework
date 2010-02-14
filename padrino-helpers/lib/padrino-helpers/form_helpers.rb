@@ -95,7 +95,7 @@ module Padrino
               value = options[key]
               html[key] = value unless value.blank?
             else
-              html[key] = 'field-errors'
+              html[key] = 'field-errors' unless key == :style
             end
           end
 

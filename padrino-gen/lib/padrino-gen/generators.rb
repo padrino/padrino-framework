@@ -5,7 +5,7 @@ module Padrino
 
     class << self
       def load_paths
-        @load_paths ||= Dir[File.dirname(__FILE__) + '/generators/{app,mailer,controller,model,migration}.rb']
+        @load_paths ||= Dir[File.dirname(__FILE__) + '/generators/{project,app,mailer,controller,model,migration}.rb']
       end
 
       def mappings
@@ -14,6 +14,11 @@ module Padrino
 
       def add_generator(name, klass)
         mappings[name] = klass
+      end
+
+      def setup!
+        require 'padrino-gen/generators/actions'
+        Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
       end
 
       def lockup!
@@ -31,8 +36,7 @@ module Padrino
       # We need to TRY to load boot because some of our app dependencies maybe have 
       # custom generators, so is necessary know who are.
       def load_boot
-        require 'padrino-gen/generators/actions'
-        Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
+        Padrino::Generators.setup!
 
         begin
           ENV['PADRINO_LOG_LEVEL'] ||= "test"

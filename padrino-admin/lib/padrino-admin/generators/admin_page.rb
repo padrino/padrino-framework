@@ -16,9 +16,8 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin_page YourModel"
       argument :model, :desc => "The name of your model"
-      class_option :admin_path, :aliases => '-p', :type => :string, :default => "admin"
-      class_option :root, :desc => "The root destination",       :aliases => '-r', :type => :string
-      class_option :destroy,    :aliases => '-d', :default => false, :type => :boolean
+      class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
+      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
       def self.start(given_args=ARGV, config={})
@@ -34,18 +33,17 @@ module Padrino
           @model_klass    = model.classify.constantize
           @model_plural   = model.underscore.pluralize
           @model_singular = model.underscore
-          @app_root       = File.join(options[:root] || '.', options[:admin_path])
           self.behavior   = :revoke if options[:destroy]
 
-          template "templates/page/controller.rb.tt",     destination_root(options[:admin_path], "/controllers/#{@model_plural}.rb")
-          template "templates/page/views/_form.haml.tt",  destination_root(options[:admin_path], "/views/#{@model_plural}/_form.haml")
-          template "templates/page/views/edit.haml.tt",   destination_root(options[:admin_path], "/views/#{@model_plural}/edit.haml")
-          template "templates/page/views/grid.js.erb.tt", destination_root(options[:admin_path], "/views/#{@model_plural}/grid.js.erb")
-          template "templates/page/views/new.haml.tt",    destination_root(options[:admin_path], "/views/#{@model_plural}/new.haml")
-          template "templates/page/views/store.jml.tt",   destination_root(options[:admin_path], "/views/#{@model_plural}/store.jml")
+          template "templates/page/controller.rb.tt",     destination_root("/admin/controllers/#{@model_plural}.rb")
+          template "templates/page/views/_form.haml.tt",  destination_root("/admin/views/#{@model_plural}/_form.haml")
+          template "templates/page/views/edit.haml.tt",   destination_root("/admin/views/#{@model_plural}/edit.haml")
+          template "templates/page/views/grid.js.erb.tt", destination_root("/admin/views/#{@model_plural}/grid.js.erb")
+          template "templates/page/views/new.haml.tt",    destination_root("/admin/views/#{@model_plural}/new.haml")
+          template "templates/page/views/store.jml.tt",   destination_root("/admin/views/#{@model_plural}/store.jml")
 
-          add_access_control_permission(options[:admin_path], @model_plural)
-          include_component_module_for(:test)
+          add_access_control_permission("/admin", @model_plural)
+          include_component_module_for(:test) if test?
           generate_controller_test(model.downcase.pluralize)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?

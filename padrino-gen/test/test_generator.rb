@@ -1,9 +1,6 @@
 require File.dirname(__FILE__) + '/helper'
 
 class TestGenerator < Test::Unit::TestCase
-  def setup
-    Padrino::Generators.lockup!
-  end
 
   context "the generator" do
     should "have default generators" do

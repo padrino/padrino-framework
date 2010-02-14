@@ -53,6 +53,12 @@ class TestFormatHelpers < Test::Unit::TestCase
       actual_text = word_wrap('Once upon a time', :line_width => 1)
       assert_equal "Once\nupon\na\ntime", actual_text
     end
+    should "return proper formatting for default width" do
+      actual_text = word_wrap(1.upto(50).map.join(" "))
+      assert_equal 1.upto(30).map.join(" ") + "\n" + 31.upto(50).map.join(" "), actual_text
+      actual_text = word_wrap(1.upto(50).map.join(" "), 80)
+      assert_equal 1.upto(30).map.join(" ") + "\n" + 31.upto(50).map.join(" "), actual_text
+    end
   end
 
   context 'for #truncate method' do
@@ -88,6 +94,21 @@ class TestFormatHelpers < Test::Unit::TestCase
   end
 
   context 'for #time_ago_in_words method' do
+    should "less than 5 seconds" do
+      assert_equal 'less than 5 seconds', time_ago_in_words(Time.now, true)
+    end
+    should "less than 10 seconds" do
+      assert_equal 'less than 10 seconds', time_ago_in_words(Time.now-5, true)
+    end
+    should "less than 20 seconds" do
+      assert_equal 'less than 20 seconds', time_ago_in_words(Time.now-10, true)
+    end
+    should "less than a minute" do
+      assert_equal 'less than a minute', time_ago_in_words(Time.now-40, true)
+    end
+    should "2 minutes" do
+      assert_equal '2 minutes', time_ago_in_words(Time.now-120, true)
+    end
     should "display today" do
       assert_equal 'less than a minute', time_ago_in_words(Time.now)
     end

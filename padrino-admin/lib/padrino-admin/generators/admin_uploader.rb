@@ -15,21 +15,25 @@ module Padrino
       include Padrino::Generators::Actions
 
       desc "Description:\n\n\tpadrino-gen admin_uploader Name"
-      class_option :admin_path, :desc => "Path where is stored your admin app", :aliases => '-p', :type => :string, :default => "admin"
-      class_option :root,       :desc => "The root destination",                :aliases => '-r', :type => :string, :default => "."
-      class_option :destroy,    :desc => "Destroy the uploader",                :aliases => '-d', :default => false, :type => :boolean
+      class_option :root,       :desc => "The root destination", :aliases => '-r', :type => :string, :default => "."
+      class_option :destroy,    :desc => "Destroy the uploader", :aliases => '-d', :default => false, :type => :boolean
 
       # Create controller for admin
       def create_controller
         self.destination_root = options[:root]
         if in_app_root?
-          @app_root       = File.join(options[:root], options[:admin_path])
-          self.behavior   = :revoke if options[:destroy]
 
-          copy_file "templates/uploader/controller.rb",      destination_root(options[:admin_path], "/controllers/uploads.rb")
-          copy_file "templates/uploader/views/grid.js.erb",  destination_root(options[:admin_path], "/views/uploads/grid.js.erb")
-          copy_file "templates/uploader/views/store.jml",    destination_root(options[:admin_path], "/views/uploads/store.jml")
-          copy_file "templates/uploader/lib/uploader.rb",    destination_root("lib", "uploader.rb")
+          unless File.exist?(destination_root("admin"))
+            say "<= You need to create an admin application first!"
+            raise SystemExit
+          end
+
+          self.behavior = :revoke if options[:destroy]
+
+          copy_file "templates/uploader/controller.rb",     destination_root("/admin/controllers/uploads.rb")
+          copy_file "templates/uploader/views/grid.js.erb", destination_root("/admin/views/uploads/grid.js.erb")
+          copy_file "templates/uploader/views/store.jml",   destination_root("/admin/views/uploads/store.jml")
+          copy_file "templates/uploader/lib/uploader.rb",   destination_root("lib", "uploader.rb")
 
           Padrino::Generators::Model.dup.start([
             "upload", "file:string", "created_at:datetime",
@@ -60,18 +64,17 @@ module Padrino
             end
           end
 
-          add_permission(options[:admin_path], "role.project_module :uploads, \"/admin/uploads.js\"")
+          add_permission("/admin", "role.project_module :uploads, \"/admin/uploads.js\"")
 
           return if self.behavior == :revoke
-
           say (<<-TEXT).gsub(/ {10}/,'')
 
-          --------------------------------------------------------
+          =================================================================
           Your admin uploader is installed, now follow this steps:
-
+          =================================================================
             1) Run migrations
             2) That's all!!
-          --------------------------------------------------------
+          =================================================================
 
           TEXT
         else

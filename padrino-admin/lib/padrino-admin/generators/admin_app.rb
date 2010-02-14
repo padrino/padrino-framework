@@ -16,15 +16,13 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin"
 
-      class_option :root, :desc => "The root destination",    :aliases => '-r', :default => ".",     :type    => :string
-      class_option :path,    :aliases => '-p', :type    => :string, :default => "admin"
-      class_option :destroy, :aliases => '-d', :default => false,   :type    => :boolean
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Copies over the Padrino base admin application
       def create_admin
         self.destination_root = options[:root]
         if in_app_root?
-          @app_path = options[:path]
 
           unless supported_orm.include?(orm)
             say "<= A the moment we only support #{supported_orm.join(" or ")}. Sorry!"
@@ -32,8 +30,8 @@ module Padrino
           end
 
           self.behavior = :revoke if options[:destroy]
-          directory("app/", destination_root(options[:path]))
-          directory("assets/", destination_root("public", options[:path]))
+          directory("app/", destination_root("admin"))
+          directory("assets/", destination_root("public", "admin"))
 
           Padrino::Generators::Model.dup.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
@@ -42,20 +40,19 @@ module Padrino
 
           insert_into_gemfile("haml")
           template "templates/page/db/seeds.rb.tt", destination_root("/db/seeds.rb")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/#{@app_path}\")"
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
 
-          unless options[:destroy]
-            say (<<-TEXT).gsub(/ {12}/,'')
+          return if self.behavior == :revoke
+          say (<<-TEXT).gsub(/ {10}/,'')
 
-            -----------------------------------------------------------------
-            Your admin now is installed, now follow this steps:
+          =================================================================
+          Your admin now is installed, now follow this steps:
+          =================================================================
+            1) Run migrations
+            2) That's all!!
+          =================================================================
 
-              1) Run migrations
-              2) That's all!!
-            -----------------------------------------------------------------
-
-            TEXT
-          end
+          TEXT
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?
         end

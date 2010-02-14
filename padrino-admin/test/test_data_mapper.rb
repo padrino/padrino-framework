@@ -43,6 +43,11 @@ class TestDataMapper < Test::Unit::TestCase
       assert_respond_to Account, :properties
       assert_respond_to Account, :count
       assert_respond_to Account, :orm
+      assert_equal "Name",    Account.human_local_attribute_name(:name)
+      assert_equal "Account", Account.human_local_name
+      assert_equal nil, account.to_param
+      assert_equal "1", Account.first.to_param
+      assert_nothing_raised { Account.first.update_attributes(:name => "foo") }
     end
 
     should 'have category_ids' do

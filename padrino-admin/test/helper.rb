@@ -16,6 +16,9 @@ end
 
 require 'padrino-admin'
 
+Padrino::Generators.setup!
+Padrino::Generators.lockup!
+
 module Kernel
   # Silences the output by redirecting to stringIO
   # silence_logger { ...commands... } => "...output..."
@@ -49,6 +52,7 @@ class Test::Unit::TestCase
   # the application.
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
+    @app.send :include, Test::Unit::Assertions
     @app.use Rack::Session::Cookie if Sinatra::VERSION =~ /0\.9\.\d+/ # Need this because Sinatra 0.9.x have use Rack::Session::Cookie if sessions? && !test?
   end
 
@@ -60,6 +64,25 @@ class Test::Unit::TestCase
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
+  end
+
+  # Assert_file_exists('/tmp/app')
+  def assert_file_exists(file_path)
+    assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"
+  end
+
+  # Assert_no_file_exists('/tmp/app')
+  def assert_no_file_exists(file_path)
+    assert !File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
+  end
+
+  # Asserts that a file matches the pattern
+  def assert_match_in_file(pattern, file)
+    File.exist?(file) ? assert_match(pattern, File.read(file)) : assert_file_exists(file)
+  end
+
+  def assert_no_match_in_file(pattern, file)
+    File.exists?(file) ? !assert_match(pattern, File.read(file)) : assert_file_exists(file)
   end
 
   # Delegate other missing methods to response.

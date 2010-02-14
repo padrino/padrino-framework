@@ -19,6 +19,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino mailer"
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :app, :desc => "The application destination", :aliases => '-a', :default => "/app", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
@@ -30,13 +31,15 @@ module Padrino
       def create_mailer
         self.destination_root = options[:root]
         if in_app_root?
+          app = options[:app].underscore
+          check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
           simple_name = name.to_s.gsub(/mailer/i, '')
           @mailer_basename = "#{simple_name.downcase.underscore}_mailer"
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
           template "templates/mailer_initializer.rb.tt", destination_root("config/initializers/mailer.rb"), :skip => true
-          template "templates/mailer.rb.tt", destination_root("app/mailers", "#{@mailer_basename}.rb")
-          empty_directory destination_root('app/views/', @mailer_basename)
+          template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
+          empty_directory destination_root(app, 'views', @mailer_basename)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

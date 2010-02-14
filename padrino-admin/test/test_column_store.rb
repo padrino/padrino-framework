@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestController < Test::Unit::TestCase
+class TestColumnStore < Test::Unit::TestCase
 
   def setup
     load_fixture 'data_mapper'

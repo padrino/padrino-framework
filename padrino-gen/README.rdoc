@@ -23,42 +23,42 @@ This means that Padrino generators do *not* lock you into using any particular d
 templating engine or javascript library. In fact, when generating an application you can actually tell 
 Padrino which components you would like to use!
 
-The usage for the app generator is quite simple:
+The usage for the project generator is quite simple:
 
-  $ padrino-gen app <the_app_name> </path/to/create/app> --<component-name> <value>
+  $ padrino-gen project <the_app_name> </path/to/create/app> --<component-name> <value>
 
 The simplest possible command to generate a base application would be:
 
-  $ padrino-gen demo_app .
+  $ padrino-gen project demo_project
   
 This would construct a Padrino application DemoApp (which extends from Padrino::Application) 
-inside the folder 'demo_app' at our current path. Inside the application there would be configuration and 
+inside the folder 'demo_project' at our current path. Inside the application there would be configuration and 
 setup performed for the default components.
 
 You can also define specific components to be used:
 
-  $ padrino-gen demo_app . --test rspec --renderer haml --mock rr --script jquery --orm datamapper
+  $ padrino-gen project demo_project --test rspec --renderer haml --mock rr --script jquery --orm datamapper
   
 There is also support for aliases for each component within the command:
 
-  $ padrino-gen demo_app . -t rspec -r haml -m rr -s jquery -d datamapper
+  $ padrino-gen project demo_project -t rspec -r haml -m rr -s jquery -d datamapper
   
 You can also instruct the generator to skip a certain component to avoid using one at all (or to use your own):
 
-  $ padrino-gen demo_app . --test none --renderer none
+  $ padrino-gen project demo_project --test none --renderer none
   
 The available components and their default options are listed below:
 
-* test:     <tt>bacon</tt>  (default), <tt>shoulda</tt>, <tt>rspec</tt>, <tt>testspec</tt>, <tt>riot</tt>
-* renderer: <tt>erb</tt>    (default), <tt>haml</tt>
-* mock:     <tt>mocha</tt>  (default), <tt>rr</tt>
-* script:   <tt>jquery</tt> (default), <tt>prototype</tt>, <tt>rightjs</tt>
+* test:     <tt>bacon</tt>      (default), <tt>shoulda</tt>, <tt>rspec</tt>, <tt>testspec</tt>, <tt>riot</tt>
+* renderer: <tt>haml</tt>       (default), <tt>erb</tt>
+* mock:     <tt>mocha</tt>      (default), <tt>rr</tt>
+* script:   <tt>jquery</tt>     (default), <tt>prototype</tt>, <tt>rightjs</tt>
 * orm:      <tt>datamapper</tt> (default), <tt>mongomapper</tt>, <tt>activerecord</tt>, <tt>sequel</tt>, <tt>couchrest</tt>
 
 The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
 The necessary bundler command can be executed automatically through the generator with
 
-  $ padrino-gen demo_app . --run_bundler # alias -b
+  $ padrino-gen project demo_project --run_bundler # alias -b
 
 or this can be done manually through executing command <tt>gem bundle</tt> in the terminal at the root of the generated application.
 If not executed manually, the bundling will be performed automatically the first time the application attempts to boot.
@@ -68,6 +68,27 @@ The generator framework within padrino is extensible and additional components a
 This would be achieved through forking our project and reading through the code in <tt>lib/generators/App.rb</tt> and
 the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
 for additional component types not originally included (although helping us maintain them would also be appreciated).
+
+=== Sub App Generator
+
+Unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
+
+First you need to create a project
+
+  $ padrino-gen project demo_project
+  $ cd demo_project
+
+Now you are in demo_project and you can create your apps:
+
+  $ padrino-gen app one
+  $ padrino-gen app two
+
+By default these apps are mounted under:
+
+  * /one
+  * /two
+  
+but you can edit config/apps.rb and change it.
 
 === Model Generator
 
@@ -142,6 +163,10 @@ created through the Padrino application generator and that follow Padrino conven
 Using the controller generator is as simple as:
 
   $ padrino-gen controller Admin
+
+If you want create a controller for a specified sub app you can:
+
+  $ padrino-gen controller Admin -a my_sub_app
   
 You can also specify desired actions to be added to your controller:
 
@@ -170,7 +195,11 @@ created through the Padrino application generator and that follow Padrino conven
 Using the mailer generator is as simple as:
 
   $ padrino-gen mailer UserNotifier
-  
+
+If you want create a mailer for a specified sub app you can:
+
+  $ padrino-gen mailer UserNotifier -a my_sub_app
+
 You can also specify desired delivery actions to be added to the mailer:
 
   $ padrino-gen mailer UserNotifier confirm_account welcome inactive_account
