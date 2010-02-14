@@ -46,7 +46,7 @@ module Padrino
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Your admin now is installed, now follow this steps:
+          Admin has been successfully installed, now follow this steps:
           =================================================================
             1) Run migrations
             2) That's all!!

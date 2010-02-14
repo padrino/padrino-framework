@@ -70,7 +70,7 @@ module Padrino
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Your admin uploader is installed, now follow this steps:
+          Uploader has been successfully installed, now follow this steps:
           =================================================================
             1) Run migrations
             2) That's all!!
