@@ -21,7 +21,7 @@ module Padrino
       # Returns the available mail fields when composing a message
       # 
       def self.mail_fields
-        [:to, :from, :subject, :type, :charset, :via, :attachments]
+        [:to, :cc, :bcc, :reply_to, :from, :subject, :type, :charset, :via, :attachments]
       end
 
       attr_accessor :mail_attributes

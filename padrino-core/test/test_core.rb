@@ -24,9 +24,7 @@ class TestCore < Test::Unit::TestCase
 
     should 'set correct utf-8 encoding' do
       Padrino.set_encoding
-      if RUBY_VERSION >= '1.9'
-        assert_equal nil, $KCODE
-      else
+      if RUBY_VERSION <'1.9'
         assert_equal 'UTF8', $KCODE
       end
     end

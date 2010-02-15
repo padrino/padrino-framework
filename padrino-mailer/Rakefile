@@ -40,10 +40,11 @@ end
 
 begin
   require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
+  Rcov::RcovTask.new do |rcov|
+    rcov.libs << 'test'
+    rcov.pattern = 'test/**/test_*.rb'
+    rcov.verbose = true
+    rcov.rcov_opts << ['--exclude /Gems/1.8/gems/,padrino-core,padrino-cache,padrino-gen,padrino-helpers,padrino-admin']
   end
 rescue LoadError
   task :rcov do

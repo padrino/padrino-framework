@@ -36,18 +36,27 @@ module Padrino
       end
 
       protected
+        ##
         # Returns the delivery method to use for this mail object
+        # 
+        # ==== Examples
+        # 
         # @mo.delivery_method => :smtp || :sendmail
+        # 
         def delivery_method
           @mail_attributes[:via] || (@smtp_settings.present? ? :smtp : :sendmail)
         end
 
+        ##
         # Returns true if the mail object is going to be delivered using smtp
+        # 
         def using_smtp?
           delivery_method.to_s =~ /smtp/
         end
 
+        ##
         # Performs the actual email sending
+        # 
         def send_mail(delivery_attributes)
           Delivery.mail(delivery_attributes) && true
         end

@@ -22,7 +22,7 @@ module Padrino
       # Show help if no argv given
       def self.start(given_args=ARGV, config={})
         given_args = ["-h"] if given_args.empty?
-        super
+        super(given_args, config)
       end
 
       # Create controller for admin

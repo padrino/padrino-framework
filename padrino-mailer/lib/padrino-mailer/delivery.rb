@@ -28,20 +28,36 @@ module Padrino
         end
 
         def build_tmail(options)
-          mail = TMail::Mail.new
-          mail.to = options[:to]
-          mail.from = options[:from] || 'padrino@unknown'
-          mail.subject = options[:subject]
-          mail.body = options[:body] || ""
-          mail.set_content_type 'text', options[:type] || 'plain', {'charset'=> options[:charset] || 'utf-8'}
-          (options[:attachments] || []).each do |name, body|
-            attachment = TMail::Mail.new
-            attachment.transfer_encoding = "base64"
-            attachment.body = Base64.encode64(body)
-            # attachment.set_content_type # TODO: if necessary
-            attachment.set_content_disposition "attachment", "filename" => name
-            mail.parts.push attachment
+          logger.error options.inspect
+          mail          = TMail::Mail.new
+          mail.to       = options[:to]
+          mail.cc       = options[:cc]   || ''
+          mail.bcc      = options[:bcc]  || ''
+          mail.from     = options[:from] || 'padrino@unknown'
+          mail.reply_to = options[:reply_to]
+          mail.subject  = options[:subject]
+
+          if options[:attachments]
+            # If message has attachment, then body must be sent as a message part
+            # or it will not be interpreted correctly by client.
+            body = TMail::Mail.new
+            body.body = options[:body] || ""
+            body.content_type = options[:content_type] || "text/plain"
+            mail.parts.push body
+            (options[:attachments] || []).each do |name, body|
+              attachment = TMail::Mail.new
+              attachment.transfer_encoding = "base64"
+              attachment.body = Base64.encode64(body)
+              content_type = MIME::Types.type_for(name).to_s
+              attachment.content_type = content_type unless content_type == ""
+              attachment.set_content_disposition "attachment", "filename" => name
+              mail.parts.push attachment
+            end
+          else
+            mail.content_type = options[:content_type] || "text/plain"
+            mail.body = options[:body] || ""
           end
+          mail.charset = options[:charset] || "UTF-8" # charset must be set after setting content_type
           mail
         end
 
@@ -62,7 +78,7 @@ module Padrino
         end
 
         def transport_via_sendmail(tmail, options={})
-          logger.debug "Sending email via sendmail: #{tmail}"
+          logger.debug "Sending email via sendmail:\n#{tmail}" if Kernel.respond_to?(:logger)
           IO.popen('-', 'w+') do |pipe|
             if pipe
               pipe.write(tmail.to_s)
@@ -73,7 +89,7 @@ module Padrino
         end
 
         def transport_via_smtp(tmail, options={:smtp => {}})
-          logger.debug "Sending email via smtp: #{tmail}"
+          logger.debug "Sending email via smtp:\n#{tmail}" if Kernel.respond_to?(:logger)
           default_options = {:smtp => { :host => 'localhost', :port => '25', :domain => 'localhost.localdomain' }}
           o = default_options[:smtp].merge(options[:smtp])
           smtp = Net::SMTP.new(o[:host], o[:port])
