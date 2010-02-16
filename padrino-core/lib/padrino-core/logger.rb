@@ -82,7 +82,7 @@ module Padrino
       :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
-    } unless const_defined?(:Config)
+    }
 
     ##
     # Setup a new logger

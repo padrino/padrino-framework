@@ -19,7 +19,8 @@ module Padrino
         def call(env)
           if env['HTTP_USER_AGENT'] =~ /^(Adobe|Shockwave) Flash/
             params = ::Rack::Request.new(env).params
-            env['rack.session'][@session_key.to_sym] = params[@session_key] unless params[@session_key].nil?
+            env['rack.session'] ||= {}
+            env['rack.session'][@session_key.to_sym] = params[@session_key] if params[@session_key].present?
           end
           @app.call(env)
         end

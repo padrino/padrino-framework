@@ -1,12 +1,9 @@
-require 'tilt'
-require 'thor/group'
 require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-helpers'
 
 Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,orm,middleware,utils}/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page,admin_uploader}.rb'].each {|file| require file }
 
 module Padrino
   ##
@@ -51,3 +48,8 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
 # Load our databases extensions
 # 
 Padrino::Admin::Orm.register!
+
+##
+# Now we need to add admin generators to padrino-gen
+# 
+Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,admin_app,admin_page,admin_uploader}.rb']

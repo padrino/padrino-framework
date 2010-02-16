@@ -15,6 +15,11 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/app/models/user.rb')
     end
 
+    should "fail if we don't use an adapter" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
+      assert_raise(SystemExit) { silence_logger { @model_gen.start(['user', '-r=/tmp/sample_project']) } }
+    end
+
     should 'not fail if we don\'t have test component' do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--test=none', '-d=activerecord']) }
       response_success = silence_logger { @model_gen.start(['user', '-r=/tmp/sample_project']) }

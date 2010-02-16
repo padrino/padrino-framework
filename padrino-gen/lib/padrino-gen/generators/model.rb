@@ -24,16 +24,16 @@ module Padrino
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       def create_model
         self.destination_root = options[:root]
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          include_component_module_for(:orm)
+          unless include_component_module_for(:orm)
+            say "<= You need an ORM adapter for run this generator. Sorry!"
+            raise SystemExit
+          end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
           create_model_file(name, fields)

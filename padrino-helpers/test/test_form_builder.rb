@@ -58,7 +58,7 @@ class TestFormBuilder < Test::Unit::TestCase
     end
 
     should "support changing form builder type" do
-      form_html = lambda { form_for(@user, '/register', :builder => "AbstractFormBuilder") { |f| f.text_field_block(:name) } }
+      form_html = proc { form_for(@user, '/register', :builder => "AbstractFormBuilder") { |f| f.text_field_block(:name) } }
       assert_raise(NoMethodError) { form_html.call }
     end
 

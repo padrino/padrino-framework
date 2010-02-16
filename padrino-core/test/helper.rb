@@ -58,7 +58,7 @@ class Test::Unit::TestCase
     if response && response.respond_to?(name)
       response.send(name, *args, &block)
     else
-      super
+      super(name, *args, &block)
     end
   end
 

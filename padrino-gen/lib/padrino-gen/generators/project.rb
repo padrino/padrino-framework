@@ -1,3 +1,5 @@
+require 'padrino-core/version'
+
 module Padrino
   module Generators
     class Project < Thor::Group
@@ -30,10 +32,7 @@ module Padrino
       component_option :renderer, "template engine",    :aliases => '-e', :choices => [:haml, :erb]
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       # Copies over the Padrino base application App
       def setup_project

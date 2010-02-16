@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-%w[rubygems thor/group].each { |gem| require gem }
+require 'rubygems'
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
 # We try to load the vendored padrino-core if exist
@@ -8,6 +8,7 @@ if File.exist?(File.dirname(__FILE__) + "/../../padrino-core/lib")
 end
 
 require 'padrino-gen'
+require 'padrino-gen/generators/cli'
 
 # We need our config boot because we need to load registered generators so:
 Padrino::Generators::Cli.start(ARGV)

@@ -6,6 +6,7 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
+require 'thor/group'
 
 # We try to load the vendored padrino-core if exist
 %w(core gen helpers).each do |gem|
@@ -14,9 +15,10 @@ require 'shoulda'
   end
 end
 
+
+require 'padrino-core/support_lite'
 require 'padrino-admin'
 
-Padrino::Generators.setup!
 Padrino::Generators.lockup!
 
 module Kernel
@@ -90,7 +92,7 @@ class Test::Unit::TestCase
     if response && response.respond_to?(name)
       response.send(name, *args, &block)
     else
-      super
+      super(name, *args, &block)
     end
   end
 

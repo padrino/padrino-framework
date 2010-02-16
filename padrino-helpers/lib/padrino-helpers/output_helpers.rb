@@ -122,13 +122,18 @@ module Padrino
           !@_out_buf.nil?
         end
 
-        ##
-        # Used to determine if a block is called from ERB.
-        # NOTE: This doesn't actually work yet because the variable __in_erb_template
-        # hasn't been defined in ERB. We need to find a way to fix this.
-        # 
-        def block_is_erb?(block)
-          has_erb_buffer? || block && eval('defined? __in_erb_template', block)
+        if RUBY_VERSION < '1.9.0'
+          # Check whether we're called from an erb template.
+          # We'd return a string in any other case, but erb <%= ... %>
+          # can't take an <% end %> later on, so we have to use <% ... %>
+          # and implicitly concat.
+          def block_is_erb?(block)
+            has_erb_buffer? || block && eval('defined? __in_erb_template', block)
+          end
+        else
+          def block_is_erb?(block)
+            has_erb_buffer? || block && eval('defined? __in_erb_template', block.binding)
+          end
         end
 
         ##

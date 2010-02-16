@@ -1,10 +1,8 @@
 require File.dirname(__FILE__) + '/helper'
-require 'thor/group'
-require 'fakeweb'
+require 'padrino-gen/generators/cli'
 
 class TestCli < Test::Unit::TestCase
   def setup
-    FakeWeb.allow_net_connect = false
     `rm -rf /tmp/sample_project`
     @cli     = Padrino::Generators::Cli.dup
     @project = Padrino::Generators::Project.dup

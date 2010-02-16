@@ -1,31 +1,12 @@
+require 'thor/group'
+require 'padrino-core/support_lite'
+
 module Padrino
   module Generators
-
-    DEV_PATH = File.expand_path("../../../", File.dirname(__FILE__))
-
-    class << self
-      def load_paths
-        @load_paths ||= Dir[File.dirname(__FILE__) + '/generators/{project,app,mailer,controller,model,migration}.rb']
-      end
-
-      def mappings
-        @mappings ||= SupportLite::OrderedHash.new
-      end
-
-      def add_generator(name, klass)
-        mappings[name] = klass
-      end
-
-      def setup!
-        require 'padrino-gen/generators/actions'
-        Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
-      end
-
-      def lockup!
-        load_paths.each { |lib| require lib  }
-      end
-    end
-
+    ##
+    # This class bootstrap +config/boot+ and perform +Padrino::Generators.lockup!+ for handle
+    # 3rd party generators
+    # 
     class Cli < Thor::Group
 
       # Include related modules
@@ -36,8 +17,6 @@ module Padrino
       # We need to TRY to load boot because some of our app dependencies maybe have 
       # custom generators, so is necessary know who are.
       def load_boot
-        Padrino::Generators.setup!
-
         begin
           ENV['PADRINO_LOG_LEVEL'] ||= "test"
           if options[:root]
@@ -47,6 +26,7 @@ module Padrino
           end
         rescue Exception => e
           puts "=> Problem loading config/boot.rb"
+          puts ["=> #{e.message}", *e.backtrace].join("\n  ")
         end
       end
 
@@ -57,13 +37,12 @@ module Padrino
         generator_class = Padrino::Generators.mappings[generator_kind]
 
         if generator_class
-          generator_class.start(ARGV)
+          args = ARGV.empty? && generator_class.require_arguments? ? ["-h"] : ARGV
+          generator_class.start(args)
         else
           puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(", ")})"
         end
       end
-
-    end
-
-  end
-end
+    end # Cli
+  end # Generators
+end # Padrino

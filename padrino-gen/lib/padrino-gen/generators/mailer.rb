@@ -23,10 +23,7 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       def create_mailer
         self.destination_root = options[:root]

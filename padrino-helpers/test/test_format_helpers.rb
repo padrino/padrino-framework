@@ -54,10 +54,10 @@ class TestFormatHelpers < Test::Unit::TestCase
       assert_equal "Once\nupon\na\ntime", actual_text
     end
     should "return proper formatting for default width" do
-      actual_text = word_wrap(1.upto(50).map.join(" "))
-      assert_equal 1.upto(30).map.join(" ") + "\n" + 31.upto(50).map.join(" "), actual_text
-      actual_text = word_wrap(1.upto(50).map.join(" "), 80)
-      assert_equal 1.upto(30).map.join(" ") + "\n" + 31.upto(50).map.join(" "), actual_text
+      actual_text = word_wrap(1.upto(50).to_a.join(" "))
+      assert_equal 1.upto(30).to_a.join(" ") + "\n" + 31.upto(50).to_a.join(" "), actual_text
+      actual_text = word_wrap(1.upto(50).to_a.join(" "), 80)
+      assert_equal 1.upto(30).to_a.join(" ") + "\n" + 31.upto(50).to_a.join(" "), actual_text
     end
   end
 

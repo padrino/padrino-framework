@@ -14,7 +14,7 @@ module Padrino
         Padrino.set_load_paths File.join(subclass.root, "/models")
         Padrino.require_dependencies File.join(subclass.root, "/models.rb")
         Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
-        super # Loading the subclass
+        super(subclass) # Loading the subclass
         subclass.default_filters!
         subclass.default_routes!
         subclass.default_errors!
@@ -28,7 +28,7 @@ module Padrino
       # 
       def new(*args, &bk)
         setup_application!
-        super
+        super(*args, &bk)
       end
 
       ##
@@ -115,7 +115,7 @@ module Padrino
       # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
       # 
       def layout(name=:layout, &block)
-        return super if block_given?
+        return super(name, &block) if block_given?
         @_layout = name
       end
 
@@ -169,7 +169,7 @@ module Padrino
         def default_configuration!
           # Overwriting Sinatra defaults
           set :app_file, caller_files.first || $0 # Assume app file is first caller
-          set :environment, PADRINO_ENV.to_sym
+          set :environment, Padrino.env
           set :raise_errors, true if development?
           set :logging, false # !test?
           set :sessions, true
@@ -381,9 +381,9 @@ module Padrino
           unbound_method = instance_method("#{verb} #{path}")
           block =
             if block.arity != 0
-              lambda { unbound_method.bind(self).call(*@block_params) }
+              proc { unbound_method.bind(self).call(*@block_params) }
             else
-              lambda { unbound_method.bind(self).call }
+              proc { unbound_method.bind(self).call }
             end
 
           invoke_hook(:route_added, verb, path, block)
@@ -499,7 +499,7 @@ module Padrino
             I18n.locale = params[:locale].to_sym rescue options.locale
           end
         end
-        super
+        super(&block)
       end
 
       ##
@@ -528,7 +528,7 @@ module Padrino
             logger.debug "Rendering layout #{options[:layout]}"
           end
         end
-        super
+        super(engine, data, options, locals, &block)
       end
 
       ##

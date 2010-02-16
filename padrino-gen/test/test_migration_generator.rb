@@ -15,6 +15,11 @@ class TestMigrationGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/db/migration')
     end
 
+    should "fail if we don't use an adapter" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
+      assert_raise(SystemExit) { silence_logger { @mig_gen.start(['AddEmailToUsers', '-r=/tmp/sample_project']) } }
+    end
+
     should "generate migration inside app root" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       response_success = silence_logger { @mig_gen.start(['AddEmailToUsers', '-r=/tmp/sample_project']) }

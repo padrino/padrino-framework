@@ -200,7 +200,7 @@ module Padrino
         module Account
 
           def self.included(base) #:nodoc:
-            super
+            super(base)
             base.send :include, Padrino::Admin::Orm::Abstract::Account
             base.send :include, ::DataMapper::Validate
             base.send :attr_accessor, :password, :password_confirmation

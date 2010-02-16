@@ -21,7 +21,7 @@ Complex1Demo.controllers do
 end
 
 Complex2Demo.controllers do
-  get("(/)"){ "The magick number is: 78!" } # Change only the number!!!
+  get("(/)"){ "The magick number is: 40!" } # Change only the number!!!
 end
 
 Padrino.load!

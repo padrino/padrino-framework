@@ -13,9 +13,11 @@ module Padrino
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
+      include Padrino::Generators::Admin::Actions
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin"
 
+      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
@@ -35,7 +37,7 @@ module Padrino
 
           Padrino::Generators::Model.dup.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
-            "-r=#{options[:root]}", "-s=#{skip_migrations}", "-d=#{options[:destroy]}"
+            "-r=#{options[:root]}", "-s=#{options[:skip_migration]}", "-d=#{options[:destroy]}"
           ])
 
           insert_into_gemfile("haml")

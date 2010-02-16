@@ -142,7 +142,7 @@ module Padrino
           def inherited(base) #:nodoc:
             base.class_eval("@@cache={}; @authorizations=[]; @roles=[]; @mappers=[]")
             base.send(:cattr_reader, :cache)
-            super
+            super(base)
           end
 
           ##

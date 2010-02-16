@@ -28,7 +28,7 @@ module Padrino
       # include_component_module_for(:mock, 'rr')
       def include_component_module_for(component, choice=nil)
         choice = fetch_component_choice(component) unless choice
-        return if choice.to_s == 'none'
+        return false if choice.to_s == 'none'
         self.class.send(:include, generator_module_for(choice, component))
       end
 
@@ -130,7 +130,6 @@ module Padrino
       end
 
       module ClassMethods
-
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported
         # component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
@@ -139,6 +138,16 @@ module Padrino
           (@available_choices ||= Hash.new)[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
           class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
+        end
+
+        # Tell to padrino that for this Thor::Group is necessary a task to run
+        def require_arguments!
+          @_require_arguments = true
+        end
+
+        # Return true if we need an arguments for our Thor::Group
+        def require_arguments?
+          @_require_arguments
         end
 
         # Returns the compiled list of component types which can be specified

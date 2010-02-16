@@ -214,7 +214,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for testspec" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--test=testspec', '--script=none']) }
       assert_match /Applying.*?testspec.*?test/, buffer
-      assert_match_in_file(/gem 'test\/spec'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'test-spec'.*?:require => "test\/spec"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_project/test/test_config.rb')
     end

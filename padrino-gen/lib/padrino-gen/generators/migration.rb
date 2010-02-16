@@ -23,17 +23,18 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       def create_migration
         self.destination_root = options[:root]
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          include_component_module_for(:orm)
-          create_migration_file(name, name, columns)
+          if include_component_module_for(:orm)
+            create_migration_file(name, name, columns)
+          else
+            say "<= You need an ORM adapter for run this generator. Sorry!"
+            raise SystemExit
+          end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

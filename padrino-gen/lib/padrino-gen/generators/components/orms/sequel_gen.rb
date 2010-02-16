@@ -59,7 +59,7 @@ module Padrino
 
           def create_model_migration(migration_name, name, columns)
             output_model_migration(migration_name, name, columns,
-                   :column_format => lambda { |field, kind| "#{kind.camelize} :#{field}" },
+                   :column_format => Proc.new { |field, kind| "#{kind.camelize} :#{field}" },
                    :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
           end
 
@@ -72,8 +72,8 @@ module Padrino
           def create_migration_file(migration_name, name, columns)
             output_migration_file(migration_name, name, columns,
                   :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-                  :add => lambda { |field, kind| "add_column :#{field}, #{kind.camelize}"  },
-                  :remove => lambda { |field, kind| "drop_column :#{field}" }
+                  :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.camelize}"  },
+                  :remove => Proc.new { |field, kind| "drop_column :#{field}" }
                   )
           end
         end

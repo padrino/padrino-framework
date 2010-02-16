@@ -15,7 +15,6 @@ end
 
 require 'padrino-gen'
 
-Padrino::Generators.setup!
 Padrino::Generators.lockup!
 
 class Test::Unit::TestCase

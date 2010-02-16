@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-%w[rubygems thor].each { |gem| require gem }
+require 'rubygems'
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
 require "padrino-core/cli/base"

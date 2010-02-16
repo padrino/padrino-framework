@@ -33,8 +33,8 @@ module Padrino
         # For orm database components
         # Generates a standalone migration file based on the given options and columns
         # options => { :base "...text...", :change_format => "...text...",
-        #              :add => lambda { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
-        #              :remove => lambda { |field, kind| "remove_column :#{table_name}, :#{field}" }
+        #              :add => proc { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
+        #              :remove => proc { |field, kind| "remove_column :#{table_name}, :#{field}" }
         def output_migration_file(filename, name, columns, options={})
           if behavior == :revoke
             remove_migration(name)

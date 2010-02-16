@@ -74,7 +74,7 @@ module Padrino
       # Returns true if a mail exists with the name being delivered
       # 
       def self.respond_to?(method_sym, include_private = false)
-        method_sym.to_s =~ /deliver_(.*)/ ? self.method_defined?($1) : super
+        method_sym.to_s =~ /deliver_(.*)/ ? self.method_defined?($1) : super(method_sym, include_private)
       end
 
       ##
@@ -82,7 +82,7 @@ module Padrino
       # being called i.e #deliver_birthday_message(22) invokes #birthday_message(22) to setup mail object
       # 
       def self.method_missing(method_sym, *arguments, &block)
-        method_sym.to_s =~ /deliver_(.*)/ ? self.deliver($1, *arguments) : super
+        method_sym.to_s =~ /deliver_(.*)/ ? self.deliver($1, *arguments) : super(method_sym, *arguments, &block)
       end
     end # Base
   end # Mailer

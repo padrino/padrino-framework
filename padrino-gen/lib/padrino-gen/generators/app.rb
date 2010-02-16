@@ -22,10 +22,7 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false,   :type    => :boolean
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       # Copies over the Padrino base admin application
       def create_app

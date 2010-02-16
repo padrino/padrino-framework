@@ -13,6 +13,7 @@ module Padrino
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
+      include Padrino::Generators::Admin::Actions
 
       desc "Description:\n\n\tpadrino-gen admin_uploader Name"
       class_option :root,       :desc => "The root destination", :aliases => '-r', :type => :string, :default => "."
@@ -37,7 +38,7 @@ module Padrino
 
           Padrino::Generators::Model.dup.start([
             "upload", "file:string", "created_at:datetime",
-            "-r=#{options[:root]}", "-s=#{skip_migrations}", "-d=#{options[:destroy]}"
+            "-r=#{options[:root]}", "-s=#{options[:skip_migration]}", "-d=#{options[:destroy]}"
           ])
 
           inject_into_file destination_root("app", "models", "upload.rb"), :before => "end" do

@@ -13,17 +13,16 @@ module Padrino
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
+      include Padrino::Generators::Admin::Actions
 
       desc "Description:\n\n\tpadrino-gen admin_page YourModel"
       argument :model, :desc => "The name of your model"
+      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
-      def self.start(given_args=ARGV, config={})
-        given_args = ["-h"] if given_args.empty?
-        super(given_args, config)
-      end
+      require_arguments!
 
       # Create controller for admin
       def create_controller
