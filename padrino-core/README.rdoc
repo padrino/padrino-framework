@@ -430,14 +430,19 @@ The following commands are available:
   # Stops a daemonized app server
   $ padrino stop
   
-  # Run all the unit tests
-  $ padrino test
-  
   # Bootup the Padrino console (irb)
   $ padrino console
   
   # Run/List tasks
   $ padrino rake
+
+The last command "padrino rake" look for rake files in:
+
+  lib/**/*.rake
+  test/test.rake
+  spec/spec.rake
+
+In this way you can customize project tasks.
 
 Using these commands can simplify common tasks making development that much smoother.
 

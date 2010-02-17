@@ -430,14 +430,19 @@ The following commands are available:
   # Stops a daemonized app server
   $ padrino stop
   
-  # Run all the unit tests
-  $ padrino test
-  
   # Bootup the Padrino console (irb)
   $ padrino console
   
   # Run/List tasks
   $ padrino rake
+
+The last command "padrino rake" look for rake files in:
+
+  lib/**/*.rake
+  test/test.rake
+  spec/spec.rake
+
+In this way you can customize project tasks.
 
 Using these commands can simplify common tasks making development that much smoother.
 
@@ -515,11 +520,13 @@ You can also instruct the generator to skip a certain component to avoid using o
   
 The available components and their default options are listed below:
 
-* test:     <tt>bacon</tt>      (default), <tt>shoulda</tt>, <tt>rspec</tt>, <tt>testspec</tt>, <tt>riot</tt>
-* renderer: <tt>haml</tt>       (default), <tt>erb</tt>
-* mock:     <tt>mocha</tt>      (default), <tt>rr</tt>
-* script:   <tt>jquery</tt>     (default), <tt>prototype</tt>, <tt>rightjs</tt>
-* orm:      <tt>datamapper</tt> (default), <tt>mongomapper</tt>, <tt>activerecord</tt>, <tt>sequel</tt>, <tt>couchrest</tt>
+<table>
+  <tr><td>test:     </td><td>rspec </td><td>rspec, rspec, testspec, riot</td></tr>
+  <tr><td>renderer: </td><td>haml  </td><td>erb</td></tr>
+  <tr><td>mock:     </td><td>none  </td><td>rr</td></tr>
+  <tr><td>script:   </td><td>none  </td><td>prototype, rightjs</td></tr>
+  <tr><td>orm:      </td><td>none  </td><td>mongomapper, activerecord, sequel, couchrest</td></tr>
+</table>
 
 The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
 The necessary bundler command can be executed automatically through the generator with
