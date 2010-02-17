@@ -204,9 +204,9 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate test file for rspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_project/test/models/user_spec.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/test/models/user_spec.rb')
-      assert_match_in_file(/@user\.should\.not\.be\snil/m, '/tmp/sample_project/test/models/user_spec.rb')
+      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_project/spec/models/user_spec.rb')
+      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/spec/models/user_spec.rb')
+      assert_match_in_file(/@user\.should\.not\.be\snil/m, '/tmp/sample_project/spec/models/user_spec.rb')
     end
 
     # SHOULDA
@@ -244,7 +244,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project', '-d']) }
-      assert_no_file_exists('/tmp/sample_project/test/models/user_spec.rb')
+      assert_no_file_exists('/tmp/sample_project/spec/models/user_spec.rb')
     end
     
     should "destroy the model migration" do

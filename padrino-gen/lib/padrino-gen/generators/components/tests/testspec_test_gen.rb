@@ -9,15 +9,15 @@ module Padrino
             include Rack::Test::Methods
 
             def app
-              CLASS_NAME.tap { |app| app.set :environment, :test }
+              # Sinatra < 1.0 always disable sessions for test env
+              # so if you need them it's necessary force the use 
+              # of Rack::Session::Cookie
+              CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
+              # You can hanlde all padrino applications using instead:
+              #   Padrino.application
             end
           end
           TEST
-
-          def setup_test
-            require_dependencies 'test-spec', :require => 'test/spec', :group => 'test'
-            insert_test_suite_setup TESTSPEC_SETUP
-          end
 
           TESTSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
@@ -30,11 +30,14 @@ module Padrino
           end
           TEST
 
-          # Generates a controller test given the controllers name
-          def generate_controller_test(name)
-            testspec_contents = TESTSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file destination_root("test/controllers/#{name}_controller_test.rb"), testspec_contents, :skip => true
+          TESTSPEC_RAKE = (<<-TEST).gsub(/^ {10}/, '')
+          require 'rake/testtask'
+
+          Rake::TestTask.new(:test) do |test|
+            test.pattern = '**/*_test.rb'
+            test.verbose = true
           end
+          TEST
 
           TESTSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
@@ -46,6 +49,18 @@ module Padrino
             end
           end
           TEST
+
+          def setup_test
+            require_dependencies 'test-spec', :require => 'test/spec', :group => 'test'
+            insert_test_suite_setup TESTSPEC_SETUP
+            create_file destination_root("test/test.rake"), TESTSPEC_RAKE
+          end
+
+          # Generates a controller test given the controllers name
+          def generate_controller_test(name)
+            testspec_contents = TESTSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+            create_file destination_root("test/controllers/#{name}_controller_test.rb"), testspec_contents, :skip => true
+          end
 
           def generate_model_test(name)
             tests_contents = TESTSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)

@@ -42,8 +42,9 @@ module Padrino
           template "templates/page/views/store.jml.tt",   destination_root("/admin/views/#{@model_plural}/store.jml")
 
           add_access_control_permission("/admin", @model_plural)
-          include_component_module_for(:test) if test?
-          generate_controller_test(model.downcase.pluralize)
+          # TODO: figure how to manage tests for sub apps.
+          # include_component_module_for(:test) if test?
+          # generate_controller_test(model.downcase.pluralize)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

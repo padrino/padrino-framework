@@ -55,7 +55,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     should "generate controller test for rspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec']) }
       silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/describe "DemoItemsController" do/m, '/tmp/sample_project/test/controllers/demo_items_controller_spec.rb')
+      assert_match_in_file(/describe "DemoItemsController" do/m, '/tmp/sample_project/spec/controllers/demo_items_controller_spec.rb')
     end
 
     should "generate controller test for shoulda" do
@@ -93,18 +93,8 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { @cont_gen.start(['demo_items','-r=/tmp/sample_project','-d'])}
       assert_no_file_exists(@controller_path)
       assert_no_file_exists('/tmp/sample_project/app/helpers/demo_items_helper.rb')
-      assert_no_file_exists('/tmp/sample_project/test/controllers/demo_items_controller_spec.rb')
-    end
-    
-    should "remove url routes" do
-      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon'])}
-      silence_logger { @cont_gen.start(['demo_items', "get:yoda","post:yada",'-r=/tmp/sample_project']) }
-      silence_logger { @cont_gen.start(['demo_items','-r=/tmp/sample_project','-d'])}
-      # assert_no_match_in_file(/map\(\:yoda\).to\(\"\/demo_items\/yoda\"\)/m,@route_path)
-      # assert_no_match_in_file(/map\(\:yada\).to\(\"\/demo_items\/yada\"\)/m,@route_path)
+      assert_no_file_exists('/tmp/sample_project/spec/controllers/demo_items_controller_spec.rb')
     end
 
   end
-
-
 end

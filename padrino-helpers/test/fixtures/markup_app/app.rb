@@ -16,7 +16,7 @@ class MarkupDemo < Sinatra::Base
     # show :erb, :index
     # show :haml, :index
     def show(kind, template)
-      eval("#{kind.to_s} #{template.to_sym.inspect}")
+      send kind.to_sym, template.to_sym
     end
 
     def captured_content(&block)

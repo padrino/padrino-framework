@@ -20,14 +20,14 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino project"
 
-      class_option :run_bundler,  :desc => "Run 'bundle install'",            :aliases => '-b', :default => false, :type => :boolean
-      class_option :root,         :desc => "The root destination",            :aliases => '-r', :default => ".",   :type => :string
-      class_option :dev,          :desc => "Use padrino from a git checkout",                   :default => false, :type => :boolean
+      class_option :run_bundler,  :desc => "Run bundle install",   :aliases => '-b', :default => false, :type => :boolean
+      class_option :root,         :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
+      class_option :dev,          :desc => "Use padrino from a git checkout",        :default => false, :type => :boolean
 
       # Definitions for the available customizable components
       component_option :orm,      "database engine",    :aliases => '-d', :choices => [:datamapper, :mongomapper, :activerecord, :sequel, :couchrest], :default => :none
-      component_option :test,     "testing framework",  :aliases => '-t', :choices => [:bacon, :shoulda, :rspec, :testspec, :riot]
-      component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr]
+      component_option :test,     "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :bacon, :testspec, :riot]
+      component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs], :default => :none
       component_option :renderer, "template engine",    :aliases => '-e', :choices => [:haml, :erb]
 
@@ -57,6 +57,20 @@ module Padrino
           say "Bundling application dependencies using bundler..."
           in_root { run 'bundle install' }
         end
+      end
+
+      # Finish message
+      def finish
+        say (<<-TEXT).gsub(/ {8}/,'')
+
+        =================================================================
+        #{name} has been successfully created, now follow this steps:
+        =================================================================
+          1) cd #{name}
+          2) bundle install
+        =================================================================
+
+        TEXT
       end
     end
   end

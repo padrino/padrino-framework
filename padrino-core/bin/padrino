@@ -4,11 +4,4 @@ $:.unshift File.dirname(__FILE__) + "/../lib"
 
 require 'padrino-core/cli/base'
 
-if ARGV == ["-v"] || ARGV == ["--version"]
-  require 'padrino-core/version'
-  puts "Padrino v.#{Padrino.version}"
-  exit(0)
-end
-
-arguments = ARGV.any? ? ARGV : ['-h']
-Padrino::Cli::Base.start(arguments)
+Padrino::Cli::Base.start(ARGV)

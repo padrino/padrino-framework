@@ -10,32 +10,34 @@ module Padrino
           end
 
           def app
-            CLASS_NAME.tap { |app| app.set :environment, :test }
+            # Sinatra < 1.0 always disable sessions for test env
+            # so if you need them it's necessary force the use 
+            # of Rack::Session::Cookie
+            CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
+            # You can hanlde all padrino applications using instead:
+            #   Padrino.application
           end
           TEST
-
-          # Setup the testing configuration helper and dependencies
-          def setup_test
-            require_dependencies 'bacon', :group => 'test'
-            insert_test_suite_setup BACON_SETUP
-          end
 
           BACON_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
 
           describe "!NAME!Controller" do
             it 'returns text at root' do
-              get '/'
+              get "/"
               last_response.body.should == "some text"
             end
           end
           TEST
 
-          # Generates a controller test given the controllers name
-          def generate_controller_test(name)
-            bacon_contents = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file destination_root("test/controllers/","#{name}_controller_test.rb"), bacon_contents, :skip => true
+          BACON_RAKE = (<<-TEST).gsub(/^ {10}/, '')
+          require 'rake/testtask'
+
+          Rake::TestTask.new(:test) do |test|
+            test.pattern = '**/*_test.rb'
+            test.verbose = true
           end
+          TEST
 
           BACON_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
@@ -47,6 +49,19 @@ module Padrino
             end
           end
           TEST
+
+          # Setup the testing configuration helper and dependencies
+          def setup_test
+            require_dependencies 'bacon', :group => 'test'
+            insert_test_suite_setup BACON_SETUP, :path => 'test/test_config.rb'
+            create_file destination_root("test/test.rake"), BACON_RAKE
+          end
+
+          # Generates a controller test given the controllers name
+          def generate_controller_test(name)
+            bacon_contents = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+            create_file destination_root("test/controllers/","#{name}_controller_test.rb"), bacon_contents, :skip => true
+          end
 
           def generate_model_test(name)
             bacon_contents = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)

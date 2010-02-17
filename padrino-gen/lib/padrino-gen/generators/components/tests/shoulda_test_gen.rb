@@ -9,15 +9,15 @@ module Padrino
             include Rack::Test::Methods
 
             def app
-              CLASS_NAME.tap { |app| app.set :environment, :test }
+              # Sinatra < 1.0 always disable sessions for test env
+              # so if you need them it's necessary force the use 
+              # of Rack::Session::Cookie
+              CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
+              # You can hanlde all padrino applications using instead:
+              #   Padrino.application
             end
           end
           TEST
-
-          def setup_test
-            require_dependencies 'shoulda', :group => 'test'
-            insert_test_suite_setup SHOULDA_SETUP
-          end
 
           SHOULDA_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
@@ -35,11 +35,14 @@ module Padrino
           end
           TEST
 
-          # Generates a controller test given the controllers name
-          def generate_controller_test(name)
-            shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file destination_root("test/controllers/#{name}_controller_test.rb"), shoulda_contents, :skip => true
+          SHOULDA_RAKE = (<<-TEST).gsub(/^ {10}/, '')
+          require 'rake/testtask'
+
+          Rake::TestTask.new(:test) do |test|
+            test.pattern = '**/*_test.rb'
+            test.verbose = true
           end
+          TEST
 
           SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
           require File.dirname(__FILE__) + '/../test_config.rb'
@@ -53,6 +56,18 @@ module Padrino
             end
           end
           TEST
+
+          def setup_test
+            require_dependencies 'shoulda', :group => 'test'
+            insert_test_suite_setup SHOULDA_SETUP
+            create_file destination_root("test/test.rake"), SHOULDA_RAKE
+          end
+
+          # Generates a controller test given the controllers name
+          def generate_controller_test(name)
+            shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+            create_file destination_root("test/controllers/#{name}_controller_test.rb"), shoulda_contents, :skip => true
+          end
 
           def generate_model_test(name)
             shoulda_contents = SHOULDA_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
