@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.8.1"
+  s.version = "0.8.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-16}
+  s.date = %q{2010-02-17}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/controllers/.empty_directory",
      "lib/padrino-gen/generators/app/helpers/.empty_directory",
      "lib/padrino-gen/generators/app/views/.empty_directory",
+     "lib/padrino-gen/generators/cli.rb",
      "lib/padrino-gen/generators/components/actions.rb",
      "lib/padrino-gen/generators/components/mocks/mocha_gen.rb",
      "lib/padrino-gen/generators/components/mocks/rr_gen.rb",
@@ -106,7 +107,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.8.1"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.8.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
       s.add_runtime_dependency(%q<bundler>, [">= 0.9.3"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
@@ -117,7 +118,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-      s.add_dependency(%q<padrino-core>, ["= 0.8.1"])
+      s.add_dependency(%q<padrino-core>, ["= 0.8.2"])
       s.add_dependency(%q<thor>, [">= 0.13.0"])
       s.add_dependency(%q<bundler>, [">= 0.9.3"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
@@ -129,7 +130,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
-    s.add_dependency(%q<padrino-core>, ["= 0.8.1"])
+    s.add_dependency(%q<padrino-core>, ["= 0.8.2"])
     s.add_dependency(%q<thor>, [">= 0.13.0"])
     s.add_dependency(%q<bundler>, [">= 0.9.3"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])

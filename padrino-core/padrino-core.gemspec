@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.8.1"
+  s.version = "0.8.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-16}
+  s.date = %q{2010-02-17}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{padrinorb@gmail.com}
@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
      "lib/padrino-core/cli/base.rb",
      "lib/padrino-core/cli/console.rb",
      "lib/padrino-core/cli/rake.rb",
-     "lib/padrino-core/cli/test.rb",
      "lib/padrino-core/images/404.png",
      "lib/padrino-core/images/500.png",
      "lib/padrino-core/loader.rb",
