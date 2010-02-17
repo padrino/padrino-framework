@@ -438,7 +438,8 @@ The following commands are available:
 
 The last command "padrino rake" look for rake files in:
 
-  lib/**/*.rake
+  lib/tasks/**/*.rake
+  tasks/**/*.rake
   test/test.rake
   spec/spec.rake
 
@@ -520,13 +521,11 @@ You can also instruct the generator to skip a certain component to avoid using o
   
 The available components and their default options are listed below:
 
-<table>
-  <tr><td>test:     </td><td>rspec </td><td>rspec, rspec, testspec, riot</td></tr>
-  <tr><td>renderer: </td><td>haml  </td><td>erb</td></tr>
-  <tr><td>mock:     </td><td>none  </td><td>rr</td></tr>
-  <tr><td>script:   </td><td>none  </td><td>prototype, rightjs</td></tr>
-  <tr><td>orm:      </td><td>none  </td><td>mongomapper, activerecord, sequel, couchrest</td></tr>
-</table>
+test::      rspec (default), bacon, shoulda, testspec, riot
+renderer::  haml  (default), erb
+mock::      none  (default), rr
+script::    none  (default), prototype, rightjs
+orm::       none  (default), mongomapper, activerecord, sequel, couchrest
 
 The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
 The necessary bundler command can be executed automatically through the generator with
