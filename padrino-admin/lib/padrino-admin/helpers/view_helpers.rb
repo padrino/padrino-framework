@@ -177,7 +177,7 @@ module Padrino
         #     ...
         # 
         def box(title=nil, options={}, &block)
-          title = I18n.t("admin.boxs.#{title}", :default => title.to_s.humanize) if title.is_a?(Symbol)
+          title = I18n.t("admin.boxes.#{title}", :default => title.to_s.humanize) if title.is_a?(Symbol)
           subtitle = options.delete(:subtitle)
           options[:style] ||= "width:100%;"
           options[:start] ||= :open
