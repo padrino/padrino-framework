@@ -182,7 +182,7 @@ module Padrino
           options[:style] ||= "width:100%;"
           options[:start] ||= :open
           concat_content (<<-HTML).gsub(/ {10}/, '')
-            <div class="#{options[:class]}" style="options[:style]">
+            <div class="#{options[:class]}" style="#{options[:style]}">
               <div class="x-box">
                 <div class="x-box-tl">
                   <div class="x-box-tr">
