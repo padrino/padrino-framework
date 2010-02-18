@@ -147,25 +147,4 @@ class TestApplication < Test::Unit::TestCase
       end
     end
   end
-
-  context 'for application i18n functionality' do
-
-    should 'have auto_locale disabled' do
-      mock_app do
-        assert !auto_locale
-      end
-    end
-
-    should 'set locale when auto_locale is enabled' do
-      mock_app do
-        enable :auto_locale
-        get("/:locale"){ I18n.locale.to_s }
-      end
-
-      %w(it de fr).each do |lang|
-        get("/#{lang}")
-        assert_equal lang, body
-      end
-    end
-  end
 end

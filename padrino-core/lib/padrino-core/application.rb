@@ -183,7 +183,6 @@ module Padrino
           set :authentication, false
           # Padrino locale
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
-          set :auto_locale, false
           # Plugin specific
           set :padrino_mailer, defined?(Padrino::Mailer)
           set :padrino_helpers, defined?(Padrino::Helpers)
@@ -467,24 +466,6 @@ module Padrino
         else
           route_missing
         end
-      end
-      
-      ##
-      # When we set :auto_locale, true then if we use param locale like:
-      # 
-      # ==== Examples
-      # 
-      #   get "/:locale/some/foo" do; ...; end
-      # 
-      # we automatically set the I18n locale to params[:locale]
-      # 
-      def route_eval(&block)
-        if options.auto_locale
-          if params[:locale]
-            I18n.locale = params[:locale].to_sym rescue options.locale
-          end
-        end
-        super(&block)
       end
 
       ##
