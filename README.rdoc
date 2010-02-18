@@ -301,21 +301,6 @@ within your application:
 This will instruct Padrino to autoload these files (and reload them when changes are detected). By default, the load path 
 contains certain paths known to contain important files such as controllers, mailers, models, urls, and helpers. 
 
-=== Initializers
-
-Padrino also has support for 'initializers' which are important setup steps or configuration within an application
-that should occur during the bootup process. To construct initializers, simply add a file to the <tt>config/initializers<tt>
-directory following this convention:
-
-  # config/initializers/example.rb
-  module ExampleInitializer
-    def self.registered(app)
-      # Manipulate 'app' here to register components or adjust configuration
-      app.set :environment, :production # just an example configuration change
-      app.use Hassle # or even enable middleware
-    end
-  end
-  
 Initializers are automatically required and 'registered' during the application startup process. Note that
 the name of the module must be the name of the file appended with 'Initializer' (i.e sample.rb => SampleInitializer)
 

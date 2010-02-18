@@ -11,7 +11,6 @@
 === GENERAL
 
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
-* Decide what to do about initializers (where do they go single app, multiple apps)
 * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
 
 === TESTING / POLISHING

@@ -34,7 +34,7 @@ module Padrino
           simple_name = name.to_s.gsub(/mailer/i, '')
           @mailer_basename = "#{simple_name.downcase.underscore}_mailer"
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
-          template "templates/mailer_initializer.rb.tt", destination_root("config/initializers/mailer.rb"), :skip => true
+          template "templates/mailer_initializer.rb.tt", destination_root("lib/mailer.rb"), :skip => true
           template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
           empty_directory destination_root(app, 'views', @mailer_basename)
         else

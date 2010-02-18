@@ -158,7 +158,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none']) }
       assert_match /Applying.*?haml.*?renderer/, buffer
       assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/config/initializers/sass.rb')
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass.rb')
     end
   end
 

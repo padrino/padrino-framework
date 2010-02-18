@@ -237,14 +237,12 @@ module Padrino
         end
 
         ##
-        # Requires the middleware and initializer modules to configure components
+        # Requires the Padrino middleware
         # 
         def register_initializers
           use Padrino::Logger::Rack
           use Padrino::Reloader::Rack  if reload?
           use Rack::Flash              if flash?
-          @initializer_path ||= Padrino.root + '/config/initializers/*.rb'
-          Dir[@initializer_path].each { |file| register_initializer(file) }
         end
 
         ##
@@ -276,19 +274,6 @@ module Padrino
         def find_view_path
           @view_paths = ["views"].collect { |path| File.join(self.root, path) }
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
-        end
-
-        ##
-        # Registers an initializer with the application
-        # register_initializer('/path/to/initializer')
-        # 
-        def register_initializer(file_path)
-          Padrino.require_dependencies(file_path)
-          file_class = File.basename(file_path, '.rb').camelize
-          register "#{file_class}Initializer".constantize
-        rescue NameError => e
-          logger.error "The module '#{file_class}Initializer' (#{file_path}) didn't loaded properly!"
-          logger.error "   Initializer error was '#{e.message}'"
         end
 
       private
