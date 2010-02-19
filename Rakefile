@@ -1,4 +1,4 @@
-# Simple release is: rake version:bump:minor publish
+# Simple release is: rake version:bump:patch publish
 
 require 'pathname'
 require 'rake/clean'
