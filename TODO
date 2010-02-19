@@ -2,14 +2,13 @@
 
 == ROADMAP FOR 1.0
 
-* [padrino-gen] Support for mounting subapplications
-* [padrino-gen] Support creation of controller/mailer/models/etc for specified app
 * [padrino-admin] Complete admin with mongomapper adapter
-* [padrino-helpers] DateTime helpers
 * [padrino-core] Code Optimizations
 
 === GENERAL
 
+* Organize before/after filters that can accept :only => ... :except and work in route_eval instead of dispatch
+* Template finder locale (that can look using I18n.locale ex: foo.ru.haml foo.it.haml - if present)
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
 * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
 
