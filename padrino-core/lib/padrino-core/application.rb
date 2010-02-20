@@ -58,9 +58,11 @@ module Padrino
       # 
       def controller(*extensions, &block)
         if block_given?
+          options = extensions.extract_options!
           @_controller, original = extensions, @_controller
+          @_parents, parent_original = options[:parent], @_parents
           instance_eval(&block)
-          @_controller = original
+          @_controller, @_parents = original, parent_original
         else
           include(*extensions)  if extensions.any?
         end
@@ -352,8 +354,9 @@ module Padrino
             end
           end
 
-          if params = options.delete(:parent)
-            path = Array(params).collect { |param| "#{param}/:#{param}_id" }.join("/") + path
+          if params = options.delete(:parent) || @_parents
+            parents = Array(@_parents) + Array(params)
+            path = parents.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/") + path
             path = "/" + path unless path =~ /^\//
           end
 
