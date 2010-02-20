@@ -47,4 +47,8 @@ or guides containing the comprehensive explanations.
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
 * Replace custom console with modified version of (http://github.com/sickill/racksh/blob/master/README.markdown)
 * Tableless module which can be included to make a class into a database-less model
-* Nested Resources
+* Nested Resources 
+    # :product controller
+    get :index, :depends => :user do
+      # /user/:user_id/
+    end
