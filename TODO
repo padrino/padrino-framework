@@ -4,6 +4,7 @@
 
 * [padrino-admin] Complete admin with mongomapper adapter
 * [padrino-core] Code Optimizations
+* [padrino-cache] Build this component out supporting page, fragment, general cache (with storage methods)
 
 === GENERAL
 
@@ -11,6 +12,27 @@
 * Template finder locale (that can look using I18n.locale ex: foo.ru.haml foo.it.haml - if present)
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
 * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
+
+== DOCUMENTATION
+
+We need to shorten the README to contain an overview of the functionality and create either gh wiki pages
+or guides containing the comprehensive explanations.
+
+* [padrino-core] Api doc in for module Padrino::Application
+* [padrino-core] Much examples for Padrino::Application#router
+* [padrino-core] Explain Padrino::Application#layout better
+* [padrino-core] I think we can privatize Padrino#first_caller Padrino#caller_files
+* [padrino-core] Padrino#load! explain better what it do
+* [padrino-core] Padrino#require_dependencies (totally refactored)
+* [padrino-core] Explain better Padrino#logger
+* [padrino-core] Padrino#run! (doc written from me)
+* [padrino-core] Support Lite refactored with doc written from me.
+* [padrino-core] Padrino#tasks (doc written form me)
+* [padrino-gen] Now all it's private we have only api docs for Padrino::Generators module (written form me)
+* [padrino-helpers] Explain better what do each helper
+* [padrino-helpers] I do a verbatim copy of doc for datetime helpers and number helpers from rails
+* [padrino-mailer] Reorganize docs
+* [padrino-admin] Al doc written from me
 
 === TESTING / POLISHING
 
