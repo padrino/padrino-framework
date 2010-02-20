@@ -26,5 +26,9 @@ class TestMongoMapper < Test::Unit::TestCase
       account_r = Account.first(:conditions => { :email => "auth@lipsia.org" })
       assert_equal account_r, account
     end
+    
+    should "generate timestamps" do
+      account 
+    end
   end
 end

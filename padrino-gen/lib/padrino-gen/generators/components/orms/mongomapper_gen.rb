@@ -27,6 +27,7 @@ module Padrino
 
             # key <name>, <type>
             !FIELDS!
+            timestamps!
           end
           MODEL
 

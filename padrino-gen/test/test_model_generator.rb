@@ -145,7 +145,8 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-d=mongomapper']) }
       silence_logger { @model_gen.start(['person', '-r=/tmp/sample_project']) }
       assert_match_in_file(/class Person\n\s+include MongoMapper::Document/m, '/tmp/sample_project/app/models/person.rb')
-      assert_match_in_file(/# key <name>, <type>[\n\s]+end/m, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/# key <name>, <type>/m, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/timestamps![\n\s]+end/m, '/tmp/sample_project/app/models/person.rb')
     end
 
     should "generate model file with given fields" do
@@ -155,6 +156,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/key :name, String/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/key :age, Integer/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/key :email, String/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/timestamps!/m, '/tmp/sample_project/app/models/user.rb')
     end
   end
 
