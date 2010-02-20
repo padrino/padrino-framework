@@ -315,7 +315,7 @@ module Padrino
               path += "/" unless path =~ /\/$/
               path += Array(params).collect(&:inspect).join("/")
             end
-
+            
             # Now we need to parse our respond_to
             if format = options.delete(:respond_to)
               path += case format
@@ -352,6 +352,11 @@ module Padrino
             end
           end
 
+          if params = options.delete(:parent)
+            path = Array(params).collect { |param| "#{param}/:#{param}_id" }.join("/") + path
+            path = "/" + path unless path =~ /^\//
+          end
+
           # Standard Sinatra requirements
           options[:conditions] ||= {}
           options[:conditions][:request_method] = verb
@@ -371,7 +376,6 @@ module Padrino
             end
 
           invoke_hook(:route_added, verb, path, block)
-
           route = router.add_route(path, options).to(block)
           route.name(name) if name
           route

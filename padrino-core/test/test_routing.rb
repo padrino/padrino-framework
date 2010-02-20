@@ -135,10 +135,10 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get :a, :respond_to => :any do
         case content_type
-          when :js    then "js"
-          when :json  then "json"
-          when :foo   then "foo"
-          when :html  then "html"
+        when :js    then "js"
+        when :json  then "json"
+        when :foo   then "foo"
+        when :html  then "html"
         end
       end
     end
@@ -214,4 +214,20 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "edit 1", body
   end
 
+  should "apply parent" do
+    mock_app do
+      controllers :project do
+        get(:index, :parent => :user) { "index #{params[:user_id]}" }
+        get(:edit, :with => :id, :parent => :user) { "edit #{params[:id]} #{params[:user_id]}"}
+        get(:show, :with => :id, :parent => [:user, :product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+      end
+    end
+    get "/user/1/project"
+    assert_equal "index 1", body
+    get "/user/1/project/edit/2"
+    assert_equal "edit 2 1", body
+    get "/user/1/product/2/project/show/3"
+    assert_equal "show 3 1 2", body
+
+  end
 end
