@@ -1,6 +1,7 @@
 require 'usher'
 require 'sinatra/base'
 
+Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
 
 # Defines our PADRINO_ENV

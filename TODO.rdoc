@@ -19,7 +19,7 @@
 We need to shorten the README to contain an overview of the functionality and create either gh wiki pages
 or guides containing the comprehensive explanations.
 
-* [padrino-core] Api doc in for module Padrino::Application
+* [padrino-core] Api docs in for module Padrino::Application
 * [padrino-core] Much examples for Padrino::Application#router
 * [padrino-core] Explain Padrino::Application#layout better
 * [padrino-core] Privatize Padrino#first_caller Padrino#caller_files

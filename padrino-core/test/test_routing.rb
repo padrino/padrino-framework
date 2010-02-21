@@ -214,7 +214,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "edit 1", body
   end
 
-  should "apply parent" do
+  should "apply parent to route" do
     mock_app do
       controllers :project do
         get(:index, :parent => :user) { "index #{params[:user_id]}" }
