@@ -193,23 +193,22 @@ module Padrino
 
           if path.kind_of?(Symbol) # path i.e :index or :show
             name = path                       # The route name
-            path = map || "/#{path}"          # The route path
+            path = map || path.to_s           # The route path
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
             # Little reformats
-            path.sub!(/\/index$/, "")                             # If the route end with /index we remove them
+            path.sub!(%r{\bindex$}, "")                            # If the route end with /index we remove them
             path = (uri_root == "/" ? "/" : "(/)") if path.blank? # Add a trailing delimiter if empty
 
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
-              path += "/" unless path =~ /\/$/
-              path += Array(with_params).collect(&:inspect).join("/")
+              path = File.join(path, Array(with_params).collect(&:inspect).join("/"))
             end
 
             # Now we need to parse our respond_to
             if format = options.delete(:respond_to)
-              path += case format
+              format_suffix = case format
                 when :any  then "(.:format)"
                 when Array then
                   formats   = format.dup # Prevent changes to HEAD verb
@@ -218,6 +217,7 @@ module Padrino
                   container % match
                 else ".{:format,#{format}}"
               end
+              path << format_suffix
             end
 
             # Build our controller
@@ -227,8 +227,7 @@ module Padrino
               # Now we need to add our controller path only if not mapped directly
               if map.blank?
                 controller_path = controller.join("/")
-                controller_path = "/" + controller_path unless controller_path =~ /^\//
-                path = controller_path + path
+                path = File.join(controller_path, path)
               end
               # Here we build the correct name route
               if name
@@ -239,13 +238,14 @@ module Padrino
 
             # Now we need to parse our 'parent' params and parent scope
             if params = options.delete(:parent) || @_parents
-              parents = Array(@_parents) + Array(params)
-              path = parents.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/") + path
+              parent_resources = Array(@_parents) + Array(params)
+              parent_prefix = parent_resources.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
+              path = File.join(parent_prefix, path)
             end
 
             # We need to have a path that start with / in some circumstances and that don't end with /
             if path != "(/)" && path != "/"
-              path = "/" + path if path !~ /^\//
+              path = "/" + path unless path =~ %r{^/}
               path.sub!(/\/$/, '')
             end
           end
