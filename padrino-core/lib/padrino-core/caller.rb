@@ -24,6 +24,8 @@ module Padrino
   # 
   PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
 
+  private
+
   ##
   # Returns the filename for the file that is the direct caller (first caller)
   # 
