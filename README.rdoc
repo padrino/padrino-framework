@@ -55,7 +55,7 @@ Please help me brainstorm and fork the project if you have any ideas to contribu
 
 To install the padrino framework, simply grab the latest version from gemcutter:
 
-  $ sudo gem install padrino --source http://gemcutter.org
+  $ sudo gem install padrino
   
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
@@ -1100,15 +1100,15 @@ This plugin also has support for useful additions such as partials (with support
 
 Using render plugin helpers is extremely simple. If you want to render an erb template in your view path:
 
-  erb_template 'path/to/my/template'
+  render :erb, 'path/to/erb/template'
   
 or using haml templates works just as well:
 
-  haml_template 'path/to/haml/template'
+  render :haml, 'path/to/haml/template'
   
 There is also a method which renders the first view matching the path and removes the need to define an engine:
 
-  render_template 'path/to/any/template'
+  render 'path/to/any/template'
   
 It is worth noting these are mostly for convenience. With nested view file paths in Sinatra, this becomes tiresome:
 
@@ -1128,16 +1128,10 @@ This works as you would expect and also supports the collection counter inside t
   
 The list of defined helpers in the 'render helpers' category:
 
-* <tt>erb_template(template_path, options={})</tt>
-  * Renders a erb template based on the given path
-  * <tt>erb_template 'users/new'</tt>
-* <tt>haml_template(template_path, options={})</tt>
-  * Renders a haml template based on the given path
-  * <tt>haml_template 'users/new'</tt>
-* <tt>render_template(template_path, options={})</tt>
-  * Renders the first detected template based on the given path
-  * <tt>render_template 'users/new'</tt>
-  * <tt>render_template 'users/index', :template_engine => 'haml'</tt>
+* <tt>render(engine, data, options, locals)</tt>
+  * Renders the specified template with the given options
+  * <tt>render ‘user/new’'</tt>
+  * <tt>render :erb, ‘users/new’, :layout => false</tt>
 * <tt>partial(template, *args)</tt>
   * Renders the html related to the partial template for object or collection
   * <tt>partial 'photo/_item', :object => @photo, :locals => { :foo => 'bar' }</tt>

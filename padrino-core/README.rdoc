@@ -55,7 +55,7 @@ Please help me brainstorm and fork the project if you have any ideas to contribu
 
 To install the padrino framework, simply grab the latest version from gemcutter:
 
-  $ sudo gem install padrino --source http://gemcutter.org
+  $ sudo gem install padrino
   
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
