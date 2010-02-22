@@ -1,3 +1,0 @@
-=title "New <%= @model_plural %>"
--form_for :<%= @model_singular %>, url(:<%= @model_plural %>_create, :format => :js), :remote => true do |f|
-  =partial '<%= @model_plural %>/form', :locals => { :f => f }

@@ -37,6 +37,7 @@ module Padrino
       app.helpers Padrino::Helpers::FormatHelpers
       app.helpers Padrino::Helpers::RenderHelpers
       app.helpers Padrino::Helpers::NumberHelpers
+      app.helpers Padrino::Helpers::TranslationHelpers
     end
   end # Helpers
 end # Padrino

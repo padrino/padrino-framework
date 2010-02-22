@@ -2,6 +2,7 @@ module Padrino
   module Generators
 
     class AdminPage < Thor::Group
+      attr_accessor :orm
 
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin_page, self)
@@ -28,23 +29,17 @@ module Padrino
       def create_controller
         self.destination_root = options[:root]
         if in_app_root?
-          @model_name     = model.classify
-          @model_klass    = model.classify.constantize
-          @model_plural   = model.underscore.pluralize
-          @model_singular = model.underscore
-          self.behavior   = :revoke if options[:destroy]
+          @orm ||= Padrino::Admin::Generators::Orm.new(model, adapter)
+          self.behavior = :revoke if options[:destroy]
 
-          template "templates/page/controller.rb.tt",     destination_root("/admin/controllers/#{@model_plural}.rb")
-          template "templates/page/views/_form.haml.tt",  destination_root("/admin/views/#{@model_plural}/_form.haml")
-          template "templates/page/views/edit.haml.tt",   destination_root("/admin/views/#{@model_plural}/edit.haml")
-          template "templates/page/views/grid.js.erb.tt", destination_root("/admin/views/#{@model_plural}/grid.js.erb")
-          template "templates/page/views/new.haml.tt",    destination_root("/admin/views/#{@model_plural}/new.haml")
-          template "templates/page/views/store.jml.tt",   destination_root("/admin/views/#{@model_plural}/store.jml")
+          template "templates/page/controller.rb.tt",    destination_root("/admin/controllers/#{@orm.name_plural}.rb")
+          template "templates/erb/page/_form.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/_form.erb")
+          template "templates/erb/page/_sidebar.erb.tt", destination_root("/admin/views/#{@orm.name_plural}/_sidebar.erb")
+          template "templates/erb/page/edit.erb.tt",     destination_root("/admin/views/#{@orm.name_plural}/edit.erb")
+          template "templates/erb/page/index.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/index.erb")
+          template "templates/erb/page/new.erb.tt",      destination_root("/admin/views/#{@orm.name_plural}/new.erb")
 
-          add_access_control_permission("/admin", @model_plural)
-          # TODO: figure how to manage tests for sub apps.
-          # include_component_module_for(:test) if test?
-          # generate_controller_test(model.downcase.pluralize)
+          add_project_module(@orm.name_plural)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

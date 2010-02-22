@@ -17,14 +17,6 @@ module Padrino
         end
 
         ##
-        #  Return the admin menu
-        # 
-        def admin_menu
-          return "[]" unless current_account
-          access_control.auths(current_account).project_modules.collect(&:config).to_json
-        end
-
-        ##
         # Ovverride the current_account, you must provide an instance of Account Model
         # 
         # ==== Examples:
@@ -42,7 +34,14 @@ module Padrino
         # For configure this role please refer to: +Padrino::Admin::AccessControl::Base+
         # 
         def allowed?
-          access_control.auths(current_account).can?(request.path_info)
+          access_control.allowed?(current_account, request.path_info)
+        end
+
+        ##
+        # Returns project modules for the current account
+        # 
+        def project_modules
+          access_control.project_modules(current_account)
         end
 
         ##

@@ -32,7 +32,6 @@ module Padrino
         self.class.send(:include, generator_module_for(choice, component))
       end
 
-      
       # Returns the component choice stored within the .component file of an application
       # fetch_component_choice(:mock)
       def fetch_component_choice(component)
@@ -142,12 +141,12 @@ module Padrino
 
         # Tell to padrino that for this Thor::Group is necessary a task to run
         def require_arguments!
-          @_require_arguments = true
+          @require_arguments = true
         end
 
         # Return true if we need an arguments for our Thor::Group
         def require_arguments?
-          @_require_arguments
+          @require_arguments
         end
 
         # Returns the compiled list of component types which can be specified

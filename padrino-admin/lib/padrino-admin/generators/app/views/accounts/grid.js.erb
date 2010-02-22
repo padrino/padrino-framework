@@ -1,9 +1,0 @@
-var grid = new Admin.grid({
-  id: 'grid-accounts',
-  title: 'List Accounts',
-  baseUrl: '/admin/accounts',
-  column_fields: <%= @store.column_fields %>,
-  store_fields: <%= @store.store_fields %>
-});
-
-Admin.app.addItem(grid);

@@ -5,13 +5,13 @@ module Padrino
       # Creates a div to display the flash of given type if it exists
       # 
       # ==== Examples
-      # 
-      #   flash_tag(:notice, :class => 'flash', :id => 'flash-notice')
+      #   # => <div class="notice">flash-notice</div>
+      #   flash_tag(:notice, :id => 'flash-notice')
       # 
       def flash_tag(kind, options={})
         flash_text = flash[kind]
         return '' if flash_text.blank?
-        options.reverse_merge!(:class => 'flash')
+        options.reverse_merge!(:class => kind)
         content_tag(:div, flash_text, options)
       end
 
@@ -37,7 +37,7 @@ module Padrino
           url = args[0] ? args[0] + anchor.to_s : anchor || 'javascript:void(0);'
           options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
-          return name unless parse_conditions(url, options)
+          return '' unless parse_conditions(url, options)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
@@ -46,6 +46,31 @@ module Padrino
           options.reverse_merge!(:href => url)
           content_tag(:a, name, options)
         end
+      end
+
+      ##
+      # Creates a form containing a single button that submits to the url.
+      # 
+      # ==== Examples
+      # 
+      #   # Generates:
+      #   # <form class="form" action="/admin/accounts/destroy/2" method="post">
+      #   #   <input type="hidden" value="delete" name="_method" />
+      #   #   <input type="submit" value="Delete" />
+      #   # </form>
+      #   button_to 'Delete', url(:accounts_destroy, :id => account), :method => :delete, :class => :form
+      # 
+      def button_to(*args, &block)
+        name, url = args[0], args[1]
+        options   = args.extract_options!
+        desired_method = options[:method]
+        options.delete(:method) if options[:method].to_s !~ /get|post/i
+        options.reverse_merge!(:method => 'post', :action => url)
+        options[:enctype] = "multipart/form-data" if options.delete(:multipart)
+        options["data-remote"] = "true" if options.delete(:remote)
+        inner_form_html  = hidden_form_method_field(desired_method)
+        inner_form_html += block_given? ? capture_html(&block) : submit_tag(name)
+        content_tag('form', inner_form_html, options)
       end
 
       ##

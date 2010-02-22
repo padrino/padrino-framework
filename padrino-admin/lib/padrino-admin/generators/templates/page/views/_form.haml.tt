@@ -1,9 +1,0 @@
--tab :general do
-  %table
-    <%- @model_klass.properties.each do |property| -%>
-    <%- unless property.name.to_sym == :id -%>
-    %tr
-      %td=f.label :<%= property.name %>
-      %td=f.text_field :<%= property.name %>
-    <%- end -%>
-    <%- end -%>
