@@ -18,7 +18,7 @@ module Padrino
         Padrino.set_load_paths File.join(subclass.root, "/models")
         Padrino.require_dependencies File.join(subclass.root, "/models.rb")
         Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
-        super(subclass) # Loading the subclass
+        super(subclass) # Loading the subclass inherited method
         subclass.default_filters!
         subclass.default_routes!
         subclass.default_errors!
@@ -36,14 +36,13 @@ module Padrino
       end
 
       ##
-      # With this method we can use layout like rails do or if a block given like sinatra
-      # By default we look in your/app/views/layouts/application.(haml|erb|etc)
+      # Use layout like rails does or if a block given then like sinatra.
+      # If used without a block, sets the current layout for the route.
       #
-      # If you define:
+      # By default, searches in your +app/views/layouts/application.(haml|erb|xxx)+
       #
-      #   layout :custom
-      #
-      # Padrino look for your/app/views/layouts/custom.(haml|erb|etc)
+      # If you define +layout :custom+ then searches for your layouts in
+      # +app/views/layouts/custom.(haml|erb|xxx)+
       #
       def layout(name=:layout, &block)
         return super(name, &block) if block_given?
@@ -53,7 +52,8 @@ module Padrino
       ##
       # Reloads the application files from all defined load paths
       #
-      # This method is used from our Padrino Reloader.
+      # This method is used from our Padrino Reloader during development mode
+      # in order to reload the source files.
       #
       # ==== Examples
       #
@@ -94,6 +94,7 @@ module Padrino
       end
 
       protected
+
         ##
         # Defines default settings for Padrino application
         #
@@ -206,6 +207,6 @@ module Padrino
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
 
-    end # self class methods
+    end # Class Methods
   end # Application
 end # Padrino
