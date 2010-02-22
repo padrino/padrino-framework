@@ -203,21 +203,12 @@ module Padrino
 
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
-              path = File.join(path, Array(with_params).collect(&:inspect).join("/"))
+              path = process_path_for_with_params(path, with_params)
             end
 
             # Now we need to parse our respond_to
-            if format = options.delete(:respond_to)
-              format_suffix = case format
-                when :any  then "(.:format)"
-                when Array then
-                  formats   = format.dup # Prevent changes to HEAD verb
-                  container = formats.delete(:html) ? "(%s)" : "%s"
-                  match     = ".{:format," + formats.collect { |f| "#{f}$" }.join("|") + "}"
-                  container % match
-                else ".{:format,#{format}}"
-              end
-              path << format_suffix
+            if format_params = options.delete(:respond_to)
+              path = process_path_for_respond_to(path, format_params)
             end
 
             # Build our controller
@@ -237,10 +228,9 @@ module Padrino
             end
 
             # Now we need to parse our 'parent' params and parent scope
-            if params = options.delete(:parent) || @_parents
-              parent_resources = Array(@_parents) + Array(params)
-              parent_prefix = parent_resources.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
-              path = File.join(parent_prefix, path)
+            if parent_params = options.delete(:parent) || @_parents
+              parent_params = Array(@_parents) + Array(parent_params)
+              path = process_path_for_parent_params(path, parent_params)
             end
 
             # We need to have a path that start with / in some circumstances and that don't end with /
@@ -272,6 +262,40 @@ module Padrino
           route = router.add_route(path, options).to(block)
           route.name(name) if name
           route
+        end
+
+        ##
+        # Processes the existing path and appends the 'with' parameters onto the route
+        # Used for calculating path in route method
+        #
+        def process_path_for_with_params(path, with_params)
+          File.join(path, Array(with_params).collect(&:inspect).join("/"))
+        end
+
+        ##
+        # Processes the existing path and prepends the 'parent' parameters onto the route
+        # Used for calculating path in route method
+        #
+        def process_path_for_parent_params(path, parent_params)
+          parent_prefix = parent_params.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
+          File.join(parent_prefix, path)
+        end
+
+        ##
+        # Processes the existing path and appends the 'format' suffix onto the route
+        # Used for calculating path in route method
+        #
+        def process_path_for_respond_to(path, format_params)
+          format_suffix = case format_params
+            when :any  then "(.:format)"
+            when Array then
+              formats   = format_params.dup # Prevent changes to HEAD verb
+              container = formats.delete(:html) ? "(%s)" : "%s"
+              match     = ".{:format," + formats.collect { |f| "#{f}$" }.join("|") + "}"
+              container % match
+            else ".{:format,#{format_params}}"
+          end
+          path << format_suffix
         end
     end
   end
