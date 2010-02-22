@@ -42,8 +42,8 @@ module Padrino
     #   url(:show, :name => :test)
     #   url("/show/:id/:name", :id => 1, :name => foo)
     #
-    def url(name, *params)
-      self.class.url(name, *params)
+    def url(*names)
+      self.class.url(*names)
     end
     alias :url_for :url
 
@@ -153,14 +153,14 @@ module Padrino
       #   url(:show, :name => :test)
       #   url("/show/:id/:name", :id => 1, :name => foo)
       #
-      def url(name, *params)
-        params.map! do |param|
-          if param.is_a?(Hash)
-            param[:format] = param[:format].to_s if param.has_key?(:format)
-            param.each { |k,v| param[k] = v.to_param if v.respond_to?(:to_param) }
-          end
+      def url(*names)
+        params =  names.extract_options! # parameters is hash at end
+        name = names.join("_").to_sym    # route name is concatenated with underscores
+        if params.is_a?(Hash)
+          params[:format] = params[:format].to_s if params.has_key?(:format)
+          params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end
-        url = router.generator.generate(name, *params)
+        url = router.generator.generate(name, params)
         uri_root != "/" ? uri_root + url : url
       end
       alias :url_for :url
