@@ -125,6 +125,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate default for datamapper" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--orm=datamapper', '--script=none']) }
       assert_match /Applying.*?datamapper.*?orm/, buffer
+      assert_match_in_file(/gem 'data_objects'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'datamapper'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/DataMapper.setup/, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')

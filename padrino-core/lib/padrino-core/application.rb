@@ -83,8 +83,8 @@ module Padrino
       #
       def setup_application!
         return if @_configured
-        self.register_framework_extensions
         self.calculate_paths
+        self.register_framework_extensions
         self.register_initializers
         self.require_load_paths
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
