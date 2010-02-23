@@ -23,7 +23,7 @@ module Padrino
           DM
 
           def setup_orm
-            require_dependencies 'data_objects', 'do_sqlite3', 'dm-core', 'dm-validations', 'dm-aggregates', 'dm-timestamps', 'dm-migrations'
+            require_dependencies 'data_objects', 'do_sqlite3', 'datamapper'
             create_file("config/database.rb", DM)
             empty_directory('app/models')
           end
