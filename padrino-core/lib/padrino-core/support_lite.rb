@@ -1,19 +1,17 @@
 ##
-# This file load some usefull extensions from Active Support.
+# This file loads certain extensions required by Padrino from ActiveSupport.
 # 
-# Why ActiveSupport and not ours or extlib?
+# Why use ActiveSupport and not our own library or extlib? 
+#
+# 1) Writing custom method extensions needed (i.e string inflections) is not a good use of time.
+# 2) Loading custom method extensions or separate gem would conflict when AR or MM has been loaded.
+# 3) Datamapper is planning to move to ActiveSupport and away from extlib.
 # 
-# We don't love so much rewite code and we don't use extlib because:
-# 
-#   1) ActiveRecord need ActiveSupport
-#   2) MongoMapper need ActiveSuport
-#   3) DataMapper it's planning to migrate to ActiveSupport (see: http://wiki.github.com/datamapper/dm-core/roadmap)
-# 
-# Required for Padrino to run:
+# Extensions required for Padrino:
 # 
 #   * Class#cattr_accessor
 #   * Module#alias_method_chain
-#   * String#inflectors (classify, underscore, camelize, etc)
+#   * String#inflectors (classify, underscore, camelize, pluralize, etc)
 #   * Array#extract_options!
 #   * Object#blank?
 #   * Object#present?
@@ -38,7 +36,7 @@ require 'active_support/core_ext/module'
 require 'active_support/ordered_hash'
 
 ##
-# Define our Ordered Hash
+# Define our own OrderedHash based on AS::OrderedHash
 # 
 unless defined?(SupportLite::OrderedHash)
   module SupportLite
@@ -47,7 +45,7 @@ unless defined?(SupportLite::OrderedHash)
 end
 
 ##
-# We new alwasy :to_params in a Hash
+# Alias allowing for use of either method to get query parameters
 # 
 unless Hash.method_defined?(:to_params)
   class Hash 
@@ -56,6 +54,6 @@ unless Hash.method_defined?(:to_params)
 end
 
 ##
-# Load our locales
+# Loads our locales configuration files
 # 
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]

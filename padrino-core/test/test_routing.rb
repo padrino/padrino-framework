@@ -135,10 +135,10 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get :a, :respond_to => :any do
         case content_type
-        when :js    then "js"
-        when :json  then "json"
-        when :foo   then "foo"
-        when :html  then "html"
+          when :js    then "js"
+          when :json  then "json"
+          when :foo   then "foo"
+          when :html  then "html"
         end
       end
     end
@@ -189,6 +189,26 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo_bar_index", body
   end
 
+  should 'use named controllers with array routes' do
+    mock_app do
+      controller :admin do
+        get(:index){ "index" }
+        get(:show, :with => :id){ "show #{params[:id]}" }
+      end
+      controllers :foo, :bar do
+        get(:index){ "foo_bar_index" }
+      end
+    end
+    get "/admin"
+    assert_equal "index", body
+    get "/admin/show/1"
+    assert_equal "show 1", body
+    assert_equal "/admin", @app.url(:admin, :index)
+    assert_equal "/admin/show/1", @app.url(:admin, :show, :id => 1)
+    get "/foo/bar"
+    assert_equal "foo_bar_index", body
+  end
+
   should 'reset routes' do
     mock_app do
       get("/"){ "foo" }
@@ -214,7 +234,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "edit 1", body
   end
 
-  should "apply parent" do
+  should "apply parent to route" do
     mock_app do
       controllers :project do
         get(:index, :parent => :user) { "index #{params[:user_id]}" }
@@ -230,7 +250,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 3 1 2", body
 
   end
-  
+
   should "apply parent to controller" do
     mock_app do
       controller :project, :parent => :user do
@@ -246,5 +266,5 @@ class TestRouting < Test::Unit::TestCase
     get "/user/1/product/2/project/show/3"
     assert_equal "show 3 1 2", body
   end
-  
+
 end

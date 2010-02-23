@@ -16,18 +16,15 @@
 
 == DOCUMENTATION
 
-We need to shorten the README to contain an overview of the functionality and create either gh wiki pages
-or guides containing the comprehensive explanations.
+We need to shorten the README to contain an overview of the functionality.
+We need to create gh wiki pages containing the comprehensive explanations. [x]
 
-* [padrino-core] Api doc in for module Padrino::Application
-* [padrino-core] Much examples for Padrino::Application#router
 * [padrino-core] Explain Padrino::Application#layout better
-* [padrino-core] Privatize Padrino#first_caller Padrino#caller_files
+* [padrino-core] Much examples for Padrino::Routing module (#router)
 * [padrino-core] Padrino#load! explain better what it do
 * [padrino-core] Padrino#require_dependencies (totally refactored)
 * [padrino-core] Explain better Padrino#logger
 * [padrino-core] Padrino#run! (check doc)
-* [padrino-core] Support Lite refactored with doc written from me.
 * [padrino-core] Padrino#tasks (check doc)
 * [padrino-gen] Now all it's private we have only api docs for Padrino::Generators module (check doc)
 * [padrino-helpers] Explain better what do each helper
@@ -43,12 +40,6 @@ or guides containing the comprehensive explanations.
 
 * Asynchronous commands baked in (http://github.com/deadprogrammer/spork)
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
-* Move the mounting process (for multiple apps) to use rack-mount (http://github.com/josh/rack-mount)
 * Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
 * Replace custom console with modified version of (http://github.com/sickill/racksh/blob/master/README.markdown)
 * Tableless module which can be included to make a class into a database-less model
-* Nested Resources 
-    # :product controller
-    get :index, :depends => :user do
-      # /user/:user_id/
-    end
