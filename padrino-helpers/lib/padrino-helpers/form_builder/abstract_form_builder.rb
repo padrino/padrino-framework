@@ -17,6 +17,11 @@ module Padrino
           @template.error_messages_for(*params)
         end
 
+        # f.error_message_on(field)
+        def error_message_on(field, options={})
+          @template.error_message_on(object_name, field, options)
+        end
+
         # f.label :username, :caption => "Nickname"
         def label(field, options={})
           options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
@@ -31,26 +36,30 @@ module Padrino
 
         # f.text_field :username, :value => "(blank)", :id => 'username'
         def text_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
           @template.text_field_tag field_name(field), options
         end
 
         # f.text_area :summary, :value => "(enter summary)", :id => 'summary'
         def text_area(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
           @template.text_area_tag field_name(field), options
         end
 
         # f.password_field :password, :id => 'password'
         def password_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field), :class => field_error(field, options))
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
           @template.password_field_tag field_name(field), options
         end
 
         # f.select :color, :options => ['red', 'green'], :include_blank => true
         # f.select :color, :collection => @colors, :fields => [:name, :id]
         def select(field, options={})
-          options.reverse_merge!(:id => field_id(field), :selected => field_value(field), :class => field_error(field, options))
+          options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
+          options.merge!(:class => field_error(field, options))
           @template.select_tag field_name(field), options
         end
 
@@ -72,7 +81,8 @@ module Padrino
 
         # f.file_field :photo, :class => 'avatar'
         def file_field(field, options={})
-          options.reverse_merge!(:id => field_id(field), :class => field_error(field, options))
+          options.reverse_merge!(:id => field_id(field))
+          options.merge!(:class => field_error(field, options))
           @template.file_field_tag field_name(field), options
         end
 
@@ -110,9 +120,12 @@ module Padrino
             @object && @object.respond_to?(field) ? @object.send(field) : ""
           end
 
+          # Add a :invalid css class to the field if it contain an error
           def field_error(field, options)
-            if @object && @object.respond_to?(:errors) && @object.errors.respond_to?(:on) && @object.errors.on(field)
-              ["x-form-invalid", options[:class]].compact.join(" ")
+            if @object && @object.respond_to?(:errors) && @object.errors[field]
+              [options[:class], :invalid].flatten.compact.join(" ")
+            else
+              options[:class]
             end
           end
 

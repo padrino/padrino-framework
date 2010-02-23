@@ -1,6 +1,0 @@
-columns:
-  <%- @model_klass.properties.each do |property| -%>
-  <%- unless property.name.to_sym == :id -%>
-  - method: <%= property.name %>
-  <%- end -%>
-  <%- end -%>

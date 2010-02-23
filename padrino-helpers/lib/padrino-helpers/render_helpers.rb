@@ -22,13 +22,13 @@ module Padrino
           collection.collect do |member|
             counter += 1
             options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
-            render(template_path, nil, options.merge(:layout => false))
+            render(template_path, options.merge(:layout => false))
           end.join("\n")
         else
           if member = options.delete(:object)
             options[:locals].merge!(object_name => member)
           end
-          render(template_path, nil, options.merge(:layout => false))
+          render(template_path, options.merge(:layout => false))
         end
       end
       alias :render_partial :partial

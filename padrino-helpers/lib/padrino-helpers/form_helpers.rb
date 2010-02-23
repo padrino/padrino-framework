@@ -38,11 +38,28 @@ module Padrino
       #   form_tag '/register' do ... end
       # 
       def form_tag(url, options={}, &block)
+        desired_method = options[:method]
+        options.delete(:method) if options[:method].to_s !~ /get|post/i
         options.reverse_merge!(:method => 'post', :action => url)
         options[:enctype] = "multipart/form-data" if options.delete(:multipart)
         options["data-remote"] = "true" if options.delete(:remote)
-        inner_form_html = hidden_form_method_field(options[:method]) + capture_html(&block)
+        inner_form_html = hidden_form_method_field(desired_method) + capture_html(&block)
         concat_content content_tag('form', inner_form_html, options)
+      end
+
+      ##
+      # Returns the hidden method field for 'put' and 'delete' forms
+      # Only 'get' and 'post' are allowed within browsers;
+      # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
+      # 
+      # ==== Examples
+      # 
+      #   # Generate: <input name="_method" value="delete" />
+      #   hidden_form_method_field('delete')
+      # 
+      def hidden_form_method_field(desired_method)
+        return '' if desired_method.blank? || desired_method.to_s =~ /get|post/i
+        hidden_field_tag(:_method, :value => desired_method)
       end
 
       ##
@@ -119,6 +136,38 @@ module Padrino
 
             content_tag(:div, contents, html)
           end
+        else
+          ''
+        end
+      end
+
+      ##
+      # Returns a string containing the error message attached to the +method+ on the +object+ if one exists.
+      #
+      # ==== Options
+      # 
+      # :tag::      The tag that enclose your error. (Default 'div')
+      # :prepend::  Text to add before error.
+      # :append::   Text to add after error.
+      # 
+      # ==== Examples
+      # 
+      #   # => <span class="error">can't be blank</div>
+      #   error_message_on :post, :title
+      # 
+      #   # => <div class="custom" style="border:1px solid red">can't be blank</div>
+      #   error_message_on :post, :title, :tag => :id, :class => :custom, :style => "border:1px solid red"
+      # 
+      #   # => <div class="error">This title can't be blank (or it won't work)</div>
+      #   error_message_on :post, :title, :prepend => "This title", :append => "(or it won't work)"
+      # 
+      def error_message_on(object, field, options={})
+        object = instance_variable_get("@#{object}")
+        if object && object.respond_to?(:errors) && object.errors[field]
+          options.reverse_merge!(:tag => :span, :class => :error)
+          tag   = options.delete(:tag)
+          error = [options.delete(:prepend), Array(object.errors[field]).first, options.delete(:append)].compact.join(" ")
+          content_tag(tag, error, options)
         else
           ''
         end
@@ -301,23 +350,6 @@ module Padrino
           value ||= caption
           content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
         end
-      end
-
-      ##
-      # Returns the hidden method field for 'put' and 'delete' forms
-      # Only 'get' and 'post' are allowed within browsers;
-      # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
-      # 
-      # ==== Examples
-      # 
-      #   # Generate: <input name="_method" value="delete" />
-      #   hidden_form_method_field('delete')
-      # 
-      def hidden_form_method_field(desired_method)
-        return '' if (desired_method.to_s =~ /get|post/)
-        original_method = desired_method.to_s.dup
-        desired_method.to_s.replace('post')
-        hidden_field_tag(:_method, :value => original_method)
       end
 
       private

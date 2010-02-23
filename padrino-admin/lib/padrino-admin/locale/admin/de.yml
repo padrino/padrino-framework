@@ -1,50 +1,16 @@
 de:
-  admin:
-    labels:
-      not_found: "Not Found"
-      none: "Nichts"
-      add: "Hinzufügen"
-      remove: "Entfernen"
-    general:
-      list: "Liste {{model}}"
-      editForm: "Ändern {{model}} {{value}}"
-      newForm: "Neu {{model}}"
-      cantDelete: "Du kannst diesen Satz nicht löschen!"
-      page: "Seite"
-      of: "von"
-    sessions:
-      wrong: "Ungültige E-Mail oder Passwort"
-      logout: "Korrekt abgemeldet!"
-    menus:
-      account: "Benutzerkonto"
-      list: "Liste"
-      new: "Neu"
-    javascripts:
-      buttons:
-        add: "Hinzufügen"
-        edit: "Ändern"
-        remove: "Löschen"
-        back: "Zurück"
-        save: "Sichern"
-        close: "Schliessen"
-        select: "Selektieren"
-        help: "Hilfe"
-        send: "Senden"
-      labels:
-        all: "Alle "
-        search: "Suchen "
-      messages:
-        compliments: 
-          title: "Gratulation"
-          message: "Ihre Daten wurden korrekt gesichert!"
-        wait:
-          title: "Senden Daten"
-          message: "Senden Daten zu dem Server..."
-        confirm:
-          title: "Sind Sie sicher?"
-          message: "Sind sie sicher {0} Elemente zu löschen?"
-        alert:
-          title: "Achtung"
-          message: "Es gibt einige Verbindungs-Probleme.<br />Kontaktiere technische Unterstützung."
-          notConfigured: "Diese Funktion ist noch nicht feriggestellt.<br />Kontaktiere technische Unterstützung."
-          notSelected: "Du mußt mindestens ein Satz selektieren"
+  padrino:
+    admin:
+      save: Speichern
+      cancel: Abbrechen
+      list: Liste
+      edit: Bearbeiten
+      new: Neu
+      show: Anzeigen
+      delete: Löschen
+      confirm: Sind Sie sicher?
+      created_at: Erstellt am
+      all: Alle
+      profile: Benutzerkonto
+      settings: Einstellungen
+      logout: Abmelden

@@ -1,51 +1,13 @@
 en:
-  admin:
-    labels:
-      not_found: "Not found"
-      none: "Nothing"
-      add: "Add"
-      remove: "Remove"
-    general:
-      list: "List {{model}}"
-      editForm: "Edit {{model}} {{value}}"
-      newForm: "New {{model}}"
-      cantDelete: "You cannot delete {{record}} record."
-      page: "Page"
-      of: "of"
-    sessions:
-      wrong: "Wrong email or password"
-      logout: "Successfully Logged Out"
-    menus:
-      account: "Account"
-      list: "List"
-      new: "New"
-    javascripts:
-      buttons:
-        add: "Add"
-        edit: "Edit"
-        remove: "Delete"
-        back: "Back"
-        save: "Save"
-        close: "Close"
-        select: "Select"
-        help: "Help"
-        send: "Send"
-      labels:
-        all: "All "
-        search: "Search"
-      messages:
-        compliments: 
-          title: "Congratulations"
-          message: "Your data was saved successfully."
-        wait:
-          title: "Sending Data"
-          message: "Sending data to server..."
-        confirm:
-          title: "Are you sure ?"
-          message: "Are you sure to destroy {0} element/s ?"
-        alert:
-          title: "Attention"
-          message: "There are some connection issues.<br />Contact technical support."
-          notConfigured: "This fatures is not ready yet.<br />Contact technical support."
-          notSelected: "You must select at least one record"
-          tooMany: "Sie haben zu viele Datensätze ausgewählt. Das Maximum ist 10!"
+  padrino:
+    admin:
+      save: Save
+      cancel: Cancel
+      list: List
+      edit: Edit
+      new: New
+      show: Show
+      delete: Delete
+      confirm: Are you sure?
+      created_at: Created at
+      all: All

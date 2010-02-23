@@ -49,16 +49,17 @@ module Padrino
       end
 
       ##
-      # Capture a block of content to be rendered at a later time.
+      # Capture a block or text of content to be rendered at a later time.
       # Your blocks can also receive values, which are passed to them by <tt>yield_content</tt>
       # 
       # ==== Examples
       # 
       #   content_for(:name) { ...content... }
       #   content_for(:name) { |name| ...content... }
+      #   content_for(:name, "I'm Jeff")
       # 
-      def content_for(key, &block)
-        content_blocks[key.to_sym] << block
+      def content_for(key, content = nil, &block)
+        content_blocks[key.to_sym] << (block_given? ? block : Proc.new { content })
       end
 
       ##
@@ -70,9 +71,12 @@ module Padrino
       # 
       #   yield_content :include
       #   yield_content :head, "param1", "param2"
+      #   yield_content(:title) || "My page title"
       # 
       def yield_content(key, *args)
-        content_blocks[key.to_sym].map { |content|
+        blocks = content_blocks[key.to_sym]
+        return nil if blocks.empty?
+        blocks.map { |content|
           capture_html(*args, &content)
         }.join
       end

@@ -1,51 +1,16 @@
 it:
-  admin:
-    labels:
-      not_found: "Non trovato"
-      none: "Nessuno"
-      add: "Aggiungi"
-      remove: "Rimuovi"
-    general:
-      list: "Elenco {{model}}"
-      editForm: "Modifica {{model}} {{value}}"
-      newForm: "Nuovo {{model}}"
-      cantDelete: "Non puoi cancellare questo record."
-      page: "Pagina"
-      of: "di"
-    sessions:
-      wrong: "Email o password sbagliati"
-      logout: "Sei correttamente uscito dal sistema"
-    menus:
-      account: "Account"
-      list: "Elenco"
-      new: "Nuovo"
-    javascripts:
-      buttons:
-        add: "Aggiungi"
-        edit: "Modifica"
-        remove: "Elimina"
-        back: "Indietro"
-        save: "Salva"
-        close: "Chiudi"
-        select: "Seleziona"
-        help: "Aiuto"
-        send: "Invia"
-      labels:
-        all: "Elenco "
-        search: "Cerca"
-      messages:
-        compliments: 
-          title: "Complimenti"
-          message: "I tuoi dati sono stati correttamente salvati."
-        wait:
-          title: "Invio dati"
-          message: "Invio dei dati al server in corso..."
-        confirm:
-          title: "Sei sicuro ?"
-          message: "Vuoi veramente eliminare {0} elemento/i ?"
-        alert:
-          title: "Attenzione"
-          message: "Si è verificato un problema di connessione.<br />Contatta il supporto tecnico."
-          notConfigured: "Questa funzione non è stata ancora implementata.<br />Contatta il supporto tecnico."
-          notSelected: "Devi selezionare almeno un record!"
-          tooMany: "Hai selezionato troppi records. Il massimo è di 10!"
+  padrino:
+    admin:
+      save: Salva
+      cancel: Annulla
+      list: Elenco
+      edit: Modifica
+      new: Nuovo
+      show: Mostra
+      delete: Elimina
+      confirm: Sei sicuro?
+      created_at: Creato il
+      all: Tutti
+      profile: Profilo
+      settings: Impostazioni
+      logout: Esci

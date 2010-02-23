@@ -4,224 +4,90 @@ module Padrino
     end
 
     ##
-    # This module give to a padrino application an access control functionality like:
-    #   
-    #   class EcommerceDemo < Padrino::Application
-    #     enable :authentication
-    #     set :login_page, "/login" # or your login page
-    #     enable :store_location # if you want know what is the page that need authentication
-    # 
-    #     access_control.roles_for :any do
-    #       role.require_login "/cart"
-    #       role.require_login "/account"
-    #       role.allow "/account/create"
-    #     end
-    #   end
-    # 
-    # In the EcommerceDemo, we +only+ require logins for all paths that start with "/cart" like:
-    # 
-    #   - "/cart/add"
-    #   - "/cart/empty"
-    #   - "/cart/checkout"
-    # 
-    # same thing for "/account" so we require a login for:
-    # 
-    #   - "/account"
-    #   - "/account/edit"
-    #   - "/account/update"
-    # 
-    # but if we call "/account/create" we don't need to be logged in our site for do that.
-    # In EcommerceDemo example we set +redirect_back_or_default+ so if a +unlogged+ 
-    # user try to access "/account/edit" will be redirected to "/login" when login is done will be 
-    # redirected to "/account/edit".
-    # 
-    # If we need something more complex aka roles/permissions we can do that in the same simple way
-    # 
-    #   class AdminDemo < Padrino::Application
-    #     enable :authentication
-    #     set :login_page, "/sessions/new" # or your page
-    #     
-    #     access_control.roles_for :any do |role|
-    #       role.allow "/sessions"
-    #     end
-    #   
-    #     access_control.roles_for :admin do |role, account|
-    #       role.allow "/"
-    #       role.deny  "/posts"
-    #     end
-    #     
-    #     access_control.roles_for :editor do |role, account|
-    #       role.allow "/posts"
-    #     end
-    #   end
-    # 
-    #   If a user logged with role admin can:
-    #   
-    #   - Access to all paths that start with "/session" like "/sessions/{new,create}"
-    #   - Access to any page except those that start with "/posts"
-    # 
-    #   If a user logged with role editor can:
-    # 
-    #   - Access to all paths that start with "/session" like "/sessions/{new,create}"
-    #   - Access +only+ to paths that start with "/posts" like "/post/{new,edit,destroy}"
-    # 
-    # Finally we have another good fatures, the possibility in the same time we build role build also +tree+.
-    # Figure this scenario: in my admin every account need their own menu, so an Account with role editor have
-    # a menu different than an Account with role admin.
-    # 
-    # So:
-    # 
-    #   class AdminDemo < Padrino::Application
-    #     enable :authentication
-    #     
-    #     access_control.roles_for :any do |role|
-    #       role.allow "/sessions"
-    #     end
-    #     
-    #     access_control.roles_for :admin do |role, current_account|
-    #       
-    #       role.project_module :settings do |project|
-    #         project.menu :accounts, "/accounts" do |accounts|
-    #           accounts.add :new, "/accounts/new" do |account|
-    #             account.add :administrator, "/account/new/?role=administrator"               
-    #             account.add :editor,        "/account/new/?role=editor"
-    #           end
-    #         end
-    #         project.menu :spam_rules, "/manage_spam"
-    #       end
-    #       
-    #       role.project_module :categories do |project|
-    #         current_account.categories.each do |category|
-    #           project.menu category.name, "/categories/#{category.id}.js"
-    #         end
-    #       end
-    #     end
-    #     
-    #     access_control.roles_for :editor do |role, current_account|
-    #       
-    #       role.project_module :posts do |posts|
-    #         post.menu :list, "/posts"
-    #         post.menu :new,  "/posts/new"
-    #       end
-    #     end
-    # 
-    # In this example when we build our menu tree we are also defining roles so:
-    # 
-    # An Admin Account have access to:
-    # 
-    # - All paths that start with "/sessions"
-    # - All paths that start with "/accounts"
-    # - All paths that start with "/manage_spam"
-    # 
-    # An Editor Account have access to:
-    # 
-    # - All paths that start with "/posts"
-    # 
-    # Remember that you always deny a specific actions or allow globally others.
-    # 
-    # Remember that when you define role_for :a_role, you have also access to the Model Account.
+    # This module give to a padrino application an access control functionality
     #
     module AccessControl
-
       ##
       # Method used by Padrino::Application when we register the extension
       # 
       def self.registered(app)
         app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
-        app.helpers Padrino::Admin::Helpers::ViewHelpers
         app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
-        app.before { login_required }
+        app.helpers Padrino::Admin::Helpers::ViewHelpers
         app.use Padrino::Admin::Middleware::FlashMiddleware, app.session_id  # make sure that is the same of session_name in helpers
-        Padrino::Admin::Orm.extend_account!
+        app.before { login_required }
+      end
+
+      module ClassMethods #:nodoc:
+        def inherited(base)
+          base.send(:cattr_accessor, :access_control)
+          base.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
+          super(base)
+        end
       end
 
       class Base
-        class << self
-          attr_reader :roles
+        def initialize #:nodoc:
+          @roles, @authorizations, @project_modules = [], [], []
+        end
+        ##
+        # We map project modules for a given role or roles
+        # 
+        def roles_for(*roles, &block)
+          raise Padrino::Admin::AccessControlError, "You must define an Account Model!" unless defined?(Account)
+          raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
+          raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 
-          def inherited(base) #:nodoc:
-            base.class_eval("@@cache={}; @authorizations=[]; @roles=[]; @mappers=[]")
-            base.send(:cattr_reader, :cache)
-            super(base)
+          @roles += roles
+          @authorizations << Authorization.new(*roles, &block)
+        end
+
+        ##
+        # Return an array of roles
+        # 
+        def roles
+          @roles.uniq.reject { |r| r == :any }
+        end
+
+        ##
+        # Return an array of project_modules
+        # 
+        def project_modules(account)
+          role = account ? account.role.to_sym : :any
+          authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
+          authorizations.collect(&:project_modules).flatten.uniq
+        end
+
+        ##
+        # Return true if the given account is allowed to see the given path.
+        # 
+        def allowed?(account=nil, path=nil)
+          return true if account.nil? && path.blank?
+          authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
+          allowed_paths  = authorizations.collect(&:allowed).flatten.uniq
+          denied_paths   = authorizations.collect(&:denied).flatten.uniq
+          if account
+            denied_paths.clear
+            authorizations = @authorizations.find_all { |auth| auth.roles.include?(account.role.to_sym) }
+            allowed_paths += authorizations.collect(&:allowed).flatten.uniq
+            authorizations = @authorizations.find_all { |auth| !auth.roles.include?(account.role.to_sym) && !auth.roles.include?(:any) }
+            denied_paths  += authorizations.collect(&:allowed).flatten.uniq
+            denied_paths  += authorizations.collect(&:denied).flatten.uniq
           end
-
-          ##
-          # We map project modules for a given role or roles
-          # 
-          def roles_for(*roles, &block)
-            raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
-            raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles"              if roles.size > 1 && roles.any? { |r| r == :any }
-
-            if roles == [:any]
-              @authorizations << Authorization.new(&block)
-            else
-              raise Padrino::Admin::AccessControlError, "For use custom roles you need to define an Account Class" unless defined?(Account)
-              @roles.concat(roles)
-              @mappers << Proc.new { |account| Mapper.new(account, *roles, &block) }
-            end
-          end
-
-          ##
-          # Returns (allowed && denied paths).
-          # If an account given we also give allowed & denied paths for their role.
-          # 
-          def auths(account=nil)
-            if account
-              cache[account.id] ||= Auths.new(@authorizations, @mappers, account)
-            else
-              cache[:any] ||= Auths.new(@authorizations)
-            end
-          end
+          return true  if allowed_paths.any? { |p| path =~ /^#{p}/ }
+          return false if denied_paths.any?  { |p| path =~ /^#{p}/ }
+          true
         end
       end # Base
 
-      class Auths #:nodoc:
-        attr_reader :account, :allowed, :denied, :project_modules
-
-        def initialize(authorizations, mappers=nil, account=nil) #:nodoc:
-          @allowed, @denied, @account = [], [], account
-          unless authorizations.empty?
-            @allowed = authorizations.collect(&:allowed).flatten
-            @denied  = authorizations.collect(&:denied).flatten
-          end
-          if mappers && !mappers.empty?
-            maps = mappers.collect { |m|  m.call(account) }.reject { |m| !m.allowed? }
-            @allowed.concat(maps.collect(&:allowed).flatten)
-            @denied.concat(maps.collect(&:denied).flatten)
-            @project_modules = maps.collect(&:project_modules).flatten.uniq
-          else
-            @project_modules = []
-          end
-          @allowed.uniq!
-          @denied.uniq!
-        end
-
-        ##
-        # Return true if the requested path (like request.path_info) is allowed.
-        # 
-        def can?(request_path)
-          return true if @allowed.empty?
-          request_path = "/" if request_path.blank?
-          @allowed.any? { |path| request_path =~ /^#{path}/ } && !cannot?(request_path)
-        end
-
-        ##
-        # Return false if we don't have +denied+ path +or+ if we have a logged account and empty project modules.
-        # Return true if the requested path (like request.path_info) is +not+ allowed
-        # 
-        def cannot?(request_path)
-          return false if @denied.empty? || (@project_modules.empty? && @account)
-          request_path = "/" if request_path.blank?
-          @denied.any? { |path| request_path =~ /^#{path}/ }
-        end
-      end # Auths
-
       class Authorization
-        attr_reader :allowed, :denied
+        attr_reader :allowed, :denied, :project_modules, :roles
 
-        def initialize(&block) #:nodoc:
-          @allowed = []
-          @denied  = []
+        def initialize(*roles, &block) #:nodoc:
+          @roles           = roles
+          @allowed         = []
+          @denied          = []
+          @project_modules = []
           yield self
         end
 
@@ -233,165 +99,51 @@ module Padrino
         end
 
         ##
-        # Deny a specified path
+        # Protect access from
         # 
-        def require_login(path)
+        def protect(path)
           @denied << path unless @denied.include?(path)
         end
-        alias :deny :require_login
+
+        ##
+        # Create a project module
+        # 
+        def project_module(name, path)
+          allow(path)
+          @project_modules << ProjectModule.new(name, path)
+        end
       end # Authorization
 
-      class Mapper
-        attr_reader :project_modules, :roles, :denied
-
-        def initialize(account, *roles, &block) #:nodoc:
-          @project_modules = []
-          @allowed         = []
-          @denied          = []
-          @roles           = roles
-          @account         = account.dup
-          yield(self, @account)
-        end
-
-        ##
-        # Create a new project module
-        # 
-        def project_module(name, path=nil, &block)
-          @project_modules << ProjectModule.new(name, path, &block)
-        end
-
-        ##
-        # Globally allow an paths for the current role
-        # 
-        def allow(path)
-          @allowed << path unless @allowed.include?(path)
-        end
-
-        ##
-        # Globally deny an pathsfor the current role
-        # 
-        def deny(path)
-          @denied << path unless @allowed.include?(path)
-        end
-
-        ##
-        # Return true if role is included in given roles
-        # 
-        def allowed?
-          @roles.any? { |r| r == @account.role.to_s.downcase.to_sym }
-        end
-
-        ##
-        # Return allowed paths
-        # 
-        def allowed
-          @project_modules.each { |pm| @allowed.concat(pm.allowed)  }
-          @allowed.uniq
-        end
-      end # Mapper
-
+      ##
+      # Project Module class
+      # 
       class ProjectModule
-        attr_reader :name, :menus, :path
 
-        def initialize(name, path=nil, options={}, &block) #:nodoc:
-          @name     = name
-          @options  = options
-          @allowed  = []
-          @menus    = []
-          @path     = path
-          @allowed << path if path
-          yield self if block_given?
+        def initialize(name, path) #:nodoc:
+          @name, @path = name, path
         end
 
         ##
-        # Build a new menu and automaitcally add the action on the allowed actions.
-        # 
-        def menu(name, path=nil, options={}, &block)
-          @menus << Menu.new(name, path, options, &block)
-        end
-
-        ##
-        # Return allowed controllers
-        # 
-        def allowed
-          @menus.each { |m| @allowed.concat(m.allowed) }
-          @allowed.uniq
-        end
-
-        ##
-        # Return the original name or try to translate or humanize the symbol
+        # Returns the name of the project module. If a symbol it translate/humanize them for you.
         # 
         def human_name
-          @name.is_a?(Symbol) ? I18n.t("admin.menus.#{@name}", :default => @name.to_s.humanize) : @name
+          @name.is_a?(Symbol) ? I18n.t("padrino.admin.menu.#{@name}", :default => @name.to_s.humanize) : @name
         end
 
         ##
-        # Return symbol for the given project module
+        # Return the path of the project module. If a prefix given will be prepended.
         # 
-        def uid
-          @name.to_s.downcase.gsub(/[^a-z0-9]+/, '').gsub(/-+$/, '').gsub(/^-+$/, '').to_sym
-        end
-
-        ##
-        # Return ExtJs Config for this project module
+        # ==== Examples
         # 
-        def config
-          options = @options.merge(:text => human_name)
-          options.merge!(:menu => @menus.collect(&:config)) if @menus.size > 0
-          options.merge!(:handler => Padrino::Admin::Config::Variable.new("function(){ Admin.app.load('#{path}') }")) if @path
-          options
+        #   # => /accounts/new
+        #   project_module.path
+        #   # => /admin/accounts
+        #   project_module.path("/admin")
+        # 
+        def path(prefix=nil)
+          prefix ? File.join(prefix, @path) : @path
         end
       end # ProjectModule
-
-      class Menu
-        attr_reader :name, :options, :items, :path
-
-        def initialize(name, path=nil, options={}, &block) #:nodoc:
-          @name    = name
-          @path    = path
-          @options = options
-          @allowed = []
-          @items   = []        
-          @allowed << path if path
-          yield self if block_given?
-        end
-
-        ##
-        # Add a new submenu to the menu
-        # 
-        def add(name, path=nil, options={}, &block)
-          @items << Menu.new(name, path, options, &block)
-        end
-
-        ##
-        # Return allowed controllers
-        # 
-        def allowed
-          @items.each { |i| @allowed.concat(i.allowed) }
-          @allowed.uniq
-        end
-
-        ##
-        # Return the original name or try to translate or humanize the symbol
-        # 
-        def human_name
-          @name.is_a?(Symbol) ? I18n.t("admin.menus.#{@name}", :default => @name.to_s.humanize) : @name
-        end
-
-        ##
-        # Return ExtJs Config for this menu
-        # 
-        def config
-          if @path.blank? && @items.empty?
-            options = human_name
-          else
-            options = @options.merge(:text => human_name)
-            options.merge!(:menu => @items.collect(&:config)) if @items.size > 0
-            options.merge!(:handler => "function(){ Admin.app.load('#{path}') }".to_l) if @path
-          end
-          options
-        end
-      end # Menu
     end # AccessControl
   end # Admin
 end # Padrino

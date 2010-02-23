@@ -9,18 +9,20 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'require correctly login' do
     mock_app do
       enable :authentication
-      set    :app_name, :test_me
-      set    :use_orm,  :datamapper
 
       # Do a simple mapping
-      access_control.roles_for :any do |role| 
-        role.allow "/"
-        role.require_login  "/foo"
+      access_control.roles_for :any do |role|
+        role.protect  "/foo"
       end
 
       get "/foo", :respond_to => [:html, :js] do
         "foo"
       end
+
+      get "/unauthenticated" do
+        "unauthenticated"
+      end
+
     end
 
     get "/foo"
@@ -28,25 +30,24 @@ class TestAdminApplication < Test::Unit::TestCase
 
     get "/foo.js"
     assert_equal "alert('Protected resource')", body
+
+    get "/unauthenticated"
+    assert_equal "unauthenticated", body
   end
 
   should 'set basic roles with store location and login page' do
     mock_app do
+      set    :app_name, :basic_app
       enable :authentication
       enable :store_location
       set    :login_page, "/login"
-      set    :app_name, :test_me
-      set    :use_orm,  :datamapper
 
-      # Do a simple mapping
-      access_control.roles_for :any do |role| 
-        role.allow "/"
-        role.require_login "/foo"
+      access_control.roles_for :any do |role|
+        role.protect "/foo"
       end
 
       # Prepare a basic page
       get "/login" do
-        assert_equal "[]", admin_menu
         redirect_back_or_default("/foo") if logged_in?
         set_current_account(Account.admin)
         "login page"
@@ -61,9 +62,189 @@ class TestAdminApplication < Test::Unit::TestCase
     follow_redirect!
     assert_equal "login page", body
 
+    get "/foo"
+    assert_equal "foo", body
+
     get "/login"
     follow_redirect!
     assert_equal "foo", body
+  end
+
+  should 'set advanced roles with store location and login page' do
+    mock_app do
+      enable :authentication
+
+      access_control.roles_for :any do |role|
+        role.protect "/"
+        role.allow "/login"
+        role.allow "/any"
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :settings, "/settings"
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :posts, "/posts"
+      end
+
+      assert access_control.allowed?(Account.admin, "/login")
+      assert access_control.allowed?(Account.admin, "/any")
+      assert access_control.allowed?(Account.admin, "/settings")
+      assert ! access_control.allowed?(Account.admin, "/posts")
+
+      assert access_control.allowed?(Account.editor, "/login")
+      assert access_control.allowed?(Account.editor, "/any")
+      assert ! access_control.allowed?(Account.editor, "/settings")
+      assert access_control.allowed?(Account.editor, "/posts")
+
+      # Prepare a basic page
+      get "/login/(:role)" do
+        set_current_account(Account.send(params[:role])) if params[:role]
+        "logged as #{params[:role] || "any"}"
+      end
+
+      get "/any"      do; "any";      end
+      get "/settings" do; "settings"; end
+      get "/posts"    do; "posts";    end
+    end
+
+    get "/login/"
+    assert_equal "logged as any", body
+
+    get "/any"
+    assert_equal "any", body
+
+    get "/settings"
+    assert_equal "You don't have permission for this resource", body
+
+    get "/posts"
+    assert_equal "You don't have permission for this resource", body
+
+    get "/login/admin"
+    assert_equal "logged as admin", body
+
+    get "/any"
+    assert_equal "any", body
+
+    get "/settings"
+    assert_equal "settings", body
+
+    get "/posts"
+    assert_equal "You don't have permission for this resource", body
+
+    get "/login/editor"
+    assert_equal "logged as editor", body
+
+    get "/any"
+    assert_equal "any", body
+
+    get "/settings"
+    assert_equal "You don't have permission for this resource", body
+
+    get "/posts"
+    assert_equal "posts", body
+  end
+
+  should 'emulate an ecommerce app' do
+    mock_app do
+      enable :authentication
+
+      access_control.roles_for :any do |role|
+        role.protect "/cart"
+        role.allow "/cart/add"
+        role.allow "/cart/empty"
+      end
+
+      get "/login" do
+        set_current_account(Account.admin)
+        "Logged in"
+      end
+
+      get "/cart/checkout" do
+        "Checkout"
+      end
+
+      get "/cart/add" do
+        "Product Added"
+      end
+
+      get "/cart/empty" do
+        "Cart Empty"
+      end
+    end
+
+    get "/cart/checkout"
+    assert_equal "You don't have permission for this resource", body
+
+    get "/cart/add"
+    assert_equal "Product Added", body
+
+    get "/cart/empty"
+    assert_equal "Cart Empty", body
+
+    get "/login"
+    assert_equal "Logged in", body
+
+    get "/cart/checkout"
+    assert_equal "Checkout", body
+
+    get "/cart/add"
+    assert_equal "Product Added", body
+
+    get "/cart/empty"
+    assert_equal "Cart Empty", body
+  end
+
+  should 'check access control helper' do
+    mock_app do
+      enable :authentication
+
+      access_control.roles_for :any do |role|
+        role.project_module :foo, "/foo"
+        role.project_module :bar, "/bar"
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :admin, "/admin"
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :editor, "/editor"
+      end
+
+      get "/login" do
+        set_current_account(Account.admin)
+        "Logged in"
+      end
+
+      get "/roles" do
+        access_control.roles.join(", ")
+      end
+
+      get "/modules" do
+        project_modules.collect { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
+      end
+
+      get "/modules-prefixed" do
+        project_modules.collect { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
+      end
+    end
+
+    get "/roles"
+    assert_equal "admin, editor", body
+
+    get "/modules"
+    assert_equal "Foo => /foo, Bar => /bar", body
+
+    get "/modules-prefixed"
+    assert_equal "Foo => /admin/foo, Bar => /admin/bar", body
+
+    get "/login"
+    assert_equal "Logged in", body
+
+    get "/modules"
+    assert_equal "Admin => /admin", body
   end
 
   should 'use correclty flash middleware' do
