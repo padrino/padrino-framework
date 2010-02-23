@@ -197,10 +197,6 @@ module Padrino
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
-            # Little reformats
-            path.sub!(%r{\bindex$}, "")                            # If the route end with /index we remove them
-            path = (uri_root == "/" ? "/" : "(/)") if path.blank? # Add a trailing delimiter if empty
-
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
               path = process_path_for_with_params(path, with_params)
@@ -233,10 +229,14 @@ module Padrino
               path = process_path_for_parent_params(path, parent_params)
             end
 
+            # Little reformats
+            path.sub!(%r{\bindex$}, "")                           # If the route end with /index we remove them
+            path = (uri_root == "/" ? "/" : "(/)") if path.blank? # Add a trailing delimiter if path is empty
+
             # We need to have a path that start with / in some circumstances and that don't end with /
             if path != "(/)" && path != "/"
               path = "/" + path unless path =~ %r{^/}
-              path.sub!(/\/$/, '')
+              path.sub!(%r{/$}, '')
             end
             # We need to fix some differences between usher and sintra router
             path.sub!(%r{/\?$}, '(/)') #  '/foo/?' => '/foo(/)'
