@@ -61,7 +61,7 @@ module Padrino
         # Return true if the given account is allowed to see the given path.
         # 
         def allowed?(account=nil, path=nil)
-          return true if account.nil? && path.blank?
+          path = "/" if path.blank?
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.collect(&:allowed).flatten.uniq
           denied_paths   = authorizations.collect(&:denied).flatten.uniq
