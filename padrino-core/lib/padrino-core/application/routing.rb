@@ -3,6 +3,10 @@ require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
 
 module Padrino
   module Routing
+    def self.registered(app)
+      app.send(:include, Padrino::Routing)
+    end
+
     def self.included(base)
       base.extend Padrino::Routing::ClassMethods
     end

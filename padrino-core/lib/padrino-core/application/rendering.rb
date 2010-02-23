@@ -1,5 +1,9 @@
 module Padrino
   module Rendering
+    def self.registered(app)
+      app.send(:include, Padrino::Rendering)
+    end
+
     private
       ##
       # Hijacking the sinatra render for do three thing:
