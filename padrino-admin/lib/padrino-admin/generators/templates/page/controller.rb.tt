@@ -2,7 +2,7 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   get :index do
     @<%= @orm.name_plural %> = <%= @orm.all %>
-    render 'accounts/index'
+    render '<%= @orm.name_plural %>/index'
   end
 
   get :new do
