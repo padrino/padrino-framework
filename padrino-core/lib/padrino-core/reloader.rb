@@ -10,7 +10,7 @@ module Padrino
     #
     # It is performing a check/reload cycle at the start of every request, but
     # also respects a cool down time, during which nothing will be done.
-    # 
+    #
     class Rack
       def initialize(app, cooldown = 1)
         @app = app
@@ -31,6 +31,14 @@ module Padrino
 
         @app.call(env)
       end
+    end
+
+    ##
+    # You can exclude some folders from reload its contents.
+    # Defaults excluded directories of Padrino.root are: test, spec, features, tmp, config, lib and public
+    # 
+    def self.exclude
+      @_exclude ||= %w(test spec tmp features config lib public).map { |path| Padrino.root(path) }
     end
 
     ##
@@ -79,8 +87,8 @@ module Padrino
         # Search Ruby files in your +Padrino.root+ and monitor them for changes.
         # 
         def rotation
-          files = Dir[Padrino.root("/**/*.rb")]
-          paths = [Padrino.root] # For now we set only our root.
+          paths = Dir[Padrino.root("*")].reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
+          files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
 
           files.map{ |file|
             found, stat = figure_path(file, paths)
