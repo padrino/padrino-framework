@@ -1,3 +1,6 @@
+require 'usher' unless defined?(Usher)
+require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
+
 module Padrino
   module Routing
     def self.included(base)
@@ -161,7 +164,8 @@ module Padrino
           params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end
         url = router.generator.generate(name, params)
-        uri_root != "/" ? uri_root + url : url
+        url = uri_root + url if defined?(uri_root) && uri_root != "/"
+        url
       end
       alias :url_for :url
 

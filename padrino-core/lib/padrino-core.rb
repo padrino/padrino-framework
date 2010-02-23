@@ -1,4 +1,3 @@
-require 'usher'
 require 'sinatra/base'
 
 Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].each {|file| require file }
