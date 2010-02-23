@@ -14,7 +14,7 @@ class TestAssetTagHelpers < Test::Unit::TestCase
 
   context 'for #flash_tag method' do
     should "display flash with no given attributes" do
-      assert_has_tag('div.flash', :content => "Demo notice") { flash_tag(:notice) }
+      assert_has_tag('div.notice', :content => "Demo notice") { flash_tag(:notice) }
     end
     should "display flash with given attributes" do
       actual_html = flash_tag(:notice, :class => 'notice', :id => 'notice-area')

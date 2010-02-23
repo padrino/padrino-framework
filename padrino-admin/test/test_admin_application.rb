@@ -235,16 +235,16 @@ class TestAdminApplication < Test::Unit::TestCase
     assert_equal "admin, editor", body
 
     get "/modules"
-    assert_equal "Foo => /foo, Bar => /bar", body
+    assert_equal "foo => /foo, bar => /bar", body
 
     get "/modules-prefixed"
-    assert_equal "Foo => /admin/foo, Bar => /admin/bar", body
+    assert_equal "foo => /admin/foo, bar => /admin/bar", body
 
     get "/login"
     assert_equal "Logged in", body
 
     get "/modules"
-    assert_equal "Admin => /admin", body
+    assert_equal "admin => /admin", body
   end
 
   should 'use correclty flash middleware' do

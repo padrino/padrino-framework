@@ -9,7 +9,7 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   def setup
-    error_stub = stub(:full_messages => ["1", "2"], :count => 2)
+    error_stub = stub(:full_messages => ["1", "2"], :count => 2, :[] => [])
     role_types = [stub(:name => 'Admin', :id => 1), stub(:name => 'Moderate', :id => 2),  stub(:name => 'Limited', :id => 3)]
     @user = stub(:errors => error_stub, :class => 'User', :first_name => "Joe", :session_id => 54)
     @user.stubs(:role_types => role_types, :role => "1")
@@ -143,7 +143,7 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
       assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
       assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
-      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'x-form-invalid'
+      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
 
     should "display correct form in erb" do
@@ -152,7 +152,7 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
       assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
       assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
-      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'x-form-invalid'
+      assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
   end
 

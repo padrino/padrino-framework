@@ -1,4 +1,4 @@
-class <%= @class_name %> < Padrino::Application
+class Admin < Padrino::Application
   configure do
     ##
     # Application-specific configuration options
@@ -15,22 +15,17 @@ class <%= @class_name %> < Padrino::Application
     # enable  :authentication     # Enable padrino-admin authentication (disabled by default)
     # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
     # 
+    enable  :authentication
+    disable :store_location
+    set :login_page, "/admin/sessions/new"
+
+    access_control.roles_for :any do |role|
+      role.protect "/"
+      role.allow "/sessions"
+    end
+
+    access_control.roles_for :admin do |role, account|
+    end
+
   end
-
-  ##
-  # You can configure for a specified environment like:
-  # 
-  #   configure :development do
-  #     set :foo, :bar
-  #   end
-  #
-
-  ##
-  # You can manage errors like:
-  # 
-  #   errors 404 do
-  #     render 'errors/404'
-  #   end
-  #
-
 end

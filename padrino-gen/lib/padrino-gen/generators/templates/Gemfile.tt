@@ -1,4 +1,4 @@
-source 'http://gemcutter.org'
+source :gemcutter
 
 # Project requirements
 gem 'rack-flash'
