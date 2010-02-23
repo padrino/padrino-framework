@@ -45,7 +45,6 @@ class TestAdminPageGenerator < Test::Unit::TestCase
       assert_file_exists '/tmp/sample_project/admin/views/people/edit.erb'
       assert_file_exists '/tmp/sample_project/admin/views/people/index.erb'
       assert_file_exists '/tmp/sample_project/admin/views/people/new.erb'
-      assert_file_exists '/tmp/sample_project/admin/views/people/_sidebar.erb'
       %w(name age email).each do |field|
         assert_match_in_file "label :#{field}", '/tmp/sample_project/admin/views/people/_form.erb'
         assert_match_in_file "text_field :#{field}", '/tmp/sample_project/admin/views/people/_form.erb'

@@ -55,8 +55,8 @@ module Padrino
             { :name => :name, :field_type => :text_field },
             { :name => :surname, :field_type => :text_field },
             { :name => :email, :field_type => :text_field },
-            { :name => :password, :field_type => :password_field },
-            { :name => :password_confirmation, :field_type => :password_field },
+            { :name => :password, :field_type => :text_field },
+            { :name => :password_confirmation, :field_type => :text_field },
             { :name => :role, :field_type => :text_field }
           ]
 

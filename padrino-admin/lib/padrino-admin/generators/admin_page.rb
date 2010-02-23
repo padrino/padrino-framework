@@ -34,7 +34,6 @@ module Padrino
 
           template "templates/page/controller.rb.tt",    destination_root("/admin/controllers/#{@orm.name_plural}.rb")
           template "templates/erb/page/_form.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/_form.erb")
-          template "templates/erb/page/_sidebar.erb.tt", destination_root("/admin/views/#{@orm.name_plural}/_sidebar.erb")
           template "templates/erb/page/edit.erb.tt",     destination_root("/admin/views/#{@orm.name_plural}/edit.erb")
           template "templates/erb/page/index.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/index.erb")
           template "templates/erb/page/new.erb.tt",      destination_root("/admin/views/#{@orm.name_plural}/new.erb")

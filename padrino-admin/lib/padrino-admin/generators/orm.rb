@@ -18,7 +18,7 @@ module Padrino
         end
 
         def field_type(type)
-          @field_type ||= case type
+          case type
             when :integer, :float, :decimal   then :text_field
             when :string                      then :text_field
             when :text                        then :text_area

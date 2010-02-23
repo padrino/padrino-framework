@@ -1,7 +1,7 @@
 <% @orm.column_fields.each do |column| -%>
 <div class="group">
   <%%= f.label :<%= column[:name] %> %><%%= f.error_message_on :<%= column[:name] %> %>
-  <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :text_field %>
+  <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %> %>
   <span class="description">Ex: a simple text</span>
 </div>
 <% end %>
