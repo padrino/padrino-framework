@@ -12,7 +12,22 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "okey", body
   end
 
-  should 'match correcly similar paths' do
+  should "parse routes with question marks" do
+    mock_app do
+      get("/foo/?"){ "okey" }
+      post('/unauthenticated/?') { "no access" }
+    end
+    get "/foo"
+    assert_equal "okey", body
+    get "/foo/"
+    assert_equal "okey", body
+    post "/unauthenticated"
+    assert_equal "no access", body
+    post "/unauthenticated/"
+    assert_equal "no access", body
+  end
+
+  should 'match correctly similar paths' do
     mock_app do
       get("/my/:foo_id"){ params[:foo_id] }
       get("/my/:bar_id/bar"){ params[:bar_id] }
