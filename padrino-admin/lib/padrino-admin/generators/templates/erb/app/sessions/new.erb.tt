@@ -15,7 +15,7 @@
           <div class="flash">
             <%%= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join %>
           </div>
-          <%% form_tag(url_for(:sessions_create), :class => 'form login') do %>
+          <%% form_tag(url(:sessions, :create), :class => 'form login') do %>
             <div class="group wat-cf">
               <div class="left">
                 <label class="label right">Login</label>

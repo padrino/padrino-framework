@@ -7,15 +7,15 @@ Admin.controllers :sessions do
   post :create do
     if account = Account.authenticate(params[:email], params[:password])
       set_current_account(account)
-      redirect url(:base_index)
+      redirect url(:base, :index)
     else
       flash[:warning] = "Login or password wrong."
-      redirect url(:sessions_new)
+      redirect url(:sessions, :new)
     end
   end
 
   get :destroy do
     set_current_account(nil)
-    redirect url(:sessions_new)
+    redirect url(:sessions, :new)
   end
 end

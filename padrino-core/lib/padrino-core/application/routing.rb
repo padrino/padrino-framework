@@ -238,6 +238,7 @@ module Padrino
               path = "/" + path unless path =~ %r{^/}
               path.sub!(%r{/$}, '')
             end
+
             # We need to fix some differences between usher and sintra router
             path.sub!(%r{/\?$}, '(/)') #  '/foo/?' => '/foo(/)'
           end

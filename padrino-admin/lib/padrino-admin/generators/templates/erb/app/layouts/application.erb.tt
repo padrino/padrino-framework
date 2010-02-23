@@ -11,8 +11,8 @@
       <h1><%%= link_to "<%= options[:name] %>", url(:base_index) %></h1>
       <div id="user-navigation">
         <ul class="wat-cf">
-          <li><%%= link_to pat(:profile), url(:accounts_edit, :id => current_account.id) %></li>
-          <li><%%= link_to pat(:logout), url(:sessions_destroy), :method => :delete %></li>
+          <li><%%= link_to pat(:profile), url(:accounts, :edit, :id => current_account.id) %></li>
+          <li><%%= link_to pat(:logout), url(:sessions, :destroy), :method => :delete %></li>
         </ul>
       </div>
       <div id="main-navigation">

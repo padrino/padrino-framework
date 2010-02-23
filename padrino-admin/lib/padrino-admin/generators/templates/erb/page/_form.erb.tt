@@ -7,5 +7,5 @@
 <% end %>
 <div class="group navform wat-cf">
   <%%= f.submit pat(:save), :class => :button %>
-  <%%= f.submit pat(:cancel), :onclick => "window.location='#{url(:accounts_index)}';return false", :class => :button %>
+  <%%= f.submit pat(:cancel), :onclick => "window.location='#{url(:accounts, :index)}';return false", :class => :button %>
 </div>
