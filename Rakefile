@@ -21,7 +21,7 @@ padrino_gems = [
   "padrino-gen",
   "padrino-helpers",
   "padrino-mailer",
-  # "padrino-admin",
+  "padrino-admin",
   "padrino"
 ]
 
@@ -148,10 +148,6 @@ task :publish do
   puts "Pushing to Gemcutter..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
-  end
-  puts "Pushing to RubyForge..."
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake_command("rubyforge:release") }
   end
   rake_command("clean")
 end
