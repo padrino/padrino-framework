@@ -5,6 +5,9 @@ module Padrino
 
         module BaconGen
           BACON_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+          PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+          require File.dirname(__FILE__) + "/../config/boot"
+
           class Bacon::Context
             include Rack::Test::Methods
           end

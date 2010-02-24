@@ -2,11 +2,6 @@ module Padrino
   module Generators
     module Components
       module Actions
-        BASE_TEST_HELPER = (<<-TEST).gsub(/^ {8}/, '')
-        PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-        require File.dirname(__FILE__) + "/../config/boot"
-        TEST
-
         # For orm database components
         # Generates the model migration file created when generating a new model
         # options => { :base => "....text...", :up => "..text...",
@@ -89,9 +84,8 @@ module Padrino
         # insert_test_suite_setup('...CLASS_NAME...')
         # => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @class_name), :after => "set :environment, :test")
         def insert_test_suite_setup(suite_text, options={})
-          test_helper_text = [BASE_TEST_HELPER, suite_text.gsub(/CLASS_NAME/, @class_name)].join("\n")
           options.reverse_merge!(:path => "test/test_config.rb")
-          create_file(options[:path], test_helper_text)
+          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @class_name))
         end
 
         # For mocking components
