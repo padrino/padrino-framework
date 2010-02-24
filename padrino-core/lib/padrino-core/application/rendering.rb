@@ -13,14 +13,13 @@ module Padrino
       # * Use render 'path/to/my/template' (with auto enegine lookup)
       #
       def render(engine, data=nil, options={}, locals={}, &block)
-        # TODO: remove these @template_cache.respond_to?(:clear) when sinatra 1.0 will be released
-        @template_cache.clear if Padrino.env != :production && @template_cache && @template_cache.respond_to?(:clear)
+        clear_template_cache!
         # If engine is an hash we convert to json
         return engine.to_json if engine.is_a?(Hash)
         # If an engine is a string probably is a path so we try to resolve them
         if data.nil?
           data   = engine.to_sym
-          engine = resolve_template_engine(engine)
+          engine = resolve_template_engine(engine, options)
         end
         # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
@@ -28,7 +27,7 @@ module Padrino
           if layout
             # We look first for views/layout_name.ext then then for views/layouts/layout_name.ext
             options[:layout] = Dir["#{self.options.views}/#{layout}.*"].present? ? layout.to_sym : File.join('layouts', layout.to_s).to_sym
-            logger.debug "Rendering layout #{options[:layout]}"
+            logger.debug "Rendering layout #{options[:layout]}" if defined?(logger)
           end
         end
         super(engine, data, options, locals, &block)
@@ -38,11 +37,23 @@ module Padrino
       # Returns the template engine (i.e haml) to use for a given template_path
       # resolve_template_engine('users/new') => :haml
       #
-      def resolve_template_engine(template_path)
-        resolved_template_path = File.join(self.options.views, template_path.to_s + ".*")
+      def resolve_template_engine(template_path, options={})
+        view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
+        resolved_template_path = File.join(view_path, template_path.to_s + ".*")
         template_file = Dir[resolved_template_path].first
         raise "Template path '#{template_path}' could not be located in views!" unless template_file
         template_engine = File.extname(template_file)[1..-1].to_sym
+      end
+
+      ##
+      # Clears the template view cache when in development mode
+      # clear_template_cache!
+      #
+      def clear_template_cache!
+        # TODO: remove these @template_cache.respond_to?(:clear) when sinatra 1.0 will be released
+        can_clear_cache = @template_cache && @template_cache.respond_to?(:clear)
+        is_in_development = (defined?(Padrino) && Padrino.respond_to?(:env) && Padrino.env != :production)
+        @template_cache.clear if is_in_development && can_clear_cache
       end
   end
 end
