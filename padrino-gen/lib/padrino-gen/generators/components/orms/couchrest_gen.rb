@@ -7,16 +7,16 @@ module Padrino
 
           COUCHREST = (<<-COUCHREST).gsub(/^ {10}/, '')
           case Padrino.env
-            when :development then COUCHDB = "your_db_name_development"
-            when :production  then COUCHDB = "your_db_name_production"
-            when :test        then COUCHDB = "your_db_name_test"
+            when :development then COUCHDB = '!NAME!_name_development'
+            when :production  then COUCHDB = '!NAME!_name_production'
+            when :test        then COUCHDB = '!NAME!_name_test'
           end
           CouchRest.database!(COUCHDB)
           COUCHREST
 
           def setup_orm
             require_dependencies 'couchrest'
-            create_file("config/database.rb", COUCHREST)
+            create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, name.underscore))
             empty_directory('app/models')
           end
 

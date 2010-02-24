@@ -168,6 +168,24 @@ class TestModelGenerator < Test::Unit::TestCase
     end
   end
 
+  context "model generator using mongoid" do
+    should "generate model file with no properties" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-d=mongoid']) }
+      silence_logger { @model_gen.start(['person', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/class Person\n\s+include Mongoid::Document/m, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/# field <name>, :type => <type>, :default => <value>/m, '/tmp/sample_project/app/models/person.rb')
+    end
+
+    should "generate model file with given fields" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-d=mongoid']) }
+      silence_logger { @model_gen.start(['user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_project']) }
+      assert_match_in_file(/class User\n\s+include Mongoid::Document/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/field :name, :type => String/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/field :age, :type => Integer/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/field :email, :type => String/m, '/tmp/sample_project/app/models/user.rb')
+    end
+  end
+
   # SEQUEL
   context "model generator using sequel" do
     should "generate model file with given properties" do

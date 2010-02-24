@@ -56,6 +56,7 @@ module Padrino
         require 'padrino-gen/generators/components/orms/couchrest_gen'
         require 'padrino-gen/generators/components/orms/datamapper_gen'
         require 'padrino-gen/generators/components/orms/mongomapper_gen'
+        require 'padrino-gen/generators/components/orms/mongoid_gen'
         require 'padrino-gen/generators/components/orms/sequel_gen'
         require 'padrino-gen/generators/components/renderers/erb_gen'
         require 'padrino-gen/generators/components/renderers/haml_gen'
