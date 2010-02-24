@@ -21,7 +21,7 @@ padrino_gems = [
   "padrino-gen",
   "padrino-helpers",
   "padrino-mailer",
-  "padrino-admin",
+  # "padrino-admin",
   "padrino"
 ]
 

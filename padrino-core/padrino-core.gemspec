@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-core}
-  s.version = "0.8.5"
+  s.version = "0.9.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-18}
+  s.date = %q{2010-02-23}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{padrinorb@gmail.com}
@@ -27,6 +27,9 @@ Gem::Specification.new do |s|
      "bin/padrino",
      "lib/padrino-core.rb",
      "lib/padrino-core/application.rb",
+     "lib/padrino-core/application/mounter.rb",
+     "lib/padrino-core/application/rendering.rb",
+     "lib/padrino-core/application/routing.rb",
      "lib/padrino-core/caller.rb",
      "lib/padrino-core/cli/adapter.rb",
      "lib/padrino-core/cli/base.rb",
@@ -39,7 +42,6 @@ Gem::Specification.new do |s|
      "lib/padrino-core/locale/en.yml",
      "lib/padrino-core/locale/it.yml",
      "lib/padrino-core/logger.rb",
-     "lib/padrino-core/mounter.rb",
      "lib/padrino-core/reloader.rb",
      "lib/padrino-core/server.rb",
      "lib/padrino-core/support_lite.rb",
@@ -80,8 +82,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_runtime_dependency(%q<usher>, [">= 0.6.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
-      s.add_runtime_dependency(%q<bundler>, ["= 0.9.5"])
-      s.add_runtime_dependency(%q<activesupport>, [">= 2.3.5"])
+      s.add_runtime_dependency(%q<bundler>, ["= 0.9.7"])
+      s.add_runtime_dependency(%q<activesupport>, ["= 2.3.5"])
       s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
@@ -91,8 +93,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_dependency(%q<usher>, [">= 0.6.2"])
       s.add_dependency(%q<thor>, [">= 0.13.0"])
-      s.add_dependency(%q<bundler>, ["= 0.9.5"])
-      s.add_dependency(%q<activesupport>, [">= 2.3.5"])
+      s.add_dependency(%q<bundler>, ["= 0.9.7"])
+      s.add_dependency(%q<activesupport>, ["= 2.3.5"])
       s.add_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
       s.add_dependency(%q<rack-test>, [">= 0.5.0"])
@@ -103,8 +105,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<i18n>, [">= 0.3.2"])
     s.add_dependency(%q<usher>, [">= 0.6.2"])
     s.add_dependency(%q<thor>, [">= 0.13.0"])
-    s.add_dependency(%q<bundler>, ["= 0.9.5"])
-    s.add_dependency(%q<activesupport>, [">= 2.3.5"])
+    s.add_dependency(%q<bundler>, ["= 0.9.7"])
+    s.add_dependency(%q<activesupport>, ["= 2.3.5"])
     s.add_dependency(%q<shoulda>, [">= 2.10.3"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
     s.add_dependency(%q<rack-test>, [">= 0.5.0"])
