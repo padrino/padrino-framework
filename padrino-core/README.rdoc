@@ -4,15 +4,10 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-Padrino is a ruby framework build upon the {Sinatra Microframework}[http://www.sinatrarb.com].
+Padrino is a ruby framework built upon the {Sinatra Microframework}[http://www.sinatrarb.com].
 
-Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort.
-  
-The extreme simplicity of this framework is quite refreshing. We have been using Sinatra a great deal
-for recent projects. First for small and simple json and xml web services and then even
-for more complex full-featured applications. 
-
-This gem represents an attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
+Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort. This gem represents an 
+attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
 
 == Introduction
 
@@ -105,7 +100,7 @@ Let us first take a look at the simplest possible Padrino application:
     # and for read better we can divide with controllers
     controller '/admin' do
       get '/foo' do
-        'Im /admin/foo
+        'Im /admin/foo'
       end
     end
   end
