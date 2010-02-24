@@ -7,6 +7,7 @@ module Padrino
 
           SASS_INIT = (<<-SASS).gsub(/^ {10}/, '')
           # Enables support for SASS template reloading for rack.
+          # Store SASS files by default within 'public/stylesheets/sass'
           # See http://nex-3.com/posts/88-sass-supports-rack for more details.
 
           module SassInitializer
@@ -17,9 +18,14 @@ module Padrino
           end
           SASS
 
+          SASS_REGISTER = (<<-SASSR).gsub(/^ {10}/, '')
+          register SassInitializer # Remove if not using SASS\n
+          SASSR
+
           def setup_renderer
             require_dependencies 'haml'
             create_file destination_root('/lib/sass.rb'), SASS_INIT
+            inject_into_file destination_root('/app/app.rb'), SASS_REGISTER, :after => "configure do\n"
           end
         end
 
