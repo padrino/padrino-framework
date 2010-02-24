@@ -5,6 +5,9 @@ module Padrino
 
         module RiotGen
           RIOT_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+          PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+          require File.dirname(__FILE__) + "/../config/boot"
+
           class Riot::Situation
             include Rack::Test::Methods
 

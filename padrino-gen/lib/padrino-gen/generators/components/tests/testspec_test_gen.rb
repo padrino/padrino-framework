@@ -5,6 +5,9 @@ module Padrino
 
         module TestspecGen
           TESTSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+          PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+          require File.dirname(__FILE__) + "/../config/boot"
+
           class Test::Unit::TestCase
             include Rack::Test::Methods
 

@@ -214,6 +214,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/spec/spec.rake')
+      assert_file_exists('/tmp/sample_project/spec/spec.opts')
     end
 
     should "properly generate for shoulda" do
@@ -233,5 +234,23 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_project/test/test_config.rb')
       assert_file_exists('/tmp/sample_project/test/test.rake')
     end
+
+    should "properly generate for cucumber" do
+      buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--test=cucumber', '--script=none']) }
+      assert_match /Applying.*?cucumber.*?test/, buffer
+      assert_match_in_file(/gem 'rspec'.*?:require => "spec"/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'cucumber'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'capybara'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/spec/spec_helper.rb')
+      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/features/support/env.rb')
+      assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
+      assert_match_in_file(/Capybara.app = /, '/tmp/sample_project/features/support/env.rb')
+      assert_file_exists('/tmp/sample_project/spec/spec.rake')
+      assert_file_exists('/tmp/sample_project/spec/spec.opts')
+      assert_file_exists('/tmp/sample_project/features/support/env.rb')
+      assert_file_exists('/tmp/sample_project/features/add.feature')
+      assert_file_exists('/tmp/sample_project/features/step_definitions/add_steps.rb')
+    end
+
   end
 end

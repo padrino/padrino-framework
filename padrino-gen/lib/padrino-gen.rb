@@ -48,7 +48,26 @@ module Padrino
       # 
       def lockup!
         require 'padrino-gen/generators/actions'
-        Dir[File.dirname(__FILE__) + '/padrino-gen/generators/components/**/*.rb'].each { |lib| require lib }
+        require 'padrino-gen/generators/components/actions'
+        require 'padrino-gen/generators/components/actions'
+        require 'padrino-gen/generators/components/mocks/mocha_gen'
+        require 'padrino-gen/generators/components/mocks/rr_gen'
+        require 'padrino-gen/generators/components/orms/activerecord_gen'
+        require 'padrino-gen/generators/components/orms/couchrest_gen'
+        require 'padrino-gen/generators/components/orms/datamapper_gen'
+        require 'padrino-gen/generators/components/orms/mongomapper_gen'
+        require 'padrino-gen/generators/components/orms/sequel_gen'
+        require 'padrino-gen/generators/components/renderers/erb_gen'
+        require 'padrino-gen/generators/components/renderers/haml_gen'
+        require 'padrino-gen/generators/components/scripts/jquery_gen'
+        require 'padrino-gen/generators/components/scripts/prototype_gen'
+        require 'padrino-gen/generators/components/scripts/rightjs_gen'
+        require 'padrino-gen/generators/components/tests/bacon_test_gen'
+        require 'padrino-gen/generators/components/tests/rspec_test_gen'
+        require 'padrino-gen/generators/components/tests/cucumber_test_gen'
+        require 'padrino-gen/generators/components/tests/riot_test_gen'
+        require 'padrino-gen/generators/components/tests/shoulda_test_gen'
+        require 'padrino-gen/generators/components/tests/testspec_test_gen'
         load_paths.flatten.each { |file| require file  }
       end
     end

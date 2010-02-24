@@ -54,6 +54,13 @@ class Account
   end
 
   ##
+  # This method is used from AuthenticationHelper
+  #
+  def self.find_by_id(id)
+    get(id)
+  end
+
+  ##
   # This method it's used for retrive the original password.
   # 
   def password_clean

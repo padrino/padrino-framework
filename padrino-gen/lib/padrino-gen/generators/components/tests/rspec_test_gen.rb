@@ -2,9 +2,12 @@ module Padrino
   module Generators
     module Components
       module Tests
-
         module RspecGen
+
           RSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+          PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+          require File.dirname(__FILE__) + "/../config/boot"
+
           Spec::Runner.configure do |conf|
             conf.include Rack::Test::Methods
           end
