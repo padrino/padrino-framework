@@ -20,6 +20,7 @@ module Padrino
           def setup_renderer
             require_dependencies 'haml'
             create_file destination_root('/lib/sass.rb'), SASS_INIT
+            inject_into_file destination_root('/app/app.rb'), "    register SassInitializer", :after => "configure do\n"
           end
         end
 
