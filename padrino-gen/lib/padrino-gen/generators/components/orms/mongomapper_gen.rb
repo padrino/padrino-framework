@@ -9,15 +9,16 @@ module Padrino
           MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
 
           case Padrino.env
-            when :development then MongoMapper.database = 'your_db_development'
-            when :production  then MongoMapper.database = 'your_db_production'
-            when :test        then MongoMapper.database = 'your_db_test'
+            when :development then MongoMapper.database = '!NAME!_development'
+            when :production  then MongoMapper.database = '!NAME!_production'
+            when :test        then MongoMapper.database = '!NAME!_test'
           end
           MONGO
 
           def setup_orm
+            require_dependencies 'mongo_ext', :require => 'mongo'
             require_dependencies 'mongo_mapper'
-            create_file("config/database.rb", MONGO)
+            create_file("config/database.rb", MONGO.gsub(/!NAME!/, name.underscore))
             empty_directory('app/models')
           end
 

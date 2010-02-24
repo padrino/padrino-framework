@@ -27,7 +27,7 @@ class Account
   before :save, :generate_password
 
   ##
-  # This method it's for authentication purpose
+  # This method is for authentication purpose
   # 
   def self.authenticate(email, password)
     account = first(:conditions => { :email => email }) if email.present?
@@ -35,7 +35,14 @@ class Account
   end
 
   ##
-  # This method it's used for retrive the original password.
+  # This method is used from AuthenticationHelper
+  #
+  def self.find_by_id(id)
+    get(id)
+  end
+
+  ##
+  # This method is used for retrive the original password.
   # 
   def password_clean
     crypted_password.decrypt(salt)

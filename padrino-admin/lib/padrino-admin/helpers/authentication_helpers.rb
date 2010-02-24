@@ -94,7 +94,7 @@ module Padrino
           end
 
           def login_from_session
-            Account.first(:conditions => { :id => session[options.session_id] }) if defined?(Account)
+            Account.find_by_id(session[options.session_id]) if defined?(Account)
           end
       end # AuthenticationHelpers
     end # Helpers

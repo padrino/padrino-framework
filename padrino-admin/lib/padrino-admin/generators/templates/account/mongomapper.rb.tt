@@ -1,5 +1,14 @@
-class Account < ActiveRecord::Base
+class Account
+  include MongoMapper::Document
   attr_accessor :password
+
+  # Keys
+  key :name,             String
+  key :surname,          String
+  key :email,            String
+  key :crypted_password, String
+  key :salt,             String
+  key :role,             String
 
   # Validations
   validates_presence_of     :email, :role
@@ -19,7 +28,7 @@ class Account < ActiveRecord::Base
   # This method is for authentication purpose
   # 
   def self.authenticate(email, password)
-    account = first(:conditions => { :email => email }) if email.present?
+    account = first(:email => email) if email.present?
     account && account.password_clean == password ? account : nil
   end
 

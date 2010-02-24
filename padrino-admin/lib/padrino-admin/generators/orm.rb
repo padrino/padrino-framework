@@ -50,7 +50,7 @@ module Padrino
 
         def find(params=nil)
           case orm
-            when :activerecord then "#{klass_name}.find(#{params})"
+            when :activerecord, :mongomapper then "#{klass_name}.find(#{params})"
             when :datamapper   then "#{klass_name}.get(#{params})"
             else raise OrmError, "Adapter #{orm} not yet supported!"
           end
@@ -70,7 +70,7 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord then "#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :mongomapper then "#{name_singular}.update_attributes(#{params})"
             when :datamapper   then "#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} not yet supported!"
           end

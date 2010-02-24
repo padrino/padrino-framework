@@ -1140,7 +1140,7 @@ See the wiki article for additional information: <...WIKI...>
 
 Padrino has a beautiful Admin, with these fatures:
 
-Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, couchdb (now only: datamapper and activerecord)
+Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper
 Authentication:: Support for Account authentication, Account Permission managment
 Scaffold:: You can simply create a new "admin interface" simply providing a Model
 

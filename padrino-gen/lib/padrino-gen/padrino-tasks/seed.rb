@@ -1,4 +1,4 @@
-if defined?(ActiveRecord) || defined?(DataMapper)
+if defined?(ActiveRecord) || defined?(DataMapper) || defined?(MongoMapper)
   desc 'Load the seed data from db/seeds.rb'
   task :seed => :environment do
     seed_file = Padrino.root('db', 'seeds.rb')
