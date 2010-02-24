@@ -13,7 +13,6 @@ module Padrino
         app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
         app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
         app.helpers Padrino::Admin::Helpers::ViewHelpers
-        app.use Padrino::Admin::Middleware::FlashMiddleware, app.session_id  # make sure that is the same of session_name in helpers
         app.before { login_required }
       end
 

@@ -246,28 +246,4 @@ class TestAdminApplication < Test::Unit::TestCase
     get "/modules"
     assert_equal "admin => /admin", body
   end
-
-  should 'use correclty flash middleware' do
-    mock_app do
-      use Padrino::Admin::Middleware::FlashMiddleware, :session_id
-
-      get "/set_session_id" do
-        params[:session_id]
-      end
-
-      get "/get_session_id" do
-        session[:session_id]
-      end
-    end
-
-    get "/set_session_id", { :session_id => 24 }, 'HTTP_USER_AGENT' => 'Adobe Flash'
-    assert_equal "24", body
-
-    # TODO: inspect why this fail on Ruby 1.9.1
-    unless RUBY_VERSION >= '1.9'
-      get "/get_session_id"
-      assert_equal "24", body
-    end
-  end
-
 end
