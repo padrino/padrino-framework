@@ -31,6 +31,7 @@ module Padrino
           @columns ||= case orm
             when :activerecord then @klass.columns
             when :datamapper   then @klass.properties
+            when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
             else raise OrmError, "Adapter #{orm} not yet supported!"
           end
         end
