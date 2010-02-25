@@ -5,7 +5,7 @@ module Padrino
         module RspecGen
 
           unless defined?(RSPEC_SETUP)
-            RSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+            RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '')
             PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
             require File.dirname(__FILE__) + "/../config/boot"
 
@@ -25,7 +25,7 @@ module Padrino
           end
 
           unless defined?(RSPEC_CONTROLLER_TEST)
-            RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
+            RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '')
             require File.dirname(__FILE__) + '/../spec_helper.rb'
 
             describe "!NAME!Controller" do
@@ -41,7 +41,7 @@ module Padrino
           end
 
           unless defined?(RSPEC_RAKE)
-            RSPEC_RAKE = (<<-TEST).gsub(/^ {10}/, '')
+            RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '')
             require 'spec/rake/spectask'
 
             Spec::Rake::SpecTask.new(:spec) do |t|
@@ -52,7 +52,7 @@ module Padrino
           end
 
           unless defined?(RSPEC_MODEL_TEST)
-            RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
+            RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '')
             require File.dirname(__FILE__) + '/../spec_helper.rb'
 
             describe "!NAME! Model" do
