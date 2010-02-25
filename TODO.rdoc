@@ -2,10 +2,7 @@
 
 == ROADMAP FOR 1.0
 
-* [padrino-admin] Complete admin with mongomapper adapter
-* [padrino-admin] Decide if use admin with extjs or with web-app-theme
-* [padrino-core]  Code Optimizations
-* [padrino-cache] Build this component out supporting page, fragment, general cache (with storage methods)
+* [padrino-cache] Build caching component out supporting page, fragment, general cache (with storage methods)
 
 === GENERAL
 
