@@ -1,0 +1,29 @@
+.block
+  .secondary-navigation
+    %ul.wat-cf
+      %li.first.active=link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
+      %li=link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
+  .content
+    %h2.title
+      =pat(:all)
+      =mt(:<%= @orm.name_singular %>)
+    .inner
+      %table.table
+        %tr
+          <%- @orm.columns.each_with_index do |column, i| -%>
+          %th<%= ".first" if i==0 %>=mat(:<%= @orm.name_singular %>, :<%= column.name %>)
+          <%- end -%>
+          %th.last="&nbsp;"
+        -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
+          %tr
+            <%- @orm.columns.each_with_index do |column, i| -%>
+            %td<%= ".first" if i==0 %>=link_to <%= @orm.name_singular %>.<%= column.name %>, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id)
+            <%- end -%>
+            %td.last
+              =button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to 
+              ="|"
+              =button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to
+      .actions-bar.wat-cf
+        .actions="&nbsp;"
+
+-content_for :sidebar, partial("base/sidebar")
