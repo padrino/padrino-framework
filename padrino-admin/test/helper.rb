@@ -19,7 +19,7 @@ end
 require 'padrino-core/support_lite'
 require 'padrino-admin'
 
-Padrino::Generators.lockup!
+Padrino::Generators.load_components!
 
 module Kernel
   # Silences the output by redirecting to stringIO

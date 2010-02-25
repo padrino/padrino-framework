@@ -15,7 +15,7 @@ end
 
 require 'padrino-gen'
 
-Padrino::Generators.lockup!
+Padrino::Generators.load_components!
 
 class Test::Unit::TestCase
   include Rack::Test::Methods

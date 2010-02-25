@@ -4,7 +4,7 @@ require 'padrino-core/support_lite'
 module Padrino
   module Generators
     ##
-    # This class bootstrap +config/boot+ and perform +Padrino::Generators.lockup!+ for handle
+    # This class bootstrap +config/boot+ and perform +Padrino::Generators.load_components!+ for handle
     # 3rd party generators
     # 
     class Cli < Thor::Group
@@ -31,7 +31,7 @@ module Padrino
       end
 
       def setup
-        Padrino::Generators.lockup!
+        Padrino::Generators.load_components!
 
         generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
         generator_class = Padrino::Generators.mappings[generator_kind]
