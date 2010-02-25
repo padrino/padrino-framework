@@ -503,8 +503,8 @@ The available components and their default options are listed below:
 
 test::      rspec (default), bacon, shoulda, cucumber, testspec, riot
 renderer::  haml  (default), erb
-mock::      none  (default), rr
-script::    none  (default), prototype, rightjs
+mock::      none  (default), mocha, rr
+script::    none  (default), jquery, prototype, mootools, rightjs
 orm::       none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
 The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.

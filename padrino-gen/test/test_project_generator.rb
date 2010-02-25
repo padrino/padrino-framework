@@ -171,6 +171,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/public/javascripts/jquery.js')
       assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
     end
+    
+    should "properly generate for mootools" do
+      buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=mootools']) }
+      assert_match /Applying.*?mootools.*?script/, buffer
+      assert_file_exists('/tmp/sample_project/public/javascripts/mootools-core.js')
+      assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
+    end
 
     should "properly generate for prototype" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=prototype']) }
