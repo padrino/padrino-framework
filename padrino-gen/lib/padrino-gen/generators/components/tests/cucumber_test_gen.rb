@@ -1,4 +1,5 @@
 require 'padrino-gen/generators/components/tests/rspec_test_gen'
+
 module Padrino
   module Generators
     module Components
@@ -14,10 +15,10 @@ module Padrino
           require 'spec/expectations'
 
           # Sinatra < 1.0 always disable sessions for test env
-          # so if you need them it's necessary force the use 
+          # so if you need them it's necessary to force the use 
           # of Rack::Session::Cookie
           Capybara.app = CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
-          # You can hanlde all padrino applications using instead:
+          # You can handle all padrino applications instead using:
           #   Capybara.app = Padrino.application
           TEST
 

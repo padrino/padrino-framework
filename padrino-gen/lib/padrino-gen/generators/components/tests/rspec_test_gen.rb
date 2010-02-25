@@ -4,57 +4,65 @@ module Padrino
       module Tests
         module RspecGen
 
-          RSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
-          PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../config/boot"
+          unless defined?(RSPEC_SETUP)
+            RSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
+            PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+            require File.dirname(__FILE__) + "/../config/boot"
 
-          Spec::Runner.configure do |conf|
-            conf.include Rack::Test::Methods
-          end
-
-          def app
-            # Sinatra < 1.0 always disable sessions for test env
-            # so if you need them it's necessary force the use 
-            # of Rack::Session::Cookie
-            CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
-            # You can hanlde all padrino applications using instead:
-            #   Padrino.application
-          end
-          TEST
-
-          RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../spec_helper.rb'
-
-          describe "!NAME!Controller" do
-            before do 
-              get "/"
+            Spec::Runner.configure do |conf|
+              conf.include Rack::Test::Methods
             end
 
-            it "returns hello world" do
-              last_response.body.should == "Hello World"
+            def app
+              # Sinatra < 1.0 always disable sessions for test env
+              # so if you need them it's necessary force the use
+              # of Rack::Session::Cookie
+              CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
+              # You can hanlde all padrino applications using instead:
+              #   Padrino.application
             end
+            TEST
           end
-          TEST
 
-          RSPEC_RAKE = (<<-TEST).gsub(/^ {10}/, '')
-          require 'spec/rake/spectask'
+          unless defined?(RSPEC_CONTROLLER_TEST)
+            RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
+            require File.dirname(__FILE__) + '/../spec_helper.rb'
 
-          Spec::Rake::SpecTask.new(:spec) do |t|
-            t.spec_opts = ['--options', "spec/spec.opts"]
-            t.spec_files = Dir['**/*_spec.rb']
-          end
-          TEST
+            describe "!NAME!Controller" do
+              before do
+                get "/"
+              end
 
-          RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../spec_helper.rb'
-
-          describe "!NAME! Model" do
-            it 'can be created' do
-              @!DNAME! = !NAME!.new
-              @!DNAME!.should.not.be nil
+              it "returns hello world" do
+                last_response.body.should == "Hello World"
+              end
             end
+            TEST
           end
-          TEST
+
+          unless defined?(RSPEC_RAKE)
+            RSPEC_RAKE = (<<-TEST).gsub(/^ {10}/, '')
+            require 'spec/rake/spectask'
+
+            Spec::Rake::SpecTask.new(:spec) do |t|
+              t.spec_opts = ['--options', "spec/spec.opts"]
+              t.spec_files = Dir['**/*_spec.rb']
+            end
+            TEST
+          end
+
+          unless defined?(RSPEC_MODEL_TEST)
+            RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
+            require File.dirname(__FILE__) + '/../spec_helper.rb'
+
+            describe "!NAME! Model" do
+              it 'can be created' do
+                @!DNAME! = !NAME!.new
+                @!DNAME!.should.not.be nil
+              end
+            end
+            TEST
+          end
 
           def setup_test
             require_dependencies 'rspec', :require => 'spec', :group => 'test'
