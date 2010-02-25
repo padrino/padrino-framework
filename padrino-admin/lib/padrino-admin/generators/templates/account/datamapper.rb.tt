@@ -38,7 +38,7 @@ class Account
   # This method is used from AuthenticationHelper
   #
   def self.find_by_id(id)
-    get(id)
+    get(id) rescue nil
   end
 
   ##

@@ -25,7 +25,7 @@ module Padrino
       class_option :dev,          :desc => "Use padrino from a git checkout",        :default => false, :type => :boolean
 
       # Definitions for the available customizable components
-      component_option :orm,      "database engine",    :aliases => '-d', :choices => [:datamapper, :mongomapper, :activerecord, :sequel, :couchrest], :default => :none
+      component_option :orm,      "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest], :default => :none
       component_option :test,     "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot]
       component_option :mock,     "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,   "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs], :default => :none

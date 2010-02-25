@@ -505,7 +505,7 @@ test::      rspec (default), bacon, shoulda, cucumber, testspec, riot
 renderer::  haml  (default), erb
 mock::      none  (default), rr
 script::    none  (default), prototype, rightjs
-orm::       none  (default), mongomapper, activerecord, sequel, couchrest
+orm::       none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
 The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
 The necessary bundler command can be executed automatically through the generator with
@@ -1140,7 +1140,7 @@ See the wiki article for additional information: <...WIKI...>
 
 Padrino has a beautiful Admin, with these fatures:
 
-Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper
+Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, mongoid
 Authentication:: Support for Account authentication, Account Permission managment
 Scaffold:: You can simply create a new "admin interface" simply providing a Model
 

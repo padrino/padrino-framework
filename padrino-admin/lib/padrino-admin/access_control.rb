@@ -51,7 +51,7 @@ module Padrino
         # Return an array of project_modules
         # 
         def project_modules(account)
-          role = account ? account.role.to_sym : :any
+          role = account.role.to_sym rescue :any
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
           authorizations.collect(&:project_modules).flatten.uniq
         end
@@ -61,14 +61,15 @@ module Padrino
         # 
         def allowed?(account=nil, path=nil)
           path = "/" if path.blank?
+          role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.collect(&:allowed).flatten.uniq
           denied_paths   = authorizations.collect(&:denied).flatten.uniq
           if account
             denied_paths.clear
-            authorizations = @authorizations.find_all { |auth| auth.roles.include?(account.role.to_sym) }
+            authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
             allowed_paths += authorizations.collect(&:allowed).flatten.uniq
-            authorizations = @authorizations.find_all { |auth| !auth.roles.include?(account.role.to_sym) && !auth.roles.include?(:any) }
+            authorizations = @authorizations.find_all { |auth| !auth.roles.include?(role) && !auth.roles.include?(:any) }
             denied_paths  += authorizations.collect(&:allowed).flatten.uniq
             denied_paths  += authorizations.collect(&:denied).flatten.uniq
           end
