@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-23}
+  s.date = %q{2010-02-25}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -39,14 +39,17 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/components/orms/activerecord_gen.rb",
      "lib/padrino-gen/generators/components/orms/couchrest_gen.rb",
      "lib/padrino-gen/generators/components/orms/datamapper_gen.rb",
+     "lib/padrino-gen/generators/components/orms/mongoid_gen.rb",
      "lib/padrino-gen/generators/components/orms/mongomapper_gen.rb",
      "lib/padrino-gen/generators/components/orms/sequel_gen.rb",
      "lib/padrino-gen/generators/components/renderers/erb_gen.rb",
      "lib/padrino-gen/generators/components/renderers/haml_gen.rb",
      "lib/padrino-gen/generators/components/scripts/jquery_gen.rb",
+     "lib/padrino-gen/generators/components/scripts/mootools_gen.rb",
      "lib/padrino-gen/generators/components/scripts/prototype_gen.rb",
      "lib/padrino-gen/generators/components/scripts/rightjs_gen.rb",
      "lib/padrino-gen/generators/components/tests/bacon_test_gen.rb",
+     "lib/padrino-gen/generators/components/tests/cucumber_test_gen.rb",
      "lib/padrino-gen/generators/components/tests/riot_test_gen.rb",
      "lib/padrino-gen/generators/components/tests/rspec_test_gen.rb",
      "lib/padrino-gen/generators/components/tests/shoulda_test_gen.rb",
@@ -77,6 +80,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/templates/mailer_initializer.rb.tt",
      "lib/padrino-gen/generators/templates/scripts/jquery.js",
      "lib/padrino-gen/generators/templates/scripts/lowpro.js",
+     "lib/padrino-gen/generators/templates/scripts/mootools-core.js",
      "lib/padrino-gen/generators/templates/scripts/protopak.js",
      "lib/padrino-gen/generators/templates/scripts/right.js",
      "lib/padrino-gen/padrino-tasks/activerecord.rb",
@@ -97,7 +101,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{padrino-gen}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{Generators for easily creating and building padrino applications}
 
   if s.respond_to? :specification_version then

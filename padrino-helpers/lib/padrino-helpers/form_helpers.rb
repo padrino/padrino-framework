@@ -163,7 +163,8 @@ module Padrino
       # 
       def error_message_on(object, field, options={})
         object = instance_variable_get("@#{object}")
-        if object && object.respond_to?(:errors) && object.errors.respond_to?(:[]) && object.errors[field]
+        error  = object.errors[field] rescue nil
+        if error
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)
           error = [options.delete(:prepend), Array(object.errors[field]).first, options.delete(:append)].compact.join(" ")
