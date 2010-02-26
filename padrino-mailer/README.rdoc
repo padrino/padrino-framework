@@ -53,33 +53,9 @@ or if you like the method_missing approach:
   SampleMailer.deliver_registration_email "Bob", 'bob@bobby.com'
 
 And that will then deliver the email according the the configured options. This is really all you need to send emails.
-A few variations are shown below for completeness.
 
-If we want to attach files to our email:
-
-  # app/mailers/sample_mailer.rb
-  class SampleMailer < Padrino::Mailer::Base
-    def attachment_email(name, user_email_address)
-      from 'admin@site.com'
-      to user_email_address
-      # ...
-      attachments { "foo.zip" => File.read("path/to/foo.zip"), "file.txt" => "this is a text file!" }
-    end
-  end
-
-or perhaps we want to have a short body without the need for a template file:
-
-  # app/mailers/sample_mailer.rb
-  class SampleMailer < Padrino::Mailer::Base
-    def short_email(name, user_email_address)
-      from 'admin@site.com'
-      to user_email_address
-      subject 'Welcome to the site!'
-      body    "This is a short body defined right in the mailer itself"
-    end
-  end
-
-See the wiki article for additional information: <...WIKI...>
+Be sure to check out the 
+{Padrino Mailer}[http://wiki.github.com/padrino/padrino-framework/padrino-mailer] guide for more details on usage.
 
 == Copyright
 

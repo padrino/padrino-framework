@@ -4,26 +4,20 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-Padrino is a ruby framework built upon the {Sinatra Microframework}[http://www.sinatrarb.com].
-
-Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort. This gem represents an 
-attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
+Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.sinatrarb.com]. 
+Sinatra is a DSL for creating simple web applications in Ruby with speed and minimal effort. 
+This framework tries hard to make it as fun and easy as possible to code much more advanced web applications by 
+building upon the Sinatra philosophies and foundation.
 
 == Introduction
 
 Many people love Sinatra's simplicity and lightweight but often quickly come to miss a great deal
 of functionality provided by other web frameworks such as Rails when building non-trivial applications.
 
-The obvious question in these cases might be "Why not just use rails then?". This can often be a viable option
-but still Rails is quite a large framework with a 'take it or leave it' attitude.
-
-Personally, we have come to love the philosophy of Sinatra which acts as a thin layer on top of rack 
-often allowing middleware to do most of the work and pulling in additional complexity only when required. 
-
 Our goal with this framework is to match the essence of Sinatra and at the same time create a standard library
 of tools, helpers and components that will make Sinatra suitable for more complex applications.
 
-Here is a small list of what Padrino provides:
+Here is a brief overview of functionality provided by the Padrino framework:
 
 Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
 MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
@@ -38,11 +32,9 @@ Logging:: Padrino provide a logger that can interact with your orm or any other 
 Reloading:: With padrino is not necessary like other framework start and restart your server for see changes.
 I18n:: Padrino has a full support of I18n and can autoset locale.
 
-Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
+Keep in mind, the user will be able to pull in these components 
+{seperately into existing Sinatra applications}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra]
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
-
-Note that all work has been created to be compatible with haml, erb, and erubis and that this gem is intended to be 
-template-agnostic in providing helpers wherever possible.
 
 == Installation
 
@@ -53,10 +45,13 @@ To install the padrino framework, simply grab the latest version from gemcutter:
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
 
+For a more detailed look at Padrino installation, 
+check out the {Installation Guide}[http://wiki.github.com/padrino/padrino-framework/installation].
+
 == Usage
 
 Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of 
-additional tools and helpers to extend the foundation. This README and Padrino documentation in general will focus
+additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
 usage of Sinatra itself. Resources for Sinatra are listed below:
 
@@ -78,9 +73,6 @@ Padrino has support for an enhanced base application class <tt>Padrino::Applicat
 expands the capabilities of Sinatra::Application and automatically provides the resulting application access to all of
 the padrino framework's functionalities. 
 
-Similar in spirit to Sinatra itself, Padrino application layout is extremely flexible and can be as small as a single file.
-However, Padrino provides many extensions which improve upon the ability to construct more complex applications.
-
 === Simple Application Definition
 
 Let us first take a look at the simplest possible Padrino application:
@@ -98,15 +90,15 @@ Let us first take a look at the simplest possible Padrino application:
     # and for read better we can divide with controllers
     controller '/admin' do
       get '/foo' do
-        'Im /admin/foo'
+        'Url is /admin/foo'
       end
     end
   end
 
 === Enhanced Route Definitions and Controllers
 
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the Padrino routing and controller system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
 within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
@@ -118,20 +110,21 @@ within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/co
     end
   end
   
-You can also do more complex route definitions:
+You can also do more complex route alias definitions:
 
   # app/controllers/example.rb
-  SimpleApp.controllers do
+  SimpleApp.controllers :posts do
     get :index do
       ...
     end
 
-    get :account do
-      # access params[:name] and params[:index]
+    get :show, :with => :id do
+      # url generated is '/posts/show/:id'
+      # access params[:id]
     end
   end
 
-as well as mapping the route to an explicit url:
+as well as mapping the route aliases to an explicit url:
   
   # app/controllers/example.rb
   SimpleApp.controllers do
@@ -144,12 +137,12 @@ as well as mapping the route to an explicit url:
     end
   end
   
-and also setting the respond_to for a route:
+and even configure the respond_to for each route:
   
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
     get :show, :with => :id, :respond_to => :js do
-      "Im /admin/show/#{params[:id]}.#{params[:format]}"
+      "Url is /admin/show/#{params[:id]}.#{params[:format]}"
     end
 
     get :other, with => [:id, :name], respond_to => [:html, :json] do
@@ -160,8 +153,8 @@ and also setting the respond_to for a route:
     end
   end
   
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the routing and controller system, check out the 
+{Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
   
 === Rendering
 
@@ -176,8 +169,8 @@ The existing render function works as well if an engine type should be specified
 # example.haml
 render :haml, 'account/index'
 
-For a complete overview of the Padrino rendering system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the Padrino rendering system, check out the 
+{Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 === Layout
 
@@ -191,8 +184,8 @@ With Padrino you can (like rails do) use for your custom layout, disable it
     # Use the layout located in views/layouts/custom.haml
     layout :custom
     
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the layout functionality, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 === Mounting Applications
 
@@ -207,7 +200,7 @@ Padrino stores application mounting information by default within <tt>config/app
 to keep all information regarding what applications are mounted to which uri's. 
 
 For a complete look at mounting applications within a Padrino project, 
-check out the guide on {Mounting Applications}[http://wiki.github.com/padrino/padrino-framework/mounting-applications]
+check out the guide on {Mounting Applications}[http://wiki.github.com/padrino/padrino-framework/mounting-applications].
 
 === Auto Load Paths
 
@@ -216,8 +209,8 @@ functionality for easily splitting up your application into separate files. Padr
 as a convention for establishing database connection. Also, any files within the <tt>lib</tt> folder will be required 
 automatically by Padrino.
 
-For a complete overview of auto-load paths, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of auto-loaded paths within Padrino, 
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Application Logging
 
@@ -233,8 +226,8 @@ within your app and any controller or views:
     get("/test") { logger.info "This is a test" }
   end
   
-For a complete overview of Padrino logger functionality, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of Padrino logger functionality, check out the 
+{Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Development Reloader
 
@@ -243,10 +236,10 @@ the need to restart the server. Through the use of a customized Rack middleware,
 are monitored and reloaded whenever changes are applied. 
 
 This makes rapid development much easier and provides a better alternative to 'shotgun' or 'rerun' 
-which require the application server to be restarted which makes requests take much longer to complete.
+which requires the application server to be restarted which makes requests take much longer to complete.
 
 For a complete overview of code reloading in development, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Terminal Commands
 
@@ -256,7 +249,7 @@ common tasks such as starting / stopping the application, executing the unit tes
 The following commands are available:
 
   # starts the app server (non-daemonized)
-  $ padrino start 
+  $ padrino start
   # starts the app server (daemonized) with given port, environment and adapter
   $ padrino start -d -p 3000 -e development -a thin 
   
@@ -272,8 +265,8 @@ The following commands are available:
 You can also create custom rake tasks as well. Using these commands can simplify common tasks 
 making development that much smoother.
 
-For a complete overview of Padrino terminal commands, 
-check out the {Padrino Commands Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of Padrino terminal commands, check out the 
+{Padrino Commands Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 = Agnostic Application Generators (padrino-gen)
 
@@ -472,7 +465,7 @@ This will capture the template body passed into the form_tag block and then appe
 to the template through the use of <tt>concat_content</tt>. Note have been built to work for both haml and erb 
 templates using the same syntax.
 
-For more information on output helpers, check out the guide for
+For more information on using output helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Tag Helpers
@@ -493,7 +486,7 @@ The input_tag is used to build tags that are related to accepting input from the
   
 Note that all of these accept html options and result in returning a string containing html tags.
 
-For more information on tag helpers, check out the guide for
+For more information on using tag helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Asset Helpers
@@ -514,7 +507,7 @@ simple view template:
     %p Mail me at #{mail_to 'fake@faker.com', "Fake Email Link", :cc => "test@demo.com"}
     %p= image_tag 'padrino.png', :width => '35', :class => 'logo'
 
-For more information on asset helpers, check out the guide for
+For more information on using asset helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
   
 === Form Helpers
@@ -539,7 +532,7 @@ example of constructing a non-object form would be:
     - field_set_tag(:class => 'buttons') do
       = submit_tag "Remove"
 
-For more information on form helpers, check out the guide for
+For more information on using form helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
     
 === FormBuilders
@@ -596,7 +589,7 @@ and would generate this html (with each input contained in a paragraph and conta
 
 You can also easily build your own FormBuilder which allows for customized fields and behavior.
 
-For more information on the Padrino form builders, check out the guide for
+For more information on using the Padrino form builders, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Format Helpers
@@ -624,7 +617,7 @@ Format helpers also includes a number of useful text manipulation functions such
 
 These helpers can be invoked from any route or view within your application.
 
-For more information on the format helpers, check out the guide for
+For more information on using the format helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Render Helpers
@@ -649,58 +642,60 @@ Finally, we have the all-important partials support for rendering mini-templates
   partial 'photo/_item', :object => @photo, :locals => { :foo => 'bar' }
   partial 'photo/_item', :collection => @photos
   
-For more information on render and partial helpers, check out the guide for
+For more information on using the render and partial helpers, check out the guide for
 {Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 = Admin Dashboard and Authentication (padrino-admin)
 
 === Overview
 
-Padrino has a beautiful Admin, with these fatures:
+Padrino has a beautiful Admin management dashboard with these features:
 
-Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, mongoid
+Orm Agnostic:: Data Adapters for Datamapper, Activerecord, Mongomapper, Mongoid
 Template Agnostic:: Erb and Haml Renderer
 Authentication:: Support for Account authentication, Account Permission managment
-Scaffold:: You can simply create a new "admin interface" simply providing a Model
+Scaffold:: You can simply create a new "admin interface" by providing a Model
+Access Control:: Supports authentication and role permissions for your application
 
-=== Admin Usage
+=== Admin Dashboard Usage
 
-Create a project:
+For a complete look at usage of the Admin dashboard functionality, be sure to check out the 
+{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
 
-  $ padrino-gen project fun-test
-  $ cd fun-test
+Create a new project:
 
-For create the admin application:
+  $ padrino-gen project demo
+  $ cd demo
 
-  fun-test$ padrino-gen admin
+Create the admin subapplication:
 
-Now follow admin instructions so:
+  demo$ padrino-gen admin
 
-* edit your config/database.rb
-* run padrino rake dm:migrate # or ar:migrate if you use activerecord
-* run padrino rake seed
+Next, follow the admin setup steps:
 
-Your admin now is "complete", you can start your server with <tt>padrino start</tt> and point your browser to /admin!
+* configure your <tt>config/database.rb</tt> to connect to the correct data.
+* run <tt>padrino rake dm:migrate</tt> # or ar:migrate if you use activerecord
+* run <tt>padrino rake seed</tt>
 
-For create a new "scaffold" you need to provide only a Model for them like:
+Your admin panel now is ready and you can start your server with <tt>padrino start</tt> and point your browser to <tt>/admin</tt>!
 
-  fun-test$ padrino-gen model post --skip-migration # edit your post.rb model and add some fields
-  fun-test$ padrino-gen rake dm:auto:migrate
-  fun-test$ padrino-gen admin_page post
-  fun-test$ padrino start # and go to http://localhost:3000/admin
+To create a new "scaffold" you need to provide only a Model name to the command:
+
+  demo$ padrino-gen model post --skip-migration # edit your post.rb model and add some fields
+  demo$ padrino-gen rake dm:auto:migrate
+  demo$ padrino-gen admin_page post
+  demo$ padrino start # and go to http://localhost:3000/admin
   
 That's all!!
 
-=== Admin Authentication
+=== Admin Access Control
 
 Padrino Admin use a model Account for manage role, membership and permissions.
 
+For an ecommerce website, usually certain actions require permissions and authentication. This is supported
+by the admin access control features:
 
-==== Scenario Ecommerce
-
-For an ecommerce we usually deny some controllers/actions like
-
-  class MyEcommerce < Padrino::Application
+  class EcommerceSite < Padrino::Application
     enable :authentication
     enable :store_location
     set    :login_page, "/login"
@@ -714,38 +709,8 @@ For an ecommerce we usually deny some controllers/actions like
 In this example +if+ we visit urls that start with /+customer+/+orders+ or /+cart/checkout+ we will be redirected
 to our :+login_page+ "/login". Once we are correctly logged in we can visit these pages.
 
-==== Scenario Admin
-
-Suppose that you need to some actions for +admin+ accounts and others for +editors+
-
-When you generate padrino-admin will be created for you an +Account+ model that have a +role+ attribute. So:
-
-  class Admin < Padrino::Application
-    enable :authentication
-    disable :store_location
-    set :login_page, "/admin/sessions/new"
-
-    access_control.roles_for :any do |role|
-      role.protect "/"
-      role.allow "/sessions"
-    end
-
-    access_control.roles_for :admin do |role|
-      role.project_module :settings, "/settings"
-    end
-
-    access_control.roles_for :editor do |role|
-      role.project_module :posts, "/posts"
-      role.project_module :categories, "/categories"
-    end
-  end
-
-In this case we +protect+ the entire admin (all paths that start with "/") except paths that start with /+sessions+ so
-an +unauthenticated+ user can login.
-
-If we login as +admin+ (account.role == 'admin') we have access *only* to paths that start with /+settings+.
-
-If we login as +editor+ (account.role == 'editor') we have access *only* to paths that start with /+posts+ and /+categories+
+For a more complete look at using the Admin panel functionality and access features, be sure to check out the 
+{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
 
 = Simple Mailer Support (padrino-mailer)
 
@@ -802,33 +767,9 @@ or if you like the method_missing approach:
   SampleMailer.deliver_registration_email "Bob", 'bob@bobby.com'
 
 And that will then deliver the email according the the configured options. This is really all you need to send emails.
-A few variations are shown below for completeness.
 
-If we want to attach files to our email:
-
-  # app/mailers/sample_mailer.rb
-  class SampleMailer < Padrino::Mailer::Base
-    def attachment_email(name, user_email_address)
-      from 'admin@site.com'
-      to user_email_address
-      # ...
-      attachments { "foo.zip" => File.read("path/to/foo.zip"), "file.txt" => "this is a text file!" }
-    end
-  end
-
-or perhaps we want to have a short body without the need for a template file:
-
-  # app/mailers/sample_mailer.rb
-  class SampleMailer < Padrino::Mailer::Base
-    def short_email(name, user_email_address)
-      from 'admin@site.com'
-      to user_email_address
-      subject 'Welcome to the site!'
-      body    "This is a short body defined right in the mailer itself"
-    end
-  end
-
-See the wiki article for additional information: <...WIKI...>
+Be sure to check out the 
+{Padrino Mailer}[http://wiki.github.com/padrino/padrino-framework/padrino-mailer] guide for more details on usage.
 
 = Painless Page and Fragment Caching (padrino-cache)
 

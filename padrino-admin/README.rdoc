@@ -2,51 +2,53 @@
 
 === Overview
 
-Padrino has a beautiful Admin, with these fatures:
+Padrino has a beautiful Admin management dashboard with these features:
 
-Orm Agnostic:: Adapters for datamapper, activerecord, mongomapper, mongoid
+Orm Agnostic:: Data Adapters for Datamapper, Activerecord, Mongomapper, Mongoid
 Template Agnostic:: Erb and Haml Renderer
 Authentication:: Support for Account authentication, Account Permission managment
-Scaffold:: You can simply create a new "admin interface" simply providing a Model
+Scaffold:: You can simply create a new "admin interface" by providing a Model
+Access Control:: Supports authentication and role permissions for your application
 
-=== Admin Usage
+=== Admin Dashboard Usage
 
-Create a project:
+For a complete look at usage of the Admin dashboard functionality, be sure to check out the 
+{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
 
-  $ padrino-gen project fun-test
-  $ cd fun-test
+Create a new project:
 
-For create the admin application:
+  $ padrino-gen project demo
+  $ cd demo
 
-  fun-test$ padrino-gen admin
+Create the admin subapplication:
 
-Now follow admin instructions so:
+  demo$ padrino-gen admin
 
-* edit your config/database.rb
-* run padrino rake dm:migrate # or ar:migrate if you use activerecord
-* run padrino rake seed
+Next, follow the admin setup steps:
 
-Your admin now is "complete", you can start your server with <tt>padrino start</tt> and point your browser to /admin!
+* configure your <tt>config/database.rb</tt> to connect to the correct data.
+* run <tt>padrino rake dm:migrate</tt> # or ar:migrate if you use activerecord
+* run <tt>padrino rake seed</tt>
 
-For create a new "scaffold" you need to provide only a Model for them like:
+Your admin panel now is ready and you can start your server with <tt>padrino start</tt> and point your browser to <tt>/admin</tt>!
 
-  fun-test$ padrino-gen model post --skip-migration # edit your post.rb model and add some fields
-  fun-test$ padrino-gen rake dm:auto:migrate
-  fun-test$ padrino-gen admin_page post
-  fun-test$ padrino start # and go to http://localhost:3000/admin
+To create a new "scaffold" you need to provide only a Model name to the command:
+
+  demo$ padrino-gen model post --skip-migration # edit your post.rb model and add some fields
+  demo$ padrino-gen rake dm:auto:migrate
+  demo$ padrino-gen admin_page post
+  demo$ padrino start # and go to http://localhost:3000/admin
   
 That's all!!
 
-=== Admin Authentication
+=== Admin Access Control
 
 Padrino Admin use a model Account for manage role, membership and permissions.
 
+For an ecommerce website, usually certain actions require permissions and authentication. This is supported
+by the admin access control features:
 
-==== Scenario Ecommerce
-
-For an ecommerce we usually deny some controllers/actions like
-
-  class MyEcommerce < Padrino::Application
+  class EcommerceSite < Padrino::Application
     enable :authentication
     enable :store_location
     set    :login_page, "/login"
@@ -60,38 +62,8 @@ For an ecommerce we usually deny some controllers/actions like
 In this example +if+ we visit urls that start with /+customer+/+orders+ or /+cart/checkout+ we will be redirected
 to our :+login_page+ "/login". Once we are correctly logged in we can visit these pages.
 
-==== Scenario Admin
-
-Suppose that you need to some actions for +admin+ accounts and others for +editors+
-
-When you generate padrino-admin will be created for you an +Account+ model that have a +role+ attribute. So:
-
-  class Admin < Padrino::Application
-    enable :authentication
-    disable :store_location
-    set :login_page, "/admin/sessions/new"
-
-    access_control.roles_for :any do |role|
-      role.protect "/"
-      role.allow "/sessions"
-    end
-
-    access_control.roles_for :admin do |role|
-      role.project_module :settings, "/settings"
-    end
-
-    access_control.roles_for :editor do |role|
-      role.project_module :posts, "/posts"
-      role.project_module :categories, "/categories"
-    end
-  end
-
-In this case we +protect+ the entire admin (all paths that start with "/") except paths that start with /+sessions+ so
-an +unauthenticated+ user can login.
-
-If we login as +admin+ (account.role == 'admin') we have access *only* to paths that start with /+settings+.
-
-If we login as +editor+ (account.role == 'editor') we have access *only* to paths that start with /+posts+ and /+categories+
+For a more complete look at using the Admin panel functionality and access features, be sure to check out the 
+{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
 
 == Copyright
 

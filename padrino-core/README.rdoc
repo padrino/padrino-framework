@@ -4,26 +4,20 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-Padrino is a ruby framework built upon the {Sinatra Microframework}[http://www.sinatrarb.com].
-
-Sinatra is a DSL for quickly creating web applications in Ruby with minimal effort. This gem represents an 
-attempt to make it as fun and easy as possible to code increasingly advanced web applications in Sinatra.
+Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.sinatrarb.com]. 
+Sinatra is a DSL for creating simple web applications in Ruby with speed and minimal effort. 
+This framework tries hard to make it as fun and easy as possible to code much more advanced web applications by 
+building upon the Sinatra philosophies and foundation.
 
 == Introduction
 
 Many people love Sinatra's simplicity and lightweight but often quickly come to miss a great deal
 of functionality provided by other web frameworks such as Rails when building non-trivial applications.
 
-The obvious question in these cases might be "Why not just use rails then?". This can often be a viable option
-but still Rails is quite a large framework with a 'take it or leave it' attitude.
-
-Personally, we have come to love the philosophy of Sinatra which acts as a thin layer on top of rack 
-often allowing middleware to do most of the work and pulling in additional complexity only when required. 
-
 Our goal with this framework is to match the essence of Sinatra and at the same time create a standard library
 of tools, helpers and components that will make Sinatra suitable for more complex applications.
 
-Here is a small list of what Padrino provides:
+Here is a brief overview of functionality provided by the Padrino framework:
 
 Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
 MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
@@ -38,11 +32,9 @@ Logging:: Padrino provide a logger that can interact with your orm or any other 
 Reloading:: With padrino is not necessary like other framework start and restart your server for see changes.
 I18n:: Padrino has a full support of I18n and can autoset locale.
 
-Keep in mind, the user will be able to pull in these components seperately and leave out those that are not required
+Keep in mind, the user will be able to pull in these components 
+{seperately into existing Sinatra applications}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra]
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
-
-Note that all work has been created to be compatible with haml, erb, and erubis and that this gem is intended to be 
-template-agnostic in providing helpers wherever possible.
 
 == Installation
 
@@ -53,10 +45,13 @@ To install the padrino framework, simply grab the latest version from gemcutter:
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
 
+For a more detailed look at Padrino installation, 
+check out the {Installation Guide}[http://wiki.github.com/padrino/padrino-framework/installation].
+
 == Usage
 
 Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of 
-additional tools and helpers to extend the foundation. This README and Padrino documentation in general will focus
+additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
 usage of Sinatra itself. Resources for Sinatra are listed below:
 
@@ -78,9 +73,6 @@ Padrino has support for an enhanced base application class <tt>Padrino::Applicat
 expands the capabilities of Sinatra::Application and automatically provides the resulting application access to all of
 the padrino framework's functionalities. 
 
-Similar in spirit to Sinatra itself, Padrino application layout is extremely flexible and can be as small as a single file.
-However, Padrino provides many extensions which improve upon the ability to construct more complex applications.
-
 === Simple Application Definition
 
 Let us first take a look at the simplest possible Padrino application:
@@ -98,15 +90,15 @@ Let us first take a look at the simplest possible Padrino application:
     # and for read better we can divide with controllers
     controller '/admin' do
       get '/foo' do
-        'Im /admin/foo'
+        'Url is /admin/foo'
       end
     end
   end
 
 === Enhanced Route Definitions and Controllers
 
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the Padrino routing and controller system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
 within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
@@ -118,20 +110,21 @@ within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/co
     end
   end
   
-You can also do more complex route definitions:
+You can also do more complex route alias definitions:
 
   # app/controllers/example.rb
-  SimpleApp.controllers do
+  SimpleApp.controllers :posts do
     get :index do
       ...
     end
 
-    get :account do
-      # access params[:name] and params[:index]
+    get :show, :with => :id do
+      # url generated is '/posts/show/:id'
+      # access params[:id]
     end
   end
 
-as well as mapping the route to an explicit url:
+as well as mapping the route aliases to an explicit url:
   
   # app/controllers/example.rb
   SimpleApp.controllers do
@@ -144,12 +137,12 @@ as well as mapping the route to an explicit url:
     end
   end
   
-and also setting the respond_to for a route:
+and even configure the respond_to for each route:
   
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
     get :show, :with => :id, :respond_to => :js do
-      "Im /admin/show/#{params[:id]}.#{params[:format]}"
+      "Url is /admin/show/#{params[:id]}.#{params[:format]}"
     end
 
     get :other, with => [:id, :name], respond_to => [:html, :json] do
@@ -160,8 +153,8 @@ and also setting the respond_to for a route:
     end
   end
   
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the routing and controller system, check out the 
+{Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
   
 === Rendering
 
@@ -176,8 +169,8 @@ The existing render function works as well if an engine type should be specified
 # example.haml
 render :haml, 'account/index'
 
-For a complete overview of the Padrino rendering system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the Padrino rendering system, check out the 
+{Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 === Layout
 
@@ -191,8 +184,8 @@ With Padrino you can (like rails do) use for your custom layout, disable it
     # Use the layout located in views/layouts/custom.haml
     layout :custom
     
-For a complete overview of the routing and controller system, 
-check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+For a complete overview of the layout functionality, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
 
 === Mounting Applications
 
@@ -207,7 +200,7 @@ Padrino stores application mounting information by default within <tt>config/app
 to keep all information regarding what applications are mounted to which uri's. 
 
 For a complete look at mounting applications within a Padrino project, 
-check out the guide on {Mounting Applications}[http://wiki.github.com/padrino/padrino-framework/mounting-applications]
+check out the guide on {Mounting Applications}[http://wiki.github.com/padrino/padrino-framework/mounting-applications].
 
 === Auto Load Paths
 
@@ -216,8 +209,8 @@ functionality for easily splitting up your application into separate files. Padr
 as a convention for establishing database connection. Also, any files within the <tt>lib</tt> folder will be required 
 automatically by Padrino.
 
-For a complete overview of auto-load paths, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of auto-loaded paths within Padrino, 
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Application Logging
 
@@ -233,8 +226,8 @@ within your app and any controller or views:
     get("/test") { logger.info "This is a test" }
   end
   
-For a complete overview of Padrino logger functionality, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of Padrino logger functionality, check out the 
+{Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Development Reloader
 
@@ -243,10 +236,10 @@ the need to restart the server. Through the use of a customized Rack middleware,
 are monitored and reloaded whenever changes are applied. 
 
 This makes rapid development much easier and provides a better alternative to 'shotgun' or 'rerun' 
-which require the application server to be restarted which makes requests take much longer to complete.
+which requires the application server to be restarted which makes requests take much longer to complete.
 
 For a complete overview of code reloading in development, 
-check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 === Terminal Commands
 
@@ -256,7 +249,7 @@ common tasks such as starting / stopping the application, executing the unit tes
 The following commands are available:
 
   # starts the app server (non-daemonized)
-  $ padrino start 
+  $ padrino start
   # starts the app server (daemonized) with given port, environment and adapter
   $ padrino start -d -p 3000 -e development -a thin 
   
@@ -272,8 +265,8 @@ The following commands are available:
 You can also create custom rake tasks as well. Using these commands can simplify common tasks 
 making development that much smoother.
 
-For a complete overview of Padrino terminal commands, 
-check out the {Padrino Commands Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+For a complete overview of Padrino terminal commands, check out the 
+{Padrino Commands Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands].
 
 == Copyright
 
