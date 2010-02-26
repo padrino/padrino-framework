@@ -54,15 +54,23 @@ check out the {Installation Guide}[http://wiki.github.com/padrino/padrino-framew
 Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of 
 additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic 
-usage of Sinatra itself. Resources for Sinatra are listed below:
+usage of Sinatra itself. 
 
-* {Sinatra Introduction}[http://www.sinatrarb.com/intro.html]
-* {Sinatra Book}[http://www.sinatrarb.com/book.html]
-* {Sinatra Github Repo}[http://github.com/sinatra/sinatra]
+Please check out the 
+{Understanding Sinatra}[http://wiki.github.com/padrino/padrino-framework/underlying-sinatra-overview] guide
+to learn more about these fundamentals.
 
-Below is a guide to how this gem enhances the Sinatra framework as part of a 'full-stack' padrino application.
 For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for
 {Using Padrino in Sinatra}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra].
+
+== Getting Started
+
+Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
+of existing Sinatra Functionality! Best way to get started with building Padrino applications is to read following resources:
+
+* {Blog Tutorial}[http://wiki.github.com/padrino/padrino-framework/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
+* {Quick Overview}[http://wiki.github.com/padrino/padrino-framework/basic-projects] - Outlines basic generation commands.
+* {Padrino Examples}[http://wiki.github.com/padrino/padrino-framework/examples] - List of known Padrino applications which can serve as examples.
 
 == Enhanced Base Application (padrino-core)
 
