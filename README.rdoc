@@ -19,18 +19,19 @@ of tools, helpers and components that will make Sinatra suitable for more comple
 
 Here is a brief overview of functionality provided by the Padrino framework:
 
-Generators:: for creating new padrino applications i.e.: <tt>padrino-gen app</tt> or <tt>padrino start</tt> on command line
-MultiApp:: unlike other ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
-Routing:: Full url named route, named params, respond_to suppor
-Tag Helpers:: helpers such as: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>, ...
-Asset Helpers:: helpers such as: <tt>link_to</tt>, <tt>image_tag</tt>, <tt>javascript_include_tag</tt>, ...
-Form Helpers:: with builder support such as: <tt>form_tag</tt>, <tt>form_for</tt>, <tt>field_set_tag</tt>, <tt>text_field</tt>, ...
-Text Helpers:: useful formatting extensions like: <tt>relative_time_ago</tt>, <tt>js_escape_html</tt>, <tt>sanitize_html</tt>
-Mailer:: fast, tiny, delivery support for send templating emails (like ActionMailer do)
-Admin:: an ajax admin that displays your records in sortable grids, tree, windows ... as a desktop app can do.
-Logging:: Padrino provide a logger that can interact with your orm or any other library
-Reloading:: With padrino is not necessary like other framework start and restart your server for see changes.
-I18n:: Padrino has a full support of I18n and can autoset locale.
+Agnostic:: Full support for many popular testing, templating, mocking, and data storage choices.
+Generators:: Create Padrino applications, models, controllers i.e: padrino-gen project.
+Mountable:: Unlike other ruby frameworks, principally designed for mounting multiple apps.
+Routing:: Full url named routes, named params, respond_to support, before/after filter support.
+Tag Helpers:: View helpers such as: tag, content_tag, input_tag.
+Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag.
+Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
+Text Helpers:: Useful formatting like: relative_time_ago, js_escape_html, sanitize_html.
+Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
+Admin:: Builtin Admin interface (like Django)
+Logging:: Provide a unified logger that can interact with your ORM or any library.
+Reloading::	Automatically reloads server code during development.
+Localization:: Full support of I18n language localization and can auto-set user’s locale. 
 
 Keep in mind, the user will be able to pull in these components 
 {seperately into existing Sinatra applications}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra]
