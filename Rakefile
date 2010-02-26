@@ -117,6 +117,8 @@ namespace :version do
   end
 end
 
+=begin
+# NOT AGGREGATING ANYMORE
 desc "Create main README.rdoc"
 task :readme do
   copyright = "== Copyright\n\nCopyright (c) 2010 Padrino. See LICENSE for details."
@@ -127,6 +129,7 @@ task :readme do
   File.open("README.rdoc", "w"){ |f| f.puts readme.join("\n\n") }
   puts "Created correctly README.rdoc"
 end
+=end
 
 desc "Publish doc on padrino.github.com"
 task :publish_doc do
