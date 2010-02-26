@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-02-23}
+  s.date = %q{2010-02-25}
   s.description = %q{Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -76,7 +76,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{padrino-helpers}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{Helpers for padrino}
 
   if s.respond_to? :specification_version then

@@ -35,8 +35,38 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_raise(SystemExit) { silence_logger { @admin.start(['-r=/tmp/sample_project', '--theme=foo']) } }
     end
 
-    should 'correctyl generate a new padrino admin application' do
+    should 'correctyl generate a new padrino admin application with default renderer' do
       assert_nothing_raised { silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=activerecord']) } }
+      assert_nothing_raised { silence_logger { @admin.start(['--root=/tmp/sample_project']) } }
+      assert_file_exists('/tmp/sample_project')
+      assert_file_exists('/tmp/sample_project/admin')
+      assert_file_exists('/tmp/sample_project/admin/app.rb')
+      assert_file_exists('/tmp/sample_project/admin/controllers')
+      assert_file_exists('/tmp/sample_project/admin/controllers/accounts.rb')
+      assert_file_exists('/tmp/sample_project/admin/controllers/base.rb')
+      assert_file_exists('/tmp/sample_project/admin/controllers/sessions.rb')
+      assert_file_exists('/tmp/sample_project/admin/views')
+      assert_file_exists('/tmp/sample_project/admin/views/accounts/_form.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/accounts/edit.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/accounts/index.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/accounts/new.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/base/index.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/sessions/new.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/base/_sidebar.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/base/index.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/layouts/application.haml')
+      assert_file_exists('/tmp/sample_project/admin/views/sessions/new.haml')
+      assert_file_exists('/tmp/sample_project/public/admin')
+      assert_file_exists('/tmp/sample_project/public/admin/stylesheets')
+      assert_file_exists('/tmp/sample_project/app/models/account.rb')
+      assert_file_exists('/tmp/sample_project/db/seeds.rb')
+      assert_match_in_file 'Padrino.mount("Admin").to("/admin")', '/tmp/sample_project/config/apps.rb'
+      assert_match_in_file 'class Admin < Padrino::Application', '/tmp/sample_project/admin/app.rb'
+      assert_match_in_file 'role.project_module :accounts, "/accounts"', '/tmp/sample_project/admin/app.rb'
+    end
+
+    should 'correctyl generate a new padrino admin application with erb renderer' do
+      assert_nothing_raised { silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=activerecord', '-e=erb']) } }
       assert_nothing_raised { silence_logger { @admin.start(['--root=/tmp/sample_project']) } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/admin')

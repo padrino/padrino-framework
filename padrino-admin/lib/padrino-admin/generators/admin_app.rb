@@ -41,6 +41,8 @@ module Padrino
 
           self.behavior = :revoke if options[:destroy]
 
+          ext = fetch_component_choice(:renderer)
+
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
 
@@ -64,16 +66,16 @@ module Padrino
           admin_app.orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke
 
-          template "templates/account/#{orm}.rb.tt",               destination_root("app", "models", "account.rb"), :force => true
-          template "templates/account/seeds.rb.tt",                destination_root("db/seeds.rb")
-          template "templates/erb/app/base/_sidebar.erb.tt",       destination_root("admin/views/base/_sidebar.erb")
-          template "templates/erb/app/base/index.erb.tt",          destination_root("admin/views/base/index.erb")
-          template "templates/erb/app/layouts/application.erb.tt", destination_root("admin/views/layouts/application.erb")
-          template "templates/erb/app/sessions/new.erb.tt",        destination_root("admin/views/sessions/new.erb")
+          template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
+          template "templates/account/seeds.rb.tt",                      destination_root("db/seeds.rb")
+          template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
+          template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
+          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
           add_project_module :accounts
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
-          gsub_file destination_root("admin/views/accounts/_form.erb"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           return if self.behavior == :revoke
           say (<<-TEXT).gsub(/ {10}/,'')

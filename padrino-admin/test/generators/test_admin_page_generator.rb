@@ -34,9 +34,27 @@ class TestAdminPageGenerator < Test::Unit::TestCase
       assert_raise(Padrino::Admin::Generators::OrmError) { @page.start(['foo', '-r=/tmp/sample_project']) }
     end
 
-    should 'correctyl generate a new padrino admin application' do
+    should 'correctyl generate a new padrino admin application default renderer' do
       'Person'.classify.constantize
       silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=datamapper']) }
+      silence_logger { @admin.start(['--root=/tmp/sample_project']) }
+      silence_logger { @model.start(['person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project']) }
+      silence_logger { @page.start(['person', '--root=/tmp/sample_project']) }
+      assert_file_exists '/tmp/sample_project/admin/controllers/people.rb'
+      assert_file_exists '/tmp/sample_project/admin/views/people/_form.haml'
+      assert_file_exists '/tmp/sample_project/admin/views/people/edit.haml'
+      assert_file_exists '/tmp/sample_project/admin/views/people/index.haml'
+      assert_file_exists '/tmp/sample_project/admin/views/people/new.haml'
+      %w(name age email).each do |field|
+        assert_match_in_file "label :#{field}", '/tmp/sample_project/admin/views/people/_form.haml'
+        assert_match_in_file "text_field :#{field}", '/tmp/sample_project/admin/views/people/_form.haml'
+      end
+      assert_match_in_file 'role.project_module :people, "/people"', '/tmp/sample_project/admin/app.rb'
+    end
+
+    should 'correctyl generate a new padrino admin application with erb renderer' do
+      'Person'.classify.constantize
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=datamapper', '-e=erb']) }
       silence_logger { @admin.start(['--root=/tmp/sample_project']) }
       silence_logger { @model.start(['person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project']) }
       silence_logger { @page.start(['person', '--root=/tmp/sample_project']) }

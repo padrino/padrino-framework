@@ -34,7 +34,7 @@
             </div>
             <div class="group navform wat-cf">
               <div class="right">
-                <input type="submit" class="button" value="Sign in" />
+                <%%= submit_tag "Sign in", :class => :button %>
               </div>
             </div>            
           <%% end %>

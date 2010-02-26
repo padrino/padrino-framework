@@ -31,12 +31,13 @@ module Padrino
         if in_app_root?
           @orm ||= Padrino::Admin::Generators::Orm.new(model, adapter)
           self.behavior = :revoke if options[:destroy]
+          ext = fetch_component_choice(:renderer)
 
-          template "templates/page/controller.rb.tt",    destination_root("/admin/controllers/#{@orm.name_plural}.rb")
-          template "templates/erb/page/_form.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/_form.erb")
-          template "templates/erb/page/edit.erb.tt",     destination_root("/admin/views/#{@orm.name_plural}/edit.erb")
-          template "templates/erb/page/index.erb.tt",    destination_root("/admin/views/#{@orm.name_plural}/index.erb")
-          template "templates/erb/page/new.erb.tt",      destination_root("/admin/views/#{@orm.name_plural}/new.erb")
+          template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")
+          template "templates/#{ext}/page/_form.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/_form.#{ext}")
+          template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root("/admin/views/#{@orm.name_plural}/edit.#{ext}")
+          template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
+          template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
 
           add_project_module(@orm.name_plural)
         else

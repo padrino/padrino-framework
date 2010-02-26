@@ -1,4 +1,9 @@
-require 'tilt'
+# require tilt if available; fall back on bundled version.
+begin
+  require 'tilt'
+rescue LoadError
+  require 'sinatra/tilt'
+end
 require 'padrino-core/support_lite'
 
 Dir[File.dirname(__FILE__) + '/padrino-mailer/**/*.rb'].each { |file| require file }
