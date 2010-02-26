@@ -44,8 +44,6 @@ or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padr
 Note that all work has been created to be compatible with haml, erb, and erubis and that this gem is intended to be 
 template-agnostic in providing helpers wherever possible.
 
-Please help me brainstorm and fork the project if you have any ideas to contribute.
-
 == Installation
 
 To install the padrino framework, simply grab the latest version from gemcutter:
@@ -67,8 +65,8 @@ usage of Sinatra itself. Resources for Sinatra are listed below:
 * {Sinatra Github Repo}[http://github.com/sinatra/sinatra]
 
 Below is a guide to how this gem enhances the Sinatra framework as part of a 'full-stack' padrino application.
-For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the README for that 
-individual gem or gems.
+For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for
+{Using Padrino in Sinatra}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra].
 
 == Enhanced Base Application (padrino-core)
 
@@ -105,7 +103,10 @@ Let us first take a look at the simplest possible Padrino application:
     end
   end
 
-=== Controllers
+=== Enhanced Route Definitions and Controllers
+
+For a complete overview of the routing and controller system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
 
 Suppose we wanted to add additional routes to our Padrino application, and we want to organize the routes
 within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/controllers</tt> folder and create a file as such:
@@ -116,17 +117,8 @@ within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/co
       "Text to return"
     end
   end
-
-== Advanced Routing Support
-
-Padrino provides support for advanced routing functionality not available within Sinatra. This routing
-supports named route aliases and easy access to url paths. The benefits of this is that instead of having to 
-hard-code route urls into every area of your application, now we can just define the urls in a 
-single spot and then attach an alias which can be used to refer to the url throughout the application.
-
-=== Padrino Routing
-
-Urls mapped here can then be defined within a controller:
+  
+You can also do more complex route definitions:
 
   # app/controllers/example.rb
   SimpleApp.controllers do
@@ -139,17 +131,8 @@ Urls mapped here can then be defined within a controller:
     end
   end
 
-and finally referenced anywhere in the application:
-
-  # app/views/example.haml
-  = link_to "Index", url_for(:index)
-  = link_to "Account", url_for(:account, :id => 1, :name => 'first')
-
-=== Inline Route Alias Definitions
-
-The routing plugin also supports inline route definitions in which the url and the named alias
-are defined together within the controller:
-
+as well as mapping the route to an explicit url:
+  
   # app/controllers/example.rb
   SimpleApp.controllers do
     get :index, :map => '/index' do
@@ -160,66 +143,9 @@ are defined together within the controller:
       # access params[:name] and params[:index]
     end
   end
-
-Routes defined inline this way can be accessed and treated the same way as traditional named aliases.
-
-=== Namespaced Route Aliases
-
-There is also support for namespaced routes which are organized into a larger grouping:
-
-  # app/controllers/example.rb
-  SimpleApp.controllers :admin do
-    get :show do
-      "Im /admin/show"
-    end
-
-    get :index, :map => "/admin/:id" do
-      "Im /admin/#{params[:id]}"
-    end
-  end
-
-You can then reference the urls using the same url_for method: 
-
-  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
-  <%= link_to 'admin index page', url_for(:admin_index, :id => 25) %>
-
-If you don't want named routes you can
-
-  # app/controllers/example.rb
-  SimpleApp.controllers "/admin" do
-    get "/show" do
-      "Im /admin/show"
-    end
-
-    get "other/:id" do
-      "Im /admin/#{params[:id]}"
-    end
-  end
-
-=== Named Params
-
-With Padrino you can use named params!! See these examples
-
-  # app/controllers/example.rb
-  SimpleApp.controllers :admin do
-    get :show, :with => :id do
-      "Im /admin/show/#{params[:id]}"
-    end
-
-    get :other, with => [:id, :name]  do
-      "Im /admin/#{params[:id]}/#{params[:name]}"
-    end
-  end
-
-You can then reference the urls using the same url_for method: 
-
-  <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
-  <%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
-
-=== Respond To
-
-With Padrino you can simply respond to a given format see example:
-
+  
+and also setting the respond_to for a route:
+  
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
     get :show, :with => :id, :respond_to => :js do
@@ -233,17 +159,25 @@ With Padrino you can simply respond to a given format see example:
       end
     end
   end
-
-  <%= link_to 'admin show page', url_for(:admin_show, :id => 25, :format => :js) %>
-  <%= link_to 'admin other page', url_for(:admin_index, :id => 25, :name => :foo) %>
-  <%= link_to 'admin other json page', url_for(:admin_index, :id => 25, :name => :foo, :format => :json) %>
-
+  
+For a complete overview of the routing and controller system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
+  
 === Rendering
 
-Unlike Sinatra Padrino support template auto lookup so:
+Unlike Sinatra, Padrino supports automatic template lookups such as:
 
-  # look for 'account/index.{erb,haml,...}
+  # searches for 'account/index.{erb,haml,...}
   render 'account/index'
+  
+This render does not require any template engine to be specified and will choose the first one that is discovered. 
+The existing render function works as well if an engine type should be specified:
+
+# example.haml
+render :haml, 'account/index'
+
+For a complete overview of the Padrino rendering system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
 
 === Layout
 
@@ -256,73 +190,9 @@ With Padrino you can (like rails do) use for your custom layout, disable it
     
     # Use the layout located in views/layouts/custom.haml
     layout :custom
-
-=== Gemfile Dependency Resolution
-  
-While this is a fully operational Padrino application in itself, let us take a look at Padrino's expanded capabilites. First, 
-we can create Gemfile within the application root. This will contain a list of all the dependencies for our application.
-
-  # /Gemfile
-  clear_sources
-  source 'http://gemcutter.org'
-  gem 'sinatra',     :require => 'sinatra/base'
-  gem 'rack-flash'
-  
-This manifest file uses the standard <tt>bundler</tt> gem syntax of which details can be found in the
-{Bundler README}[http://github.com/wycats/bundler]
-This gem allows us to place all our dependencies into a single file. Padrino will then automatically require
-all necessary files (if they exist on the system). 
-
-If the dependencies are not on the system, you can automatically vendor all necessary gems 
-using the <tt>gem bundle</tt> command within the application root. Note that this is all possible without
-any further effort than adding the Gemfile (or having this generated automatically with generators explained later).
-
-=== Auto Load Paths
-
-Padrino also intelligently supports requiring useful files within your application automatically and provides
-functionality for easily splitting up your application into separate files. Padrino automatically requires <tt>config/database.rb</tt>
-as a convention for establishing database connection. Also, any files within the <tt>lib</tt> folder will be required 
-automatically by Padrino.
-
-This is powered by the fact that Padrino will automatically load (and reload) any directory patterns within the 'load path'. 
-Additional directory patterns can be added to the load path as needed by simply appending to the <tt>load_paths</tt> 
-within your application:
-
-  # app.rb
-  class SimpleApp < Padrino::Application
-    load_paths << ["app/special/*.rb", "some_file.rb"]
-  end
-  
-This will instruct Padrino to autoload these files (and reload them when changes are detected). By default, the load path 
-contains certain paths known to contain important files such as controllers, mailers, models, urls, and helpers. 
-
-Initializers are automatically required and 'registered' during the application startup process. Note that
-the name of the module must be the name of the file appended with 'Initializer' (i.e sample.rb => SampleInitializer)
-
-=== Application Logging
-
-Padrino also supports robust logging capabilities. By default, logging information will
-go to the STDOUT in development (for use in a console) and in an environment-specific log file <tt>log/development.log</tt>
-in test and production environments.
-
-You can modify the logging behavior or disable logging altogether:
-
-  # app.rb
-  class SimpleApp < Padrino::Application
-    disable :logging     # Turns off logging
-    enable  :log_to_file # Forces logging to be written to a file
-  end
-  
-To use the logger within a Padrino application, simply refer to the <tt>logger</tt> method accessible
-within your app and any controller or views:
-
-  # controllers/example.rb
-  SimpleApp.controllers do
-    get("/test") { logger.info "This is a test" }
-  end
-  
-The logger automatically supports severity through the use of <tt>logger.info</tt>, <tt>logger.warn</tt>, <tt>logger.error</tt>, et al.
-For more information about the logger, check out the {Logger RDOC}[http://www.ruby-doc.org/stdlib/libdoc/logger/rdoc/]
+    
+For a complete overview of the routing and controller system, 
+check out the {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers]
 
 === Mounting Applications
 
@@ -334,21 +204,37 @@ You can think of mountable applications as a 'full-featured' merb slice or rails
 any application can simply be packaged and mounted into another project.
 
 Padrino stores application mounting information by default within <tt>config/apps.rb</tt>. This file is intended
-to keep all information regarding what applications are mounted to which uri's. An <tt>apps.rb</tt> file has
-the following structure:
+to keep all information regarding what applications are mounted to which uri's. 
 
-  Padrino.mount("blog").to("/blog")
-  Padrino.mount("website").to("/website")
-  
-This would mount two applications onto the Padrino project, one served from the '/blog' uri namespace and the other
-served from the '/website' uri namespace. Often a Padrino project directory requires a single 'core' application
-which is served from the uri root. This can be easily configured using:
+For a complete look at mounting applications within a Padrino project, 
+check out the guide on {Mounting Applications}[http://wiki.github.com/padrino/padrino-framework/mounting-applications]
 
-  Padrino.mount_core("app_name") # mounts app with class AppName, in file <tt>app/app.rb</tt>
-  Padrino.mount_core("app_name", :app_file => Padrino.root('app.rb')) # now with file in <tt>app.rb</tt>
+=== Auto Load Paths
+
+Padrino also intelligently supports requiring useful files within your application automatically and provides
+functionality for easily splitting up your application into separate files. Padrino automatically requires <tt>config/database.rb</tt>
+as a convention for establishing database connection. Also, any files within the <tt>lib</tt> folder will be required 
+automatically by Padrino.
+
+For a complete overview of auto-load paths, 
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
+
+=== Application Logging
+
+Padrino also supports robust logging capabilities. By default, logging information will
+go to the STDOUT in development (for use in a console) and in an environment-specific log file <tt>log/development.log</tt>
+in test and production environments.
   
-This will mount a 'core' application with class AppName from the file 'app.rb' to the uri root which will
-act as a primary application.
+To use the logger within a Padrino application, simply refer to the <tt>logger</tt> method accessible
+within your app and any controller or views:
+
+  # controllers/example.rb
+  SimpleApp.controllers do
+    get("/test") { logger.info "This is a test" }
+  end
+  
+For a complete overview of Padrino logger functionality, 
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
 
 === Development Reloader
 
@@ -359,41 +245,8 @@ are monitored and reloaded whenever changes are applied.
 This makes rapid development much easier and provides a better alternative to 'shotgun' or 'rerun' 
 which require the application server to be restarted which makes requests take much longer to complete.
 
-An application can explicitly enable / disable reloading through the use of options:
-
-  # app.rb
-  class SimpleApp < Padrino::Application
-    disable :reload # reload is disabled in all environments
-    enable  :reload # enabled in all environments
-  end
-  
-By default, reloading is enabled in development and disabled in the test and production environments.
-
-If you want to build a standalone app you need to take some precautions see example:
-
-  # simple_demo.rb
-  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
-  require 'padrino-core'
-
-  class SimpleDemo < Padrino::Application
-    set :reload, true
-
-    get "/" do
-      "This is a simple Demo!!!"
-    end
-  end
-
-  Padrino.mount_core("SimpleDemo")
-
-  Padrino.run! unless Padrino.loaded? # If you enable reloader prevent to re-run the app 
-
-  Padrino.load!
-
-Now you can run simple_demo.rb with:
-
-  $ ruby simple_demo.rb
-
-Browse http://localhost:3000 edit your file and refresh your page for see changes!
+For a complete overview of code reloading in development, 
+check out the {Padrino Development Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
 
 === Terminal Commands
 
@@ -416,39 +269,11 @@ The following commands are available:
   # Run/List tasks
   $ padrino rake
 
-The last command "padrino rake" look for rake files in:
+You can also create custom rake tasks as well. Using these commands can simplify common tasks 
+making development that much smoother.
 
-  lib/tasks/**/*.rake
-  tasks/**/*.rake
-  test/test.rake
-  spec/spec.rake
-
-In this way you can customize project tasks.
-
-Using these commands can simplify common tasks making development that much smoother.
-
-=== Special Folders
-
-Padrino load these paths:
-
-  project/lib
-  project/models
-  project/shared/lib
-  project/shared/models
-  project/each_app/models
-
-This mean that you are free to store for example +models+ where you prefer, if you have two or more apps with same
-models you can use +project+/+shared+/+models+ or +root+/+models+.
-
-If you have only one app you still use +project+/+app+/+models+ (this is the default padrino-gen choice)
-
-Remember that if you need to load other paths you can use:
-
-  Padrino.set_load_paths("path/one")
-
-and if you need to load dependencies use:
-
-  Padrino.require_dependencies("path/one/**/*.rb")
+For a complete overview of Padrino terminal commands, 
+check out the {Padrino Commands Guide}[http://wiki.github.com/padrino/padrino-framework/development-and-terminal-commands]
 
 = Agnostic Application Generators (padrino-gen)
 
@@ -459,7 +284,8 @@ Padrino comes preloaded with flexible code generators powered in part by the exc
 both in creating new applications and building on existing ones. The generators have been built to be as library agnostic
 as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc.
 
-See the wiki article for additional information: <...WIKI...>
+See the guide for {Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators] for a
+more in-depth look at the system.
 
 === Application Generator
 
@@ -471,14 +297,6 @@ to using Padrino.
 One important feature of the generators is that they were built from the ground up to support a wide variety
 of tools, libraries and gems for use within your padrino application. 
 
-This means that Padrino generators do *not* lock you into using any particular database, ORM, testing framework, 
-templating engine or javascript library. In fact, when generating an application you can actually tell 
-Padrino which components you would like to use!
-
-The usage for the project generator is quite simple:
-
-  $ padrino-gen project <the_app_name> </path/to/create/app> --<component-name> <value>
-
 The simplest possible command to generate a base application would be:
 
   $ padrino-gen project demo_project
@@ -487,11 +305,7 @@ This would construct a Padrino application DemoApp (which extends from Padrino::
 inside the folder 'demo_project' at our current path. Inside the application there would be configuration and 
 setup performed for the default components.
 
-You can also define specific components to be used:
-
-  $ padrino-gen project demo_project --test rspec --renderer haml --mock rr --script jquery --orm datamapper
-  
-There is also support for aliases for each component within the command:
+You can define specific components to be used:
 
   $ padrino-gen project demo_project -t rspec -r haml -m rr -s jquery -d datamapper
   
@@ -507,19 +321,8 @@ mock::      none  (default), mocha, rr
 script::    none  (default), jquery, prototype, mootools, rightjs
 orm::       none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
-The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
-The necessary bundler command can be executed automatically through the generator with
-
-  $ padrino-gen project demo_project --run_bundler # alias -b
-
-or this can be done manually through executing command <tt>gem bundle</tt> in the terminal at the root of the generated application.
-If not executed manually, the bundling will be performed automatically the first time the application attempts to boot.
-Note that this command only has to be performed when the application is first generated or when the Gemfile is modified.
- 
-The generator framework within padrino is extensible and additional components and tools can be added easily.
-This would be achieved through forking our project and reading through the code in <tt>lib/generators/App.rb</tt> and
-the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
-for additional component types not originally included (although helping us maintain them would also be appreciated).
+To learn more about the project generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Sub App Generator
 
@@ -542,6 +345,9 @@ By default these apps are mounted under:
   
 but you can edit config/apps.rb and change it.
 
+To learn more about the subapp generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+
 === Model Generator
 
 Padrino provides generator support for quickly creating new models within your Padrino application. Note that
@@ -560,20 +366,8 @@ You can also specify desired fields to be contained within your User model:
 
   $ padrino-gen model User name:string age:integer email:string
   
-The model generator will create multiple files within your application and based on your ORM component. 
-Usually the model file will generate files similar to the following:
-
-  * model definition file [app/models/user.rb]
-  * migration declaration [db/migrate/xxx_create_users.rb]
-  * model unit test file  [test/models/user_test.rb]
-  
-You can define as many models as you would like in a Padrino application using this generator.
-
-You can destroy models that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen model User -d
-  
-This remove all created model files.
+To learn more about the model generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Migration Generator
 
@@ -589,19 +383,8 @@ Using the migration generator is as simple as:
   $ padrino-gen migration AddFieldsToUsers
   $ padrino-gen migration RemoveFieldsFromUsers
   
-You can also specify desired columns to be added to the migration file:
-
-  $ padrino-gen migration AddFieldsToUsers last_login:datetime crypted_password:string
-  $ padrino-gen migration RemoveFieldsFromUsers password:string ip_address:string
-  
-The migration generator will then construct the migration file according to your ORM component chosen
-within <tt>db/migrate/xxx_add_fields_to_users.rb</tt> including the columns specified in the command.
-
-You can destroy migrations that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen migration AddFieldsToUsers -d
-  
-This removes the migration file.
+To learn more about the migration generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Controller Generator
 
@@ -615,28 +398,13 @@ created through the Padrino application generator and that follow Padrino conven
 Using the controller generator is as simple as:
 
   $ padrino-gen controller Admin
-
-If you want create a controller for a specified sub app you can:
-
-  $ padrino-gen controller Admin -a my_sub_app
   
 You can also specify desired actions to be added to your controller:
 
   $ padrino-gen controller Admin get:index get:new post:create
   
-The controller generator will then construct the controller file within <tt>app/controllers/admin.rb</tt>
-and also a controller test file at <tt>test/controllers/admin_controller_test.rb</tt> according to the 
-test framework chosen during app generation. A default route will also be generated mapping to name of the controller and the route name. For example:
-
-  $ padrino-gen controller User get:index
-  
-  will create a url route for :index mapping to "/user/index"
-  
-You can destroy controllers that you created via the destroy option and setting it to true. default is false.
-
-    $ padrino-gen controller User -d
-
-This removes all created controller files.
+To learn more about the controller generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Mailer Generator
 
@@ -648,21 +416,8 @@ Using the mailer generator is as simple as:
 
   $ padrino-gen mailer UserNotifier
 
-If you want create a mailer for a specified sub app you can:
-
-  $ padrino-gen mailer UserNotifier -a my_sub_app
-
-You can also specify desired delivery actions to be added to the mailer:
-
-  $ padrino-gen mailer UserNotifier confirm_account welcome inactive_account
-  
-The mailer generator will then construct the mailer file within <tt>app/mailers/user_notifier.rb</tt>
-
-You can destroy mailer that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen mailer UserNotifer -d
-  
-This remove all created mailer files.
+To learn more about the mailer generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 = Application Extensions and Helpers (padrino-helpers)
 
@@ -671,7 +426,6 @@ This remove all created mailer files.
 This component provides a great deal of view helpers related to html markup generation.
 There are helpers for generating tags, forms, links, images, and more. Most of the basic
 methods should be very familiar to anyone who has used rails view helpers.
-
 
 === Output Helpers
 
@@ -718,24 +472,8 @@ This will capture the template body passed into the form_tag block and then appe
 to the template through the use of <tt>concat_content</tt>. Note have been built to work for both haml and erb 
 templates using the same syntax.
 
-The list of defined helpers in the 'output helpers' category:
-
-* <tt>content_for(key, &block)</tt>
-  * Capture a block of content to be rendered at a later time.
-  * <tt>content_for(:head) { ...content... }</tt>
-  * Also supports arguments passed to the content block
-  * <tt>content_for(:head) { |param1, param2| ...content... }</tt>
-* <tt>yield_content(key, *args)</tt>
-  * Render the captured content blocks for a given key.
-  * <tt>yield_content :head</tt>
-  * Also supports arguments yielded to the content block
-  * <tt>yield_content :head, param1, param2</tt>
-* <tt>capture_html(*args, &block)</tt>
-  * Captures the html from a block of template code for erb or haml
-  * <tt>capture_html(&block)</tt> => "...html..."
-* <tt>concat_content(text="")</tt>
-  * Outputs the given text to the templates buffer directly in erb or haml
-  * <tt>concat_content("This will be output to the template buffer in erb or haml")</tt>
+For more information on output helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Tag Helpers
 
@@ -755,20 +493,8 @@ The input_tag is used to build tags that are related to accepting input from the
   
 Note that all of these accept html options and result in returning a string containing html tags.
 
-The list of defined helpers in the 'tag helpers' category:
-
-* <tt>tag(name, options={})</tt>
-  * Creates an html tag with the given name and options
-  * <tt>tag(:br, :style => 'clear:both')</tt> => <br style="clear:both" />
-  * <tt>tag(:p, :content => "demo", :class => 'large')</tt> => <p class="large">demo</p>
-* <tt>content_tag(name, content, options={})</tt>
-  * Creates an html tag with given name, content and options
-  * <tt>content_tag(:p, "demo", :class => 'light')</tt> => <p class="light">demo</p>
-  * <tt>content_tag(:p, :class => 'dark') { ...content... }</tt> => <p class="dark">...content...</p>
-* <tt>input_tag(type, options = {})</tt>
-  * Creates an html input field with given type and options
-  * <tt>input_tag :text,     :class => "demo"</tt>
-  * <tt>input_tag :password, :value => "secret", :class => "demo"</tt>
+For more information on tag helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Asset Helpers
 
@@ -788,31 +514,8 @@ simple view template:
     %p Mail me at #{mail_to 'fake@faker.com', "Fake Email Link", :cc => "test@demo.com"}
     %p= image_tag 'padrino.png', :width => '35', :class => 'logo'
 
-The list of defined helpers in the 'asset helpers' category:
-
-* <tt>flash_tag(kind, options={})</tt>
-  * Creates a div to display the flash of given type if it exists
-  * <tt>flash_tag(:notice, :class => 'flash', :id => 'flash-notice')</tt>
-* <tt>link_to(*args, &block)</tt>
-  * Creates a link element with given name, url and options
-  * <tt>link_to 'click me', '/dashboard', :class => 'linky'</tt>
-  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :if => @foo.present?</tt>
-  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :unless => @foo.blank?</tt>
-  * <tt>link_to 'click me', '/dashboard', :class => 'linky', :unless => :current</tt>
-  * <tt>link_to('/dashboard', :class => 'blocky') { ...content... }</tt>
-* <tt>mail_to(email, caption=nil, mail_options={})</tt>
-  * Creates a mailto link tag to the specified email_address
-  * <tt>mail_to "me@demo.com"</tt>
-  * <tt>mail_to "me@demo.com", "My Email", :subject => "Feedback", :cc => 'test@demo.com'</tt>
-* <tt>image_tag(url, options={})</tt>
-  * Creates an image element with given url and options
-  * <tt>image_tag('icons/avatar.png')</tt>
-* <tt>stylesheet_link_tag(*sources)</tt>
-  * Returns a stylesheet link tag for the sources specified as arguments
-  * <tt>stylesheet_link_tag 'style', 'application', 'layout'</tt>
-* <tt>javascript_include_tag(*sources)</tt>
-  * Returns an html script tag for each of the sources provided.
-  * <tt>javascript_include_tag 'application', 'special'</tt>
+For more information on asset helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
   
 === Form Helpers
 
@@ -836,58 +539,8 @@ example of constructing a non-object form would be:
     - field_set_tag(:class => 'buttons') do
       = submit_tag "Remove"
 
-The list of defined helpers in the 'form helpers' category:
-
-* <tt>form_tag(url, options={}, &block)</tt>
-  * Constructs a form without object based on options
-  * Supports form methods 'put' and 'delete' through hidden field
-  * <tt>form_tag('/register', :class => 'example') { ... }</tt>
-* <tt>field_set_tag(*args, &block)</tt>
-  * Constructs a field_set to group fields with given options
-  * <tt>field_set_tag(:class => 'office-set') { }</tt>
-  * <tt>field_set_tag("Office", :class => 'office-set') { }</tt>
-* <tt>error_messages_for(:record, options={})</tt>
-  * Constructs list html for the errors for a given object
-  * <tt>error_messages_for :user</tt>
-* <tt>label_tag(name, options={}, &block)</tt>
-  * Constructs a label tag from the given options
-  * <tt>label_tag :username, :class => 'long-label'</tt>
-  * <tt>label_tag(:username, :class => 'blocked-label') { ... }</tt>
-* <tt>hidden_field_tag(name, options={})</tt>
-  * Constructs a hidden field input from the given options
-  * <tt>hidden_field_tag :session_key, :value => 'secret'</tt>
-* <tt>text_field_tag(name, options={})</tt>
-  * Constructs a text field input from the given options
-  * <tt>text_field_tag :username, :class => 'long'</tt>
-* <tt>text_area_tag(name, options={})</tt>
-  * Constructs a text area input from the given options
-  * <tt>text_area_tag :username, :class => 'long'</tt>
-* <tt>password_field_tag(name, options={})</tt>
-  * Constructs a password field input from the given options
-  * <tt>password_field_tag :password, :class => 'long'</tt>
-* <tt>check_box_tag(name, options={})</tt>
-  * Constructs a checkbox input from the given options
-  * <tt>check_box_tag :remember_me, :checked => true</tt>
-* <tt>radio_button_tag(name, options={})</tt>
-  * Constructs a radio button input from the given options
-  * <tt>radio_button_tag :gender, :value => 'male'</tt>
-* <tt>select_tag(name, settings={})</tt>
-  * Constructs a select tag with options from the given settings
-  * <tt>select_tag(:favorite_color, :options => ['1', '2', '3'], :selected => '1')</tt>
-  * <tt>select_tag(:more_color, :options => [['label', '1'], ['label2', '2']])</tt>
-  * <tt>select_tag(:multiple_color, :options => [...], :multiple => true)</tt>
-* <tt>file_field_tag(name, options={})</tt>
-  * Constructs a file field input from the given options
-  * <tt>file_field_tag :photo, :class => 'long'</tt>
-* <tt>submit_tag(caption, options={})</tt>
-  * Constructs a submit button from the given options
-  * <tt>submit_tag "Create", :class => 'success'</tt>
-* <tt>button_tag(caption, options={})</tt>
-  * Constructs an input (type => 'button') from the given options
-  * <tt>button_tag "Cancel", :class => 'clear'</tt>
-* <tt>image_submit_tag(source, options={})</tt>
-  * Constructs an image submit button from the given options
-  * <tt>image_submit_tag "submit.png", :class => 'success'</tt>
+For more information on form helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
     
 === FormBuilders
 
@@ -919,51 +572,6 @@ A form_for using these basic fields might look like:
         = location.text_field :city
     %p
       = f.submit "Create", :class => 'button'
-
-The list of defined helpers in the 'form builders' category:
-
-* <tt>form_for(object, url, settings={}, &block)</tt>
-  * Constructs a form using given or default form_builder
-  * Supports form methods 'put' and 'delete' through hidden field
-  * Defaults to StandardFormBuilder but you can easily create your own!
-  * <tt>form_for(@user, '/register', :id => 'register') { |f| ...field-elements... }</tt>
-  * <tt>form_for(:user, '/register', :id => 'register') { |f| ...field-elements... }</tt>
-* <tt>fields_for(object, settings={}, &block)</tt>
-  * Constructs fields for a given object for use in an existing form
-  * Defaults to StandardFormBuilder but you can easily create your own!
-  * <tt>fields_for @user.assignment do |assignment| ... end</tt>
-  * <tt>fields_for :assignment do |assigment| ... end</tt>
-
-The following are fields provided by AbstractFormBuilder that can be used within a form_for or fields_for:
-
-* <tt>error_messages(options={})</tt>
-  * Displays list html for the errors on form object
-  * <tt>f.errors_messages</tt>
-* <tt>label(field, options={})</tt>
-  * <tt>f.label :name, :class => 'long'</tt>
-* <tt>text_field(field, options={})</tt>
-  * <tt>f.text_field :username, :class => 'long'</tt>
-* <tt>check_box(field, options={})</tt>
-  * Uses hidden field to provide a 'unchecked' value for field
-  * <tt>f.check_box :remember_me, :uncheck_value => 'false'</tt>
-* <tt>radio_button(field, options={})</tt>
-  * <tt>f.radio_button :gender, :value => 'male'</tt>
-* <tt>hidden_field(field, options={})</tt>
-  * <tt>f.hidden_field :session_id, :class => 'hidden'</tt>
-* <tt>text_area(field, options={})</tt>
-  * <tt>f.text_area :summary, :class => 'long'</tt>
-* <tt>password_field(field, options={})</tt>
-  * <tt>f.password_field :secret, :class => 'long'</tt>
-* <tt>file_field(field, options={})</tt>
-  * <tt>f.file_field :photo, :class => 'long'</tt>
-* <tt>select(field, options={})</tt>
-  * <tt>f.select(:state, :options => ['California', 'Texas', 'Wyoming'])</tt>
-  * <tt>f.select(:state, :collection => @states, :fields => [:name, :id])</tt>
-  * <tt>f.select(:state, :options => [...], :include_blank => true)</tt>
-* <tt>submit(caption, options={})</tt>
-  * <tt>f.submit "Update", :class => 'long'</tt>
-* <tt>image_submit(source, options={})</tt>
-  * <tt>f.image_submit "submit.png", :class => 'long'</tt>
   
 There is also an additional StandardFormBuilder which builds on the abstract fields that can be used within a form_for.
 
@@ -986,50 +594,10 @@ and would generate this html (with each input contained in a paragraph and conta
     <p><input type="submit" value="Create" class="button"></p>
   </form>
 
-The following are fields provided by StandardFormBuilder that can be used within a form_for or fields_for:
+You can also easily build your own FormBuilder which allows for customized fields and behavior.
 
-* <tt>text_field_block(field, options={}, label_options={})</tt>
-  * <tt>text_field_block(:nickname, :class => 'big', :caption => "Username")</tt>
-* <tt>text_area_block(field, options={}, label_options={})</tt>
-  * <tt>text_area_block(:about, :class => 'big')</tt>
-* <tt>password_field_block(field, options={}, label_options={})</tt>
-  * <tt>password_field_block(:code, :class => 'big')</tt>
-* <tt>file_field_block(field, options={}, label_options={})</tt>
-  * <tt>file_field_block(:photo, :class => 'big')</tt>
-* <tt>check_box_block(field, options={}, label_options={})</tt>
-  * <tt>check_box_block(:remember_me, :class => 'big')</tt>
-* <tt>select_block(field, options={}, label_options={})</tt>
-  * <tt>select_block(:country, :option => ['USA', 'Canada'])</tt>
-* <tt>submit_block(caption, options={})</tt>
-  * <tt>submit_block(:username, :class => 'big')</tt>
-* <tt>image_submit_block(source, options={})</tt>
-  * <tt>image_submit_block('submit.png', :class => 'big')</tt>
-
-You can also easily build your own FormBuilder which allows for customized fields and behavior:
-
-  class MyCustomFormBuilder < AbstractFormBuilder
-    # Here we have access to a number of useful variables
-    #
-    #   * template  (use this to invoke any helpers)(ex. template.hidden_field_tag(...))
-    #   * object    (the record for this form) (ex. object.valid?)
-    #   * object_name (object's underscored type) (ex. object_name => 'admin_user')
-    #
-    # We also have access to self.field_types => [:text_field, :text_area, ...]
-    # In addition, we have access to all the existing field tag helpers (text_field, hidden_field, file_field, ...)
-  end
-
-Once a custom builder is defined, any call to form_for can use the new builder:
-
-  - form_for @user, '/register', :builder => 'MyCustomFormBuilder', :id => 'register' do |f|
-    ...fields here...
-
-The form builder can even be made into the default builder when form_for is invoked:
-
-  # anywhere in the Padrino or Sinatra application
-  set :default_builder, 'MyCustomFormBuilder'
-
-And there you have it, a fairly complete form builder solution for Padrino (and Sinatra). 
-I hope to create or merge in an even better 'default' form_builder in the near future.
+For more information on the Padrino form builders, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Format Helpers
 
@@ -1056,37 +624,8 @@ Format helpers also includes a number of useful text manipulation functions such
 
 These helpers can be invoked from any route or view within your application.
 
-The list of defined helpers in the 'format helpers' category:
-
-* <tt>simple_format(text, html_options)</tt>
-  * Returns text transformed into HTML using simple formatting rules.
-  * <tt>simple_format("hello\nworld")</tt> => "<p>hello<br/>world</p>"
-* <tt>pluralize(count, singular, plural = nil)</tt>
-  * Attempts to pluralize the singular word unless count is 1.
-  * <tt>pluralize(2, 'person')</tt> => '2 people'
-* <tt>word_wrap(text, *args)</tt>
-  * Wraps the text into lines no longer than line_width width.
-  * <tt>word_wrap('Once upon a time', :line_width => 8)</tt> => "Once upon\na time"
-* <tt>truncate(text, *args)</tt>
-  * Truncates a given text after a given :length if text is longer than :length (defaults to 30).
-  * <tt>truncate("Once upon a time in a world far far away", :length => 8)</tt> => "Once upon..."
-* <tt>escape_html</tt> (alias <tt>h</tt> and <tt>h!</tt>)
-  * (from RackUtils) Escape ampersands, brackets and quotes to their HTML/XML entities.
-* <tt>relative_time_ago(date)</tt>
-  * Returns relative time in words referencing the given date
-  * <tt>relative_time_ago(2.days.ago)</tt> => "2 days"
-  * <tt>relative_time_ago(5.minutes.ago)</tt> => "5 minutes"
-  * <tt>relative_time_ago(2800.days.ago)</tt> => "over 7 years"
-* <tt>time_in_words(date)</tt>
-  * Returns relative time in the past or future using appropriate date format
-  * <tt>time_in_words(2.days.ago)</tt> => "2 days ago"
-  * <tt>time_in_words(100.days.ago)</tt> => "Tuesday, July 21"
-  * <tt>time_in_words(1.day.from_now)</tt> => "tomorrow"
-* <tt>js_escape_html(html_content)</tt>
-  * Escapes html to allow passing information to javascript. Used for passing data inside an ajax .js.erb template
-  * <tt>js_escape_html("<h1>Hey</h1>")</tt>
-
-See the wiki article for additional information: <...WIKI...>
+For more information on the format helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 === Render Helpers
 
@@ -1105,34 +644,13 @@ There is also a method which renders the first view matching the path and remove
 
   render 'path/to/any/template'
   
-It is worth noting these are mostly for convenience. With nested view file paths in Sinatra, this becomes tiresome:
-
-  haml :"the/path/to/file"
-  erb "/path/to/file".to_sym
-  
 Finally, we have the all-important partials support for rendering mini-templates onto a page:
 
   partial 'photo/_item', :object => @photo, :locals => { :foo => 'bar' }
   partial 'photo/_item', :collection => @photos
   
-This works as you would expect and also supports the collection counter inside the partial <tt>item_counter</tt>
-
-  # /views/photo/_item.haml
-  # Access to collection counter with <partial_name>_counter i.e item_counter
-  # Access the object with the partial_name i.e item
-  
-The list of defined helpers in the 'render helpers' category:
-
-* <tt>render(engine, data, options, locals)</tt>
-  * Renders the specified template with the given options
-  * <tt>render ‘user/new’'</tt>
-  * <tt>render :erb, ‘users/new’, :layout => false</tt>
-* <tt>partial(template, *args)</tt>
-  * Renders the html related to the partial template for object or collection
-  * <tt>partial 'photo/_item', :object => @photo, :locals => { :foo => 'bar' }</tt>
-  * <tt>partial 'photo/_item', :collection => @photos</tt>
-
-See the wiki article for additional information: <...WIKI...>
+For more information on render and partial helpers, check out the guide for
+{Padrino Helpers}[http://wiki.github.com/padrino/padrino-framework/application-helpers].
 
 = Admin Dashboard and Authentication (padrino-admin)
 

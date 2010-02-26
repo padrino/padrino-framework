@@ -7,7 +7,8 @@ Padrino comes preloaded with flexible code generators powered in part by the exc
 both in creating new applications and building on existing ones. The generators have been built to be as library agnostic
 as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc.
 
-See the wiki article for additional information: <...WIKI...>
+See the guide for {Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators] for a
+more in-depth look at the system.
 
 === Application Generator
 
@@ -19,14 +20,6 @@ to using Padrino.
 One important feature of the generators is that they were built from the ground up to support a wide variety
 of tools, libraries and gems for use within your padrino application. 
 
-This means that Padrino generators do *not* lock you into using any particular database, ORM, testing framework, 
-templating engine or javascript library. In fact, when generating an application you can actually tell 
-Padrino which components you would like to use!
-
-The usage for the project generator is quite simple:
-
-  $ padrino-gen project <the_app_name> </path/to/create/app> --<component-name> <value>
-
 The simplest possible command to generate a base application would be:
 
   $ padrino-gen project demo_project
@@ -35,11 +28,7 @@ This would construct a Padrino application DemoApp (which extends from Padrino::
 inside the folder 'demo_project' at our current path. Inside the application there would be configuration and 
 setup performed for the default components.
 
-You can also define specific components to be used:
-
-  $ padrino-gen project demo_project --test rspec --renderer haml --mock rr --script jquery --orm datamapper
-  
-There is also support for aliases for each component within the command:
+You can define specific components to be used:
 
   $ padrino-gen project demo_project -t rspec -r haml -m rr -s jquery -d datamapper
   
@@ -55,19 +44,8 @@ mock::      none  (default), mocha, rr
 script::    none  (default), jquery, prototype, mootools, rightjs
 orm::       none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
-The generator uses the <tt>bundler</tt> gem to resolve any application dependencies when the application is newly created.
-The necessary bundler command can be executed automatically through the generator with
-
-  $ padrino-gen project demo_project --run_bundler # alias -b
-
-or this can be done manually through executing command <tt>gem bundle</tt> in the terminal at the root of the generated application.
-If not executed manually, the bundling will be performed automatically the first time the application attempts to boot.
-Note that this command only has to be performed when the application is first generated or when the Gemfile is modified.
- 
-The generator framework within padrino is extensible and additional components and tools can be added easily.
-This would be achieved through forking our project and reading through the code in <tt>lib/generators/App.rb</tt> and
-the setup instructions inside the relevant files within <tt>lib/generators/components/</tt>. We are happy to accept pull requests
-for additional component types not originally included (although helping us maintain them would also be appreciated).
+To learn more about the project generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Sub App Generator
 
@@ -90,6 +68,9 @@ By default these apps are mounted under:
   
 but you can edit config/apps.rb and change it.
 
+To learn more about the subapp generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+
 === Model Generator
 
 Padrino provides generator support for quickly creating new models within your Padrino application. Note that
@@ -108,20 +89,8 @@ You can also specify desired fields to be contained within your User model:
 
   $ padrino-gen model User name:string age:integer email:string
   
-The model generator will create multiple files within your application and based on your ORM component. 
-Usually the model file will generate files similar to the following:
-
-  * model definition file [app/models/user.rb]
-  * migration declaration [db/migrate/xxx_create_users.rb]
-  * model unit test file  [test/models/user_test.rb]
-  
-You can define as many models as you would like in a Padrino application using this generator.
-
-You can destroy models that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen model User -d
-  
-This remove all created model files.
+To learn more about the model generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Migration Generator
 
@@ -137,19 +106,8 @@ Using the migration generator is as simple as:
   $ padrino-gen migration AddFieldsToUsers
   $ padrino-gen migration RemoveFieldsFromUsers
   
-You can also specify desired columns to be added to the migration file:
-
-  $ padrino-gen migration AddFieldsToUsers last_login:datetime crypted_password:string
-  $ padrino-gen migration RemoveFieldsFromUsers password:string ip_address:string
-  
-The migration generator will then construct the migration file according to your ORM component chosen
-within <tt>db/migrate/xxx_add_fields_to_users.rb</tt> including the columns specified in the command.
-
-You can destroy migrations that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen migration AddFieldsToUsers -d
-  
-This removes the migration file.
+To learn more about the migration generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Controller Generator
 
@@ -163,28 +121,13 @@ created through the Padrino application generator and that follow Padrino conven
 Using the controller generator is as simple as:
 
   $ padrino-gen controller Admin
-
-If you want create a controller for a specified sub app you can:
-
-  $ padrino-gen controller Admin -a my_sub_app
   
 You can also specify desired actions to be added to your controller:
 
   $ padrino-gen controller Admin get:index get:new post:create
   
-The controller generator will then construct the controller file within <tt>app/controllers/admin.rb</tt>
-and also a controller test file at <tt>test/controllers/admin_controller_test.rb</tt> according to the 
-test framework chosen during app generation. A default route will also be generated mapping to name of the controller and the route name. For example:
-
-  $ padrino-gen controller User get:index
-  
-  will create a url route for :index mapping to "/user/index"
-  
-You can destroy controllers that you created via the destroy option and setting it to true. default is false.
-
-    $ padrino-gen controller User -d
-
-This removes all created controller files.
+To learn more about the controller generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 === Mailer Generator
 
@@ -196,21 +139,8 @@ Using the mailer generator is as simple as:
 
   $ padrino-gen mailer UserNotifier
 
-If you want create a mailer for a specified sub app you can:
-
-  $ padrino-gen mailer UserNotifier -a my_sub_app
-
-You can also specify desired delivery actions to be added to the mailer:
-
-  $ padrino-gen mailer UserNotifier confirm_account welcome inactive_account
-  
-The mailer generator will then construct the mailer file within <tt>app/mailers/user_notifier.rb</tt>
-
-You can destroy mailer that you created via the destroy option and setting it to true. default is false.
-  
-  $ padrino-gen mailer UserNotifer -d
-  
-This remove all created mailer files.
+To learn more about the mailer generator, check out the guide to
+{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
 
 == Copyright
 
