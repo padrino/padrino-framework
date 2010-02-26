@@ -216,7 +216,7 @@ module Padrino
             end
 
             # Build our controller
-            controller = Array(@_controller).collect(&:to_s)
+            controller = Array(@_controller).collect { |c| c.to_s }
 
             unless controller.empty?
               # Now we need to add our controller path only if not mapped directly
