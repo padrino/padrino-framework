@@ -13,21 +13,17 @@
 
 == DOCUMENTATION
 
-We need to shorten the README to contain an overview of the functionality.
-We need to create gh wiki pages containing the comprehensive explanations. [x]
-
 * [padrino-core] Explain Padrino::Application#layout better
-* [padrino-core] Much examples for Padrino::Routing module (#router)
-* [padrino-core] Padrino#load! explain better what it do
-* [padrino-core] Padrino#require_dependencies (totally refactored)
-* [padrino-core] Explain better Padrino#logger
-* [padrino-core] Padrino#run! (check doc)
-* [padrino-core] Padrino#tasks (check doc)
-* [padrino-gen] Now all it's private we have only api docs for Padrino::Generators module (check doc)
-* [padrino-helpers] Explain better what do each helper
-* [padrino-helpers] I do a verbatim copy of doc for datetime helpers and number helpers from rails
+* [padrino-core] More examples for Padrino::Routing module (#router)
+* [padrino-core] Padrino#load! should explain better what this does
+* [padrino-core] Padrino#require_dependencies (has been refactored)
+* [padrino-core] Explain better Padrino#logger functionality
+* [padrino-core] Padrino#run! (check docs)
+* [padrino-core] Padrino#tasks (check docs)
+* [padrino-gen] Now all it's private we have only api docs for Padrino::Generators module (check docs)
+* [padrino-helpers] Explain better each helpers function
 * [padrino-mailer] Reorganize docs
-* [padrino-admin] Al doc written from me
+* [padrino-admin] All docs need to be reviewed
 
 === TESTING / POLISHING
 
@@ -35,8 +31,5 @@ We need to create gh wiki pages containing the comprehensive explanations. [x]
 
 === IDEAS
 
-* Asynchronous commands baked in (http://github.com/deadprogrammer/spork)
 * Job Queue support with http://github.com/adamcooke/resque (or http://github.com/bmizerany/sinatra-dj)
-* Refactor mailer to use adv_attr_accessor (for from, to, subject) methods
-* Replace custom console with modified version of (http://github.com/sickill/racksh/blob/master/README.markdown)
 * Tableless module which can be included to make a class into a database-less model
