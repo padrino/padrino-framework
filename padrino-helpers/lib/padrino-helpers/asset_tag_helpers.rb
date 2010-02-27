@@ -208,10 +208,13 @@ module Padrino
       
       ##
       # Generates a favicon link.
-      # example:
-      # favicon_tag 'images/favicon.png'
-      # or override some options
-      # favicon_tag 'images/favicon.png', :type => 'image/ico'
+      # 
+      # ==== Examples
+      # 
+      #   favicon_tag 'images/favicon.png'
+      #   # or override some options
+      #   favicon_tag 'images/favicon.png', :type => 'image/ico'
+      # 
       def favicon_tag(source,options={})
         type = File.extname(source).gsub('.','')
         options = options.dup.reverse_merge!(:href => source, :rel => 'icon', :type => "image/#{type}")

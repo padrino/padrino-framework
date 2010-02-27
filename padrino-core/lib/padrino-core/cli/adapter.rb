@@ -13,7 +13,7 @@ module Padrino
 
             fork do
               Process.setsid
-              return if fork
+              exit if fork
               File.umask 0000
               puts "=> Padrino server has been daemonized with pid #{Process.pid}"
               STDIN.reopen "/dev/null"
@@ -29,7 +29,7 @@ module Padrino
               end
 
               Padrino.run!(options.host, options.port, options.adapter)
-
+              exit
             end
           else
             Padrino.run!(options.host, options.port, options.adapter)
