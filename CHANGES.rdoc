@@ -1,15 +1,20 @@
-= 0.9.2
+= Changelog
 
+== 0.9.2 (Unreleased)
+
+* Cleaned up (truncated) README files for Padrino gems
 * Added template agnosticism (erb/haml) in admin generator
 * Added +mootools+ as a javascript option in project generator 
 * Added +cucumber+ as a test option in project generator
 * Added +Mongoid+ as adapter in admin generator
 * Added +Mongoid+ as an orm option in project generator
 * Added +MongoMapper+ as adapter in admin generator
+* Fixed an issue with the SASS initializer for project generator
 * Fixed a small problem with DataMapper and our error helpers
+* Removed admin flash middleware (extracted to extension)
 * Minor code cleanup
 
-= 0.9.1
+== 0.9.1 (2/23/10)
 
 * New Padrino Admin with static theme based on web-app-theme
 * Fix routing module to work for sinatra standalone 
