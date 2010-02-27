@@ -74,7 +74,6 @@ Best way to get started with building Padrino applications is to read following 
 * {Blog Tutorial}[http://wiki.github.com/padrino/padrino-framework/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
 * {Padrino RDoc}[http://padrino.github.com/api/index.html] - Rdoc documentation for the Padrino framework.
 * {Quick Overview}[http://wiki.github.com/padrino/padrino-framework/basic-projects] - Outlines basic generation commands.
-* {Padrino Examples}[http://wiki.github.com/padrino/padrino-framework/examples] - List of known Padrino applications which can serve as examples.
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
 
