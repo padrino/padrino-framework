@@ -25,7 +25,6 @@ module Padrino
 
               if pid
                 File.open(pid, 'w'){ |f| f.write("#{Process.pid}") }
-                at_return { File.delete(pid) if File.exist?(pid) }
               end
 
               Padrino.run!(options.host, options.port, options.adapter)
@@ -43,6 +42,7 @@ module Padrino
             print "=> Sending SIGTERM to process with pid #{pid} wait "
             Process.kill(15, pid) rescue nil
             1.step(5) { |i| sleep i; print "."; $stdout.flush }
+            File.delete("tmp/pids/server.pid")
             puts " done."
           end
         end
