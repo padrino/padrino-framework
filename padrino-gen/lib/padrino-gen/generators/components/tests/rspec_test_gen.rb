@@ -58,7 +58,7 @@ module Padrino
             describe "!NAME! Model" do
               it 'can be created' do
                 @!DNAME! = !NAME!.new
-                @!DNAME!.should.not.be nil
+                @!DNAME!.should_not be_nil
               end
             end
             TEST
