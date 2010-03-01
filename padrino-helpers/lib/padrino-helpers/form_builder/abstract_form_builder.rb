@@ -67,15 +67,15 @@ module Padrino
         def check_box(field, options={})
           unchecked_value = options.delete(:uncheck_value) || '0'
           options.reverse_merge!(:id => field_id(field), :value => '1')
-          options.merge!(:checked => true) if values_matches_field?(field, options[:value])
-          html = hidden_field(field, :value => unchecked_value, :id => nil)
+          options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
+          html  = @template.hidden_field_tag(options[:name] || field_name(field), :value => unchecked_value, :id => nil)
           html << @template.check_box_tag(field_name(field), options)
         end
 
         # f.radio_button :gender, :value => 'male'
         def radio_button(field, options={})
           options.reverse_merge!(:id => field_id(field, options[:value]))
-          options.merge!(:checked => true) if values_matches_field?(field, options[:value])
+          options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
           @template.radio_button_tag field_name(field), options
         end
 

@@ -89,6 +89,32 @@ module Padrino
       end
 
       ##
+      # Highlights one or more words everywhere in text by inserting it into a :highlighter string.
+      # 
+      # The highlighter can be customized by passing :+highlighter+ as a single-quoted string 
+      # with \1 where the phrase is to be inserted (defaults to ’<strong class="highlight">\1</strong>’)
+      # 
+      # ==== Examples
+      # 
+      #   # => Lorem ipsum <strong class="highlight">dolor</strong> sit amet
+      #   highlight('Lorem ipsum dolor sit amet', 'dolor')
+      # 
+      #   # => Lorem ipsum <span class="custom">dolor</span> sit amet
+      #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
+      # 
+      def highlight(text, words, *args)
+        options = args.extract_options!
+        options.reverse_merge!(:highlighter => '<strong class="highlight">\1</strong>')
+
+        if text.blank? || words.blank?
+          text
+        else
+          match = Array(words).map { |p| Regexp.escape(p) }.join('|')
+          text.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
+        end
+      end
+
+      ##
       # Reports the approximate distance in time between two Time or Date objects or integers as seconds.
       # Set <tt>include_seconds</tt> to true if you want more detailed approximations when distance < 1 min, 29 secs
       # Distances are reported based on the following table:

@@ -234,7 +234,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
       assert_match_in_file(/describe "User Model"/m, '/tmp/sample_project/spec/models/user_spec.rb')
       assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/spec/models/user_spec.rb')
-      assert_match_in_file(/@user\.should\.not\.be\snil/m, '/tmp/sample_project/spec/models/user_spec.rb')
+      assert_match_in_file(/@user\.should_not be_nil/m, '/tmp/sample_project/spec/models/user_spec.rb')
     end
 
     # SHOULDA

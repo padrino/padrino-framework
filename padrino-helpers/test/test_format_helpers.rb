@@ -61,6 +61,18 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
   end
 
+  context 'for #highlight method' do
+    should 'highligth with defaults' do
+      actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor')
+      assert_equal 'Lorem ipsum <strong class="highlight">dolor</strong> sit amet', actual_text
+    end
+
+    should 'highlight with highlighter' do
+      actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
+      assert_equal 'Lorem ipsum <span class="custom">dolor</span> sit amet', actual_text
+    end
+  end
+
   context 'for #truncate method' do
     should "support default truncation" do
       actual_text = truncate("Once upon a time in a world far far away")
