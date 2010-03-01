@@ -1,7 +1,9 @@
 = Changelog
 
-== 0.9.2 (Unreleased)
+== 0.9.2
 
+* Fixed overwrite of :+name+ in f.check_box and f.radio_button
+* Added +highlight+ helper
 * Cleaned up (truncated) README files for Padrino gems
 * Added template agnosticism (erb/haml) in admin generator
 * Added +mootools+ as a javascript option in project generator 
