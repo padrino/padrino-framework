@@ -50,9 +50,7 @@ module Padrino
         require 'padrino-gen/generators/actions'
         require 'padrino-gen/generators/components/actions'
         # Require all generator components
-        Dir[File.dirname(__FILE__) + '/padrino-gen/generators/components/**/*.rb'].each { |file| 
-          require file.gsub(%r{.*?/padrino-gen/generators}, 'padrino-gen/generators')
-        }
+        Dir[File.dirname(__FILE__) + '/padrino-gen/generators/components/**/*.rb'].each { |file| require file }
         load_paths.flatten.each { |file| require file  }
       end
     end
