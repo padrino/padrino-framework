@@ -1,5 +1,10 @@
 = Changelog
 
+== 0.9.4
+
+* Fixed Padrino Mailer views_path when we use a "multi app" project
+* Fixed content_type
+
 == 0.9.3
 
 * Fixed a problem with some env with generators
