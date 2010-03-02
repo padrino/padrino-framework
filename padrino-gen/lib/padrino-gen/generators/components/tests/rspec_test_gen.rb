@@ -68,7 +68,7 @@ module Padrino
             require_dependencies 'rspec', :require => 'spec', :group => 'test'
             insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
             create_file destination_root("spec/spec.rake"), RSPEC_RAKE
-            create_file destination_root("spec/spec.opts"), "--color"
+            create_file destination_root("spec/spec.opts"), "-fs --color"
           end
 
           # Generates a controller test given the controllers name
