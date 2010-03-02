@@ -2,13 +2,12 @@ module Padrino
   module Generators
     module Components
       module Renderers
-        
-        module ErbGen    
+
+        module ErbGen
           def setup_renderer
             require_dependencies 'erubis'
           end
         end
-      
       end
     end
   end

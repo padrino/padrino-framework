@@ -221,7 +221,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/spec/spec.rake')
-      assert_file_exists('/tmp/sample_project/spec/spec.opts')
     end
 
     should "properly generate for shoulda" do
@@ -253,11 +252,9 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_match_in_file(/Capybara.app = /, '/tmp/sample_project/features/support/env.rb')
       assert_file_exists('/tmp/sample_project/spec/spec.rake')
-      assert_file_exists('/tmp/sample_project/spec/spec.opts')
       assert_file_exists('/tmp/sample_project/features/support/env.rb')
       assert_file_exists('/tmp/sample_project/features/add.feature')
       assert_file_exists('/tmp/sample_project/features/step_definitions/add_steps.rb')
     end
-
   end
 end

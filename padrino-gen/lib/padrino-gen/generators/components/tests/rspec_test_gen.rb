@@ -45,8 +45,8 @@ module Padrino
             require 'spec/rake/spectask'
 
             Spec::Rake::SpecTask.new(:spec) do |t|
-              t.spec_opts = ['--options', "spec/spec.opts"]
               t.spec_files = Dir['**/*_spec.rb']
+              t.spec_opts  = %w(-fs --color)
             end
             TEST
           end
@@ -68,7 +68,6 @@ module Padrino
             require_dependencies 'rspec', :require => 'spec', :group => 'test'
             insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
             create_file destination_root("spec/spec.rake"), RSPEC_RAKE
-            create_file destination_root("spec/spec.opts"), "-fs --color"
           end
 
           # Generates a controller test given the controllers name
