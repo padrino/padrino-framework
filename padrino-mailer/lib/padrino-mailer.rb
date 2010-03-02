@@ -20,7 +20,7 @@ module Padrino
     # Used Padrino::Application for register Padrino::Mailer::Base::views_path
     # 
     def self.registered(app)
-      Padrino::Mailer::Base::views_path = app.views
+      Padrino::Mailer::Base::views_path << app.views
     end
   end # Mailer
 end # Padrino

@@ -20,7 +20,7 @@ class TestPadrinoMailer < Test::Unit::TestCase
     end
 
     should 'be able to deliver html emails' do
-      assert_email_sent(:to => 'julie@fake.com', :from => 'noreply@anniversary.com', :type => 'html', :via => :smtp,
+      assert_email_sent(:to => 'julie@fake.com', :from => 'noreply@anniversary.com', :content_type => 'text/html', :via => :smtp,
                         :subject => "Happy anniversary!", :body => "<p>Yay Joey & Charlotte!</p>\n<p>You have been married 16 years</p>")
       visit '/deliver/html', :post
       assert_equal 'mail delivered', last_response.body

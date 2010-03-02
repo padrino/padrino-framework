@@ -21,7 +21,7 @@ module Padrino
       # Returns the available mail fields when composing a message
       # 
       def self.mail_fields
-        [:to, :cc, :bcc, :reply_to, :from, :subject, :type, :charset, :via, :attachments]
+        [:to, :cc, :bcc, :reply_to, :from, :subject, :content_type, :charset, :via, :attachments]
       end
 
       attr_accessor :mail_attributes
@@ -42,7 +42,9 @@ module Padrino
       # Assigns the body key to the mail attributes either with the rendered body from a template or the given string value
       # 
       def body(body_value)
-        @mail_attributes[:body] = Tilt.new(template_path).render(self, body_value.symbolize_keys) if body_value.is_a?(Hash)
+        template = template_path
+        raise "Template for '#{@mail_name}' could not be located in views path!" unless template
+        @mail_attributes[:body] = Tilt.new(template).render(self, body_value.symbolize_keys) if body_value.is_a?(Hash)
         @mail_attributes[:body] = body_value if body_value.is_a?(String)
       end
 
@@ -50,9 +52,13 @@ module Padrino
       # Returns the path to the email template searched for using glob pattern
       # 
       def template_path
-        Dir[File.join(self.views_path, self.class.name.underscore.split("/").last, "#{@mail_name}.*")].first
+        self.views_path.each do |path|
+          template = Dir[File.join(path, self.class.name.underscore.split("/").last, "#{@mail_name}.*")].first
+          return template if template
+        end
       end
 
+      @@views_path = []
       cattr_accessor :smtp_settings
       cattr_accessor :views_path
 

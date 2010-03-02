@@ -31,7 +31,7 @@ class MailerDemo < Sinatra::Base
       to   'julie@fake.com'
       from 'noreply@anniversary.com'
       body 'names' => names, 'years_married' => years_married
-      type 'html'
+      content_type 'text/html'
     end
   end
 

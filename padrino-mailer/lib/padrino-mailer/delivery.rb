@@ -28,7 +28,6 @@ module Padrino
         end
 
         def build_tmail(options)
-          logger.error options.inspect
           mail          = TMail::Mail.new
           mail.to       = options[:to]
           mail.cc       = options[:cc]   || ''

@@ -10,9 +10,9 @@ class DemoMailer < Padrino::Mailer::Base
     body "Hello world!"
     via :sendmail
   end
-  
+
   def sample_mail_smtp
-   from 'test@default.com'
+    from 'test@default.com'
     to 'test@test.com'
     body "SMTP Hello world!"
   end
