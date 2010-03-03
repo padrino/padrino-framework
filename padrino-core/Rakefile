@@ -17,7 +17,7 @@ begin
     gem.add_runtime_dependency     "i18n",          ">= 0.3.2"
     gem.add_runtime_dependency     "usher",         ">= 0.6.2"
     gem.add_runtime_dependency     "thor",          ">= 0.13.0"
-    gem.add_runtime_dependency     "bundler",       "= 0.9.7"
+    gem.add_runtime_dependency     "bundler",       ">= 0.9.7"
     gem.add_runtime_dependency     "activesupport", "= 2.3.5"
     gem.add_development_dependency "shoulda",       ">= 2.10.3"
     gem.add_development_dependency "mocha",         ">= 0.9.7"
