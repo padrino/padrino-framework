@@ -390,6 +390,12 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_has_tag('select', :id => 'user_state', :name => 'user[state]') { actual_html }
       assert_has_tag('select option', :count => 4) { actual_html }
       assert_has_tag('select option:first-child', :content => '') { actual_html }
+      assert_has_tag('select option:first-child', :value => '') { actual_html }
+      actual_html = standard_builder.select(:state, :options => ['California', 'Texas', 'Wyoming'], :include_blank => 'Select')
+      assert_has_tag('select', :id => 'user_state', :name => 'user[state]') { actual_html }
+      assert_has_tag('select option', :count => 4) { actual_html }
+      assert_has_tag('select option:first-child', :content => 'Select') { actual_html }
+      assert_has_tag('select option:first-child', :value => '') { actual_html }
     end
 
     should "display correct select html with collection passed in" do

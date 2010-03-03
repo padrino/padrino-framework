@@ -250,13 +250,14 @@ module Padrino
       #   options = [['caption', 'value'], ['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
       #   options = ['option', 'red', 'yellow' ]
       #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
-      #   select_tag(:country, :collection => @countries, :fields => [:name, :code])
+      #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
       # 
       def select_tag(name, options={})
         options.reverse_merge!(:name => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
-        options[:options].unshift('') if options.delete(:include_blank)
+        blank = options.delete(:include_blank)
+        options[:options].unshift(blank.is_a?(String) ? [blank, ''] : '') if blank
         select_options_html = options_for_select(options.delete(:options), options.delete(:selected))
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
         content_tag(:select, select_options_html, options)
@@ -338,7 +339,6 @@ module Padrino
       # fields is an array containing the fields to display from each item in the collection
       # 
       def options_from_collection(collection, fields)
-        return '' if collection.blank?
         collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
       end
 
