@@ -15,6 +15,7 @@ begin
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.rubyforge_project = 'padrino-mailer'
     gem.add_runtime_dependency     "padrino-core",  "= #{GEM_VERSION}"
+    gem.add_runtime_dependency     "tilt",          ">= 0.6"
     gem.add_runtime_dependency     "tmail",         ">= 1.2"
     gem.add_development_dependency "shoulda",       ">= 2.10.3"
     gem.add_development_dependency "haml",          ">= 2.2.1"
