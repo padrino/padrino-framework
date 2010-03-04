@@ -20,6 +20,13 @@ module Padrino
       end
 
       ##
+      # Strips all HTML tags from the html
+      # 
+      def strip_tags(html)
+        html.gsub(/<\/?[^>]*>/, "") if html
+      end
+
+      ##
       # Returns text transformed into HTML using simple formatting rules. Two or more consecutive newlines(\n\n) are considered
       # as a paragraph and wrapped in <p> tags. One newline (\n) is considered as a linebreak and a <br /> tag is appended.
       # This method does not remove the newlines from the text.
