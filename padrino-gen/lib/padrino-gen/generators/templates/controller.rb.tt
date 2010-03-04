@@ -11,7 +11,7 @@
   # end
 
   # get :foo, :with => :id do
-  #   "Im foo/#{params[:id]}"
+  #   "Maps to url '/foo/#{params[:id]}'"
   # end
 
   # get "/example" do
