@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-$:.unshift File.dirname(__FILE__) + "/../lib"
+
+padrino_core_path = File.expand_path('../../lib', __FILE__)
+$:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.include?(padrino_core_path)
 
 require 'padrino-core/cli/base'
 
