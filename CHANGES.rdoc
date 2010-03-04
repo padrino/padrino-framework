@@ -2,8 +2,14 @@
 
 == 0.9.4
 
+* Improved select_tag helper, now accept :include_blank => 'My text' 
+* Re-require 'tilt' since not all of us use sinatra --pre
+* Fixed a strange api change of bundler (see: http://github.com/carlhuda/bundler/issues/closed#issue/160)
+* Removed Bundler 0.9.7 dependency and allow all versions > 0.9.7.
 * Fixed Padrino Mailer views_path when we use a "multi app" project
-* Fixed content_type
+* Fixed content_type in Padrino Mailer
+* Added a spec option -fs 
+* Removed rspec.opts and use it directly in rake task.
 
 == 0.9.3
 
@@ -25,7 +31,7 @@
 * Removed admin flash middleware (extracted to extension)
 * Minor code cleanup
 
-== 0.9.1 (2/23/10)
+== 0.9.1
 
 * New Padrino Admin with static theme based on web-app-theme
 * Fix routing module to work for sinatra standalone 

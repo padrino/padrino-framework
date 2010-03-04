@@ -6,8 +6,9 @@ module Padrino
       # 
       # ==== Examples
       # 
-      #   partial 'photo/_item', :object => @photo
-      #   partial 'photo/_item', :collection => @photos
+      #   partial 'photo/item', :object => @photo
+      #   partial 'photo/item', :collection => @photos
+      #   partial 'photo/item', :locals => { :foo => :bar }
       # 
       def partial(template, options={})
         options.reverse_merge!(:locals => {}, :layout => false)
@@ -19,16 +20,16 @@ module Padrino
         if collection = options.delete(:collection)
           options.delete(:object)
           counter = 0
-          collection.collect do |member|
+          collection.collect { |member|
             counter += 1
             options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
-            render(template_path, nil, options.merge(:layout => false))
-          end.join("\n")
+            render(template_path, nil, options.dup)
+          }.join("\n")
         else
           if member = options.delete(:object)
             options[:locals].merge!(object_name => member)
           end
-          render(template_path, nil, options.merge(:layout => false))
+          render(template_path, nil, options.dup)
         end
       end
       alias :render_partial :partial
