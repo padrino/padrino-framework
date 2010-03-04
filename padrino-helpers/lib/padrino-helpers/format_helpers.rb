@@ -58,8 +58,7 @@ module Padrino
       # 
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       # 
-      def truncate(text, *args)
-        options = args.extract_options!
+      def truncate(text, options={})
         options.reverse_merge!(:length => 30, :omission => "...")
         if text
           len = options[:length] - options[:omission].length
