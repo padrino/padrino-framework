@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.9.5 (Unreleased)
+
+* Fixed minor SASS support issue for haml generated projects
+
 == 0.9.4
 
 * Improved select_tag helper, now accept :include_blank => 'My text' 
