@@ -1,4 +1,3 @@
-require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
 
 module Padrino
