@@ -48,6 +48,7 @@ task :clean do
       %w(doc tmp pkg coverage).each { |dir| FileUtils.rm_rf dir }
     end
   end
+  Dir["**/*.gem"].each { |gem| FileUtils.rm_rf gem }
 end
 
 desc "Clean pkg and other stuff"

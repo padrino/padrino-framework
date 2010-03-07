@@ -16,6 +16,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/app')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
+      assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
 
     should "not create models folder if no orm is chosen" do

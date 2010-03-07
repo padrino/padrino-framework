@@ -14,6 +14,7 @@ require 'thor/group'
 end
 
 require 'padrino-gen'
+require 'padrino-core/support_lite'
 
 Padrino::Generators.load_components!
 

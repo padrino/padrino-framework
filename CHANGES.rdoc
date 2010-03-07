@@ -2,6 +2,12 @@
 
 == 0.9.5 (Unreleased)
 
+* Now we use Sinatra 0.9.6 since previous versions on ruby >= 1.8.7-p248 raise a segfault bug
+* Refactored executables
+* Added strip_tags helper
+* Fixed model_attribute_translate helper
+* Added favicon
+* Prevent bundler gem clashing
 * Fixed minor SASS support issue for haml generated projects
 
 == 0.9.4
