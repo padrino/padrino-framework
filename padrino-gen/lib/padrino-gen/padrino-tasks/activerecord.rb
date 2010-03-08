@@ -366,10 +366,6 @@ if defined?(ActiveRecord)
     end
   end
 
-  def session_table_name
-    ActiveRecord::SessionStore::Session.table_name
-  end
-
   def set_firebird_env(config)
     ENV["ISC_USER"]     = config[:username].to_s if config[:username]
     ENV["ISC_PASSWORD"] = config[:password].to_s if config[:password]
@@ -526,7 +522,7 @@ if defined?(ActiveRecord)
         fields     = Array(args.shift).map(&:to_s)
         options    = args.shift
 
-        index_name = options[:name] if options  
+        index_name = options[:name].to_s if options
         index_name ||= ActiveRecord::Base.connection.index_name(table_name, :column => fields)
 
         (self.indexes_in_schema ||= []) << index_name
