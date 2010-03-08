@@ -14,13 +14,19 @@ module Padrino
       #
       def render(engine, data=nil, options={}, locals={}, &block)
         clear_template_cache!
+
         # If engine is an hash we convert to json
         return engine.to_json if engine.is_a?(Hash)
+
         # If an engine is a string probably is a path so we try to resolve them
         if data.nil?
           data   = engine.to_sym
           engine = resolve_template_engine(engine, options)
         end
+
+        # We need for Sinatra 1.0 an outvar for erb and erubis templates
+        options[:outvar] ||= '@_out_buf' if [:erb, :erubis].include?(engine)
+
         # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application

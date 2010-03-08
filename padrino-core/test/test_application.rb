@@ -146,5 +146,22 @@ class TestApplication < Test::Unit::TestCase
         assert_equal "3", body
       end
     end
+
+    should "renders erb with blocks" do
+      mock_app {
+        def container
+          @_out_buf << "THIS."
+          yield
+          @_out_buf << "SPARTA!"
+        end
+        def is; "IS." end
+        get '/' do
+          render :erb, '<% container do %> <%= is %> <% end %>'
+        end
+      }
+      get '/'
+      assert ok?
+      assert_equal 'THIS. IS. SPARTA!', body
+    end
   end
 end
