@@ -19,6 +19,5 @@ module Padrino
     def self.files
       @files ||= []
     end
-
   end # Tasks
 end # Padrino

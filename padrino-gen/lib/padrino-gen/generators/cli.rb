@@ -1,5 +1,4 @@
 require 'thor/group'
-require 'padrino-core/support_lite'
 
 module Padrino
   module Generators
@@ -19,10 +18,12 @@ module Padrino
       def load_boot
         begin
           ENV['PADRINO_LOG_LEVEL'] ||= "test"
-          if options[:root]
-            require File.join(options[:root], 'config/boot.rb') if File.exist?(File.join(options[:root], 'config/boot.rb'))
+          boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
+          if File.exist?(boot)
+            require boot
           else
-            require 'config/boot.rb' if File.exist?('config/boot.rb')
+            # If we are outside app we need to load support_lite
+            require 'padrino-core/support_lite'
           end
         rescue Exception => e
           puts "=> Problem loading config/boot.rb"
