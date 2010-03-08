@@ -176,7 +176,7 @@ class TestFormatHelpers < Test::Unit::TestCase
 
   context 'for #js_escape_html method' do
     should "escape double quotes" do
-      assert_equal "\"hello\"", js_escape_html('"hello"')
+      assert_equal %Q{"hello"}, js_escape_html('"hello"')
     end
     should "escape single quotes" do
       assert_equal "\"hello\"", js_escape_html("'hello'")

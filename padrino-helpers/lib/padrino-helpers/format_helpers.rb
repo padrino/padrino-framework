@@ -238,7 +238,7 @@ module Padrino
       #   js_escape_html("<h1>Hey</h1>")
       # 
       def js_escape_html(html_content)
-        "\"#{escape_javascript(html_content)}\""
+        %Q["#{escape_javascript(html_content)}"]
       end
     end # FormatHelpers
   end # Helpers
