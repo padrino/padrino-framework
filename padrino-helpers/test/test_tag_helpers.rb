@@ -68,6 +68,10 @@ class TestTagHelpers < Test::Unit::TestCase
       actual_html = input_tag(:checkbox, :checked => true)
       assert_has_tag('input[type=checkbox]', :checked => 'checked') { actual_html }
     end
+    should "remove checked attribute if false" do
+      actual_html = input_tag(:checkbox, :checked => false)
+      assert_has_no_tag('input[type=checkbox][checked=false]') { actual_html }
+    end
     should "support disabled attribute by using 'disabled' if true" do
       actual_html = input_tag(:checkbox, :disabled => true)
       assert_has_tag('input[type=checkbox]', :disabled => 'disabled') { actual_html }
