@@ -14,16 +14,33 @@ class TestApplication < Test::Unit::TestCase
     FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
   end
 
-  def with_view(name, content)
-    # Build a temp layout
+  def create_view(name, content, options={})
     FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
-    layout = File.dirname(__FILE__) + "/views/#{name}.erb"
-    File.open(layout, 'wb') { |io| io.write content }
+    path   = "/views/#{name}"
+    path  += ".#{options.delete(:locale)}" if options[:locale].present?
+    path  += ".#{options.delete(:format)}" if options[:format].present?
+    path  += ".erb"
+    view   = File.dirname(__FILE__) + path
+    File.open(view, 'wb') { |io| io.write content }
+    view
+  end
+
+  def remove_views
+    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
+  end
+
+  def with_view(name, content, options={})
+    # Build a temp layout
+    view = create_view(name, content, options)
     yield
   ensure
     # Remove temp layout
-    File.unlink(layout) rescue nil
-    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
+    File.unlink(view) rescue nil
+    remove_views
+  end
+
+  def teardown
+    remove_views
   end
 
   class PadrinoTestApp < Padrino::Application; end
@@ -147,8 +164,68 @@ class TestApplication < Test::Unit::TestCase
       end
     end
 
-    should "renders erb with blocks" do
-      mock_app {
+    should 'reslove template content type' do
+      create_view :foo, "Im Js", :format => :js
+      create_view :foo, "Im Erb"
+      mock_app do
+        get("/foo", :respond_to => :js) { render :foo }
+        get("/bar.js") { render :foo }
+      end
+      get "/foo.js"
+      assert_equal "Im Js", body
+      get "/bar.js"
+      assert_equal "Im Js", body
+      remove_views
+    end
+
+    should 'reslove template locale' do
+      create_view :foo, "Im English", :locale => :en
+      create_view :foo, "Im Italian", :locale => :it
+      mock_app do
+        get("/foo") { render :foo }
+      end
+      I18n.locale = :en
+      get "/foo"
+      assert_equal "Im English", body
+      I18n.locale = :it
+      get "/foo"
+      assert_equal "Im Italian", body
+    end
+
+    should 'resolve template content_type and locale' do
+      create_view :foo, "Im Js",          :format => :js
+      create_view :foo, "Im Erb"
+      create_view :foo, "Im English Erb", :locale => :en
+      create_view :foo, "Im Italian Erb", :locale => :it
+      create_view :foo, "Im English Js",  :format => :js, :locale => :en
+      create_view :foo, "Im Italian Js",  :format => :js, :locale => :it
+      mock_app do
+        get("/foo", :respond_to => [:html, :js]) { render :foo }
+      end
+      I18n.locale = :none
+      get "/foo.js"
+      assert_equal "Im Js", body
+      get "/foo"
+      assert_equal "Im Erb", body
+      I18n.locale = :en
+      get "/foo"
+      assert_equal "Im English Erb", body
+      I18n.locale = :it
+      get "/foo"
+      assert_equal "Im Italian Erb", body
+      I18n.locale = :en
+      get "/foo.js"
+      assert_equal "Im English Js", body
+      I18n.locale = :it
+      get "/foo.js"
+      assert_equal "Im Italian Js", body
+      I18n.locale = :en
+      get "/foo.pk"
+      assert_equal 404, status
+    end
+
+    should 'renders erb with blocks' do
+      mock_app do
         def container
           @_out_buf << "THIS."
           yield
@@ -158,7 +235,7 @@ class TestApplication < Test::Unit::TestCase
         get '/' do
           render :erb, '<% container do %> <%= is %> <% end %>'
         end
-      }
+      end
       get '/'
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body

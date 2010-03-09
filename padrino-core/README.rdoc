@@ -161,7 +161,19 @@ and even configure the respond_to for each route:
       end
     end
   end
-  
+
+or auto lookup for current locale or content_type
+
+  # app/controllers/example.rb
+  SimpleApp.controllers :admin do
+    get :show, :with => :id, :respond_to => [html, :js] do
+      render "admin/show"
+    end
+  end
+
+When you visit :+show+ and your I18n.locale == :ru Padrino try to look for "admin/show.ru.js.*" if nothing match that path
+they try "admin/show.ru.*" then "admin/show.js.*" if none match return "admin/show.erb" (or other engine i.e. haml)
+
 For a complete overview of the routing and controller system, check out the 
 {Routing and Controller guide}[http://wiki.github.com/padrino/padrino-framework/controllers].
   
