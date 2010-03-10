@@ -18,7 +18,7 @@
         <%% @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>| %>
         <tr>
           <%- @orm.columns.each_with_index do |column, i| -%>
-          <td<%= " class=\"first\"" if i==0 %>><%%= link_to <%= @orm.name_singular %>.<%= column.name %>, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id) %></td>
+          <td<%= " class=\"first\"" if i==0 %>><%%= <%= @orm.name_singular %>.<%= column.name %> %></td>
           <%- end -%>
           <td class="last">
             <%%= button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to %> |
