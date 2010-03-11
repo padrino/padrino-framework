@@ -153,7 +153,6 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate default for erb" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=erb', '--script=none']) }
       assert_match /Applying.*?erb.*?renderer/, buffer
-      assert_match_in_file(/gem 'erubis'/, '/tmp/sample_project/Gemfile')
     end
 
     should "properly generate for haml" do

@@ -2,6 +2,7 @@
 
 == 0.9.5 (Unreleased)
 
+* Added the possibility for dsl lovers to create a single file in app called helpers.rb/controllers.rb/mailers.rb
 * Changed generated scaffold now table rows didn't contains links
 * Fixed a bug in reloader, now we prevent schema.rb reloading
 * Fixed check_box helper when :checked => false we remove them
