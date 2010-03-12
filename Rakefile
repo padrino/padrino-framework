@@ -118,24 +118,9 @@ namespace :version do
   end
 end
 
-=begin
-# NOT AGGREGATING ANYMORE
-desc "Create main README.rdoc"
-task :readme do
-  copyright = "== Copyright\n\nCopyright (c) 2010 Padrino. See LICENSE for details."
-  readme = %w(core gen helpers admin mailer cache).collect do |gem|
-    File.read("padrino-#{gem}/README.rdoc").gsub(copyright,"").strip
-  end
-  readme << copyright
-  File.open("README.rdoc", "w"){ |f| f.puts readme.join("\n\n") }
-  puts "Created correctly README.rdoc"
-end
-=end
-
 desc "Publish doc on padrino.github.com"
 task :publish_doc do
   puts "Publishing doc on padrino.github.com ..."
-  rake_command("readme")
   sh 'git clone git@github.com:padrino/padrino.github.com.git'
   rake_command("rdoc")
   FileUtils.cp_r("doc/.", "padrino.github.com/api")
