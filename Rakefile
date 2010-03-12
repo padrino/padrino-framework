@@ -73,6 +73,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title    = "Padrino Framework Documentation"
   rdoc.main = 'padrino-core/README.rdoc'
   rdoc.rdoc_files.include('padrino-core/lib/{*.rb,padrino-core}/*.rb')
+  rdoc.rdoc_files.include('padrino-core/lib/padrino-core/application/**/*.rb')
   rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/cli.rb')
   rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/support_lite.rb')
   rdoc.rdoc_files.exclude('padrino-core/lib/padrino-core/server.rb')
