@@ -246,14 +246,14 @@ class TestApplication < Test::Unit::TestCase
           yield
           @_out_buf << "SPARTA!"
         end
-        def is; "IS." end
-          get '/' do
-            render :erb, '<% container do %> <%= is %> <% end %>'
-          end
+        def is; "IS."; end
+        get '/' do
+          render :erb, '<% container do %> <%= is %> <% end %>'
         end
-        get '/'
-        assert ok?
-        assert_equal 'THIS. IS. SPARTA!', body
       end
+      get '/'
+      assert ok?
+      assert_equal 'THIS. IS. SPARTA!', body
     end
   end
+end
