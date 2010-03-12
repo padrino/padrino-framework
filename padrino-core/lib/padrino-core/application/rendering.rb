@@ -6,12 +6,13 @@ module Padrino
 
     private
       ##
-      # Hijacking the sinatra render for do three thing:
+      # Hijacking the sinatra render for:
       #
       # * Use layout like rails do
       # * Use render 'path/to/my/template' (without symbols)
       # * Use render 'path/to/my/template' (with auto enegine lookup)
       # * Use render 'path/to/template', :layout => false
+      # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
       #
       def render(engine, data=nil, options={}, locals={}, &block)
         clear_template_cache!
