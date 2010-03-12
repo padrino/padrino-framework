@@ -66,7 +66,7 @@ if defined?(ActiveRecord)
                 "TO '#{config[:username]}'@'localhost' " \
                 "IDENTIFIED BY '#{config[:password]}' WITH GRANT OPTION;"
               ActiveRecord::Base.establish_connection(config.merge(
-                  :database => nil, 'username' => 'root', 'password' => root_password))
+                  :database => nil, :username => 'root', :password => root_password))
               ActiveRecord::Base.connection.create_database(config[:database], creation_options)
               ActiveRecord::Base.connection.execute grant_statement
               ActiveRecord::Base.establish_connection(config)
@@ -79,8 +79,8 @@ if defined?(ActiveRecord)
         when 'postgresql'
           @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
           begin
-            ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', 'schema_search_path' => 'public'))
-            ActiveRecord::Base.connection.create_database(config[:database], config.merge('encoding' => @encoding))
+            ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
+            ActiveRecord::Base.connection.create_database(config[:database], config.merge(:encoding => @encoding))
             ActiveRecord::Base.establish_connection(config)
           rescue
             $stderr.puts $!, *($!.backtrace)
@@ -110,7 +110,7 @@ if defined?(ActiveRecord)
 
     desc 'Drops the database for the current Padrino.env'
     task :drop => :environment do
-      config = ActiveRecord::Base.configurations[Padrino.env || 'development']
+      config = ActiveRecord::Base.configurations[Padrino.env || :development]
       begin
         drop_database(config)
       rescue Exception => e
@@ -184,7 +184,7 @@ if defined?(ActiveRecord)
 
     desc "Retrieves the charset for the current environment's database"
     task :charset => :environment do
-      config = ActiveRecord::Base.configurations[Padrino.env || 'development']
+      config = ActiveRecord::Base.configurations[Padrino.env || :development]
       case config[:adapter]
       when 'mysql'
         ActiveRecord::Base.establish_connection(config)
@@ -199,7 +199,7 @@ if defined?(ActiveRecord)
 
     desc "Retrieves the collation for the current environment's database"
     task :collation => :environment do
-      config = ActiveRecord::Base.configurations[Padrino.env || 'development']
+      config = ActiveRecord::Base.configurations[Padrino.env || :development]
       case config[:adapter]
       when 'mysql'
         ActiveRecord::Base.establish_connection(config)
@@ -267,32 +267,32 @@ if defined?(ActiveRecord)
       desc "Dump the database structure to a SQL file"
       task :dump => :environment do
         abcs = ActiveRecord::Base.configurations
-        case abcs[Padrino.env]["adapter"]
+        case abcs[Padrino.env][:adapter]
         when "mysql", "oci", "oracle"
           ActiveRecord::Base.establish_connection(abcs[Padrino.env])
           File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
         when "postgresql"
-          ENV['PGHOST']     = abcs[Padrino.env]["host"] if abcs[Padrino.env]["host"]
-          ENV['PGPORT']     = abcs[Padrino.env]["port"].to_s if abcs[Padrino.env]["port"]
-          ENV['PGPASSWORD'] = abcs[Padrino.env]["password"].to_s if abcs[Padrino.env]["password"]
-          search_path = abcs[Padrino.env]["schema_search_path"]
+          ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
+          ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
+          ENV['PGPASSWORD'] = abcs[Padrino.env][:password].to_s if abcs[Padrino.env][:password]
+          search_path = abcs[Padrino.env][:schema_search_path]
           unless search_path.blank?
             search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
           end
-          `pg_dump -i -U "#{abcs[Padrino.env]["username"]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{abcs[Padrino.env]["database"]}`
+          `pg_dump -i -U "#{abcs[Padrino.env][:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{abcs[Padrino.env][:database]}`
           raise "Error dumping database" if $?.exitstatus == 1
         when "sqlite", "sqlite3"
-          dbfile = abcs[Padrino.env]["database"] || abcs[Padrino.env]["dbfile"]
-          `#{abcs[Padrino.env]["adapter"]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
+          dbfile = abcs[Padrino.env][:database] || abcs[Padrino.env][:dbfile]
+          `#{abcs[Padrino.env][:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
         when "sqlserver"
-          `scptxfr /s #{abcs[Padrino.env]["host"]} /d #{abcs[Padrino.env]["database"]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
-          `scptxfr /s #{abcs[Padrino.env]["host"]} /d #{abcs[Padrino.env]["database"]} /I /F db\ /q /A /r`
+          `scptxfr /s #{abcs[Padrino.env][:host]} /d #{abcs[Padrino.env][:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
+          `scptxfr /s #{abcs[Padrino.env][:host]} /d #{abcs[Padrino.env][:database]} /I /F db\ /q /A /r`
         when "firebird"
           set_firebird_env(abcs[Padrino.env])
           db_string = firebird_db_string(abcs[Padrino.env])
           sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
         else
-          raise "Task not supported by '#{abcs["test"]["adapter"]}'"
+          raise "Task not supported by '#{abcs[Padrino.env][:adapter]}'"
         end
 
         if ActiveRecord::Base.connection.supports_migrations?
@@ -361,13 +361,9 @@ if defined?(ActiveRecord)
 
       FileUtils.rm(file)
     when 'postgresql'
-      ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', 'schema_search_path' => 'public'))
+      ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
       ActiveRecord::Base.connection.drop_database config[:database]
     end
-  end
-
-  def session_table_name
-    ActiveRecord::SessionStore::Session.table_name
   end
 
   def set_firebird_env(config)
@@ -526,7 +522,7 @@ if defined?(ActiveRecord)
         fields     = Array(args.shift).map(&:to_s)
         options    = args.shift
 
-        index_name = options[:name] if options  
+        index_name = options[:name].to_s if options
         index_name ||= ActiveRecord::Base.connection.index_name(table_name, :column => fields)
 
         (self.indexes_in_schema ||= []) << index_name

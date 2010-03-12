@@ -5,7 +5,7 @@ module Padrino
 
         module ErbGen
           def setup_renderer
-            require_dependencies 'erubis'
+            # Nothing to do
           end
         end
       end
