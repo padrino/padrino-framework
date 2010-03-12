@@ -20,7 +20,7 @@ module Padrino
         return engine.to_json if engine.is_a?(Hash)
 
         # Data can be a hash of options sometimes mistakenly
-        options.merge!(data) && data.nil? if data.is_a?(Hash)
+        options.merge!(data) && data = nil if data.is_a?(Hash)
 
         # If an engine is a string probably is a path so we try to resolve them
         data, engine = *resolve_template(engine, options) if data.nil?

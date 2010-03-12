@@ -117,6 +117,21 @@ class TestApplication < Test::Unit::TestCase
         assert_equal "this is a rails way custom layout", body
       end
     end
+
+    should 'not use layout' do
+      with_layout do
+        with_view :index, "index" do
+          mock_app do
+            get("/with/layout"){ render :index }
+            get("/without/layout"){ render :index, :layout => false }
+          end
+          get "/with/layout"
+          assert_equal "this is a index", body
+          get "/without/layout"
+          assert_equal "index", body
+        end
+      end
+    end
   end
 
   context 'for application render functionality' do

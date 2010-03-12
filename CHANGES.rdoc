@@ -1,5 +1,10 @@
 = CHANGES
 
+== 0.9.6 (unreleased)
+
+* Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
+* Small helpers refactoring
+
 == 0.9.5
 
 * Added the possibility for dsl lovers to create a single file in app called helpers.rb/controllers.rb/mailers.rb
