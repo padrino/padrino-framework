@@ -87,7 +87,7 @@ class TestApplication < Test::Unit::TestCase
         layout do
           "this is a <%= yield %>"
         end
-        
+
         get("/"){ render :erb, "sinatra layout" }
       end
 
@@ -232,13 +232,13 @@ class TestApplication < Test::Unit::TestCase
           @_out_buf << "SPARTA!"
         end
         def is; "IS." end
-        get '/' do
-          render :erb, '<% container do %> <%= is %> <% end %>'
+          get '/' do
+            render :erb, '<% container do %> <%= is %> <% end %>'
+          end
         end
+        get '/'
+        assert ok?
+        assert_equal 'THIS. IS. SPARTA!', body
       end
-      get '/'
-      assert ok?
-      assert_equal 'THIS. IS. SPARTA!', body
     end
   end
-end

@@ -17,7 +17,7 @@ module Padrino
         end
 
         ##
-        # Ovverride the current_account, you must provide an instance of Account Model
+        # Override the current_account, you must provide an instance of Account Model
         # 
         # ==== Examples:
         # 

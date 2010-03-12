@@ -11,12 +11,16 @@ module Padrino
       # * Use layout like rails do
       # * Use render 'path/to/my/template' (without symbols)
       # * Use render 'path/to/my/template' (with auto enegine lookup)
+      # * Use render 'path/to/template', :layout => false
       #
       def render(engine, data=nil, options={}, locals={}, &block)
         clear_template_cache!
 
         # If engine is an hash we convert to json
         return engine.to_json if engine.is_a?(Hash)
+        
+        # data can be a hash of options sometimes mistakenly
+        options.merge!(data) && data = nil if data.is_a?(Hash)
 
         # If an engine is a string probably is a path so we try to resolve them
         data, engine = *resolve_template(engine, options) if data.nil?
