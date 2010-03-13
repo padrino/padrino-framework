@@ -206,18 +206,18 @@ class TestAssetTagHelpers < Test::Unit::TestCase
   context "for #favicon_tag method" do
     should "display favicon" do
       time = stop_time_for_test
-      actual_html = favicon_tag('images/favicon.png')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/png', :href => 'images/favicon.png') { actual_html }
+      actual_html = favicon_tag('icons/favicon.png')
+      assert_has_tag('link', :rel => 'icon', :type => 'image/png', :href => '/images/icons/favicon.png') { actual_html }
     end
     should "match type with file ext" do
       time = stop_time_for_test
-      actual_html = favicon_tag('images/favicon.ico')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => 'images/favicon.ico') { actual_html }
+      actual_html = favicon_tag('favicon.ico')
+      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => '/images/favicon.ico') { actual_html }
     end
     should "allow option overrides" do
       time = stop_time_for_test
-      actual_html = favicon_tag('images/favicon.png', :type => 'image/ico')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => 'images/favicon.png') { actual_html }
+      actual_html = favicon_tag('favicon.png', :type => 'image/ico')
+      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => '/images/favicon.png') { actual_html }
     end
     
   end
