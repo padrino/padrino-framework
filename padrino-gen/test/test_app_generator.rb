@@ -36,8 +36,8 @@ class TestAppGenerator < Test::Unit::TestCase
       silence_logger { @project.start(['sample_project', '--root=/tmp']) }
       silence_logger { @app.start(['demo', '--root=/tmp/sample_project']) }
       silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project', '-a=demo']) }
-      assert_match_in_file(/SampleProject.controllers :demo_items do/m, '/tmp/sample_project/demo/controllers/demo_items.rb')
-      assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/demo/helpers/demo_items_helper.rb')
+      assert_match_in_file(/Demo.controllers :demo_items do/m, '/tmp/sample_project/demo/controllers/demo_items.rb')
+      assert_match_in_file(/Demo.helpers do/m, '/tmp/sample_project/demo/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_project/demo/views/demo_items')
     end
 

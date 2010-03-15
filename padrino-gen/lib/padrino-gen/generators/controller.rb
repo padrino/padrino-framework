@@ -31,7 +31,7 @@ module Padrino
         if in_app_root?
           app = options[:app].underscore
           check_app_existence(app)
-          @app_name = fetch_app_name(options[:root])
+          @app_name = fetch_app_name(app)
           @actions  = controller_actions(fields)
           @controller = name
           self.behavior = :revoke if options[:destroy]
