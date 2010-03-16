@@ -47,7 +47,7 @@ class TestAppGenerator < Test::Unit::TestCase
       silence_logger { @mail_gen.start(['demo', '-r=/tmp/sample_project', '-a=demo']) }
       assert_match_in_file(/class DemoMailer < Padrino::Mailer::Base/m, '/tmp/sample_project/demo/mailers/demo_mailer.rb')
       assert_match_in_file(/Padrino::Mailer::Base.smtp_settings/m, '/tmp/sample_project/lib/mailer.rb')
-      assert_match_in_file(/register MailerInitializer/,'/tmp/sample_project/app/app.rb')
+      assert_match_in_file(/register MailerInitializer/,'/tmp/sample_project/demo/app.rb')
       assert_file_exists('/tmp/sample_project/demo/views/demo_mailer')
     end
 

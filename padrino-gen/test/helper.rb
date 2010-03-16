@@ -7,9 +7,9 @@ require 'webrat'
 require 'thor/group'
 
 # We try to load the vendored padrino-core if exist
-%w(core).each do |gem|
-  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
-    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
+%w(core).each do |lib|
+  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{lib}/lib")
+    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{lib}/lib"
   end
 end
 
