@@ -27,10 +27,6 @@ class Test::Unit::TestCase
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
-  
-  def setup
-    Padrino.stubs(:root).returns("/tmp/sample")
-  end
 
   Webrat.configure do |config|
     config.mode = :rack
