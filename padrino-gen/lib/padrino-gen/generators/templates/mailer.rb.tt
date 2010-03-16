@@ -7,7 +7,7 @@ Mailer methods can be defined using the simple format:
     to user_email_address
     subject 'Welcome to the site!'
     body    :name => name
-    content_type    'html'        # optional, defaults to plain/text
+    content_type 'text/html'        # optional, defaults to plain/text
     charset 'windows-1252'        # optional, defaults to utf-8
     via     :sendmail             # optional, to smtp if defined otherwise sendmail
   end
