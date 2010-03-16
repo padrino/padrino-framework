@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.9.5"
+  s.version = "0.9.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-03-11}
+  s.date = %q{2010-03-15}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -86,6 +86,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/templates/scripts/right.js",
      "lib/padrino-gen/padrino-tasks/activerecord.rb",
      "lib/padrino-gen/padrino-tasks/datamapper.rb",
+     "lib/padrino-gen/padrino-tasks/mongomapper.rb",
      "lib/padrino-gen/padrino-tasks/seed.rb",
      "padrino-gen.gemspec",
      "test/helper.rb",
@@ -110,7 +111,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.9.5"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.9.6"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
@@ -118,7 +119,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
       s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
-      s.add_dependency(%q<padrino-core>, ["= 0.9.5"])
+      s.add_dependency(%q<padrino-core>, ["= 0.9.6"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
@@ -127,7 +128,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<fakeweb>, [">= 1.2.3"])
     end
   else
-    s.add_dependency(%q<padrino-core>, ["= 0.9.5"])
+    s.add_dependency(%q<padrino-core>, ["= 0.9.6"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 2.10.3"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])
