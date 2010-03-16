@@ -89,8 +89,8 @@ module Padrino
 
         def transport_via_smtp(tmail, options={:smtp => {}})
           logger.debug "Sending email via smtp:\n#{tmail}" if Kernel.respond_to?(:logger)
-          default_options = {:smtp => { :host => 'localhost', :port => '25', :domain => 'localhost.localdomain' }}
-          o = default_options[:smtp].merge(options[:smtp])
+          o = { :host => 'localhost', :port => '25', :domain => 'localhost.localdomain' }
+          o.merge!(options[:smtp]) if options[:smtp].is_a?(Hash)
           smtp = Net::SMTP.new(o[:host], o[:port])
           if o[:tls]
             raise "You may need: gem install smtp_tls" unless smtp.respond_to?(:enable_starttls)
