@@ -6,9 +6,9 @@ require 'rack/test'
 require 'webrat'
 
 # We try to load the vendored padrino-core if exist
-%w(core).each do |gem|
-  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{gem}/lib")
-    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{gem}/lib"
+%w(core).each do |lib|
+  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{lib}/lib")
+    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{lib}/lib"
   end
 end
 
@@ -27,6 +27,10 @@ class Test::Unit::TestCase
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
+  
+  def setup
+    Padrino.stubs(:root).returns("/tmp/sample")
+  end
 
   Webrat.configure do |config|
     config.mode = :rack
