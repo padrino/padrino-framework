@@ -1,9 +1,9 @@
 class <%= @class_name %> < Padrino::Application
   configure do
-    register MailerInitializer if defined?(MailerInitializer) # Remove this if your not using mailer
     ##
     # Application-specific configuration options
     # 
+    register MailerInitializer if defined?(MailerInitializer) # Remove this if your not using mailer
     # set :raise_errors, true     # Show exceptions (default for development)
     # set :public, "foo/bar"      # Location for static assets (default root/public)
     # set :sessions, false        # Enabled by default

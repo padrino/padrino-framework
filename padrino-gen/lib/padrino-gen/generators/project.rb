@@ -39,6 +39,7 @@ module Padrino
         @class_name = name.underscore.classify
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
+        directory("app/", destination_root("app/"))
         store_component_config('.components')
         template "templates/Gemfile.tt", destination_root("Gemfile")
       end
