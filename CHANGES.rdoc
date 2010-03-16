@@ -1,14 +1,17 @@
 = CHANGES
 
-== 0.9.6 (unreleased)
+== 0.9.7 (unreleased)
+
+
+== 0.9.6
 
 * Fixed an issue in controller generator when using --app=app_name
 * Added mm:transate task for easily translate models
 * Updated favicon_tag to search inside images folder 
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
-* fixed mailer initializer issue. cleaned up options[:smtp] merge in delivery.rb
-* fixes tests in padrino helper. stub Padrino.root
+* fixed mailer initializer issue. cleaned up options in delivery.rb
+* fixes tests in padrino helper. stubs Padrino.root
 
 == 0.9.5
 
