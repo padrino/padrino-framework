@@ -1,5 +1,6 @@
 class <%= @class_name %> < Padrino::Application
   configure do
+    register MailerInitializer if defined?(MailerInitializer) # Remove this if your not using mailer
     ##
     # Application-specific configuration options
     # 
