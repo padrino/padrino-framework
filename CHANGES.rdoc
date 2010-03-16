@@ -7,6 +7,7 @@
 * Updated favicon_tag to search inside images folder 
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
+* fixed mailer initializer issue. cleaned up options[:smtp] merge in delivery.rb
 
 == 0.9.5
 
