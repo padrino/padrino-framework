@@ -3,6 +3,9 @@
 == 0.9.7 (unreleased)
 
 * removed duplicate app folder in project skeleton.
+* couchrest generator now include in Gemfile json_pure
+* fixed project name when using some like www.my-domain.com
+* fixed a small typo error in app template
 
 == 0.9.6
 

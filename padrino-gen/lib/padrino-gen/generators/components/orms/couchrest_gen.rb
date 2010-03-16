@@ -16,6 +16,7 @@ module Padrino
 
           def setup_orm
             require_dependencies 'couchrest'
+            require_dependencies 'json_pure'
             create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, name.underscore))
             empty_directory('app/models')
           end

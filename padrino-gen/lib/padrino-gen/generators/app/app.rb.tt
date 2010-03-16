@@ -29,7 +29,7 @@ class <%= @class_name %> < Padrino::Application
   ##
   # You can manage errors like:
   # 
-  #   errors 404 do
+  #   error 404 do
   #     render 'errors/404'
   #   end
   #
