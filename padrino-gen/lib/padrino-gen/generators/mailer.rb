@@ -36,7 +36,9 @@ module Padrino
           @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
           template "templates/mailer_initializer.rb.tt", destination_root("lib/mailer.rb"), :skip => true
           template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
-          inject_into_file destination_root(app, "app.rb"), "    register MailerInitializer\n", :after => "configure do\n"
+          unless File.read(destination_root(app,"app.rb")) =~ /MailerInitializer/
+            inject_into_file(destination_root(app, "app.rb"), "    register MailerInitializer\n", :after => "configure do\n")
+          end
           empty_directory destination_root(app, 'views', @mailer_basename)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
