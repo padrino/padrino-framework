@@ -1,10 +1,8 @@
 module Padrino
   module Generators
     module Components
-      module Renderers
-
-        module HamlGen
-
+      module Stylesheets
+        module SassGen
           SASS_INIT = (<<-SASS).gsub(/^ {10}/, '')
           # Enables support for SASS template reloading for rack.
           # Store SASS files by default within 'app/stylesheets/sass'
@@ -24,14 +22,13 @@ module Padrino
               register SassInitializer # Remove if not using SASS\n
           SASSR
 
-          def setup_renderer
+          def setup_stylesheet
             require_dependencies 'haml'
-            # create_file destination_root('/lib/sass.rb'), SASS_INIT
-            # inject_into_file destination_root('/app/app.rb'), SASS_REGISTER, :after => "configure do\n"
-            # empty_directory destination_root('/app/stylesheets')
+            create_file destination_root('/lib/sass.rb'), SASS_INIT
+            inject_into_file destination_root('/app/app.rb'), SASS_REGISTER, :after => "configure do\n"
+            empty_directory destination_root('/app/stylesheets')
           end
         end
-
       end
     end
   end

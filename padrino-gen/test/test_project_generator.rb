@@ -46,7 +46,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     end
 
     should "create components file containing options chosen" do
-      component_options = ['--orm=datamapper', '--test=riot', '--mock=mocha', '--script=prototype', '--renderer=erb']
+      component_options = ['--orm=datamapper', '--test=riot', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
       silence_logger { @project.start(['sample_project', '--root=/tmp', *component_options]) }
       components_chosen = YAML.load_file('/tmp/sample_project/.components')
       assert_equal 'datamapper', components_chosen[:orm]
@@ -54,16 +54,18 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_equal 'mocha',     components_chosen[:mock]
       assert_equal 'prototype', components_chosen[:script]
       assert_equal 'erb',   components_chosen[:renderer]
+      assert_equal 'less',  components_chosen[:stylesheet]
     end
 
     should "output to log components being applied" do
-      component_options = ['--orm=datamapper', '--test=riot', '--mock=mocha', '--script=prototype', '--renderer=erb']
+      component_options = ['--orm=datamapper', '--test=riot', '--mock=mocha', '--script=prototype', '--renderer=erb','--stylesheet=less']
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', *component_options]) }
       assert_match /Applying.*?datamapper.*?orm/, buffer
       assert_match /Applying.*?riot.*?test/, buffer
       assert_match /Applying.*?mocha.*?mock/, buffer
       assert_match /Applying.*?prototype.*?script/, buffer
       assert_match /Applying.*?erb.*?renderer/, buffer
+      assert_match /Applying.*?less.*?stylesheet/, buffer
     end
 
     should "output gem files for base app" do
@@ -159,9 +161,9 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none']) }
       assert_match /Applying.*?haml.*?renderer/, buffer
       assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass.rb')
-      assert_match_in_file(/register SassInitializer/m, '/tmp/sample_project/app/app.rb')
-      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+      # assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass.rb')
+      # assert_match_in_file(/register SassInitializer/m, '/tmp/sample_project/app/app.rb')
+      # assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end
   end
 
@@ -258,4 +260,24 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/features/step_definitions/add_steps.rb')
     end
   end
+  
+  context "the generator for stylesheet component" do
+    should "properly generate for sass" do
+      buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=sass']) }
+      assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass.rb')
+      assert_match_in_file(/register SassInitializer/m, '/tmp/sample_project/app/app.rb')
+      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+    end
+    
+    should "properly generate for less" do
+      buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=less']) }
+      assert_match_in_file(/gem 'less'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'rack-less'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/module LessInitializer.*Rack::Less/m, '/tmp/sample_project/lib/less.rb')
+      assert_match_in_file(/register LessInitializer/m, '/tmp/sample_project/app/app.rb')
+      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+    end
+  end
+  
 end
