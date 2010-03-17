@@ -38,11 +38,12 @@ You can also instruct the generator to skip a certain component to avoid using o
   
 The available components and their default options are listed below:
 
-test::      rspec (default), bacon, shoulda, cucumber, testspec, riot
-renderer::  haml  (default), erb
-mock::      none  (default), mocha, rr
-script::    none  (default), jquery, prototype, mootools, rightjs
-orm::       none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
+test::       rspec (default), bacon, shoulda, cucumber, testspec, riot
+renderer::   haml  (default), erb
+stylesheet:: sass  (default), less
+mock::       none  (default), mocha, rr
+script::     none  (default), jquery, prototype, mootools, rightjs
+orm::        none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
 To learn more about the project generator, check out the guide to
 {Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
