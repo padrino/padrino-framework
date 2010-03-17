@@ -7,6 +7,7 @@
 * Couchrest generator now include in Gemfile json_pure
 * Fixed project name when using some like www.my-domain.com
 * Fixed a small typo error in app template
+* Added stylesheet generator. decouples from sass from haml generation. includes sass and less ( via rack-less)
 
 == 0.9.6
 
@@ -15,8 +16,8 @@
 * Updated favicon_tag to search inside images folder 
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
-* fixed mailer initializer issue. cleaned up options in delivery.rb
-* fixes tests in padrino helper. stubs Padrino.root
+* Fixed mailer initializer issue. cleaned up options in delivery.rb
+* Fixes tests in padrino helper. stubs Padrino.root
 
 == 0.9.5
 

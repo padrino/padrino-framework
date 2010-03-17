@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-03-15}
+  s.date = %q{2010-03-17}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -48,6 +48,8 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/components/scripts/mootools_gen.rb",
      "lib/padrino-gen/generators/components/scripts/prototype_gen.rb",
      "lib/padrino-gen/generators/components/scripts/rightjs_gen.rb",
+     "lib/padrino-gen/generators/components/stylesheets/less_gen.rb",
+     "lib/padrino-gen/generators/components/stylesheets/sass_gen.rb",
      "lib/padrino-gen/generators/components/tests/bacon_test_gen.rb",
      "lib/padrino-gen/generators/components/tests/cucumber_test_gen.rb",
      "lib/padrino-gen/generators/components/tests/riot_test_gen.rb",
@@ -60,12 +62,6 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/model.rb",
      "lib/padrino-gen/generators/project.rb",
      "lib/padrino-gen/generators/project/.gitignore",
-     "lib/padrino-gen/generators/project/app/.empty_directory",
-     "lib/padrino-gen/generators/project/app/app.rb.tt",
-     "lib/padrino-gen/generators/project/app/controllers/.empty_directory",
-     "lib/padrino-gen/generators/project/app/helpers/.empty_directory",
-     "lib/padrino-gen/generators/project/app/views/.empty_directory",
-     "lib/padrino-gen/generators/project/app/views/layouts/.emptydirectory",
      "lib/padrino-gen/generators/project/config.ru",
      "lib/padrino-gen/generators/project/config/apps.rb.tt",
      "lib/padrino-gen/generators/project/config/boot.rb",

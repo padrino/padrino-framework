@@ -20,6 +20,7 @@ class TestMailerGenerator < Test::Unit::TestCase
       silence_logger { @mail_gen.start(['demo', '-r=/tmp/sample_project']) }
       assert_match_in_file(/class DemoMailer < Padrino::Mailer::Base/m, '/tmp/sample_project/app/mailers/demo_mailer.rb')
       assert_match_in_file(/Padrino::Mailer::Base.smtp_settings/m, '/tmp/sample_project/lib/mailer.rb')
+      assert_match_in_file(/register MailerInitializer/m, '/tmp/sample_project/app/app.rb')
       assert_file_exists('/tmp/sample_project/app/views/demo_mailer')
     end
 
@@ -38,6 +39,7 @@ class TestMailerGenerator < Test::Unit::TestCase
       assert_match_in_file(/Padrino::Mailer::Base.smtp_settings/m, '/tmp/sample_project/lib/mailer.rb')
       assert_file_exists('/tmp/sample_project/app/views/demo_mailer')
     end
+
   end
 
   context "the mailer destroy option" do
