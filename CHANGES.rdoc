@@ -2,11 +2,11 @@
 
 == 0.9.7 (unreleased)
 
-* removed Mailer Initializer from app.rb.tt and added it to the mailer generator.
-* removed duplicate app folder in project skeleton.
-* couchrest generator now include in Gemfile json_pure
-* fixed project name when using some like www.my-domain.com
-* fixed a small typo error in app template
+* Removed Mailer Initializer from app.rb.tt and added it to the mailer generator.
+* Removed duplicate app folder in project skeleton.
+* Couchrest generator now include in Gemfile json_pure
+* Fixed project name when using some like www.my-domain.com
+* Fixed a small typo error in app template
 
 == 0.9.6
 
