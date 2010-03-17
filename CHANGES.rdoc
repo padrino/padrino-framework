@@ -7,6 +7,7 @@
 * couchrest generator now include in Gemfile json_pure
 * fixed project name when using some like www.my-domain.com
 * fixed a small typo error in app template
+* added stylesheet generator. decouples from sass from haml generation. includes sass and less ( via rack-less)
 
 == 0.9.6
 
