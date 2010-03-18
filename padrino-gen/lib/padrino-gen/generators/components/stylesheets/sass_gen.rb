@@ -11,15 +11,15 @@ module Padrino
           module SassInitializer
             def self.registered(app)
               require 'sass/plugin/rack'
-              Sass::Plugin.options[:template_location] = File.join(Padrino.root, "app/stylesheets")
-              Sass::Plugin.options[:css_location] = File.join(Padrino.root, "public/stylesheets")
+              Sass::Plugin.options[:template_location] = Padrino.root("app/stylesheets")
+              Sass::Plugin.options[:css_location] = Padrino.root("public/stylesheets")
               app.use Sass::Plugin::Rack
             end
           end
           SASS
 
           SASS_REGISTER = (<<-SASSR).gsub(/^ {10}/, '')
-              register SassInitializer # Remove if not using SASS\n
+              register SassInitializer\n
           SASSR
 
           def setup_stylesheet
