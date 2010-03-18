@@ -3,6 +3,9 @@ require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
 
 module Padrino
   module Routing
+    class UnrecognizedException < RuntimeError #:nodoc:
+    end
+    
     def self.registered(app)
       app.send(:include, Padrino::Routing)
     end
@@ -170,6 +173,9 @@ module Padrino
         url = router.generator.generate(name, params)
         url = uri_root + url if defined?(uri_root) && uri_root != "/"
         url
+      rescue Usher::UnrecognizedException
+        route_error = "route mapping for url(#{name.inspect}) could not be found!"
+        raise Padrino::Routing::UnrecognizedException.new(route_error)
       end
       alias :url_for :url
 

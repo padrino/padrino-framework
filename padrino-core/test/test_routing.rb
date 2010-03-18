@@ -11,6 +11,17 @@ class TestRouting < Test::Unit::TestCase
     get "/foo/"
     assert_equal "okey", body
   end
+  
+  should 'fail with unrecognized route exception when not found' do
+    unrecognized_app = mock_app do
+      get(:index){ "okey" }
+    end
+    assert_nothing_raised { get unrecognized_app.url_for(:index) }
+    assert_equal "okey", body
+    assert_raises(Padrino::Routing::UnrecognizedException) { 
+      get unrecognized_app.url_for(:fake) 
+    }
+  end
 
   should "parse routes with question marks" do
     mock_app do
