@@ -11,15 +11,15 @@ class TestRouting < Test::Unit::TestCase
     get "/foo/"
     assert_equal "okey", body
   end
-  
+
   should 'fail with unrecognized route exception when not found' do
     unrecognized_app = mock_app do
       get(:index){ "okey" }
     end
     assert_nothing_raised { get unrecognized_app.url_for(:index) }
     assert_equal "okey", body
-    assert_raises(Padrino::Routing::UnrecognizedException) { 
-      get unrecognized_app.url_for(:fake) 
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get unrecognized_app.url_for(:fake)
     }
   end
 
@@ -94,6 +94,39 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/d.js?foo=bar", body
     get "/d.js"
     assert_equal "/d.js?foo=bar", body
+  end
+
+  should "generate routes for format simple" do
+    mock_app do
+      get(:foo, :respond_to => [:html, :rss]) { render :haml, "Test" }
+    end
+    get "/foo"
+    assert_equal "Test\n", body
+    get "/foo.rss"
+    assert_equal "Test\n", body
+  end
+  
+  should "generate routes for format with controller" do
+    mock_app do
+      controller :posts do
+        get(:index, :respond_to => [:html, :rss, :atom, :js]) { render :haml, "Index.#{content_type}" }
+        get(:show,  :with => :id, :respond_to => [:html, :rss, :atom]) { render :haml, "Show.#{content_type}" }
+      end
+    end
+    get "/posts"
+    assert_equal "Index.html\n", body
+    get "/posts.rss"
+    assert_equal "Index.rss\n", body
+    get "/posts.atom"
+    assert_equal "Index.atom\n", body
+    get "/posts.js"
+    assert_equal "Index.js\n", body
+    get "/posts/show/5"
+    assert_equal "Show.html\n", body
+    get "/posts/show/5.rss"
+    assert_equal "Show.rss\n", body
+    get "/posts/show/10.atom"
+    assert_equal "Show.atom\n", body
   end
 
   should 'map routes' do
