@@ -219,7 +219,17 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       actual_html = favicon_tag('favicon.png', :type => 'image/ico')
       assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => '/images/favicon.png') { actual_html }
     end
-    
   end
-  
+
+  context 'for #feed_tag method' do
+    should "generate correctly link tag for rss" do
+      assert_has_tag('link', :type => 'application/rss+xml', :rel => 'alternate', :href => "/blog/post.rss", :title => 'rss') { feed_tag :rss, "/blog/post.rss" }
+    end
+    should "generate correctly link tag for atom" do
+      assert_has_tag('link', :type => 'application/atom+xml', :rel => 'alternate', :href => "/blog/post.atom", :title => 'atom') { feed_tag :atom, "/blog/post.atom" }
+    end
+    should "override options" do
+      assert_has_tag('link', :type => 'my-type', :rel => 'my-rel', :href => "/blog/post.rss", :title => 'my-title') { feed_tag :rss, "/blog/post.rss", :type => "my-type", :rel => "my-rel", :title => "my-title" }
+    end
+  end
 end

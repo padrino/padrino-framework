@@ -77,5 +77,4 @@ class TestTagHelpers < Test::Unit::TestCase
       assert_has_tag('input[type=checkbox]', :disabled => 'disabled') { actual_html }
     end
   end
-
 end

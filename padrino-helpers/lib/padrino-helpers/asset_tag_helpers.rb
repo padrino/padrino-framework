@@ -5,7 +5,7 @@ module Padrino
       # Creates a div to display the flash of given type if it exists
       # 
       # ==== Examples
-      #   # => <div class="notice">flash-notice</div>
+      #   # Generates: <div class="notice">flash-notice</div>
       #   flash_tag(:notice, :id => 'flash-notice')
       # 
       def flash_tag(kind, options={})
@@ -74,17 +74,41 @@ module Padrino
       end
 
       ##
+      # Creates a link tag that browsers and news readers can use to auto-detect an RSS or ATOM feed.
+      # 
+      # === Options
+      # 
+      #   :rel::   Specify the relation of this link, defaults to "alternate"
+      #   :type::  Override the auto-generated mime type
+      #   :title:: Specify the title of the link, defaults to the type
+      # 
+      # === Examples
+      # 
+      #   # Generates: <link type="application/atom+xml" rel="alternate" href="/blog/posts.atom" title="ATOM" />
+      #   feed_tag :atom, url(:blog, :posts, :format => :atom), :title => "ATOM"
+      #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
+      #   feed_tag :rss, url(:blog, :posts, :format => :rss)
+      # 
+      def feed_tag(mime, url, options={})
+        full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
+        content_tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
+      end
+
+      ##
       # Creates a mail link element with given name and caption
       # 
       # ==== Examples
-      #   mail_to "me@demo.com"             => <a href="mailto:me@demo.com">me@demo.com</a>
-      #   mail_to "me@demo.com", "My Email" => <a href="mailto:me@demo.com">My Email</a>
+      # 
+      #   # Generates: <a href="mailto:me@demo.com">me@demo.com</a>
+      #   mail_to "me@demo.com"
+      #   # Generates: <a href="mailto:me@demo.com">My Email</a>
+      #   mail_to "me@demo.com", "My Email"
       # 
       def mail_to(email, caption=nil, mail_options={})
         html_options = mail_options.slice!(:cc, :bcc, :subject, :body)
         mail_query = Rack::Utils.build_query(mail_options).gsub(/\+/, '%20').gsub('%40', '@')
         mail_href = "mailto:#{email}"; mail_href << "?#{mail_query}" if mail_query.present?
-        link_to (caption || email), mail_href, html_options
+        link_to((caption || email), mail_href, html_options)
       end
 
       ##
@@ -92,8 +116,10 @@ module Padrino
       # 
       # ==== Examples
       # 
-      #   meta_tag "weblog,news", :name => "keywords"                         => <meta name="keywords" content="weblog,news">
-      #   meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"  => <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      #   # Generates: <meta name="keywords" content="weblog,news">
+      #   meta_tag "weblog,news", :name => "keywords"
+      #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      #   meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"
       # 
       def meta_tag(content, options={})
         options.reverse_merge!("content" => content)
@@ -179,6 +205,11 @@ module Padrino
       ##
       # Returns the javascript_path appending the default javascripts path if necessary
       # 
+      # ==== Examples
+      # 
+      #   # Generates: /javascripts/jquery.js?1269008689
+      #   javascript_path :jquery
+      # 
       def javascript_path(source)
         return source if source =~ /^http/
         source        = source.to_s.gsub(/\.js$/, '')
@@ -193,6 +224,11 @@ module Padrino
 
       ##
       # Returns the stylesheet_path appending the default stylesheets path if necessary
+      # 
+      # ==== Examples
+      # 
+      #   # Generates: /stylesheets/application.css?1269008689
+      #   stylesheet_path :application
       # 
       def stylesheet_path(source)
         return source if source =~ /^http/
