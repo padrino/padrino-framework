@@ -2,6 +2,7 @@
 
 == 0.9.7 (unreleased)
 
+* Added feed_tag helper
 * Removed Mailer Initializer from app.rb.tt and added it to the mailer generator.
 * Removed duplicate app folder in project skeleton.
 * Couchrest generator now include in Gemfile json_pure

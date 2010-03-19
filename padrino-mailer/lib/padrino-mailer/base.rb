@@ -24,6 +24,9 @@ module Padrino
         [:to, :cc, :bcc, :reply_to, :from, :subject, :content_type, :charset, :via, :attachments]
       end
 
+      @@views_path = []
+      cattr_accessor :smtp_settings
+      cattr_accessor :views_path
       attr_accessor :mail_attributes
 
       def initialize(mail_name=nil) #:nodoc:
@@ -57,10 +60,6 @@ module Padrino
           return template if template
         end
       end
-
-      @@views_path = []
-      cattr_accessor :smtp_settings
-      cattr_accessor :views_path
 
       ##
       # Delivers the specified message for mail_name to the intended recipients
