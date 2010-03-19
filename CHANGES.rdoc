@@ -8,6 +8,7 @@
 * Fixed project name when using some like www.my-domain.com
 * Fixed a small typo error in app template
 * Fixes issue with formatted routes for an index
+* Fixed an issue with Riot and RR in generator
 * Added stylesheet generator. decouples from sass from haml generation. includes sass and less ( via rack-less)
 
 == 0.9.6
