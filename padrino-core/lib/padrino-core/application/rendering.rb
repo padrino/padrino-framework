@@ -31,11 +31,10 @@ module Padrino
 
         # Use layout as rails do
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
-          layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
-          if layout
-            # We look first for views/layout_name.ext then then for views/layouts/layout_name.ext
-            options[:layout] = Dir["#{self.options.views}/#{layout}.*"].present? ? layout.to_sym : File.join('layouts', layout.to_s).to_sym
-            logger.debug "Rendering layout #{options[:layout]}" if defined?(logger)
+          if layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
+            layout = Dir["#{self.options.views}/#{layout}.*"].any? ? layout.to_sym : File.join('layouts', layout.to_s).to_sym
+            options[:layout] = resolve_template(layout)[0] rescue nil
+            logger.debug "Rendering layout #{options[:layout]}" if defined?(logger) && options[:layout]
           end
         end
         super(engine, data, options, locals, &block)
@@ -51,19 +50,19 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       # 
       def resolve_template(template_path, options={})
+        template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
-        template_path   = File.join(view_path, template_path.to_s)
-        regexs = [/^[^\.]+\.[^\.]+$/]
-        regexs.unshift(/^[^\.]+\.#{content_type}\.[^\.]+$/) if content_type.present?
-        if defined?(I18n) && I18n.locale.present?
-          regexs.unshift(/^[^\.]+\.#{I18n.locale}\.[^\.]+$/)
-          regexs.unshift(/^[^\.]+\.#{I18n.locale}\.#{content_type}\.[^\.]+$/) if content_type.present?
-        end
-        template_file = regexs.map { |regex| Dir[template_path + ".*"].find { |file| File.basename(file) =~ regex } }.compact.first
+        templates = Dir[File.join(view_path, template_path) + ".*"].
+                      map { |f| [f.sub(view_path, '').chomp(File.extname(f)).to_sym, File.extname(f)[1..-1].to_sym] }
+
+        template_file =
+          templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
+          templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
+          templates.find { |t| t[0].to_s == "#{template_path}.#{content_type}" } ||
+          templates.find { |t| t[0].to_s == "#{template_path}" && content_type == :html }
+
         raise "Template path '#{template_path}' could not be located in views!" unless template_file
-        engine   = File.extname(template_file)[1..-1]
-        template = template_file.gsub(view_path, '').gsub(/\.#{engine}$/, '')
-        [template.to_sym, engine.to_sym]
+        template_file
       end
 
       ##

@@ -2,6 +2,8 @@
 
 == 0.9.7 (unreleased)
 
+* Added layout finder with format and locale
+* Improved template finder (with format and locale)
 * Fixed a bug that duplicates admin menus during app reloading.
 * Added feed_tag helper
 * Removed Mailer Initializer from app.rb.tt and added it to the mailer generator.

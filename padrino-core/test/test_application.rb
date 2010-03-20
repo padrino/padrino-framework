@@ -2,42 +2,35 @@ require File.dirname(__FILE__) + '/helper'
 
 class TestApplication < Test::Unit::TestCase
 
-  def with_layout(name=:application)
-    # Build a temp layout
-    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
-    layout = File.dirname(__FILE__) + "/views/layouts/#{name}.erb"
-    File.open(layout, 'wb') { |io| io.write "this is a <%= yield %>" }
-    yield
-  ensure
-    # Remove temp layout
-    File.unlink(layout) rescue nil
-    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
-  end
-
-  def create_view(name, content, options={})
+  def create_template(name, content, options={})
     FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
-    path   = "/views/#{name}"
-    path  += ".#{options.delete(:locale)}" if options[:locale].present?
-    path  += ".#{options.delete(:format)}" if options[:format].present?
-    path  += ".erb"
-    view   = File.dirname(__FILE__) + path
-    File.open(view, 'wb') { |io| io.write content }
-    view
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
+    path  = "/views/#{name}"
+    path += ".#{options.delete(:locale)}" if options[:locale].present?
+    path += ".#{options.delete(:format)}" if options[:format].present?
+    path += ".erb"
+    file  = File.dirname(__FILE__) + path
+    File.open(file, 'w') { |io| io.write content }
+    file
   end
+  alias :create_view   :create_template
+  alias :create_layout :create_template
 
   def remove_views
     FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
   end
 
-  def with_view(name, content, options={})
+  def with_template(name, content, options={})
     # Build a temp layout
-    view = create_view(name, content, options)
+    template = create_template(name, content, options)
     yield
   ensure
     # Remove temp layout
-    File.unlink(view) rescue nil
+    File.unlink(template) rescue nil
     remove_views
   end
+  alias :with_view   :with_template
+  alias :with_layout :with_template
 
   def teardown
     remove_views
@@ -96,7 +89,7 @@ class TestApplication < Test::Unit::TestCase
     end
 
     should 'use rails way layout' do
-      with_layout do
+      with_layout :application, "this is a <%= yield %>" do
         mock_app do
           get("/"){ render :erb, "rails way layout" }
         end
@@ -107,7 +100,7 @@ class TestApplication < Test::Unit::TestCase
     end
 
     should 'use rails way for a custom layout' do
-      with_layout :custom do
+      with_layout "layouts/custom", "this is a <%= yield %>" do
         mock_app do
           layout :custom
           get("/"){ render :erb, "rails way custom layout" }
@@ -119,7 +112,7 @@ class TestApplication < Test::Unit::TestCase
     end
 
     should 'not use layout' do
-      with_layout do
+      with_layout :application, "this is a <%= yield %>" do
         with_view :index, "index" do
           mock_app do
             get("/with/layout"){ render :index }
@@ -236,6 +229,48 @@ class TestApplication < Test::Unit::TestCase
       assert_equal "Im Italian Js", body
       I18n.locale = :en
       get "/foo.pk"
+      assert_equal 404, status
+    end
+
+    should 'resolve template content_type and locale with layout' do
+      create_layout :foo, "Hello <%= yield %> in a Js layout",     :format => :js
+      create_layout :foo, "Hello <%= yield %> in a Js-En layout",  :format => :js, :locale => :en
+      create_layout :foo, "Hello <%= yield %> in a Js-It layout",  :format => :js, :locale => :it
+      create_layout :foo, "Hello <%= yield %> in a Erb-En layout", :locale => :en
+      create_layout :foo, "Hello <%= yield %> in a Erb-It layout", :locale => :it
+      create_layout :foo, "Hello <%= yield %> in a Erb layout"
+      create_view   :bar, "Im Js",          :format => :js
+      create_view   :bar, "Im Erb"
+      create_view   :bar, "Im English Erb", :locale => :en
+      create_view   :bar, "Im Italian Erb", :locale => :it
+      create_view   :bar, "Im English Js",  :format => :js, :locale => :en
+      create_view   :bar, "Im Italian Js",  :format => :js, :locale => :it
+      create_view   :bar, "Im a json",      :format => :json
+      mock_app do
+        layout :foo
+        get("/bar", :respond_to => [:html, :js, :json]) { render :bar }
+      end
+      I18n.locale = :none
+      get "/bar.js"
+      assert_equal "Hello Im Js in a Js layout", body
+      get "/bar"
+      assert_equal "Hello Im Erb in a Erb layout", body
+      I18n.locale = :en
+      get "/bar"
+      assert_equal "Hello Im English Erb in a Erb-En layout", body
+      I18n.locale = :it
+      get "/bar"
+      assert_equal "Hello Im Italian Erb in a Erb-It layout", body
+      I18n.locale = :en
+      get "/bar.js"
+      assert_equal "Hello Im English Js in a Js-En layout", body
+      I18n.locale = :it
+      get "/bar.js"
+      assert_equal "Hello Im Italian Js in a Js-It layout", body
+      I18n.locale = :en
+      get "/bar.json"
+      assert_equal "Im a json", body
+      get "/bar.pk"
       assert_equal 404, status
     end
 
