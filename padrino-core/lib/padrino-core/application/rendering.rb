@@ -55,14 +55,14 @@ module Padrino
         templates = Dir[File.join(view_path, template_path) + ".*"].
                       map { |f| [f.sub(view_path, '').chomp(File.extname(f)).to_sym, File.extname(f)[1..-1].to_sym] }
 
-        template_file =
+        template =
           templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
           templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
           templates.find { |t| t[0].to_s == "#{template_path}.#{content_type}" } ||
           templates.find { |t| t[0].to_s == "#{template_path}" && content_type == :html }
 
-        raise "Template path '#{template_path}' could not be located in views!" unless template_file
-        template_file
+        raise "Template path '#{template_path}' could not be located in views!" unless template
+        template
       end
 
       ##
