@@ -246,7 +246,7 @@ module Padrino
             # Little reformats
             path.sub!(%r{\bindex$}, "")                               # If the route end with /index we remove them
             path.sub!(%r^/index(\(.\{:format[\,\w\$\|]*\}\))$^, '\1') # Remove index from formatted routes
-            path = (uri_root == "/" ? "/" : "(/)") if path.blank? # Add a trailing delimiter if path is empty
+            path = (uri_root == "/" ? "/" : "(/)") if path.blank?     # Add a trailing delimiter if path is empty
 
             # We need to have a path that start with / in some circumstances and that don't end with /
             if path != "(/)" && path != "/"

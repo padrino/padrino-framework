@@ -18,9 +18,17 @@ module Padrino
 
       module ClassMethods #:nodoc:
         def inherited(base)
-          base.send(:cattr_accessor, :access_control)
-          base.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
+          unless base.respond_to?(:access_control)
+            base.send(:cattr_accessor, :access_control)
+            base.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
+          end
           super(base)
+          base.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
+        end
+
+        def reload_with_access_control!
+          self.access_control = Padrino::Admin::AccessControl::Base.new
+          reload_without_access_control!
         end
       end
 

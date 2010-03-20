@@ -2,6 +2,7 @@
 
 == 0.9.7 (unreleased)
 
+* Fixed a bug that duplicates admin menus during app reloading.
 * Added feed_tag helper
 * Removed Mailer Initializer from app.rb.tt and added it to the mailer generator.
 * Removed duplicate app folder in project skeleton.
@@ -10,7 +11,7 @@
 * Fixed a small typo error in app template
 * Fixes issue with formatted routes for an index
 * Fixed an issue with Riot and RR in generator
-* Added stylesheet generator. decouples from sass from haml generation. includes sass and less ( via rack-less)
+* Added stylesheet generator. Decouples from sass from haml generation. Includes sass and less ( via rack-less)
 
 == 0.9.6
 
@@ -19,8 +20,8 @@
 * Updated favicon_tag to search inside images folder 
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
-* Fixed mailer initializer issue. cleaned up options in delivery.rb
-* Fixes tests in padrino helper. stubs Padrino.root
+* Fixed mailer initializer issue. Cleaned up options in delivery.rb
+* Fixes tests in padrino helper.
 
 == 0.9.5
 
