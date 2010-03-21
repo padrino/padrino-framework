@@ -13,7 +13,7 @@ module Padrino
 
             def app
               # Sinatra < 1.0 always disable sessions for test env
-              # so if you need them it's necessary force the use 
+              # so if you need them it's necessary force the use
               # of Rack::Session::Cookie
               CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
               # You can hanlde all padrino applications using instead:
@@ -50,7 +50,7 @@ module Padrino
 
           context "!NAME! Model" do
             context 'can be created' do
-              setup do 
+              setup do
                 @!DNAME! = !NAME!.new
               end
 
@@ -75,10 +75,8 @@ module Padrino
             riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
             create_file destination_root("test/models/#{name.to_s.downcase}_test.rb"), riot_contents, :skip => true
           end
-
-        end
-
-      end
-    end
-  end
-end
+        end # RiotGen
+      end # Tests
+    end # Components
+  end # Generators
+end # Padrino

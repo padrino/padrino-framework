@@ -13,7 +13,7 @@ module Padrino
 
             def app
               # Sinatra < 1.0 always disable sessions for test env
-              # so if you need them it's necessary force the use 
+              # so if you need them it's necessary force the use
               # of Rack::Session::Cookie
               CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
               # You can hanlde all padrino applications using instead:
@@ -76,10 +76,8 @@ module Padrino
             shoulda_contents = SHOULDA_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
             create_file destination_root("test/models/#{name.to_s.downcase}_test.rb"), shoulda_contents, :skip => true
           end
-
-        end
-
-      end
-    end
-  end
-end
+        end # ShouldaGen
+      end # Tests
+    end # Components
+  end # Generators
+end # Padrino

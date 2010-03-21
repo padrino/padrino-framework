@@ -47,7 +47,7 @@ class Account
 
   ##
   # This method it's for authentication purpose
-  # 
+  #
   def self.authenticate(email, password)
     account = first(:conditions => { :email => email }) if email.present?
     account && account.password_clean == password ? account : nil
@@ -62,7 +62,7 @@ class Account
 
   ##
   # This method it's used for retrive the original password.
-  # 
+  #
   def password_clean
     crypted_password.decrypt(salt)
   end
@@ -82,12 +82,12 @@ end
 DataMapper.auto_migrate!
 
 # We build some fake accounts
-admin  = Account.create(:name => "DAddYE", :role => "admin",  :email => "d.dagostino@lipsiasoft.com", 
+admin  = Account.create(:name => "DAddYE", :role => "admin",  :email => "d.dagostino@lipsiasoft.com",
                         :password => "some", :password_confirmation => "some")
 editor = Account.create(:name => "Dexter", :role => "editor", :email => "editor@lipsiasoft.com",
                         :password => "some", :password_confirmation => "some")
 
-%w(News Press HowTo).each do |c| 
+%w(News Press HowTo).each do |c|
   admin.categories.create(:name => c)
   editor.categories.create(:name => c)
 end

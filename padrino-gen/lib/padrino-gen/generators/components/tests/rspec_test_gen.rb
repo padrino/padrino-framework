@@ -2,8 +2,8 @@ module Padrino
   module Generators
     module Components
       module Tests
-        module RspecGen
 
+        module RspecGen
           unless defined?(RSPEC_SETUP)
             RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '')
             PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
@@ -80,9 +80,8 @@ module Padrino
             rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
             create_file destination_root("spec/models/#{name.to_s.downcase}_spec.rb"), rspec_contents, :skip => true
           end
-
-        end
-      end
-    end
-  end
-end
+        end # RspecGen
+      end # Tests
+    end # Components
+  end # Generators
+end # Padrino

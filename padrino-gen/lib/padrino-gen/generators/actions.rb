@@ -159,6 +159,6 @@ module Padrino
           @available_choices[component] + [:none]
         end
       end
-    end
-  end
-end
+    end # Actions
+  end # Generators
+end # Padrino

@@ -315,6 +315,6 @@ module Padrino
           end
           path + format_suffix
         end
-    end
-  end
-end
+    end # ClassMethods
+  end # Routing
+end # Padrino

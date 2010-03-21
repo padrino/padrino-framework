@@ -46,8 +46,7 @@ module Padrino
             puts " done."
           end
         end
-
-      end
-    end
-  end
-end
+      end # self
+    end # Adapter
+  end # Cli
+end # Padrino

@@ -7,8 +7,8 @@ module Padrino
           def setup_renderer
             # Nothing to do
           end
-        end
-      end
-    end
-  end
-end
+        end # ErbGen
+      end # Renderers
+    end # Components
+  end # Generators
+end # Padrino

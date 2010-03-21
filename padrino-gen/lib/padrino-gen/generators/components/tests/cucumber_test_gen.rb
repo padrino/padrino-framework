@@ -4,18 +4,19 @@ module Padrino
   module Generators
     module Components
       module Tests
+
         module CucumberGen
           include Padrino::Generators::Components::Tests::RspecGen
 
           CUCUMBER_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
           require File.dirname(__FILE__) + "/../../config/boot"
-          
+
           require 'capybara/cucumber'
           require 'spec/expectations'
 
           # Sinatra < 1.0 always disable sessions for test env
-          # so if you need them it's necessary to force the use 
+          # so if you need them it's necessary to force the use
           # of Rack::Session::Cookie
           Capybara.app = CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
           # You can handle all padrino applications instead using:
@@ -30,7 +31,7 @@ module Padrino
           CUCUMBER_FEATURE = (<<-TEST).gsub(/^ {10}/, '')
           Feature: Addition
             In order to avoid silly mistakes
-            As a math idiot 
+            As a math idiot
             I want to be told the sum of two numbers
 
             Scenario: Add two numbers
@@ -70,8 +71,8 @@ module Padrino
           end
 
           alias_method_chain :setup_test, :cucumber
-        end
-      end
-    end
-  end
-end
+        end # CucumberGen
+      end # Tests
+    end # Components
+  end # Generators
+end # Padrino

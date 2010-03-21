@@ -102,13 +102,13 @@ class TestModelGenerator < Test::Unit::TestCase
 
   # DATAMAPPER
   context "model generator using datamapper" do
-    
+
     should "generate gemfile gem" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-d=datamapper']) }
       silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_project']) }
       assert_match_in_file(/gem 'datamapper'/m,'/tmp/sample_project/Gemfile')
     end
-    
+
     should "generate model file with fields" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-d=datamapper']) }
       silence_logger { @model_gen.start(['user', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_project']) }
@@ -256,9 +256,9 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_project/test/models/user_test.rb')
     end
   end
-  
+
   context "the model destroy option" do
-    
+
     should "destroy the model file" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
@@ -267,14 +267,14 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/sample_project/test/models/user_test.rb')
       assert_no_file_exists('/tmp/sample_project/db/migrate/001_create_users.rb')
     end
-    
+
     should "destroy the model test file with rspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project', '-d']) }
       assert_no_file_exists('/tmp/sample_project/spec/models/user_spec.rb')
     end
-    
+
     should "destroy the model migration" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
       silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_project']) }
@@ -282,7 +282,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project', '-d']) }
       assert_no_file_exists('/tmp/sample_project/db/migrate/002_create_users.rb')
     end
-        
+
   end
 
 end

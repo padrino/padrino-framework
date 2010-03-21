@@ -90,9 +90,8 @@ module Padrino
                 :remove => Proc.new { |field, kind| "drop_column :#{field}" }
                 )
           end
-        end
-
-      end
-    end
-  end
-end
+        end # DatamapperGen
+      end # Orms
+    end # Components
+  end # Generators
+end # Padrino

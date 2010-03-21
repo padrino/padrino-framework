@@ -43,7 +43,7 @@ class TestMailerGenerator < Test::Unit::TestCase
   end
 
   context "the mailer destroy option" do
-    
+
     should "destroy mailer file" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
       silence_logger { @mail_gen.start(['demo', '-r=/tmp/sample_project']) }

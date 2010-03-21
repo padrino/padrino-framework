@@ -171,7 +171,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/public/javascripts/jquery.js')
       assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
     end
-    
+
     should "properly generate for mootools" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=mootools']) }
       assert_match /Applying.*?mootools.*?script/, buffer
@@ -257,7 +257,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/features/step_definitions/add_steps.rb')
     end
   end
-  
+
   context "the generator for stylesheet component" do
     should "properly generate for sass" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=sass']) }
@@ -266,7 +266,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/register SassInitializer/m, '/tmp/sample_project/app/app.rb')
       assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end
-    
+
     should "properly generate for less" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=less']) }
       assert_match_in_file(/gem 'less'/, '/tmp/sample_project/Gemfile')
@@ -276,5 +276,5 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end
   end
-  
+
 end

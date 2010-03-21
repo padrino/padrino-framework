@@ -53,7 +53,7 @@ class TestMailerBase < Test::Unit::TestCase
 
    should "perform the email delivery for smtp" do
       DemoMailer.smtp_settings = { :host => 'smtp.arcadic.com' }
-      Delivery.expects(:mail).with(:from => 'test@default.com', :to => 'test@test.com', 
+      Delivery.expects(:mail).with(:from => 'test@default.com', :to => 'test@test.com',
                                :body => "SMTP Hello world!", :via => :smtp, :smtp => { :host => 'smtp.arcadic.com' })
       DemoMailer.deliver(:sample_mail_smtp)
     end

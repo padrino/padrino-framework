@@ -36,8 +36,8 @@ module Padrino
             inject_into_file destination_root('/app/app.rb'), LESS_REGISTER, :after => "configure do\n"
             empty_directory destination_root('/app/stylesheets')
           end
-        end
-      end
-    end
-  end
-end
+        end # LessGen
+      end # Stylesheets
+    end # Components
+  end # Generators
+end # Padrino

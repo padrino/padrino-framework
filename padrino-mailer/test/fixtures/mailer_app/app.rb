@@ -17,7 +17,7 @@ class MailerDemo < Sinatra::Base
   register Padrino::Mailer
 
   class SampleMailer < Padrino::Mailer::Base
-    
+
     def birthday_message(name, age)
       subject "Happy Birthday!"
       to   'john@fake.com'

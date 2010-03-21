@@ -48,9 +48,8 @@ module Padrino
           def create_migration_file(migration_name, name, columns)
             # NO MIGRATION NEEDED
           end
-        end
-
-      end
-    end
-  end
-end
+        end # MongomapperGen
+      end # Orms
+    end # Components
+  end # Generators
+end # Padrino

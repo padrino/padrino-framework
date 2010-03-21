@@ -13,7 +13,7 @@ module Rack::Handler
     def stop
     end
   end
-  
+
   register 'mock', 'Rack::Handler::Mock'
   Padrino::Server::Handlers << 'mock'
 end

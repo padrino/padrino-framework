@@ -168,9 +168,9 @@ class TestMigrationGenerator < Test::Unit::TestCase
       assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
     end
   end
-  
+
   context "the migration destroy option" do
-    
+
     should "destroy the migration files" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=sequel']) }
       migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", '-r=/tmp/sample_project']
@@ -178,7 +178,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
       silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_project','-d']) }
       assert_no_file_exists("/tmp/sample_project/db/migrate/001_remove_email_from_users.rb")
     end
-    
+
     should "destroy the migration file regardless of number" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=sequel']) }
       migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", '-r=/tmp/sample_project']
@@ -188,7 +188,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
       silence_logger { @mig_gen.start(['RemoveEmailFromUsers', '-r=/tmp/sample_project','-d']) }
       assert_no_file_exists("/tmp/sample_project/db/migrate/002_remove_email_from_users.rb")
     end
-    
+
   end
-  
+
 end

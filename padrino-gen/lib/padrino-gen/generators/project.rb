@@ -74,6 +74,6 @@ module Padrino
 
         TEXT
       end
-    end
-  end
-end
+    end # Project
+  end # Generators
+end # Padrino

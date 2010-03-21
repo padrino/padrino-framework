@@ -25,22 +25,21 @@ module Padrino
   PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
 
   private
+    ##
+    # Returns the filename for the file that is the direct caller (first caller)
+    #
+    def self.first_caller
+      caller_files.first
+    end
 
-  ##
-  # Returns the filename for the file that is the direct caller (first caller)
-  #
-  def self.first_caller
-    caller_files.first
-  end
-
-  ##
-  # Like Kernel#caller but excluding certain magic entries and without
-  # line / method information; the resulting array contains filenames only.
-  #
-  def self.caller_files
-    caller(1).
-      map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
-      reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
-      map    { |file,line| file }
-  end
+    ##
+    # Like Kernel#caller but excluding certain magic entries and without
+    # line / method information; the resulting array contains filenames only.
+    #
+    def self.caller_files
+      caller(1).
+        map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
+        reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
+        map    { |file,line| file }
+    end
 end # Padrino

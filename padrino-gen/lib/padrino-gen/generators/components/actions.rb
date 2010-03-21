@@ -114,7 +114,7 @@ module Padrino
           end
           action_declarations.join("\n  ")
         end
-      end
-    end
-  end
-end
+      end # Actions
+    end # Components
+  end # Generators
+end # Padrino

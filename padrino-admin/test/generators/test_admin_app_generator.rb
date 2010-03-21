@@ -5,7 +5,7 @@ require 'padrino-gen/generators/actions'
 Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
 
 class TestAdminAppGenerator < Test::Unit::TestCase
-  
+
   def setup
     `rm -rf /tmp/sample_project`
     @project = Padrino::Generators::Project.dup

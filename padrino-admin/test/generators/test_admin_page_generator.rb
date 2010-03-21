@@ -21,7 +21,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
   end
 
   context 'the admin page generator' do
-    
+
     should 'fail outside app root' do
       output = silence_logger { @page.start(['foo', '-r=/tmp/sample_project']) }
       assert_match(/not at the root/, output)

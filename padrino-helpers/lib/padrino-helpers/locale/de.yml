@@ -8,9 +8,9 @@ de:
       format:
         unit: '€'
         format: '%n%u'
-        separator: 
-        delimiter: 
-        precision: 
+        separator:
+        delimiter:
+        precision:
     percentage:
       format:
         delimiter: ""

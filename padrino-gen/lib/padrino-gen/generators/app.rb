@@ -46,8 +46,6 @@ module Padrino
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and exit unless in_app_root?
         end
       end
-
-    end
-
-  end
-end
+    end # App
+  end # Generators
+end # Padrino

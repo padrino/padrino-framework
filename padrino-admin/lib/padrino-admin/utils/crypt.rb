@@ -9,13 +9,17 @@ module Padrino
       # We prefer send original password instead reset them.
       #
       module Crypt
-        # Decrypts the current string using the current key and algorithm specified
+        ##
+        # Decrypts the current string using the current key specified
+        #
         def decrypt(password)
           cipher = build_cipher(:decrypt, password)
           cipher.update(self.unpack('m')[0]) + cipher.final
         end
 
+        ##
         # Encrypts the current string using the current key and algorithm specified
+        #
         def encrypt(password)
           cipher = build_cipher(:encrypt, password)
           [cipher.update(self) + cipher.final].pack('m').chomp
@@ -27,8 +31,7 @@ module Padrino
           cipher.pkcs5_keyivgen(password)
           cipher
         end
-      end
-
-    end
-  end
-end
+      end # Crypt
+    end # Utils
+  end # Admin
+end # Padrino

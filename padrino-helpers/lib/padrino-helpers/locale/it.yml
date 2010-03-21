@@ -16,7 +16,7 @@ it:
     percentage:
       format:
         delimiter: ""
-        # precision: 
+        # precision:
 
     precision:
       format:
@@ -27,7 +27,7 @@ it:
     human:
       format:
         # These three are to override number.format and are optional
-        # separator: 
+        # separator:
         delimiter: ""
         precision: 1
       storage_units:
@@ -79,7 +79,7 @@ it:
   models:
     errors:
       template:
-        header: 
+        header:
           one: "Non posso salvare questo {{model}}: 1 errore"
           other: "Non posso salvare questo {{model}}: {{count}} errori."
         body: "Per favore ricontrolla i seguenti campi:"

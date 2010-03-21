@@ -207,6 +207,6 @@ module Padrino
           @view_paths = ["views"].collect { |path| File.join(self.root, path) }
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
-    end # Class Methods
+    end # self
   end # Application
 end # Padrino

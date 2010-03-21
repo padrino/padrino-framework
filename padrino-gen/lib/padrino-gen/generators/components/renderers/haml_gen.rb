@@ -8,8 +8,8 @@ module Padrino
           def setup_renderer
             require_dependencies 'haml'
           end
-        end
-      end
-    end
-  end
-end
+        end # HamlGen
+      end # Renderers
+    end # Components
+  end # Generators
+end # Padrino

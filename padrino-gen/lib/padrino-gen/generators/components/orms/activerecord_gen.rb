@@ -116,9 +116,8 @@ module Padrino
                 :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
                 :remove => Proc.new { |field, kind| "t.remove :#{field}" })
           end
-
-        end
-      end
-    end
-  end
-end
+        end # ActiverecordGen
+      end # Orms
+    end # Components
+  end # Generators
+end # Padrino

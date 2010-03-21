@@ -15,7 +15,7 @@
     = f.file_field :photo, :class => 'user-photo'
   %p
     = f.label :about, :caption => "About Me: "
-    = f.text_area :about, :class => 'user-about'  
+    = f.text_area :about, :class => 'user-about'
   %p
     = f.label :gender, :caption => "Your gender: "
     = f.radio_button :gender, :value => 'male'
@@ -42,6 +42,6 @@
   = f.select_block :state, :options => ['California', 'Texas'], :class => 'selector'
   = f.submit_block "Create", { :class => 'button' }
   = f.image_submit_block "buttons/ok.png", { :class => 'image' }
-  
+
 - form_for :markup_user, '/third_demo', :id => 'demo3', :method => 'get' do |f|
   = f.text_field_block :username

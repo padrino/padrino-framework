@@ -75,5 +75,5 @@ module Padrino
         is_in_development = (defined?(Padrino) && Padrino.respond_to?(:env) && Padrino.env != :production)
         @template_cache.clear if is_in_development && can_clear_cache
       end
-  end
-end
+  end # Rendering
+end # Padrino

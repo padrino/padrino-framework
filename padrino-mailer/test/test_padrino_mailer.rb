@@ -7,14 +7,14 @@ class TestPadrinoMailer < Test::Unit::TestCase
   end
 
   context 'for mail delivery in sample application' do
-    setup { 
+    setup {
       Padrino::Mailer::Base::views_path << MailerDemo.views
-      MailerDemo::SampleMailer.smtp_settings = MailerDemo.smtp_settings 
+      MailerDemo::SampleMailer.smtp_settings = MailerDemo.smtp_settings
     }
 
     should 'be able to deliver plain text emails' do
       assert_email_sent(:to => 'john@fake.com', :from => 'noreply@birthday.com', :via => :smtp,
-                        :subject => "Happy Birthday!", :body => "Happy Birthday Joey! \nYou are turning 21")
+                        :subject => "Happy Birthday!", :body => "Happy Birthday Joey!\nYou are turning 21")
       visit '/deliver/plain', :post
       assert_equal 'mail delivered', last_response.body
     end

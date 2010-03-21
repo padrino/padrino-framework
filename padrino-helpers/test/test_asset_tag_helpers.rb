@@ -202,7 +202,7 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('script', :src => "http://google.com/lib.js") { actual_html }
     end
   end
-  
+
   context "for #favicon_tag method" do
     should "display favicon" do
       time = stop_time_for_test

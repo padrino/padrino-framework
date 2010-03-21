@@ -7,7 +7,7 @@ class TestMounter < Test::Unit::TestCase
   end
 
   context 'for mounter functionality' do
-    
+
     should 'check methods' do
       mounter = Padrino::Mounter.new("test", :app_file => "/path/to/test.rb")
       mounter.to("/test")
@@ -38,7 +38,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal AnApp, Padrino.mounted_apps.first.app_obj
       assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
     end
-    
+
     should 'mount a core' do
       mounter = Padrino.mount_core("test")
       assert_equal "core", mounter.name
@@ -52,7 +52,7 @@ class TestMounter < Test::Unit::TestCase
     should 'mount multiple apps' do
       class ::OneApp < Padrino::Application; end
       class ::TwoApp < Padrino::Application; end
-      
+
       Padrino.mount("one_app").to("/one_app")
       Padrino.mount("two_app").to("/two_app")
       # And testing no duplicates
@@ -64,7 +64,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal 2, Padrino.mounted_apps.size, "should not mount duplicate apps"
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
     end
-    
+
     should 'change mounted_root' do
       Padrino.mounted_root = "fixtures"
       assert_equal Padrino.root("fixtures", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
@@ -79,7 +79,7 @@ class TestMounter < Test::Unit::TestCase
         get("/demo_1"){ "Im Demo 1" }
         get("/demo_2"){ "Im Demo 2" }
       end
-      
+
       get '/demo_1'
       assert_equal "Im Demo 1", body
       get '/demo_2'

@@ -15,7 +15,6 @@ require 'thor/group'
   end
 end
 
-
 require 'padrino-core/support_lite'
 require 'padrino-admin'
 

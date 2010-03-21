@@ -105,7 +105,7 @@ class TestRouting < Test::Unit::TestCase
     get "/foo.rss"
     assert_equal "Test\n", body
   end
-  
+
   should "generate routes for format with controller" do
     mock_app do
       controller :posts do
