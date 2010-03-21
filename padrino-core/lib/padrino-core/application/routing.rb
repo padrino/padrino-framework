@@ -2,6 +2,13 @@ require 'usher' unless defined?(Usher)
 require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
 
 module Padrino
+  ##
+  # Padrino provides advanced routing definition support to make routes and url generation much easier.
+  # This routing system supports named route aliases and easy access to url paths.
+  # The benefits of this is that instead of having to hard-code route urls into every area of your application,
+  # now we can just define the urls in a single spot and then attach an alias which can be used to refer
+  # to the url throughout the application.
+  #
   module Routing
     class UnrecognizedException < RuntimeError #:nodoc:
     end
