@@ -36,20 +36,6 @@ module Padrino
       end
 
       ##
-      # Use layout like rails does or if a block given then like sinatra.
-      # If used without a block, sets the current layout for the route.
-      #
-      # By default, searches in your +app/views/layouts/application.(haml|erb|xxx)+
-      #
-      # If you define +layout :custom+ then searches for your layouts in
-      # +app/views/layouts/custom.(haml|erb|xxx)+
-      #
-      def layout(name=:layout, &block)
-        return super(name, &block) if block_given?
-        @_layout = name
-      end
-
-      ##
       # Reloads the application files from all defined load paths
       #
       # This method is used from our Padrino Reloader during development mode
@@ -94,7 +80,6 @@ module Padrino
       end
 
       protected
-
         ##
         # Defines default settings for Padrino application
         #
