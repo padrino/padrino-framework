@@ -193,5 +193,14 @@ module Padrino
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
     end # self
+
+    private
+      def clean_backtrace(trace)
+        return trace unless options.clean_trace?
+        trace.reject { |line|
+          line =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/ ||
+            (defined?(Gem) && line.include?(Gem.dir))
+        }.map! { |line| line.gsub(/^\.\//, '') }
+      end
   end # Application
 end # Padrino

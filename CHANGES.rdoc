@@ -2,12 +2,14 @@
 
 == 0.9.7 (unreleased)
 
+* Fixed an issue in Sinatra::ShowExceptions since Bundler change Gem.dir
+* Removed from Sinatra::ShowExceptions and clean_backtrace padrino code
 * Added layout finder with format and locale
 * Improved template finder (with format and locale)
-* Fixed a bug that duplicates admin menus during app reloading.
+* Fixed a bug that duplicates admin menus during app reloading
 * Added feed_tag helper
-* Removed Mailer Initializer from app.rb.tt and added it to the mailer generator.
-* Removed duplicate app folder in project skeleton.
+* Removed Mailer Initializer from app.rb.tt and added it to the mailer generator
+* Removed duplicate app folder in project skeleton
 * Couchrest generator now include in Gemfile json_pure
 * Fixed project name when using some like www.my-domain.com
 * Fixed a small typo error in app template
@@ -23,7 +25,7 @@
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
 * Fixed mailer initializer issue. Cleaned up options in delivery.rb
-* Fixes tests in padrino helper.
+* Fixes tests in padrino helper
 
 == 0.9.5
 
@@ -53,7 +55,7 @@
 * Fixed Padrino Mailer views_path when we use a "multi app" project
 * Fixed content_type in Padrino Mailer
 * Added a spec option -fs
-* Removed rspec.opts and use it directly in rake task.
+* Removed rspec.opts and use it directly in rake task
 
 == 0.9.3
 
