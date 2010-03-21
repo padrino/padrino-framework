@@ -1,9 +1,9 @@
 module Padrino
   module Helpers
     module FormatHelpers
-      ## 
+      ##
       # Returns escaped text to protect against malicious content
-      # 
+      #
       def escape_html(text)
         Rack::Utils.escape_html(text)
       end
@@ -13,7 +13,7 @@ module Padrino
       ##
       # Returns escaped text to protect against malicious content
       # Returns blank if the text is empty
-      # 
+      #
       def h!(text, blank_text = '&nbsp;')
         return blank_text if text.nil? || text.empty?
         h text
@@ -21,7 +21,7 @@ module Padrino
 
       ##
       # Strips all HTML tags from the html
-      # 
+      #
       def strip_tags(html)
         html.gsub(/<\/?[^>]*>/, "") if html
       end
@@ -30,11 +30,11 @@ module Padrino
       # Returns text transformed into HTML using simple formatting rules. Two or more consecutive newlines(\n\n) are considered
       # as a paragraph and wrapped in <p> tags. One newline (\n) is considered as a linebreak and a <br /> tag is appended.
       # This method does not remove the newlines from the text.
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
-      # 
+      #
       def simple_format(text, html_options={})
         start_tag = tag('p', html_options.merge(:open => true))
         text = text.to_s.dup
@@ -48,11 +48,11 @@ module Padrino
       ##
       # Attempts to pluralize the singular word unless count is 1. If plural is supplied, it will use that when count is > 1,
       # otherwise it will use the Inflector to determine the plural form
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   pluralize(2, 'person') => '2 people'
-      # 
+      #
       def pluralize(count, singular, plural = nil)
         "#{count || 0} " + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
       end
@@ -60,11 +60,11 @@ module Padrino
       ##
       # Truncates a given text after a given :length if text is longer than :length (defaults to 30).
       # The last characters will be replaced with the :omission (defaults to "…") for a total length not exceeding :length.
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
-      # 
+      #
       def truncate(text, options={})
         options.reverse_merge!(:length => 30, :omission => "...")
         if text
@@ -77,11 +77,11 @@ module Padrino
       ##
       # Wraps the text into lines no longer than line_width width.
       # This method breaks on the first whitespace character that does not exceed line_width (which is 80 by default).
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
-      # 
+      #
       def word_wrap(text, *args)
         options = args.extract_options!
         unless args.blank?
@@ -96,18 +96,18 @@ module Padrino
 
       ##
       # Highlights one or more words everywhere in text by inserting it into a :highlighter string.
-      # 
-      # The highlighter can be customized by passing :+highlighter+ as a single-quoted string 
+      #
+      # The highlighter can be customized by passing :+highlighter+ as a single-quoted string
       # with \1 where the phrase is to be inserted (defaults to ’<strong class="highlight">\1</strong>’)
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   # => Lorem ipsum <strong class="highlight">dolor</strong> sit amet
       #   highlight('Lorem ipsum dolor sit amet', 'dolor')
-      # 
+      #
       #   # => Lorem ipsum <span class="custom">dolor</span> sit amet
       #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
-      # 
+      #
       def highlight(text, words, *args)
         options = args.extract_options!
         options.reverse_merge!(:highlighter => '<strong class="highlight">\1</strong>')
@@ -148,7 +148,7 @@ module Padrino
       #   60-89 secs      # => 1 minute
       #
       # ==== Examples
-      # 
+      #
       #   from_time = Time.now
       #   distance_of_time_in_words(from_time, from_time + 50.minutes)        # => about 1 hour
       #   distance_of_time_in_words(from_time, 50.minutes.from_now)           # => about 1 hour
@@ -216,20 +216,20 @@ module Padrino
       # Like distance_of_time_in_words, but where <tt>to_time</tt> is fixed to <tt>Time.now</tt>.
       #
       # ==== Examples
-      # 
+      #
       #   time_ago_in_words(3.minutes.from_now)       # => 3 minutes
       #   time_ago_in_words(Time.now - 15.hours)      # => 15 hours
       #   time_ago_in_words(Time.now)                 # => less than a minute
       #
       #   from_time = Time.now - 3.days - 14.minutes - 25.seconds     # => 3 days
-      # 
+      #
       def time_ago_in_words(from_time, include_seconds = false)
         distance_of_time_in_words(from_time, Time.now, include_seconds)
       end
 
       ##
       # Remove unsafe chars from our javascript
-      # 
+      #
       def escape_javascript(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n' }
@@ -240,9 +240,9 @@ module Padrino
 
       ##
       # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino
-      # 
+      #
       #   js_escape_html("<h1>Hey</h1>")
-      # 
+      #
       def js_escape_html(html_content)
         %Q["#{escape_javascript(html_content)}"]
       end

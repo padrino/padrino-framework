@@ -3,11 +3,11 @@ module Padrino
     module TagHelpers
       ##
       # Creates an html input field with given type and options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   input_tag :text, :class => "test"
-      # 
+      #
       def input_tag(type, options = {})
         options.reverse_merge!(:type => type)
         tag(:input, options)
@@ -15,13 +15,13 @@ module Padrino
 
       ##
       # Creates an html tag with given name, content and options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   content_tag(:p, "hello", :class => 'light')
       #   content_tag(:p, :class => 'dark') do ... end
       #   content_tag(name, content=nil, options={}, &block)
-      # 
+      #
       def content_tag(*args, &block)
         name = args.first
         options = args.extract_options!
@@ -32,12 +32,12 @@ module Padrino
 
       ##
       # Creates an html tag with the given name and options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   tag(:br, :style => 'clear:both')
       #   tag(:p, :content => "hello", :class => 'large')
-      # 
+      #
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
         content = content.join("\n") if content.respond_to?(:join)
@@ -50,7 +50,7 @@ module Padrino
       private
         ##
         # Returns a list of attributes which can only contain an identity value (i.e selected)
-        # 
+        #
         def identity_tag_attributes
           [:checked, :disabled, :selected, :multiple]
         end

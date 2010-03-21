@@ -10,7 +10,7 @@
     <div id="box">
       <h1><%= options[:name] %></h1>
       <div class="block" id="block-login">
-        <h2>Login Box</h2>        
+        <h2>Login Box</h2>
         <div class="content login">
           <div class="flash">
             <%%= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join %>
@@ -22,7 +22,7 @@
               </div>
               <div class="right">
                 <%%= text_field_tag :email, :value => params[:email], :class => 'text_field' %>
-              </div>              
+              </div>
             </div>
             <div class="group wat-cf">
               <div class="left">
@@ -30,13 +30,13 @@
               </div>
               <div class="right">
                 <%%= password_field_tag :password, :value => params[:password], :class => 'text_field' %>
-              </div>              
+              </div>
             </div>
             <div class="group navform wat-cf">
               <div class="right">
                 <%%= submit_tag "Sign in", :class => :button %>
               </div>
-            </div>            
+            </div>
           <%% end %>
         </div>
       </div>

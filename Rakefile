@@ -6,6 +6,7 @@ require 'pathname'
 require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
+require 'rake/contrib/sshpublisher'
 require 'fileutils'
 require 'sdoc'
 require File.dirname(__FILE__) + '/versioner'
@@ -120,17 +121,9 @@ namespace :version do
 end
 
 desc "Publish doc on padrino.github.com"
-task :publish_doc do
-  puts "Publishing doc on padrino.github.com ..."
-  sh 'git clone git@github.com:padrino/padrino.github.com.git'
-  rake_command("rdoc")
-  FileUtils.cp_r("doc/.", "padrino.github.com/api")
-  Dir.chdir('padrino.github.com') do
-    sh 'git add *'
-    sh 'git commit -m "Updated docs."'
-    sh 'git push origin master'
-  end
-  FileUtils.rm_rf "padrino.github.com"
+task :pdoc => :rdoc do
+  puts "Publishing doc on padrinorb.com ..."
+  Rake::SshDirPublisher.new("root@lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload
   FileUtils.rm_rf "doc"
 end
 

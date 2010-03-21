@@ -33,7 +33,7 @@ end
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'test'
-  
+
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
@@ -67,7 +67,7 @@ Rake::RDocTask.new do |rdoc|
 end
 
 
-spec = Gem::Specification.new do |s| 
+spec = Gem::Specification.new do |s|
   s.name              = "foo"
   s.version           = "1.0.1"
   s.author            = "Davide D'Agostino"

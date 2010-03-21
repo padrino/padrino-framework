@@ -2,7 +2,7 @@ class Admin < Padrino::Application
   configure do
     ##
     # Application-specific configuration options
-    # 
+    #
     # set :raise_errors, true     # Show exceptions (default for development)
     # set :public, "foo/bar"      # Location for static assets (default root/public)
     # set :sessions, false        # Enabled by default
@@ -14,7 +14,7 @@ class Admin < Padrino::Application
     # disable :flash              # Disables rack-flash (enabled by default)
     # enable  :authentication     # Enable padrino-admin authentication (disabled by default)
     # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
-    # 
+    #
     enable  :authentication
     disable :store_location
     set :login_page, "/admin/sessions/new"

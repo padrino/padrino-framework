@@ -31,12 +31,12 @@ module Padrino
         if in_app_root?
           directory("app/", destination_root(name))
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@class_name}\").to(\"/#{name.underscore}\")"
-          
+
           return if self.behavior == :revoke
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Your #{@class_name} Application now is installed. 
+          Your #{@class_name} Application now is installed.
           It's available on /#{name.underscore}
           You can setup a new path editing config/apps.rb
           =================================================================

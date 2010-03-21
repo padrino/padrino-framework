@@ -17,7 +17,7 @@ class Account < ActiveRecord::Base
 
   ##
   # This method is for authentication purpose
-  # 
+  #
   def self.authenticate(email, password)
     account = first(:conditions => { :email => email }) if email.present?
     account && account.password_clean == password ? account : nil
@@ -25,7 +25,7 @@ class Account < ActiveRecord::Base
 
   ##
   # This method is used for retrive the original password.
-  # 
+  #
   def password_clean
     crypted_password.decrypt(salt)
   end

@@ -22,7 +22,7 @@
           <%% end %>
         </ul>
       </div>
-    </div>    
+    </div>
     <div id="wrapper" class="wat-cf">
       <div class="flash">
         <%%= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join %>
@@ -38,7 +38,7 @@
       <div id="sidebar">
         <%%= yield_content :sidebar %>
       </div>
-    </div>    
+    </div>
   </div>
 </body>
 </html>

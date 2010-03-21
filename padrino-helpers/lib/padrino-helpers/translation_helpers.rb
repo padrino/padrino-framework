@@ -3,7 +3,7 @@ module Padrino
     module TranslationHelpers
       ##
       # Delegates to I18n.translate with no additional functionality.
-      # 
+      #
       def translate(*args)
         I18n.translate(*args)
       end
@@ -11,7 +11,7 @@ module Padrino
 
       ##
       # Delegates to I18n.localize with no additional functionality.
-      # 
+      #
       def localize(*args)
         I18n.localize(*args)
       end

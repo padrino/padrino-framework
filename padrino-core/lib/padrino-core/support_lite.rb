@@ -1,14 +1,14 @@
 ##
 # This file loads certain extensions required by Padrino from ActiveSupport.
-# 
-# Why use ActiveSupport and not our own library or extlib? 
+#
+# Why use ActiveSupport and not our own library or extlib?
 #
 # 1) Writing custom method extensions needed (i.e string inflections) is not a good use of time.
 # 2) Loading custom method extensions or separate gem would conflict when AR or MM has been loaded.
 # 3) Datamapper is planning to move to ActiveSupport and away from extlib.
-# 
+#
 # Extensions required for Padrino:
-# 
+#
 #   * Class#cattr_accessor
 #   * Module#alias_method_chain
 #   * String#inflectors (classify, underscore, camelize, pluralize, etc)
@@ -20,7 +20,7 @@
 #   * Hash#symbolize_keys, Hash.symbolize_keys!
 #   * Hash#reverse_merge, Hash#reverse_merge!
 #   * SupportLite::OrderedHash
-# 
+#
 
 require 'i18n'
 require 'active_support/core_ext/kernel'
@@ -37,7 +37,7 @@ require 'active_support/ordered_hash'
 
 ##
 # Define our own OrderedHash based on AS::OrderedHash
-# 
+#
 unless defined?(SupportLite::OrderedHash)
   module SupportLite
     OrderedHash = ::ActiveSupport::OrderedHash
@@ -46,14 +46,14 @@ end
 
 ##
 # Alias allowing for use of either method to get query parameters
-# 
+#
 unless Hash.method_defined?(:to_params)
-  class Hash 
+  class Hash
     alias :to_params :to_query
   end
 end
 
 ##
 # Loads our locales configuration files
-# 
+#
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]

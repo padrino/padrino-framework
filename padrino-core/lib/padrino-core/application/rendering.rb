@@ -42,13 +42,13 @@ module Padrino
 
       ##
       # Returns the template path and engine that match (if presents) content_type, I18n.locale.
-      # 
+      #
       # ==== Example
-      # 
+      #
       #   get "/foo", :respond_to => [:html, :js] do; render 'path/to/foo'; end
       #   # If you request "/foo.js" with I18n.locale == :ru => [:"/path/to/foo.ru.js", :erb]
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
-      # 
+      #
       def resolve_template(template_path, options={})
         template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"

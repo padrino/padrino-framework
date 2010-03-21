@@ -10,14 +10,14 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]
 
 module Padrino
   ##
-  # This component provides a great deal of view helpers related to html markup generation. 
-  # There are helpers for generating tags, forms, links, images, and more. 
+  # This component provides a great deal of view helpers related to html markup generation.
+  # There are helpers for generating tags, forms, links, images, and more.
   # Most of the basic methods should be very familiar to anyone who has used rails view helpers.
-  # 
+  #
   module Helpers
     ##
     # Register these helpers:
-    # 
+    #
     #   Padrino::Helpers::OutputHelpers
     #   Padrino::Helpers::TagHelpers
     #   Padrino::Helpers::AssetTagHelpers
@@ -25,9 +25,9 @@ module Padrino
     #   Padrino::Helpers::FormatHelpers
     #   Padrino::Helpers::RenderHelpers
     #   Padrino::Helpers::NumberHelpers
-    # 
+    #
     # for Padrino::Application
-    # 
+    #
     def self.registered(app)
       app.set :default_builder, 'StandardFormBuilder'
       app.helpers Padrino::Helpers::OutputHelpers

@@ -2,7 +2,7 @@ module Padrino
   class << self
     ##
     # Requires necessary dependencies as well as application files from root lib and models
-    # 
+    #
     def load!
       return false if loaded?
       @_called_from = first_caller
@@ -17,7 +17,7 @@ module Padrino
 
     ##
     # Method for reloading required applications and their files
-    # 
+    #
     def reload!
       return unless Reloader::Stat.changed?
       Reloader::Stat.reload! # detects the modified files
@@ -26,14 +26,14 @@ module Padrino
 
     ##
     # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
-    # 
+    #
     def called_from
       @_called_from || first_caller
     end
 
     ##
     # Return true if Padrino was loaded with Padrino.load!
-    # 
+    #
     def loaded?
       Thread.current[:padrino_loaded]
     end
@@ -42,23 +42,23 @@ module Padrino
     # Attempts to require all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     # Another good thing that this method are dependency check, for example:
-    # 
+    #
     #   models
     #    \-- a.rb => require something of b.rb
     #    \-- b.rb
-    # 
+    #
     # In the example above if we do:
-    # 
+    #
     #   Dir["/models/*.rb"].each { |r| require r }
-    # 
+    #
     # we get an error, because we try to require first a.rb that need +something+ of b.rb.
-    # 
+    #
     # With +require_dependencies+ we don't have this problem.
-    # 
+    #
     # ==== Examples
     #   # For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
-    # 
+    #
     def require_dependencies(*paths)
       # Extract all files to load
       files = paths.map { |path| Dir[path] }.flatten
@@ -101,7 +101,7 @@ module Padrino
 
     ##
     # Concat to $LOAD_PATH the given paths
-    # 
+    #
     def set_load_paths(*paths)
       $:.concat(paths)
       $:.uniq!

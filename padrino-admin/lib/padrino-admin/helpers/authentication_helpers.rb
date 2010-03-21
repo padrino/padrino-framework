@@ -4,25 +4,25 @@ module Padrino
       module AuthenticationHelpers
         ##
         # Returns true if +current_account+ is logged and active.
-        # 
+        #
         def logged_in?
           !current_account.nil?
         end
 
         ##
         # Returns the current_account, it's an instance of <tt>Account</tt> model
-        # 
+        #
         def current_account
           @current_account ||= login_from_session
         end
 
         ##
         # Override the current_account, you must provide an instance of Account Model
-        # 
+        #
         # ==== Examples:
-        # 
+        #
         #     set_current_account(Account.authenticate(params[:email], params[:password])
-        # 
+        #
         def set_current_account(account=nil)
           session[options.session_id] = account ? account.id : nil
           @current_account = account
@@ -30,16 +30,16 @@ module Padrino
 
         ##
         # Returns true if the +current_account+ is allowed to see the requested path
-        # 
+        #
         # For configure this role please refer to: +Padrino::Admin::AccessControl::Base+
-        # 
+        #
         def allowed?
           access_control.allowed?(current_account, request.path_info)
         end
 
         ##
         # Returns project modules for the current account
-        # 
+        #
         def project_modules
           access_control.project_modules(current_account)
         end
@@ -47,9 +47,9 @@ module Padrino
         ##
         # Returns a helper useful in a +before_filter+ for check if
         # an account are: +logged_in?+ and +allowed?+
-        # 
+        #
         # By default this method is used in Admin Apps.
-        # 
+        #
         def login_required
           store_location! if store_location
           return access_denied unless allowed?
@@ -57,7 +57,7 @@ module Padrino
 
         ##
         # Store in session[:return_to] the env['HTTP_REFERER']
-        # 
+        #
         def store_location!
           session[:return_to] = env['HTTP_REFERER']
         end
@@ -65,7 +65,7 @@ module Padrino
         ##
         # Redirect the account to the page that requested an authentication or
         # if the account is not allowed/logged return it to a default page
-        # 
+        #
         def redirect_back_or_default(default)
           return_to = session.delete(:return_to)
           redirect(return_to || default)

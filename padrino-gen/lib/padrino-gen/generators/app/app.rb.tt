@@ -2,7 +2,7 @@ class <%= @class_name %> < Padrino::Application
   configure do
     ##
     # Application-specific configuration options
-    # 
+    #
     # set :raise_errors, true     # Show exceptions (default for development)
     # set :public, "foo/bar"      # Location for static assets (default root/public)
     # set :sessions, false        # Enabled by default
@@ -14,12 +14,12 @@ class <%= @class_name %> < Padrino::Application
     # disable :flash              # Disables rack-flash (enabled by default)
     # enable  :authentication     # Enable padrino-admin authentication (disabled by default)
     # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
-    # 
+    #
   end
 
   ##
   # You can configure for a specified environment like:
-  # 
+  #
   #   configure :development do
   #     set :foo, :bar
   #   end
@@ -27,7 +27,7 @@ class <%= @class_name %> < Padrino::Application
 
   ##
   # You can manage errors like:
-  # 
+  #
   #   error 404 do
   #     render 'errors/404'
   #   end

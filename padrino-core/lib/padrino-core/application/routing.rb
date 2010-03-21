@@ -5,7 +5,7 @@ module Padrino
   module Routing
     class UnrecognizedException < RuntimeError #:nodoc:
     end
-    
+
     def self.registered(app)
       app.send(:include, Padrino::Routing)
     end

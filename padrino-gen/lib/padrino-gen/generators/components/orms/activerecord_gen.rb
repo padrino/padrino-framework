@@ -8,7 +8,7 @@ module Padrino
           AR = (<<-AR).gsub(/^ {10}/, '')
           ##
           # You can use other adapters like:
-          # 
+          #
           #   ActiveRecord::Base.configurations[:development] = {
           #     :adapter   => 'mysql',
           #     :encoding  => 'utf8',

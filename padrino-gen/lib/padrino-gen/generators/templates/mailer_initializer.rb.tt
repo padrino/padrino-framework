@@ -1,6 +1,6 @@
 =begin
 
-By default, Padrino mailer uses the built-in sendmail binary functionality on the server. 
+By default, Padrino mailer uses the built-in sendmail binary functionality on the server.
 However, smtp is also supported using the following configuration if needed:
 
 =end

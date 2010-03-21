@@ -305,7 +305,7 @@ if defined?(ActiveRecord)
       desc "Use schema.rb to auto-upgrade"
       task :upgrade => :environment do
         AutoMigrations.run
-      end 
+      end
     end
 
     desc "Generates .yml files for I18n translations."
@@ -377,10 +377,10 @@ if defined?(ActiveRecord)
 
   ##
   # Padrino plugin for automating migrations
-  # 
+  #
   # Thanks to:: PJ Hyett
   # Original Repo:: http://github.com/pjhyett/auto_migrations
-  # 
+  #
   module AutoMigrations
 
     def self.run
@@ -406,13 +406,13 @@ if defined?(ActiveRecord)
       schema_in.gsub!(/#(.)+\n/, '')
       schema_in.sub!(/ActiveRecord::Schema.define(.+)do[ ]?\n/, '')
       schema_in.gsub!(/^/, '  ')
-      schema = "class InitialSchema < ActiveRecord::Migration\n  def self.up\n" 
+      schema = "class InitialSchema < ActiveRecord::Migration\n  def self.up\n"
       schema += "    # We're resetting the migrations database...\n" +
                 "    drop_table :schema_migrations\n" +
                 "    initialize_schema_migrations_table\n\n" if with_reset
       schema += schema_in
       schema << "\n  def self.down\n"
-      schema << (ActiveRecord::Base.connection.tables - %w(schema_info schema_migrations)).map do |table| 
+      schema << (ActiveRecord::Base.connection.tables - %w(schema_info schema_migrations)).map do |table|
                   "    drop_table :#{table}\n"
                 end.join
       schema << "  end\nend\n"
@@ -439,12 +439,12 @@ if defined?(ActiveRecord)
         when :add_index
           auto_add_index(method, *args, &block)
         else
-          method_missing_without_auto_migration(method, *args, &block) 
+          method_missing_without_auto_migration(method, *args, &block)
         end
       end
 
       def auto_create_table(method, *args, &block)
-        table_name = args.shift.to_s    
+        table_name = args.shift.to_s
         options    = args.pop || {}
 
         (self.tables_in_schema ||= []) << table_name
@@ -517,7 +517,7 @@ if defined?(ActiveRecord)
         end
       end
 
-      def auto_add_index(method, *args, &block)      
+      def auto_add_index(method, *args, &block)
         table_name = args.shift.to_s
         fields     = Array(args.shift).map(&:to_s)
         options    = args.shift

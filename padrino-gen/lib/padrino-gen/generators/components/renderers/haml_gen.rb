@@ -9,7 +9,6 @@ module Padrino
             require_dependencies 'haml'
           end
         end
-
       end
     end
   end

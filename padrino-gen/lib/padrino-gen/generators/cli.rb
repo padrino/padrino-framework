@@ -5,7 +5,7 @@ module Padrino
     ##
     # This class bootstrap +config/boot+ and perform +Padrino::Generators.load_components!+ for handle
     # 3rd party generators
-    # 
+    #
     class Cli < Thor::Group
 
       # Include related modules
@@ -13,7 +13,7 @@ module Padrino
 
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => nil, :type => :string
 
-      # We need to TRY to load boot because some of our app dependencies maybe have 
+      # We need to TRY to load boot because some of our app dependencies maybe have
       # custom generators, so is necessary know who are.
       def load_boot
         begin

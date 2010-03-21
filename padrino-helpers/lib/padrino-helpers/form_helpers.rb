@@ -3,12 +3,12 @@ module Padrino
     module FormHelpers
       ##
       # Constructs a form for object using given or default form_builder
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   form_for :user, '/register' do |f| ... end
       #   form_for @user, '/register', :id => 'register' do |f| ... end
-      # 
+      #
       def form_for(object, url, settings={}, &block)
         builder_class = configured_form_builder_class(settings[:builder])
         form_html = capture_html(builder_class.new(self, object), &block)
@@ -18,12 +18,12 @@ module Padrino
       ##
       # Constructs form fields for an object using given or default form_builder
       # Used within an existing form to allow alternate objects within one form
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   fields_for @user.assignment do |assignment| ... end
       #   fields_for :assignment do |assigment| ... end
-      # 
+      #
       def fields_for(object, settings={}, &block)
         builder_class = configured_form_builder_class(settings[:builder])
         fields_html = capture_html(builder_class.new(self, object), &block)
@@ -32,11 +32,11 @@ module Padrino
 
       ##
       # Constructs a form without object based on options
-      # 
+      #
       # ==== Examples
-      #   
+      #
       #   form_tag '/register' do ... end
-      # 
+      #
       def form_tag(url, options={}, &block)
         desired_method = options[:method]
         options.delete(:method) if options[:method].to_s !~ /get|post/i
@@ -51,12 +51,12 @@ module Padrino
       # Returns the hidden method field for 'put' and 'delete' forms
       # Only 'get' and 'post' are allowed within browsers;
       # 'put' and 'delete' are just specified using hidden fields with form action still 'put'.
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   # Generate: <input name="_method" value="delete" />
       #   hidden_form_method_field('delete')
-      # 
+      #
       def hidden_form_method_field(desired_method)
         return '' if desired_method.blank? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
@@ -64,11 +64,11 @@ module Padrino
 
       ##
       # Constructs a field_set to group fields with given options
-      # 
+      #
       # ==== Examples
-      #   
+      #
       #   field_set_tag("Office", :class => 'office-set')
-      # 
+      #
       def field_set_tag(*args, &block)
         options = args.extract_options!
         legend_text = args[0].is_a?(String) ? args.first : nil
@@ -79,7 +79,7 @@ module Padrino
 
       ##
       # Constructs list html for the errors for a given symbol
-      # 
+      #
       # ==== Options
       #
       # :header_tag:: Used for the header of the error div (default: "h2").
@@ -95,11 +95,11 @@ module Padrino
       # :message:: The explanation message after the header message and before
       # the error list.  Pass +nil+ or an empty string to avoid the explanation message
       # altogether. (Default: "There were problems with the following fields:").
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   error_messages_for :user
-      # 
+      #
       def error_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
         objects = objects.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
@@ -145,22 +145,22 @@ module Padrino
       # Returns a string containing the error message attached to the +method+ on the +object+ if one exists.
       #
       # ==== Options
-      # 
+      #
       # :tag::      The tag that enclose your error. (Default 'div')
       # :prepend::  Text to add before error.
       # :append::   Text to add after error.
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   # => <span class="error">can't be blank</div>
       #   error_message_on :post, :title
-      # 
+      #
       #   # => <div class="custom" style="border:1px solid red">can't be blank</div>
       #   error_message_on :post, :title, :tag => :id, :class => :custom, :style => "border:1px solid red"
-      # 
+      #
       #   # => <div class="error">This title can't be blank (or it won't work)</div>
       #   error_message_on :post, :title, :prepend => "This title", :append => "(or it won't work)"
-      # 
+      #
       def error_message_on(object, field, options={})
         object = instance_variable_get("@#{object}")
         error  = object.errors[field] rescue nil
@@ -176,12 +176,12 @@ module Padrino
 
       ##
       # Constructs a label tag from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   label_tag :username, :class => 'long-label'
       #   label_tag :username, :class => 'long-label' do ... end
-      # 
+      #
       def label_tag(name, options={}, &block)
         options.reverse_merge!(:caption => "#{name.to_s.titleize}: ", :for => name)
         caption_text = options.delete(:caption)
@@ -196,11 +196,11 @@ module Padrino
 
       ##
       # Constructs a hidden field input from the given options
-      # 
+      #
       # ==== Examples
-      #   
+      #
       #   hidden_field_tag :session_key, :value => "__secret__"
-      # 
+      #
       def hidden_field_tag(name, options={})
         options.reverse_merge!(:name => name)
         input_tag(:hidden, options)
@@ -208,11 +208,11 @@ module Padrino
 
       ##
       # Constructs a text field input from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   text_field_tag :username, :class => 'long'
-      # 
+      #
       def text_field_tag(name, options={})
         options.reverse_merge!(:name => name)
         input_tag(:text, options)
@@ -220,11 +220,11 @@ module Padrino
 
       ##
       # Constructs a text area input from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
-      # 
+      #
       def text_area_tag(name, options={})
         options.reverse_merge!(:name => name)
         content_tag(:textarea, options.delete(:value).to_s, options)
@@ -232,11 +232,11 @@ module Padrino
 
       ##
       # Constructs a password field input from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   password_field_tag :password, :class => 'long'
-      # 
+      #
       def password_field_tag(name, options={})
         options.reverse_merge!(:name => name)
         input_tag(:password, options)
@@ -244,14 +244,14 @@ module Padrino
 
       ##
       # Constructs a check_box from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   options = [['caption', 'value'], ['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
       #   options = ['option', 'red', 'yellow' ]
       #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
       #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
-      # 
+      #
       def select_tag(name, options={})
         options.reverse_merge!(:name => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
@@ -265,11 +265,11 @@ module Padrino
 
       ##
       # Constructs a check_box from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   check_box_tag :remember_me, :value => 'Yes'
-      # 
+      #
       def check_box_tag(name, options={})
         options.reverse_merge!(:name => name, :value => '1')
         input_tag(:checkbox, options)
@@ -277,11 +277,11 @@ module Padrino
 
       ##
       # Constructs a radio_button from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   radio_button_tag :remember_me, :value => 'true'
-      # 
+      #
       def radio_button_tag(name, options={})
         options.reverse_merge!(:name => name)
         input_tag(:radio, options)
@@ -289,11 +289,11 @@ module Padrino
 
       ##
       # Constructs a file field input from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   file_field_tag :photo, :class => 'long'
-      # 
+      #
       def file_field_tag(name, options={})
         options.reverse_merge!(:name => name)
         input_tag(:file, options)
@@ -301,11 +301,11 @@ module Padrino
 
       ##
       # Constructs a submit button from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   submit_tag "Create", :class => 'success'
-      # 
+      #
       def submit_tag(caption="Submit", options={})
         options.reverse_merge!(:value => caption)
         input_tag(:submit, options)
@@ -313,22 +313,22 @@ module Padrino
 
       ##
       # Constructs a button input from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   button_tag "Cancel", :class => 'clear'
-      # 
+      #
       def button_tag(caption, options = {})
         options.reverse_merge!(:value => caption)
         input_tag(:button, options)
       end
 
       # Constructs a submit button from the given options
-      # 
+      #
       # ==== Examples
-      # 
+      #
       #   submit_tag "Create", :class => 'success'
-      # 
+      #
       def image_submit_tag(source, options={})
         options.reverse_merge!(:src => image_path(source))
         input_tag(:image, options)
@@ -337,14 +337,14 @@ module Padrino
       ##
       # Returns an array of option items for a select field based on the given collection
       # fields is an array containing the fields to display from each item in the collection
-      # 
+      #
       def options_from_collection(collection, fields)
         collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
       end
 
       #
       # Returns the options tags for a select based on the given option items
-      # 
+      #
       def options_for_select(option_items, selected_value=nil)
         return '' if option_items.blank?
         option_items.collect do |caption, value|
@@ -357,9 +357,9 @@ module Padrino
         ##
         # Returns the FormBuilder class to use based on all available setting sources
         # If explicitly defined, returns that, otherwise returns defaults.
-        # 
+        #
         #   configured_form_builder_class(nil) => StandardFormBuilder
-        # 
+        #
         def configured_form_builder_class(explicit_builder=nil)
           default_builder    = self.respond_to?(:options) && self.options.default_builder
           configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'

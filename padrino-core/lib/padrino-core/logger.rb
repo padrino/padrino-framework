@@ -5,24 +5,24 @@ module Padrino
 
   ##
   # Returns the padrino logger
-  # 
+  #
   # ==== Examples
-  # 
+  #
   #   logger.debug "foo"
   #   logger.warn "bar"
-  # 
+  #
   def self.logger
     Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
   end
 
   ##
   # Extensions to the built in Ruby logger.
-  # 
+  #
   # ==== Examples
-  # 
+  #
   #   logger.debug "foo"
   #   logger.warn  "bar"
-  # 
+  #
   class Logger
 
     attr_accessor :level
@@ -33,13 +33,13 @@ module Padrino
 
     ##
     # Ruby (standard) logger levels:
-    # 
+    #
     # :fatal:: An unhandleable error that results in a program crash
     # :error:: A handleable error condition
     # :warn:: A warning
     # :info:: generic (useful) information about system operation
     # :debug:: low-level information for developers
-    # 
+    #
     Levels = {
       :fatal => 7,
       :error => 6,
@@ -52,7 +52,7 @@ module Padrino
 
     ##
     # Configuration for a given environment, possible options are:
-    # 
+    #
     # :log_level:: Once of [:fatal, :error, :warn, :info, :debug]
     # :stream:: Once of [:to_file, :null, :stdout, :stderr] our your custom stream
     # :log_level::
@@ -63,21 +63,21 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
-    # 
+    #
     # ==== Examples
-    # 
+    #
     #   Padrino::Logger::Config[:development] = { :log_level => :debug, :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
     #   # or you can use your stream
     #   Padrino::Logger::Config[:development][:stream] = StringIO.new
-    # 
+    #
     # Defaults are:
-    # 
+    #
     #   :production  => { :log_level => :warn, :stream => :to_file }
     #   :development => { :log_level => :debug, :stream => :stdout }
     #   :test        => { :log_level => :fatal, :stream => :null }
-    # 
+    #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
@@ -86,7 +86,7 @@ module Padrino
 
     ##
     # Setup a new logger
-    # 
+    #
     def self.setup!
       config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
       config = Config[config_level]
@@ -108,7 +108,7 @@ module Padrino
     # To initialize the logger you create a new object, proxies to set_log.
     #
     # ==== Options
-    # 
+    #
     # :stream:: Either an IO object or a name of a logfile. Defaults to $stdout
     # :log_level::
     #   The log level from, e.g. :fatal or :info. Defaults to :debug in the
@@ -118,7 +118,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
-    # 
+    #
     def initialize(options={})
       @buffer            = []
       @auto_flush        = options.has_key?(:auto_flush) ? options[:auto_flush] : true
@@ -132,7 +132,7 @@ module Padrino
 
     ##
     # Flush the entire buffer to the log object.
-    # 
+    #
     def flush
       return unless @buffer.size > 0
       @mutex.synchronize do
@@ -142,7 +142,7 @@ module Padrino
 
     ##
     # Close and remove the current log object.
-    # 
+    #
     def close
       flush
       @log.close if @log.respond_to?(:close) && !@log.tty?
@@ -159,7 +159,7 @@ module Padrino
 
     ##
     # Directly append message to the log.
-    # 
+    #
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
       @buffer << message
@@ -169,7 +169,7 @@ module Padrino
 
     ##
     # Generate the logging methods for Padrino.logger for each log level.
-    # 
+    #
     Levels.each_pair do |name, number|
       class_eval <<-LEVELMETHODS, __FILE__, __LINE__
 
@@ -219,13 +219,13 @@ module Padrino
     # Padrino::Loggger::Rack forwards every request to an +app+ given, and
     # logs a line in the Apache common log format to the +logger+, or
     # rack.errors by default.
-    # 
+    #
     class Rack
       ##
       # Common Log Format: http://httpd.apache.org/docs/1.3/logs.html#common
       # "lilith.local - - GET / HTTP/1.1 500 -"
       #  %{%s - %s %s %s%s %s - %d %s %0.4f}
-      # 
+      #
       FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
 
       def initialize(app)
@@ -271,7 +271,7 @@ end # Padrino
 module Kernel #:nodoc:
   ##
   # Define a logger available every where in our app
-  # 
+  #
   def logger
     Padrino.logger
   end

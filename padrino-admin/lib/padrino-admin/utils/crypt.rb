@@ -3,9 +3,11 @@ require 'openssl'
 module Padrino
   module Admin
     module Utils
+      ##
       # This util it's used for encrypt/decrypt password.
       # We want password decryptable because generally for our sites we have: password_lost.
       # We prefer send original password instead reset them.
+      #
       module Crypt
         # Decrypts the current string using the current key and algorithm specified
         def decrypt(password)

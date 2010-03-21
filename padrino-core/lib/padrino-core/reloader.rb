@@ -36,7 +36,7 @@ module Padrino
     ##
     # You can exclude some folders from reload its contents.
     # Defaults excluded directories of Padrino.root are: test, spec, features, tmp, config, lib, db and public
-    # 
+    #
     def self.exclude
       @_exclude ||= %w(test spec tmp features config lib public db).map { |path| Padrino.root(path) }
     end
@@ -48,7 +48,7 @@ module Padrino
     #
     # Please note that this will not reload files in the background, it does so
     # only when actively called.
-    # 
+    #
     module Stat
       class << self
         CACHE  = {}
@@ -72,7 +72,7 @@ module Padrino
 
         ##
         # A safe Kernel::load, issuing the hooks depending on the results
-        # 
+        #
         def safe_load(file, mtime)
           logger.debug "Reloading #{file}"
           load(file)
@@ -85,7 +85,7 @@ module Padrino
 
         ##
         # Search Ruby files in your +Padrino.root+ and monitor them for changes.
-        # 
+        #
         def rotation
           paths = Dir[Padrino.root("*")].reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
           files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
@@ -104,7 +104,7 @@ module Padrino
         # Takes a relative or absolute +file+ name, a couple possible +paths+ that
         # the +file+ might reside in. Returns the full path and File::Stat for the
         # path.
-        # 
+        #
         def figure_path(file, paths)
           found = CACHE[file]
           found = file if !found and Pathname.new(file).absolute?

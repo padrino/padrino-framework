@@ -8,7 +8,7 @@ module Padrino
     module AccessControl
       ##
       # Method used by Padrino::Application when we register the extension
-      # 
+      #
       def self.registered(app)
         app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
         app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
@@ -38,7 +38,7 @@ module Padrino
         end
         ##
         # We map project modules for a given role or roles
-        # 
+        #
         def roles_for(*roles, &block)
           raise Padrino::Admin::AccessControlError, "You must define an Account Model!" unless defined?(Account)
           raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
@@ -50,14 +50,14 @@ module Padrino
 
         ##
         # Return an array of roles
-        # 
+        #
         def roles
           @roles.uniq.reject { |r| r == :any }
         end
 
         ##
         # Return an array of project_modules
-        # 
+        #
         def project_modules(account)
           role = account.role.to_sym rescue :any
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
@@ -66,7 +66,7 @@ module Padrino
 
         ##
         # Return true if the given account is allowed to see the given path.
-        # 
+        #
         def allowed?(account=nil, path=nil)
           path = "/" if path.blank?
           role = account.role.to_sym rescue nil
@@ -100,21 +100,21 @@ module Padrino
 
         ##
         # Allow a specified path
-        # 
+        #
         def allow(path)
           @allowed << path unless @allowed.include?(path)
         end
 
         ##
         # Protect access from
-        # 
+        #
         def protect(path)
           @denied << path unless @denied.include?(path)
         end
 
         ##
         # Create a project module
-        # 
+        #
         def project_module(name, path)
           allow(path)
           @project_modules << ProjectModule.new(name, path)
@@ -123,7 +123,7 @@ module Padrino
 
       ##
       # Project Module class
-      # 
+      #
       class ProjectModule
         attr_reader :name
 
@@ -133,21 +133,21 @@ module Padrino
 
         ##
         # Returns the name of the project module. If a symbol it translate/humanize them for you.
-        # 
+        #
         def human_name
           @name.is_a?(Symbol) ? I18n.t("padrino.admin.menu.#{@name}", :default => @name.to_s.humanize) : @name
         end
 
         ##
         # Return the path of the project module. If a prefix given will be prepended.
-        # 
+        #
         # ==== Examples
-        # 
+        #
         #   # => /accounts/new
         #   project_module.path
         #   # => /admin/accounts
         #   project_module.path("/admin")
-        # 
+        #
         def path(prefix=nil)
           prefix ? File.join(prefix, @path) : @path
         end

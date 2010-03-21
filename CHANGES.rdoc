@@ -19,7 +19,7 @@
 
 * Fixed an issue in controller generator when using --app=app_name
 * Added mm:transate task for easily translate models
-* Updated favicon_tag to search inside images folder 
+* Updated favicon_tag to search inside images folder
 * Fixes an issue with rendering with layout false now you can use: render 'path/to/template', :layout => false
 * Small helpers refactoring
 * Fixed mailer initializer issue. Cleaned up options in delivery.rb
@@ -46,13 +46,13 @@
 
 == 0.9.4
 
-* Improved select_tag helper, now accept :include_blank => 'My text' 
+* Improved select_tag helper, now accept :include_blank => 'My text'
 * Re-require 'tilt' since not all of us use sinatra --pre
 * Fixed a strange api change of bundler (see: http://github.com/carlhuda/bundler/issues/closed#issue/160)
 * Removed Bundler 0.9.7 dependency and allow all versions > 0.9.7.
 * Fixed Padrino Mailer views_path when we use a "multi app" project
 * Fixed content_type in Padrino Mailer
-* Added a spec option -fs 
+* Added a spec option -fs
 * Removed rspec.opts and use it directly in rake task.
 
 == 0.9.3
@@ -65,7 +65,7 @@
 * Added +highlight+ helper
 * Cleaned up (truncated) README files for Padrino gems
 * Added template agnosticism (erb/haml) in admin generator
-* Added +mootools+ as a javascript option in project generator 
+* Added +mootools+ as a javascript option in project generator
 * Added +cucumber+ as a test option in project generator
 * Added +Mongoid+ as adapter in admin generator
 * Added +Mongoid+ as an orm option in project generator
@@ -78,9 +78,9 @@
 == 0.9.1
 
 * New Padrino Admin with static theme based on web-app-theme
-* Fix routing module to work for sinatra standalone 
-* Fix rendering module to work for sinatra standalone 
-* Added +favicon_tag+ helper 
+* Fix routing module to work for sinatra standalone
+* Fix rendering module to work for sinatra standalone
+* Added +favicon_tag+ helper
 * Refactored Internals of +Padrino+::+Application+
 * Added I18n helpers +t+ and +l+
 * Added a new helper +error_message_on+

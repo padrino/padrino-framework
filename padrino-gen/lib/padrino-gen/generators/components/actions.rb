@@ -70,11 +70,11 @@ module Padrino
         # For the removal of migration files
         # removes the migration file based on the migration name
         def remove_migration(name)
-          migration_path =  Dir[destination_root('db/migrate/*.rb')].find do |f| 
+          migration_path =  Dir[destination_root('db/migrate/*.rb')].find do |f|
             File.basename(f) =~ /#{name.to_s.underscore}/
           end
           return unless migration_path
-          if behavior == :revoke 
+          if behavior == :revoke
             create_file migration_path # we use create to reverse the operation of a revoke
           end
         end

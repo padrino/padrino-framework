@@ -6,7 +6,7 @@ if defined?(DataMapper)
         ::DataMapper.auto_migrate!
         puts "<= dm:auto:migrate executed"
       end
-      
+
       desc "Perform non destructive automigration"
       task :upgrade => :environment do
         ::DataMapper.auto_upgrade!
