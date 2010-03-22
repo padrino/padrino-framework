@@ -238,8 +238,9 @@ module Padrino
         #
         def asset_timestamp(file_path)
           return nil if file_path =~ /\?/
-          public_path = Padrino.respond_to?(:root) ? Padrino.root("public", file_path) : '/public'
-          stamp = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
+          public_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
+          stamp = Time.now.to_i unless public_path && File.exist?(public_path)
+          stamp ||= File.mtime(public_path).to_i
           "?#{stamp}"
         end
 
