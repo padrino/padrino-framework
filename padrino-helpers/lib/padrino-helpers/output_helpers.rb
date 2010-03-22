@@ -132,11 +132,11 @@ module Padrino
           # can't take an <% end %> later on, so we have to use <% ... %>
           # and implicitly concat.
           def block_is_erb?(block)
-            has_erb_buffer? || block && eval('defined? __in_erb_template', block)
+            has_erb_buffer? || (block && eval('defined? __in_erb_template', block))
           end
         else
           def block_is_erb?(block)
-            has_erb_buffer? || block && eval('defined? __in_erb_template', block.binding)
+            has_erb_buffer? || (block && eval('defined? __in_erb_template', block.binding))
           end
         end
 
