@@ -127,6 +127,22 @@ module Padrino
       end
 
       ##
+      # Generates a favicon link. looks inside images folder
+      #
+      # ==== Examples
+      #
+      #   favicon_tag 'favicon.png'
+      #   favicon_tag 'icons/favicon.png'
+      #   # or override some options
+      #   favicon_tag 'favicon.png', :type => 'image/ico'
+      #
+      def favicon_tag(source,options={})
+        type = File.extname(source).gsub('.','')
+        options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
+        tag(:link, options)
+      end
+
+      ##
       # Creates an image element with given url and options
       #
       # ==== Examples
@@ -149,7 +165,10 @@ module Padrino
       #
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.symbolize_keys
-        sources.collect { |sheet| stylesheet_tag(sheet, options) }.join("\n")
+        options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
+        sources.collect { |source|
+          tag(:link, options.reverse_merge(:href => asset_path(:css, source)))
+        }.join("\n")
       end
 
       ##
@@ -163,7 +182,10 @@ module Padrino
       #
       def javascript_include_tag(*sources)
         options = sources.extract_options!.symbolize_keys
-        sources.collect { |script| javascript_tag(script, options) }.join("\n")
+        options.reverse_merge!(:type => 'text/javascript', :content => "")
+        sources.collect { |source|
+          tag(:script, options.reverse_merge(:src => asset_path(:js, source)))
+        }.join("\n")
       end
 
       ##
@@ -180,91 +202,45 @@ module Padrino
       end
 
       ##
-      # Generate a +link+ tag for stylesheet.
+      # Returns the path to the specified asset (css or javascript)
       #
       # ==== Examples
       #
-      #   stylesheet_tag('style', :media => 'screen')
-      #
-      def stylesheet_tag(source, options={})
-        options = options.dup.reverse_merge!(:href => stylesheet_path(source), :media => 'screen', :rel => 'stylesheet', :type => 'text/css')
-        tag(:link, options)
-      end
-      ##
-      # Generate a link +script+ for javascript.
-      #
-      # ==== Examples
-      #
-      #   javascript_tag 'application', :src => '/javascripts/base/application.js'
-      #
-      def javascript_tag(source, options={})
-        options = options.dup.reverse_merge!(:src => javascript_path(source), :type => 'text/javascript', :content => "")
-        tag(:script, options)
-      end
-
-      ##
-      # Returns the javascript_path appending the default javascripts path if necessary
-      #
-      # ==== Examples
-      #
-      #   # Generates: /javascripts/jquery.js?1269008689
-      #   javascript_path :jquery
-      #
-      def javascript_path(source)
-        return source if source =~ /^http/
-        source        = source.to_s.gsub(/\.js$/, '')
-        source_name   = source; source_name << ".js" unless source =~ /\.js/
-        result_path   = source_name if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("javascripts", source_name)
-        return result_path if result_path =~ /\?/
-        public_path = Padrino.root("public", result_path)
-        stamp = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
-        "#{result_path}?#{stamp}"
-      end
-
-      ##
-      # Returns the stylesheet_path appending the default stylesheets path if necessary
-      #
-      # ==== Examples
+      #   # Generates: /javascripts/application.js?1269008689
+      #   asset_path :js, :application
       #
       #   # Generates: /stylesheets/application.css?1269008689
-      #   stylesheet_path :application
+      #   asset_path :css, :application
       #
-      def stylesheet_path(source)
+      def asset_path(kind, source)
         return source if source =~ /^http/
-        source        = source.to_s.gsub(/\.css$/, '')
-        source_name   = source; source_name << ".css" unless source =~ /\.css/
+        asset_folder = (kind == :css) ? 'stylesheets' : 'javascripts'
+        source        = source.to_s.gsub(/\.#{kind}$/, '')
+        source_name   = source; source_name << ".#{kind}" unless source =~ /\.#{kind}/
         result_path   = source_name if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path("stylesheets", source_name)
-        return result_path if result_path =~ /\?/
-        public_path   = Padrino.root("public", result_path)
-        stamp         = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
-        "#{result_path}?#{stamp}"
-      end
-
-      ##
-      # Generates a favicon link. looks inside images folder
-      #
-      # ==== Examples
-      #
-      #   favicon_tag 'favicon.png'
-      #   favicon_tag 'icons/favicon.png'
-      #   # or override some options
-      #   favicon_tag 'favicon.png', :type => 'image/ico'
-      #
-      def favicon_tag(source,options={})
-        type = File.extname(source).gsub('.','')
-        options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
-        tag(:link, options)
+        result_path ||= uri_root_path(asset_folder, source_name)
+        timestamp = asset_timestamp(result_path)
+        "#{result_path}#{timestamp}"
       end
 
       private
+
         ##
-        # Returns the uri root of the application.'
+        # Returns the uri root of the application.
         #
         def uri_root_path(*paths)
           root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
           File.join(root_uri || '/', *paths)
+        end
+
+        ##
+        # Returns the timestamp mtime for an asset
+        #
+        def asset_timestamp(file_path)
+          return nil if file_path =~ /\?/
+          public_path = Padrino.respond_to?(:root) ? Padrino.root("public", file_path) : '/public'
+          stamp = File.exist?(public_path) ? File.mtime(public_path).to_i : Time.now.to_i
+          "?#{stamp}"
         end
 
         ##
