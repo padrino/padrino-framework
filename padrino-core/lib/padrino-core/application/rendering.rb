@@ -36,6 +36,7 @@ module Padrino
       # * Use render 'path/to/my/template' (without symbols)
       # * Use render 'path/to/my/template' (with auto enegine lookup)
       # * Use render 'path/to/template', :layout => false
+      # * Use render 'path/to/template', :layout => false, :engine => 'haml'
       # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
       #
       def render(engine, data=nil, options={}, locals={}, &block)
@@ -74,19 +75,22 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
-        template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
-        templates = Dir[File.join(view_path, template_path) + ".*"].
-                      map { |f| [f.sub(view_path, '').chomp(File.extname(f)).to_sym, File.extname(f)[1..-1].to_sym] }
+        template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
+        templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
+          template_file =  file.sub(view_path, '').chomp(File.extname(file)).to_sym # retrieves relative file path
+          template_engine = options[:engine] || File.extname(file)[1..-1].to_sym    # retrieves engine extension
+          [template_file, template_engine]
+        end
 
-        template =
-          templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
-          templates.find { |t| defined?(I18n) && t[0].to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
-          templates.find { |t| t[0].to_s == "#{template_path}.#{content_type}" } ||
-          templates.find { |t| t[0].to_s == "#{template_path}" && content_type == :html }
+        located_template =
+          templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
+          templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
+          templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
+          templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html }
 
-        raise "Template path '#{template_path}' could not be located in views!" unless template
-        template
+        raise "Template path '#{template_path}' could not be located and rendered!" unless located_template
+        located_template
       end
 
       ##
