@@ -2,6 +2,7 @@
 
 == 0.9.7 (unreleased)
 
+* Fixed TestTask
 * Fixed admin generator since not all ruby versions respond to "lines"
 * Fixed an issue in Sinatra::ShowExceptions since Bundler changes the Gem.dir
 * Removed from Sinatra::ShowExceptions and clean_backtrace padrino code
