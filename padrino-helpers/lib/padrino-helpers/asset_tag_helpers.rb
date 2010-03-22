@@ -195,7 +195,7 @@ module Padrino
       #
       # ==== Examples
       #
-      #   # Generates: /images/foo.jpg
+      #   # Generates: /images/foo.jpg?1269008689
       #   image_path("foo.jpg")
       #
       def image_path(src)
