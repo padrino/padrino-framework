@@ -2,12 +2,12 @@
 
 == 0.9.7 (unreleased)
 
-* Fixed an issue in Sinatra::ShowExceptions since Bundler change Gem.dir
+* Fixed an issue in Sinatra::ShowExceptions since Bundler changes the Gem.dir
 * Removed from Sinatra::ShowExceptions and clean_backtrace padrino code
 * Added layout finder with format and locale
 * Improved template finder (with format and locale)
 * Fixed a bug that duplicates admin menus during app reloading
-* Added feed_tag helper
+* Added feed_tag helper for rss / atom auto discovery
 * Removed Mailer Initializer from app.rb.tt and added it to the mailer generator
 * Removed duplicate app folder in project skeleton
 * Couchrest generator now include in Gemfile json_pure
@@ -15,6 +15,7 @@
 * Fixed a small typo error in app template
 * Fixes issue with formatted routes for an index
 * Fixed an issue with Riot and RR in generator
+* Cleaned up the implementation for asset include helpers for javascript and css
 * Added stylesheet generator. Decouples from sass from haml generation. Includes sass and less ( via rack-less)
 
 == 0.9.6
