@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) + '/../tasks'
 require 'rake'
-
 Rake.application.instance_variable_set(:@rakefile, __FILE__)
 
 module PadrinoTasks

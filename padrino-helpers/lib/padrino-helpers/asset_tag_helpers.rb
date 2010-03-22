@@ -118,6 +118,7 @@ module Padrino
       #
       #   # Generates: <meta name="keywords" content="weblog,news">
       #   meta_tag "weblog,news", :name => "keywords"
+      #
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       #   meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"
       #
@@ -194,7 +195,8 @@ module Padrino
       #
       # ==== Examples
       #
-      #   image_path("foo.jpg") => "yourapp/public/images/foo.jpg"
+      #   # Generates: /images/foo.jpg
+      #   image_path("foo.jpg")
       #
       def image_path(src)
         asset_path(:images, src)
