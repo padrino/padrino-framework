@@ -445,26 +445,30 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   context 'for #image_submit method' do
+    setup do
+      @stamp = stop_time_for_test.to_i
+    end
+
     should "display correct image submit button html with no options" do
       actual_html = standard_builder.image_submit('buttons/ok.png')
-      assert_has_tag('input[type=image]', :src => "/images/buttons/ok.png") { actual_html }
+      assert_has_tag('input[type=image]', :src => "/images/buttons/ok.png?#{@stamp}") { actual_html }
     end
 
     should "display correct image submit button html" do
       actual_html = standard_builder.image_submit('/system/ok.png', :class => 'large')
-      assert_has_tag('input.large[type=image]', :src => "/system/ok.png") { actual_html }
+      assert_has_tag('input.large[type=image]', :src => "/system/ok.png?#{@stamp}") { actual_html }
     end
 
     should "display correct image submit button in haml" do
       visit '/haml/form_for'
-      assert_have_selector '#demo input', :type => 'image', :id => 'image-button', :src => '/images/buttons/post.png'
-      assert_have_selector '#demo2 input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png"
+      assert_have_selector '#demo input', :type => 'image', :id => 'image-button', :src => "/images/buttons/post.png?#{@stamp}"
+      assert_have_selector '#demo2 input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png?#{@stamp}"
     end
 
     should "display correct image submit button in erb" do
       visit '/erb/form_for'
-      assert_have_selector '#demo input', :type => 'image', :id => 'image-button', :src => '/images/buttons/post.png'
-      assert_have_selector '#demo2 input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png"
+      assert_have_selector '#demo input', :type => 'image', :id => 'image-button', :src => "/images/buttons/post.png?#{@stamp}"
+      assert_have_selector '#demo2 input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png?#{@stamp}"
     end
   end
 
@@ -614,19 +618,23 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   context 'for #image_submit_block method' do
+    setup do
+      @stamp = stop_time_for_test.to_i
+    end
+
     should "display correct image submit block html" do
       actual_html = standard_builder.image_submit_block("buttons/ok.png", :class => 'large')
-      assert_has_tag('p input.large[type=image]', :src => '/images/buttons/ok.png') { actual_html }
+      assert_has_tag('p input.large[type=image]', :src => "/images/buttons/ok.png?#{@stamp}") { actual_html }
     end
 
     should "display correct image submit block in haml" do
       visit '/haml/form_for'
-      assert_have_selector '#demo2 p input', :type => 'image', :class => 'image', :src => '/images/buttons/ok.png'
+      assert_have_selector '#demo2 p input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png?#{@stamp}"
     end
 
     should "display correct image submit block in erb" do
       visit '/erb/form_for'
-      assert_have_selector '#demo2 p input', :type => 'image', :class => 'image', :src => '/images/buttons/ok.png'
+      assert_have_selector '#demo2 p input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png?#{@stamp}"
     end
   end
 end

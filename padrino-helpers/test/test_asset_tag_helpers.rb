@@ -109,20 +109,27 @@ class TestAssetTagHelpers < Test::Unit::TestCase
 
   context 'for #image_tag method' do
     should "display image tag absolute link with no options" do
-      assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
+      time = stop_time_for_test
+      assert_has_tag('img', :src => "/absolute/pic.gif?#{time.to_i}") { image_tag('/absolute/pic.gif') }
     end
     should "display image tag absolute link with specified uri root" do
+      time = stop_time_for_test
       self.class.stubs(:uri_root).returns("/blog")
-      assert_has_tag('img', :src => "/blog/images/relative/pic.gif") { image_tag('relative/pic.gif') }
+      assert_has_tag('img', :src => "/blog/images/relative/pic.gif?#{time.to_i}") { image_tag('relative/pic.gif') }
     end
     should "display image tag relative link with options" do
-      assert_has_tag('img.photo', :src => "/images/relative/pic.gif") { image_tag('relative/pic.gif', :class => 'photo') }
+      time = stop_time_for_test
+      assert_has_tag('img.photo', :src => "/images/relative/pic.gif?#{time.to_i}") { 
+        image_tag('relative/pic.gif', :class => 'photo') }
     end
     should "display image tag uri link with options" do
+      time = stop_time_for_test
       assert_has_tag('img.photo', :src => "http://demo.org/pic.gif") { image_tag('http://demo.org/pic.gif', :class => 'photo') }
     end
     should "display image tag relative link with incorrect spacing" do
-      assert_has_tag('img.photo', :src => "/images/relative/pic.gif") { image_tag(' relative/ pic.gif  ', :class => 'photo') }
+      time = stop_time_for_test
+      assert_has_tag('img.photo', :src => "/images/relative/pic.gif?#{time.to_i}") { 
+        image_tag(' relative/ pic.gif  ', :class => 'photo') }
     end
   end
 
@@ -207,17 +214,17 @@ class TestAssetTagHelpers < Test::Unit::TestCase
     should "display favicon" do
       time = stop_time_for_test
       actual_html = favicon_tag('icons/favicon.png')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/png', :href => '/images/icons/favicon.png') { actual_html }
+      assert_has_tag('link', :rel => 'icon', :type => 'image/png', :href => "/images/icons/favicon.png?#{time.to_i}") { actual_html }
     end
     should "match type with file ext" do
       time = stop_time_for_test
       actual_html = favicon_tag('favicon.ico')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => '/images/favicon.ico') { actual_html }
+      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => "/images/favicon.ico?#{time.to_i}") { actual_html }
     end
     should "allow option overrides" do
       time = stop_time_for_test
       actual_html = favicon_tag('favicon.png', :type => 'image/ico')
-      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => '/images/favicon.png') { actual_html }
+      assert_has_tag('link', :rel => 'icon', :type => 'image/ico', :href => "/images/favicon.png?#{time.to_i}") { actual_html }
     end
   end
 

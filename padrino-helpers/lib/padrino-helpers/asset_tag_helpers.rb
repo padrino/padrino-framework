@@ -197,8 +197,7 @@ module Padrino
       #   image_path("foo.jpg") => "yourapp/public/images/foo.jpg"
       #
       def image_path(src)
-        src.gsub!(/\s/, '')
-        src =~ %r{^\s*(/|http)} ? src : uri_root_path('images', src)
+        asset_path(:images, src)
       end
 
       ##
@@ -212,13 +211,21 @@ module Padrino
       #   # Generates: /stylesheets/application.css?1269008689
       #   asset_path :css, :application
       #
+      #   # Generates: /images/example.jpg?1269008689
+      #   asset_path :images, 'example.jpg'
+      #
       def asset_path(kind, source)
         return source if source =~ /^http/
-        asset_folder = (kind == :css) ? 'stylesheets' : 'javascripts'
-        source        = source.to_s.gsub(/\.#{kind}$/, '')
-        source_name   = source; source_name << ".#{kind}" unless source =~ /\.#{kind}/
-        result_path   = source_name if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path(asset_folder, source_name)
+        asset_folder  = case kind
+          when :css then 'stylesheets'
+          when :js  then 'javascripts'
+          else kind.to_s
+        end
+        source = source.to_s.gsub(/\s/, '')
+        ignore_extension = (asset_folder.to_s == kind.to_s) # don't append extension
+        source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
+        result_path   = source if source =~ %r{^/} # absolute path
+        result_path ||= uri_root_path(asset_folder, source)
         timestamp = asset_timestamp(result_path)
         "#{result_path}#{timestamp}"
       end

@@ -390,24 +390,28 @@ class TestFormHelpers < Test::Unit::TestCase
   end
 
   context 'for #image_submit_tag method' do
+    setup do
+      @stamp = stop_time_for_test.to_i
+    end
+
     should "display image submit tag in ruby with relative path" do
       actual_html = image_submit_tag('buttons/ok.png', :class => 'success')
-      assert_has_tag(:input, :type => 'image', :class => "success", :src => '/images/buttons/ok.png') { actual_html }
+      assert_has_tag(:input, :type => 'image', :class => "success", :src => "/images/buttons/ok.png?#{@stamp}") { actual_html }
     end
 
     should "display image submit tag in ruby with absolute path" do
       actual_html = image_submit_tag('/system/ok.png', :class => 'success')
-      assert_has_tag(:input, :type => 'image', :class => "success", :src => '/system/ok.png') { actual_html }
+      assert_has_tag(:input, :type => 'image', :class => "success", :src => "/system/ok.png?#{@stamp}") { actual_html }
     end
 
     should "display image submit tag in erb" do
       visit '/erb/form_tag'
-      assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png"
+      assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
     end
 
     should "display image submit tag in haml" do
       visit '/haml/form_tag'
-      assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png"
+      assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
     end
   end
 
