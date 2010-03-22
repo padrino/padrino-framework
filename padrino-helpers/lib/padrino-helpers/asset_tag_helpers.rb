@@ -118,6 +118,7 @@ module Padrino
       #
       #   # Generates: <meta name="keywords" content="weblog,news">
       #   meta_tag "weblog,news", :name => "keywords"
+      #
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       #   meta_tag "text/html; charset=UTF-8", :http-equiv => "Content-Type"
       #
@@ -194,7 +195,8 @@ module Padrino
       #
       # ==== Examples
       #
-      #   image_path("foo.jpg") => "yourapp/public/images/foo.jpg"
+      #   # Generates: /images/foo.jpg
+      #   image_path("foo.jpg")
       #
       def image_path(src)
         src.gsub!(/\s/, '')
@@ -214,7 +216,7 @@ module Padrino
       #
       def asset_path(kind, source)
         return source if source =~ /^http/
-        asset_folder = (kind == :css) ? 'stylesheets' : 'javascripts'
+        asset_folder  = (kind == :css) ? 'stylesheets' : 'javascripts'
         source        = source.to_s.gsub(/\.#{kind}$/, '')
         source_name   = source; source_name << ".#{kind}" unless source =~ /\.#{kind}/
         result_path   = source_name if source =~ %r{^/} # absolute path
