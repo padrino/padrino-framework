@@ -172,7 +172,7 @@ class TestApplication < Test::Unit::TestCase
       end
     end
 
-    should 'reslove template content type' do
+    should 'resolve template content type' do
       create_view :foo, "Im Js", :format => :js
       create_view :foo, "Im Erb"
       mock_app do
@@ -186,7 +186,7 @@ class TestApplication < Test::Unit::TestCase
       remove_views
     end
 
-    should 'reslove template locale' do
+    should 'resolve template locale' do
       create_view :foo, "Im English", :locale => :en
       create_view :foo, "Im Italian", :locale => :it
       mock_app do
