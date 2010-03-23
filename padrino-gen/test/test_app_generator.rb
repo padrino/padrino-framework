@@ -28,6 +28,7 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/demo/controllers')
       assert_file_exists('/tmp/sample_project/demo/helpers')
       assert_file_exists('/tmp/sample_project/demo/views')
+      assert_file_exists('/tmp/sample_project/demo/views/layouts')
       assert_match_in_file 'Padrino.mount("Demo").to("/demo")', '/tmp/sample_project/config/apps.rb'
       assert_match_in_file 'class Demo < Padrino::Application', '/tmp/sample_project/demo/app.rb'
     end

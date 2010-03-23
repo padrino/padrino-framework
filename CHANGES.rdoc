@@ -2,6 +2,8 @@
 
 == 0.9.8 (unreleased)
 
+* added layouts folder back into application skeleton
+
 == 0.9.7
 
 * Fixed a problem with folders called "sinatra" and PADRINO_IGNORE_CALLERS
