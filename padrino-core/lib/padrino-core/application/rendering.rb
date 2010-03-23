@@ -30,42 +30,57 @@ module Padrino
 
     private
       ##
-      # Hijacking the sinatra render for:
+      # Enhancing Sinatra render functionality for:
       #
-      # * Use layout like rails do
-      # * Use render 'path/to/my/template' (without symbols)
-      # * Use render 'path/to/my/template' (with auto enegine lookup)
+      # * Using layout similar to rails
+      # * Use render 'path/to/my/template'   (without symbols)
+      # * Use render 'path/to/my/template'   (with engine lookup)
+      # * Use render 'path/to/template.haml' (with explicit engine lookup)
       # * Use render 'path/to/template', :layout => false
       # * Use render 'path/to/template', :layout => false, :engine => 'haml'
       # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
       #
       def render(engine, data=nil, options={}, locals={}, &block)
+        # Clear template view cache in development mode
         clear_template_cache!
 
-        # If engine is an hash we convert to json
+        # If engine is a hash then render data converted to json
         return engine.to_json if engine.is_a?(Hash)
 
-        # Data can be a hash of options sometimes mistakenly
+        # Data can actually be a hash of options in certain cases
         options.merge!(data) && data = nil if data.is_a?(Hash)
 
-        # If an engine is a string probably is a path so we try to resolve them
+        # If an engine is a string then this is a likely a path to be resolved
         data, engine = *resolve_template(engine, options) if data.nil?
 
-        # We need for Sinatra 1.0 an outvar for erb and erubis templates
+        # Sinatra 1.0 requires an outvar for erb and erubis templates
         options[:outvar] ||= '@_out_buf' if [:erb, :erubis].include?(engine)
 
-        # Use layout as rails do
+        # Resolve layouts similar to in Rails
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
-          if layout = self.class.instance_variable_defined?(:@_layout) ? self.class.instance_variable_get(:@_layout) : :application
-            layout = Dir["#{self.options.views}/#{layout}.*"].any? ? layout.to_sym : File.join('layouts', layout.to_s).to_sym
-            options[:layout] = resolve_template(layout)[0] rescue nil
-            logger.debug "Rendering layout #{options[:layout]}" if defined?(logger) && options[:layout]
-          end
+          options[:layout] = resolved_layout
+          logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout]
         end
+
+        # Pass arguments to Sinatra render method
         super(engine, data, options, locals, &block)
       end
 
       ##
+      # Returns the located layout to be used for the rendered template (if available)
+      #
+      # ==== Example
+      #
+      # resolve_layout(true)
+      # => "/layouts/custom"
+      #
+      def resolved_layout
+        layout_var = self.class.instance_variable_get(:@_layout) || :application
+        has_layout_at_root = Dir["#{self.options.views}/#{layout_var}.*"].any?
+        layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
+        resolve_template(layout_path)[0] rescue nil
+      end
+
       ##
       # Returns the template path and engine that match content_type (if present), I18n.locale.
       #
