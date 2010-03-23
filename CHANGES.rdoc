@@ -2,7 +2,8 @@
 
 == 0.9.8 (unreleased)
 
-* added layouts folder back into application skeleton
+* Added layouts folder back into application skeleton
+* Added support for forcing render of specified template (i.e render 'foo.haml' in js request) 
 
 == 0.9.7
 

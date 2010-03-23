@@ -187,6 +187,24 @@ class TestApplication < Test::Unit::TestCase
       remove_views
     end
 
+    should 'resolve with explicit template format' do
+      create_view :foo, "Im Js", :format => :js
+      create_view :foo, "Im Haml", :format => :haml
+      create_view :foo, "Im Xml", :format => :xml
+      mock_app do
+        get("/foo_normal", :respond_to => :js) { render 'foo' }
+        get("/foo_haml", :respond_to => :js) { render 'foo.haml' }
+        get("/foo_xml", :respond_to => :js) { render 'foo.xml' }
+      end
+      get "/foo_normal.js"
+      assert_equal "Im Js", body
+      get "/foo_haml.js"
+      assert_equal "Im Haml\n", body
+      get "/foo_xml.js"
+      assert_equal "Im Xml", body
+      remove_views
+    end
+
     should 'resolve template locale' do
       create_view :foo, "Im English", :locale => :en
       create_view :foo, "Im Italian", :locale => :it

@@ -66,7 +66,8 @@ module Padrino
       end
 
       ##
-      # Returns the template path and engine that match (if presents) content_type, I18n.locale.
+      ##
+      # Returns the template path and engine that match content_type (if present), I18n.locale.
       #
       # ==== Example
       #
@@ -77,15 +78,19 @@ module Padrino
       def resolve_template(template_path, options={})
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
         template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
+        target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
+        template_path = template_path.chomp(".#{target_extension}")
+
         templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
-          template_file =  file.sub(view_path, '').chomp(File.extname(file)).to_sym # retrieves relative file path
-          template_engine = options[:engine] || File.extname(file)[1..-1].to_sym    # retrieves engine extension
+          template_engine = options[:engine] || File.extname(file)[1..-1].to_sym       # retrieves engine extension
+          template_file =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine]
         end
 
         located_template =
           templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
           templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
+          templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
           templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
           templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html }
 
