@@ -7,8 +7,9 @@ class TestApplication < Test::Unit::TestCase
     FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
     path  = "/views/#{name}"
     path += ".#{options.delete(:locale)}" if options[:locale].present?
-    path += ".#{options.delete(:format)}" if options[:format].present?
-    path += ".erb"
+    path += ".#{options[:format]}" if options[:format].present?
+    path += ".erb" unless options[:format].to_s =~ /haml|rss|atom/
+    path += ".builder" if options[:format].to_s =~ /rss|atom/
     file  = File.dirname(__FILE__) + path
     File.open(file, 'w') { |io| io.write content }
     file
