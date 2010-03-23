@@ -239,7 +239,7 @@ hr {
 /* tables */
 
 .table th {
-  background: #36393d;  
+  background: #36393d;
   color: #FFF;
 }
 
@@ -257,7 +257,7 @@ hr {
   color: #666666;
 }
 
-.form input.text_field, .form textarea.text_area {
+.form input.text_field, .form input.password_field, .form textarea.text_area {
   width: 100%;
   border: 1px solid #cfcfcf;
 }

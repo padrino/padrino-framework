@@ -2,8 +2,9 @@
 
 == 0.9.8 (unreleased)
 
+* Fixed Padrino Admin Account where the accounts password field is in plain text (text_field)
 * Added layouts folder back into application skeleton
-* Added support for forcing render of specified template (i.e render 'foo.haml' in js request) 
+* Added support for forcing render of specified template (i.e render 'foo.haml' in js request)
 
 == 0.9.7
 

@@ -17,7 +17,7 @@ p {
   line-height: 20px;
 }
 
-input.checkbox {
+input.check_box {
   vertical-align:middle;
 }
 
@@ -309,7 +309,7 @@ input.checkbox {
   width:99%;
 }
 
-.form input.text_field, .form textarea.text_area {
+.form input.text_field, .form input.password_field, .form textarea.text_area {
   border-right: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   border-top: 2px solid #ccc;

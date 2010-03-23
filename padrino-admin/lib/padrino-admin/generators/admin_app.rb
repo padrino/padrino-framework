@@ -54,12 +54,12 @@ module Padrino
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
           column_fields = [
-            { :name => :name, :field_type => :text_field },
-            { :name => :surname, :field_type => :text_field },
-            { :name => :email, :field_type => :text_field },
-            { :name => :password, :field_type => :text_field },
-            { :name => :password_confirmation, :field_type => :text_field },
-            { :name => :role, :field_type => :text_field }
+            { :name => :name,                  :field_type => :text_field },
+            { :name => :surname,               :field_type => :text_field },
+            { :name => :email,                 :field_type => :text_field },
+            { :name => :password,              :field_type => :password_field },
+            { :name => :password_confirmation, :field_type => :password_field },
+            { :name => :role,                  :field_type => :text_field }
           ]
 
           admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root])
