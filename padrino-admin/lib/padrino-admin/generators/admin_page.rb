@@ -2,7 +2,7 @@ module Padrino
   module Generators
 
     class AdminPage < Thor::Group
-      attr_accessor :orm
+      attr_accessor :default_orm
 
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin_page, self)
@@ -16,8 +16,8 @@ module Padrino
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
 
-      desc "Description:\n\n\tpadrino-gen admin_page YourModel"
-      argument :model, :desc => "The name of your model"
+      desc "Description:\n\n\tpadrino-gen admin_page Model(s)"
+      argument :models, :desc => "The name(s) of your model(s)", :type => :array
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
@@ -29,17 +29,19 @@ module Padrino
       def create_controller
         self.destination_root = options[:root]
         if in_app_root?
-          @orm ||= Padrino::Admin::Generators::Orm.new(model, adapter)
-          self.behavior = :revoke if options[:destroy]
-          ext = fetch_component_choice(:renderer)
+          models.each do |model|
+            @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
+            self.behavior = :revoke if options[:destroy]
+            ext = fetch_component_choice(:renderer)
 
-          template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")
-          template "templates/#{ext}/page/_form.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/_form.#{ext}")
-          template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root("/admin/views/#{@orm.name_plural}/edit.#{ext}")
-          template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
-          template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
+            template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")
+            template "templates/#{ext}/page/_form.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/_form.#{ext}")
+            template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root("/admin/views/#{@orm.name_plural}/edit.#{ext}")
+            template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
+            template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
 
-          add_project_module(@orm.name_plural)
+            add_project_module(@orm.name_plural)
+          end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

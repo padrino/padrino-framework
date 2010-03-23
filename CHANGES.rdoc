@@ -2,6 +2,7 @@
 
 == 0.9.8 (unreleased)
 
+* Improved Padrino Admin Generator, now admin_page accepts multiple models
 * Fixed Padrino Admin Account where the accounts password field is in plain text (text_field)
 * Added layouts folder back into application skeleton
 * Added support for forcing render of specified template (i.e render 'foo.haml' in js request)
