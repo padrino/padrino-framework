@@ -76,7 +76,7 @@ module Padrino
           add_project_module :accounts
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
-
+          gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
           return if self.behavior == :revoke
           say (<<-TEXT).gsub(/ {10}/,'')
 

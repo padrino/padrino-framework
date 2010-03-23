@@ -2,6 +2,8 @@
 
 == 0.9.8 (unreleased)
 
+* Prevent that an account destroy itself
+* Removed some unused code from padrino-admin
 * Improved Padrino Admin Generator, now admin_page accepts multiple models
 * Fixed Padrino Admin Account where the accounts password field is in plain text (text_field)
 * Added layouts folder back into application skeleton
