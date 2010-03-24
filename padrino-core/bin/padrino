@@ -6,4 +6,15 @@ $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.inclu
 
 require 'padrino-core/cli/base'
 
+if %w(g gen).include?(ARGV[0])
+  ARGV.shift
+  padrino_gen = File.join(padrino_core_path, "/../../padrino-gen/bin/padrino-gen")
+  if File.exist?(padrino_gen)
+    system "#{padrino_gen} #{ARGV.join(" ")}"
+  else
+    puts "<= You need padrino-gen! Run: gem install padrino-gen"
+  end
+  exit(0)
+end
+
 Padrino::Cli::Base.start(ARGV)
