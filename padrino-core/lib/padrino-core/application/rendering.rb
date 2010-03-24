@@ -1,7 +1,7 @@
 module Padrino
   ##
   # Padrino enhances the Sinatra ‘render’ method to have support for automatic template engine detection,
-  # among other more advanced features.
+  # enhanced layout functionality, locale enabled rendering, among other features.
   #
   module Rendering
     def self.registered(app)
@@ -78,11 +78,15 @@ module Padrino
         layout_var = self.class.instance_variable_get(:@_layout) || :application
         has_layout_at_root = Dir["#{self.options.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
-        resolve_template(layout_path)[0] rescue nil
+        resolve_template(layout_path, :strict_format => true)[0] rescue nil
       end
 
       ##
       # Returns the template path and engine that match content_type (if present), I18n.locale.
+      #
+      # === Options
+      #
+      #   :strict_format::  The resolved template must match the content_type of the request (defaults to false)
       #
       # ==== Example
       #
@@ -91,13 +95,14 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
+        options.reverse_merge!(:strict_format => false)
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
         template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
         target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
 
         templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
-          template_engine = options[:engine] || File.extname(file)[1..-1].to_sym       # retrieves engine extension
+          template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
           template_file =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine]
         end
@@ -107,7 +112,8 @@ module Padrino
           templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
           templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
           templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
-          templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html }
+          templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html } ||
+          templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
         raise "Template path '#{template_path}' could not be located and rendered!" unless located_template
         located_template
