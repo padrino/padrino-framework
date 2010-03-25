@@ -118,16 +118,5 @@ module Padrino
         raise "Template path '#{template_path}' could not be located and rendered!" unless located_template
         located_template
       end
-
-      ##
-      # Clears the template view cache when in development mode
-      # clear_template_cache!
-      #
-      def clear_template_cache!
-        # TODO: remove @template_cache.respond_to?(:clear) when sinatra 1.0 will be released
-        can_clear_cache = @template_cache && @template_cache.respond_to?(:clear)
-        is_in_development = (defined?(Padrino) && Padrino.respond_to?(:env) && Padrino.env != :production)
-        @template_cache.clear if is_in_development && can_clear_cache
-      end
   end # Rendering
 end # Padrino
