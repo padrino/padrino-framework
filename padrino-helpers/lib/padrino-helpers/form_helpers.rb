@@ -122,12 +122,18 @@ module Padrino
             header_message = if options.include?(:header_message)
               options[:header_message]
             else
-              object_name = options[:object_name].to_s.gsub('_', ' ')
-              object_name = I18n.t(object_name, :default => object_name, :scope => :models, :count => 1)
+              object_name = options[:object_name].to_s.underscore.gsub('_', ' ')
+              object_name = I18n.t(:name, :default => object_name, :scope => [:models, object_name], :count => 1)
               locale.t :header, :count => count, :model => object_name
             end
             message = options.include?(:message) ? options[:message] : locale.t(:body)
-            error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, msg) } }.join
+            error_messages = objects.map { |object|
+              object_name = options[:object_name].to_s.underscore.gsub('_', ' ')
+              object.errors.map { |f, msg|
+                field = I18n.t(f, :default => object_name, :scope => [:models, object_name, :attributes])
+                content_tag(:li, "%s %s" % [field, msg])
+              }
+            }.join
 
             contents = ''
             contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
@@ -167,7 +173,8 @@ module Padrino
         if error
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)
-          error = [options.delete(:prepend), Array(object.errors[field]).first, options.delete(:append)].compact.join(" ")
+          # Array(error).first is necessary because some orm give us an array others directly a value
+          error = [options.delete(:prepend), Array(error).first, options.delete(:append)].compact.join(" ")
           content_tag(tag, error, options)
         else
           ''
