@@ -41,9 +41,6 @@ module Padrino
       # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
       #
       def render(engine, data=nil, options={}, locals={}, &block)
-        # Clear template view cache in development mode
-        clear_template_cache!
-
         # If engine is a hash then render data converted to json
         return engine.to_json if engine.is_a?(Hash)
 
