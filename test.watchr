@@ -1,7 +1,7 @@
 #
 # install watchr
 # $ sudo gem install watchr
-# 
+#
 # Run With:
 # $ watchr test.watchr
 #
@@ -28,8 +28,13 @@ end
 # --------------------------------------------------
 
 # Padrino-Admin
-watch("^padrino-admin/lib/generators/(.*)\.rb") { |m| run("ruby padrino-admin/test/generators/test_#{File.basename(m[1],'.rb')}_generator.rb")}
-watch("^padrino-admin/(.*)") { |m| run("ruby padrino-admin/test/test_admin_application.rb")}
+watch("^padrino-admin/(.*)") do |m|
+  if m[1] =~ /generators/
+    run("ruby padrino-admin/test/generators/test_#{File.basename(m[1],'.rb')}_generator.rb")
+  else
+    run("ruby padrino-admin/test/test_admin_application.rb")
+  end
+end
 # Padrino-Cache
 watch("^padrino-cache.*/(.*)\.rb") { |m| run("ruby padrino-cache/test/test_#{File.basename(m[1],'.rb')}.rb")}
 # Padrino-Core
@@ -53,6 +58,6 @@ Signal.trap('QUIT') do
   puts " --- Running all tests ---\n\n"
   run_all_tests
 end
- 
+
 # Ctrl-C
 Signal.trap('INT') { abort("\n") }
