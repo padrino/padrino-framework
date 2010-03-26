@@ -9,11 +9,10 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   def setup
-    error_stub = stub(:full_messages => ["1", "2"], :count => 2, :[] => [])
     role_types = [stub(:name => 'Admin', :id => 1), stub(:name => 'Moderate', :id => 2),  stub(:name => 'Limited', :id => 3)]
-    @user = stub(:errors => error_stub, :class => 'User', :first_name => "Joe", :session_id => 54)
+    @user = stub(:errors => {:a => "must be present", :b => "must be valid"}, :class => 'User', :first_name => "Joe", :session_id => 54)
     @user.stubs(:role_types => role_types, :role => "1")
-    @user_none = stub(:errors => stub(:count => 0), :class => 'User')
+    @user_none = stub(:errors => {}, :class => 'User')
   end
 
   def standard_builder(object=@user)
@@ -131,27 +130,35 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display correct form html with valid record" do
       actual_html = standard_builder.error_messages(:header_message => "Demo form cannot be saved", :style => "foo:bar", :class => "mine")
       assert_has_tag('#field-errors h2', :content => "Demo form cannot be saved") { actual_html }
-      assert_has_tag('#field-errors ul li', :content => "1") { actual_html }
-      assert_has_tag('#field-errors ul li', :content => "2") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "User must be valid") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "User must be present") { actual_html }
       assert_has_tag('#field-errors', :style => "foo:bar") { actual_html }
       assert_has_tag('#field-errors', :class => "mine") { actual_html }
     end
 
     should "display correct form in haml" do
       visit '/haml/form_for'
-      assert_have_selector '#demo div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
-      assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo div.field-errors h2',     :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be valid"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be present"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be a number"
+      assert_have_selector '#demo2 div.field-errors h2',    :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be valid"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be present"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be a number"
       assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
 
     should "display correct form in erb" do
       visit '/erb/form_for'
-      assert_have_selector '#demo div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul li', :content => "This is a fake error"
-      assert_have_selector '#demo2 div.field-errors h2', :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "This is a fake error"
+      assert_have_selector '#demo div.field-errors h2',     :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be valid"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be present"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be a number"
+      assert_have_selector '#demo2 div.field-errors h2',    :content => "custom MarkupUser cannot be saved!"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be valid"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be present"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be a number"
       assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
   end

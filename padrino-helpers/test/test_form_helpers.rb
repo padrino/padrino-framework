@@ -76,7 +76,7 @@ class TestFormHelpers < Test::Unit::TestCase
 
   context 'for #error_messages_for method' do
     should "display correct error messages list in ruby" do
-      user = stub(:class => "User", :errors => stub(:full_messages => ["1", "2"], :count => 2), :blank? => false)
+      user = stub(:class => "User", :errors => { :a => "1", :b => "2" }, :blank? => false)
       actual_html = error_messages_for(user)
       assert_has_tag('div.field-errors') { actual_html }
       assert_has_tag('div.field-errors h2', :content => "2 errors prohibited this User from being saved") { actual_html }
@@ -92,8 +92,10 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.advanced-form .field-errors h2', :content => "There are problems with saving user!"
       assert_have_selector 'form.advanced-form .field-errors p', :content => "There were problems with the following fields:"
       assert_have_selector 'form.advanced-form .field-errors ul'
-      assert_have_selector 'form.advanced-form .field-errors ul li', :count => 3
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "This is a second fake error"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :count => 4
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be valid"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be present"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be a number"
     end
 
     should "display correct error messages list in haml" do
@@ -101,10 +103,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_no_selector 'form.simple-form .field-errors'
       assert_have_selector 'form.advanced-form .field-errors'
       assert_have_selector 'form.advanced-form .field-errors h2', :content => "There are problems with saving user!"
-      assert_have_selector 'form.advanced-form .field-errors p', :content => "There were problems with the following fields:"
+      assert_have_selector 'form.advanced-form .field-errors p',  :content => "There were problems with the following fields:"
       assert_have_selector 'form.advanced-form .field-errors ul'
-      assert_have_selector 'form.advanced-form .field-errors ul li', :count => 3
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "This is a second fake error"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :count => 4
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be valid"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be present"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be a number"
     end
   end
 

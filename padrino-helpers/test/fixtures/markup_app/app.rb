@@ -41,7 +41,7 @@ class MarkupDemo < Sinatra::Base
 end
 
 class MarkupUser
-  def errors; Errors.new; end
+  def errors; { :fake => "must be valid", :second => "must be present", :third  => "must be a number", :email => "must be a email"}; end
   def session_id; 45; end
   def gender; 'male'; end
   def remember_me; '1'; end
@@ -51,14 +51,6 @@ end
 class Permission
   def can_edit; true; end
   def can_delete; false; end
-end
-
-class Errors < Array
-  def initialize; self << [:fake, :second, :third]; end
-  def [](fake); true if fake == :email; end
-  def full_messages
-    ["This is a fake error", "This is a second fake error", "This is a third fake error"]
-  end
 end
 
 module Outer
