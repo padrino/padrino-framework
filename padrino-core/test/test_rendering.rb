@@ -4,7 +4,7 @@ class TestRendering < Test::Unit::TestCase
   def teardown
     remove_views
   end
-  
+
   context 'for application layout functionality' do
 
     should 'get no layout' do
@@ -80,7 +80,7 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "js file", body
       remove_views
     end
-    
+
     should 'use correct layout for each format' do
       create_layout :application, "this is an <%= yield %>"
       create_layout :application, "document start <%= yield %> end", :format => :xml
@@ -96,7 +96,7 @@ class TestRendering < Test::Unit::TestCase
       remove_views
     end
   end
-  
+
   context 'for application render functionality' do
 
     should 'be compatible with sinatra render' do
@@ -173,9 +173,10 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "Im Xml", body
       remove_views
     end
-    
+
     should "ignore files ending in tilde and not render them" do
-      create_view :foo, "Im Haml", :format => :haml
+      create_view :foo, "Im Wrong", :format => 'haml~'
+      create_view :foo, "Im Haml",  :format => :haml
       create_view :bar, "Im Haml backup", :format => 'haml~'
       mock_app do
         get('/foo') { render 'foo' }
