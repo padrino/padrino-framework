@@ -173,6 +173,19 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "Im Xml", body
       remove_views
     end
+    
+    should "ignore files ending in tilde and not render them" do
+      create_view :foo, "Im Haml", :format => :haml
+      create_view :bar, "Im Haml backup", :format => 'haml~'
+      mock_app do
+        get('/foo') { render 'foo' }
+        get('/bar') { render 'bar' }
+      end
+      get '/foo'
+      assert_equal "Im Haml\n", body
+      assert_raises(Padrino::Rendering::TemplateNotFound) { get '/bar' }
+      remove_views
+    end
 
     should 'resolve template locale' do
       create_view :foo, "Im English", :locale => :en

@@ -4,6 +4,11 @@ module Padrino
   # enhanced layout functionality, locale enabled rendering, among other features.
   #
   module Rendering
+    class TemplateNotFound < RuntimeError #:nodoc:
+    end
+    
+    IGNORE_FILE_PATTERN = %r{(\~)}
+    
     def self.registered(app)
       app.send(:include, Padrino::Rendering)
     end
@@ -101,7 +106,7 @@ module Padrino
         templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
           template_file =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
-          [template_file, template_engine]
+          [template_file, template_engine] unless template_engine.to_s =~ IGNORE_FILE_PATTERN
         end
 
         located_template =
@@ -112,7 +117,7 @@ module Padrino
           templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html } ||
           templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
-        raise "Template path '#{template_path}' could not be located and rendered!" unless located_template
+        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!") unless located_template
         located_template
       end
   end # Rendering
