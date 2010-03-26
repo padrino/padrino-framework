@@ -6,9 +6,17 @@ module Padrino
   module Rendering
     class TemplateNotFound < RuntimeError #:nodoc:
     end
-    
-    IGNORE_FILE_PATTERN = %r{(\~)}
-    
+
+    ##
+    # This is an array of file patterns to ignore.
+    # If your editor add a suffix during editing to your files please add it like:
+    #
+    #   Padrino::Rendering::IGNORE_FILE_PATTERN << /~$/
+    #
+    IGNORE_FILE_PATTERN = [
+      /~$/ # This is for Gedit
+    ]
+
     def self.registered(app)
       app.send(:include, Padrino::Rendering)
     end
@@ -105,8 +113,8 @@ module Padrino
 
         templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
-          template_file =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
-          [template_file, template_engine] unless template_engine.to_s =~ IGNORE_FILE_PATTERN
+          template_file   =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+          [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
         end
 
         located_template =
