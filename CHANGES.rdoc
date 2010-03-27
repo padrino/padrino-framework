@@ -2,6 +2,7 @@
 
 == 0.9.8 (unreleased)
 
+* Fixed a small issue with Passenger and Ruby 1.9.1
 * Removed clear_template_cache! since Sinatra 1.0. now has settings.reload_templates
 * Fixed error_messages_for with custom locales
 * Added "padrino gen", "padrino g" as alias of padrino-gen.
