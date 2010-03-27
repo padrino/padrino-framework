@@ -24,7 +24,7 @@ module Padrino
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account=nil)
-          session[options.session_id] = account ? account.id : nil
+          session[settings.session_id] = account ? account.id : nil
           @current_account = account
         end
 
@@ -86,11 +86,11 @@ module Padrino
           end
 
           def login_page
-            options.login_page rescue nil # on sinatra 9.4.x respond_to?(:login_page) didn't work
+            settings.login_page rescue nil
           end
 
           def store_location
-            options.store_location rescue false
+            settings.store_location rescue nil
           end
 
           def login_from_session

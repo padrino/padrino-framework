@@ -196,7 +196,7 @@ module Padrino
 
     private
       def clean_backtrace(trace)
-        return trace unless options.clean_trace?
+        return trace unless settings.clean_trace?
         trace.reject { |line|
           line =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/ ||
             (defined?(Gem) && line.include?(Gem.dir))

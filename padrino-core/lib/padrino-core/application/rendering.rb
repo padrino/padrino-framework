@@ -86,7 +86,7 @@ module Padrino
       #
       def resolved_layout
         layout_var = self.class.instance_variable_get(:@_layout) || :application
-        has_layout_at_root = Dir["#{self.options.views}/#{layout_var}.*"].any?
+        has_layout_at_root = Dir["#{self.settings.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
         resolve_template(layout_path, :strict_format => true)[0] rescue nil
       end

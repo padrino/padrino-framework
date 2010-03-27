@@ -3,6 +3,8 @@
 == 0.9.8 (unreleased)
 
 * Dropped compatibility with Sinatra < 1.0
+* Ruby 1.8.6 compat
+* Initials additions for make Padrino compat with ruby 1.9.2
 * Fixed a small issue with Passenger and Ruby 1.9.1
 * Removed clear_template_cache! since Sinatra 1.0. now has settings.reload_templates
 * Fixed error_messages_for with custom locales
