@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestDependencies < Test::Unit::TestCase
   context 'when we require a dependency that have another dependecy' do

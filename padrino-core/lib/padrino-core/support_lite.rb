@@ -19,6 +19,7 @@
 #   * Hash#to_params
 #   * Hash#symbolize_keys, Hash.symbolize_keys!
 #   * Hash#reverse_merge, Hash#reverse_merge!
+#   * Symbol#to_proc
 #   * SupportLite::OrderedHash
 #
 
@@ -33,6 +34,7 @@ require 'active_support/core_ext/object'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/module'
+require 'active_support/core_ext/symbol'
 require 'active_support/ordered_hash'
 
 ##

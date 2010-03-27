@@ -8,7 +8,7 @@ module Padrino
       Padrino::Generators.add_generator(:project, self)
 
       # Define the source template root
-      def self.source_root; File.dirname(__FILE__); end
+      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       def self.banner; "padrino-gen project [name] [options]"; end
 
       # Include related modules

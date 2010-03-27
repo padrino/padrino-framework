@@ -9,7 +9,7 @@ require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
 require 'fileutils'
 require 'sdoc'
-require File.dirname(__FILE__) + '/versioner'
+require File.expand_path(File.dirname(__FILE__) + '/versioner')
 
 include FileUtils
 

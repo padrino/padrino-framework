@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'thor/group'
 
 class TestMailerGenerator < Test::Unit::TestCase

@@ -10,7 +10,7 @@ module Padrino
 
           CUCUMBER_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../../config/boot"
+          require File.expand_path(File.dirname(__FILE__) + "/../../config/boot")
 
           require 'capybara/cucumber'
           require 'spec/expectations'

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../tasks'
+require File.expand_path(File.dirname(__FILE__) + '/../tasks')
 require 'rake'
 Rake.application.instance_variable_set(:@rakefile, __FILE__)
 

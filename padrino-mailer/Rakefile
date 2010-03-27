@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'rake'
-require 'sdoc'
 
 GEM_VERSION = File.read(File.dirname(__FILE__) + '/VERSION')
 

@@ -6,7 +6,7 @@ module Padrino
         module TestspecGen
           TESTSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../config/boot"
+          require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
           class Test::Unit::TestCase
             include Rack::Test::Methods
@@ -21,7 +21,7 @@ module Padrino
           TEST
 
           TESTSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           context "!NAME!Controller" do
             setup { get('/') }
@@ -41,7 +41,7 @@ module Padrino
           TEST
 
           TESTSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           context "!NAME! Model" do
             specify 'can be created' do

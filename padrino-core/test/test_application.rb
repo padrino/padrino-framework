@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestApplication < Test::Unit::TestCase
   def teardown
@@ -23,7 +23,6 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.instance_variable_get(:@_configured)
       PadrinoTestApp.send(:setup_application!)
       assert PadrinoTestApp.instance_variable_get(:@_configured)
-      assert !PadrinoTestApp.send(:find_view_path)
       assert !PadrinoTestApp.reload?
       assert 'padrino_test_app', PadrinoTestApp.app_name
       assert 'StandardFormBuilder', PadrinoTestApp.default_builder

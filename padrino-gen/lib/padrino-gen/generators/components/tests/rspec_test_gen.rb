@@ -7,7 +7,7 @@ module Padrino
           unless defined?(RSPEC_SETUP)
             RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '')
             PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-            require File.dirname(__FILE__) + "/../config/boot"
+            require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
             Spec::Runner.configure do |conf|
               conf.include Rack::Test::Methods
@@ -24,7 +24,7 @@ module Padrino
 
           unless defined?(RSPEC_CONTROLLER_TEST)
             RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '')
-            require File.dirname(__FILE__) + '/../spec_helper.rb'
+            require File.expand_path(File.dirname(__FILE__) + '/../spec_helper.rb')
 
             describe "!NAME!Controller" do
               before do
@@ -51,7 +51,7 @@ module Padrino
 
           unless defined?(RSPEC_MODEL_TEST)
             RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '')
-            require File.dirname(__FILE__) + '/../spec_helper.rb'
+            require File.expand_path(File.dirname(__FILE__) + '/../spec_helper.rb')
 
             describe "!NAME! Model" do
               it 'can be created' do

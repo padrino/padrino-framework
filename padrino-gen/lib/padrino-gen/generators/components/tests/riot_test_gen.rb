@@ -6,7 +6,7 @@ module Padrino
         module RiotGen
           RIOT_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../config/boot"
+          require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
           class Riot::Situation
             include Rack::Test::Methods
@@ -21,7 +21,7 @@ module Padrino
           TEST
 
           RIOT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           context "!NAME!Controller" do
             context "description here" do
@@ -44,7 +44,7 @@ module Padrino
           TEST
 
           RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           context "!NAME! Model" do
             context 'can be created' do

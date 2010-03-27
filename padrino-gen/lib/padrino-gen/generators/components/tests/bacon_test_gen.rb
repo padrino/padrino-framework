@@ -6,7 +6,7 @@ module Padrino
         module BaconGen
           BACON_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../config/boot"
+          require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
           class Bacon::Context
             include Rack::Test::Methods
@@ -21,7 +21,7 @@ module Padrino
           TEST
 
           BACON_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           describe "!NAME!Controller" do
             it 'returns text at root' do
@@ -41,7 +41,7 @@ module Padrino
           TEST
 
           BACON_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           describe "!NAME! Model" do
             it 'can be created' do

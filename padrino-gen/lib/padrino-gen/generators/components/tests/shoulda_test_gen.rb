@@ -6,7 +6,7 @@ module Padrino
         module ShouldaGen
           SHOULDA_SETUP = (<<-TEST).gsub(/^ {10}/, '')
           PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-          require File.dirname(__FILE__) + "/../config/boot"
+          require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
           class Test::Unit::TestCase
             include Rack::Test::Methods
@@ -21,7 +21,7 @@ module Padrino
           TEST
 
           SHOULDA_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           class !NAME!ControllerTest < Test::Unit::TestCase
             context "!NAME!Controller" do
@@ -46,7 +46,7 @@ module Padrino
           TEST
 
           SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '')
-          require File.dirname(__FILE__) + '/../test_config.rb'
+          require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
           class !NAME!ControllerTest < Test::Unit::TestCase
             context "!NAME! Model" do

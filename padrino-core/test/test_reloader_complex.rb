@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/helper'
-require File.dirname(__FILE__) + '/fixtures/apps/complex'
+require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/complex')
 
 class TestComplexReloader < Test::Unit::TestCase
 

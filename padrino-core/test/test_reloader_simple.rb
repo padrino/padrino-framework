@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'fixtures/apps/simple'
 
 class TestSimpleReloader < Test::Unit::TestCase
@@ -7,16 +7,16 @@ class TestSimpleReloader < Test::Unit::TestCase
 
     should 'reset routes' do
       mock_app do
-        1.step(10).each do |i|
+        (1..10).each do |i|
           get("/#{i}") { "Foo #{i}" }
         end
       end
-      1.step(10).each do |i|
+      (1..10).each do |i|
         get "/#{i}"
         assert_equal "Foo #{i}", body
       end
       @app.reset_routes!
-      1.step(10).each do |i|
+      (1..10).each do |i|
         get "/#{i}"
         assert_equal 404, status
       end

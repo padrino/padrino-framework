@@ -18,14 +18,14 @@ module Padrino
       method_option :daemonize,   :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background"
       def start
         prepare :start
-        require File.dirname(__FILE__) + "/adapter"
+        require File.expand_path(File.dirname(__FILE__) + "/adapter")
         require 'config/boot'
         Padrino::Cli::Adapter.start(options)
       end
 
       desc "stop", "Stops the Padrino application"
       def stop
-        require File.dirname(__FILE__) + "/adapter"
+        require File.expand_path(File.dirname(__FILE__) + "/adapter")
         Padrino::Cli::Adapter.stop
       end
 
@@ -44,7 +44,7 @@ module Padrino
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
         ENV['PADRINO_LOG_LEVEL'] ||= "test"
-        require File.dirname(__FILE__) + '/rake'
+        require File.expand_path(File.dirname(__FILE__) + '/rake')
         silence(:stdout) { require 'config/boot' }
         PadrinoTasks.init
       end
@@ -52,13 +52,13 @@ module Padrino
       desc "console", "Boots up the Padrino application irb console"
       def console
         prepare :console
-        require File.dirname(__FILE__) + "/../version"
+        require File.expand_path(File.dirname(__FILE__) + "/../version")
         ARGV.clear
         puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
         require 'irb'
         require "irb/completion"
         require 'config/boot'
-        require File.dirname(__FILE__) + '/console'
+        require File.expand_path(File.dirname(__FILE__) + '/console')
         IRB.start
       end
 
