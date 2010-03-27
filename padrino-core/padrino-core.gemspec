@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-03-22}
+  s.date = %q{2010-03-27}
   s.default_executable = %q{padrino}
   s.description = %q{The Padrino core gem required for use of this framework}
   s.email = %q{padrinorb@gmail.com}
@@ -64,6 +64,7 @@ Gem::Specification.new do |s|
      "test/test_mounter.rb",
      "test/test_reloader_complex.rb",
      "test/test_reloader_simple.rb",
+     "test/test_rendering.rb",
      "test/test_routing.rb",
      "test/test_server.rb"
   ]
@@ -79,7 +80,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<sinatra>, [">= 0.9.6"])
+      s.add_runtime_dependency(%q<sinatra>, [">= 1.0.0"])
       s.add_runtime_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_runtime_dependency(%q<usher>, [">= 0.6.2"])
       s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
@@ -90,7 +91,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
     else
-      s.add_dependency(%q<sinatra>, [">= 0.9.6"])
+      s.add_dependency(%q<sinatra>, [">= 1.0.0"])
       s.add_dependency(%q<i18n>, [">= 0.3.2"])
       s.add_dependency(%q<usher>, [">= 0.6.2"])
       s.add_dependency(%q<thor>, [">= 0.13.0"])
@@ -102,7 +103,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<webrat>, [">= 0.5.1"])
     end
   else
-    s.add_dependency(%q<sinatra>, [">= 0.9.6"])
+    s.add_dependency(%q<sinatra>, [">= 1.0.0"])
     s.add_dependency(%q<i18n>, [">= 0.3.2"])
     s.add_dependency(%q<usher>, [">= 0.6.2"])
     s.add_dependency(%q<thor>, [">= 0.13.0"])

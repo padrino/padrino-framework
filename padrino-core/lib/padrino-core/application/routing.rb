@@ -25,17 +25,6 @@ module Padrino
     # Compatibility with usher
     #
     def route!(base=self.class, pass_block=nil)
-      # TODO: remove this when sinatra 1.0 will be released
-      if Sinatra::VERSION =~ /^0\.9/
-        # enable nested params in Rack < 1.0; allow indifferent access
-        can_parse_nested = Rack::Utils.respond_to?(:parse_nested_query)
-        @params = can_parse_nested ? indifferent_params(@request.params) : nested_params(@request.params)
-        # deliver static files
-        static! if options.static? && (request.get? || request.head?)
-        # perform before filters
-        self.class.filters.each { |block| instance_eval(&block) }
-      end # for sinatra = 0.9
-
       # Usher
       if self.class.router and match = self.class.router.recognize(@request, @request.path_info)
         @block_params = match.params.map { |p| p.last }
@@ -96,9 +85,7 @@ module Padrino
     end
 
     ##
-    # Method for deliver static files, Sinatra 0.10.x or 1.0.x have this method
-    # but for now we use this (because we need a compatibility with 0.9.x) and also
-    # because we just have +static_file?+ method.
+    # Method for deliver static files.
     #
     def static!
       if path = static_file?(request.path_info)

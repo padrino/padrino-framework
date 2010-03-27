@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-03-22}
+  s.date = %q{2010-03-27}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/controllers/.empty_directory",
      "lib/padrino-gen/generators/app/helpers/.empty_directory",
      "lib/padrino-gen/generators/app/views/.empty_directory",
+     "lib/padrino-gen/generators/app/views/layouts/.emptydirectory",
      "lib/padrino-gen/generators/cli.rb",
      "lib/padrino-gen/generators/components/actions.rb",
      "lib/padrino-gen/generators/components/mocks/mocha_gen.rb",

@@ -15,12 +15,10 @@ module Padrino
           require 'capybara/cucumber'
           require 'spec/expectations'
 
-          # Sinatra < 1.0 always disable sessions for test env
-          # so if you need them it's necessary to force the use
-          # of Rack::Session::Cookie
-          Capybara.app = CLASS_NAME.tap { |app| app.use Rack::Session::Cookie }
-          # You can handle all padrino applications instead using:
-          #   Capybara.app = Padrino.application
+          ##
+          # You can hanlde all padrino applications using instead:
+          #   Padrino.application
+          Capybara.app = CLASS_NAME.tap { |app|  }
           TEST
 
           CUCUMBER_YML = (<<-TEST).gsub(/^ {10}/, '')

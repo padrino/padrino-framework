@@ -13,7 +13,7 @@ begin
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.executables = ["padrino"]
     gem.rubyforge_project = 'padrino-core'
-    gem.add_runtime_dependency     "sinatra",       ">= 0.9.6"
+    gem.add_runtime_dependency     "sinatra",       ">= 1.0.0"
     gem.add_runtime_dependency     "i18n",          ">= 0.3.2"
     gem.add_runtime_dependency     "usher",         ">= 0.6.2"
     gem.add_runtime_dependency     "thor",          ">= 0.13.0"
