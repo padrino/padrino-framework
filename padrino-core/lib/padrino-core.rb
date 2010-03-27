@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'padrino-core/support_lite'
 
 Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
