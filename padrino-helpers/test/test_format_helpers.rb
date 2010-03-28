@@ -6,6 +6,10 @@ class TestFormatHelpers < Test::Unit::TestCase
     MarkupDemo.tap { |app| app.set :environment, :test }
   end
 
+  def setup
+    Time.stubs(:now).returns(Time.utc(1983, 11, 9, 5))
+  end
+
   include Padrino::Helpers::FormatHelpers
 
   context 'for #simple_format method' do
@@ -128,8 +132,7 @@ class TestFormatHelpers < Test::Unit::TestCase
       assert_equal '1 day', time_ago_in_words(1.day.ago)
     end
     should "display tomorrow" do
-      # TODO: inspect why return 'about 23 hours'
-      # assert_equal '1 day', time_ago_in_words(1.day.from_now)
+      assert_equal '1 day', time_ago_in_words(1.day.from_now)
     end
     should "return future number of days" do
       assert_equal '4 days', time_ago_in_words(4.days.from_now)
