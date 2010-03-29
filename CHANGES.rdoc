@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.9.9
+
+* Minor fixes and repush due to inability to re-push 0.9.8 on gemcutter
+
 == 0.9.8
 
 * Dropped compatibility with Sinatra < 1.0
