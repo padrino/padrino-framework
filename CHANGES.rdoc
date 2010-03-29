@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.8 (unreleased)
+== 0.9.8
 
 * Dropped compatibility with Sinatra < 1.0
 * Ruby 1.8.6 compat
