@@ -129,6 +129,14 @@ end
 
 desc "Release all padrino gems"
 task :publish do
+  # TODO uncomment these and test this (pushes repo to github on release)
+  # puts "Pushing to GitHub..."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { 
+      # rake_command("github:release")
+      # rake_command("git:release") 
+    }
+  end
   puts "Pushing to Gemcutter..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
