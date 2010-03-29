@@ -66,7 +66,7 @@ module Padrino
         say (<<-TEXT).gsub(/ {8}/,'')
 
         =================================================================
-        #{name} has been successfully created, now follow this steps:
+        #{name} is ready for development! Next, follow these steps:
         =================================================================
           1) cd #{name}
           2) bundle install

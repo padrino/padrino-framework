@@ -14,7 +14,7 @@ module Padrino
       include Thor::Actions
       include Padrino::Generators::Actions
 
-      desc "Description:\n\n\tpadrino-gen project generate a new Padrino application"
+      desc "Description:\n\n\tpadrino-gen app generates a new Padrino application"
 
       argument :name, :desc => "The name of your padrino application"
 
@@ -36,9 +36,9 @@ module Padrino
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Your #{@class_name} Application now is installed.
-          It's available on /#{name.underscore}
-          You can setup a new path editing config/apps.rb
+          Your #{@class_name} application has been installed.
+          This application has been mounted to /#{name.underscore}
+          You can configure a different path by editing 'config/apps.rb'
           =================================================================
 
           TEXT
