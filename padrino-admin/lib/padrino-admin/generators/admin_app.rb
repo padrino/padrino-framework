@@ -16,7 +16,7 @@ module Padrino
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
 
-      desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin"
+      desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
@@ -30,7 +30,7 @@ module Padrino
         if in_app_root?
 
           unless supported_orm.include?(orm)
-            say "<= A the moment we only support #{supported_orm.join(" or ")}. Sorry!"
+            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!"
             raise SystemExit
           end
 
@@ -81,10 +81,11 @@ module Padrino
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Admin has been successfully installed, now follow this steps:
+          The admin panel has been mounted! Next, follow these steps:
           =================================================================
-            1) Run migrations
-            2) Run padrino rake seed
+            1) Run migrations (if necessary)
+            2) Run 'padrino rake seed'
+            3) Visit the admin panel in the browser at '/admin'
           =================================================================
 
           TEXT

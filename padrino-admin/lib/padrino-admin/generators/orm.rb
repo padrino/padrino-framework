@@ -14,7 +14,7 @@ module Padrino
           @orm            = orm.to_sym
           @columns        = columns
           @column_fields  = column_fields
-          raise OrmError, "Model #{name} not found!" if @columns.nil? && @klass.nil?
+          raise OrmError, "Model #{name} was not found!" if @columns.nil? && @klass.nil?
         end
 
         def field_type(type)
@@ -33,7 +33,7 @@ module Padrino
             when :datamapper   then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
-            else raise OrmError, "Adapter #{orm} not yet supported!"
+            else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
@@ -54,7 +54,7 @@ module Padrino
           case orm
             when :activerecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
             when :datamapper   then "#{klass_name}.get(#{params})"
-            else raise OrmError, "Adapter #{orm} not yet supported!"
+            else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
@@ -74,7 +74,7 @@ module Padrino
           case orm
             when :activerecord, :mongomapper, :mongoid then "#{name_singular}.update_attributes(#{params})"
             when :datamapper   then "#{name_singular}.update(#{params})"
-            else raise OrmError, "Adapter #{orm} not yet supported!"
+            else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 

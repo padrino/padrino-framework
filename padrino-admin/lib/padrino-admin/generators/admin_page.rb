@@ -16,7 +16,7 @@ module Padrino
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
 
-      desc "Description:\n\n\tpadrino-gen admin_page Model(s)"
+      desc "Description:\n\n\tpadrino-gen admin_page model(s)"
       argument :models, :desc => "The name(s) of your model(s)", :type => :array
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
