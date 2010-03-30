@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.9.10
+
+* Added default values for controllers
+
 == 0.9.9
 
 * Minor typo fixes

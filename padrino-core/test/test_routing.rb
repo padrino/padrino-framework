@@ -326,4 +326,19 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 3 1 2", body
   end
 
+  should "use default values" do
+    mock_app do
+      controller :lang => :it do
+        get(:index, :map => "/:lang") { "lang is #{params[:lang]}" }
+      end
+      assert_equal "/it", url(:index)
+      # This is only for be sure that default values
+      # work only for the given controller
+      get(:foo, :map => "/foo") {}
+      assert_equal "/foo", url(:foo)
+    end
+    get "/en"
+    assert_equal "lang is en", body
+  end
+
 end

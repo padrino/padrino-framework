@@ -114,6 +114,12 @@ module Padrino
       #     get "/show/:id" do; ...; end
       #   end
       #
+      # You can supply default values:
+      #
+      #   controller :lang => :de do
+      #     get :index, :map => "/:lang" do; ...; end
+      #   end
+      #
       # And you can call directly these urls:
       #
       #   # => "/admin"
@@ -123,9 +129,10 @@ module Padrino
         if block_given?
           options = extensions.extract_options!
           @_controller, original_controller = extensions, @_controller
-          @_parents, original_parent = options[:parent], @_parents
+          @_parents,    original_parent     = options.delete(:parent), @_parents
+          @_defaults,   original_defaults   = options, @_defaults
           instance_eval(&block)
-          @_controller, @_parents = original_controller, original_parent
+          @_controller, @_parents, @_defaults = original_controller, original_parent, original_defaults
         else
           include(*extensions) if extensions.any?
         end
@@ -271,7 +278,7 @@ module Padrino
           end
 
           invoke_hook(:route_added, verb, path, block)
-          route = router.add_route(path, options).to(block)
+          route = router.add_route(path, options.reverse_merge(:default_values => @_defaults)).to(block)
           route.name(name) if name
           route
         end
