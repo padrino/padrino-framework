@@ -12,7 +12,7 @@ require 'webrat'
   end
 end
 
-require 'padrino-mailer'
+require File.dirname(__FILE__) + '/../lib/padrino-mailer'
 
 class Test::Unit::TestCase
   include Rack::Test::Methods
