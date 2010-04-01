@@ -13,7 +13,7 @@ require 'thor/group'
   end
 end
 
-require 'padrino-gen'
+require File.dirname(__FILE__) + '/../lib/padrino-gen'
 require 'padrino-core/support_lite'
 
 Padrino::Generators.load_components!
