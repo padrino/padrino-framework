@@ -1,14 +1,14 @@
 require 'rubygems'
 require 'rake'
+require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
-GEM_VERSION = File.read(File.dirname(__FILE__) + '/VERSION')
 subgems = [
-  ["padrino-core", "= #{GEM_VERSION}"],
-  ["padrino-helpers", "= #{GEM_VERSION}"],
-  ["padrino-mailer", "= #{GEM_VERSION}"],
-  ["padrino-gen", "= #{GEM_VERSION}"],
-  ["padrino-admin", "= #{GEM_VERSION}"]
-  # ["padrino-cache", "= #{GEM_VERSION}"],
+  ["padrino-core", "= #{Padrino.version}"],
+  ["padrino-helpers", "= #{Padrino.version}"],
+  ["padrino-mailer", "= #{Padrino.version}"],
+  ["padrino-gen", "= #{Padrino.version}"],
+  ["padrino-admin", "= #{Padrino.version}"]
+  # ["padrino-cache", "= #{Padrino.version}"],
 ]
 
 begin
@@ -55,16 +55,12 @@ rescue LoadError
   end
 end
 
-task :test => :check_dependencies
-
 task :default => :test
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "padrino #{version}"
+  rdoc.title = "padrino #{Padrino.version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

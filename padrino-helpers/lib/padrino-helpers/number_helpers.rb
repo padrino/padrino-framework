@@ -1,5 +1,3 @@
-require 'bigdecimal'
-
 module Padrino
   module Helpers
     ##
@@ -180,7 +178,7 @@ module Padrino
         delimiter ||= (options[:delimiter] || defaults[:delimiter])
 
         begin
-          rounded_number = BigDecimal.new((Float(number) * (10 ** precision)).to_s).round.to_f / 10 ** precision
+          rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
           number_with_delimiter("%01.#{precision}f" % rounded_number,
             :separator => separator,
             :delimiter => delimiter)

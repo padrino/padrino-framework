@@ -4,10 +4,11 @@
 # without include full padrino core.
 #
 module Padrino
+  VERSION = '0.9.9'
   ##
   # Return the current Padrino version
   #
   def self.version
-    @version ||= File.read(File.dirname(__FILE__) + '/../../VERSION').chomp
+    VERSION
   end
 end # Padrino

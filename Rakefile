@@ -1,22 +1,16 @@
-# Simple patch (X.X.X+) release is: rake version:bump:tiny  publish
-# Simple minor (X.X+.X) release is: rake version:bump:minor publish
-# Simple minor (X+.X.X) release is: rake version:bump:major publish
-
 require 'pathname'
 require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
 require 'fileutils'
-require 'sdoc'
-require File.expand_path(File.dirname(__FILE__) + '/versioner')
+require 'sdoc' unless RUBY_PLATFORM =~ /java/
+require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
 include FileUtils
 
 ROOT        = Pathname(__FILE__).dirname.expand_path
 GEM_NAME    = 'padrino-framework'
-GEM_VERSION = ROOT.join('VERSION').read.chomp
-VERSIONER   = Versioner.new(GEM_VERSION, Dir[File.dirname(__FILE__) + '/**/VERSION'])
 
 padrino_gems = [
   "padrino-core",
@@ -46,7 +40,7 @@ desc "Clean pkg and other stuff"
 task :clean do
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) do
-      %w(doc tmp pkg coverage).each { |dir| FileUtils.rm_rf dir }
+      %w(tmp pkg coverage).each { |dir| FileUtils.rm_rf dir }
     end
   end
   Dir["**/*.gem"].each { |gem| FileUtils.rm_rf gem }
@@ -59,7 +53,7 @@ end
 
 desc "Displays the current version"
 task :version do
-  puts "Current version: #{VERSIONER.current_version}"
+  puts "Current version: #{Padrino.version}"
 end
 
 desc "Commits all staged files"
@@ -88,38 +82,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('padrino-mailer/README.rdoc')
 end
 
-namespace :version do
-  namespace :bump do
-    desc "Bump the gemspec by a major version."
-    task :major => :versionomy do
-      version = VERSIONER.bump!(:major)
-      puts "Bumping the major version to #{version.to_s}"
-      Rake::Task['gemspec'].invoke
-      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
-    end
-
-    desc "Bump the gemspec by a minor version."
-    task :minor => :versionomy do
-      version = VERSIONER.bump!(:minor)
-      puts "Bumping the minor version to #{version.to_s}"
-      Rake::Task['gemspec'].invoke
-      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
-    end
-
-    desc "Bump the gemspec by a patch version."
-    task :tiny => :versionomy do |t|
-      version = VERSIONER.bump!(:tiny)
-      puts "Bumping the patch version to #{version.to_s}"
-      Rake::Task['gemspec'].invoke
-      Rake::Task['commit'].invoke("Bumped version to #{version.to_s}")
-    end
-
-    task :versionomy do
-      require 'versionomy' unless defined?(Versionomy) # gem install versionomy
-    end
-  end
-end
-
 desc "Publish doc on padrino.github.com"
 task :pdoc => :rdoc do
   puts "Publishing doc on padrinorb.com ..."
@@ -129,14 +91,6 @@ end
 
 desc "Release all padrino gems"
 task :publish do
-  # TODO uncomment these and test this (pushes repo to github on release)
-  # puts "Pushing to GitHub..."
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { 
-      # rake_command("github:release")
-      # rake_command("git:release") 
-    }
-  end
   puts "Pushing to Gemcutter..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("gemcutter:release") }
