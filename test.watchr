@@ -10,13 +10,14 @@
 # Helpers
 # --------------------------------------------------
 
-def run(cmd)
+def run(path, file)
+  cmd = "ruby -I\"lib:test\" test/#{file}"
   puts(cmd)
-  system(cmd)
+  Dir.chdir(path){ system(cmd) }
 end
 
 def run_all_tests
-  system( "rake test" )
+  system("rake test")
 end
 
 def sudo(cmd)
@@ -34,25 +35,25 @@ end
 # Padrino-Admin
 watch("^padrino-admin/(.*)") do |m|
   if m[1] =~ /generators/
-    run("ruby padrino-admin/test/generators/test_#{base_name(m[1])}_generator.rb")
+    run("padrino-admin", "generators/test_#{base_name(m[1])}_generator.rb")
   else
-    run("ruby padrino-admin/test/test_admin_application.rb")
+    run("padrino-admin", "test_admin_application.rb")
   end
 end
 # Padrino-Cache
-watch("^padrino-cache.*/(.*)\.rb") { |m| run("ruby padrino-cache/test/test_#{base_name(m[1])}.rb")}
+watch("^padrino-cache.*/(.*)\.rb") { |m| run("padrino-cache", "test_#{base_name(m[1])}.rb")}
 # Padrino-Core
-watch("^padrino-core.*/(.*)\.rb") { |m| run("ruby padrino-core/test/test_#{base_name(m[1])}.rb")}
+watch("^padrino-core.*/(.*)\.rb") { |m| run("padrino-core", "test_#{base_name(m[1])}.rb")}
 # Padrino-Gen
-watch("^padrino-gen/lib/padrino-gen/generators/cli.rb") { |m| run("ruby padrino-gen/test/test_cli.rb") }
-watch("^padrino-gen/lib/padrino-gen/generators/(.*)\.rb") { |m| run("ruby padrino-gen/test/test_#{base_name(m[1])}_generator.rb")}
+watch("^padrino-gen/lib/padrino-gen/generators/cli.rb") { |m| run("padrino-gen", "test_cli.rb") }
+watch("^padrino-gen/lib/padrino-gen/generators/(.*)\.rb") { |m| run("padrino-gen", "test_#{base_name(m[1])}_generator.rb")}
 # Padrino-Helpers
-watch("^padrino-helpers/lib/padrino-helpers/(.*)\.rb") { |m| run("ruby padrino-helpers/test/test_#{base_name(m[1])}.rb")}
+watch("^padrino-helpers/lib/padrino-helpers/(.*)\.rb") { |m| run("padrino-helpers", "test_#{base_name(m[1])}.rb")}
 # Padrino-Mailer
-watch("^padrino-mailer/lib/padrino-mailer/(.*)\.rb") { |m| run("ruby padrino-mailer/test/test_#{base_name(m[1])}.rb")}
+watch("^padrino-mailer/lib/padrino-mailer/(.*)\.rb") { |m| run("padrino-mailer", "test_#{base_name(m[1])}.rb")}
 
-# any tests in test folder.
-watch("^(.*)/test/(.*)") { |m| run("ruby #{m[1]}/test/#{m[2]}")}
+# Any tests in test folder.
+watch("^(.*)/test/(.*)") { |m| run(m[1], m[2]) }
 
 # --------------------------------------------------
 # Signal Handling
