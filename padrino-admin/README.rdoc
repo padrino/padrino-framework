@@ -13,7 +13,7 @@ Access Control:: Supports authentication and role permissions for your applicati
 === Admin Dashboard Usage
 
 For a complete look at usage of the Admin dashboard functionality, be sure to check out the
-{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
+{Padrino Admin}[http://www.padrinorb.com/guides/padrino-admin] guide.
 
 Create a new project:
 
@@ -63,7 +63,7 @@ In this example +if+ we visit urls that start with /+customer+/+orders+ or /+car
 to our :+login_page+ "/login". Once we are correctly logged in we can visit these pages.
 
 For a more complete look at using the Admin panel functionality and access features, be sure to check out the
-{Padrino Admin}[http://wiki.github.com/padrino/padrino-framework/padrino-admin] guide.
+{Padrino Admin}[http://www.padrinorb.com/guides/padrino-admin] guide.
 
 == Copyright
 

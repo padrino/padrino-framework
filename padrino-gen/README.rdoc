@@ -7,7 +7,7 @@ Padrino comes preloaded with flexible code generators powered in part by the exc
 both in creating new applications and building on existing ones. The generators have been built to be as library agnostic
 as possible, supporting a myriad of test frameworks, js libraries, mocking libraries, etc.
 
-See the guide for {Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators] for a
+See the guide for {Padrino Generators}[http://www.padrinorb.com/guides/generators] for a
 more in-depth look at the system.
 
 === Application Generator
@@ -46,7 +46,7 @@ script::     none  (default), jquery, prototype, mootools, rightjs
 orm::        none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
 
 To learn more about the project generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 === Sub App Generator
 
@@ -70,7 +70,7 @@ By default these apps are mounted under:
 but you can edit config/apps.rb and change it.
 
 To learn more about the subapp generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 === Model Generator
 
@@ -91,7 +91,7 @@ You can also specify desired fields to be contained within your User model:
   $ padrino-gen model User name:string age:integer email:string
 
 To learn more about the model generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 === Migration Generator
 
@@ -108,7 +108,7 @@ Using the migration generator is as simple as:
   $ padrino-gen migration RemoveFieldsFromUsers
 
 To learn more about the migration generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 === Controller Generator
 
@@ -128,7 +128,7 @@ You can also specify desired actions to be added to your controller:
   $ padrino-gen controller Admin get:index get:new post:create
 
 To learn more about the controller generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 === Mailer Generator
 
@@ -141,7 +141,7 @@ Using the mailer generator is as simple as:
   $ padrino-gen mailer UserNotifier
 
 To learn more about the mailer generator, check out the guide to
-{Padrino Generators}[http://wiki.github.com/padrino/padrino-framework/generators].
+{Padrino Generators}[http://www.padrinorb.com/guides/generators].
 
 == Copyright
 

@@ -34,7 +34,7 @@ Reloading::	Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user’s locale.
 
 Keep in mind, the user will be able to pull in these components
-{seperately into existing Sinatra applications}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra]
+{seperately into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
 
 == Installation
@@ -47,7 +47,7 @@ This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
 
 For a more detailed look at Padrino installation,
-check out the {Installation Guide}[http://wiki.github.com/padrino/padrino-framework/installation].
+check out the {Installation Guide}[http://www.padrinorb.com/guides/installation].
 
 == Usage
 
@@ -57,11 +57,11 @@ on the enhancements to the core Sinatra functionality. To use Padrino, one shoul
 usage of Sinatra itself.
 
 You can also check out the
-{Understanding Sinatra}[http://wiki.github.com/padrino/padrino-framework/underlying-sinatra-overview] guide
+{Understanding Sinatra}[http://www.padrinorb.com/guides/underlying-sinatra-overview] guide
 to learn more about these fundamentals.
 
 For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for
-{Using Padrino in Sinatra}[http://wiki.github.com/padrino/padrino-framework/standalone-usage-in-sinatra].
+{Using Padrino in Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
 
 == Getting Started
 
@@ -70,10 +70,10 @@ of existing Sinatra Functionality!
 
 Best way to get started with building Padrino applications is to read following resources:
 
-* {Padrino Guides}[http://wiki.github.com/padrino/padrino-framework/] - Guides outlining the major functionality within Padrino.
-* {Blog Tutorial}[http://wiki.github.com/padrino/padrino-framework/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
+* {Padrino Guides}[http://www.padrinorb.com/guides/] - Guides outlining the major functionality within Padrino.
+* {Blog Tutorial}[http://www.padrinorb.com/guides/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
 * {Padrino RDoc}[http://padrino.github.com/api/index.html] - Rdoc documentation for the Padrino framework.
-* {Quick Overview}[http://wiki.github.com/padrino/padrino-framework/basic-projects] - Outlines basic generation commands.
+* {Quick Overview}[http://www.padrinorb.com/guides/basic-projects] - Outlines basic generation commands.
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
 

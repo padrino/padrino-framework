@@ -55,7 +55,7 @@ or if you like the method_missing approach:
 And that will then deliver the email according the the configured options. This is really all you need to send emails.
 
 Be sure to check out the
-{Padrino Mailer}[http://wiki.github.com/padrino/padrino-framework/padrino-mailer] guide for more details on usage.
+{Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide for more details on usage.
 
 == Copyright
 
