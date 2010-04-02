@@ -24,6 +24,7 @@
 #
 
 require 'i18n'
+require 'active_support/version'
 require 'active_support/core_ext/kernel'
 require 'active_support/core_ext/module'
 require 'active_support/deprecation'
@@ -34,8 +35,10 @@ require 'active_support/core_ext/object'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/module'
-require 'active_support/core_ext/symbol'
 require 'active_support/ordered_hash'
+
+# AS 3.0 has been removed it because is now available in Ruby 1.8.7 and 1.9.
+require 'active_support/core_ext/symbol' if ActiveSupport::VERSION::MAJOR < 3
 
 ##
 # Define our own OrderedHash based on AS::OrderedHash
