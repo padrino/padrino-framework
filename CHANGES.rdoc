@@ -2,6 +2,9 @@
 
 == 0.9.10 (Unreleased)
 
+* Brazilian Translation [Thanks to Mickey]
+* French Translation [Thanks to Deminew]
+* AS 3.0 Compat
 * Removed VERSION files. This prevent problems described here: http://github.com/nex3/haml/issues/issue/24
 * Added default values for controllers
 * Updated sequel generation to work with sqlite3.

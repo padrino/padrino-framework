@@ -11,3 +11,6 @@ en:
       confirm: Are you sure?
       created_at: Created at
       all: All
+      profile: Profile
+      settings: Settings
+      logout: Logout

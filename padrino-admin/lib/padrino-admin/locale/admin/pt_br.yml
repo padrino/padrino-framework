@@ -1,0 +1,16 @@
+pt_br:
+  padrino:
+    admin:
+      save: Salvar
+      cancel: Cancelar
+      list: Lista
+      edit: Editar
+      new: Novo
+      show: Exibir
+      delete: Excluir
+      confirm: Tem certeza?
+      created_at: Criado em
+      all: Todos
+      profile: Perfil
+      settings: Preferências
+      logout: Sair
