@@ -11,6 +11,6 @@ fr:
       confirm: Etes-vous sur ?
       created_at: Créé à
       all: Tous
-      profile: Profil
-      settings: Settings
-      logout: Logout
+      profile: Profile
+      settings: Paramètres
+      logout: Déconnexion
