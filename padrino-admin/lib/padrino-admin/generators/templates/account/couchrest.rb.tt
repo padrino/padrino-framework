@@ -1,0 +1,80 @@
+class Account < CouchRest::ExtendedDocument
+  include CouchRest::Validation
+  use_database COUCHDB
+  
+  attr_accessor :password, :password_confirmation
+  
+  # Properties
+  property :name
+  property :surname
+  property :email
+  property :crypted_password
+  property :salt
+  property :role
+  
+  view_by :email
+  view_by :id,
+    :map => "function(doc) {\n if ((doc['couchrest-type'] == 'Account') && doc['_id']) {\n emit(doc['_id'], null);\n }\n}\n"
+
+  # Validations
+  validates_presence_of     :email, :role
+  validates_presence_of     :password,                   :if => :password_required
+  validates_presence_of     :password_confirmation,      :if => :password_required
+  validates_length_of       :password, :within => 4..40, :if => :password_required
+  validates_confirmation_of :password,                   :if => :password_required
+  validates_length_of       :email,    :within => 3..100
+  validates_with_method     :email,    :method => :email_is_unique
+  validates_format_of       :email,    :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+  validates_format_of       :role,     :with => /[A-Za-z]/
+
+  # Callbacks
+  before_save :generate_password
+
+  ##
+  # This method is for authentication purpose
+  #
+  def self.authenticate(email, password)
+    email_array = self.by_email :key => email
+    if email_array.size == 0
+      return nil
+    else
+      account = email_array[0]
+    end
+    account && account.password_clean == password ? account : nil
+  end
+  
+  ##
+  # This method is used for retrive the original password.
+  #
+  def password_clean
+    crypted_password.decrypt(salt)
+  end
+  
+  def self.find_by_id(id)
+    id_array = self.by_id :key => id
+    if id_array.size == 0
+      return nil
+    else
+      return id_array[0]
+    end
+  end
+
+  private
+    def generate_password
+      return if password.blank?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new_record?
+      self.crypted_password = password.encrypt(self.salt)
+    end
+
+    def password_required
+      crypted_password.blank? || !password.blank?
+    end
+    
+    def email_is_unique
+        if Account.by_email(:key => self.email, :limit => 1).blank? || Account.get("#{self.id}").email == self.email
+          return true
+        else 
+          return [false, "Email has already been taken"] 
+        end
+      end
+end
