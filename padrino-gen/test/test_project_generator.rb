@@ -112,7 +112,9 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--orm=sequel', '--script=none']) }
       assert_match /Applying.*?sequel.*?orm/, buffer
       assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'sqlite3'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
+      assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')
     end
 

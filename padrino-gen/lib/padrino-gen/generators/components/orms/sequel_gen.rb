@@ -8,14 +8,14 @@ module Padrino
           SEQUEL = (<<-SEQUEL).gsub(/^ {10}/, '')
           Sequel::Model.plugin(:schema)
           case Padrino.env
-            when :development then Sequel.connect("sqlite3://" + Padrino.root('db', "development.db"), :loggers => [logger])
-            when :production  then Sequel.connect("sqlite3://" + Padrino.root('db', "production.db"),  :loggers => [logger])
-            when :test        then Sequel.connect("sqlite3://" + Padrino.root('db', "test.db"),        :loggers => [logger])
+            when :development then Sequel.connect("sqlite://" + Padrino.root('db', "development.db"), :loggers => [logger])
+            when :production  then Sequel.connect("sqlite://" + Padrino.root('db', "production.db"),  :loggers => [logger])
+            when :test        then Sequel.connect("sqlite://" + Padrino.root('db', "test.db"),        :loggers => [logger])
           end
           SEQUEL
 
           def setup_orm
-            require_dependencies 'sequel'
+            require_dependencies 'sequel', 'sqlite3'
             create_file("config/database.rb", SEQUEL)
             empty_directory('app/models')
           end
