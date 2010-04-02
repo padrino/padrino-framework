@@ -11,6 +11,7 @@
 # --------------------------------------------------
 
 def run(path, file)
+  return unless File.exists?(File.join(path, "test/", file))
   cmd = "ruby -I\"lib:test\" test/#{file}"
   puts(cmd)
   Dir.chdir(path){ system(cmd) }
@@ -53,7 +54,7 @@ watch("^padrino-helpers/lib/padrino-helpers/(.*)\.rb") { |m| run("padrino-helper
 watch("^padrino-mailer/lib/padrino-mailer/(.*)\.rb") { |m| run("padrino-mailer", "test_#{base_name(m[1])}.rb")}
 
 # Any tests in test folder.
-watch("^(.*)/test/(.*)") { |m| run(m[1], m[2]) }
+watch("^(.*)/test/test_(.*)") { |m| run(m[1], "test_#{m[2]}") }
 
 # --------------------------------------------------
 # Signal Handling
