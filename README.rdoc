@@ -70,9 +70,9 @@ of existing Sinatra Functionality!
 
 Best way to get started with building Padrino applications is to read following resources:
 
-* {Padrino Guides}[http://www.padrinorb.com/guides/] - Guides outlining the major functionality within Padrino.
+* {Padrino Guides}[http://www.padrinorb.com/guides] - Guides outlining the major functionality within Padrino.
 * {Blog Tutorial}[http://www.padrinorb.com/guides/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
-* {Padrino RDoc}[http://padrino.github.com/api/index.html] - Rdoc documentation for the Padrino framework.
+* {Padrino RDoc}[http://www.padrinorb.com/api/index.html] - Rdoc documentation for the Padrino framework.
 * {Quick Overview}[http://www.padrinorb.com/guides/basic-projects] - Outlines basic generation commands.
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
