@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.10
+== 0.9.10 (Unreleased)
 
 * Removed VERSION files. This prevent problems described here: http://github.com/nex3/haml/issues/issue/24
 * Added default values for controllers

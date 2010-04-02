@@ -12,6 +12,7 @@ class TestAppGenerator < Test::Unit::TestCase
     @mail_gen = Padrino::Generators::Mailer.dup
   end
 
+
   context 'the app generator' do
     should "fail outside app root" do
       output = silence_logger { @app.start(['demo', '-r=/tmp']) }
