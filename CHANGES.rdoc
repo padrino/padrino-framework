@@ -2,6 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
+* Added couchdb support for padrino-admin [Thanks to Ghostm]
 * Brazilian Translation [Thanks to Deminew]
 * French Translation [Thanks to Mickey]
 * AS 3.0 Compat
@@ -9,7 +10,7 @@
 * Added default values for controllers
 * Updated sequel generation to work with sqlite3.
 * Added couchdb support for padrino-admin.
-* Fixes support for index action with params.
+* Fixes support for index routes with params.
 
 == 0.9.9
 
