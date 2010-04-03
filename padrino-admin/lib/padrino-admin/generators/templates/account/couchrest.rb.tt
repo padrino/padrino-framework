@@ -66,6 +66,8 @@ class Account < CouchRest::ExtendedDocument
     end
 
     def email_is_unique
-      Account.by_email(:key => self.email, :limit => 1).blank? || [false, "Email has already been taken"]
+      Account.by_email(:key => self.email, :limit => 1).empty? ||
+        Account.by_email(:key => self.email, :limit => 1) == [self] ||
+        [false, "Email has already been taken"]
     end
 end
