@@ -4,7 +4,7 @@
 # without include full padrino core.
 #
 module Padrino
-  VERSION = '0.9.9'
+  VERSION = '0.9.9' unless defined?(Padrino::VERSION)
   ##
   # Return the current Padrino version
   #
