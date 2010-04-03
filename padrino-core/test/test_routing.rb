@@ -149,6 +149,15 @@ class TestRouting < Test::Unit::TestCase
     get "/accounts"
     assert_equal "accounts", body
   end
+  
+  should 'remove index from path with params' do
+    mock_app do
+      get(:index, :with => :name){ "index with #{params[:name]}" }
+    end
+    get "/bobby"
+    assert_equal "index with bobby", body
+    assert_equal "/john", @app.url(:index, :name => "john")
+  end
 
   should 'parse named params' do
     mock_app do
