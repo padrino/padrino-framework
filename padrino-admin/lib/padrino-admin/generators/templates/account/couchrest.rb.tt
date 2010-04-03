@@ -51,7 +51,7 @@ class Account < CouchRest::ExtendedDocument
   #
   def self.find_by_id(id)
     id_array = self.by_id :key => id
-    return id_array[0]
+    id_array[0]
   end
 
   private
@@ -66,10 +66,6 @@ class Account < CouchRest::ExtendedDocument
     end
 
     def email_is_unique
-      if Account.by_email(:key => self.email, :limit => 1).blank? || Account.get(self.id).email == self.email
-        true
-      else
-        [false, "Email has already been taken"]
-      end
+      Account.by_email(:key => self.email, :limit => 1).blank? || [false, "Email has already been taken"]
     end
 end

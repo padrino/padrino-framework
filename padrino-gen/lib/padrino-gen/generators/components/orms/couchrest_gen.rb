@@ -7,9 +7,9 @@ module Padrino
 
           COUCHREST = (<<-COUCHREST).gsub(/^ {10}/, '')
           case Padrino.env
-            when :development then COUCHDB_NAME = '!NAME!_name_development'
-            when :production  then COUCHDB_NAME = '!NAME!_name_production'
-            when :test        then COUCHDB_NAME = '!NAME!_name_test'
+            when :development then COUCHDB_NAME = '!NAME!_development'
+            when :production  then COUCHDB_NAME = '!NAME!_production'
+            when :test        then COUCHDB_NAME = '!NAME!_test'
           end
           COUCHDB = CouchRest.database!(COUCHDB_NAME)
           COUCHREST
