@@ -2,6 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
+* Updated jquery to v1.4.2
 * Added couchdb support for padrino-admin [Thanks to Ghostm]
 * Brazilian Translation [Thanks to Deminew]
 * French Translation [Thanks to Mickey]
