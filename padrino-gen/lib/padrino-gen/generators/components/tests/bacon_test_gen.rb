@@ -61,12 +61,12 @@ module Padrino
           # Generates a controller test given the controllers name
           def generate_controller_test(name)
             bacon_contents = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file destination_root("test/controllers/","#{name}_controller_test.rb"), bacon_contents, :skip => true
+            create_file destination_root("test/controllers/","#{name.to_s.underscore}_controller_test.rb"), bacon_contents, :skip => true
           end
 
           def generate_model_test(name)
-            bacon_contents = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file destination_root("test/models/#{name.to_s.downcase}_test.rb"), bacon_contents, :skip => true
+            bacon_contents = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+            create_file destination_root("test/models/#{name.to_s.underscore}_test.rb"), bacon_contents, :skip => true
           end
         end # BaconGen
       end # Tests
