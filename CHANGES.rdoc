@@ -12,6 +12,7 @@
 * Updated sequel generation to work with sqlite3.
 * Fixes support for index routes with params.
 * Fixes SASS reload plugin issue on 1.9.X.
+* Fixes an issue with generator not casing controller / model names
 
 == 0.9.9
 
