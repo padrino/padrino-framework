@@ -6,7 +6,7 @@
 * Added couchdb support for padrino-admin [Thanks to Ghostm]
 * Brazilian Translation [Thanks to Deminew]
 * French Translation [Thanks to Mickey]
-* AS 3.0 Compat
+* ActiveSupport 3.0 Compatibility fixes
 * Removed VERSION files. This prevent problems described here: http://github.com/nex3/haml/issues/issue/24
 * Added default values for controllers
 * Updated sequel generation to work with sqlite3.
