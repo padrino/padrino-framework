@@ -263,7 +263,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for sass" do
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=sass']) }
       assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass.rb')
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/sass_plugin.rb')
       assert_match_in_file(/register SassInitializer/m, '/tmp/sample_project/app/app.rb')
       assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end
@@ -272,7 +272,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=less']) }
       assert_match_in_file(/gem 'less'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'rack-less'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/module LessInitializer.*Rack::Less/m, '/tmp/sample_project/lib/less.rb')
+      assert_match_in_file(/module LessInitializer.*Rack::Less/m, '/tmp/sample_project/lib/less_plugin.rb')
       assert_match_in_file(/register LessInitializer/m, '/tmp/sample_project/app/app.rb')
       assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end

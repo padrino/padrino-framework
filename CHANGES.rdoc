@@ -11,6 +11,7 @@
 * Added default values for controllers
 * Updated sequel generation to work with sqlite3.
 * Fixes support for index routes with params.
+* Fixes SASS reload plugin issue on 1.9.X.
 
 == 0.9.9
 

@@ -24,7 +24,7 @@ module Padrino
 
           def setup_stylesheet
             require_dependencies 'haml'
-            create_file destination_root('/lib/sass.rb'), SASS_INIT
+            create_file destination_root('/lib/sass_plugin.rb'), SASS_INIT
             inject_into_file destination_root('/app/app.rb'), SASS_REGISTER, :after => "configure do\n"
             empty_directory destination_root('/app/stylesheets')
           end

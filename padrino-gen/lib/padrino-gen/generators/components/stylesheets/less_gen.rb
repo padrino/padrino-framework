@@ -32,7 +32,7 @@ module Padrino
 
           def setup_stylesheet
             require_dependencies 'less', 'rack-less'
-            create_file destination_root('/lib/less.rb'), LESS_INIT
+            create_file destination_root('/lib/less_plugin.rb'), LESS_INIT
             inject_into_file destination_root('/app/app.rb'), LESS_REGISTER, :after => "configure do\n"
             empty_directory destination_root('/app/stylesheets')
           end
