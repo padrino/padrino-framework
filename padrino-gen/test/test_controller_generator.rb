@@ -19,7 +19,7 @@ class TestControllerGenerator < Test::Unit::TestCase
 
     should 'not fail if we don\'t have test component' do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--test=none']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
       assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/app/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_project/app/views/demo_items')
@@ -28,7 +28,7 @@ class TestControllerGenerator < Test::Unit::TestCase
 
     should "generate controller within existing application" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
       assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/app/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_project/app/views/demo_items')
@@ -36,33 +36,43 @@ class TestControllerGenerator < Test::Unit::TestCase
 
     should "generate controller test for bacon" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for riot" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=riot']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for testspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=testspec']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path)
     end
 
     should "generate controller test for rspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       assert_match_in_file(/describe "DemoItemsController" do/m, '/tmp/sample_project/spec/controllers/demo_items_controller_spec.rb')
     end
 
     should "generate controller test for shoulda" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=shoulda']) }
-      silence_logger { @cont_gen.start(['demo_items', '-r=/tmp/sample_project']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
       expected_pattern = /class DemoItemsControllerTest < Test::Unit::TestCase/m
       assert_match_in_file(expected_pattern, @controller_test_path)
+      assert_file_exists('/tmp/sample_project/test/controllers/demo_items_controller_test.rb')
+    end
+
+    should "correctly generate file names" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec']) }
+      silence_logger { @cont_gen.start(['DemoItems', '-r=/tmp/sample_project']) }
+      assert_file_exists('/tmp/sample_project/app/views/demo_items')
+      assert_file_exists('/tmp/sample_project/app/controllers/demo_items.rb')
+      assert_file_exists('/tmp/sample_project/app/helpers/demo_items_helper.rb')
+      assert_file_exists('/tmp/sample_project/spec/controllers/demo_items_controller_spec.rb')
     end
 
     # Controller action generation

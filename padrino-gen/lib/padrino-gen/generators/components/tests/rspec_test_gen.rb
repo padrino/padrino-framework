@@ -71,12 +71,12 @@ module Padrino
           # Generates a controller test given the controllers name
           def generate_controller_test(name)
             rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-            create_file destination_root("spec/controllers/#{name}_controller_spec.rb"), rspec_contents, :skip => true
+            create_file destination_root("spec/controllers/#{name.to_s.underscore}_controller_spec.rb"), rspec_contents, :skip => true
           end
 
           def generate_model_test(name)
-            rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.downcase.underscore)
-            create_file destination_root("spec/models/#{name.to_s.downcase}_spec.rb"), rspec_contents, :skip => true
+            rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+            create_file destination_root("spec/models/#{name.to_s.underscore}_spec.rb"), rspec_contents, :skip => true
           end
         end # RspecGen
       end # Tests

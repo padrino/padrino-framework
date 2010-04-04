@@ -33,11 +33,11 @@ module Padrino
           check_app_existence(app)
           @app_name = fetch_app_name(app)
           @actions  = controller_actions(fields)
-          @controller = name
+          @controller = name.to_s.underscore
           self.behavior = :revoke if options[:destroy]
-          template "templates/controller.rb.tt", destination_root(app, "controllers", "#{name}.rb")
-          template "templates/helper.rb.tt",     destination_root(app, "helpers", "#{name}_helper.rb")
-          empty_directory destination_root(app, "/views/#{name}")
+          template "templates/controller.rb.tt", destination_root(app, "controllers", "#{name.to_s.underscore}.rb")
+          template "templates/helper.rb.tt",     destination_root(app, "helpers", "#{name.to_s.underscore}_helper.rb")
+          empty_directory destination_root(app, "/views/#{name.to_s.underscore}")
           include_component_module_for(:test)
           generate_controller_test(name) if test?
         else

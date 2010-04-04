@@ -15,6 +15,12 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/app/models/user.rb')
     end
 
+    should "generate filename properly" do
+      silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=couchrest']) }
+      silence_logger { @model_gen.start(['DemoItem', "name:string", "age", "email:string", '-r=/tmp/sample_project']) }
+      assert_file_exists('/tmp/sample_project/app/models/demo_item.rb')
+    end
+
     should "fail if we don't use an adapter" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
       assert_raise(SystemExit) { silence_logger { @model_gen.start(['user', '-r=/tmp/sample_project']) } }
@@ -213,47 +219,47 @@ class TestModelGenerator < Test::Unit::TestCase
     # BACON
     should "generate test file for bacon" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_project/test/models/user_test.rb')
+      silence_logger { @model_gen.start(['SomeUser', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/describe "SomeUser Model"/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/@some_user = SomeUser.new/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, '/tmp/sample_project/test/models/some_user_test.rb')
     end
 
     # RIOT
     should "generate test file for riot" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=riot', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/context "User Model" do/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!@user.nil\? \}/m, '/tmp/sample_project/test/models/user_test.rb')
+      silence_logger { @model_gen.start(['SomeUser', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/context "SomeUser Model" do/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/@some_user = SomeUser.new/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!@some_user.nil\? \}/m, '/tmp/sample_project/test/models/some_user_test.rb')
     end
 
     # RSPEC
     should "generate test file for rspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=rspec', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/describe "User Model"/m, '/tmp/sample_project/spec/models/user_spec.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/spec/models/user_spec.rb')
-      assert_match_in_file(/@user\.should_not be_nil/m, '/tmp/sample_project/spec/models/user_spec.rb')
+      silence_logger { @model_gen.start(['SomeUser', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/describe "SomeUser Model"/m, '/tmp/sample_project/spec/models/some_user_spec.rb')
+      assert_match_in_file(/@some_user = SomeUser.new/m, '/tmp/sample_project/spec/models/some_user_spec.rb')
+      assert_match_in_file(/@some_user\.should_not be_nil/m, '/tmp/sample_project/spec/models/some_user_spec.rb')
     end
 
     # SHOULDA
     should "generate test file for shoulda" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=shoulda', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['Person', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/class PersonControllerTest < Test::Unit::TestCase/m, '/tmp/sample_project/test/models/person_test.rb')
-      assert_match_in_file(/context "Person Model"/m, '/tmp/sample_project/test/models/person_test.rb')
-      assert_match_in_file(/@person = Person.new/m, '/tmp/sample_project/test/models/person_test.rb')
-      assert_match_in_file(/assert_not_nil @person/m, '/tmp/sample_project/test/models/person_test.rb')
+      silence_logger { @model_gen.start(['SomePerson', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/class SomePersonControllerTest < Test::Unit::TestCase/m, '/tmp/sample_project/test/models/some_person_test.rb')
+      assert_match_in_file(/context "SomePerson Model"/m, '/tmp/sample_project/test/models/some_person_test.rb')
+      assert_match_in_file(/@some_person = SomePerson.new/m, '/tmp/sample_project/test/models/some_person_test.rb')
+      assert_match_in_file(/assert_not_nil @some_person/m, '/tmp/sample_project/test/models/some_person_test.rb')
     end
 
     # TESTSPEC
     should "generate test file for testspec" do
       silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=none', '-t=testspec', '-d=activerecord']) }
-      silence_logger { @model_gen.start(['User', '-r=/tmp/sample_project']) }
-      assert_match_in_file(/context "User Model"/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/@user = User.new/m, '/tmp/sample_project/test/models/user_test.rb')
-      assert_match_in_file(/@user\.should\.not\.be\.nil/m, '/tmp/sample_project/test/models/user_test.rb')
+      silence_logger { @model_gen.start(['SomeUser', '-r=/tmp/sample_project']) }
+      assert_match_in_file(/context "SomeUser Model"/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/@some_user = SomeUser.new/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, '/tmp/sample_project/test/models/some_user_test.rb')
     end
   end
 
