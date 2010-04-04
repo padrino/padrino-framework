@@ -118,7 +118,8 @@ desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
   GEM_PATHS[0..-2].each do |gem|
-    Dir.chdir(File.join(ROOT, gem)) { rake_command "test" }
+    # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
+    sh "cd #{File.join(ROOT, gem)} && #{Gem.ruby} -S rake test", :verbose => true
   end
 end
 
