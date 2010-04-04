@@ -12,6 +12,7 @@ begin
     gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-admin"
     gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
     gem.rubyforge_project = 'padrino-admin'
+    gem.version = Padrino.version
     gem.add_runtime_dependency     "padrino-core",    "= #{Padrino.version}"
     gem.add_runtime_dependency     "padrino-gen",     "= #{Padrino.version}"
     gem.add_runtime_dependency     "padrino-helpers", "= #{Padrino.version}"
