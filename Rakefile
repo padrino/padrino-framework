@@ -1,3 +1,5 @@
+# rake bump version=X.X.X && rake publish
+
 require 'pathname'
 require 'rake/clean'
 require 'rake/rdoctask'
@@ -87,6 +89,17 @@ task :pdoc => :rdoc do
   puts "Publishing doc on padrinorb.com ..."
   Rake::SshDirPublisher.new("root@lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload
   FileUtils.rm_rf "doc"
+end
+
+desc "Bumps the version number based on given version"
+task :bump, [:version] do |t, args|
+  raise "Please specify version=x.x.x !" unless args.version
+  version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
+  version_text = File.read(version_path).sub(/VERSION = '[\d\.]+'/, "VERSION = '#{args.version}'")
+  puts "Updating Padrino to version #{args.version}."
+  File.open(version_path, 'w') { |f| f.puts version_text }
+  Rake::Task['gemspec'].invoke
+  Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
 end
 
 desc "Release all padrino gems"
