@@ -267,6 +267,9 @@ module Padrino
           # Because of self.options.host
           host_name(options.delete(:host)) if options.key?(:host)
 
+          # Merge in option defaults
+          options.reverse_merge!(:default_values => @_defaults)
+
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
           unbound_method = instance_method("#{verb} #{path}")
@@ -278,7 +281,7 @@ module Padrino
           end
 
           invoke_hook(:route_added, verb, path, block)
-          route = router.add_route(path, options.reverse_merge(:default_values => @_defaults)).to(block)
+          route = router.add_route(path, options).to(block)
           route.name(name) if name
           route
         end
