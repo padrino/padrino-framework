@@ -2,6 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
+* Danish translation [Thanks to Molte]
 * Russian translation [Thanks to Imm]
 * Added +extcore+ as a javascript option in project generator [Thanks to Imm]
 * Updated jquery to v1.4.2
