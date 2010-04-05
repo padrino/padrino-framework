@@ -1,0 +1,16 @@
+da:
+  padrino:
+    admin:
+      save: Gem
+      cancel: Annuller
+      list: Liste
+      edit: Rediger
+      new: Tilføj
+      show: Vis
+      delete: Slet
+      confirm: Er du sikker?
+      created_at: Oprettet
+      all: Alle
+      profile: Profil
+      settings: Indstillinger
+      logout: Log ud
