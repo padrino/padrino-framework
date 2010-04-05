@@ -1,5 +1,9 @@
 = CHANGES
 
+== My Changes
+
+* Added +extcore+ as a javascript option in project generator
+
 == 0.9.10 (Unreleased)
 
 * Updated jquery to v1.4.2

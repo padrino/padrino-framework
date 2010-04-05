@@ -194,6 +194,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/public/javascripts/right.js')
       assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
     end
+
+    should "properly generate for ext-core" do
+      buffer = silence_logger { @project.start(['sample_project', '--root=/tmp', '--script=extcore']) }
+      assert_match /Applying.*?extcore.*?script/, buffer
+      assert_file_exists('/tmp/sample_project/public/javascripts/ext-core.js')
+      assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
+    end
   end
 
   context "the generator for test component" do
