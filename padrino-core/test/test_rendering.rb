@@ -99,6 +99,7 @@ class TestRendering < Test::Unit::TestCase
     should_eventually 'use correct layout with each controller' do
       create_layout :foo, "foo layout <%= yield %> end"
       create_layout :bar, "bar layout <%= yield %> end"
+      create_layout :application, "default layout <%= yield %> end"
       create_view :the_file, "erb file"
       mock_app do
         controller :foo_test do
@@ -109,11 +110,19 @@ class TestRendering < Test::Unit::TestCase
           layout :bar
           get(:demo){ render :the_file }
         end
+        controller :default_test do
+          get(:demo) { render :the_file }
+          get(:foo)  { render  :the_file, :layout => :foo }
+        end
       end
       get "/foo_test/demo"
       assert_equal "foo layout erb file end", body
       get "/bar_test/demo"
       assert_equal "bar layout erb file end", body
+      get "/default_test/demo"
+      assert_equal "default layout erb file end", body
+      get "/default_test/foo"
+      assert_equal "foo layout erb file end", body
       remove_views
     end
   end
