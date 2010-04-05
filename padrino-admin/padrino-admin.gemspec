@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-03-29}
+  s.date = %q{2010-04-05}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
      "LICENSE",
      "README.rdoc",
      "Rakefile",
-     "VERSION",
      "lib/padrino-admin.rb",
      "lib/padrino-admin/access_control.rb",
      "lib/padrino-admin/generators/actions.rb",
@@ -29,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/admin_page.rb",
      "lib/padrino-admin/generators/orm.rb",
      "lib/padrino-admin/generators/templates/account/activerecord.rb.tt",
+     "lib/padrino-admin/generators/templates/account/couchrest.rb.tt",
      "lib/padrino-admin/generators/templates/account/datamapper.rb.tt",
      "lib/padrino-admin/generators/templates/account/mongoid.rb.tt",
      "lib/padrino-admin/generators/templates/account/mongomapper.rb.tt",
@@ -70,10 +70,16 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/helpers/view_helpers.rb",
      "lib/padrino-admin/locale/admin/de.yml",
      "lib/padrino-admin/locale/admin/en.yml",
+     "lib/padrino-admin/locale/admin/fr.yml",
      "lib/padrino-admin/locale/admin/it.yml",
+     "lib/padrino-admin/locale/admin/pt_br.yml",
+     "lib/padrino-admin/locale/admin/ru.yml",
      "lib/padrino-admin/locale/orm/de.yml",
      "lib/padrino-admin/locale/orm/en.yml",
+     "lib/padrino-admin/locale/orm/fr.yml",
      "lib/padrino-admin/locale/orm/it.yml",
+     "lib/padrino-admin/locale/orm/pt_br.yml",
+     "lib/padrino-admin/locale/orm/ru.yml",
      "lib/padrino-admin/utils/crypt.rb",
      "padrino-admin.gemspec",
      "test/fixtures/data_mapper.rb",
