@@ -2,6 +2,7 @@
 
 == My Changes
 
+* Russian translation
 * Added +extcore+ as a javascript option in project generator
 
 == 0.9.10 (Unreleased)

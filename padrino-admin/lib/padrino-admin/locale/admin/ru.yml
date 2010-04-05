@@ -1,0 +1,16 @@
+ru:
+  padrino:
+    admin:
+      save: Сохранить
+      cancel: Отмена
+      list: Список
+      edit: Изменить
+      new: Добавить
+      show: Показать
+      delete: Удалить
+      confirm: Вы уверены?
+      created_at: Добавлено
+      all: Все
+      profile: Профиль
+      settings: Настройки
+      logout: Выход
