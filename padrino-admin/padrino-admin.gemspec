@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/generators/templates/account/datamapper.rb.tt",
      "lib/padrino-admin/generators/templates/account/mongoid.rb.tt",
      "lib/padrino-admin/generators/templates/account/mongomapper.rb.tt",
+     "lib/padrino-admin/generators/templates/account/sequel.rb.tt",
      "lib/padrino-admin/generators/templates/account/seeds.rb.tt",
      "lib/padrino-admin/generators/templates/app/app.rb",
      "lib/padrino-admin/generators/templates/app/controllers/base.rb",

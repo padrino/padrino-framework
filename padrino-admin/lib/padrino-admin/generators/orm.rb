@@ -34,6 +34,7 @@ module Padrino
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
+            when :sequel       then @klass.columns
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -55,6 +56,7 @@ module Padrino
           case orm
             when :activerecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
+            when :sequel then "#{klass_name}.filter(#{params}).all"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end

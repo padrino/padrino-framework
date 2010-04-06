@@ -83,6 +83,7 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/templates/scripts/protopak.js",
      "lib/padrino-gen/generators/templates/scripts/right.js",
      "lib/padrino-gen/padrino-tasks/activerecord.rb",
+     "lib/padrino-gen/padrino-tasks/sequel.rb",
      "lib/padrino-gen/padrino-tasks/datamapper.rb",
      "lib/padrino-gen/padrino-tasks/mongomapper.rb",
      "lib/padrino-gen/padrino-tasks/seed.rb",

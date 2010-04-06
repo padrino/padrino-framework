@@ -7,7 +7,7 @@ module Padrino
 
           SEQUEL = (<<-SEQUEL).gsub(/^ {10}/, '')
           Sequel::Model.plugin(:schema)
-          case Padrino.env
+          DB = case Padrino.env
             when :development then Sequel.connect("sqlite://" + Padrino.root('db', "development.db"), :loggers => [logger])
             when :production  then Sequel.connect("sqlite://" + Padrino.root('db', "production.db"),  :loggers => [logger])
             when :test        then Sequel.connect("sqlite://" + Padrino.root('db', "test.db"),        :loggers => [logger])
