@@ -39,6 +39,13 @@ module Padrino
         return super(name, &block) if block_given?
         @_layout = name
       end
+
+      ##
+      # Small template cache
+      #
+      def template_for
+        @_template_for ||= {}
+      end
     end
 
     private
@@ -69,7 +76,7 @@ module Padrino
         # Resolve layouts similar to in Rails
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
           options[:layout] = resolved_layout
-          logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout]
+          logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout].present?
         end
 
         # Pass arguments to Sinatra render method
@@ -85,11 +92,10 @@ module Padrino
       # => "/layouts/custom"
       #
       def resolved_layout
-        return @_resolved_layout if Padrino.env == :production && !@_resolved_layout
         layout_var = self.class.instance_variable_get(:@_layout) || :application
         has_layout_at_root = Dir["#{self.settings.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
-        @_resolved_layout = resolve_template(layout_path, :strict_format => true)[0] rescue nil
+        located_template = resolve_template(layout_path, :strict_format => true)[0] rescue nil
       end
 
       ##
@@ -106,9 +112,12 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
+        template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
+        tpl = self.class.template_for[[template_path, content_type, locale]]
+        return tpl if tpl
+
         options.reverse_merge!(:strict_format => false)
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
-        template_path = "/#{template_path}" unless template_path.to_s =~ /^\//
         target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
 
@@ -119,15 +128,23 @@ module Padrino
         end
 
         located_template =
-          templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}.#{content_type}" } ||
-          templates.find { |file, e| defined?(I18n) && file.to_s == "#{template_path}.#{I18n.locale}" && content_type == :html } ||
+          templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
+          templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && content_type == :html } ||
           templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
           templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
           templates.find { |file, e| file.to_s == "#{template_path}" && content_type == :html } ||
           templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
-        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!") unless located_template
+        self.class.template_for[[template_path, content_type, locale]] = located_template || [] unless settings.reload_templates?
+        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!")    unless located_template
         located_template
+      end
+
+      ##
+      # Return the I18n.locale if I18n is defined
+      #
+      def locale
+        I18n.locale if defined?(I18n)
       end
   end # Rendering
 end # Padrino
