@@ -180,8 +180,23 @@ module Padrino
       end
       alias :url_for :url
 
-      private
+      ##
+      # Returns the cached route for the given path and options.
+      #
+      def fetch_route(path, options)
+        key = [path, options, @_controller, @_parents]
+        (@_cached_route ||= {})[key]
+      end
 
+      ###
+      # Caches the given route
+      #
+      def cache_route!(original, parsed)
+        key = original.push(@_controller, @_parents)
+        (@_cached_route ||= {})[key] = parsed if parsed
+      end
+
+      private
         ##
         # Rewrite default because now routes can be:
         #
@@ -201,8 +216,41 @@ module Padrino
         #   get :list, :respond_to => [:html, :js, :json] # => "/list(.{!format,js|json})"
         #
         def route(verb, path, options={}, &block)
-          # We dup options so we can build HEAD request correctly
-          options = options.dup
+          # Do padrino parsing. We dup options so we can build HEAD request correctly
+          path, name, options = *parse_route(path, options.dup)
+
+          # Standard Sinatra requirements
+          options[:conditions] ||= {}
+          options[:conditions][:request_method] = verb
+          options[:conditions][:host] = options.delete(:host) if options.key?(:host)
+
+          # Because of self.options.host
+          host_name(options.delete(:host)) if options.key?(:host)
+
+          # Sinatra defaults
+          define_method "#{verb} #{path}", &block
+          unbound_method = instance_method("#{verb} #{path}")
+          block =
+          if block.arity != 0
+            proc { unbound_method.bind(self).call(*@block_params) }
+          else
+            proc { unbound_method.bind(self).call }
+          end
+
+          invoke_hook(:route_added, verb, path, block)
+          route = router.add_route(path, options).to(block)
+          route.name(name) if name
+          route
+        end
+
+        def parse_route(path, options)
+          # We check and return the cached route if present
+          cache = fetch_route(path, options)
+          return cache if cache
+
+          # We need save our originals path/options so we can perform correctly cache.
+          original = [path, options.dup]
+
           # We need check if path is a symbol, if that it's a named route
           map = options.delete(:map)
 
@@ -244,9 +292,9 @@ module Padrino
               path = process_path_for_parent_params(path, parent_params)
             end
 
-            # Little reformats                       
+            # Little reformats
             path.sub!(%r^/index(\(.\{:format[\,\w\$\|]*\}\))$^, '\1') # Remove index from formatted routes
-            path.sub!(%r{\bindex(.*)$}, '\1')                         # If the route contains /index we remove that    
+            path.sub!(%r{\bindex(.*)$}, '\1')                         # If the route contains /index we remove that
             path = (uri_root == "/" ? "/" : "(/)") if path.blank?     # Add a trailing delimiter if path is empty
 
             # We need to have a path that start with / in some circumstances and that don't end with /
@@ -259,31 +307,15 @@ module Padrino
             path.sub!(%r{/\?$}, '(/)') #  '/foo/?' => '/foo(/)'
           end
 
-          # Standard Sinatra requirements
-          options[:conditions] ||= {}
-          options[:conditions][:request_method] = verb
-          options[:conditions][:host] = options.delete(:host) if options.key?(:host)
-
-          # Because of self.options.host
-          host_name(options.delete(:host)) if options.key?(:host)
-
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
 
-          # Sinatra defaults
-          define_method "#{verb} #{path}", &block
-          unbound_method = instance_method("#{verb} #{path}")
-          block =
-          if block.arity != 0
-            proc { unbound_method.bind(self).call(*@block_params) }
-          else
-            proc { unbound_method.bind(self).call }
-          end
+          # Save parsed
+          parsed = [path, name, options.dup]
 
-          invoke_hook(:route_added, verb, path, block)
-          route = router.add_route(path, options).to(block)
-          route.name(name) if name
-          route
+          # Perform caching
+          cache_route!(original, parsed) unless reload?
+          [path, name, options]
         end
 
         ##

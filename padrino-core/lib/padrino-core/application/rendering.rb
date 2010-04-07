@@ -41,19 +41,19 @@ module Padrino
       end
 
       ##
-      # Returns the cached template file to render for a given url, content_type and locale.  
+      # Returns the cached template file to render for a given url, content_type and locale.
       #
       # render_options = [template_path, content_type, locale]
       #
       def fetch_template_file(render_options)
         (@_cached_templates ||= {})[render_options]
       end
-      
+
       ###
-      # Caches the template file for the given rendering options 
-      # 
+      # Caches the template file for the given rendering options
+      #
       # render_options = [template_path, content_type, locale]
-      # 
+      #
       def cache_template_file!(template_file, render_options)
         (@_cached_templates ||= {})[render_options] = template_file || []
       end
@@ -106,7 +106,7 @@ module Padrino
         layout_var = self.class.instance_variable_get(:@_layout) || :application
         has_layout_at_root = Dir["#{self.settings.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
-        located_template = resolve_template(layout_path, :strict_format => true)[0] rescue nil
+        located_template = resolve_template(layout_path, :strict_format => true, :raise_exceptions => false)[0]
       end
 
       ##
@@ -130,7 +130,7 @@ module Padrino
         return cached_template if cached_template
 
         # Resolve view path and options
-        options.reverse_merge!(:strict_format => false)
+        options.reverse_merge!(:strict_format => false, :raise_exceptions => true)
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
@@ -152,7 +152,7 @@ module Padrino
           templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
         self.class.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!")  unless located_template
+        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!") if options[:raise_exceptions] && !located_template
         located_template
       end
 
