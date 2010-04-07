@@ -4,6 +4,9 @@ require 'rubygems'
 padrino_core_path = File.expand_path('../../lib', __FILE__)
 $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.include?(padrino_core_path)
 
+padrino_local_path = Dir.pwd
+$:.unshift(padrino_local_path) if File.directory?(padrino_local_path) && !$:.include?(padrino_local_path)
+
 require 'padrino-core/cli/base'
 
 if %w(g gen).include?(ARGV[0])
