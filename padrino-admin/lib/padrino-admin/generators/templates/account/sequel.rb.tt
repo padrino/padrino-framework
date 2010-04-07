@@ -37,6 +37,13 @@ class Account < ::Sequel::Model
     crypted_password.decrypt(salt)
   end
 
+  ##
+  # Replace AR method
+  #
+  def self.find_by_id(id)
+    filter(:id => id).first
+  end
+
   private
     def generate_password
       return if password.blank?
