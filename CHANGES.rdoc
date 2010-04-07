@@ -16,6 +16,8 @@
 * Fixes support for index routes with params.
 * Fixes SASS reload plugin issue on 1.9.X.
 * Fixes an issue with generator not casing controller / model names
+* Added sequel support for padrino-admin [Thanks to Aemadrid]
+* Added basic sequel migration tasks [Thanks to Aemadrid]
 
 == 0.9.9
 
