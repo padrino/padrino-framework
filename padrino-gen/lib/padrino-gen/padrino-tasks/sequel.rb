@@ -1,7 +1,7 @@
 if defined?(Sequel)
   namespace :sq do
     namespace :migrate do
-      task :default => :auto
+
       desc "Perform automigration (reset your db data)"
       task :auto => :environment do
         ::Sequel.extension :migration

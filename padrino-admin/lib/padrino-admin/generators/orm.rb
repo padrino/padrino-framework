@@ -27,6 +27,8 @@ module Padrino
           end
         end
 
+        Column = Struct.new(:name, :type) # for compatibility
+
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
@@ -34,7 +36,7 @@ module Padrino
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
-            when :sequel       then @klass.columns
+            when :sequel       then @klass.db_schema.map { |k,v| Column.new(k, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -70,13 +72,17 @@ module Padrino
         end
 
         def save
-          "#{name_singular}.save"
+          case orm
+            when :sequel then "(@#{name_singular}.save rescue false)"
+            else "@#{name_singular}.save"
+          end
         end
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :mongomapper, :mongoid, :couchrest then "#{name_singular}.update_attributes(#{params})"
-            when :datamapper, :sequel then "#{name_singular}.update(#{params})"
+            when :activerecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
+            when :datamapper then "@#{name_singular}.update(#{params})"
+            when :sequel then "(@#{name_singular}.update(#{params}) rescue false)"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end

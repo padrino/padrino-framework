@@ -12,7 +12,7 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   post :create do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
-    if @<%= @orm.save %>
+    if <%= @orm.save %>
       flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
       redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular%>.id)
     else
@@ -27,7 +27,7 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   put :update, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
-    if @<%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
+    if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
       flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
       redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
     else

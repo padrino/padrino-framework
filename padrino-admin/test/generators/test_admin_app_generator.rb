@@ -25,11 +25,6 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_raise(SystemExit) { silence_logger { @admin.start(['-r=/tmp/sample_project']) } }
     end
 
-    should 'fail if we don\'t a valid orm' do
-      assert_nothing_raised { silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=unknown']) } }
-      assert_raise(SystemExit) { silence_logger { @admin.start(['-r=/tmp/sample_project']) } }
-    end
-
     should 'fail if we don\'t a valid theme' do
       assert_nothing_raised { silence_logger { @project.start(['sample_project', '--root=/tmp', '-d=activerecord']) } }
       assert_raise(SystemExit) { silence_logger { @admin.start(['-r=/tmp/sample_project', '--theme=foo']) } }

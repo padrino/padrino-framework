@@ -15,9 +15,10 @@ module Padrino
           SEQUEL
 
           def setup_orm
-            require_dependencies 'sequel', 'sqlite3'
+            require_dependencies 'sequel', 'sqlite3-ruby'
             create_file("config/database.rb", SEQUEL)
             empty_directory('app/models')
+            empty_directory('db/migrate')
           end
 
           SQ_MODEL = (<<-MODEL).gsub(/^ {10}/, '')
