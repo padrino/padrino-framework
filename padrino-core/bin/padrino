@@ -7,8 +7,6 @@ $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.inclu
 padrino_local_path = Dir.pwd
 $:.unshift(padrino_local_path) if File.directory?(padrino_local_path) && !$:.include?(padrino_local_path)
 
-puts "{'='*120}\n$: : #{$:}"
-
 require 'padrino-core/cli/base'
 
 if %w(g gen).include?(ARGV[0])
