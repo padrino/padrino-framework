@@ -106,7 +106,8 @@ module Padrino
         layout_var = self.class.instance_variable_get(:@_layout) || :application
         has_layout_at_root = Dir["#{self.settings.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
-        located_template = resolve_template(layout_path, :strict_format => true, :raise_exceptions => false)[0]
+        located_layout = resolve_template(layout_path, :strict_format => true, :raise_exceptions => false)
+        located_layout ? located_layout[0] : nil # Fetch the template file for layout
       end
 
       ##
@@ -115,6 +116,7 @@ module Padrino
       # === Options
       #
       #   :strict_format::  The resolved template must match the content_type of the request (defaults to false)
+      #   :raise_exceptions::  Raises a +TemplateNotFound+ exception if the template cannot be located.
       #
       # ==== Example
       #
@@ -152,7 +154,7 @@ module Padrino
           templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
         self.class.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!") if options[:raise_exceptions] && !located_template
+        raise TemplateNotFound.new("Template path '#{template_path}' could not be located!") if !located_template && options[:raise_exceptions]
         located_template
       end
 

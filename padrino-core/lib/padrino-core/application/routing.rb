@@ -243,10 +243,16 @@ module Padrino
           route
         end
 
+        ##
+        # Returns the final parsed route details (modified to reflect all Padrino options)
+        # given the raw route. Raw route passed in could be a named alias or a string and
+        # is parsed to reflect respond_to formats, controllers, parents, 'with' parameters,
+        # and other options.
+        #
         def parse_route(path, options)
           # We check and return the cached route if present
-          cache = fetch_route(path, options)
-          return cache if cache
+          cached_route = fetch_route(path, options)
+          return cached_route if cached_route
 
           # We need save our originals path/options so we can perform correctly cache.
           original = [path, options.dup]
@@ -292,7 +298,7 @@ module Padrino
               path = process_path_for_parent_params(path, parent_params)
             end
 
-            # Little reformats
+            # Small reformats
             path.sub!(%r^/index(\(.\{:format[\,\w\$\|]*\}\))$^, '\1') # Remove index from formatted routes
             path.sub!(%r{\bindex(.*)$}, '\1')                         # If the route contains /index we remove that
             path = (uri_root == "/" ? "/" : "(/)") if path.blank?     # Add a trailing delimiter if path is empty
@@ -303,7 +309,7 @@ module Padrino
               path.sub!(%r{/$}, '')
             end
 
-            # We need to fix some differences between usher and sintra router
+            # We need to fix a few differences between the usher and sintra router
             path.sub!(%r{/\?$}, '(/)') #  '/foo/?' => '/foo(/)'
           end
 
