@@ -231,11 +231,11 @@ module Padrino
           define_method "#{verb} #{path}", &block
           unbound_method = instance_method("#{verb} #{path}")
           block =
-          if block.arity != 0
-            proc { unbound_method.bind(self).call(*@block_params) }
-          else
-            proc { unbound_method.bind(self).call }
-          end
+            if block.arity != 0
+              proc { unbound_method.bind(self).call(*@block_params) }
+            else
+              proc { unbound_method.bind(self).call }
+            end
 
           invoke_hook(:route_added, verb, path, block)
           route = router.add_route(path, options).to(block)

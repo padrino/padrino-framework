@@ -1,7 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestCore < Test::Unit::TestCase
-
   context 'for core functionality' do
 
     should 'check some global methods' do

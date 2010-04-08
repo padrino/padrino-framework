@@ -3,30 +3,15 @@
 == ROADMAP FOR 1.0
 
 * [padrino-cache] Build caching component out supporting page, fragment, general cache (with storage methods)
+* [padrino-core] Scoped layouts
+* [padrino-core] Enhanced before/after filters scoped in the current controller (if given)
+* [padrino-all] Full support for Redis with OHM adapter
+* [padrino-gen] Tiny Skeleton
 
 === GENERAL
 
-* Organize before/after filters that can accept :only => ... :except and work in route_eval instead of dispatch
 * Helpers for form.fields_for (one-to-one, nested and many associations like in rails)
 * support for an 'annotate' function that labels the models and tests for AR, DM, and SQ about which columns they have
-
-== DOCUMENTATION
-
-* [padrino-core] Explain Padrino::Application#layout better
-* [padrino-core] More examples for Padrino::Routing module (#router)
-* [padrino-core] Padrino#load! should explain better what this does
-* [padrino-core] Padrino#require_dependencies (has been refactored)
-* [padrino-core] Explain better Padrino#logger functionality
-* [padrino-core] Padrino#run! (check docs)
-* [padrino-core] Padrino#tasks (check docs)
-* [padrino-gen] Now all it's private we have only api docs for Padrino::Generators module (check docs)
-* [padrino-helpers] Explain better each helpers function
-* [padrino-mailer] Reorganize docs
-* [padrino-admin] All docs need to be reviewed
-
-=== TESTING / POLISHING
-
-* Test that controller, mailer, migration and model generators work properly
 
 === IDEAS
 

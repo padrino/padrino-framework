@@ -350,4 +350,22 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "lang is en", body
   end
 
+  should "transitions to the next matching route on pass" do
+    mock_app {
+      disable :reload
+
+      get '/:foo' do
+        pass
+        'Hello Foo'
+      end
+
+      get '/:bar' do
+        'Hello World'
+      end
+    }
+
+    get '/bar'
+    assert_equal 'Hello World', body
+  end
+
 end
