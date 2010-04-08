@@ -43,7 +43,7 @@ renderer::   haml  (default), erb
 stylesheet:: sass  (default), less
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, rightjs, extcore
-orm::        none  (default), mongomapper, mongoid, activerecord, sequel, couchrest
+orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, sequel, couchrest
 
 To learn more about the project generator, check out the guide to
 {Padrino Generators}[http://www.padrinorb.com/guides/generators].

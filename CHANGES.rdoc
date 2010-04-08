@@ -2,8 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
-* Performance Tuning: Cached templates
-* Performance Tuning: Cached routes
+* Performance Tuning: Caching templates and routes in production
 * Danish translation [Thanks to Molte]
 * Russian translation [Thanks to Imm]
 * Added +extcore+ as a javascript option in project generator [Thanks to Imm]
