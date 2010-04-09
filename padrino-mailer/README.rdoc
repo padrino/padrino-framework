@@ -33,6 +33,7 @@ Next, we should define a custom mailer extended from <tt>Padrino::Mailer::Base</
       type    'html'                # optional, defaults to plain/text
       charset 'windows-1252'        # optional, defaults to utf-8
       via     :sendmail             # optional, to smtp if defined otherwise sendmail
+      template 'sample_mailer/foo'  # optional, defaults to views/sample_mailer/registration_email.erb
     end
   end
 

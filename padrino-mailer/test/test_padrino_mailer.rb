@@ -19,8 +19,17 @@ class TestPadrinoMailer < Test::Unit::TestCase
       assert_equal 'mail delivered', last_response.body
     end
 
+    should 'be able to deliver emails with custom view' do
+      assert_email_sent(:template => 'sample_mailer/foo_message', :to => 'john@fake.com',
+                        :from => 'noreply@custom.com', :via => :smtp,
+                        :subject => "Welcome Message!", :body => "Hello to Bobby")
+      visit '/deliver/custom', :post
+      assert_equal 'mail delivered', last_response.body
+    end
+
     should 'be able to deliver html emails' do
-      assert_email_sent(:to => 'julie@fake.com', :from => 'noreply@anniversary.com', :content_type => 'text/html', :via => :smtp,
+      assert_email_sent(:to => 'julie@fake.com', :from => 'noreply@anniversary.com',
+                        :content_type => 'text/html', :via => :smtp,
                         :subject => "Happy anniversary!", :body => "<p>Yay Joey & Charlotte!</p>\n<p>You have been married 16 years</p>")
       visit '/deliver/html', :post
       assert_equal 'mail delivered', last_response.body
@@ -29,8 +38,8 @@ class TestPadrinoMailer < Test::Unit::TestCase
 
   protected
 
-  def assert_email_sent(mail_attributes)
-    delivery_attributes = mail_attributes.merge(:smtp => MailerDemo.smtp_settings)
-    Padrino::Mailer::MailObject.any_instance.expects(:send_mail).with(delivery_attributes).once.returns(true)
-  end
+    def assert_email_sent(mail_attributes)
+      delivery_attributes = mail_attributes.merge(:smtp => MailerDemo.smtp_settings)
+      Padrino::Mailer::MailObject.any_instance.expects(:send_mail).with(delivery_attributes).once.returns(true)
+    end
 end
