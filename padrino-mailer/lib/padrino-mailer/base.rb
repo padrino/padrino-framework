@@ -21,7 +21,7 @@ module Padrino
       # Returns the available mail fields when composing a message
       #
       def self.mail_fields
-        [:to, :cc, :bcc, :reply_to, :from, :subject, :content_type, :charset, :via, :attachments]
+        [:to, :cc, :bcc, :reply_to, :from, :subject, :content_type, :charset, :via, :attachments, :template]
       end
 
       @@views_path = []
@@ -45,9 +45,9 @@ module Padrino
       # Assigns the body key to the mail attributes either with the rendered body from a template or the given string value
       #
       def body(body_value)
-        template = template_path
-        raise "Template for '#{@mail_name}' could not be located in views path!" unless template
-        @mail_attributes[:body] = Tilt.new(template).render(self, body_value.symbolize_keys) if body_value.is_a?(Hash)
+        final_template = template_path
+        raise "Template for '#{@mail_name}' could not be located in views path!" unless final_template
+        @mail_attributes[:body] = Tilt.new(final_template).render(self, body_value.symbolize_keys) if body_value.is_a?(Hash)
         @mail_attributes[:body] = body_value if body_value.is_a?(String)
       end
 
@@ -55,8 +55,8 @@ module Padrino
       # Returns the path to the email template searched for using glob pattern
       #
       def template_path
-        self.views_path.each do |path|
-          template = Dir[File.join(path, self.class.name.underscore.split("/").last, "#{@mail_name}.*")].first
+        self.views_path.each do |view_path|
+          template = Dir[File.join(view_path, template_pattern)].first
           return template if template
         end
       end
@@ -89,6 +89,14 @@ module Padrino
       def self.method_missing(method_sym, *arguments, &block)
         method_sym.to_s =~ /deliver_(.*)/ ? self.deliver($1, *arguments) : super(method_sym, *arguments, &block)
       end
+
+      private
+
+        # Returns the glob pattern of the template file to locate and render
+        def template_pattern
+          @_pattern ||= (@mail_attributes[:template].present? ? "#{@mail_attributes[:template]}.*" :
+                         File.join(self.class.name.underscore.split("/").last, "#{@mail_name}.*"))
+        end
     end # Base
   end # Mailer
 end # Padrino

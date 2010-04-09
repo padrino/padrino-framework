@@ -19,6 +19,7 @@
 * Fixes an issue with generator not casing controller / model names
 * Added sequel support for padrino-admin [Thanks to Aemadrid]
 * Added basic sequel migration tasks [Thanks to Aemadrid]
+* Mailer now supports setting template path to render explicitly
 
 == 0.9.9
 
