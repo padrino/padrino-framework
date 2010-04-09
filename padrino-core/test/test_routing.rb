@@ -352,7 +352,6 @@ class TestRouting < Test::Unit::TestCase
 
   should "transitions to the next matching route on pass" do
     mock_app {
-      disable :reload
 
       get '/:foo' do
         pass
@@ -364,7 +363,7 @@ class TestRouting < Test::Unit::TestCase
       end
     }
 
-    get '/bar'
+    get '/za'
     assert_equal 'Hello World', body
   end
 
