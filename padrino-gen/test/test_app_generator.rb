@@ -15,9 +15,9 @@ class TestAppGenerator < Test::Unit::TestCase
 
   context 'the app generator' do
     should "fail outside app root" do
-      output = silence_logger { @app.start(['demo', '-r=/tmp']) }
+      output = silence_logger { @app.start(['demo_root', '-r=/tmp']) }
       assert_match(/not at the root/, output)
-      assert_no_file_exists('/tmp/demo')
+      assert_no_file_exists('/tmp/demo_root')
     end
 
     should "create correctly a new padrino application" do
