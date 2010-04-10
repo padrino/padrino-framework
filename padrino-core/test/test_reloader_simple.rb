@@ -22,10 +22,12 @@ class TestSimpleReloader < Test::Unit::TestCase
       end
     end
 
-    should 'keep sinatra routes' do
+    should 'keep sinatra routes on development' do
       mock_app do
+        set :environment, :development
         get("/"){ "ok" }
       end
+      assert_equal :development, @app.environment
       get "/"
       assert_equal 200, status
       get "/__sinatra__/404.png"

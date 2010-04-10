@@ -19,9 +19,6 @@ module Padrino
         Padrino.require_dependencies File.join(subclass.root, "/models.rb")
         Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
         super(subclass) # Loading the subclass inherited method
-        subclass.default_filters!
-        subclass.default_routes!
-        subclass.default_errors!
       end
 
       ##
@@ -74,6 +71,9 @@ module Padrino
         self.register_initializers
         self.require_load_paths
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
+        self.default_filters!
+        self.default_routes!
+        self.default_errors!
         I18n.load_path += self.locale_path
         I18n.reload!
         @_configured = true
@@ -88,7 +88,7 @@ module Padrino
           set :app_file, caller_files.first || $0 # Assume app file is first caller
           set :environment, Padrino.env
           set :raise_errors, true if development?
-          set :logging, false # !test?
+          set :logging, false
           set :sessions, true
           set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
@@ -109,10 +109,11 @@ module Padrino
         # We need to add almost __sinatra__ images.
         #
         def default_routes!
-          # images resources
-          get "/__sinatra__/:image.png" do
-            filename = File.dirname(__FILE__) + "/images/#{params[:image]}.png"
-            send_file filename
+          configure :development do
+            get '/__sinatra__/:image.png' do
+              filename = File.dirname(__FILE__) + "/images/#{params[:image]}.png"
+              send_file filename
+            end
           end
         end
 
@@ -121,9 +122,8 @@ module Padrino
         #
         def default_filters!
           before do
-            request.path_info =~ /\.([^\.\/]+)$/
-            @_content_type = ($1 || :html).to_sym
-            content_type(@_content_type, :charset => 'utf-8') rescue content_type('application/octet-stream')
+            @_content_type = :html
+            response['Content-Type'] = 'text/html;charset=utf-8'
           end
         end
 
@@ -165,8 +165,8 @@ module Padrino
         # Registers all desired padrino extension helpers
         #
         def register_framework_extensions
-          register Padrino::Mailer        if padrino_mailer?
-          register Padrino::Helpers       if padrino_helpers?
+          register Padrino::Mailer  if padrino_mailer?
+          register Padrino::Helpers if padrino_helpers?
           register Padrino::Admin::AccessControl if authentication?
         end
 

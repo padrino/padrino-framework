@@ -71,10 +71,10 @@ class TestRouting < Test::Unit::TestCase
 
   should 'generate url with format' do
     mock_app do
-      get(:a, :respond_to => :any){ url(:a, :format => :json) }
-      get(:b, :respond_to => :js){ url(:b, :format => :js) }
-      get(:c, :respond_to => [:js, :json]){ url(:c, :format => :json) }
-      get(:d, :respond_to => [:html, :js]){ url(:d, :format => :js, :foo => :bar) }
+      get(:a, :provides => :any){ url(:a, :format => :json) }
+      get(:b, :provides => :js){ url(:b, :format => :js) }
+      get(:c, :provides => [:js, :json]){ url(:c, :format => :json) }
+      get(:d, :provides => [:html, :js]){ url(:d, :format => :js, :foo => :bar) }
     end
     get "/a.js"
     assert_equal "/a.json", body
@@ -98,7 +98,7 @@ class TestRouting < Test::Unit::TestCase
 
   should "generate routes for format simple" do
     mock_app do
-      get(:foo, :respond_to => [:html, :rss]) { render :haml, "Test" }
+      get(:foo, :provides => [:html, :rss]) { render :haml, "Test" }
     end
     get "/foo"
     assert_equal "Test\n", body
@@ -109,8 +109,8 @@ class TestRouting < Test::Unit::TestCase
   should "generate routes for format with controller" do
     mock_app do
       controller :posts do
-        get(:index, :respond_to => [:html, :rss, :atom, :js]) { render :haml, "Index.#{content_type}" }
-        get(:show,  :with => :id, :respond_to => [:html, :rss, :atom]) { render :haml, "Show.#{content_type}" }
+        get(:index, :provides => [:html, :rss, :atom, :js]) { render :haml, "Index.#{content_type}" }
+        get(:show,  :with => :id, :provides => [:html, :rss, :atom]) { render :haml, "Show.#{content_type}" }
       end
     end
     get "/posts"
@@ -170,10 +170,10 @@ class TestRouting < Test::Unit::TestCase
 
   should 'respond to' do
     mock_app do
-      get(:a, :respond_to => :js){ "js" }
-      get(:b, :respond_to => :any){ "any" }
-      get(:c, :respond_to => [:js, :json]){ "js,json" }
-      get(:d, :respond_to => [:html, :js]){ "html,js"}
+      get(:a, :provides => :js){ "js" }
+      get(:b, :provides => :any){ "any" }
+      get(:c, :provides => [:js, :json]){ "js,json" }
+      get(:d, :provides => [:html, :js]){ "html,js"}
     end
     get "/a"
     assert_equal 404, status
@@ -181,11 +181,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "js", body
     get "/b"
     assert_equal "any", body
-    get "/b.foo"
-    assert_equal "any", body
+    assert_raise(RuntimeError) { get "/b.foo" }
     get "/c"
-    assert_equal 404, status
-    get "/c.fo"
     assert_equal 404, status
     get "/c.js"
     assert_equal "js,json", body
@@ -193,15 +190,14 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "js,json", body
     get "/d"
     assert_equal "html,js", body
-    get "/d.fo"
-    assert_equal 404, status
     get "/d.js"
     assert_equal "html,js", body
   end
 
   should 'respond_to and set content_type' do
+    Rack::Mime::MIME_TYPES['.foo'] = 'application/foo'
     mock_app do
-      get :a, :respond_to => :any do
+      get :a, :provides => :any do
         case content_type
           when :js    then "js"
           when :json  then "json"
@@ -218,7 +214,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'application/json;charset=utf-8', response["Content-Type"]
     get "/a.foo"
     assert_equal "foo", body
-    assert_equal 'application/octet-stream', response["Content-Type"]
+    assert_equal 'application/foo;charset=utf-8', response["Content-Type"]
     get "/a"
     assert_equal "html", body
     assert_equal 'text/html;charset=utf-8', response["Content-Type"]
@@ -351,20 +347,84 @@ class TestRouting < Test::Unit::TestCase
   end
 
   should "transitions to the next matching route on pass" do
-    mock_app {
-
+    mock_app do
       get '/:foo' do
         pass
         'Hello Foo'
       end
-
       get '/:bar' do
         'Hello World'
       end
-    }
+    end
 
     get '/za'
     assert_equal 'Hello World', body
   end
 
+  should "filters by accept header" do
+    mock_app do
+      get '/', :provides => :xml do
+        request.env['HTTP_ACCEPT']
+      end
+    end
+
+    get '/', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert ok?
+    assert_equal 'application/xml', body
+    assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
+
+    get '/', {}, { :accept => 'text/html' }
+    assert not_found?
+  end
+
+  should "works allow global provides" do
+    mock_app do
+      provides :xml
+
+      get("/foo"){ "Foo in #{content_type}" }
+      get("/bar"){ "Bar in #{content_type}" }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal 'Foo in xml', body
+    get '/foo'
+    assert not_found?
+
+    get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal 'Bar in html', body
+  end
+
+  should 'allows custom route-conditions to be set via route options' do
+    protector = Module.new {
+      def protect(*args)
+        condition {
+          unless authorize(params["user"], params["password"])
+            halt 403, "go away"
+          end
+        }
+      end
+    }
+
+    mock_app {
+      register protector
+
+      helpers do
+        def authorize(username, password)
+          username == "foo" && password == "bar"
+        end
+      end
+
+      get "/", :protect => true do
+        "hey"
+      end
+    }
+
+    get "/"
+    assert forbidden?
+    assert_equal "go away", body
+
+    get "/", :user => "foo", :password => "bar"
+    assert ok?
+    assert_equal "hey", body
+  end
 end
