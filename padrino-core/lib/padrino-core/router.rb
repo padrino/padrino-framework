@@ -8,8 +8,8 @@ module Padrino
   # Features:
   #
   # * Map a path to the specified App
-  # * Ignore server names (this solve issues with nginx)
-  # * Use hosts instead of server name for mappings
+  # * Ignore server names (this solve issues with vhost and domain aliases)
+  # * Use hosts instead of server name for mappings (this help us with our vhost and doman aliases)
   #
   # ==== Options
   #
@@ -33,8 +33,11 @@ module Padrino
   class Router
     def initialize(*mapping, &block)
       @mapping = []
-      mapping.each { |m| map(m) } # Longest path first
+      mapping.each { |m| map(m) }
       instance_eval(&block) if block
+    end
+
+    def sort!
       @mapping = @mapping.sort_by { |h, p, m, a| [(-1.0 / 0.0), -p.size] }
     end
 
@@ -51,6 +54,7 @@ module Padrino
       host  = Regexp.new("^#{Regexp.quote(host)}$", true, 'n') unless host.nil? || host.is_a?(Regexp)
 
       @mapping << [host, path, match, app]
+      sort!
     end
 
     def call(env)
