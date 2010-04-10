@@ -3,7 +3,7 @@
 == 0.9.10 (Unreleased)
 
 * Our routing system now with :provides or :respond_to (other than route format) match "request.accept"
-* Our routes now accept Sinatra 1.0 conditions
+* Our routes now accepts Sinatra 1.0 conditions
 * Routing refactoring
 * Now mounter use the our new Router instead of Rack::Builder
 * Added a new router class that handle in a easy why domains
