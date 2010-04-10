@@ -22,6 +22,7 @@
 * Fixes support for index routes with params.
 * Fixes SASS reload plugin issue on 1.9.X.
 * Fixes an issue with generator not casing controller / model names
+* Fixes issue with mounter and locating the app file
 * Added sequel support for padrino-admin [Thanks to Aemadrid]
 * Added basic sequel migration tasks [Thanks to Aemadrid]
 * Mailer now supports setting template path to render explicitly
