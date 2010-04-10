@@ -379,7 +379,7 @@ module Padrino
             match_format = types.include?(format) || types.include?(:any)
             @_content_type =
               if mime_type = matching_types.first
-                Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'')
+                Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               else
                 format
               end
