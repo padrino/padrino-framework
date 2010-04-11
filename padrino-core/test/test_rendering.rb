@@ -94,33 +94,35 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "document start xml file end", body
     end
 
-    should_eventually 'use correct layout with each controller' do
-      create_layout :foo, "foo layout <%= yield %> end"
-      create_layout :bar, "bar layout <%= yield %> end"
-      create_layout :application, "default layout <%= yield %> end"
-      create_view :the_file, "erb file"
+    should 'use correct layout with each controller' do
+      create_layout :foo, "foo layout at <%= yield %>"
+      create_layout :bar, "bar layout at <%= yield %>"
+      create_layout :application, "default layout at <%= yield %>"
       mock_app do
-        controller :foo_test do
+        get("/"){ render :erb, "application" }
+        controller :foo do
           layout :foo
-          get(:demo){ render :the_file }
+          get("/"){ render :erb, "foo" }
         end
-        controller :bar_test do
+        controller :bar do
           layout :bar
-          get(:demo){ render :the_file }
+          get("/"){ render :erb, "bar" }
         end
-        controller :default_test do
-          get(:demo) { render :the_file }
-          get(:foo)  { render  :the_file, :layout => :foo }
+        controller :none do
+          get("/") { render :erb, "none" }
+          get("/with_foo_layout")  { render :erb, "none with layout", :layout => :foo }
         end
       end
-      get "/foo_test/demo"
-      assert_equal "foo layout erb file end", body
-      get "/bar_test/demo"
-      assert_equal "bar layout erb file end", body
-      get "/default_test/demo"
-      assert_equal "default layout erb file end", body
-      get "/default_test/foo"
-      assert_equal "foo layout erb file end", body
+      get "/foo"
+      assert_equal "foo layout at foo", body
+      get "/bar"
+      assert_equal "bar layout at bar", body
+      get "/none"
+      assert_equal "default layout at none", body
+      get "/none/with_foo_layout"
+      assert_equal "foo layout at none with layout", body
+      get "/"
+      assert_equal "default layout at application", body
     end
   end
 

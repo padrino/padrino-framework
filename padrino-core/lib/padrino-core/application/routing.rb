@@ -1,7 +1,7 @@
 require 'usher' unless defined?(Usher)
 require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
 
-Usher::Route.class_eval { attr_accessor :custom_conditions }
+Usher::Route.class_eval { attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout }
 
 module Padrino
   ##
@@ -86,8 +86,21 @@ module Padrino
           @block_params = match.params.map { |p| p.last }
           @params = @params ? @params.merge(match.params_as_hash) : match.params_as_hash
           pass_block = catch(:pass) do
+            # Run Sinatra Conditions
             match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
-            route_eval(&match.destination)
+            # Run scoped before filters
+            match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
+            # If present set current controller layout
+            parent_layout = base.instance_variable_get(:@layout)
+            base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
+            # Now we can eval route, but because we have "throw halt" we need to be
+            # (en)sure to reset old layout and run controller after filters.
+            begin
+              route_eval(&match.destination)
+            ensure
+              base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
+              match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+            end
           end
         end
 
@@ -129,21 +142,45 @@ module Padrino
       #     get :index, :map => "/:lang" do; ...; end
       #   end
       #
-      # And you can call directly these urls:
+      # and you can call directly these urls:
       #
       #   # => "/admin"
       #   # => "/admin/show/1"
       #
-      def controller(*extensions, &block)
+      # In a controller before and after filters are scoped and didn't affect other controllers or main app.
+      # In a controller layout are scoped and didn't affect others controllers and main app.
+      #
+      #   controller :posts do
+      #     layout :post
+      #     before { foo }
+      #     after  { bar }
+      #   end
+      #
+      def controller(*args, &block)
         if block_given?
-          options = extensions.extract_options!
-          @_controller, original_controller = extensions, @_controller
+          options = args.extract_options!
+
+          # Controller defaults
+          @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_defaults,   original_defaults   = options, @_defaults
+
+          # Application defaults
+          @before_filters, original_before_filters = [],  @before_filters
+          @after_filters,  original_after_filters  = [],  @after_filters
+          @layout,         original_layout         = nil, @layout
+
           instance_eval(&block)
+
+          # Application defaults
+          @before_filters = original_before_filters
+          @after_filters  = original_after_filters
+          @layout         = original_layout
+
+          # Controller defaults
           @_controller, @_parents, @_defaults = original_controller, original_parent, original_defaults
         else
-          include(*extensions) if extensions.any?
+          include(*args) if extensions.any?
         end
       end
       alias :controllers :controller
@@ -255,6 +292,17 @@ module Padrino
           options.each { |option, args| send(option, *args) }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
+
+          # Add Application defaults
+          if @_controller
+            route.before_filters = @before_filters
+            route.after_filters  = @after_filters
+            route.use_layout     = @layout
+          else
+            route.before_filters = []
+            route.after_filters  = []
+          end
+
           route
         end
 

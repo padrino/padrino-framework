@@ -405,7 +405,7 @@ class TestRouting < Test::Unit::TestCase
       end
     }
 
-    mock_app {
+    mock_app do
       register protector
 
       helpers do
@@ -417,7 +417,7 @@ class TestRouting < Test::Unit::TestCase
       get "/", :protect => true do
         "hey"
       end
-    }
+    end
 
     get "/"
     assert forbidden?
@@ -426,5 +426,35 @@ class TestRouting < Test::Unit::TestCase
     get "/", :user => "foo", :password => "bar"
     assert ok?
     assert_equal "hey", body
+  end
+
+  should 'scope filters in the given controller' do
+    mock_app do
+      before { @global = 'global' }
+      after { @global = nil }
+
+      controller :foo do
+        before { @foo = :foo }
+        after { @foo = nil }
+        get("/") { [@foo, @bar, @global].compact.join(" ") }
+      end
+
+      get("/") { [@foo, @bar, @global].compact.join(" ") }
+
+      controller :bar do
+        before { @bar = :bar }
+        after { @bar = nil }
+        get("/") { [@foo, @bar, @global].compact.join(" ") }
+      end
+    end
+
+    get "/bar"
+    assert_equal "bar global", body
+
+    get "/foo"
+    assert_equal "foo global", body
+
+    get "/"
+    assert_equal "global", body
   end
 end

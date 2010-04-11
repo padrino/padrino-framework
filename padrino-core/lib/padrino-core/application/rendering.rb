@@ -37,7 +37,7 @@ module Padrino
       #
       def layout(name=:layout, &block)
         return super(name, &block) if block_given?
-        @_layout = name
+        @layout = name
       end
 
       ##
@@ -103,7 +103,7 @@ module Padrino
       # => "/layouts/custom"
       #
       def resolved_layout
-        layout_var = self.class.instance_variable_get(:@_layout) || :application
+        layout_var = self.class.instance_variable_get(:@layout) || :application
         has_layout_at_root = Dir["#{self.settings.views}/#{layout_var}.*"].any?
         layout_path = has_layout_at_root ? layout_var.to_sym : File.join('layouts', layout_var.to_s).to_sym
         located_layout = resolve_template(layout_path, :strict_format => true, :raise_exceptions => false)

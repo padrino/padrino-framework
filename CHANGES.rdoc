@@ -2,6 +2,8 @@
 
 == 0.9.10 (Unreleased)
 
+* Added Scoped filters
+* Added Scoped layout
 * Our routing system now with :provides or :respond_to (other than route format) match "request.accept"
 * Our routes now accepts Sinatra 1.0 conditions
 * Routing refactoring
