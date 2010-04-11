@@ -12,7 +12,7 @@ module Padrino
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host
 
     def initialize(name, options={})
-      @name      = name.downcase
+      @name      = name.underscore
       @app_class = options[:app_class] || name.classify
       @app_file  = options[:app_file]  || locate_app_file
       @app_root  = options[:app_root]  || File.dirname(@app_file)
