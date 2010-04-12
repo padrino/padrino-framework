@@ -83,7 +83,7 @@ module Padrino
       # Compatibility with usher
       #
       def route!(base=self.class, pass_block=nil)
-        if self.class.router and match = self.class.router.recognize(@request, @request.path_info)
+        if base.router and match = base.router.recognize(@request, @request.path_info)
           @block_params = match.params.map { |p| p.last }
           @params = @params ? @params.merge(match.params_as_hash) : match.params_as_hash
           pass_block = catch(:pass) do
@@ -106,7 +106,7 @@ module Padrino
         end
 
         # Run routes defined in superclass.
-        if base.superclass.respond_to?(:routes)
+        if base.superclass.respond_to?(:router)
           route! base.superclass, pass_block
           return
         end
