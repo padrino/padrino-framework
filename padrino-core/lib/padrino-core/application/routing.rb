@@ -226,22 +226,6 @@ module Padrino
       end
       alias :url_for :url
 
-      ##
-      # Returns the cached route for the given path and options.
-      #
-      def fetch_route(path, options)
-        key = [path, options, @_controller, @_parents]
-        (@_cached_route ||= {})[key]
-      end
-
-      ###
-      # Caches the given route
-      #
-      def cache_route!(original, parsed)
-        key = original.push(@_controller, @_parents)
-        (@_cached_route ||= {})[key] = parsed if parsed
-      end
-
       private
         ##
         # Rewrite default because now routes can be:
@@ -313,9 +297,6 @@ module Padrino
         # and other options.
         #
         def parse_route(path, options)
-          # We check and return the cached route if present
-          cached_route = fetch_route(path, options)
-          return cached_route if cached_route
 
           # We need save our originals path/options so we can perform correctly cache.
           original = [path, options.dup]
@@ -381,11 +362,6 @@ module Padrino
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
 
-          # Save parsed
-          parsed = [path, name, options.dup]
-
-          # Perform caching
-          cache_route!(original, parsed) unless reload?
           [path, name, options]
         end
 
