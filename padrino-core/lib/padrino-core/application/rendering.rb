@@ -93,7 +93,7 @@ module Padrino
         data, engine = *resolve_template(engine, options.dup) if data.nil?
 
         # Sinatra 1.0 requires an outvar for erb and erubis templates
-        options[:outvar] ||= '@_out_buf' if [:erb, :erubis].include?(engine)
+        options[:outvar] ||= '@_out_buf' if [:erb, :erubis] & [engine]
 
         # Resolve layouts similar to in Rails
         if (options[:layout].nil? || options[:layout] == true) && !self.class.templates.has_key?(:layout)
