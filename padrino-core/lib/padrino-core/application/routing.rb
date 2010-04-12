@@ -73,6 +73,7 @@ module Padrino
     #
     def static!
       if path = static_file?(request.path_info)
+        env['sinatra.static_file'] = path
         send_file(path, :disposition => nil)
       end
     end
@@ -246,6 +247,7 @@ module Padrino
         #   get :list, :provides => [:html, :js, :json] # => "/list(.{!format,js|json})"
         #
         def route(verb, path, options={}, &block)
+
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           path, name, options = *parse_route(path, options.dup)
 
