@@ -247,7 +247,6 @@ module Padrino
         #   get :list, :provides => [:html, :js, :json] # => "/list(.{!format,js|json})"
         #
         def route(verb, path, options={}, &block)
-
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           path, name, options = *parse_route(path, options.dup)
 
@@ -299,7 +298,6 @@ module Padrino
         # and other options.
         #
         def parse_route(path, options)
-
           # We need save our originals path/options so we can perform correctly cache.
           original = [path, options.dup]
 

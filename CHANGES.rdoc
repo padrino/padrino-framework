@@ -2,6 +2,8 @@
 
 == 0.9.10 (Unreleased)
 
+* Performance tuning: Caching layout template
+* Fixed a bug with layouts that prevent double rendering
 * Added Scoped filters
 * Added Scoped layout
 * Our routing system now with :provides or :respond_to (other than route format) match "request.accept"
@@ -9,7 +11,7 @@
 * Routing refactoring
 * Now mounter use the our new Router instead of Rack::Builder
 * Added a new router class that handle in a easy why domains
-* Performance Tuning: Caching templates and routes in production
+* Performance Tuning: Caching templates
 * Danish translation [Thanks to Molte]
 * Russian translation [Thanks to Imm]
 * Added +extcore+ as a javascript option in project generator [Thanks to Imm]
