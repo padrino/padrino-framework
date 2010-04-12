@@ -73,11 +73,8 @@ module Padrino
 
         private
           def access_denied
-            # If request a javascript we alert the user
-            if request.xhr? || content_type == :js
-              halt 401, "alert('Protected resource')"
             # If we have a login_page we redirect the user
-            elsif login_page
+            if login_page
               redirect(login_page)
             # If no match we halt with 401
             else

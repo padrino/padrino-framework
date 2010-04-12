@@ -363,17 +363,30 @@ class TestRouting < Test::Unit::TestCase
 
   should "filters by accept header" do
     mock_app do
-      get '/', :provides => :xml do
+      get '/foo', :provides => [:xml, :js] do
         request.env['HTTP_ACCEPT']
       end
     end
 
-    get '/', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert ok?
     assert_equal 'application/xml', body
     assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
 
-    get '/', {}, { :accept => 'text/html' }
+    get '/foo.xml'
+    assert ok?
+    assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript' }
+    assert ok?
+    assert_equal 'application/javascript', body
+    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+
+    get '/foo.js'
+    assert ok?
+    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+
+    get '/foo', {}, { :accept => 'text/html' }
     assert not_found?
   end
 

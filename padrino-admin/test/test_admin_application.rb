@@ -15,7 +15,7 @@ class TestAdminApplication < Test::Unit::TestCase
         role.protect  "/foo"
       end
 
-      get "/foo", :respond_to => [:html, :js] do
+      get "/foo", :provides => [:html, :js] do
         "foo"
       end
 
@@ -27,9 +27,6 @@ class TestAdminApplication < Test::Unit::TestCase
 
     get "/foo"
     assert_equal "You don't have permission for this resource", body
-
-    get "/foo.js"
-    assert_equal "alert('Protected resource')", body
 
     get "/unauthenticated"
     assert_equal "unauthenticated", body
