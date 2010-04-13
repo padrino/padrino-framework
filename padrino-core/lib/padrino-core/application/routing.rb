@@ -1,5 +1,5 @@
 require 'usher' unless defined?(Usher)
-require 'padrino-core/support_lite' unless String.method_defined?(:blank!)
+require 'padrino-core/support_lite' unless String.method_defined?(:blank?)
 
 Usher::Route.class_eval { attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout }
 
