@@ -90,7 +90,7 @@ module Padrino
           set :raise_errors, true if development?
           set :logging, false
           set :sessions, true
-          set :public, Proc.new { Padrino.root('public', self.uri_root) }
+          set :public, Proc.new { File.join(PADRINO_ROOT, 'public', self.uri_root) }
           # Padrino specific
           set :uri_root, "/"
           set :reload, development?

@@ -12,6 +12,7 @@ module Padrino
       require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # load root models
       require_dependencies("#{root}/config/database.rb", "#{root}/config/apps.rb") # load configuration
       Reloader::Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
+      Padrino.logger # Initialize our logger
       Thread.current[:padrino_loaded] = true
     end
 

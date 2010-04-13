@@ -61,7 +61,7 @@ module Padrino
       rPath = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
       hHost, sName, sPort = env.values_at('HTTP_HOST','SERVER_NAME','SERVER_PORT')
-      @mapping.each { |host, path, match, app|
+      @mapping.each do |host, path, match, app|
         next unless host.nil? || hHost =~ host
         next unless rPath =~ match && rest = $1
         next unless rest.empty? || rest[0] == ?/
@@ -70,7 +70,7 @@ module Padrino
           env.merge(
             'SCRIPT_NAME' => (script_name + path),
             'PATH_INFO'   => rest))
-      }
+      end
       [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{rPath}"]]
     end
   end

@@ -29,7 +29,7 @@ module Padrino
     # Helper method that return PADRINO_ENV
     #
     def env
-      PADRINO_ENV.to_s.downcase.to_sym
+      @_env ||= PADRINO_ENV.to_s.downcase.to_sym
     end
 
     ##
