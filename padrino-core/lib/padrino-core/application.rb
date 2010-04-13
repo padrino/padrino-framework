@@ -159,7 +159,7 @@ module Padrino
         def register_initializers
           use Padrino::Logger::Rack    if Padrino.logger && Padrino.logger.level == 0
           use Padrino::Reloader::Rack  if reload?
-          use Rack::Flash              if flash?
+          use Rack::Flash              if flash? && sessions?
         end
 
         ##
