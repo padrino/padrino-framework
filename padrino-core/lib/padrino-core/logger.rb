@@ -30,6 +30,7 @@ module Padrino
     attr_reader   :buffer
     attr_reader   :log
     attr_reader   :init_args
+    attr_reader   :colors
 
     ##
     # Ruby (standard) logger levels:
@@ -84,6 +85,36 @@ module Padrino
       :test        => { :log_level => :debug, :stream => :null }
     }
 
+    # Embed in a String to clear all previous ANSI sequences.
+    CLEAR      = "\e[0m"
+    # The start of an ANSI bold sequence.
+    BOLD       = "\e[1m"
+    # Set the terminal's foreground ANSI color to black.
+    BLACK      = "\e[30m"
+    # Set the terminal's foreground ANSI color to red.
+    RED        = "\e[31m"
+    # Set the terminal's foreground ANSI color to green.
+    GREEN      = "\e[32m"
+    # Set the terminal's foreground ANSI color to yellow.
+    YELLOW     = "\e[33m"
+    # Set the terminal's foreground ANSI color to blue.
+    BLUE       = "\e[34m"
+    # Set the terminal's foreground ANSI color to magenta.
+    MAGENTA    = "\e[35m"
+    # Set the terminal's foreground ANSI color to cyan.
+    CYAN       = "\e[36m"
+    # Set the terminal's foreground ANSI color to white.
+    WHITE      = "\e[37m"
+
+    # Colors for levels
+    ColoredLevels = {
+      :fatal => [BOLD, RED],
+      :error => [RED],
+      :warn  => [YELLOW],
+      :info  => [GREEN],
+      :debug => [CYAN]
+    } unless defined?(ColoredLevels)
+
     ##
     # Setup a new logger
     #
@@ -101,8 +132,6 @@ module Padrino
       end
       Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
     end
-
-    public
 
     ##
     # To initialize the logger you create a new object, proxies to set_log.
@@ -127,7 +156,24 @@ module Padrino
       @log.sync          = true
       @mutex             = @@mutex[@log] ||= Mutex.new
       @format_datetime   = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message    = options[:format_message] || "%-5s - [%s] \"%s\""
+      @format_message    = options[:format_message]  || "%-5s - [%s] \"%s\""
+    end
+
+    ##
+    # Colorize our level
+    #
+    def colored_level(level)
+      style = ColoredLevels[level.to_s.downcase.to_sym].join("")
+      "#{style}#{level.to_s.upcase}#{CLEAR}"
+    end
+
+    ##
+    # Set a color for our string. Color can be a symbol/string
+    #
+    def set_color(string, color, bold=false)
+      color = self.class.const_get(color.to_s.upcase) if color.is_a?(Symbol)
+      bold  = bold ? BOLD : ""
+      "#{bold}#{color}#{string}#{CLEAR}"
     end
 
     ##
@@ -154,7 +200,7 @@ module Padrino
     # the output of this block will be appended to the message.
     #
     def push(message = nil, level = nil)
-      self << @format_message % [level.to_s.upcase, Time.now.strftime(@format_datetime), message.to_s]
+      self << @format_message % [colored_level(level), set_color(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
 
     ##
