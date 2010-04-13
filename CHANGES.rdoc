@@ -2,6 +2,11 @@
 
 == 0.9.10 (Unreleased)
 
+* Disabled sessions by defaults as Sinatra do
+* Enable sessions for admin app since authentication require it
+* Don't load Rack::Logger if our log_level is not :debug
+* Set real values for app.public and app.static because due to frequently calls
+* Updated templates with new changes
 * Performance tuning: Caching layout template
 * Fixed a bug with layouts that prevent double rendering
 * Added Scoped filters
