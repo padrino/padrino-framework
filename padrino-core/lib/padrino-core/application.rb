@@ -88,12 +88,13 @@ module Padrino
           set :app_file, caller_files.first || $0 # Assume app file is first caller
           set :environment, Padrino.env
           set :raise_errors, true if development?
+          set :reload, true if development?
           set :logging, false
-          set :sessions, true
-          set :public, Proc.new { File.join(PADRINO_ROOT, 'public', self.uri_root) }
+          set :sessions, false
+          set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
           set :uri_root, "/"
-          set :reload, development?
+          set :reload, Proc.new { development? }
           set :app_name, self.to_s.underscore.to_sym
           set :default_builder, 'StandardFormBuilder'
           set :flash, defined?(Rack::Flash)
@@ -156,7 +157,7 @@ module Padrino
         # Requires the Padrino middleware
         #
         def register_initializers
-          use Padrino::Logger::Rack
+          use Padrino::Logger::Rack    if Padrino.logger && Padrino.logger.level == 0
           use Padrino::Reloader::Rack  if reload?
           use Rack::Flash              if flash?
         end

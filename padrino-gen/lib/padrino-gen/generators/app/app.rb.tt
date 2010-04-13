@@ -5,7 +5,7 @@ class <%= @class_name %> < Padrino::Application
     #
     # set :raise_errors, true     # Show exceptions (default for development)
     # set :public, "foo/bar"      # Location for static assets (default root/public)
-    # set :sessions, false        # Enabled by default
+    # set :sessions, true         # Disabled by default
     # set :reload, false          # Reload application files (default in development)
     # set :default_builder, "foo" # Set a custom form builder (default 'StandardFormBuilder')
     # set :locale_path, "bar"     # Set path for I18n translations (default your_app/locales)
