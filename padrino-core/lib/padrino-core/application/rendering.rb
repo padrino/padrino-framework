@@ -65,7 +65,7 @@ module Padrino
         return cached_layout_path if cached_layout_path
         has_layout_at_root = Dir["#{views}/#{layout_name}.*"].any?
         layout_path = has_layout_at_root ? layout_name.to_sym : File.join('layouts', layout_name.to_s).to_sym
-        @_cached_layout[layout_name] = layout_path
+        @_cached_layout[layout_name] = layout_path unless reload_templates?
         layout_path
       end
     end
@@ -90,7 +90,7 @@ module Padrino
         options.merge!(data) && data = nil if data.is_a?(Hash)
 
         # If an engine is a string then this is a likely a path to be resolved
-        data, engine = *resolve_template(engine, options.dup) if data.nil?
+        data, engine = *resolve_template(engine, options) if data.nil?
 
         # Sinatra 1.0 requires an outvar for erb and erubis templates
         options[:outvar] ||= '@_out_buf' if [:erb, :erubis] & [engine]
