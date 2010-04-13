@@ -235,7 +235,7 @@ module Padrino
       def call(env)
         began_at = Time.now
         status, header, body = @app.call(env)
-        log(env, status, header, began_at)
+        log(env, status, header, began_at) if Padrino.logger && Padrino.logger.level == 0
         [status, header, body]
       end
 

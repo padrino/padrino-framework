@@ -85,7 +85,7 @@ module Padrino
       def route!(base=self.class, pass_block=nil)
         if base.router and match = base.router.recognize(@request, @request.path_info)
           @block_params = match.params.map { |p| p.last }
-          @params = @params ? @params.merge(match.params_as_hash) : match.params_as_hash
+          (@params ||= {}).merge!(match.params_as_hash)
           pass_block = catch(:pass) do
             # Run Sinatra Conditions
             match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
