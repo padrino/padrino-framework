@@ -30,7 +30,6 @@ module Padrino
     attr_reader   :buffer
     attr_reader   :log
     attr_reader   :init_args
-    attr_reader   :colors
 
     ##
     # Ruby (standard) logger levels:
