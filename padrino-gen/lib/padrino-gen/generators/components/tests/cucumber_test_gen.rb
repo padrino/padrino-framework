@@ -16,7 +16,7 @@ module Padrino
           require 'spec/expectations'
 
           ##
-          # You can hanlde all padrino applications using instead:
+          # You can handle all padrino applications using instead:
           #   Padrino.application
           Capybara.app = CLASS_NAME.tap { |app|  }
           TEST

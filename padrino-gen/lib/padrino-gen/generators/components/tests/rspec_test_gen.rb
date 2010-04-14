@@ -15,7 +15,7 @@ module Padrino
 
             def app
               ##
-              # You can hanlde all padrino applications using instead:
+              # You can handle all padrino applications using instead:
               #   Padrino.application
               CLASS_NAME.tap { |app|  }
             end
