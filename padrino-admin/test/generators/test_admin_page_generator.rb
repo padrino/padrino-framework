@@ -1,8 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
-require 'thor/group'
-require 'fakeweb'
-require 'padrino-gen/generators/actions'
-Dir[File.dirname(__FILE__) + '/generators/{components}/**/*.rb'].each { |lib| require lib }
 
 class Person
   def self.properties
