@@ -46,7 +46,7 @@ module Padrino
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
 
-          Padrino::Generators::Model.dup.start([
+          Padrino::Generators::Model.start([
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
             "-r=#{options[:root]}", "-s=#{options[:skip_migration]}", "-d=#{options[:destroy]}"
           ])
