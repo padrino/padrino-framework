@@ -1,6 +1,7 @@
 module Padrino
   module Generators
     class  AppRootNotFound < RuntimeError; end
+
     module Actions
 
       def self.included(base)
@@ -12,14 +13,19 @@ module Padrino
       def execute_component_setup(component, choice)
         return true && say("Skipping generator for #{component} component...", :yellow) if choice.to_s == 'none'
         say "Applying '#{choice}' (#{component})...", :yellow
-        self.class.send(:include, generator_module_for(choice, component))
+        apply_component_for(choice, component)
         send("setup_#{component}") if respond_to?("setup_#{component}")
       end
 
       # Returns the related module for a given component and option
       # generator_module_for('rr', :mock)
-      def generator_module_for(choice, component)
-        "Padrino::Generators::Components::#{component.to_s.capitalize.pluralize}::#{choice.to_s.capitalize}Gen".constantize
+      def apply_component_for(choice, component)
+        # I need to override Thor#apply because for unknow reason :verobse => false break tasks.
+        path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
+        say_status :apply, "#{component.to_s.pluralize}/#{choice}"
+        shell.padding += 1
+        instance_eval(open(path).read)
+        shell.padding -= 1
       end
 
       # Includes the component module for the given component and choice
@@ -29,7 +35,7 @@ module Padrino
       def include_component_module_for(component, choice=nil)
         choice = fetch_component_choice(component) unless choice
         return false if choice.to_s == 'none'
-        self.class.send(:include, generator_module_for(choice, component))
+        apply_component_for(choice, component)
       end
 
       # Returns the component choice stored within the .component file of an application

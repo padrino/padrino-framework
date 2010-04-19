@@ -2,6 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
+* Refactored padrino-gen internals
 * Colorized logs
 * Disabled sessions by defaults as Sinatra do
 * Enable sessions for admin app since authentication require it
