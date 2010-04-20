@@ -2,6 +2,7 @@
 
 == 0.9.10 (Unreleased)
 
+* Fixed padrino g and padrino gen aliases
 * Refactored padrino-gen internals
 * Colorized logs
 * Disabled sessions by defaults as Sinatra do

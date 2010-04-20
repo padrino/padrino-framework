@@ -8,13 +8,17 @@ padrino_local_path = Dir.pwd
 $:.unshift(padrino_local_path) if File.directory?(padrino_local_path) && !$:.include?(padrino_local_path)
 
 require 'padrino-core/cli/base'
+require 'padrino-core/support_lite'
 
 if %w(g gen).include?(ARGV[0])
   ARGV.shift
-  padrino_gen = File.join(padrino_core_path, "/../../padrino-gen/bin/padrino-gen")
-  if File.exist?(padrino_gen)
-    system "#{padrino_gen} #{ARGV.join(" ")}"
-  else
+  begin
+    # We try to load the vendored padrino-gen if exist
+    padrino_gen_path = File.expand_path('../../../padrino-gen/lib', __FILE__)
+    $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)
+    require 'padrino-gen'
+    Padrino.bin_gen(ARGV)
+  rescue
     puts "<= You need padrino-gen! Run: gem install padrino-gen"
   end
   exit(0)
