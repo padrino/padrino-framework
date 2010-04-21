@@ -37,9 +37,9 @@ task :routes, :query, :needs => :environment do |t, args|
     next if app_routes.empty?
     shell.say "\nApplication: #{app.name}", :yellow
     app_routes.map! do |route|
-      url_string     = "(#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")})"
+      name_string     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
       request_method = route.conditions[:request_method]
-      [request_method, url_string, route.original_path]
+      [request_method, name_string, route.original_path]
     end
     app_routes.unshift(["URL", "REQUEST", "PATH"])
     max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
