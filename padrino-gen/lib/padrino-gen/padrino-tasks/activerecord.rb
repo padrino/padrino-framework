@@ -308,7 +308,7 @@ if defined?(ActiveRecord)
       end
     end
 
-    desc "Generates .yml files for I18n translations."
+    desc "Generates .yml files for I18n translations"
     task :translate => :environment do
       models = Dir["#{Padrino.root}/app/models/**/*.rb"].collect { |m| File.basename(m, ".rb") }
 
