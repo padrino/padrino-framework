@@ -45,8 +45,8 @@ task :routes, :query, :needs => :environment do |t, args|
     max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
     max_col_2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
     app_routes.each_with_index do |row, i|
-      message = [row[1].rjust(max_col_2+2), row[0].center(max_col_1+2), row[2]]
-      shell.say(message.join(" "), i==0 ? :bold : nil)
+      message = [row[1].ljust(max_col_2+2), row[0].center(max_col_1+2), row[2]]
+      shell.say("    " + message.join(" "), i==0 ? :bold : nil)
     end
   end
 end
