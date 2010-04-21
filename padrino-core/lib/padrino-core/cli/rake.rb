@@ -41,11 +41,11 @@ task :routes, :query, :needs => :environment do |t, args|
       request_method = route.conditions[:request_method]
       [request_method, url_string, route.original_path]
     end
-    app_routes.unshift(["URL", "REQUEST", "PATH"])
+    app_routes.unshift(["REQUEST", "URL", "PATH"])
     max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
     max_col_2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
     app_routes.each_with_index do |row, i|
-      message = [row[1].rjust(max_col_2+2), row[0].center(max_col_1+4), row[2]]
+      message = [row[1].rjust(max_col_2+2), row[0].center(max_col_1+2), row[2]]
       shell.say(message.join(" "), i==0 ? :bold : nil)
     end
   end
