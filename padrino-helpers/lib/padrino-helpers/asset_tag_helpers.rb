@@ -239,7 +239,7 @@ module Padrino
         #
         def uri_root_path(*paths)
           root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
-          File.join(root_uri || '/', *paths)
+          File.join(ENV['RACK_BASE_URI'].to_s, root_uri || '/', *paths)
         end
 
         ##

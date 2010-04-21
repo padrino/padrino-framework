@@ -3,6 +3,7 @@
 == 0.9.10 (Unreleased)
 
 * Fixed DM Migration Issue with Text, Boolean etc... [Thanks to Snusnu and Akzhan]
+* Fixed Issue with deploying Padrino apps to a Sub-URI
 * Fixed padrino g and padrino gen aliases
 * Refactored padrino-gen internals
 * Colorized logs
