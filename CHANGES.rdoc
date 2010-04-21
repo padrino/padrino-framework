@@ -5,6 +5,7 @@
 * Fixed padrino g and padrino gen aliases
 * Refactored padrino-gen internals
 * Colorized logs
+* Added support for 'rake routes' task
 * Disabled sessions by defaults as Sinatra do
 * Enable sessions for admin app since authentication require it
 * Don't load Rack::Logger if our log_level is not :debug
