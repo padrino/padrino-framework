@@ -220,6 +220,7 @@ module Padrino
         end
         url = router.generator.generate(name, params)
         url = uri_root + url if defined?(uri_root) && uri_root != "/"
+        url = File.join(ENV['RACK_BASE_URI'].to_s, url) if ENV['RACK_BASE_URI']
         url
       rescue Usher::UnrecognizedException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
