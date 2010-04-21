@@ -28,16 +28,14 @@ task :environment do
   end
 end
 
-# Displays a listing of the named routes within a project
-# Listing can be optionally scoped by route name
-# rake routes routes[accounts]
+desc "Displays a listing of the named routes within a project"
 task :routes, :query, :needs => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
     app_routes = app.app_object.router.routes
     app_routes.reject! { |r| r.named.blank?  || r.conditions[:request_method] == 'HEAD' }
     app_routes.reject! { |r| r.named.to_s !~ /#{args.query}/ } if args.query.present?
     puts "Application: #{app.name}" if app_routes.size > 0
-    formatted_routes = app_routes.map do |route| 
+    formatted_routes = app_routes.map do |route|
       name_string = "[#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")}]"
       request_method = route.conditions[:request_method]
       { :name => name_string, :verb => "(#{request_method})", :url => route.original_path.inspect }
