@@ -11,7 +11,7 @@ module PadrinoTasks
 end
 
 def shell
-  @_shell ||= Thor::Shell::Basic.new
+  @_shell ||= Thor::Base.shell.new
 end
 
 # Load rake tasks from common rake task definition locations
@@ -34,11 +34,19 @@ task :routes, :query, :needs => :environment do |t, args|
     app_routes = app.app_object.router.routes
     app_routes.reject! { |r| r.named.blank?  || r.conditions[:request_method] == 'HEAD' }
     app_routes.reject! { |r| r.named.to_s !~ /#{args.query}/ } if args.query.present?
-    puts "Application: #{app.name}" if app_routes.size > 0
-    app_routes.each do |route|
-      url_string = "[#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")}]"
+    next if app_routes.empty?
+    shell.say "\nApplication: #{app.name}", :yellow
+    app_routes.map! do |route|
+      url_string     = "(#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")})"
       request_method = route.conditions[:request_method]
-      puts %Q[    #{url_string} (#{request_method}) => "#{route.original_path}"]
+      [request_method, url_string, route.original_path]
+    end
+    app_routes.unshift(["URL", "REQUEST", "PATH"])
+    max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
+    max_col_2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
+    app_routes.each_with_index do |row, i|
+      message = [row[1].rjust(max_col_2+2), row[0].center(max_col_1+4), row[2]]
+      shell.say(message.join(" "), i==0 ? :bold : nil)
     end
   end
 end
