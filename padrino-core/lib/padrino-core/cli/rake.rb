@@ -37,10 +37,16 @@ task :routes, :query, :needs => :environment do |t, args|
     app_routes.reject! { |r| r.named.blank?  || r.conditions[:request_method] == 'HEAD' }
     app_routes.reject! { |r| r.named.to_s !~ /#{args.query}/ } if args.query.present?
     puts "Application: #{app.name}" if app_routes.size > 0
-    app_routes.each do |route| 
-      url_string = "[#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")}]"
+    formatted_routes = app_routes.map do |route| 
+      name_string = "[#{route.named.to_s.split("_").map { |piece| ":#{piece}" }.join(", ")}]"
       request_method = route.conditions[:request_method]
-      puts %Q[    #{url_string} (#{request_method}) => "#{route.original_path}"]
+      { :name => name_string, :verb => "(#{request_method})", :url => route.original_path.inspect }
+    end
+    name_width = formatted_routes.collect {|r| r[:name]}.collect {|n| n.length}.max
+    verb_width = formatted_routes.collect {|r| r[:verb]}.collect {|v| v.length}.max
+    url_width = formatted_routes.collect {|r| r[:url]}.collect {|p| p.length}.max
+    formatted_routes.each do |r| 
+      puts %Q[    #{r[:name].ljust(name_width)} #{r[:verb].ljust(verb_width)} => #{r[:url].ljust(url_width)}]
     end
   end
 end
