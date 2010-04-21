@@ -18,6 +18,7 @@ module Padrino
         end
 
         def field_type(type)
+          type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
           case type
             when :integer, :float, :decimal   then :text_field
             when :string                      then :text_field
