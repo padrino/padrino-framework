@@ -155,7 +155,7 @@ module Padrino
       @log.sync          = true
       @mutex             = @@mutex[@log] ||= Mutex.new
       @format_datetime   = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message    = options[:format_message]  || "%-5s - [%s] \"%s\""
+      @format_message    = options[:format_message]  || "%s - [%s] \"%s\""
     end
 
     ##
@@ -163,7 +163,7 @@ module Padrino
     #
     def colored_level(level)
       style = ColoredLevels[level.to_s.downcase.to_sym].join("")
-      "#{style}#{level.to_s.upcase}#{CLEAR}"
+      "#{style}#{level.to_s.upcase.rjust(7)}#{CLEAR}"
     end
 
     ##
