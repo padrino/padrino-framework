@@ -14,10 +14,13 @@ def shell
   @_shell ||= Thor::Shell::Basic.new
 end
 
+# Load rake tasks from common rake task definition locations
 Dir["lib/tasks/**/*.rake"].
   concat(Dir["tasks/**/*.rake"]).
   concat(Dir["{test,spec}/*.rake"]).each  { |ext| load(ext) }
 
+# Loads the Padrino applications mounted within the project
+# setting up the required environment for Padrino
 task :environment do
   Padrino.mounted_apps.each do |app|
     Padrino.require_dependency(app.app_file)
@@ -25,6 +28,9 @@ task :environment do
   end
 end
 
+# Displays a listing of the named routes within a project
+# Listing can be optionally scoped by route name
+# rake routes routes[accounts]
 task :routes, :query, :needs => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
     app_routes = app.app_object.router.routes
