@@ -75,8 +75,7 @@ module Padrino
           def access_denied
             # If we have a login_page we redirect the user
             if login_page
-              url = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
-              redirect(url)
+              redirect(login_page)
             # If no match we halt with 401
             else
               halt 401, "You don't have permission for this resource"
@@ -84,7 +83,10 @@ module Padrino
           end
 
           def login_page
-            settings.login_page rescue nil
+            login_page ||= settings.login_page rescue nil
+            return unless login_page
+            login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
+            login_page
           end
 
           def store_location
