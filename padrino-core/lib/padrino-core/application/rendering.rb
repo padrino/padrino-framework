@@ -16,6 +16,11 @@ module Padrino
     IGNORE_FILE_PATTERN = [
       /~$/ # This is for Gedit
     ]
+    
+    ##
+    # Default rendering options used in the #render-method
+    #
+    DEFAULT_RENDERING_OPTIONS = {:strict_format => false, :raise_exceptions => true}
 
     def self.registered(app)
       app.send(:include, Padrino::Rendering)
@@ -140,7 +145,7 @@ module Padrino
         return cached_template if cached_template
 
         # Resolve view path and options
-        options.reverse_merge!(:strict_format => false, :raise_exceptions => true)
+        options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
         view_path = options.delete(:views) || self.options.views || self.class.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
