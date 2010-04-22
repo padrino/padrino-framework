@@ -1,4 +1,4 @@
-# rake bump version=X.X.X && rake publish
+# rake bump[version=X.X.X] && rake publish
 
 require 'pathname'
 require 'rake/clean'
