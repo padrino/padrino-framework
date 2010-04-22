@@ -12,6 +12,8 @@ module Padrino
   # to the url throughout the application.
   #
   module Routing
+    CONTENT_TYPE_ALIASES = {:htm => :html}
+
     class UnrecognizedException < RuntimeError #:nodoc:
     end
 
@@ -404,7 +406,8 @@ module Padrino
             match_format = types.include?(format) || types.include?(:any)
             @_content_type =
               if mime_type = matching_types.first
-                Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+                type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+                CONTENT_TYPE_ALIASES[type] || type
               else
                 format
               end
