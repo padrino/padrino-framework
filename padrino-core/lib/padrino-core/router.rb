@@ -13,9 +13,9 @@ module Padrino
   #
   # ==== Options
   #
-  #   :to:: The class of application that you want mount
-  #   :path:: Map the app to the given path
-  #   :host:: Map the app to the given host
+  # :to:: The class of application that you want mount
+  # :path:: Map the app to the given path
+  # :host:: Map the app to the given host
   #
   # ==== Examples
   #
