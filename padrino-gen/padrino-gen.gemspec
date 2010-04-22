@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-gen}
-  s.version = "0.9.9"
+  s.version = "0.9.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-04-05}
+  s.date = %q{2010-04-22}
   s.default_executable = %q{padrino-gen}
   s.description = %q{Generators for easily creating and building padrino applications from the console}
   s.email = %q{padrinorb@gmail.com}
@@ -34,29 +34,29 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/app/views/layouts/.emptydirectory",
      "lib/padrino-gen/generators/cli.rb",
      "lib/padrino-gen/generators/components/actions.rb",
-     "lib/padrino-gen/generators/components/mocks/mocha_gen.rb",
-     "lib/padrino-gen/generators/components/mocks/rr_gen.rb",
-     "lib/padrino-gen/generators/components/orms/activerecord_gen.rb",
-     "lib/padrino-gen/generators/components/orms/couchrest_gen.rb",
-     "lib/padrino-gen/generators/components/orms/datamapper_gen.rb",
-     "lib/padrino-gen/generators/components/orms/mongoid_gen.rb",
-     "lib/padrino-gen/generators/components/orms/mongomapper_gen.rb",
-     "lib/padrino-gen/generators/components/orms/sequel_gen.rb",
-     "lib/padrino-gen/generators/components/renderers/erb_gen.rb",
-     "lib/padrino-gen/generators/components/renderers/haml_gen.rb",
-     "lib/padrino-gen/generators/components/scripts/extcore_gen.rb",
-     "lib/padrino-gen/generators/components/scripts/jquery_gen.rb",
-     "lib/padrino-gen/generators/components/scripts/mootools_gen.rb",
-     "lib/padrino-gen/generators/components/scripts/prototype_gen.rb",
-     "lib/padrino-gen/generators/components/scripts/rightjs_gen.rb",
-     "lib/padrino-gen/generators/components/stylesheets/less_gen.rb",
-     "lib/padrino-gen/generators/components/stylesheets/sass_gen.rb",
-     "lib/padrino-gen/generators/components/tests/bacon_test_gen.rb",
-     "lib/padrino-gen/generators/components/tests/cucumber_test_gen.rb",
-     "lib/padrino-gen/generators/components/tests/riot_test_gen.rb",
-     "lib/padrino-gen/generators/components/tests/rspec_test_gen.rb",
-     "lib/padrino-gen/generators/components/tests/shoulda_test_gen.rb",
-     "lib/padrino-gen/generators/components/tests/testspec_test_gen.rb",
+     "lib/padrino-gen/generators/components/mocks/mocha.rb",
+     "lib/padrino-gen/generators/components/mocks/rr.rb",
+     "lib/padrino-gen/generators/components/orms/activerecord.rb",
+     "lib/padrino-gen/generators/components/orms/couchrest.rb",
+     "lib/padrino-gen/generators/components/orms/datamapper.rb",
+     "lib/padrino-gen/generators/components/orms/mongoid.rb",
+     "lib/padrino-gen/generators/components/orms/mongomapper.rb",
+     "lib/padrino-gen/generators/components/orms/sequel.rb",
+     "lib/padrino-gen/generators/components/renderers/erb.rb",
+     "lib/padrino-gen/generators/components/renderers/haml.rb",
+     "lib/padrino-gen/generators/components/scripts/extcore.rb",
+     "lib/padrino-gen/generators/components/scripts/jquery.rb",
+     "lib/padrino-gen/generators/components/scripts/mootools.rb",
+     "lib/padrino-gen/generators/components/scripts/prototype.rb",
+     "lib/padrino-gen/generators/components/scripts/rightjs.rb",
+     "lib/padrino-gen/generators/components/stylesheets/less.rb",
+     "lib/padrino-gen/generators/components/stylesheets/sass.rb",
+     "lib/padrino-gen/generators/components/tests/bacon.rb",
+     "lib/padrino-gen/generators/components/tests/cucumber.rb",
+     "lib/padrino-gen/generators/components/tests/riot.rb",
+     "lib/padrino-gen/generators/components/tests/rspec.rb",
+     "lib/padrino-gen/generators/components/tests/shoulda.rb",
+     "lib/padrino-gen/generators/components/tests/testspec.rb",
      "lib/padrino-gen/generators/controller.rb",
      "lib/padrino-gen/generators/mailer.rb",
      "lib/padrino-gen/generators/migration.rb",
@@ -83,10 +83,10 @@ Gem::Specification.new do |s|
      "lib/padrino-gen/generators/templates/scripts/protopak.js",
      "lib/padrino-gen/generators/templates/scripts/right.js",
      "lib/padrino-gen/padrino-tasks/activerecord.rb",
-     "lib/padrino-gen/padrino-tasks/sequel.rb",
      "lib/padrino-gen/padrino-tasks/datamapper.rb",
      "lib/padrino-gen/padrino-tasks/mongomapper.rb",
      "lib/padrino-gen/padrino-tasks/seed.rb",
+     "lib/padrino-gen/padrino-tasks/sequel.rb",
      "padrino-gen.gemspec",
      "test/helper.rb",
      "test/test_app_generator.rb",
@@ -110,7 +110,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<padrino-core>, ["= 0.9.9"])
+      s.add_runtime_dependency(%q<padrino-core>, ["= 0.9.10"])
       s.add_development_dependency(%q<haml>, [">= 2.2.1"])
       s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
@@ -118,7 +118,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
       s.add_development_dependency(%q<fakeweb>, [">= 1.2.3"])
     else
-      s.add_dependency(%q<padrino-core>, ["= 0.9.9"])
+      s.add_dependency(%q<padrino-core>, ["= 0.9.10"])
       s.add_dependency(%q<haml>, [">= 2.2.1"])
       s.add_dependency(%q<shoulda>, [">= 2.10.3"])
       s.add_dependency(%q<mocha>, [">= 0.9.7"])
@@ -127,7 +127,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<fakeweb>, [">= 1.2.3"])
     end
   else
-    s.add_dependency(%q<padrino-core>, ["= 0.9.9"])
+    s.add_dependency(%q<padrino-core>, ["= 0.9.10"])
     s.add_dependency(%q<haml>, [">= 2.2.1"])
     s.add_dependency(%q<shoulda>, [">= 2.10.3"])
     s.add_dependency(%q<mocha>, [">= 0.9.7"])

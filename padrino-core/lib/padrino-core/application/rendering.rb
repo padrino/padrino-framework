@@ -148,7 +148,7 @@ module Padrino
         # Generate potential template candidates
         templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
-          template_file   =  file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+          template_file   = file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
         end
 
