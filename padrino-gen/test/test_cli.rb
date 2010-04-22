@@ -9,13 +9,13 @@ class TestCli < Test::Unit::TestCase
   context 'the cli' do
 
     should "fail without arguments" do
-      output = silence_logger { Padrino::Generators::Cli.start }
+      output = silence_logger { generate(:cli) }
       assert_match "Please specify generator to use", output
     end
 
     should "work correctly if we have a project" do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp']) }
-      assert_nothing_raised { silence_logger { Padrino::Generators::Cli.start(['--root=/tmp/sample_project']) } }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp') }
+      assert_nothing_raised { silence_logger { generate(:cli, '--root=/tmp/sample_project') } }
     end
   end
 end

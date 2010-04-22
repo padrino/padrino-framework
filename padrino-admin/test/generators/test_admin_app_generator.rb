@@ -9,24 +9,24 @@ class TestAdminAppGenerator < Test::Unit::TestCase
   context 'the admin app generator' do
 
     should 'fail outside app root' do
-      output = silence_logger { Padrino::Generators::AdminApp.start(['-r=/tmp/sample_project']) }
+      output = silence_logger { generate(:admin_app, '-r=/tmp/sample_project') }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/admin')
     end
 
     should 'fail if we don\'t an orm' do
-      assert_nothing_raised { silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp']) } }
-      assert_raise(SystemExit) { silence_logger { Padrino::Generators::AdminApp.start(['-r=/tmp/sample_project']) } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
+      assert_raise(SystemExit) { silence_logger { generate(:admin_app, '-r=/tmp/sample_project') } }
     end
 
     should 'fail if we don\'t a valid theme' do
-      assert_nothing_raised { silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=activerecord']) } }
-      assert_raise(SystemExit) { silence_logger { Padrino::Generators::AdminApp.start(['-r=/tmp/sample_project', '--theme=foo']) } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord') } }
+      assert_raise(SystemExit) { silence_logger { generate(:admin_app, '-r=/tmp/sample_project', '--theme=foo') } }
     end
 
     should 'correctyl generate a new padrino admin application with default renderer' do
-      assert_nothing_raised { silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=activerecord']) } }
-      assert_nothing_raised { silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord') } }
+      assert_nothing_raised { silence_logger { generate(:admin_app, '--root=/tmp/sample_project') } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/admin')
       assert_file_exists('/tmp/sample_project/admin/app.rb')
@@ -55,8 +55,8 @@ class TestAdminAppGenerator < Test::Unit::TestCase
     end
 
     should 'correctyl generate a new padrino admin application with erb renderer' do
-      assert_nothing_raised { silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=activerecord', '-e=erb']) } }
-      assert_nothing_raised { silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord', '-e=erb') } }
+      assert_nothing_raised { silence_logger { generate(:admin_app, '--root=/tmp/sample_project') } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/admin')
       assert_file_exists('/tmp/sample_project/admin/app.rb')

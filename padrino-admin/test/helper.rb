@@ -60,6 +60,11 @@ class Test::Unit::TestCase
   def app
     Rack::Lint.new(@app)
   end
+  
+  # generate(:admin_app, '-r=/tmp/sample_project')
+  def generate(name, *params)
+    "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+  end
 
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)

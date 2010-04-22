@@ -7,14 +7,14 @@ class TestAppGenerator < Test::Unit::TestCase
 
   context 'the app generator' do
     should "fail outside app root" do
-      output = silence_logger { Padrino::Generators::App.start(['demo_root', '-r=/tmp']) }
+      output = silence_logger { generate(:app, 'demo_root', '-r=/tmp') }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/demo_root')
     end
 
     should "create correctly a new padrino application" do
-      assert_nothing_raised { silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp']) } }
-      assert_nothing_raised { silence_logger { Padrino::Generators::App.start(['demo', '--root=/tmp/sample_project']) } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
+      assert_nothing_raised { silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project') } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/demo')
       assert_file_exists('/tmp/sample_project/demo/app.rb')
@@ -27,18 +27,18 @@ class TestAppGenerator < Test::Unit::TestCase
     end
 
     should "correctly create a new controller inside a padrino application" do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp']) }
-      silence_logger { Padrino::Generators::App.start(['demo', '--root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Controller.start(['demo_items', '-r=/tmp/sample_project', '-a=demo']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp') }
+      silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project') }
+      silence_logger { generate(:controller, 'demo_items', '-r=/tmp/sample_project', '-a=demo') }
       assert_match_in_file(/Demo.controllers :demo_items do/m, '/tmp/sample_project/demo/controllers/demo_items.rb')
       assert_match_in_file(/Demo.helpers do/m, '/tmp/sample_project/demo/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_project/demo/views/demo_items')
     end
 
     should "correctly create a new mailer inside a padrino application" do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '--script=none', '-t=bacon']) }
-      silence_logger { Padrino::Generators::App.start(['demo', '--root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Mailer.start(['demo', '-r=/tmp/sample_project', '-a=demo']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
+      silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project') }
+      silence_logger { generate(:mailer, 'demo', '-r=/tmp/sample_project', '-a=demo') }
       assert_match_in_file(/class DemoMailer < Padrino::Mailer::Base/m, '/tmp/sample_project/demo/mailers/demo_mailer.rb')
       assert_match_in_file(/Padrino::Mailer::Base.smtp_settings/m, '/tmp/sample_project/lib/mailer.rb')
       assert_match_in_file(/register MailerInitializer/,'/tmp/sample_project/demo/app.rb')

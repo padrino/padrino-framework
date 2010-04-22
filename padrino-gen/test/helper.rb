@@ -32,6 +32,11 @@ class Test::Unit::TestCase
     Time.stubs(:now).returns(time)
     return time
   end
+  
+  # generate(:controller, 'DemoItems', '-r=/tmp/sample_project')
+  def generate(name, *params)
+    "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+  end
 
   # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
   # In this case, block is the html to evaluate

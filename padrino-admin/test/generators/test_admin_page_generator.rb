@@ -21,22 +21,22 @@ class TestAdminPageGenerator < Test::Unit::TestCase
   context 'the admin page generator' do
 
     should 'fail outside app root' do
-      output = silence_logger { Padrino::Generators::AdminPage.start(['foo', '-r=/tmp/sample_project']) }
+      output = silence_logger { generate(:admin_page, 'foo', '-r=/tmp/sample_project') }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/admin')
     end
 
     should 'fail without argument and model' do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=activerecord']) }
-      silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) }
-      assert_raise(Padrino::Admin::Generators::OrmError) { Padrino::Generators::AdminPage.start(['foo', '-r=/tmp/sample_project']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord') }
+      silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
+      assert_raise(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', '-r=/tmp/sample_project') }
     end
 
     should 'correctly generate a new padrino admin application default renderer' do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=datamapper']) }
-      silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Model.start(['person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::AdminPage.start(['person', '--root=/tmp/sample_project']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper') }
+      silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
+      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project') }
+      silence_logger { generate(:admin_page, 'person', '--root=/tmp/sample_project') }
       assert_file_exists '/tmp/sample_project/admin/controllers/people.rb'
       assert_file_exists '/tmp/sample_project/admin/views/people/_form.haml'
       assert_file_exists '/tmp/sample_project/admin/views/people/edit.haml'
@@ -50,10 +50,10 @@ class TestAdminPageGenerator < Test::Unit::TestCase
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=datamapper', '-e=erb']) }
-      silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Model.start(['person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::AdminPage.start(['person', '--root=/tmp/sample_project']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper', '-e=erb') }
+      silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
+      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project') }
+      silence_logger { generate(:admin_page, 'person', '--root=/tmp/sample_project') }
       assert_file_exists '/tmp/sample_project/admin/controllers/people.rb'
       assert_file_exists '/tmp/sample_project/admin/views/people/_form.erb'
       assert_file_exists '/tmp/sample_project/admin/views/people/edit.erb'
@@ -67,11 +67,11 @@ class TestAdminPageGenerator < Test::Unit::TestCase
     end
 
     should 'correctly generate a new padrino admin application with multiple models' do
-      silence_logger { Padrino::Generators::Project.start(['sample_project', '--root=/tmp', '-d=datamapper']) }
-      silence_logger { Padrino::Generators::AdminApp.start(['--root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Model.start(['person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::Model.start(['page', "name:string", "body:string", '-root=/tmp/sample_project']) }
-      silence_logger { Padrino::Generators::AdminPage.start(['person', 'page', '--root=/tmp/sample_project']) }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper') }
+      silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
+      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project') }
+      silence_logger { generate(:model, 'page', "name:string", "body:string", '-root=/tmp/sample_project') }
+      silence_logger { generate(:admin_page, 'person', 'page', '--root=/tmp/sample_project') }
       # For Person
       assert_file_exists '/tmp/sample_project/admin/controllers/people.rb'
       assert_file_exists '/tmp/sample_project/admin/views/people/_form.haml'
