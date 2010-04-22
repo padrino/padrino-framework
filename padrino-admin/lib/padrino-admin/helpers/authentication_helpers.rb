@@ -83,7 +83,10 @@ module Padrino
           end
 
           def login_page
-            settings.login_page rescue nil
+            login_page ||= settings.login_page rescue nil
+            return unless login_page
+            login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
+            login_page
           end
 
           def store_location

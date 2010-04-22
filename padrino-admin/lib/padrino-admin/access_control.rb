@@ -150,7 +150,9 @@ module Padrino
         #   project_module.path("/admin")
         #
         def path(prefix=nil)
-          prefix ? File.join(prefix, @path) : @path
+          path = prefix ? File.join(prefix, @path) : @path
+          path = File.join(ENV['RACK_BASE_URI'].to_s, path) if ENV['RACK_BASE_URI']
+          path
         end
       end # ProjectModule
     end # AccessControl
