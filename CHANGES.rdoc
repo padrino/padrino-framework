@@ -1,6 +1,10 @@
 = CHANGES
 
-== 0.9.10 (Unreleased)
+== 0.9.11 (Unreleased)
+
+* Fixed issue with rspec rake spec task
+
+== 0.9.10
 
 * Fixed DM Migration Issue with Text, Boolean etc... [Thanks to Snusnu and Akzhan]
 * Fixed Issue with deploying Padrino apps to a Sub-URI
