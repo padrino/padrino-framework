@@ -5,6 +5,7 @@
 * Fix ensure to load database conf before everything
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks
+* Fixes an issue with trailing delimiters for index controller actions (i.e /posts/)
 
 == 0.9.10
 
