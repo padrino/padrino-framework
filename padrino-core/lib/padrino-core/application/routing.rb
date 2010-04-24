@@ -349,7 +349,8 @@ module Padrino
             end
 
             # Small reformats
-            path.gsub!(/\/?index\/?/, '')                             # Remove index
+            path.gsub!(%r{(/?\w+)/index/?}, '\1(/)')                  # Remove index from named controller action
+            path.gsub!(%r{/?index/?}, '')                             # Remove index path
             path = (uri_root == "/" ? "/" : "(/)") if path.blank?     # Add a trailing delimiter if path is empty
 
             # We need to have a path that start with / in some circumstances and that don't end with /

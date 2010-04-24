@@ -2,14 +2,19 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestRouting < Test::Unit::TestCase
 
-  should 'ignore trailing delimiters' do
+  should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
+      get(:test) { "tester" }
     end
     get "/foo"
     assert_equal "okey", body
     get "/foo/"
     assert_equal "okey", body
+    get "/test"
+    assert_equal "tester", body
+    get "/test/"
+    assert_equal "tester", body
   end
 
   should 'fail with unrecognized route exception when not found' do
@@ -251,6 +256,28 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/admin/show/1", @app.url(:admin_show, :id => 1)
     get "/foo/bar"
     assert_equal "foo_bar_index", body
+  end
+
+  should "ignore trailing delimiters within a named controller" do
+    mock_app do
+      controller :posts do
+        get(:index, :provides => [:html, :js]){ "index" }
+        get(:new)  { "new" }
+        get(:show, :with => :id){ "show #{params[:id]}" }
+      end
+    end
+    get "/posts"
+    assert_equal "index", body
+    get "/posts/"
+    assert_equal "index", body
+    get "/posts.js"
+    assert_equal "index", body
+    get "/posts/.js"
+    assert_equal "index", body
+    get "/posts/new"
+    assert_equal "new", body
+    get "/posts/new/"
+    assert_equal "new", body
   end
 
   should 'use named controllers with array routes' do
