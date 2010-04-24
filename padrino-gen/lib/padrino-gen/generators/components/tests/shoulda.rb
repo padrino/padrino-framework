@@ -34,7 +34,7 @@ SHOULDA_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
 require 'rake/testtask'
 
 Rake::TestTask.new(:test) do |test|
-  test.pattern = '**/*_test.rb'
+  test.pattern = 'test/**/*_test.rb'
   test.verbose = true
 end
 TEST

@@ -3,7 +3,7 @@
 == 0.9.11 (Unreleased)
 
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
-* Fixed issue with rspec rake spec task
+* Fixed issue with rake test tasks
 
 == 0.9.10
 
