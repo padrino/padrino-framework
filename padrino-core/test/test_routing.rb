@@ -280,6 +280,30 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "new", body
   end
 
+  should "ignore trailing delimiters within a named controller for unnamed actions" do
+    mock_app do
+      controller :accounts do
+        get("/") { "account_index" }
+        get("/new") { "new" }
+      end
+      controller :votes do
+        get("(/)") { "vote_index" }
+      end
+    end
+    get "/accounts"
+    assert_equal "account_index", body
+    # get "/accounts/"
+    # assert_equal "account_index", body
+    get "/accounts/new"
+    assert_equal "new", body
+    get "/accounts/new/"
+    assert_equal "new", body
+    # get "/votes"
+    # assert_equal "vote_index", body
+    get "/votes/"
+    assert_equal "vote_index", body
+  end
+
   should 'use named controllers with array routes' do
     mock_app do
       controller :admin do
