@@ -8,9 +8,10 @@ module Padrino
       @_called_from = first_caller
       set_encoding
       set_load_paths(*load_paths) # we set the padrino load paths
-      require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # load root libs
+      require_dependencies("#{root}/config/database.rb") # load db adapter
+      require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # load our libs
       require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # load root models
-      require_dependencies("#{root}/config/database.rb", "#{root}/config/apps.rb") # load configuration
+      require_dependencies("#{root}/config/apps.rb") # load configuration
       Reloader::Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
       Padrino.logger # Initialize our logger
       Thread.current[:padrino_loaded] = true
