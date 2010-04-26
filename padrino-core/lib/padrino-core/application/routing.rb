@@ -403,20 +403,30 @@ module Padrino
           condition {
             matching_types = (request.accept & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
-            format = ($1 || :html).to_sym
-            match_format = types.include?(format) || types.include?(:any)
-            @_content_type =
-              if mime_type = matching_types.first
-                type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
-                CONTENT_TYPE_ALIASES[type] || type
-              else
-                format
-              end
-            content_type(@_content_type, :charset => 'utf-8')
-            match_format || !matching_types.empty?
+            url_format = $1.to_sym if $1
+            
+            if !url_format && matching_types.first
+               type = (
+                 Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+               )
+               accept_format = CONTENT_TYPE_ALIASES[type] || type
+            end
+            
+            matched_format = types.include?(:any) ||
+                             types.include?(accept_format) || 
+                             types.include?(url_format) ||
+                             (request.accept.empty? && types.include?(:html))
+                             
+            if matched_format
+              @_content_type = url_format || accept_format || :html
+              content_type(@_content_type, :charset => 'utf-8')
+            end
+
+            matched_format || !matching_types.empty?
           }
         end
         alias :respond_to :provides
+        
     end # ClassMethods
   end # Routing
 end # Padrino
