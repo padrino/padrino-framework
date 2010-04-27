@@ -93,36 +93,36 @@ class TestRendering < Test::Unit::TestCase
       get "/layout_test.xml"
       assert_equal "document start xml file end", body
     end
-    
+
     should 'by default use html file when no other is given' do
       create_layout :foo, "html file", :format => :html
-      
+
       mock_app do
         get('/content_type_test', :respond_to => [:html, :xml]) { render :foo }
       end
-      
+
       get "/content_type_test"
       assert_equal "html file", body
       get "/content_type_test.xml"
       assert_equal "html file", body
     end
-    
+
     should 'not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
       create_layout :foo, "html file", :format => :html
-      
+
       mock_app do
         get('/default_rendering_test', :respond_to => [:html, :xml]) { render :foo }
       end
-      
+
       @save = Padrino::Rendering::DEFAULT_RENDERING_OPTIONS
       Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = true
-      
+
       get "/default_rendering_test"
       assert_equal "html file", body
       assert_raise Padrino::Rendering::TemplateNotFound do
         get "/default_rendering_test.xml"
       end
-      
+
       Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge(@save)
     end
 
@@ -232,6 +232,18 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "Im Haml\n", body
       get "/foo_xml.js"
       assert_equal "Im Xml", body
+    end
+
+    should 'resolve without explict template format' do
+      create_view :foo, "Im Html"
+      create_view :foo, "xml.rss", :format => :rss
+      mock_app do
+        get(:index, :map => "/", :provides => [:html, :rss]){ render 'foo' }
+      end
+      get "/"
+      assert_equal "Im Html", body
+      get ".rss"
+      assert_equal "<rss/>\n", body
     end
 
     should "ignore files ending in tilde and not render them" do
