@@ -136,7 +136,7 @@ class TestRouter < Test::Unit::TestCase
     assert res.not_found?
 
     res = Rack::MockRequest.new(Padrino.application).get("/foo", "HTTP_HOST" => "bar.padrino.org")
-    assert res.not_found?
+    assert res.ok?
 
     res = Rack::MockRequest.new(Padrino.application).get("/foo/", "HTTP_HOST" => "bar.padrino.org")
     assert res.ok?

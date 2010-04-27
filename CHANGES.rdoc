@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* Allow default rendering options to be changed [Thanks to Skade]
 * Fix ensure to load database conf before everything
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks

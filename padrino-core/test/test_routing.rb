@@ -100,21 +100,21 @@ class TestRouting < Test::Unit::TestCase
     get "/d.js"
     assert_equal "/d.js?foo=bar", body
   end
-  
+
   should "not allow Accept-Headers it does not provide" do
     mock_app do
       get(:a, :provides => [:html, :js]){ content_type }
     end
-    
+
     get "/a", {}, {"HTTP_ACCEPT" => "application/yaml"}
     assert_equal 404, status
   end
-  
+
   should "not default to HTML if HTML is not provided and no type is given" do
     mock_app do
       get(:a, :provides => [:js]){ content_type }
     end
-    
+
     get "/a", {}, {}
     assert_equal 404, status
   end
@@ -290,7 +290,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "index", body
     get "/posts.js"
     assert_equal "index", body
-    get "/posts/.js"
+    get "/posts.js/"
     assert_equal "index", body
     get "/posts/new"
     assert_equal "new", body
@@ -310,14 +310,14 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/accounts"
     assert_equal "account_index", body
-    # get "/accounts/"
-    # assert_equal "account_index", body
+    get "/accounts/"
+    assert_equal "account_index", body
     get "/accounts/new"
     assert_equal "new", body
     get "/accounts/new/"
     assert_equal "new", body
-    # get "/votes"
-    # assert_equal "vote_index", body
+    get "/votes"
+    assert_equal "vote_index", body
     get "/votes/"
     assert_equal "vote_index", body
   end

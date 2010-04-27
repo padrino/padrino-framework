@@ -223,6 +223,7 @@ module Padrino
         url = router.generator.generate(name, params)
         url = File.join(uri_root, url) if defined?(uri_root) && uri_root != "/"
         url = File.join(ENV['RACK_BASE_URI'].to_s, url) if ENV['RACK_BASE_URI']
+        url = "/" if url.blank?
         url
       rescue Usher::UnrecognizedException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
@@ -257,9 +258,6 @@ module Padrino
           options[:conditions] ||= {}
           options[:conditions][:request_method] = verb
           options[:conditions][:host] = options.delete(:host) if options.key?(:host)
-
-          # Because of self.options.host
-          host_name(options.delete(:host)) if options.key?(:host)
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
@@ -333,6 +331,7 @@ module Padrino
               # Now we need to add our controller path only if not mapped directly
               if map.blank?
                 controller_path = controller.join("/")
+                path.gsub!(%r{^\(/\)|/\?}, "")
                 path = File.join(controller_path, path)
               end
               # Here we build the correct name route
@@ -349,18 +348,12 @@ module Padrino
             end
 
             # Small reformats
-            path.gsub!(%r{(/?\w+)/index/?}, '\1(/)')                  # Remove index from named controller action
-            path.gsub!(%r{/?index/?}, '')                             # Remove index path
-            path = (uri_root == "/" ? "/" : "(/)") if path.blank?     # Add a trailing delimiter if path is empty
-
-            # We need to have a path that start with / in some circumstances and that don't end with /
-            if path != "(/)" && path != "/"
-              path = "/" + path unless path =~ %r{^/}
-              path.sub!(%r{/$}, '')
-            end
-
-            # We need to fix a few differences between the usher and sintra router
-            path.sub!(%r{/\?$}, '(/)') #  '/foo/?' => '/foo(/)'
+            path.gsub!(%r{/?index/?}, '')                  # Remove index path
+            path = "(/)"      if path.blank?               # Add a trailing delimiter if path is empty
+            path = "/" + path if path !~ %r{^\(?/} && path # Paths must start with a trailing delimiter
+            path.sub!(%r{/\?$}, '(/)')                     # Sinatra compat '/foo/?' => '/foo(/)'
+            path.sub!(%r{/$}, '(/)')                       # Ignoring trailing delimiters
+            path += "(/)" unless path =~ %r{/\)$}          # Be sure to always ignore trailing delimiters
           end
 
           # Merge in option defaults
@@ -404,19 +397,19 @@ module Padrino
             matching_types = (request.accept & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format = $1.to_sym if $1
-            
+
             if !url_format && matching_types.first
                type = (
                  Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
                )
                accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
-            
+
             matched_format = types.include?(:any) ||
-                             types.include?(accept_format) || 
+                             types.include?(accept_format) ||
                              types.include?(url_format) ||
                              (request.accept.empty? && types.include?(:html))
-                             
+
             if matched_format
               @_content_type = url_format || accept_format || :html
               content_type(@_content_type, :charset => 'utf-8')
@@ -426,7 +419,7 @@ module Padrino
           }
         end
         alias :respond_to :provides
-        
+
     end # ClassMethods
   end # Routing
 end # Padrino
