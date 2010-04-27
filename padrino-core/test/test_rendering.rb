@@ -240,7 +240,7 @@ class TestRendering < Test::Unit::TestCase
       mock_app do
         get(:index, :map => "/", :provides => [:html, :rss]){ render 'foo' }
       end
-      get "/"
+      get "/", {}, { 'HTTP_ACCEPT' => 'text/html;q=0.9' }
       assert_equal "Im Html", body
       get ".rss"
       assert_equal "<rss/>\n", body

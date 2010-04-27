@@ -394,14 +394,12 @@ module Padrino
           mime_types = types.map{ |t| mime_type(t) }
 
           condition {
-            matching_types = (request.accept & mime_types)
+            matching_types = (request.accept.map { |a| a.split(";")[0].strip } & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format = $1.to_sym if $1
 
             if !url_format && matching_types.first
-               type = (
-                 Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
-               )
+               type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
                accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
 
