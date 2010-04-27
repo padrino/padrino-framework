@@ -63,7 +63,7 @@ task :commit, [:message] do |t, args|
   system("git commit -a -m \"#{args.message}\"")
 end
 
-desc "Generate documentation for the Rails framework"
+desc "Generate documentation for the Padrino framework"
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
