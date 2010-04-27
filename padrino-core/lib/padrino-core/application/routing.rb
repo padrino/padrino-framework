@@ -417,7 +417,6 @@ module Padrino
           }
         end
         alias :respond_to :provides
-
     end # ClassMethods
   end # Routing
 end # Padrino
