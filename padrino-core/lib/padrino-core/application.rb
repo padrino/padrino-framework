@@ -74,8 +74,10 @@ module Padrino
         self.default_filters!
         self.default_routes!
         self.default_errors!
-        I18n.load_path += self.locale_path
-        I18n.reload!
+        if defined?(I18n)
+          I18n.load_path += self.locale_path
+          I18n.reload!
+        end
         @_configured = true
       end
 

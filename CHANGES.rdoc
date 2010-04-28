@@ -2,6 +2,8 @@
 
 == 0.9.11 (Unreleased)
 
+* Moved bundler dependency from padrino-core to padrino-gen
+* Moved I18n dependency from padrino-core to padrino-helpers
 * Use 'mail' library and remove 'tmail' dependency for padrino-mailer
 * Add support for a quick 'email' helper for delivering mail in padrino-mailer
 * Allow default rendering options to be changed [Thanks to Skade]

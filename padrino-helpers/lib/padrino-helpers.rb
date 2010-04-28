@@ -2,6 +2,7 @@ require 'padrino-core/support_lite'
 require 'active_support/core_ext/float/rounding'
 require 'active_support/option_merger'
 require 'cgi'
+require 'i18n'
 
 Dir[File.dirname(__FILE__) + '/padrino-helpers/**/*.rb'].each {|file| require file }
 

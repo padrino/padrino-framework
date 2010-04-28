@@ -22,8 +22,6 @@
 #   * Symbol#to_proc
 #   * SupportLite::OrderedHash
 #
-
-require 'i18n'
 require 'rbconfig'
 require 'active_support/version'
 require 'active_support/core_ext/kernel'
@@ -62,7 +60,7 @@ end
 ##
 # Loads our locales configuration files
 #
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"]
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
 
 module Padrino
   ##

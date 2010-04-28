@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-04-23}
+  s.date = %q{2010-04-28}
   s.description = %q{Mailer system for padrino allowing easy delivery of application emails}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
      "test/fixtures/mailer_app/views/sample_mailer/foo_message.erb",
      "test/helper.rb",
      "test/test_base.rb",
+     "test/test_delivery.rb",
      "test/test_mail_object.rb",
      "test/test_padrino_mailer.rb"
   ]
