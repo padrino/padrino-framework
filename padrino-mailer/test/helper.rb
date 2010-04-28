@@ -58,6 +58,13 @@ class Test::Unit::TestCase
     log_buffer.rewind && log_buffer.read
   end
 
+  # Asserts that the specified email object was delivered
+  def assert_email_sent(mail_attributes, options={})
+    delivery_attributes = mail_attributes
+    delivery_attributes.merge!(:smtp => MailerDemo.smtp_settings) if mail_attributes[:via].to_s == 'smtp'
+    Padrino::Mailer::MailObject.any_instance.expects(:send_mail).with(has_entries(delivery_attributes)).once.returns(true)
+  end
+
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"

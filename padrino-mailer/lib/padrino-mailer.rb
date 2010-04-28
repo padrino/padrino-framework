@@ -21,6 +21,22 @@ module Padrino
     #
     def self.registered(app)
       Padrino::Mailer::Base::views_path << app.views
+      app.helpers Padrino::Mailer::Helpers
+    end
+    
+    module Helpers
+      ##
+      # Delivers an email with the given mail attributes (to, from, subject, cc, bcc, body, et.al)
+      #
+      # ==== Examples
+      #
+      #   email :to => @user.email, :from => "awesomeness@example.com", 
+      #         :subject => "Welcome to Awesomeness!", :body => haml(:some_template)
+      #
+      def email(mail_attributes)
+        smtp_settings = Padrino::Mailer::Base.smtp_settings
+        Padrino::Mailer::MailObject.new(mail_attributes, smtp_settings).deliver
+      end
     end
   end # Mailer
 end # Padrino

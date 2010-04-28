@@ -2,6 +2,9 @@
 
 == 0.9.11 (Unreleased)
 
+* Use 'mail' library and remove 'tmail' dependency for padrino-mailer
+* Add support for a quick 'email' helper for delivering mail in padrino-mailer
+* Allow default rendering options to be changed [Thanks to Skade]
 * Fix ensure to load database conf before everything
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks

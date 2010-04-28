@@ -21,7 +21,26 @@ functionality on the server. However, smtp is also supported using the following
    }
 
 Once those have been defined, the default will become smtp delivery unless overwritten in an individual mail definition.
-Next, we should define a custom mailer extended from <tt>Padrino::Mailer::Base</tt>.
+
+Padrino supports sending any arbitrary email (using either sendmail or smtp) right from your controllers. 
+This is ideal for ‘one-off’ emails where the ‘full’ mailer object is simply unnecessary or too heavy for your simple task.
+
+Delivering an email within your controller is simple:
+
+  # app/controllers/session.rb
+  post :create do
+    email(:to => "john@smith.com", :subject => "Successfully Registered!", :body => "Test Body")
+  end
+  
+This simple helper will accept any of the standard email attributes and deliver your email in a single command. You can also render a template for the body and specify the delivery method:
+
+  # app/controllers/session.rb
+  post :create do
+    email(:to => "john@smith.com", :subject => "Successfully Registered!", 
+          :body => render('email/registered'), :via => :sendmail)
+  end
+
+Padrino also supports more structured mailers. We can define a custom mailer extended from <tt>Padrino::Mailer::Base</tt>.
 
   # app/mailers/sample_mailer.rb
   class SampleMailer < Padrino::Mailer::Base

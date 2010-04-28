@@ -16,11 +16,11 @@ module Padrino
     IGNORE_FILE_PATTERN = [
       /~$/ # This is for Gedit
     ]
-    
+
     ##
     # Default rendering options used in the #render-method
     #
-    DEFAULT_RENDERING_OPTIONS = {:strict_format => false, :raise_exceptions => true}
+    DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true }
 
     def self.registered(app)
       app.send(:include, Padrino::Rendering)

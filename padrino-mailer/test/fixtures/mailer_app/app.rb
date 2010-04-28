@@ -42,6 +42,11 @@ class MailerDemo < Sinatra::Base
       via  :smtp
     end
   end
+  
+  post "/deliver/inline" do
+    result = email(:to => "john@apple.com", :from => "joe@smith.com", :subject => "Test Email", :body => "Test Body", :via => :smtp)
+    result ? "mail delivered" : 'mail not delivered'
+  end
 
   post "/deliver/plain" do
     result = SampleMailer.deliver_birthday_message("Joey", 21)
