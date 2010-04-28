@@ -1,0 +1,16 @@
+uk:
+  padrino:
+    admin:
+      save: Зберегти
+      cancel: Скасувати
+      list: Список
+      edit: Змінити
+      new: Додати
+      show: Показати
+      delete: Видалити
+      confirm: Ви впевнені?
+      created_at: Додано
+      all: Всі
+      profile: Профіль
+      settings: Налаштування
+      logout: Вихід
