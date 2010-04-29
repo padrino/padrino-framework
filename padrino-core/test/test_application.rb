@@ -30,5 +30,24 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.padrino_mailer
       assert !PadrinoTestApp.padrino_helpers
     end
+    
+    #compare to: test_routing: allow global provides
+    should "set content_type to :html if none can be determined" do
+      mock_app do
+        provides :xml
+
+        get("/foo"){ "Foo in #{content_type}" }
+        get("/bar"){ "Foo in #{content_type}" }
+      end
+      
+      get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+      assert_equal 'Foo in xml', body
+      get '/foo'
+      assert not_found?
+      
+      get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+      assert_equal "Foo in html", body
+    end
+    
   end
 end

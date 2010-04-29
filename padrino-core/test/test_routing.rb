@@ -472,18 +472,18 @@ class TestRouting < Test::Unit::TestCase
       provides :xml
 
       get("/foo"){ "Foo in #{content_type}" }
-      get("/bar"){ "Bar in #{content_type}" }
+      get("/bar"){ raise if content_type != nil }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Foo in xml', body
     get '/foo'
     assert not_found?
-
+    
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert_equal 'Bar in html', body
+    assert 200, status
   end
-
+  
   should "set content_type to :html for both empty Accept as well as Accept text/html" do
     mock_app do
       provides :html
