@@ -11,6 +11,7 @@
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks
 * Fixes an issue with trailing delimiters for index controller actions (i.e /posts/)
+* Fixes issue with sequel in admin gem
 
 == 0.9.10
 
