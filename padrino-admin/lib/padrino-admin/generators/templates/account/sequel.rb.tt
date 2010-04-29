@@ -31,20 +31,21 @@ class Account < ::Sequel::Model
   end
 
   ##
-  # This method is used for retrive the original password.
-  #
-  def password_clean
-    crypted_password.decrypt(salt)
-  end
-
-  ##
   # Replace AR method
   #
   def self.find_by_id(id)
     self[id] rescue nil
   end
 
+  ##
+  # This method is used for retrive the original password.
+  #
+  def password_clean
+    crypted_password.decrypt(salt)
+  end
+
   private
+  
     def generate_password
       return if password.blank?
       self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new?
