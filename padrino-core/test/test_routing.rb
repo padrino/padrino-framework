@@ -1,7 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestRouting < Test::Unit::TestCase
-
+  class RoutingApp < Sinatra::Base
+    register ::Padrino::Routing
+    set :environment, :test
+  end
+  
+  def mock_app(base=RoutingApp, &block)
+    @app = Sinatra.new(base, &block)
+  end
+  
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
