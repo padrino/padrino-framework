@@ -41,7 +41,7 @@ class Account < ::Sequel::Model
   # Replace AR method
   #
   def self.find_by_id(id)
-    filter(:id => id).first
+    self[id] rescue nil
   end
 
   private
