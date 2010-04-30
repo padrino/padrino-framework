@@ -83,7 +83,7 @@ module Padrino
           case orm
             when :activerecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
             when :datamapper then "@#{name_singular}.update(#{params})"
-            when :sequel then "(@#{name_singular}.update(#{params}) rescue false)"
+            when :sequel then "(@#{name_singular}.update(#{params}) rescue false) & @#{name_singular}.valid?"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
