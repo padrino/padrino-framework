@@ -26,7 +26,7 @@ class TestRouter < Test::Unit::TestCase
     res = Rack::MockRequest.new(map).get("/foo")
     assert res.ok?
     assert_equal "/foo", res["X-ScriptName"]
-    assert_equal "", res["X-PathInfo"]
+    assert_equal "/", res["X-PathInfo"]
 
     res = Rack::MockRequest.new(map).get("/foo/")
     assert res.ok?
@@ -36,7 +36,7 @@ class TestRouter < Test::Unit::TestCase
     res = Rack::MockRequest.new(map).get("/foo/bar")
     assert res.ok?
     assert_equal "/foo/bar", res["X-ScriptName"]
-    assert_equal "", res["X-PathInfo"]
+    assert_equal "/", res["X-PathInfo"]
 
     res = Rack::MockRequest.new(map).get("/foo/bar/")
     assert res.ok?
@@ -57,7 +57,7 @@ class TestRouter < Test::Unit::TestCase
     res = Rack::MockRequest.new(map).get("/bar", 'HTTP_HOST' => 'foo.org')
     assert res.ok?
     assert_equal "/bar", res["X-ScriptName"]
-    assert_equal "", res["X-PathInfo"]
+    assert_equal "/", res["X-PathInfo"]
 
     res = Rack::MockRequest.new(map).get("/bar/", 'HTTP_HOST' => 'foo.org')
     assert res.ok?

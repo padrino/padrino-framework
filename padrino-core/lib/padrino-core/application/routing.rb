@@ -1,5 +1,5 @@
 require 'usher' unless defined?(Usher)
-require 'padrino-core/support_lite' unless String.method_defined?(:blank?)
+require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 Usher::Route.class_eval { attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout }
 
@@ -12,7 +12,7 @@ module Padrino
   # to the url throughout the application.
   #
   module Routing
-    CONTENT_TYPE_ALIASES = {:htm => :html}
+    CONTENT_TYPE_ALIASES = { :htm => :html }
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -349,11 +349,10 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            path = "(/)"      if path.blank?               # Add a trailing delimiter if path is empty
+            path = "/"        if path.blank?               # Add a trailing delimiter if path is empty
             path = "/" + path if path !~ %r{^\(?/} && path # Paths must start with a trailing delimiter
             path.sub!(%r{/\?$}, '(/)')                     # Sinatra compat '/foo/?' => '/foo(/)'
-            path.sub!(%r{/$}, '(/)')                       # Ignoring trailing delimiters
-            path += "(/)" unless path =~ %r{/\)$}          # Be sure to always ignore trailing delimiters
+            path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
           end
 
           # Merge in option defaults

@@ -96,7 +96,7 @@ class TestAdminApplication < Test::Unit::TestCase
       assert access_control.allowed?(Account.editor, "/posts")
 
       # Prepare a basic page
-      get "/login/(:role)" do
+      get "/login(/:role)" do
         set_current_account(Account.send(params[:role])) if params[:role]
         "logged as #{params[:role] || "any"}"
       end
@@ -106,7 +106,7 @@ class TestAdminApplication < Test::Unit::TestCase
       get "/posts"    do; "posts";    end
     end
 
-    get "/login/"
+    get "/login"
     assert_equal "logged as any", body
 
     get "/any"
