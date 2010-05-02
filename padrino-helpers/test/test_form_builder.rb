@@ -130,8 +130,8 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display correct form html with valid record" do
       actual_html = standard_builder.error_messages(:header_message => "Demo form cannot be saved", :style => "foo:bar", :class => "mine")
       assert_has_tag('#field-errors h2', :content => "Demo form cannot be saved") { actual_html }
-      assert_has_tag('#field-errors ul li', :content => "User must be valid") { actual_html }
-      assert_has_tag('#field-errors ul li', :content => "User must be present") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "B must be valid") { actual_html }
+      assert_has_tag('#field-errors ul li', :content => "A must be present") { actual_html }
       assert_has_tag('#field-errors', :style => "foo:bar") { actual_html }
       assert_has_tag('#field-errors', :class => "mine") { actual_html }
     end
@@ -139,26 +139,26 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display correct form in haml" do
       visit '/haml/form_for'
       assert_have_selector '#demo div.field-errors h2',     :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be valid"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be present"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be a number"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Fake must be valid"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Second must be present"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Third must be a number"
       assert_have_selector '#demo2 div.field-errors h2',    :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be valid"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be present"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be a number"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Fake must be valid"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Second must be present"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Third must be a number"
       assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
 
     should "display correct form in erb" do
       visit '/erb/form_for'
       assert_have_selector '#demo div.field-errors h2',     :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be valid"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be present"
-      assert_have_selector '#demo div.field-errors ul li',  :content => "Markup user must be a number"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Fake must be valid"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Second must be present"
+      assert_have_selector '#demo div.field-errors ul li',  :content => "Third must be a number"
       assert_have_selector '#demo2 div.field-errors h2',    :content => "custom MarkupUser cannot be saved!"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be valid"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be present"
-      assert_have_selector '#demo2 div.field-errors ul li', :content => "Markup user must be a number"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Fake must be valid"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Second must be present"
+      assert_have_selector '#demo2 div.field-errors ul li', :content => "Third must be a number"
       assert_have_selector '#demo input', :name => 'markup_user[email]', :class => 'invalid'
     end
   end
