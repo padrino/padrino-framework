@@ -12,6 +12,7 @@
 * Fixed issue with rake test tasks
 * Fixes an issue with trailing delimiters for index controller actions (i.e /posts/)
 * Fixes issue with sequel in admin gem
+* Fixes error_messages_for to use humanized attribute
 
 == 0.9.10
 

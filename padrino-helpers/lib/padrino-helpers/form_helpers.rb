@@ -130,7 +130,7 @@ module Padrino
             error_messages = objects.map { |object|
               object_name = options[:object_name].to_s.underscore.gsub('_', ' ')
               object.errors.map { |f, msg|
-                field = I18n.t(f, :default => object_name.humanize, :scope => [:models, object_name, :attributes])
+                field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
                 content_tag(:li, "%s %s" % [field, msg])
               }
             }.join

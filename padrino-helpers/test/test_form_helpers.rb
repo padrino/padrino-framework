@@ -93,9 +93,10 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.advanced-form .field-errors p', :content => "There were problems with the following fields:"
       assert_have_selector 'form.advanced-form .field-errors ul'
       assert_have_selector 'form.advanced-form .field-errors ul li', :count => 4
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be valid"
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be present"
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be a number"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Email must be a email"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Fake must be valid"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Second must be present"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Third must be a number"
     end
 
     should "display correct error messages list in haml" do
@@ -106,9 +107,10 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.advanced-form .field-errors p',  :content => "There were problems with the following fields:"
       assert_have_selector 'form.advanced-form .field-errors ul'
       assert_have_selector 'form.advanced-form .field-errors ul li', :count => 4
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be valid"
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be present"
-      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Markup user must be a number"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Email must be a email"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Fake must be valid"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Second must be present"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Third must be a number"
     end
   end
 
