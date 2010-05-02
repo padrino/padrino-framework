@@ -40,13 +40,9 @@ require 'active_support/ordered_hash'
 require 'active_support/core_ext/symbol' if ActiveSupport::VERSION::MAJOR < 3
 
 ##
-# Define our own OrderedHash based on AS::OrderedHash
+# Used to know if this file was required
 #
-unless defined?(SupportLite::OrderedHash)
-  module SupportLite
-    OrderedHash = ::ActiveSupport::OrderedHash
-  end
-end
+module SupportLite; end
 
 ##
 # Alias allowing for use of either method to get query parameters

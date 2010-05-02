@@ -66,6 +66,8 @@ module Padrino
         next unless rPath =~ match && rest = $1
         next unless rest.empty? || rest[0] == ?/
 
+        rest = "/" if rest.empty?
+
         return app.call(
           env.merge(
             'SCRIPT_NAME' => (script_name + path),

@@ -553,4 +553,16 @@ class TestRouting < Test::Unit::TestCase
     get "/"
     assert_equal "global", body
   end
+
+  should 'works with optionals params' do
+    mock_app do
+      get("/foo(/:bar)") { params[:bar] }
+    end
+
+    get "/foo/bar"
+    assert_equal "bar", body
+
+    get "/foo"
+    assert_equal "", body
+  end
 end
