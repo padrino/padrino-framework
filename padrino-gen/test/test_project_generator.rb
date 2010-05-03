@@ -255,6 +255,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/features/support/env.rb')
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_match_in_file(/Capybara.app = /, '/tmp/sample_project/features/support/env.rb')
+      assert_match_in_file(/World\(Cucumber::Web::URLs\)/, '/tmp/sample_project/features/support/url.rb')
       assert_file_exists('/tmp/sample_project/spec/spec.rake')
       assert_file_exists('/tmp/sample_project/features/support/env.rb')
       assert_file_exists('/tmp/sample_project/features/add.feature')
