@@ -1,4 +1,4 @@
-DM = (<<-DM).gsub(/^ {10}/, '') unless defined?(DM)
+DM = (<<-DM) unless defined?(DM)
 ##
 # A MySQL connection:
 # DataMapper.setup(:default, 'mysql://user:password@localhost/the_database_name')
@@ -22,7 +22,7 @@ def setup_orm
   empty_directory('app/models')
 end
 
-DM_MODEL = (<<-MODEL).gsub(/^ {10}/, '') unless defined?(DM_MODEL)
+DM_MODEL = (<<-MODEL) unless defined?(DM_MODEL)
 class !NAME!
   include DataMapper::Resource
 
@@ -42,7 +42,7 @@ def create_model_file(name, fields)
   create_file(model_path, model_contents)
 end
 
-DM_MIGRATION = (<<-MIGRATION).gsub(/^ {10}/, '') unless defined?(DM_MIGRATION)
+DM_MIGRATION = (<<-MIGRATION) unless defined?(DM_MIGRATION)
 migration !VERSION!, :!FILENAME! do
   up do
     !UP!
@@ -61,7 +61,7 @@ create_table :!TABLE! do
 end
 MIGRATION
 
-DM_MODEL_DOWN_MG =  (<<-MIGRATION).gsub(/^ {10}/, '') unless defined?(DM_MODEL_DOWN_MG)
+DM_MODEL_DOWN_MG =  (<<-MIGRATION) unless defined?(DM_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 

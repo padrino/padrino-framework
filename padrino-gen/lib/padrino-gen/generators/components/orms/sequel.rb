@@ -1,4 +1,4 @@
-SEQUEL = (<<-SEQUEL).gsub(/^ {10}/, '') unless defined?(SEQUEL)
+SEQUEL = (<<-SEQUEL) unless defined?(SEQUEL)
 Sequel::Model.plugin(:schema)
 Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
 DB = case Padrino.env
@@ -15,7 +15,7 @@ def setup_orm
   empty_directory('db/migrate')
 end
 
-SQ_MODEL = (<<-MODEL).gsub(/^ {10}/, '') unless defined?(SQ_MODEL)
+SQ_MODEL = (<<-MODEL) unless defined?(SQ_MODEL)
 class !NAME! < Sequel::Model
 
 end
@@ -27,7 +27,7 @@ def create_model_file(name, fields)
   create_file(model_path, model_contents)
 end
 
-SQ_MIGRATION = (<<-MIGRATION).gsub(/^ {10}/, '') unless defined?(SQ_MIGRATION)
+SQ_MIGRATION = (<<-MIGRATION) unless defined?(SQ_MIGRATION)
 class !FILECLASS! < Sequel::Migration
   def up
     !UP!
@@ -46,7 +46,7 @@ create_table :!TABLE! do
 end
 MIGRATION
 
-SQ_MODEL_DOWN_MG = (<<-MIGRATION).gsub(/^ {10}/, '') unless defined?(SQ_MODEL_DOWN_MG)
+SQ_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(SQ_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 

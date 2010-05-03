@@ -107,10 +107,9 @@ module Padrino
       # insert_into_gemfile(name, :group => 'test', :require => 'foo')
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
-        gem_options = options.slice(:group, :require).collect { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
-        include_text = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
-        options.merge!(:content => include_text, :after => after_pattern)
-        inject_into_file('Gemfile', options[:content], :after => options[:after])
+        gem_options   = options.map { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
+        include_text  = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
+        inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
       ## Return true if our project has test component

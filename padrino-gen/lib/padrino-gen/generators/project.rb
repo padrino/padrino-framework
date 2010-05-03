@@ -56,7 +56,7 @@ module Padrino
       # Bundle all required components using bundler and Gemfile
       def bundle_dependencies
         if options[:run_bundle]
-          say "Bundling application dependencies using bundler..."
+          say "Bundling application dependencies using bundler...", :yellow
           in_root { run 'bundle install' }
         end
       end

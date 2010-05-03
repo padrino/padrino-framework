@@ -1,4 +1,4 @@
-COUCHREST = (<<-COUCHREST).gsub(/^ {10}/, '') unless defined?(COUCHREST)
+COUCHREST = (<<-COUCHREST) unless defined?(COUCHREST)
 case Padrino.env
   when :development then COUCHDB_NAME = '!NAME!_development'
   when :production  then COUCHDB_NAME = '!NAME!_production'
@@ -14,7 +14,7 @@ def setup_orm
   empty_directory('app/models')
 end
 
-CR_MODEL = (<<-MODEL).gsub(/^ {10}/, '') unless defined?(CR_MODEL)
+CR_MODEL = (<<-MODEL) unless defined?(CR_MODEL)
 class !NAME! < CouchRest::ExtendedDocument
   include CouchRest::Validation
 
