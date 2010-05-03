@@ -1,4 +1,4 @@
-MONGO = (<<-MONGO).gsub(/^ {10}/, '') unless defined?(MONGO)
+MONGO = (<<-MONGO) unless defined?(MONGO)
 MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
 
 case Padrino.env
@@ -15,7 +15,7 @@ def setup_orm
   empty_directory('app/models')
 end
 
-MM_MODEL = (<<-MODEL).gsub(/^ {10}/, '') unless defined?(MM_MODEL)
+MM_MODEL = (<<-MODEL) unless defined?(MM_MODEL)
 class !NAME!
   include MongoMapper::Document
 

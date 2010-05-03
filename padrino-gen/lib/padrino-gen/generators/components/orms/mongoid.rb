@@ -1,4 +1,4 @@
-MONGOID = (<<-MONGO).gsub(/^ {10}/, '') unless defined?(MONGOID)
+MONGOID = (<<-MONGO) unless defined?(MONGOID)
 
 # Connection.new takes host, port
 host = 'localhost'
@@ -33,7 +33,7 @@ def setup_orm
   empty_directory('app/models')
 end
 
-MONGOID_MODEL = (<<-MODEL).gsub(/^ {10}/, '') unless defined?(MONGOID_MODEL)
+MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
 class !NAME!
   include Mongoid::Document
   include Mongoid::Timestamps # adds created_at and updated_at fields

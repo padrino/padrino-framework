@@ -1,4 +1,4 @@
-AR = (<<-AR).gsub(/^ {10}/, '') unless defined?(AR)
+AR = (<<-AR) unless defined?(AR)
 ##
 # You can use other adapters like:
 #
@@ -56,7 +56,7 @@ def setup_orm
   empty_directory('app/models')
 end
 
-AR_MODEL = (<<-MODEL).gsub(/^ {10}/, '')
+AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)
 class !NAME! < ActiveRecord::Base
 
 end
@@ -68,7 +68,7 @@ def create_model_file(name, fields)
   create_file(model_path, model_contents,:skip => true)
 end
 
-AR_MIGRATION = (<<-MIGRATION).gsub(/^ {10}/, '')
+AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration
   def self.up
     !UP!
@@ -80,13 +80,13 @@ class !FILECLASS! < ActiveRecord::Migration
 end
 MIGRATION
 
-AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^ {6}/, '')
-create_table :!TABLE! do |t|
-  !FIELDS!
-end
+AR_MODEL_UP_MG = (<<-MIGRATION) unless defined?(AR_MODEL_UP_MG)
+    create_table :!TABLE! do |t|
+      !FIELDS!
+    end
 MIGRATION
 
-AR_MODEL_DOWN_MG = (<<-MIGRATION).gsub(/^ {10}/, '')
+AR_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(AR_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 
@@ -97,10 +97,10 @@ def create_model_migration(migration_name, name, columns)
        :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
 end
 
-AR_CHANGE_MG = (<<-MIGRATION).gsub(/^ {6}/, '')
-change_table :!TABLE! do |t|
-  !COLUMNS!
-end
+AR_CHANGE_MG = (<<-MIGRATION) unless defined?(AR_CHANGE_MG)
+    change_table :!TABLE! do |t|
+      !COLUMNS!
+    end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)
