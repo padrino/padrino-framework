@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* Fixed MongoId adapter using git legacy branch instead (un)stable gem
 * Moved bundler dependency from padrino-core to padrino-gen
 * Moved I18n dependency from padrino-core to padrino-helpers
 * Use 'mail' library and remove 'tmail' dependency for padrino-mailer
