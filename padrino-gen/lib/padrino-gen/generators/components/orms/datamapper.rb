@@ -54,7 +54,7 @@ migration !VERSION!, :!FILENAME! do
 end
 MIGRATION
 
-DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^ {6}/, '') unless defined?(DM_MODEL_UP_MG)
+DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
   column :id, Integer, :serial => true
   !FIELDS!
@@ -71,7 +71,7 @@ def create_model_migration(migration_name, name, columns)
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
-DM_CHANGE_MG = (<<-MIGRATION).gsub(/^ {6}/, '') unless defined?(DM_CHANGE_MG)
+DM_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
 modify_table :!TABLE! do
   !COLUMNS!
 end
