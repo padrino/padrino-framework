@@ -39,12 +39,11 @@ class !FILECLASS! < Sequel::Migration
 end
 MIGRATION
 
-SQ_MODEL_UP_MG = (<<-MIGRATION) unless defined?(SQ_MODEL_UP_MG)
-    create_table :!TABLE! do
-      primary_key :id
-      # <type> <name>
-      !FIELDS!
-    end
+SQ_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(SQ_MODEL_UP_MG)
+create_table :!TABLE! do
+  primary_key :id
+  !FIELDS!
+end
 MIGRATION
 
 SQ_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(SQ_MODEL_DOWN_MG)
@@ -57,10 +56,10 @@ def create_model_migration(migration_name, name, columns)
          :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
 end
 
-SQ_CHANGE_MG = (<<-MIGRATION) unless defined?(SQ_CHANGE_MG)
-    alter_table :!TABLE! do
-      !COLUMNS!
-    end
+SQ_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
+alter_table :!TABLE! do
+  !COLUMNS!
+end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)

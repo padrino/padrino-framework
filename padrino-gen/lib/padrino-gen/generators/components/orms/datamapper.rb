@@ -54,11 +54,11 @@ migration !VERSION!, :!FILENAME! do
 end
 MIGRATION
 
-DM_MODEL_UP_MG =  (<<-MIGRATION) unless defined?(DM_MODEL_UP_MG)
-    create_table :!TABLE! do
-      column :id, Integer, :serial => true
-      !FIELDS!
-    end
+DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
+create_table :!TABLE! do
+  column :id, Integer, :serial => true
+  !FIELDS!
+end
 MIGRATION
 
 DM_MODEL_DOWN_MG =  (<<-MIGRATION) unless defined?(DM_MODEL_DOWN_MG)
@@ -71,10 +71,10 @@ def create_model_migration(migration_name, name, columns)
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
-DM_CHANGE_MG = (<<-MIGRATION) unless defined?(DM_CHANGE_MG)
-    modify_table :!TABLE! do
-      !COLUMNS!
-    end
+DM_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
+modify_table :!TABLE! do
+  !COLUMNS!
+end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)

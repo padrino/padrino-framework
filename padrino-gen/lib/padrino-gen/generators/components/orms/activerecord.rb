@@ -80,10 +80,10 @@ class !FILECLASS! < ActiveRecord::Migration
 end
 MIGRATION
 
-AR_MODEL_UP_MG = (<<-MIGRATION) unless defined?(AR_MODEL_UP_MG)
-    create_table :!TABLE! do |t|
-      !FIELDS!
-    end
+AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)
+create_table :!TABLE! do |t|
+  !FIELDS!
+end
 MIGRATION
 
 AR_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(AR_MODEL_DOWN_MG)
@@ -97,10 +97,10 @@ def create_model_migration(migration_name, name, columns)
        :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
 end
 
-AR_CHANGE_MG = (<<-MIGRATION) unless defined?(AR_CHANGE_MG)
-    change_table :!TABLE! do |t|
-      !COLUMNS!
-    end
+AR_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)
+change_table :!TABLE! do |t|
+  !COLUMNS!
+end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)
