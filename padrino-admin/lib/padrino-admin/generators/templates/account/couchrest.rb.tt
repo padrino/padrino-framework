@@ -66,9 +66,13 @@ class Account < CouchRest::ExtendedDocument
     end
 
     def email_is_unique
-      Account.by_email(:key => self.email, :limit => 1).empty? ||
-        Account.by_email(:key => self.email, :limit => 1) == [self] ||
-          Account.by_email(:key => self.email, :limit => 1).first.id == self.id ||
-            [false, "Email has already been taken"]
+      account = Account.by_email(:key => self.email, :limit => 1)
+      return true if account.empty? # didn't find email in the database
+      account = account[0]
+      if self.has_key?("_id")
+        # there is an id, make sure updates are being applied to same account
+        return true if self["_id"] == account["_id"]
+      end
+      [false, "Email has already been taken"] 
     end
 end
