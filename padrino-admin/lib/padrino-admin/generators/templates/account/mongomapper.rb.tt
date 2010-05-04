@@ -33,7 +33,7 @@ class Account
   end
 
   ##
-  # This method is used for retrive the original password.
+  # This method is used to retrieve the original password.
   #
   def password_clean
     crypted_password.decrypt(salt)

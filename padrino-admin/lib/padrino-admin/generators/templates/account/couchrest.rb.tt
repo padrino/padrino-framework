@@ -40,14 +40,14 @@ class Account < CouchRest::ExtendedDocument
   end
 
   ##
-  # This method is used for retrive the original password.
+  # This method is used to retrieve the original password.
   #
   def password_clean
     crypted_password.decrypt(salt)
   end
 
   ##
-  # This method is used for retrive the first record by id without raise errors if not found.
+  # This method is used to retrieve the first record by id without raise errors if not found.
   #
   def self.find_by_id(id)
     id_array = self.by_id :key => id
