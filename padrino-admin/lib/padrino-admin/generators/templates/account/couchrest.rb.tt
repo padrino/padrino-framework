@@ -57,7 +57,7 @@ class Account < CouchRest::ExtendedDocument
   private
     def generate_password
       return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new_record?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if self.salt.blank?
       self.crypted_password = password.encrypt(self.salt)
     end
 
