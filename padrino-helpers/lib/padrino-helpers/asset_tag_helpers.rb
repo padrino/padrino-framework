@@ -21,9 +21,6 @@ module Padrino
       # ==== Examples
       #
       #   link_to 'click me', '/dashboard', :class => 'linky'
-      #   link_to 'click me', '/dashboard', :if => @foo.present?
-      #   link_to 'click me', '/dashboard', :unless => @foo.empty?
-      #   link_to 'click me', '/dashboard', :unless => :current
       #   link_to('/dashboard', :class => 'blocky') do ... end
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
