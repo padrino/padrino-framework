@@ -5,11 +5,11 @@ class TestRouting < Test::Unit::TestCase
     register ::Padrino::Routing
     set :environment, :test
   end
-  
+
   def mock_app(base=RoutingApp, &block)
     @app = Sinatra.new(base, &block)
   end
-  
+
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
@@ -479,11 +479,11 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'Foo in xml', body
     get '/foo'
     assert not_found?
-    
+
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert 200, status
   end
-  
+
   should "set content_type to :html for both empty Accept as well as Accept text/html" do
     mock_app do
       provides :html
