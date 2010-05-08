@@ -89,24 +89,31 @@ module Padrino
       #
       def route!(base=self.class, pass_block=nil)
         if base.router and match = base.router.recognize(@request, @request.path_info)
-          @block_params = match.params.map { |p| p.last }
-          (@params ||= {}).merge!(match.params_as_hash)
-          pass_block = catch(:pass) do
-            # Run Sinatra Conditions
-            match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
-            # Run scoped before filters
-            match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
-            # If present set current controller layout
-            parent_layout = base.instance_variable_get(:@layout)
-            base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
-            # Now we can eval route, but because we have "throw halt" we need to be
-            # (en)sure to reset old layout and run controller after filters.
-            begin
-              route_eval(&match.destination)
-            ensure
-              base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-              match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+          if match.succeeded?
+            @block_params = match.params.map { |p| p.last }
+            (@params ||= {}).merge!(match.params_as_hash)
+            pass_block = catch(:pass) do
+              # Run Sinatra Conditions
+              match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
+              # Run scoped before filters
+              match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
+              # If present set current controller layout
+              parent_layout = base.instance_variable_get(:@layout)
+              base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
+              # Now we can eval route, but because we have "throw halt" we need to be
+              # (en)sure to reset old layout and run controller after filters.
+              begin
+                route_eval(&match.destination)
+              ensure
+                base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
+                match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+              end
             end
+          elsif match.request_method?
+            route_eval {
+              response['Allow'] = match.acceptable_responses_only_strings.join(", ")
+              status 405
+            }
           end
         end
 
@@ -202,8 +209,11 @@ module Padrino
       def router
         unless @router
           @router = Usher.new(:request_methods => [:request_method, :host, :port, :scheme],
-                                :ignore_trailing_delimiters => true,
-                                :generator => Usher::Util::Generators::URL.new)
+                              :ignore_trailing_delimiters => true,
+                              :generator => Usher::Util::Generators::URL.new,
+                              :delimiters => ['/', '.', '-'],
+                              :valid_regex => '[0-9A-Za-z\$_\+!\*\',]+',
+                              :detailed_failure => true)
           @router.route_class = Padrino::Routing::Route                      
         end
         block_given? ? yield(@router) : @router
@@ -329,7 +339,7 @@ module Padrino
             options.delete(:provides) if options[:provides].nil?
 
             if format_params = options[:provides]
-              path = process_path_for_provides(path, format_params)
+              process_path_for_provides(path, format_params)
             end
 
             # Build our controller
@@ -391,7 +401,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_provides(path, format_params)
-          path + "(.:format)"
+          path << "(.:format)"
         end
 
         ##

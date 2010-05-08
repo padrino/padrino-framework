@@ -208,6 +208,14 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/print/9", @app.url(:print, :id => 9)
   end
 
+  should '405 on wrong request_method' do
+    mock_app do
+      post('/bar'){ "bar" }
+    end
+    get "/bar"
+    assert_equal 405, status
+  end
+
   should 'respond to' do
     mock_app do
       get(:a, :provides => :js){ "js" }
