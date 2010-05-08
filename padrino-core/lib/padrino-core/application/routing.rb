@@ -1,7 +1,6 @@
 require 'usher' unless defined?(Usher)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-Usher::Route.class_eval { attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout }
 
 module Padrino
   ##
@@ -11,6 +10,11 @@ module Padrino
   # now we can just define the urls in a single spot and then attach an alias which can be used to refer
   # to the url throughout the application.
   #
+
+  class Route < Usher::Route
+    attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout
+  end
+
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
@@ -197,9 +201,12 @@ module Padrino
       #   router.recognize_path('/simple')
       #
       def router
-        @router ||= Usher.new(:request_methods => [:request_method, :host, :port, :scheme],
-                              :ignore_trailing_delimiters => true,
-                              :generator => Usher::Util::Generators::URL.new)
+        unless @router
+          @router = Usher.new(:request_methods => [:request_method, :host, :port, :scheme],
+                                :ignore_trailing_delimiters => true,
+                                :generator => Usher::Util::Generators::URL.new)
+          @router.route_class = Padrino::Route                      
+        end
         block_given? ? yield(@router) : @router
       end
       alias :urls :router
