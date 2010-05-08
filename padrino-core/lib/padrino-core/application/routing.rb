@@ -10,13 +10,12 @@ module Padrino
   # now we can just define the urls in a single spot and then attach an alias which can be used to refer
   # to the url throughout the application.
   #
-
-  class Route < Usher::Route
-    attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout
-  end
-
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html }
+
+    class Route < Usher::Route
+      attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout
+    end
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -205,7 +204,7 @@ module Padrino
           @router = Usher.new(:request_methods => [:request_method, :host, :port, :scheme],
                                 :ignore_trailing_delimiters => true,
                                 :generator => Usher::Util::Generators::URL.new)
-          @router.route_class = Padrino::Route                      
+          @router.route_class = Padrino::Routing::Route                      
         end
         block_given? ? yield(@router) : @router
       end
@@ -217,19 +216,21 @@ module Padrino
       # ==== Examples
       #
       #   url(:show, :id => 1)
+      #   url(:show, 1)
       #   url(:show, :name => :test)
       #   url("/show/:id/:name", :id => 1, :name => foo)
       #
-      def url(*names)
-        params =  names.extract_options! # parameters is hash at end
+      def url(*args)
+        params = args.extract_options!  # parameters is hash at end
+        names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names.join("_").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
           params[:format] = params[:format].to_s if params.has_key?(:format)
           params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end
-        url = router.generator.generate(name, params)
-        url = File.join(uri_root, url) if defined?(uri_root) && uri_root != "/"
-        url = File.join(ENV['RACK_BASE_URI'].to_s, url) if ENV['RACK_BASE_URI']
+        url = router.generator.generate(name, params_array.empty? ? params : params_array << params)
+        url[0,0] = "#{uri_root}/" if defined?(uri_root) && uri_root != "/"
+        url[0,0] = "#{ENV['RACK_BASE_URI'].to_s}/" if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
         url
       rescue Usher::UnrecognizedException

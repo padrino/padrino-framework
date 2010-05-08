@@ -65,15 +65,24 @@ class TestRouting < Test::Unit::TestCase
   should 'generate basic urls'do
     mock_app do
       get(:foo){ url(:foo) }
-      get(:bar, :with => :id){ url(:bar, :id => 1) }
+      get(:hash, :with => :id){ url(:hash, :id => 1) }
+      get(:array, :with => :id){ url(:array, 23) }
+      get(:hash_with_extra, :with => :id){ url(:hash_with_extra, :id => 1, :query => 'string') }
+      get(:array_with_extra, :with => :id){ url(:array_with_extra, 23, :query => 'string') }
       get("/old-bar/:id"){ params[:id] }
       post(:mix, :map => "/mix-bar/:id"){ params[:id] }
       get(:mix, :map => "/mix-bar/:id"){ params[:id] }
     end
     get "/foo"
     assert_equal "/foo", body
-    get "/bar/2"
-    assert_equal "/bar/1", body
+    get "/hash/2"
+    assert_equal "/hash/1", body
+    get "/array/23"
+    assert_equal "/array/23", body
+    get "/hash_with_extra/1"
+    assert_equal "/hash_with_extra/1?query=string", body
+    get "/array_with_extra/23"
+    assert_equal "/array_with_extra/23?query=string", body
     get "/old-bar/3"
     assert_equal "3", body
     post "/mix-bar/4"
