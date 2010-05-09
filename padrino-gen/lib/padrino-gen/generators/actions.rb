@@ -87,6 +87,12 @@ module Padrino
       def in_app_root?
         File.exist?(destination_root('config/boot.rb'))
       end
+      
+      # Returns the field with an unacceptable name(for symbol) else returns nil
+      def invalid_fields(fields)
+        results = fields.select { |field| field.split(":").first =~ /\W/ }
+        results.empty? ? nil : results
+      end
 
       # Returns the app_name for the application at root
       def fetch_app_name(app='app')
@@ -162,7 +168,7 @@ module Padrino
         # Returns the list of available choices for the given component (including none)
         def available_choices_for(component)
           @available_choices[component] + [:none]
-        end
+        end        
       end
     end # Actions
   end # Generators

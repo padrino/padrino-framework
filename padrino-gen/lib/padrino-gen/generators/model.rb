@@ -34,6 +34,10 @@ module Padrino
             say "<= You need an ORM adapter for run this generator. Sorry!"
             raise SystemExit
           end
+          if invalids = invalid_fields(fields)
+            say "Invalid field name: #{invalids.join(", ")}"
+            return
+          end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
           create_model_file(name, fields)
