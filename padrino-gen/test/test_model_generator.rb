@@ -26,6 +26,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match(/age&year:datetime/, output)
       assert_match(/re@l\$ly:string/, output)
       assert_no_match(/email_two:string/, output)
+      assert_no_match(/apply/, output)
       assert_no_file_exists('/tmp/sample_project/app/models/demo_item.rb')
     end
 

@@ -30,13 +30,14 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
+          if invalids = invalid_fields(fields)
+            say "Invalid field name:", :red
+            say " #{invalids.join(", ")}"
+            return
+          end
           unless include_component_module_for(:orm)
             say "<= You need an ORM adapter for run this generator. Sorry!"
             raise SystemExit
-          end
-          if invalids = invalid_fields(fields)
-            say "Invalid field name: #{invalids.join(", ")}"
-            return
           end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
