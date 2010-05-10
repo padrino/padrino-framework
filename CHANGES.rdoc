@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* Fixed a problem when reloading apps
 * Fixed MongoId adapter using git legacy branch instead (un)stable gem
 * Moved bundler dependency from padrino-core to padrino-gen
 * Moved I18n dependency from padrino-core to padrino-helpers
@@ -15,7 +16,8 @@
 * Fixes issue with sequel in admin gem
 * Fixes error_messages_for to use humanized attribute
 * Fixes indentation issues for orm generators
-* Added Ukrainian translation to admin and localization
+* Added Ukrainian translation [Thanks to Mama]
+* Added Spanish translation [Thanks to Alvaro]
 * Fixes issue with invalid field names
 
 == 0.9.10

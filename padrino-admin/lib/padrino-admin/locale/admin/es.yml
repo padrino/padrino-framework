@@ -1,0 +1,16 @@
+es:
+  padrino:
+    admin:
+      save: Guardar
+      cancel: Cancelar
+      list: Listar
+      edit: Editar
+      new: Nuevo
+      show: Mostrar
+      delete: Eliminar
+      confirm: ¿Estás seguro?
+      created_at: Creado el
+      all: Todos
+      profile: Perfil
+      settings: Configuración
+      logout: Cerrar sesión
