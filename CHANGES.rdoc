@@ -16,6 +16,7 @@
 * Fixes error_messages_for to use humanized attribute
 * Fixes indentation issues for orm generators
 * Added Ukrainian translation to admin and localization
+* Fixes issue with invalid field names
 
 == 0.9.10
 
