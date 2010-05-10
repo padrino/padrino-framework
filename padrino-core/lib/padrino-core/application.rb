@@ -43,9 +43,14 @@ module Padrino
       #   MyApp.reload!
       #
       def reload!
+        reset! # reset sinatra app
         reset_routes! # remove all existing user-defined application routes
         Padrino.load_dependency(self.app_file)  # reload the app file
+        register_framework_extensions # reload our extensions
+        register_initializers # reload our middlewares
         load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
+        default_filters! # reload filters
+        default_errors!  # reload our errors
       end
 
       ##

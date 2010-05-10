@@ -7,11 +7,18 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 class SimpleDemo < Padrino::Application
   set :reload, true
+  before { true }
+  after  { true }
+  error(404) { "404" }
 end
 
 SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 77!' # Change only the number!!!
+    'The magick number is: 28!' # Change only the number!!!
+  end
+
+  get "/rand" do
+    rand(99).to_s
   end
 end
 
