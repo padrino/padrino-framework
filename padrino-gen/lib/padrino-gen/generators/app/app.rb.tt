@@ -1,4 +1,4 @@
-class <%= @class_name %> < Padrino::Application
+class <%= @app_name %> < Padrino::Application
   ##
   # Application configuration options
   #

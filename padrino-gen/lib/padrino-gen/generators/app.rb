@@ -28,16 +28,16 @@ module Padrino
       # Copies over the Padrino base admin application
       def create_app
         self.destination_root = options[:root]
-        @app_name = @class_name = name.gsub(/\W/, "_").underscore.classify
+        @app_name = name.gsub(/\W/, "_").underscore.classify
         if in_app_root?
-          app_skeleton(@class_name,options[:tiny])
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@class_name}\").to(\"/#{name.underscore}\")"
+          app_skeleton(name,options[:tiny])
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{name.underscore}\")"
 
           return if self.behavior == :revoke
           say (<<-TEXT).gsub(/ {10}/,'')
 
           =================================================================
-          Your #{@class_name} application has been installed.
+          Your #{@app_name} application has been installed.
           This application has been mounted to /#{name.underscore}
           You can configure a different path by editing 'config/apps.rb'
           =================================================================

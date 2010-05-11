@@ -82,10 +82,10 @@ module Padrino
         # For testing components
         # Injects the test class text into the test_config file for setting up the test gen
         # insert_test_suite_setup('...CLASS_NAME...')
-        # => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @class_name), :after => "set :environment, :test")
+        # => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
         def insert_test_suite_setup(suite_text, options={})
           options.reverse_merge!(:path => "test/test_config.rb")
-          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @class_name))
+          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @app_name))
         end
 
         # For mocking components

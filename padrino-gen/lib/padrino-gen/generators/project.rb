@@ -38,7 +38,7 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_project
-        @app_name = @class_name = name.gsub(/\W/, "_").underscore.classify
+        @app_name = name.gsub(/\W/, "_").underscore.classify
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
         app_skeleton('app',options[:tiny])

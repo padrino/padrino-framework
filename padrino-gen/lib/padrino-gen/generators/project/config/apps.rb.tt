@@ -23,4 +23,4 @@
 #
 
 # Mounts the core application for this project
-Padrino.mount_core("<%= @class_name %>")
+Padrino.mount_core("<%= @app_name %>")
