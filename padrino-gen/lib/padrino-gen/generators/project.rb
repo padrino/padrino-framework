@@ -23,6 +23,7 @@ module Padrino
       class_option :run_bundle,   :desc => "Run bundle install",   :aliases => '-b', :default => false, :type => :boolean
       class_option :root,         :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
       class_option :dev,          :desc => "Use padrino from a git checkout",        :default => false, :type => :boolean
+      class_option :tiny,         :desc => "Generate tiny app skeleton", :aliases => '-a', :default => false, :type => :boolean
 
       # Definitions for the available customizable components
       component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest], :default => :none
@@ -37,10 +38,10 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_project
-        @class_name = name.gsub(/\W/, "_").underscore.classify
+        @app_name = @class_name = name.gsub(/\W/, "_").underscore.classify
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
-        directory("app/", destination_root("app/"))
+        app_skeleton('app',options[:tiny])
         store_component_config('.components')
         template "templates/Gemfile.tt", destination_root("Gemfile")
       end
@@ -68,8 +69,8 @@ module Padrino
         =================================================================
         #{name} is ready for development! Next, follow these steps:
         =================================================================
-          1) cd #{name}
-          2) bundle install
+        1) cd #{name}
+        2) bundle install
         =================================================================
 
         TEXT

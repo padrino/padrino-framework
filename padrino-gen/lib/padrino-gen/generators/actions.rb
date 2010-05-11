@@ -87,7 +87,7 @@ module Padrino
       def in_app_root?
         File.exist?(destination_root('config/boot.rb'))
       end
-      
+
       # Returns the field with an unacceptable name(for symbol) else returns nil
       def invalid_fields(fields)
         results = fields.select { |field| field.split(":").first =~ /\W/ }
@@ -139,6 +139,19 @@ module Padrino
         end
       end
 
+      # For Generating Tiny/Standard App Generation
+      def app_skeleton(app,tiny=false)
+        directory("app/", destination_root(app))
+        if tiny
+          template "templates/controller.rb.tt", destination_root(app,"controllers.rb")
+          template "templates/helper.rb.tt", destination_root(app,"helpers.rb")
+        else
+          empty_directory destination_root("#{app}/controllers/")
+          empty_directory destination_root("#{app}/helpers/")
+        end
+      end
+
+
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported
@@ -168,7 +181,7 @@ module Padrino
         # Returns the list of available choices for the given component (including none)
         def available_choices_for(component)
           @available_choices[component] + [:none]
-        end        
+        end
       end
     end # Actions
   end # Generators
