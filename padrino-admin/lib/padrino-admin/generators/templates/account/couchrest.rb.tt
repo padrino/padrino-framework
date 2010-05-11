@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 class Account < CouchRest::ExtendedDocument
   include CouchRest::Validation
   use_database COUCHDB

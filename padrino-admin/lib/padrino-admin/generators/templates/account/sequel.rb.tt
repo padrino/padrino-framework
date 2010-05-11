@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 class Account < ::Sequel::Model
 
   plugin :validation_helpers
@@ -45,7 +47,7 @@ class Account < ::Sequel::Model
   end
 
   private
-  
+
     def generate_password
       return if password.blank?
       self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new?
