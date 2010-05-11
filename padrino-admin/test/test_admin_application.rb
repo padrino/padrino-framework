@@ -243,4 +243,4 @@ class TestAdminApplication < Test::Unit::TestCase
     get "/modules"
     assert_equal "admin => /admin", body
   end
-end unless RUBY_PLATFORM =~ /java/ # DM seems to have some problems on JRuby
+end # unless RUBY_PLATFORM =~ /java/ # DM seems to have some problems on JRuby

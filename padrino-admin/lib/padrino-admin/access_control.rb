@@ -16,25 +16,17 @@ module Padrino
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
-          app.extend(ClassMethods)
           app.send(:cattr_accessor, :access_control)
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
-          app.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
         end
         alias :included :registered
-      end
-
-      module ClassMethods #:nodoc:
-        def reload_with_access_control!
-          self.access_control = Padrino::Admin::AccessControl::Base.new
-          reload_without_access_control!
-        end
       end
 
       class Base
         def initialize #:nodoc:
           @roles, @authorizations, @project_modules = [], [], []
         end
+
         ##
         # We map project modules for a given role or roles
         #
