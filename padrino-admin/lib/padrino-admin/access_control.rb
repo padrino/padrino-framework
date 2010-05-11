@@ -9,16 +9,19 @@ module Padrino
       ##
       # Method used by Padrino::Application when we register the extension
       #
-      def self.registered(app)
-        app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
-        app.enable :sessions
-        app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
-        app.helpers Padrino::Admin::Helpers::ViewHelpers
-        app.before { login_required }
-        app.extend(ClassMethods)
-        app.send(:cattr_accessor, :access_control)
-        app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
-        app.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
+      class << self
+        def registered(app)
+          app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
+          app.enable :sessions
+          app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
+          app.helpers Padrino::Admin::Helpers::ViewHelpers
+          app.before { login_required }
+          app.extend(ClassMethods)
+          app.send(:cattr_accessor, :access_control)
+          app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
+          app.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
+        end
+        alias :included :registered
       end
 
       module ClassMethods #:nodoc:

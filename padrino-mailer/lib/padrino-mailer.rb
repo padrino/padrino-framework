@@ -18,10 +18,17 @@ module Padrino
   #
   module Mailer
     ##
-    # Used Padrino::Application for register Padrino::Mailer::Base::views_path
+    # Register
     #
-    def self.registered(app)
-      app.helpers Padrino::Mailer::Helpers
+    #   Padrino::Mailer::Helpers
+    #
+    # for Padrino::Application
+    #
+    class << self
+      def registered(app)
+        app.helpers Padrino::Mailer::Helpers
+      end
+      alias :included :registered
     end
   end # Mailer
 end # Padrino
