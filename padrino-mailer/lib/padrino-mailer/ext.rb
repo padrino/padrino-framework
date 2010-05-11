@@ -110,6 +110,13 @@ module Mail
       add_part(new_part)
     end
 
+    def do_delivery_with_logging
+      logger.debug "Sending email to: #{destinations.join(" ")}"
+      encoded.to_lf.split("\n").each { |line| logger << ("  " + line) } if logger.debug?
+      do_delivery_without_logging
+    end
+    alias_method_chain :do_delivery, :logging if Padrino.respond_to?(:logger)
+
     ##
     # Sinatra and Padrino compatibility
     #
