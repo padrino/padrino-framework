@@ -199,6 +199,7 @@ module Mail
           part do |p|
             p.content_type(format)
             p.body p.send(:render, engine, data, options, locals, &block)
+            add_multipart_alternate_header unless html_part.blank?
           end
         end
         return false unless provides.empty? # prevent to setup a body if we have provides
