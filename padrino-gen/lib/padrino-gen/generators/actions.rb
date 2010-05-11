@@ -145,6 +145,9 @@ module Padrino
         if tiny
           template "templates/controller.rb.tt", destination_root(app,"controllers.rb")
           template "templates/helper.rb.tt", destination_root(app,"helpers.rb")
+          @short_name = 'default'
+          template "templates/mailer.rb.tt", destination_root(app, "mailers.rb")
+          empty_directory destination_root(app, 'views', 'mailers',@short_name)
         else
           empty_directory destination_root("#{app}/controllers/")
           empty_directory destination_root("#{app}/helpers/")
