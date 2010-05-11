@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
      "lib/padrino-mailer.rb",
      "lib/padrino-mailer/base.rb",
      "lib/padrino-mailer/delivery.rb",
-     "lib/padrino-mailer/mail_object.rb",
+     "lib/padrino-mailer/email.rb",
      "padrino-mailer.gemspec",
      "test/fixtures/mailer_app/app.rb",
      "test/fixtures/mailer_app/views/demo_mailer/sample_mail.erb",
@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
      "test/helper.rb",
      "test/test_base.rb",
      "test/test_delivery.rb",
-     "test/test_mail_object.rb",
+     "test/test_email.rb",
      "test/test_padrino_mailer.rb"
   ]
   s.homepage = %q{http://github.com/padrino/padrino-framework/tree/master/padrino-mailer}

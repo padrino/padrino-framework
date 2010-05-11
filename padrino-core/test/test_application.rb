@@ -27,8 +27,6 @@ class TestApplication < Test::Unit::TestCase
       assert 'padrino_test_app', PadrinoTestApp.app_name
       assert 'StandardFormBuilder', PadrinoTestApp.default_builder
       assert !PadrinoTestApp.flash
-      assert !PadrinoTestApp.padrino_mailer
-      assert !PadrinoTestApp.padrino_helpers
     end
 
     #compare to: test_routing: allow global provides

@@ -54,6 +54,16 @@ module Padrino
     end
 
     ##
+    # Method for deliver static files.
+    #
+    def static!
+      if path = static_file?(request.path_info)
+        env['sinatra.static_file'] = path
+        send_file(path, :disposition => nil)
+      end
+    end
+
+    ##
     # Return the request format, this is useful when we need to respond to a given content_type like:
     #
     # ==== Examples
@@ -68,16 +78,6 @@ module Padrino
     #
     def content_type(type=nil, params={})
       type.nil? ? @_content_type : super(type, params)
-    end
-
-    ##
-    # Method for deliver static files.
-    #
-    def static!
-      if path = static_file?(request.path_info)
-        env['sinatra.static_file'] = path
-        send_file(path, :disposition => nil)
-      end
     end
 
     private

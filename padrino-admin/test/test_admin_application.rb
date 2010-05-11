@@ -8,7 +8,7 @@ class TestAdminApplication < Test::Unit::TestCase
 
   should 'require correctly login' do
     mock_app do
-      enable :authentication
+      register Padrino::Admin::AccessControl
 
       # Do a simple mapping
       access_control.roles_for :any do |role|
@@ -35,7 +35,7 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app
-      enable :authentication
+      register Padrino::Admin::AccessControl
       enable :store_location
       set    :login_page, "/login"
 
@@ -69,7 +69,7 @@ class TestAdminApplication < Test::Unit::TestCase
 
   should 'set advanced roles with store location and login page' do
     mock_app do
-      enable :authentication
+      register Padrino::Admin::AccessControl
 
       access_control.roles_for :any do |role|
         role.protect "/"
@@ -145,7 +145,7 @@ class TestAdminApplication < Test::Unit::TestCase
 
   should 'emulate an ecommerce app' do
     mock_app do
-      enable :authentication
+      register Padrino::Admin::AccessControl
 
       access_control.roles_for :any do |role|
         role.protect "/cart"
@@ -195,7 +195,7 @@ class TestAdminApplication < Test::Unit::TestCase
 
   should 'check access control helper' do
     mock_app do
-      enable :authentication
+      register Padrino::Admin::AccessControl
 
       access_control.roles_for :any do |role|
         role.project_module :foo, "/foo"

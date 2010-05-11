@@ -15,18 +15,13 @@ module Padrino
         app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
         app.helpers Padrino::Admin::Helpers::ViewHelpers
         app.before { login_required }
+        app.extend(ClassMethods)
+        app.send(:cattr_accessor, :access_control)
+        app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
+        app.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
       end
 
       module ClassMethods #:nodoc:
-        def inherited(base)
-          unless base.respond_to?(:access_control)
-            base.send(:cattr_accessor, :access_control)
-            base.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
-          end
-          super(base)
-          base.class_eval { class << self; alias_method_chain :reload!, :access_control; end }
-        end
-
         def reload_with_access_control!
           self.access_control = Padrino::Admin::AccessControl::Base.new
           reload_without_access_control!

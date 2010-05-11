@@ -54,13 +54,13 @@ class Test::Unit::TestCase
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
     @app.send :include, Test::Unit::Assertions
-    @app.use Rack::Session::Cookie if Sinatra::VERSION =~ /0\.9\.\d+/ # Need this because Sinatra 0.9.x have use Rack::Session::Cookie if sessions? && !test?
+    @app.register Padrino::Helpers
   end
 
   def app
     Rack::Lint.new(@app)
   end
-  
+
   # generate(:admin_app, '-r=/tmp/sample_project')
   def generate(name, *params)
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)

@@ -14,7 +14,7 @@ end
 
 SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 28!' # Change only the number!!!
+    'The magick number is: 39!' # Change only the number!!!
   end
 
   get "/rand" do

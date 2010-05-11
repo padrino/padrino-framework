@@ -46,7 +46,6 @@ module Padrino
         reset! # reset sinatra app
         reset_routes! # remove all existing user-defined application routes
         Padrino.load_dependency(self.app_file)  # reload the app file
-        register_framework_extensions # reload our extensions
         register_initializers # reload our middlewares
         load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
         default_filters! # reload filters
@@ -72,7 +71,6 @@ module Padrino
       def setup_application!
         return if @_configured
         self.calculate_paths
-        self.register_framework_extensions
         self.register_initializers
         self.require_load_paths
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
@@ -108,9 +106,6 @@ module Padrino
           set :authentication, false
           # Padrino locale
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
-          # Plugin specific
-          set :padrino_mailer, defined?(Padrino::Mailer)
-          set :padrino_helpers, defined?(Padrino::Helpers)
         end
 
         ##
@@ -167,15 +162,6 @@ module Padrino
           use Padrino::Logger::Rack    if Padrino.logger && Padrino.logger.level == 0
           use Padrino::Reloader::Rack  if reload?
           use Rack::Flash              if flash? && sessions?
-        end
-
-        ##
-        # Registers all desired padrino extension helpers
-        #
-        def register_framework_extensions
-          register Padrino::Mailer  if padrino_mailer?
-          register Padrino::Helpers if padrino_helpers?
-          register Padrino::Admin::AccessControl if authentication?
         end
 
         ##

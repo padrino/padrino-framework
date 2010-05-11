@@ -49,7 +49,7 @@ For an ecommerce website, usually certain actions require permissions and authen
 by the admin access control features:
 
   class EcommerceSite < Padrino::Application
-    enable :authentication
+    register Padrino::Admin::AccessControl
     enable :store_location
     set    :login_page, "/login"
 

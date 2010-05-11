@@ -20,7 +20,6 @@
 #   * Hash#symbolize_keys, Hash.symbolize_keys!
 #   * Hash#reverse_merge, Hash#reverse_merge!
 #   * Symbol#to_proc
-#   * SupportLite::OrderedHash
 #
 require 'rbconfig'
 require 'active_support/version'
