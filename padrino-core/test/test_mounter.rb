@@ -23,11 +23,11 @@ class TestMounter < Test::Unit::TestCase
     end
 
     should 'check locate_app_file with __FILE__' do
-      mounter = Padrino::Mounter.new("test")
+      mounter = Padrino::Mounter.new("test", :app_file => __FILE__)
       mounter.to("/test")
       assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
-      assert_match %r{test/app.rb}, mounter.app_file
+      assert_equal __FILE__, mounter.app_file
       assert_equal "/test", mounter.uri_root
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
@@ -40,11 +40,11 @@ class TestMounter < Test::Unit::TestCase
     end
 
     should 'mount a core' do
-      mounter = Padrino.mount_core("test")
+      mounter = Padrino.mount_core("test", :app_file => __FILE__)
       assert_equal "core", mounter.name
       assert_equal "Test", mounter.app_class
       assert_equal Test, mounter.app_obj
-      assert_equal Padrino.root('app/app.rb'), mounter.app_file
+      assert_equal __FILE__, mounter.app_file
       assert_equal "/", mounter.uri_root
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end

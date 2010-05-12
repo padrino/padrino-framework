@@ -43,14 +43,16 @@ module Padrino
       #   MyApp.reload!
       #
       def reload!
-        reset! # reset sinatra app
-        reset_routes! # remove all existing user-defined application routes
-        Padrino.load_dependency(self.app_file)  # reload the app file
-        register_initializers # reload our middlewares
-        load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
-        default_filters! # reload filters
-        default_errors!  # reload our errors
-        I18n.reload! # reload also our translations
+        reset! # Reset sinatra app
+        reset_routes! # Remove all existing user-defined application routes
+        Padrino.require_dependencies(File.join(self.root, "/models.rb")) # Reload models class
+        Padrino.require_dependencies(File.join(self.root, "/models/**/*.rb")) # Reload all models
+        Padrino.require_dependencies(self.app_file) # Reload the app file
+        register_initializers # Reload our middlewares
+        load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) } # Reload dependencies
+        default_filters! # Reload filters
+        default_errors!  # Reload our errors
+        I18n.reload! if defined?(I18n) # Reload also our translations
       end
 
       ##
@@ -91,7 +93,7 @@ module Padrino
         #
         def default_configuration!
           # Overwriting Sinatra defaults
-          set :app_file, caller_files.first || $0 # Assume app file is first caller
+          set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
           set :environment, Padrino.env
           set :raise_errors, true if development?
           set :reload, true if development?

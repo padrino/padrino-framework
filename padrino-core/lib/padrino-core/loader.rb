@@ -23,7 +23,6 @@ module Padrino
     def reload!
       return unless Reloader::Stat.changed?
       Reloader::Stat.reload! # detects the modified files
-      Padrino.mounted_apps.each { |m| m.app_object.reload! } # finally we reload all files for each app
     end
 
     ##
@@ -75,7 +74,7 @@ module Padrino
         # Now we try to require our dependencies
         files.each do |file|
           begin
-            require file
+            Reloader::Stat.safe_load(file)
             files.delete(file)
           rescue Exception => e
             errors << e
@@ -88,7 +87,6 @@ module Padrino
         break if files.empty?
       end
     end
-    alias :require_dependency :require_dependencies
 
     ##
     # Attempts to load all dependency libs that we need.
@@ -99,7 +97,6 @@ module Padrino
         Dir[path].each { |file| load(file) }
       end
     end
-    alias :load_dependency :load_dependencies
 
     ##
     # Concat to $LOAD_PATH the given paths

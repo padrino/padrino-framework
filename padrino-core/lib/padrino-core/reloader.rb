@@ -51,16 +51,36 @@ module Padrino
     #
     module Stat
       class << self
-        CACHE  = {}
-        MTIMES = {}
+        CACHE                = {}
+        MTIMES               = {}
+        FILES_LOADED         = {}
+        LOADED_CLASSES       = {}
 
+        ##
+        # Reload changed files
+        #
         def reload!
           rotation do |file, mtime|
-            previous_mtime = MTIMES[file] ||= mtime
-            safe_load(file, mtime) if mtime > previous_mtime
+            previous_time = MTIMES[file] ||= mtime
+            next unless mtime > previous_time
+            # If the file is related to their app (i.e. a controller/mailer/helper)
+            if app = Padrino.mounted_apps.find { |a| file =~ /^#{File.dirname(a.app_file)}/ }
+              # We need to reload their own app
+              app.app_object.reload!
+              # App reloading will also perform safe_load of itself so we can go next
+              if File.identical?(app.app_file, file)
+                MTIMES[file] = mtime
+                next
+              end
+            end
+            # Now we can reload our file
+            safe_load(file, mtime)
           end
         end
 
+        ##
+        # Return true if some thing changed
+        #
         def changed?
           changed = false
           rotation do |file, mtime|
@@ -73,21 +93,88 @@ module Padrino
         ##
         # A safe Kernel::load, issuing the hooks depending on the results
         #
-        def safe_load(file, mtime)
-          logger.debug "Reloading #{file}"
-          load(file)
-          file
-        rescue LoadError, SyntaxError => ex
-          logger.error ex
-        ensure
-          MTIMES[file] = mtime
+        def safe_load(file, mtime=nil)
+          reload = mtime && mtime > MTIMES[file]
+
+          logger.debug "Reloading #{file}" if reload
+
+          # We remove all classes declared in the specified file
+          if klasses = LOADED_CLASSES.delete(file)
+            klasses.each { |klass| remove_constant(klass) }
+          end
+
+          # We track of what constants were loaded and what files
+          # have been added, so that the constants can be removed
+          # and the files can be removed from $LOADED_FEAUTRES
+          if FILES_LOADED[file]
+            FILES_LOADED[file].each do |fl|
+              next if fl == file
+              logger.debug "Require dependency #{fl}"
+              $LOADED_FEATURES.delete(fl)
+              require(fl)
+            end
+          end
+
+          klasses = ObjectSpace.classes.dup
+          files_loaded = $LOADED_FEATURES.dup
+
+          # Now we can reload the file ignoring syntax errors
+          $LOADED_FEATURES.delete(file)
+
+          begin
+            logger.debug "Require #{file}"
+            require(file)
+          rescue SyntaxError => ex
+            logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
+          ensure
+            MTIMES[file] = mtime if mtime
+          end
+
+          # Store off the details after the file has been loaded
+          LOADED_CLASSES[file] = ObjectSpace.classes - klasses
+          FILES_LOADED[file]   = $LOADED_FEATURES - files_loaded
+
+          nil
+        end
+
+        ##
+        # Removes the specified class.
+        #
+        # Additionally, removes the specified class from the subclass list of every superclass that
+        # tracks it's subclasses in an array returned by _subclasses_list. Classes that wish to use this
+        # functionality are required to alias the reader for their list of subclasses
+        # to _subclasses_list. Plugins for ORMs and other libraries should keep this in mind.
+        #
+        def remove_constant(const)
+          return if const.superclass.to_s =~ /Padrino::Application|Sinatra::Application|Sinatra::Base/
+
+          superklass = const
+          until (superklass = superklass.superclass).nil?
+            if superklass.respond_to?(:_subclasses_list)
+              superklass.send(:_subclasses_list).delete(klass)
+              superklass.send(:_subclasses_list).delete(klass.to_s)
+            end
+          end
+
+          parts = const.to_s.split("::")
+          base = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
+          object = parts[-1].to_s
+          begin
+            base.send(:remove_const, object)
+            logger.debug("Removed constant #{object} from #{base}")
+          rescue NameError
+            logger.debug("Failed to remove constant #{object} from #{base}")
+          end
+
+          nil
         end
 
         ##
         # Search Ruby files in your +Padrino.root+ and monitor them for changes.
         #
         def rotation
-          paths = Dir[Padrino.root("*")].reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
+          paths = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
+
           files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
 
           files.map{ |file|
