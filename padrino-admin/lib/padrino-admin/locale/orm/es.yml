@@ -2,7 +2,7 @@ es:
   activemodel: &activemodel
     errors:
       messages:
-        inclusion: "no está incluido en la listaç"
+        inclusion: "no está incluido en la lista"
         exclusion: "está reservado"
         invalid: "es inválido"
         confirmation: "no es igual a la confirmación"
