@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 class Account
   include DataMapper::Resource
   include DataMapper::Validate

@@ -110,6 +110,13 @@ module Mail
       add_part(new_part)
     end
 
+    def do_delivery_with_logging
+      logger.debug "Sending email to: #{destinations.join(" ")}"
+      encoded.to_lf.split("\n").each { |line| logger << ("  " + line) } if logger.debug?
+      do_delivery_without_logging
+    end
+    alias_method_chain :do_delivery, :logging if Padrino.respond_to?(:logger)
+
     ##
     # Sinatra and Padrino compatibility
     #
@@ -192,6 +199,7 @@ module Mail
           part do |p|
             p.content_type(format)
             p.body p.send(:render, engine, data, options, locals, &block)
+            add_multipart_alternate_header unless html_part.blank?
           end
         end
         return false unless provides.empty? # prevent to setup a body if we have provides

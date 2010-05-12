@@ -1,7 +1,7 @@
 ##
 # Mailer methods can be defined using the simple format:
 #
-# message :registration_email do |name, user|
+# email :registration_email do |name, user|
 #   from 'admin@site.com'
 #   to   user.email
 #   subject 'Welcome to the site!'
@@ -22,7 +22,7 @@
 #     :domain          => "localhost.localdomain" # the HELO domain provided by the client to the server
 #   }
 #
-# or sendmail:
+# or sendmail (default):
 #
 #   set :delivery_method, :sendmail
 #

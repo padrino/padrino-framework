@@ -50,6 +50,7 @@ module Padrino
         load_paths.each { |path| Padrino.load_dependencies(File.join(self.root, path)) } # reload dependencies
         default_filters! # reload filters
         default_errors!  # reload our errors
+        I18n.reload! # reload also our translations
       end
 
       ##
