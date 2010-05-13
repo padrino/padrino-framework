@@ -61,15 +61,19 @@ module Padrino
         #
         def reload!
           rotation do |file, mtime|
-            previous_time = MTIMES[file] ||= mtime
-            next unless mtime > previous_time
+            # Retrive the last modified time
+            new_file = MTIMES[file].nil?
+            previous_mtime = MTIMES[file] ||= mtime
+            logger.debug "Detected a new file #{file}" if new_file
+            # We skip to next file if it is not new and not modified
+            next unless new_file || mtime > previous_mtime
             # If the file is related to their app (i.e. a controller/mailer/helper)
             if app = Padrino.mounted_apps.find { |a| file =~ /^#{File.dirname(a.app_file)}/ }
               # We need to reload their own app
               app.app_object.reload!
               # App reloading will also perform safe_load of itself so we can go next
               if File.identical?(app.app_file, file)
-                MTIMES[file] = mtime
+                MTIMES[file] = mtime # This prevent a loop
                 next
               end
             end
@@ -79,16 +83,19 @@ module Padrino
         end
 
         ##
-        # Return true if some thing changed
+        # Return true if some thing changed and in the meanwhile fill MTIMES cache
         #
         def changed?
+          logger.debug "Check for new and changed files"
           changed = false
           rotation do |file, mtime|
+            new_file = MTIMES[file].nil?
             previous_mtime = MTIMES[file] ||= mtime
-            changed = true if mtime > MTIMES[file]
+            changed = true if new_file || mtime > previous_mtime
           end
           changed
         end
+        alias :run! :changed?
 
         ##
         # A safe Kernel::load, issuing the hooks depending on the results

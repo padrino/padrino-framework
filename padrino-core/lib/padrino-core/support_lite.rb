@@ -43,36 +43,6 @@ require 'active_support/core_ext/symbol' if ActiveSupport::VERSION::MAJOR < 3
 #
 module SupportLite; end
 
-module ObjectSpace
-  class << self
-    # Returns all the classes in the object space.
-    def classes
-      klasses = []
-      ObjectSpace.each_object(Class) {|o| klasses << o}
-      klasses
-    end
-  end
-end unless ObjectSpace.method_defined?(:classes)
-
-class Object
-  def full_const_get(name)
-    list = name.split("::")
-    list.shift if list.first.blank?
-    obj = self
-    list.each do |x|
-      # This is required because const_get tries to look for constants in the
-      # ancestor chain, but we only want constants that are HERE
-      obj = obj.const_defined?(x) ? obj.const_get(x) : obj.const_missing(x)
-    end
-    obj
-  end
-end unless Object.method_defined?(:full_const_get)
-
-##
-# Loads our locales configuration files
-#
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
-
 module Padrino
   ##
   # This method return the correct location of padrino bin or
@@ -98,3 +68,33 @@ module Padrino
     end
   end
 end
+
+module ObjectSpace
+  class << self
+    # Returns all the classes in the object space.
+    def classes
+      klasses = []
+      ObjectSpace.each_object(Class) {|o| klasses << o}
+      klasses
+    end
+  end
+end unless ObjectSpace.respond_to?(:classes)
+
+class Object
+  def full_const_get(name)
+    list = name.split("::")
+    list.shift if list.first.blank?
+    obj = self
+    list.each do |x|
+      # This is required because const_get tries to look for constants in the
+      # ancestor chain, but we only want constants that are HERE
+      obj = obj.const_defined?(x) ? obj.const_get(x) : obj.const_missing(x)
+    end
+    obj
+  end
+end unless Object.method_defined?(:full_const_get)
+
+##
+# Loads our locales configuration files
+#
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
