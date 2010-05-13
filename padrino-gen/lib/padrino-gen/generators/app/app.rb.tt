@@ -1,4 +1,7 @@
-class <%= @app_name %> < Padrino::Application
+class <%= @class_name %> < Padrino::Application
+  register Padrino::Mailer
+  register Padrino::Helpers
+
   ##
   # Application configuration options
   #
@@ -11,8 +14,6 @@ class <%= @app_name %> < Padrino::Application
   # disable :flash              # Disables rack-flash (enabled by default if sessions)
   # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
-  register Padrino::Mailer
-  register Padrino::Helpers
 
   ##
   # You can configure for a specified environment like:

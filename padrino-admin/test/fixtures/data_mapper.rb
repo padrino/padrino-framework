@@ -1,6 +1,7 @@
 require 'dm-core'
 require 'dm-validations'
 require 'dm-aggregates'
+require 'digest/sha1'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 
