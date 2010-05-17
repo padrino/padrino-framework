@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* Fixed / Updated German translations [Thanks to Gottlike]
 * Fixed a problem with extensions since Sinatra#register extend every thing
 * Fixed a problem when reloading apps
 * Fixed MongoId adapter using git legacy branch instead (un)stable gem
