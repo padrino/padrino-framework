@@ -46,7 +46,7 @@ de:
         other: '{{count}} Sekunden'
       less_than_x_minutes:
         zero: 'weniger als 1 Minute'
-        one: 'weniger als eine Minute'
+        one: 'weniger als 1 Minute'
         other: 'weniger als {{count}} Minuten'
       x_minutes:
         one: '1 Minute'
@@ -75,4 +75,4 @@ de:
         header:
           one:    "1 Fehler verhindert, dass Objekt {{model}} gesichert werden kann"
           other:  "{{count}} Fehler verhindern, dass Objekt {{model}} gesichert werden kann"
-        body: "Es existieren Probleme mit den follgenden Feldern:"
+        body: "Es existieren Probleme mit den folgenden Feldern:"
