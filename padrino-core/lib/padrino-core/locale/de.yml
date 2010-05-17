@@ -1,17 +1,17 @@
 de:
   date:
     formats:
-      # Benutze die strftime Parameter f¸r die Formatierung
-      # Wenn keine Formate angegeben wurde, wird "default" benutzt.
-      # Du kannst andere Formate hier bieten, wenn Du willst.
+      # Benutze die strftime Parameter für die Formatierung
+      # Wenn keine Formate angegeben werden, wird "default" benutzt.
+      # Du kannst auch weitere Formate hinzufügen, wenn Du möchtest.
       default: "&d.&m.%Y"
       short: "%b %d"
       long: "%B %d, %Y"
 
-    day_names: [Sontag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag]
-    abbr_day_names: [Son, Mon, Die, Mit, Don, Fre, Sam]
-    month_names: [~, Januar, Februar, Marz, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
-    abbr_month_names: [~, Jan, Feb, Mar, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez]
+    day_names: [Sonntag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag]
+    abbr_day_names: [So, Mo, Di, Mi, Do, Fr, Sa]
+    month_names: [~, Januar, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+    abbr_month_names: [~, Jan., Feb., März, April, Mai, Juni, Juli, Aug., Sept., Okt., Nov., Dez.]
     order: [ day, :month, :year ]
 
   time:
