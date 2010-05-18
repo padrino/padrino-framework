@@ -46,6 +46,10 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       actual_link = link_to('Sign up', '/register', :method => :delete)
       assert_has_tag('a', :content => "Sign up", :href => '/register', 'data-method' => 'delete', :rel => 'nofollow') { actual_link }
     end
+    should "display link element with confirm option" do
+      actual_link = link_to('Sign up', '/register', :confirm => "Are you sure?")
+      assert_has_tag('a', :content => "Sign up", :href => '/register', 'data-confirm' => 'Are you sure?') { actual_link }
+    end
     should "display link element with ruby block" do
       actual_link = link_to('/register', :class => 'first', :id => 'binky') { "Sign up" }
       assert_has_tag('a#binky.first', :content => "Sign up", :href => '/register') { actual_link }
