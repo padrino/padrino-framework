@@ -138,12 +138,30 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_dir_exists('/tmp/sample_project/app/models')
     end
 
-    should "properly generate for activerecord" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--script=none') }
-      assert_match /Applying.*?activerecord.*?orm/, buffer
-      assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+    context "for activerecord" do
+      should "properly generate default" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--script=none') }
+        assert_match /Applying.*?activerecord.*?orm/, buffer
+        assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_project/config/database.rb')
+        assert_dir_exists('/tmp/sample_project/app/models')
+      end
+      
+      should "properly generate mysql" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord','--adapter=mysql') }
+        assert_match_in_file(/gem 'mysql', :require => "mysql"/, '/tmp/sample_project/Gemfile')
+      end
+      
+      should "properly generate sqlite3" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--adapter=sqlite3') }
+        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/sample_project/Gemfile')
+      end
+      
+      should "properly generate postgres" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--adapter=postgres') }
+        assert_match_in_file(/gem 'pg', :require => "postgres"/, '/tmp/sample_project/Gemfile')
+      end
     end
 
     context "for datamapper" do

@@ -50,7 +50,14 @@ ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrin
 AR
 
 def setup_orm
-  require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
+  case options[:adapter]
+  when 'mysql'
+    require_dependencies 'mysql', :require => 'mysql'
+  when 'postgres'
+    require_dependencies 'pg', :require => 'postgres'
+  else
+    require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
+  end
   require_dependencies 'activerecord', :require => 'active_record'
   create_file("config/database.rb", AR)
   empty_directory('app/models')
