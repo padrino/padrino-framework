@@ -20,8 +20,10 @@ module Padrino
       #
       # ==== Examples
       #
-      #   link_to 'click me', '/dashboard', :class => 'linky'
-      #   link_to('/dashboard', :class => 'blocky') do ... end
+      #   link_to('click me', '/dashboard', :class => 'linky')
+      #   link_to('click me', '/dashboard', :remote => true)
+      #   link_to('click me', '/dashboard', :method => :delete)
+      #   link_to('click me', :class => 'blocky') do ... end
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
       # condition padrino return true/false if the request.path_info match the given url
@@ -30,6 +32,10 @@ module Padrino
         options = args.extract_options!
         anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
         options["data-remote"] = "true" if options.delete(:remote)
+        if link_method = options.delete(:method)
+          options["data-method"] = link_method
+          options["rel"] = "nofollow"
+        end
         if block_given?
           url = args[0] ? args[0] + anchor.to_s : anchor || 'javascript:void(0);'
           options.reverse_merge!(:href => url)
