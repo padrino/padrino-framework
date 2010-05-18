@@ -17,7 +17,12 @@ end
 DM
 
 def setup_orm
-  require_dependencies 'data_objects', 'do_sqlite3', 'datamapper'
+  require_dependencies 'data_objects', 'datamapper'
+  require_dependencies case options[:adapter]
+  when 'mysql' then 'do_mysql'
+  when 'postgres' then 'do_postgres'
+  else 'do_sqlite3'
+  end
   create_file("config/database.rb", DM)
   empty_directory('app/models')
 end
