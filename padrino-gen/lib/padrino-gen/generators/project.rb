@@ -24,7 +24,7 @@ module Padrino
       class_option :run_bundle,   :desc => "Run bundle install",   :aliases => '-b', :default => false, :type => :boolean
       class_option :root,         :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
       class_option :dev,          :desc => "Use padrino from a git checkout",        :default => false, :type => :boolean
-      class_option :tiny,         :desc => "Generate tiny app skeleton", :aliases => '-a', :default => false, :type => :boolean
+      class_option :tiny,         :desc => "Generate tiny app skeleton", :aliases => '-i', :default => false, :type => :boolean
 
       # Definitions for the available customizable components
       component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest], :default => :none
