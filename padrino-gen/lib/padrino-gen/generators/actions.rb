@@ -139,21 +139,20 @@ module Padrino
         end
       end
 
-      # For Generating Tiny/Standard App Generation
-      def app_skeleton(app,tiny=false)
+      # Generates standard and tiny applications within a project
+      def app_skeleton(app, tiny=false)
         directory("app/", destination_root(app))
-        if tiny
+        if tiny # generate tiny structure
           template "templates/controller.rb.tt", destination_root(app, "controllers.rb")
           template "templates/helper.rb.tt", destination_root(app, "helpers.rb")
           @short_name = 'notifier'
           template "templates/mailer.rb.tt", destination_root(app, "mailers.rb")
           empty_directory destination_root(app, "views", "mailers")
-        else
+        else # generate standard folders
           empty_directory destination_root("#{app}/controllers/")
           empty_directory destination_root("#{app}/helpers/")
         end
       end
-
 
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
