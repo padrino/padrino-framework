@@ -9,7 +9,12 @@ end
 SEQUEL
 
 def setup_orm
-  require_dependencies 'sequel', 'sqlite3-ruby'
+  require_dependencies 'sequel'
+  require_dependencies case options[:adapter]
+  when 'mysql' then 'mysql'
+  when 'postgres' then 'pg'
+  else 'sqlite3-ruby'
+  end
   create_file("config/database.rb", SEQUEL)
   empty_directory('app/models')
   empty_directory('db/migrate')

@@ -127,15 +127,33 @@ class TestProjectGenerator < Test::Unit::TestCase
   end
 
   context "the generator for orm components" do
-    should "properly generate for sequel" do
-      @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--script=none') }
-      assert_match /Applying.*?sequel.*?orm/, buffer
-      assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
-      assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+    
+    context "for sequel" do
+      should "properly generate default" do
+        @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--script=none') }
+        assert_match /Applying.*?sequel.*?orm/, buffer
+        assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
+        assert_dir_exists('/tmp/sample_project/app/models')
+      end
+      
+      should "properly generate mysql" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=mysql') }
+        assert_match_in_file(/gem 'mysql'/, '/tmp/sample_project/Gemfile')
+      end
+      
+      should "properly generate sqlite3" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=sqlite') }
+        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
+      end
+      
+      should "properly generate postgres" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=postgres') }
+        assert_match_in_file(/gem 'pg'/, '/tmp/sample_project/Gemfile')
+      end
     end
 
     context "for activerecord" do
