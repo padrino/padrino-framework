@@ -20,113 +20,16 @@ module Padrino
     class UnrecognizedException < RuntimeError #:nodoc:
     end
 
-    def self.registered(app)
-      app.send(:include, Padrino::Routing)
-    end
-
-    def self.included(base)
-      base.extend Padrino::Routing::ClassMethods
-    end
-
     ##
-    # Instance method for url generation like:
+    # Main class that register this extension
     #
-    # ==== Examples
-    #
-    #   url(:show, :id => 1)
-    #   url(:show, :name => :test)
-    #   url("/show/:id/:name", :id => 1, :name => foo)
-    #
-    def url(*names)
-      self.class.url(*names)
-    end
-    alias :url_for :url
-
-    ##
-    # This is mostly just a helper so request.path_info isn't changed when
-    # serving files from the public directory
-    #
-    def static_file?(path_info)
-      return if (public_dir = settings.public).nil?
-      public_dir = File.expand_path(public_dir)
-
-      path = File.expand_path(public_dir + unescape(path_info))
-      return if path[0, public_dir.length] != public_dir
-      return unless File.file?(path)
-      return path
-    end
-
-    ##
-    # Return the request format, this is useful when we need to respond to a given content_type like:
-    #
-    # ==== Examples
-    #
-    #   get :index, :provides => :any do
-    #     case content_type
-    #       when :js    then ...
-    #       when :json  then ...
-    #       when :html  then ...
-    #     end
-    #   end
-    #
-    def content_type(type=nil, params={})
-      type.nil? ? @_content_type : super(type, params)
-    end
-
-    ##
-    # Method for deliver static files.
-    #
-    def static!
-      if path = static_file?(request.path_info)
-        env['sinatra.static_file'] = path
-        send_file(path, :disposition => nil)
+    class << self
+      def registered(app)
+        app.send(:include, InstanceMethods)
+        app.extend(ClassMethods)
       end
+      alias :included :registered
     end
-
-    private
-      ##
-      # Compatibility with usher
-      #
-      def route!(base=self.class, pass_block=nil)
-        if base.router and match = base.router.recognize(@request, @request.path_info)
-          if match.succeeded?
-            @block_params = match.params.map { |p| p.last }
-            (@params ||= {}).merge!(match.params_as_hash)
-            pass_block = catch(:pass) do
-              # Run Sinatra Conditions
-              match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
-              # Run scoped before filters
-              match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
-              # If present set current controller layout
-              parent_layout = base.instance_variable_get(:@layout)
-              base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
-              # Now we can eval route, but because we have "throw halt" we need to be
-              # (en)sure to reset old layout and run controller after filters.
-              begin
-                route_eval(&match.destination)
-              ensure
-                base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-                match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
-              end
-            end
-          elsif match.request_method?
-            route_eval {
-              response['Allow'] = match.acceptable_responses_only_strings.join(", ")
-              status 405
-            }
-          end
-        end
-
-        # Run routes defined in superclass.
-        if base.superclass.respond_to?(:router)
-          route! base.superclass, pass_block
-          return
-        end
-
-        route_eval(&pass_block) if pass_block
-
-        route_missing
-      end
 
     module ClassMethods
       ##
@@ -434,6 +337,108 @@ module Padrino
           }
         end
         alias :respond_to :provides
-    end # ClassMethods
+    end
+
+    module InstanceMethods
+      ##
+      # Instance method for url generation like:
+      #
+      # ==== Examples
+      #
+      #   url(:show, :id => 1)
+      #   url(:show, :name => :test)
+      #   url("/show/:id/:name", :id => 1, :name => foo)
+      #
+      def url(*names)
+        self.class.url(*names)
+      end
+      alias :url_for :url
+
+      ##
+      # This is mostly just a helper so request.path_info isn't changed when
+      # serving files from the public directory
+      #
+      def static_file?(path_info)
+        return if (public_dir = settings.public).nil?
+        public_dir = File.expand_path(public_dir)
+
+        path = File.expand_path(public_dir + unescape(path_info))
+        return if path[0, public_dir.length] != public_dir
+        return unless File.file?(path)
+        return path
+      end
+
+      ##
+      # Method for deliver static files.
+      #
+      def static!
+        if path = static_file?(request.path_info)
+          env['sinatra.static_file'] = path
+          send_file(path, :disposition => nil)
+        end
+      end
+
+      ##
+      # Return the request format, this is useful when we need to respond to a given content_type like:
+      #
+      # ==== Examples
+      #
+      #   get :index, :provides => :any do
+      #     case content_type
+      #       when :js    then ...
+      #       when :json  then ...
+      #       when :html  then ...
+      #     end
+      #   end
+      #
+      def content_type(type=nil, params={})
+        type.nil? ? @_content_type : super(type, params)
+      end
+
+      private
+        ##
+        # Compatibility with usher
+        #
+        def route!(base=self.class, pass_block=nil)
+          if base.router and match = base.router.recognize(@request, @request.path_info)
+            if match.succeeded?
+              @block_params = match.params.map { |p| p.last }
+              (@params ||= {}).merge!(match.params_as_hash)
+              pass_block = catch(:pass) do
+                # Run Sinatra Conditions
+                match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
+                # Run scoped before filters
+                match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
+                # If present set current controller layout
+                parent_layout = base.instance_variable_get(:@layout)
+                base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
+                # Now we can eval route, but because we have "throw halt" we need to be
+                # (en)sure to reset old layout and run controller after filters.
+                begin
+                  route_eval(&match.destination)
+                ensure
+                  base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
+                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+                end
+              end
+            elsif match.request_method?
+              route_eval {
+                response['Allow'] = match.acceptable_responses_only_strings.join(", ")
+                status 405
+              }
+            end
+          end
+
+          # Run routes defined in superclass.
+          if base.superclass.respond_to?(:router)
+            route! base.superclass, pass_block
+            return
+          end
+
+          route_eval(&pass_block) if pass_block
+
+          route_missing
+        end
+    end # InstanceMethods
   end # Routing
 end # Padrino

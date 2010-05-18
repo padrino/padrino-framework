@@ -55,7 +55,7 @@ class TestSimpleReloader < Test::Unit::TestCase
     should 'correctly reload SimpleDemo fixture' do
       @app = SimpleDemo
       get "/"
-      assert_equal 200, status
+      assert ok?
       new_phrase = "The magick number is: #{rand(100)}!"
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
@@ -66,6 +66,30 @@ class TestSimpleReloader < Test::Unit::TestCase
 
       # Now we need to prevent to commit a new changed file so we revert it
       File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
+    end
+
+    should 'correctly reset SimpleDemo fixture' do
+      @app = SimpleDemo
+      get "/rand"
+      assert ok?
+      last_body = body
+      assert_equal 2, @app.before_filters.size # one is ours the other is default_filter for content type
+      assert_equal 1, @app.errors.size
+      assert_equal 1, @app.after_filters.size
+      assert_equal 2, @app.middleware.size # [Padrino::Logger::Rack, Padrino::Reloader::Rack]
+      assert_equal 4, @app.router.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
+      assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
+      assert_equal 0, @app.templates.size
+      @app.reload!
+      get "/rand"
+      assert_not_equal last_body, body
+      assert_equal 2, @app.before_filters.size # one is ours the other is default_filter for content type
+      assert_equal 1, @app.errors.size
+      assert_equal 1, @app.after_filters.size
+      assert_equal 2, @app.middleware.size # only logger Padrino::Logger::Rack
+      assert_equal 4, @app.router.routes.size # GET+HEAD of "/" = 2
+      assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
+      assert_equal 0, @app.templates.size
     end
   end
 end

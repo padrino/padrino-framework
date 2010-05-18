@@ -23,11 +23,6 @@ end
 String.send(:include, Padrino::Admin::Utils::Crypt)
 
 ##
-# We need to add to Padrino::Application a +access_control+ class
-#
-Padrino::Application.extend(Padrino::Admin::AccessControl::ClassMethods)
-
-##
 # Load our Padrino::Admin locales
 #
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]

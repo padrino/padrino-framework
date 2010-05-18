@@ -88,6 +88,12 @@ module Padrino
         File.exist?(destination_root('config/boot.rb'))
       end
 
+      # Returns the field with an unacceptable name(for symbol) else returns nil
+      def invalid_fields(fields)
+        results = fields.select { |field| field.split(":").first =~ /\W/ }
+        results.empty? ? nil : results
+      end
+
       # Returns the app_name for the application at root
       def fetch_app_name(app='app')
         app_path = destination_root(app, 'app.rb')
@@ -132,6 +138,22 @@ module Padrino
           raise SystemExit
         end
       end
+
+      # For Generating Tiny/Standard App Generation
+      def app_skeleton(app,tiny=false)
+        directory("app/", destination_root(app))
+        if tiny
+          template "templates/controller.rb.tt", destination_root(app, "controllers.rb")
+          template "templates/helper.rb.tt", destination_root(app, "helpers.rb")
+          @short_name = 'notifier'
+          template "templates/mailer.rb.tt", destination_root(app, "mailers.rb")
+          empty_directory destination_root(app, "views", "mailers")
+        else
+          empty_directory destination_root("#{app}/controllers/")
+          empty_directory destination_root("#{app}/helpers/")
+        end
+      end
+
 
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list

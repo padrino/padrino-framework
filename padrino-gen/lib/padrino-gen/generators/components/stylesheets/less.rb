@@ -22,12 +22,12 @@ end
 LESS
 
 LESS_REGISTER = (<<-LESSR).gsub(/^ {10}/, '') unless defined?(LESS_REGISTER)
-    register LessInitializer\n
+  register LessInitializer\n
 LESSR
 
 def setup_stylesheet
   require_dependencies 'less', 'rack-less'
   create_file destination_root('/lib/less_plugin.rb'), LESS_INIT
-  inject_into_file destination_root('/app/app.rb'), LESS_REGISTER, :after => "configure do\n"
+  inject_into_file destination_root('/app/app.rb'), LESS_REGISTER, :after => "register Padrino::Helpers\n"
   empty_directory destination_root('/app/stylesheets')
 end

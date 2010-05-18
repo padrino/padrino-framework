@@ -9,6 +9,7 @@ class RenderUser
 end
 
 class RenderDemo < Padrino::Application
+  register Padrino::Helpers
 
   # partial with object
   get '/partial/object' do

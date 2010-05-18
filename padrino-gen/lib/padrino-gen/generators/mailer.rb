@@ -31,13 +31,11 @@ module Padrino
           app = options[:app].underscore
           check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
-          simple_name = name.to_s.gsub(/mailer/i, '')
-          @mailer_basename = "#{simple_name.downcase.underscore}_mailer"
-          @mailer_klass    = "#{simple_name.downcase.camelize}Mailer"
-          template "templates/mailer_initializer.rb.tt", destination_root("lib/mailer.rb"), :skip => true
+          @app_name = fetch_app_name(app)
+          @short_name = name.to_s.gsub(/mailer/i, '').underscore.downcase
+          @mailer_basename = @short_name.underscore
           template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
-          inject_into_file(destination_root(app, "app.rb"), "    register MailerInitializer\n", :after => "configure do\n")
-          empty_directory destination_root(app, 'views', @mailer_basename)
+          empty_directory destination_root(app, 'views', 'mailers', @mailer_basename)
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
         end

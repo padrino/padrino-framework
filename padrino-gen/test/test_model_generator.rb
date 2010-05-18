@@ -17,6 +17,18 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:model, 'DemoItem', "name:string", "age", "email:string", '-r=/tmp/sample_project') }
       assert_file_exists('/tmp/sample_project/app/models/demo_item.rb')
     end
+    
+    should "fail if field name is not acceptable" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=couchrest') }
+      output = silence_logger { generate(:model, 'DemoItem', "re@l$ly:string","display-name:string", "age&year:datetime", "email_two:string", '-r=/tmp/sample_project') }
+      assert_match(/Invalid field name:/, output)
+      assert_match(/display-name:string/, output)
+      assert_match(/age&year:datetime/, output)
+      assert_match(/re@l\$ly:string/, output)
+      assert_no_match(/email_two:string/, output)
+      assert_no_match(/apply/, output)
+      assert_no_file_exists('/tmp/sample_project/app/models/demo_item.rb')
+    end
 
     should "fail if we don't use an adapter" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
