@@ -20,6 +20,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino project"
 
+      class_option :app ,         :desc => "The application name", :aliases => '-a', :default => nil,   :type => :string
       class_option :run_bundle,   :desc => "Run bundle install",   :aliases => '-b', :default => false, :type => :boolean
       class_option :root,         :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
       class_option :dev,          :desc => "Use padrino from a git checkout",        :default => false, :type => :boolean
@@ -38,7 +39,7 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_project
-        @app_name = name.gsub(/\W/, "_").underscore.classify
+        @app_name = (options[:app] || name).gsub(/\W/, "_").underscore.classify
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
         app_skeleton('app', options[:tiny])

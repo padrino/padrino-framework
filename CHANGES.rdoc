@@ -25,6 +25,7 @@
 * Added Spanish translation [Thanks to Alvaro]
 * Fixes issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
+* Adds support for a '--app' option to specify app name in project generator
 
 == 0.9.10
 

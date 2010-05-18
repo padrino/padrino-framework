@@ -7,16 +7,27 @@ class TestProjectGenerator < Test::Unit::TestCase
 
   context 'the project generator' do
     should "allow simple generator to run and create base_app with no options" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none') } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
       assert_file_exists('/tmp/sample_project')
-      assert_file_exists('/tmp/sample_project/app')
+      assert_match_in_file(/class SampleProject < Padrino::Application/,'/tmp/sample_project/app/app.rb')
+      assert_match_in_file(/Padrino.mount_core\("SampleProject"\)/,'/tmp/sample_project/config/apps.rb')
+      assert_file_exists('/tmp/sample_project/config/boot.rb')
+      assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
+      assert_file_exists('/tmp/sample_project/public/favicon.ico')
+    end
+    
+    should "allow specifying alternate application name" do
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--app=base_app') } }
+      assert_file_exists('/tmp/sample_project')
+      assert_match_in_file(/class BaseApp < Padrino::Application/,'/tmp/sample_project/app/app.rb')
+      assert_match_in_file(/Padrino.mount_core\("BaseApp"\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
 
     should "generate tiny skeleton" do
-      assert_nothing_raised { silence_logger { generate(:project,'sample_project', '--tiny','--root=/tmp', '--script=none') } }
+      assert_nothing_raised { silence_logger { generate(:project,'sample_project', '--tiny','--root=/tmp') } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/app')
       assert_file_exists('/tmp/sample_project/app/controllers.rb')
