@@ -2,6 +2,8 @@
 
 == 0.9.11 (Unreleased)
 
+* Support params as arrays for generation. More efficent generation
+* Added 405 support
 * Fixed / Updated German translations [Thanks to Gottlike]
 * Fixed a problem with extensions since Sinatra#register extend every thing
 * Fixed a problem when reloading apps
