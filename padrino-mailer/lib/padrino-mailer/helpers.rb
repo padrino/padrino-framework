@@ -11,10 +11,11 @@ module Padrino
       # ==== Examples
       #
       #   email do
-      #     to @user.email
-      #     from "awesomeness@example.com",
+      #     to      @user.email
+      #     from    "awesomeness@example.com",
       #     subject "Welcome to Awesomeness!"
-      #     body 'path/to/my/template', :locals => { :a => a, :b => b }
+      #     locals  :a => a, :b => b
+      #     body    'path/to/my/template', :
       #   end
       #
       def email(mail_attributes={}, &block)

@@ -34,14 +34,6 @@ Delivering an email from within your controller is simple:
     email(:to => "john@smith.com", :subject => "Successfully Registered!", :body => "Test Body")
   end
 
-This <tt>email</tt> helper will accept any of the standard email attributes and deliver your email in a single command. You can also render a template for the body and specify the delivery method:
-
-  # app/controllers/session.rb
-  post :create do
-    email(:to => "john@smith.com", :subject => "Successfully Registered!",
-          :body => render('email/registered'), :via => :sendmail)
-  end
-
 Padrino also supports structured mailer declarations. We can define a new mailer using a <tt>mailer</tt> block.
 
   # app/mailers/sample_mailer.rb
@@ -67,8 +59,8 @@ In addition to a standard body, Padrino also easily supports multi-part emails:
       subject "nested multipart"
       from    "test@example.com"
 
-      text_part render('multipart/basic.plain')
-      html_part render('multipart/basic.html')
+      text_part { render('multipart/basic.plain') }
+      html_part { render('multipart/basic.html')  }
     end
   end
 
@@ -84,7 +76,7 @@ Defaults can also be declared on a per-mailer or app-wide basis:
       # Uses default 'content_type' and 'from' values but can also overwrite them
       to      'user@domain.com'
       subject 'Welcome to the site!'
-      body    :name => name
+      locals  :name => name
       render  :registration'
     end
   end
