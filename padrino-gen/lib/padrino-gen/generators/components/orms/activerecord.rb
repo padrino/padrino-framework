@@ -15,18 +15,15 @@ AR = (<<-AR) unless defined?(AR)
 #   }
 #
 ActiveRecord::Base.configurations[:development] = {
-  :adapter => 'sqlite3',
-  :database => Padrino.root('db', "development.db")
+!DB_DEVELOPMENT!
 }
 
 ActiveRecord::Base.configurations[:production] = {
-  :adapter => 'sqlite3',
-  :database => Padrino.root('db', "production.db")
+!DB_PRODUCTION!
 }
 
 ActiveRecord::Base.configurations[:test] = {
-  :adapter => 'sqlite3',
-  :database => Padrino.root('db', "test.db")
+!DB_TEST!
 }
 
 # Setup our logger
@@ -49,17 +46,54 @@ ActiveSupport.escape_html_entities_in_json = false
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
 AR
 
+MYSQL = (<<-MYSQL)
+  :adapter   => 'mysql',
+  :encoding  => 'utf8',
+  :reconnect => false,
+  :database  => !DB_NAME!,
+  :pool      => 5,
+  :username  => 'root',
+  :password  => '',
+  :host      => 'localhost',
+  :socket    => '/tmp/mysql.sock'
+MYSQL
+
+POSTGRES = (<<-POSTGRES)
+  :adapter   => 'postgresql',
+  :database  => !DB_NAME!,
+  :username  => 'root',
+  :password  => '',
+  :host      => 'localhost',
+  :port      => 5432
+POSTGRES
+
+SQLITE = (<<-SQLITE)
+  :adapter => 'sqlite3',
+  :database => !DB_NAME!
+SQLITE
+
+
 def setup_orm
+  ar = AR
   case options[:adapter]
   when 'mysql'
-    require_dependencies 'mysql', :require => 'mysql'
+    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_development\"")
+    ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_production\"")
+    ar.gsub! /!DB_TEST/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_test\"")
+    require_dependencies 'mysql'
   when 'postgres'
+    ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_development\"")
+    ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_production\"")
+    ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_test\"")
     require_dependencies 'pg', :require => 'postgres'
   else
+    ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_development.db\")")
+    ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_production.db\")")
+    ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_test.db\")")    
     require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record'
-  create_file("config/database.rb", AR)
+  create_file("config/database.rb", ar)
   empty_directory('app/models')
 end
 
