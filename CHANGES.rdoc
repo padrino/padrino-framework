@@ -26,6 +26,7 @@
 * Fixes issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
 * Adds support for a '--app' option to specify app name in project generator
+* Adds support for '--adapter' option which specifies what SQL adapter to use(for AR, Datamapper, Sequel)
 
 == 0.9.10
 
