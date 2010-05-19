@@ -143,16 +143,22 @@ class TestProjectGenerator < Test::Unit::TestCase
       should "properly generate mysql" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=mysql') }
         assert_match_in_file(/gem 'mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"mysql://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate sqlite3" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=sqlite') }
         assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate postgres" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=postgres') }
         assert_match_in_file(/gem 'pg'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"postgres://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
     end
 
