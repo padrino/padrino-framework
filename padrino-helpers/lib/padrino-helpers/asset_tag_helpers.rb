@@ -30,15 +30,9 @@ module Padrino
       #
       def link_to(*args, &block)
         options = args.extract_options!
+        options = parse_js_attributes(options) # parses remote, method and confirm options
         anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
-        options["data-remote"] = "true" if options.delete(:remote)
-        if link_confirm = options.delete(:confirm)
-          options["data-confirm"] = link_confirm
-        end
-        if link_method = options.delete(:method)
-          options["data-method"] = link_method
-          options["rel"] = "nofollow"
-        end
+
         if block_given?
           url = args[0] ? args[0] + anchor.to_s : anchor || 'javascript:void(0);'
           options.reverse_merge!(:href => url)
@@ -260,7 +254,7 @@ module Padrino
         end
 
         ##
-        # Parse link_to options for give correct conditions
+        # Parses link_to options for given correct conditions
         #
         def parse_conditions(url, options)
           if options.has_key?(:if)
@@ -271,6 +265,23 @@ module Padrino
           else
             true
           end
+        end
+
+        ##
+        # Parses link_to options for given js declarations (remote, method, confirm)
+        # Not destructive on options; returns updated options
+        #
+        def parse_js_attributes(options)
+          options = options.dup
+          options["data-remote"] = "true" if options.delete(:remote)
+          if link_confirm = options.delete(:confirm)
+            options["data-confirm"] = link_confirm
+          end
+          if link_method = options.delete(:method)
+            options["data-method"] = link_method
+            options["rel"] = "nofollow"
+          end
+          options
         end
     end # AssetTagHelpers
   end # Helpers
