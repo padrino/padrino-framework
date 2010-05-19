@@ -28,6 +28,21 @@ class TestMessage < Test::Unit::TestCase
       end
     end
 
+    should "use locals" do
+      message = Mail::Message.new do
+        from    'padrino@me.com'
+        to      'padrino@you.com'
+        subject 'Hello there Padrino'
+        locals  :foo => "Im Foo!"
+        body    erb("<%= foo %>")
+      end
+
+      assert_equal ['padrino@me.com'],    message.from
+      assert_equal ['padrino@you.com'],   message.to
+      assert_equal 'Hello there Padrino', message.subject
+      assert_equal 'Im Foo!',             message.body.to_s
+    end
+
     should "use views paths" do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'

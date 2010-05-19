@@ -129,7 +129,11 @@ module Mail
     # Sets the message defined template path to the given view path
     #
     def views(value)
-      self.class.views = value
+      settings.views = value
+    end
+
+    def locals(value)
+      @_locals = value
     end
 
     ##
@@ -168,6 +172,13 @@ module Mail
     end
 
     ##
+    # Return the path of this file, only for compatiblity with sinatra rendering methods
+    #
+    def self.caller_locations
+      [[File.dirname(__FILE__), 1]]
+    end
+
+    ##
     # Modify the default attributes for this message (if not explicitly specified)
     #
     def defaults=(attributes)
@@ -192,6 +203,7 @@ module Mail
     private
       # Defines the render for the mailer utilizing the padrino 'rendering' module
       def render(engine, data=nil, options={}, locals={}, &block)
+        locals = @_locals if options[:locals].blank? && locals.blank?
         # Reload templates
         @template_cache.clear if settings.reload_templates?
         # Setup provides
