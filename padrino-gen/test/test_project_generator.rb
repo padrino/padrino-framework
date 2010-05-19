@@ -196,18 +196,22 @@ class TestProjectGenerator < Test::Unit::TestCase
       should "properly generate for mysql" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=mysql') }
         assert_match_in_file(/gem 'do_mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"mysql://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate for sqlite" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=sqlite') }
         assert_match_in_file(/gem 'do_sqlite3'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate for postgres" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=postgres') }
         assert_match_in_file(/gem 'do_postgres'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"postgres://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
-      
     end
 
 
