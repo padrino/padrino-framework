@@ -34,11 +34,11 @@ module Mail
     #   # This add a email plain part if a template called bar.plain.* is found
     #   # and a html part if a template called bar.html.* is found
     #   email do
-    #     from 'from@email.com'
-    #     to   'to@email.com'
-    #     subject 'Welcome here'
-    #     provides [:plain, :html]
-    #     body render("foo/bar")
+    #     from     'from@email.com'
+    #     to       'to@email.com'
+    #     subject  'Welcome here'
+    #     provides :plain, :html
+    #     render   "foo/bar"
     #   end
     #
     def provides(*formats)
@@ -57,8 +57,8 @@ module Mail
     #
     # ==== Examples
     #
-    #  text_part render('multipart/basic.plain')
-    #  text_part { body render('multipart/basic.text') }
+    #  text_part "Some text"
+    #  text_part { render('multipart/basic.text') }
     #
     def text_part(value=nil, &block)
       if block_given? || value
@@ -76,8 +76,8 @@ module Mail
     #
     # ==== Examples
     #
-    #  html_part render('multipart/basic.html')
-    #  html_part { body render('multipart/basic.html') }
+    #  html_part "Some <b>Html</b> text"
+    #  html_part { render('multipart/basic.html') }
     #
     def html_part(value=nil, &block)
       if block_given? || value
@@ -210,13 +210,12 @@ module Mail
         provides.each do |format|
           part do |p|
             p.content_type(format)
-            p.body p.send(:render, engine, data, options, locals, &block)
+            p.send(:render, engine, data, options, locals, &block)
             add_multipart_alternate_header unless html_part.blank?
           end
         end
-        return false unless provides.empty? # prevent to setup a body if we have provides
-        # Pass arguments to Sinatra/Padrino render method
-        super(engine, data, options, locals, &block)
+        # Setup the body if we don't have provides
+        self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
   end
 end

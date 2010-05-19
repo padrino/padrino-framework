@@ -23,7 +23,7 @@ class TestMessage < Test::Unit::TestCase
           from    'padrino@me.com'
           to      'padrino@you.com'
           subject 'Hello there Padrino'
-          body    render('/foo/bar')
+          render  'foo/bar'
         end
       end
     end
@@ -49,7 +49,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('bar')
+        render  :bar
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -64,7 +64,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('alternate/foo')
+        render  'alternate/foo'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -79,7 +79,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('sample/foo', :layout => :"layouts/sample")
+        render  'sample/foo', :layout => :"layouts/sample"
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -96,7 +96,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('i18n/hello')
+        render  'i18n/hello'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -111,7 +111,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('i18n/hello')
+        render  'i18n/hello'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -127,7 +127,7 @@ class TestMessage < Test::Unit::TestCase
         to           'padrino@you.com'
         subject      'Hello there Padrino'
         content_type 'text/html'
-        body          render('multipart/basic')
+        render       'multipart/basic'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -141,7 +141,7 @@ class TestMessage < Test::Unit::TestCase
         to           'padrino@you.com'
         subject      'Hello there Padrino'
         content_type :plain
-        body          render('multipart/basic')
+        render       'multipart/basic'
       end
 
       assert_equal ['padrino@me.com'],    message.from

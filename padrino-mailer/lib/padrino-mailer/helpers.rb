@@ -53,11 +53,11 @@ module Padrino
         #
         #   mailer :sample do
         #     email :birthday do |name, age|
-        #       subject "Happy Birthday!"
-        #       to   'john@fake.com'
-        #       from 'noreply@birthday.com'
-        #       locals :name => name, :age => age
-        #       body render('sample/birthday')
+        #       subject 'Happy Birthday!'
+        #       to      'john@fake.com'
+        #       from    'noreply@birthday.com'
+        #       locals  :name => name, :age => age
+        #       render  'sample/birthday'
         #     end
         #   end
         #
