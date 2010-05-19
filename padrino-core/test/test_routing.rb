@@ -1,14 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestRouting < Test::Unit::TestCase
-  class RoutingApp < Sinatra::Base
-    register ::Padrino::Routing
-    set :environment, :test
-  end
-
-  def mock_app(base=RoutingApp, &block)
-    @app = Sinatra.new(base, &block)
-  end
 
   should 'ignore trailing delimiters for basic route' do
     mock_app do
@@ -489,7 +481,7 @@ class TestRouting < Test::Unit::TestCase
       provides :xml
 
       get("/foo"){ "Foo in #{content_type}" }
-      get("/bar"){ raise if content_type != nil }
+      get("/bar"){ "Bar in #{content_type}" }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
@@ -498,7 +490,7 @@ class TestRouting < Test::Unit::TestCase
     assert not_found?
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert 200, status
+    assert_equal 'Bar in html', body
   end
 
   should "set content_type to :html for both empty Accept as well as Accept text/html" do
@@ -589,5 +581,19 @@ class TestRouting < Test::Unit::TestCase
 
     get "/foo"
     assert_equal "", body
+  end
+
+  should_eventually 'work with multiple dashed params' do
+    mock_app do
+      get "/route/:foo/:bar/:baz", :provides => :html do
+        "#{params[:foo]};#{params[:bar]};#{params[:baz]}"
+      end
+    end
+
+    get "/route/foo/bar/baz"
+    assert_equal 'foo;bar;baz', body
+
+    get "/route/foo/bar-whatever/baz"
+    assert_equal 'foo;bar-whatever;baz', body
   end
 end

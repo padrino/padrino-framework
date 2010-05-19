@@ -117,7 +117,7 @@ module Padrino
                               :delimiters => ['/', '.', '-'],
                               :valid_regex => '[0-9A-Za-z\$_\+!\*\',]+',
                               :detailed_failure => true)
-          @router.route_class = Padrino::Routing::Route                      
+          @router.route_class = Padrino::Routing::Route
         end
         block_given? ? yield(@router) : @router
       end
@@ -304,7 +304,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_provides(path, format_params)
-          path << "(.:format)"
+          path << "(.:format)" unless path =~ /\(\.:format\)/
         end
 
         ##
