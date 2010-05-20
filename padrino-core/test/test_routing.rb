@@ -358,6 +358,42 @@ class TestRouting < Test::Unit::TestCase
     get "/foo/bar"
     assert_equal "foo_bar_index", body
   end
+  
+  should 'use uri_root' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    @app.uri_root = '/'
+    assert_equal "/foo", @app.url(:foo)
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = '/testing/'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = 'testing/bar///'
+    assert_equal "/testing/bar/foo", @app.url(:foo)
+  end
+  
+  should 'use uri_root with controllers' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo/bar", @app.url(:foo, :bar)
+  end
+  
+  should 'use RACK_BASE_URI' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    # Wish there was a side-effect free way to test this...
+    ENV['RACK_BASE_URI'] = '/'
+    assert_equal "/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
 
   should 'reset routes' do
     mock_app do
@@ -409,12 +445,21 @@ class TestRouting < Test::Unit::TestCase
         get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
-    get "/user/1/project"
+    
+    user_project_url = "/user/1/project"
+    get user_project_url
     assert_equal "index 1", body
-    get "/user/1/project/edit/2"
+    assert_equal user_project_url, @app.url(:project, :index, :user_id => 1)
+    
+    user_project_edit_url = "/user/1/project/edit/2"
+    get user_project_edit_url
     assert_equal "edit 2 1", body
-    get "/user/1/product/2/project/show/3"
+    assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2)
+    
+    user_product_project_url = "/user/1/product/2/project/show/3"
+    get user_product_project_url
     assert_equal "show 3 1 2", body
+    assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
   end
 
   should "use default values" do
