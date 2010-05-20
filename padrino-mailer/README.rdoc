@@ -77,7 +77,7 @@ Defaults can also be declared on a per-mailer or app-wide basis:
       to      'user@domain.com'
       subject 'Welcome to the site!'
       locals  :name => name
-      render  :registration'
+      render  'registration'
     end
   end
 

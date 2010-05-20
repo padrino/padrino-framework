@@ -10,7 +10,7 @@ module Mail
 
     def initialize_with_app(*args, &block)
       @template_cache = Tilt::Cache.new
-      # Check if we have an app
+      # Check if we have an app passed into initialize
       if args[0].respond_to?(:views) && args[0].respond_to?(:reload_templates?)
         app                       = args.shift
         settings.views            = File.join(app.views, 'mailers')
@@ -132,6 +132,9 @@ module Mail
       settings.views = value
     end
 
+    ##
+    # Sets the local variables available within the message template
+    #
     def locals(value)
       @_locals = value
     end
@@ -201,6 +204,7 @@ module Mail
     alias_method_chain :content_type, :symbol
 
     private
+
       # Defines the render for the mailer utilizing the padrino 'rendering' module
       def render(engine, data=nil, options={}, locals={}, &block)
         locals = @_locals if options[:locals].blank? && locals.blank?
@@ -217,5 +221,6 @@ module Mail
         # Setup the body if we don't have provides
         self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
-  end
-end
+      
+  end # Message
+end # Mail
