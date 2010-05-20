@@ -358,7 +358,7 @@ class TestRouting < Test::Unit::TestCase
     get "/foo/bar"
     assert_equal "foo_bar_index", body
   end
-  
+
   should 'use uri_root' do
     mock_app do
       get(:foo){ "foo" }
@@ -372,7 +372,7 @@ class TestRouting < Test::Unit::TestCase
     @app.uri_root = 'testing/bar///'
     assert_equal "/testing/bar/foo", @app.url(:foo)
   end
-  
+
   should 'use uri_root with controllers' do
     mock_app do
       controller :foo do
@@ -382,7 +382,7 @@ class TestRouting < Test::Unit::TestCase
     @app.uri_root = '/testing'
     assert_equal "/testing/foo/bar", @app.url(:foo, :bar)
   end
-  
+
   should 'use RACK_BASE_URI' do
     mock_app do
       get(:foo){ "foo" }
@@ -445,17 +445,17 @@ class TestRouting < Test::Unit::TestCase
         get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
-    
+
     user_project_url = "/user/1/project"
     get user_project_url
     assert_equal "index 1", body
     assert_equal user_project_url, @app.url(:project, :index, :user_id => 1)
-    
+
     user_project_edit_url = "/user/1/project/edit/2"
     get user_project_edit_url
     assert_equal "edit 2 1", body
     assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2)
-    
+
     user_product_project_url = "/user/1/product/2/project/show/3"
     get user_product_project_url
     assert_equal "show 3 1 2", body
@@ -640,5 +640,21 @@ class TestRouting < Test::Unit::TestCase
 
     get "/route/foo/bar-whatever/baz"
     assert_equal 'foo;bar-whatever;baz', body
+  end
+
+  should_eventually "parse params without explicit provides for every matching route" do
+    mock_app do
+      get(:index, :map => "/foos/:bar") { "get bar = #{params[:bar]}" }
+      post :create, :map => "/foos/:bar", :provides => [:html, :js] do
+        "post bar = #{params[:bar]}"
+      end
+    end
+
+    get "/foos/hello"
+    assert_equal "get bar = hello", body
+    post "/foos/hello"
+    assert_equal "post bar = hello", body
+    post "/foos/hello.js"
+    assert_equal "post bar = hello", body
   end
 end
