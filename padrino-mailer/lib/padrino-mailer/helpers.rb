@@ -11,10 +11,11 @@ module Padrino
       # ==== Examples
       #
       #   email do
-      #     to @user.email
-      #     from "awesomeness@example.com",
+      #     to      @user.email
+      #     from    "awesomeness@example.com",
       #     subject "Welcome to Awesomeness!"
-      #     body 'path/to/my/template', :locals => { :a => a, :b => b }
+      #     locals  :a => a, :b => b
+      #     render  'path/to/my/template'
       #   end
       #
       def email(mail_attributes={}, &block)
@@ -53,10 +54,11 @@ module Padrino
         #
         #   mailer :sample do
         #     email :birthday do |name, age|
-        #       subject "Happy Birthday!"
-        #       to   'john@fake.com'
-        #       from 'noreply@birthday.com'
-        #       body render('sample/birthday', :locals => { :name => name, :age => age })
+        #       subject 'Happy Birthday!'
+        #       to      'john@fake.com'
+        #       from    'noreply@birthday.com'
+        #       locals  :name => name, :age => age
+        #       render  'sample/birthday'
         #     end
         #   end
         #
@@ -111,7 +113,7 @@ module Padrino
           #
           def delivery_settings
             @_delivery_setting ||= begin
-              return [:sendmail, {}] unless respond_to?(:delivery_method)
+              return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
               return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
               return [delivery_method, {}] if delivery_method.is_a?(Symbol)
               [nil, {}]

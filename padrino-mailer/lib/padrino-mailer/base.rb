@@ -44,7 +44,8 @@ module Padrino
       #     subject "Happy Birthday!"
       #     to   'john@fake.com'
       #     from 'noreply@birthday.com'
-      #     body 'name' => name, 'age' => age
+      #     locals 'name' => name, 'age' => age
+      #     render 'birthday'
       #   end
       #
       def email(name, &block)

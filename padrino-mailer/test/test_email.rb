@@ -57,7 +57,7 @@ class TestEmail < Test::Unit::TestCase
             from    'padrino@me.com'
             to      'padrino@you.com'
             subject 'Hello there Padrino'
-            body    render('basic')
+            render  :basic
             via     :test
           end
         end
@@ -80,8 +80,8 @@ class TestEmail < Test::Unit::TestCase
           email :foo do
             to 'padrino@different.com'
             subject 'Hello there again Padrino'
-            body    render('alternate/foo')
             via     :test
+            render  'alternate/foo'
           end
         end
         get("/") { deliver(:alternate, :foo) }
@@ -94,7 +94,7 @@ class TestEmail < Test::Unit::TestCase
       assert_equal 'Hello there again Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s
     end
-    
+
     should 'send emails with app mailer defaults' do
       mock_app do
         register Padrino::Mailer
@@ -103,8 +103,8 @@ class TestEmail < Test::Unit::TestCase
         mailer :alternate do
           email :foo do
             to 'padrino@different.com'
-            body    render('alternate/foo')
             via     :test
+            render  'alternate/foo'
           end
         end
         get("/") { deliver(:alternate, :foo) }
@@ -127,8 +127,8 @@ class TestEmail < Test::Unit::TestCase
             from    'padrino@me.com'
             to      'padrino@you.com'
             subject 'Hello there Padrino'
-            body    render('alternate/foo')
             via     :test
+            render  'alternate/foo'
           end
         end
         get("/") { deliver(:alternate, :foo) }

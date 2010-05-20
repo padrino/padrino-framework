@@ -6,19 +6,42 @@ DM = (<<-DM) unless defined?(DM)
 # # A Postgres connection:
 # DataMapper.setup(:default, 'postgres://user:password@localhost/the_database_name')
 #
+# # A Sqlite3 connection
+# DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "development.db"))
+#
+
 
 DataMapper.logger = logger
 
 case Padrino.env
-  when :development then DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "development.db"))
-  when :production  then DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "production.db"))
-  when :test        then DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "test.db"))
+  when :development then DataMapper.setup(:default, !DB_DEVELOPMENT!))
+  when :production  then DataMapper.setup(:default, !DB_PRODUCTION!))
+  when :test        then DataMapper.setup(:default, !DB_TEST!))
 end
 DM
 
 def setup_orm
-  require_dependencies 'data_objects', 'do_sqlite3', 'datamapper'
-  create_file("config/database.rb", DM)
+  dm = DM
+  require_dependencies 'data_objects', 'datamapper'
+  require_dependencies case options[:adapter]
+  when 'mysql'
+    dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://localhost/#{name}_development\"")
+    dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://localhost/#{name}_production\"")
+    dm.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{name}_test\"")
+    'do_mysql'
+  when 'postgres'
+    dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://localhost/#{name}_development\"")
+    dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://localhost/#{name}_production\"")
+    dm.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{name}_test\"")
+    'do_postgres'
+  else
+    dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_development.db\"")
+    dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_production.db\"")
+    dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_test.db\"")
+    'do_sqlite3'
+  end
+  
+  create_file("config/database.rb", dm)
   empty_directory('app/models')
 end
 

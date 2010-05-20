@@ -26,6 +26,20 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_match_in_file 'class Demo < Padrino::Application', '/tmp/sample_project/demo/app.rb'
     end
 
+    should "generate tiny app skeleton" do
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
+      assert_nothing_raised { silence_logger { generate(:app,'demo','--tiny','--root=/tmp/sample_project') } }
+      assert_file_exists('/tmp/sample_project')
+      assert_file_exists('/tmp/sample_project/demo')
+      assert_file_exists('/tmp/sample_project/demo/helpers.rb')
+      assert_file_exists('/tmp/sample_project/demo/controllers.rb')
+      assert_file_exists('/tmp/sample_project/demo/mailers.rb')
+      assert_dir_exists('/tmp/sample_project/demo/views/mailers')
+      assert_match_in_file(/:notifier/,'/tmp/sample_project/demo/mailers.rb')
+      assert_no_file_exists('/tmp/sample_project/demo/helpers')
+      assert_no_file_exists('/tmp/sample_project/demo/controllers')
+    end
+
     should "correctly create a new controller inside a padrino application" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp') }
       silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project') }

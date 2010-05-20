@@ -23,9 +23,24 @@ class TestMessage < Test::Unit::TestCase
           from    'padrino@me.com'
           to      'padrino@you.com'
           subject 'Hello there Padrino'
-          body    render('/foo/bar')
+          render  'foo/bar'
         end
       end
+    end
+
+    should "use locals" do
+      message = Mail::Message.new do
+        from    'padrino@me.com'
+        to      'padrino@you.com'
+        subject 'Hello there Padrino'
+        locals  :foo => "Im Foo!"
+        body    erb("<%= foo %>")
+      end
+
+      assert_equal ['padrino@me.com'],    message.from
+      assert_equal ['padrino@you.com'],   message.to
+      assert_equal 'Hello there Padrino', message.subject
+      assert_equal 'Im Foo!',             message.body.to_s
     end
 
     should "use views paths" do
@@ -34,7 +49,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('bar')
+        render  :bar
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -49,7 +64,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('alternate/foo')
+        render  'alternate/foo'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -64,7 +79,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('sample/foo', :layout => :"layouts/sample")
+        render  'sample/foo', :layout => :"layouts/sample"
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -81,7 +96,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('i18n/hello')
+        render  'i18n/hello'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -96,7 +111,7 @@ class TestMessage < Test::Unit::TestCase
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        body    render('i18n/hello')
+        render  'i18n/hello'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -112,7 +127,7 @@ class TestMessage < Test::Unit::TestCase
         to           'padrino@you.com'
         subject      'Hello there Padrino'
         content_type 'text/html'
-        body          render('multipart/basic')
+        render       'multipart/basic'
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -126,7 +141,7 @@ class TestMessage < Test::Unit::TestCase
         to           'padrino@you.com'
         subject      'Hello there Padrino'
         content_type :plain
-        body          render('multipart/basic')
+        render       'multipart/basic'
       end
 
       assert_equal ['padrino@me.com'],    message.from

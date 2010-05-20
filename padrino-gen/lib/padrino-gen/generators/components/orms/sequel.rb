@@ -2,15 +2,33 @@ SEQUEL = (<<-SEQUEL) unless defined?(SEQUEL)
 Sequel::Model.plugin(:schema)
 Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
 DB = case Padrino.env
-  when :development then Sequel.connect("sqlite://" + Padrino.root('db', "development.db"), :loggers => [logger])
-  when :production  then Sequel.connect("sqlite://" + Padrino.root('db', "production.db"),  :loggers => [logger])
-  when :test        then Sequel.connect("sqlite://" + Padrino.root('db', "test.db"),        :loggers => [logger])
+  when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
+  when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
+  when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
 end
 SEQUEL
 
 def setup_orm
-  require_dependencies 'sequel', 'sqlite3-ruby'
-  create_file("config/database.rb", SEQUEL)
+  sequel = SEQUEL
+  require_dependencies 'sequel'  
+  require_dependencies case options[:adapter]
+  when 'mysql'
+    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{name}_development\"")
+    sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{name}_production\"")
+    sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{name}_test\"")
+    'mysql'
+  when 'postgres'
+    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://localhost/#{name}_development\"")
+    sequel.gsub!(/!DB_PRODUCTION!/, "\"postgres://localhost/#{name}_production\"")
+    sequel.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{name}_test\"")
+    'pg'
+  else
+    sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_development.db\"")
+    sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_production.db\"")
+    sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_test.db\"")
+    'sqlite3-ruby'
+  end
+  create_file("config/database.rb", sequel)
   empty_directory('app/models')
   empty_directory('db/migrate')
 end

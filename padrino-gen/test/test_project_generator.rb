@@ -7,12 +7,36 @@ class TestProjectGenerator < Test::Unit::TestCase
 
   context 'the project generator' do
     should "allow simple generator to run and create base_app with no options" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none') } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
       assert_file_exists('/tmp/sample_project')
-      assert_file_exists('/tmp/sample_project/app')
+      assert_match_in_file(/class SampleProject < Padrino::Application/,'/tmp/sample_project/app/app.rb')
+      assert_match_in_file(/Padrino.mount_core\("SampleProject"\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
+    end
+    
+    should "allow specifying alternate application name" do
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--app=base_app') } }
+      assert_file_exists('/tmp/sample_project')
+      assert_match_in_file(/class BaseApp < Padrino::Application/,'/tmp/sample_project/app/app.rb')
+      assert_match_in_file(/Padrino.mount_core\("BaseApp"\)/,'/tmp/sample_project/config/apps.rb')
+      assert_file_exists('/tmp/sample_project/config/boot.rb')
+      assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
+      assert_file_exists('/tmp/sample_project/public/favicon.ico')
+    end
+
+    should "generate tiny skeleton" do
+      assert_nothing_raised { silence_logger { generate(:project,'sample_project', '--tiny','--root=/tmp') } }
+      assert_file_exists('/tmp/sample_project')
+      assert_file_exists('/tmp/sample_project/app')
+      assert_file_exists('/tmp/sample_project/app/controllers.rb')
+      assert_file_exists('/tmp/sample_project/app/helpers.rb')
+      assert_file_exists('/tmp/sample_project/app/mailers.rb')
+      assert_dir_exists('/tmp/sample_project/app/views/mailers')
+      assert_match_in_file(/:notifier/,'/tmp/sample_project/app/mailers.rb')
+      assert_no_file_exists('/tmp/sample_project/demo/helpers')
+      assert_no_file_exists('/tmp/sample_project/demo/controllers')
     end
 
     should "not create models folder if no orm is chosen" do
@@ -103,33 +127,105 @@ class TestProjectGenerator < Test::Unit::TestCase
   end
 
   context "the generator for orm components" do
-    should "properly generate for sequel" do
-      @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--script=none') }
-      assert_match /Applying.*?sequel.*?orm/, buffer
-      assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
-      assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+    
+    context "for sequel" do
+      should "properly generate default" do
+        @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--script=none') }
+        assert_match /Applying.*?sequel.*?orm/, buffer
+        assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
+        assert_dir_exists('/tmp/sample_project/app/models')
+      end
+      
+      should "properly generate mysql" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=mysql') }
+        assert_match_in_file(/gem 'mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"mysql://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate sqlite3" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=sqlite') }
+        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate postgres" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--adapter=postgres') }
+        assert_match_in_file(/gem 'pg'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"postgres://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
     end
 
-    should "properly generate for activerecord" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--script=none') }
-      assert_match /Applying.*?activerecord.*?orm/, buffer
-      assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+    context "for activerecord" do
+      should "properly generate default" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--script=none') }
+        assert_match /Applying.*?activerecord.*?orm/, buffer
+        assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_project/config/database.rb')
+        assert_dir_exists('/tmp/sample_project/app/models')
+      end
+      
+      should "properly generate mysql" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord','--adapter=mysql') }
+        assert_match_in_file(/gem 'mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(%r{:adapter   => 'mysql'}, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate sqlite3" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--adapter=sqlite3') }
+        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/sample_project_development.db/, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(%r{:adapter => 'sqlite3'}, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate postgres" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--adapter=postgres') }
+        assert_match_in_file(/gem 'pg', :require => "postgres"/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(%r{:adapter   => 'postgresql'}, '/tmp/sample_project/config/database.rb')
+      end
     end
 
-    should "properly generate default for datamapper" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--script=none') }
-      assert_match /Applying.*?datamapper.*?orm/, buffer
-      assert_match_in_file(/gem 'data_objects'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'datamapper'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/DataMapper.setup/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+    context "for datamapper" do
+      should "properly generate default" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--script=none') }
+        assert_match /Applying.*?datamapper.*?orm/, buffer
+        assert_match_in_file(/gem 'data_objects'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'datamapper'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'do_sqlite3'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/DataMapper.setup/, '/tmp/sample_project/config/database.rb')
+        assert_dir_exists('/tmp/sample_project/app/models')
+      end
+      
+      should "properly generate for mysql" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=mysql') }
+        assert_match_in_file(/gem 'do_mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"mysql://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate for sqlite" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=sqlite') }
+        assert_match_in_file(/gem 'do_sqlite3'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
+      
+      should "properly generate for postgres" do
+        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=postgres') }
+        assert_match_in_file(/gem 'do_postgres'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(%r{"postgres://}, '/tmp/sample_project/config/database.rb')
+        assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
+      end
     end
+
 
     should "properly generate for mongomapper" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongomapper', '--script=none') }

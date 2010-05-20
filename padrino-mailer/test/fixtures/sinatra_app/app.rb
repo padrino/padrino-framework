@@ -14,31 +14,34 @@ class SinatraApp < Sinatra::Base
     :authentication       => 'plain',
     :enable_starttls_auto => true
   }
-  
+
   mailer :sample do
     email :birthday do |name, age|
       subject "Happy Birthday!"
-      to   'john@fake.com'
-      from 'noreply@birthday.com'
-      body render('sample/birthday', :locals => { :name => name, :age => age })
-      via  :test
+      to      'john@fake.com'
+      from    'noreply@birthday.com'
+      locals  :name => name, :age => age
+      via     :test
+      render  'sample/birthday'
     end
 
     email :anniversary do |names, years_married|
       subject "Happy anniversary!"
       to   'julie@fake.com'
       from 'noreply@anniversary.com'
-      body render('sample/anniversary', :locals => { :names => names, :years_married => years_married })
-      content_type 'text/html'
+      locals :names => names, :years_married => years_married
+      content_type :html
       via  :test
+      render 'sample/anniversary'
     end
 
     message :welcome do |name|
       subject "Welcome Message!"
-      to   'john@fake.com'
-      from 'noreply@custom.com'
-      body render('sample/foo_message', :locals => {  :name => name })
-      via  :test
+      to      'john@fake.com'
+      from    'noreply@custom.com'
+      locals  :name => name
+      via     :test
+      render  'sample/foo_message'
     end
   end
 

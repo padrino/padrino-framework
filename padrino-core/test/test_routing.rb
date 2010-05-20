@@ -1,14 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestRouting < Test::Unit::TestCase
-  class RoutingApp < Sinatra::Base
-    register ::Padrino::Routing
-    set :environment, :test
-  end
-
-  def mock_app(base=RoutingApp, &block)
-    @app = Sinatra.new(base, &block)
-  end
 
   should 'ignore trailing delimiters for basic route' do
     mock_app do
@@ -65,15 +57,24 @@ class TestRouting < Test::Unit::TestCase
   should 'generate basic urls'do
     mock_app do
       get(:foo){ url(:foo) }
-      get(:bar, :with => :id){ url(:bar, :id => 1) }
+      get(:hash, :with => :id){ url(:hash, :id => 1) }
+      get(:array, :with => :id){ url(:array, 23) }
+      get(:hash_with_extra, :with => :id){ url(:hash_with_extra, :id => 1, :query => 'string') }
+      get(:array_with_extra, :with => :id){ url(:array_with_extra, 23, :query => 'string') }
       get("/old-bar/:id"){ params[:id] }
       post(:mix, :map => "/mix-bar/:id"){ params[:id] }
       get(:mix, :map => "/mix-bar/:id"){ params[:id] }
     end
     get "/foo"
     assert_equal "/foo", body
-    get "/bar/2"
-    assert_equal "/bar/1", body
+    get "/hash/2"
+    assert_equal "/hash/1", body
+    get "/array/23"
+    assert_equal "/array/23", body
+    get "/hash_with_extra/1"
+    assert_equal "/hash_with_extra/1?query=string", body
+    get "/array_with_extra/23"
+    assert_equal "/array_with_extra/23?query=string", body
     get "/old-bar/3"
     assert_equal "3", body
     post "/mix-bar/4"
@@ -197,6 +198,14 @@ class TestRouting < Test::Unit::TestCase
     get "/print/9"
     assert_equal "Im 9", body
     assert_equal "/print/9", @app.url(:print, :id => 9)
+  end
+
+  should '405 on wrong request_method' do
+    mock_app do
+      post('/bar'){ "bar" }
+    end
+    get "/bar"
+    assert_equal 405, status
   end
 
   should 'respond to' do
@@ -472,7 +481,7 @@ class TestRouting < Test::Unit::TestCase
       provides :xml
 
       get("/foo"){ "Foo in #{content_type}" }
-      get("/bar"){ raise if content_type != nil }
+      get("/bar"){ "Bar in #{content_type}" }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
@@ -481,7 +490,7 @@ class TestRouting < Test::Unit::TestCase
     assert not_found?
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert 200, status
+    assert_equal 'Bar in html', body
   end
 
   should "set content_type to :html for both empty Accept as well as Accept text/html" do
@@ -572,5 +581,19 @@ class TestRouting < Test::Unit::TestCase
 
     get "/foo"
     assert_equal "", body
+  end
+
+  should_eventually 'work with multiple dashed params' do
+    mock_app do
+      get "/route/:foo/:bar/:baz", :provides => :html do
+        "#{params[:foo]};#{params[:bar]};#{params[:baz]}"
+      end
+    end
+
+    get "/route/foo/bar/baz"
+    assert_equal 'foo;bar;baz', body
+
+    get "/route/foo/bar-whatever/baz"
+    assert_equal 'foo;bar-whatever;baz', body
   end
 end

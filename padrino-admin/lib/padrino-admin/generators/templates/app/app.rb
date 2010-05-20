@@ -1,4 +1,8 @@
 class Admin < Padrino::Application
+  register Padrino::Mailer
+  register Padrino::Helpers
+  register Padrino::Admin::AccessControl
+
   ##
   # Application configuration options
   #
@@ -11,9 +15,6 @@ class Admin < Padrino::Application
   # disable :flash              # Disables rack-flash (enabled by default if sessions)
   # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
-  register Padrino::Mailer
-  register Padrino::Helpers
-  register Padrino::Admin::AccessControl
 
   set :login_page, "/admin/sessions/new"
   disable :store_location
