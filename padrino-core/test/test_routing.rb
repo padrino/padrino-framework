@@ -445,12 +445,21 @@ class TestRouting < Test::Unit::TestCase
         get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
-    get "/user/1/project"
+    
+    user_project_url = "/user/1/project"
+    get user_project_url
     assert_equal "index 1", body
-    get "/user/1/project/edit/2"
+    assert_equal user_project_url, @app.url(:project, :index, :user_id => 1)
+    
+    user_project_edit_url = "/user/1/project/edit/2"
+    get user_project_edit_url
     assert_equal "edit 2 1", body
-    get "/user/1/product/2/project/show/3"
+    assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2)
+    
+    user_product_project_url = "/user/1/product/2/project/show/3"
+    get user_product_project_url
     assert_equal "show 3 1 2", body
+    assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
   end
 
   should "use default values" do
