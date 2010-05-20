@@ -15,7 +15,7 @@ module Padrino
       #     from    "awesomeness@example.com",
       #     subject "Welcome to Awesomeness!"
       #     locals  :a => a, :b => b
-      #     body    'path/to/my/template'
+      #     render  'path/to/my/template'
       #   end
       #
       def email(mail_attributes={}, &block)
