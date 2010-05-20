@@ -583,7 +583,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "", body
   end
 
-  should_eventually 'work with multiple dashed params' do
+  should 'work with multiple dashed params' do
     mock_app do
       get "/route/:foo/:bar/:baz", :provides => :html do
         "#{params[:foo]};#{params[:bar]};#{params[:baz]}"
