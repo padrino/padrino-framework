@@ -358,6 +358,42 @@ class TestRouting < Test::Unit::TestCase
     get "/foo/bar"
     assert_equal "foo_bar_index", body
   end
+  
+  should 'use uri_root' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    @app.uri_root = '/'
+    assert_equal "/foo", @app.url(:foo)
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = '/testing/'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = 'testing/bar///'
+    assert_equal "/testing/bar/foo", @app.url(:foo)
+  end
+  
+  should 'use uri_root with controllers' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo/bar", @app.url(:foo, :bar)
+  end
+  
+  should 'use RACK_BASE_URI' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    # Wish there was a side-effect free way to test this...
+    ENV['RACK_BASE_URI'] = '/'
+    assert_equal "/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
 
   should 'reset routes' do
     mock_app do

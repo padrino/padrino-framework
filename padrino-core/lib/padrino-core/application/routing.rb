@@ -142,8 +142,8 @@ module Padrino
           params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end
         url = router.generator.generate(name, params_array.empty? ? params : params_array << params)
-        url[0,0] = "#{uri_root}/" if defined?(uri_root) && uri_root != "/"
-        url[0,0] = "#{ENV['RACK_BASE_URI'].to_s}/" if ENV['RACK_BASE_URI']
+        url[0,0] = conform_uri(uri_root) if defined?(uri_root)
+        url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
         url
       rescue Usher::UnrecognizedException
@@ -153,6 +153,12 @@ module Padrino
       alias :url_for :url
 
       private
+      
+        # Add prefix slash if its not present and remove trailing slashes.
+        def conform_uri(uri_string)
+          uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
+        end
+        
         ##
         # Rewrite default because now routes can be:
         #
