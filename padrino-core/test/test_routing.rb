@@ -693,8 +693,8 @@ class TestRouting < Test::Unit::TestCase
     get url
     assert_equal "bar4", body
     
-    url = @app.url(:test2, :url5, :with1 => 'awith1', :foo => 'bar5')
-    assert_equal "/parent1/1/test2/url5/awith2?foo=bar5", url
+    url = @app.url(:test2, :url5, :with2 => 'awith1', :foo => 'bar5')
+    assert_equal "/parent1/1/test2/url5/awith1?foo=bar5", url
     get url
     assert_equal "bar5", body
   end
