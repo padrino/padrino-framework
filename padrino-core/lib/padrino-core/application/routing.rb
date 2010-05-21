@@ -355,8 +355,8 @@ module Padrino
       #   url(:show, :name => :test)
       #   url("/show/:id/:name", :id => 1, :name => foo)
       #
-      def url(*names)
-        self.class.url(*names)
+      def url(*args)
+        self.class.url(*args)
       end
       alias :url_for :url
 

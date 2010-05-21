@@ -15,7 +15,7 @@ begin
     gem.rubyforge_project = 'padrino-core'
     gem.version = Padrino.version
     gem.add_runtime_dependency     "sinatra",       ">= 1.0.0"
-    gem.add_runtime_dependency     "usher",         ">= 0.8.1"
+    gem.add_runtime_dependency     "usher",         ">= 0.8.3"
     gem.add_runtime_dependency     "thor",          ">= 0.13.0"
     gem.add_runtime_dependency     "activesupport", "= 2.3.5"
     gem.add_development_dependency "shoulda",       ">= 2.10.3"
