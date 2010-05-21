@@ -112,7 +112,7 @@
 * Fixes issue with formatted routes for an index
 * Fixed an issue with Riot and RR in generator
 * Cleaned up the implementation for asset include helpers for javascript and css
-* Added stylesheet generator. Decouples from sass from haml generation. Includes sass and less ( via rack-less)
+* Added stylesheet generator. Includes sass and less ( via rack-less)
 
 == 0.9.6
 
