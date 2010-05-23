@@ -235,6 +235,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_dir_exists('/tmp/sample_project/app/models')
     end
 
+    should "properly generate for mongoid" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongoid', '--script=none') }
+      assert_match /Applying.*?mongoid.*?orm/, buffer
+      assert_match_in_file(/gem 'mongoid'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/Mongoid.database/, '/tmp/sample_project/config/database.rb')
+      assert_dir_exists('/tmp/sample_project/app/models')
+    end
+
+
     should "properly generate for couchrest" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=couchrest', '--script=none') }
       assert_match /Applying.*?couchrest.*?orm/, buffer
