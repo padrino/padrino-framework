@@ -9,8 +9,44 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 # app { CLASS_NAME.tap { |app| } }
 
 class Riot::Situation
+  include Rack::Test::Methods
 
+  # The Rack app under test.
+  def app
+    defined?(@app) ? @app : build_app
+  end
+
+  private
+
+  def build_app
+    config_file = File.read(find_config_file)
+    Rack::Builder.new { instance_eval(config_file) }.to_app
+  end
+
+  def find_config_file
+    if Dir.glob("config.ru").length > 0
+      File.join(Dir.pwd,"config.ru")
+    elsif Dir.pwd != "/"
+      Dir.chdir("..") { find_config_file }
+    else
+      raise "Cannot find config.ru"
+    end
+  end
 end
+
+class Riot::Context
+  # Set the Rack app which is to be tested.
+  #
+  #   context "MyApp" do
+  #     app { [200, {}, "Hello!"] }
+  #     setup { get '/' }
+  #     asserts(:status).equals(200)
+  #   end
+  def app(app=nil, &block)
+    setup { @app = (app || block) }
+  end
+end
+
 TEST
 
 RIOT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_CONTROLLER_TEST)
@@ -52,7 +88,6 @@ TEST
 
 def setup_test
   require_dependencies 'riot', :group => 'test'
-  require_dependencies 'riot-rack', :group => 'test'
   insert_test_suite_setup RIOT_SETUP
   create_file destination_root("test/test.rake"), RIOT_RAKE
 end
