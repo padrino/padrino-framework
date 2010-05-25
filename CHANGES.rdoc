@@ -5,28 +5,31 @@
 * Improved reloader (that fixes also problems with MM)
 * Core refactoring
 * Fixed mounter in certain scenarios (i.e. single app file)
+* Updated usher version which fix a problem using :provides with dashes in the URL
+* Improve the router's use of base uri's in url(). [Thanks to Lholden]
 * Support params as arrays for generation. More efficent generation
 * Added 405 support
 * Fixed / Updated German translations [Thanks to Gottlike]
 * Fixed a problem with extensions since Sinatra#register extend every thing
-* Fixed a problem when reloading apps (W)
-* Fixed MongoId adapter using git legacy branch instead (un)stable gem
+* Fixed a problem when reloading apps
+* Fixed Mongoid adapter using updated master branch
 * Moved bundler dependency from padrino-core to padrino-gen
 * Moved I18n dependency from padrino-core to padrino-helpers
 * Use 'mail' library and remove 'tmail' dependency for padrino-mailer
-* Add support for a quick 'email' helper for delivering mail in padrino-mailer
+* Adds support for a quick 'email' helper for delivering mail in padrino-mailer
 * Replaces old mailer syntax with a more consistent dsl
 * Allow default rendering options to be changed [Thanks to Skade]
-* Fix ensure to load database conf before everything
+* Fixed ensure to load database conf before everything
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks
-* Fixes an issue with trailing delimiters for index controller actions (i.e /posts/)
-* Fixes issue with sequel in admin gem
-* Fixes error_messages_for to use humanized attribute
-* Fixes indentation issues for orm generators
+* Fixed an issue with trailing delimiters for index controller actions (i.e /posts/)
+* Fixed issue with sequel in admin gem
+* Fixed error_messages_for to use humanized attribute
+* Fixed indentation issues for orm generators
 * Added Ukrainian translation [Thanks to Mama]
 * Added Spanish translation [Thanks to Alvaro]
-* Fixes issue with invalid field names
+* Added support for disabling asset timestamps via setting
+* Fixed issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
 * Adds support for a '--app' option to specify app name in project generator
 * Adds support for '--adapter' option which specifies what SQL adapter to use(for AR, Datamapper, Sequel)
@@ -113,7 +116,7 @@
 * Fixes issue with formatted routes for an index
 * Fixed an issue with Riot and RR in generator
 * Cleaned up the implementation for asset include helpers for javascript and css
-* Added stylesheet generator. Decouples from sass from haml generation. Includes sass and less ( via rack-less)
+* Added stylesheet generator. Includes sass and less ( via rack-less)
 
 == 0.9.6
 

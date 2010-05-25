@@ -359,6 +359,42 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo_bar_index", body
   end
 
+  should 'use uri_root' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    @app.uri_root = '/'
+    assert_equal "/foo", @app.url(:foo)
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = '/testing/'
+    assert_equal "/testing/foo", @app.url(:foo)
+    @app.uri_root = 'testing/bar///'
+    assert_equal "/testing/bar/foo", @app.url(:foo)
+  end
+
+  should 'use uri_root with controllers' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    @app.uri_root = '/testing'
+    assert_equal "/testing/foo/bar", @app.url(:foo, :bar)
+  end
+
+  should 'use RACK_BASE_URI' do
+    mock_app do
+      get(:foo){ "foo" }
+    end
+    # Wish there was a side-effect free way to test this...
+    ENV['RACK_BASE_URI'] = '/'
+    assert_equal "/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = '/testing'
+    assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
+
   should 'reset routes' do
     mock_app do
       get("/"){ "foo" }
@@ -409,12 +445,21 @@ class TestRouting < Test::Unit::TestCase
         get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
-    get "/user/1/project"
+
+    user_project_url = "/user/1/project"
+    get user_project_url
     assert_equal "index 1", body
-    get "/user/1/project/edit/2"
+    assert_equal user_project_url, @app.url(:project, :index, :user_id => 1)
+
+    user_project_edit_url = "/user/1/project/edit/2"
+    get user_project_edit_url
     assert_equal "edit 2 1", body
-    get "/user/1/product/2/project/show/3"
+    assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2)
+
+    user_product_project_url = "/user/1/product/2/project/show/3"
+    get user_product_project_url
     assert_equal "show 3 1 2", body
+    assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
   end
 
   should "use default values" do
@@ -583,7 +628,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "", body
   end
 
-  should_eventually 'work with multiple dashed params' do
+  should 'work with multiple dashed params' do
     mock_app do
       get "/route/:foo/:bar/:baz", :provides => :html do
         "#{params[:foo]};#{params[:bar]};#{params[:baz]}"
@@ -595,5 +640,77 @@ class TestRouting < Test::Unit::TestCase
 
     get "/route/foo/bar-whatever/baz"
     assert_equal 'foo;bar-whatever;baz', body
+  end
+
+  should 'work with arbitrary params' do
+    mock_app do
+      get(:testing) { params[:foo] }
+    end
+
+    url = @app.url(:testing, :foo => 'bar')
+    assert_equal "/testing?foo=bar", url
+    get url
+    assert_equal "bar", body
+  end
+
+  should 'work with controller and arbitrary params' do
+    mock_app do
+      get(:testing) { params[:foo] }
+      controller :test1 do
+        get(:url1) { params[:foo] }
+        get(:url2, :provides => [:html, :json]) { params[:foo] }
+      end
+    end
+    
+    url = @app.url(:test1, :url1, :foo => 'bar1')
+    assert_equal "/test1/url1?foo=bar1", url
+    get url
+    assert_equal "bar1", body
+
+    url = @app.url(:test1, :url2, :foo => 'bar2')
+    assert_equal "/test1/url2?foo=bar2", url
+    get url
+    assert_equal "bar2", body
+  end
+
+  should "work with params and parent options" do
+    mock_app do
+      controller :test2, :parent => :parent1, :parent1_id => 1 do
+        get(:url3) { params[:foo] }
+        get(:url4, :with => :with1) { params[:foo] }
+        get(:url5, :with => :with2, :provides => [:html]) { params[:foo] }
+      end
+    end
+
+    url = @app.url(:test2, :url3, :foo => 'bar3')
+    assert_equal "/parent1/1/test2/url3?foo=bar3", url
+    get url
+    assert_equal "bar3", body
+
+    url = @app.url(:test2, :url4, :with1 => 'awith1', :foo => 'bar4')
+    assert_equal "/parent1/1/test2/url4/awith1?foo=bar4", url
+    get url
+    assert_equal "bar4", body
+
+    url = @app.url(:test2, :url5, :with2 => 'awith1', :foo => 'bar5')
+    assert_equal "/parent1/1/test2/url5/awith1?foo=bar5", url
+    get url
+    assert_equal "bar5", body
+  end
+
+  should_eventually "parse params without explicit provides for every matching route" do
+    mock_app do
+      get(:index, :map => "/foos/:bar") { "get bar = #{params[:bar]}" }
+      post :create, :map => "/foos/:bar", :provides => [:html, :js] do
+        "post bar = #{params[:bar]}"
+      end
+    end
+
+    get "/foos/hello"
+    assert_equal "get bar = hello", body
+    post "/foos/hello"
+    assert_equal "post bar = hello", body
+    post "/foos/hello.js"
+    assert_equal "post bar = hello", body
   end
 end

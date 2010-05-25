@@ -20,6 +20,7 @@ class <%= @app_name %> < Padrino::Application
   #
   #   configure :development do
   #     set :foo, :bar
+  #     disable :asset_stamp # no asset timestamping for dev
   #   end
   #
 

@@ -28,7 +28,7 @@ MONGO
 
 def setup_orm
   require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'mongoid', :git => 'http://github.com/durran/mongoid.git', :branch => 'legacy'
+  require_dependencies 'mongoid'
   create_file("config/database.rb", MONGOID.gsub(/!NAME!/, name.underscore))
   empty_directory('app/models')
 end

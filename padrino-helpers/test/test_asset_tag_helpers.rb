@@ -143,6 +143,10 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('img.photo', :src => "/images/relative/pic.gif?#{time.to_i}") { 
         image_tag(' relative/ pic.gif  ', :class => 'photo') }
     end
+    should "not use a timestamp if stamp setting is false" do
+      self.class.expects(:asset_stamp).returns(false)
+      assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
+    end
   end
 
   context 'for #stylesheet_link_tag method' do
@@ -177,6 +181,11 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('link', :href => "/stylesheets/style.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "/stylesheets/layout.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "http://google.com/style.css") { actual_html }
+    end
+    should "not use a timestamp if stamp setting is false" do
+      self.class.expects(:asset_stamp).returns(false)
+      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css")) { stylesheet_link_tag('style') }
     end
   end
 
@@ -219,6 +228,11 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}") { actual_html }
       assert_has_tag('script', :src => "/javascripts/base.js?#{time.to_i}") { actual_html }
       assert_has_tag('script', :src => "http://google.com/lib.js") { actual_html }
+    end
+    should "not use a timestamp if stamp setting is false" do
+      self.class.expects(:asset_stamp).returns(false)
+      actual_html = javascript_include_tag('application')
+      assert_has_tag('script', :src => "/javascripts/application.js", :type => "text/javascript") { actual_html }
     end
   end
 
