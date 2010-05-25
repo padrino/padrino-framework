@@ -17,7 +17,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:model, 'DemoItem', "name:string", "age", "email:string", '-r=/tmp/sample_project') }
       assert_file_exists('/tmp/sample_project/app/models/demo_item.rb')
     end
-    
+
     should "fail if field name is not acceptable" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon', '-d=couchrest') }
       output = silence_logger { generate(:model, 'DemoItem', "re@l$ly:string","display-name:string", "age&year:datetime", "email_two:string", '-r=/tmp/sample_project') }
@@ -239,8 +239,8 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=riot', '-d=activerecord') }
       silence_logger { generate(:model, 'SomeUser', '-r=/tmp/sample_project') }
       assert_match_in_file(/context "SomeUser Model" do/m, '/tmp/sample_project/test/models/some_user_test.rb')
-      assert_match_in_file(/@some_user = SomeUser.new/m, '/tmp/sample_project/test/models/some_user_test.rb')
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!@some_user.nil\? \}/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/SomeUser.new/m, '/tmp/sample_project/test/models/some_user_test.rb')
+      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, '/tmp/sample_project/test/models/some_user_test.rb')
     end
 
     # RSPEC

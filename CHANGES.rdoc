@@ -9,24 +9,24 @@
 * Fixed / Updated German translations [Thanks to Gottlike]
 * Fixed a problem with extensions since Sinatra#register extend every thing
 * Fixed a problem when reloading apps
-* Fixed MongoId adapter using git legacy branch instead (un)stable gem
+* Fixed Mongoid adapter using updated master branch
 * Moved bundler dependency from padrino-core to padrino-gen
 * Moved I18n dependency from padrino-core to padrino-helpers
 * Use 'mail' library and remove 'tmail' dependency for padrino-mailer
-* Add support for a quick 'email' helper for delivering mail in padrino-mailer
+* Adds support for a quick 'email' helper for delivering mail in padrino-mailer
 * Replaces old mailer syntax with a more consistent dsl
 * Allow default rendering options to be changed [Thanks to Skade]
-* Fix ensure to load database conf before everything
+* Fixed ensure to load database conf before everything
 * Prevent htm, html mismatch in content_type [Thanks to Skade]
 * Fixed issue with rake test tasks
-* Fixes an issue with trailing delimiters for index controller actions (i.e /posts/)
-* Fixes issue with sequel in admin gem
-* Fixes error_messages_for to use humanized attribute
-* Fixes indentation issues for orm generators
+* Fixed an issue with trailing delimiters for index controller actions (i.e /posts/)
+* Fixed issue with sequel in admin gem
+* Fixed error_messages_for to use humanized attribute
+* Fixed indentation issues for orm generators
 * Added Ukrainian translation [Thanks to Mama]
 * Added Spanish translation [Thanks to Alvaro]
 * Added support for disabling asset timestamps via setting
-* Fixes issue with invalid field names
+* Fixed issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
 * Adds support for a '--app' option to specify app name in project generator
 * Adds support for '--adapter' option which specifies what SQL adapter to use(for AR, Datamapper, Sequel)
