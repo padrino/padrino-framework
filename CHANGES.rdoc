@@ -5,6 +5,8 @@
 * Improved reloader (that fixes also problems with MM)
 * Core refactoring
 * Fixed mounter in certain scenarios (i.e. single app file)
+* Fixed an issue when using only Padrino Rendering (without Padrino Routing) in a Sinatra application
+* Fixed a path must always match the url_format and optionally the given request.accept
 * Updated usher version which fix a problem using :provides with dashes in the URL
 * Improve the router's use of base uri's in url(). [Thanks to Lholden]
 * Support params as arrays for generation. More efficent generation
@@ -28,6 +30,7 @@
 * Fixed indentation issues for orm generators
 * Added Ukrainian translation [Thanks to Mama]
 * Added Spanish translation [Thanks to Alvaro]
+* Added Turkish translation [Thanks to Selman ULUG]
 * Added support for disabling asset timestamps via setting
 * Fixed issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
