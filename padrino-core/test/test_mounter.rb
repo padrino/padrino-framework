@@ -48,13 +48,13 @@ class TestMounter < Test::Unit::TestCase
       assert_equal "/", mounter.uri_root
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
-    
+
     should 'mount a core to url' do
-      mounter = Padrino.mount_core("test").to('/me')
+      mounter = Padrino.mount_core("test", :app_file => __FILE__).to('/me')
       assert_equal "core", mounter.name
       assert_equal "Test", mounter.app_class
       assert_equal Test, mounter.app_obj
-      assert_equal Padrino.root('app/app.rb'), mounter.app_file
+      assert_equal __FILE__, mounter.app_file
       assert_equal "/me", mounter.uri_root
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
