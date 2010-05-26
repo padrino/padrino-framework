@@ -1,7 +1,6 @@
 require 'usher' unless defined?(Usher)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-
 module Padrino
   ##
   # Padrino provides advanced routing definition support to make routes and url generation much easier.

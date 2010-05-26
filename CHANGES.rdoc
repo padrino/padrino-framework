@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* Fixed an issue when using only Padrino Rendering (without Padrino Routing) in a Sinatra application
 * Fixed a path must always match the url_format and optionally the given request.accept
 * Updated usher version which fix a problem using :provides with dashes in the URL
 * Improve the router's use of base uri's in url(). [Thanks to Lholden]
