@@ -358,80 +358,119 @@ b.html=d.stripScripts(function(e){b.javascript=e;});var a=this.processHTML(b.htm
 
 //  ----------- Delegation -----------
 /*
+/*
 ---
-description: Simpler event delegation for MooTools.
- 
+description: Better event delegation for MooTools.
+
 license: MIT-style
- 
+
 authors:
-- Arian Stolwijk
- 
+- Christopher Pitt
+- Arieh Glazer
+
 requires:
-  core/1.2.4:
-  - Element.Event
-  - Selectors
- 
-provides: [Element.addDelegate, Element.addDelegates, Element.removeDelegate, Element.removeDelegates,Element.Properties.delegates.set]
- 
+- core/1.2.4: Element.Event
+- core/1.2.4: Selectors
+
+provides: [Element.delegateEvent, Element.delegateEvents, Element.denyEvent, Element.denyEvents]
+
 ...
 */
 
-
-Element.Properties.delegates = {
-	set: function(delegates){
-		this.addDelegates(delegates);
-	}
-};
-
 Element.implement({
+	'delegateEvent': function(type, delegates, prevent, propagate)
+	{	
+		//get stored delegates
+		var key = type + '-delegates',
+			stored = this.retrieve(key) || false;
+		
+		// if stored delegates; extend with
+		// new delegates and return self.
+		if (stored)
+		{
+            Hash.each(delegates, function(fn, selector) {
+                if (stored[selector])
+                {
+                    stored[selector].push(fn);
+                }
+                else
+                {
+                    stored[selector] = [fn];
+                }
+            });
+            
+            return this;
+		}
+		else
+		{
+            stored = new Hash();
+            Hash.each(delegates, function(fn, selector) {
+                stored[selector] = [fn];
+            });
+			this.store(key, stored);
+		}
 	
-	addDelegate: function(type,selector,fn){
-		var elmt = document.id(this);
-				
-		var delegatefn = function(e){
-			var target = document.id(e.target);
-			elmt.getElements(selector).each(function(el){
-				if(el === target) fn.apply(el,[e]);
+		return this.addEvent(type, function(e)
+		{
+			// Get target and set defaults
+			var target = document.id(e.target),
+				prevent = prevent || true,
+				propagate = propagate || false
+				stored = this.retrieve(key),
+                args = arguments;
+	
+			// Cycle through rules
+            Hash.each(stored, function(delegates, selector){
+				if (target.match(selector)){
+					if (prevent) e.preventDefault();
+					if (!propagate) e.stopPropagation();
+ 
+					Array.each(delegates, function(fn) {
+						if (fn.apply) fn.apply(target, args);
+					});
+				}
 			});
-		};
-		
-		var stores = elmt.retrieve('delegates') || {};
-		if(!stores[type]) stores[type] = {};
-		if(!stores[type][selector]) stores[type][selector] = [];
-		stores[type][selector].push([delegatefn,fn]);
-
-		return elmt.addEvent(type,delegatefn).store('delegates',stores);
+            
+            return this;
+		});		
 	},
-	
-	addDelegates: function(types){
-		for(var type in types){
-			for(var selector in types[type])
-				this.addDelegate(type,selector,types[type][selector]);
-		}
-		return this;
-	},
-	
-	removeDelegate: function(type,selector,fn){
-		var elmt = document.id(this);
-		
-		var stores = this.retrieve('delegates');
-		if(!stores[type] || !stores[type][selector]) return elmt;
-		
-		$each(stores[type][selector],function(fns,i){
-			if(fns[1] === fn){
-				elmt.removeEvent(type,fns[0]);
-				delete stores[type][selector][i];
-			}
-		});
-		return elmt;
-	},
-	
-	removeDelegates: function(types){
-		for(var type in types){
-			for(var selector in types[type])
-				this.removeDelegate(type,selector,types[type][selector]);
-		}
-		return this;		
-	}
-	
+    
+    'delegateEvents': function(delegates, prevent, propagate)
+    {
+        for (key in delegates)
+        {
+            this.delegateEvent(key, delegates[key], prevent, propagate);
+        }
+        
+        return this;
+    },
+    
+    'denyEvent': function(type, selector, fn)
+    {
+        var key = type + '-delegates',
+            stored = this.retrieve(key) || false;
+            
+        if (stored && stored[selector])
+        {
+            stored[selector].erase(fn);
+        }
+        
+        return this;
+    },
+    
+    'denyEvents': function(type, selector)
+    {
+        var key = type + '-delegates',
+            stored = this.retrieve(key) || false;
+            
+        if (stored && stored[selector])
+        {
+            delete stored[selector];
+        }
+        
+        return this;
+    }
 });
+
+Element.alias('delegateEvent','relayEvent');
+Element.alias('delegateEvents','relayEvents');
