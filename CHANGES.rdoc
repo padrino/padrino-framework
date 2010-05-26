@@ -25,6 +25,7 @@
 * Fixed indentation issues for orm generators
 * Added Ukrainian translation [Thanks to Mama]
 * Added Spanish translation [Thanks to Alvaro]
+* Added Turkish translation [Thanks to Selman ULUG]
 * Added support for disabling asset timestamps via setting
 * Fixed issue with invalid field names
 * Adds tiny skeleton generation for project and app generators
