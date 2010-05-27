@@ -274,9 +274,7 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            #path = "/"        if path.blank?               # Add a trailing delimiter if path is empty
             path[0,0] = "/" if path !~ %r{^\(?/} && path # Paths must start with a /
-            #path.sub!(%r{/\?$}, '(/)')                     # Sinatra compat '/foo/?' => '/foo(/)'
             path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
           end
 
