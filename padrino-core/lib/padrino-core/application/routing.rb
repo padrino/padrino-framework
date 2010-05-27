@@ -1,4 +1,4 @@
-require 'usher' unless defined?(Usher)
+require '../../http_router/lib/http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 
@@ -13,7 +13,7 @@ module Padrino
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
-    class Route < Usher::Route
+    class ::HttpRouter::Route
       attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout
     end
 
@@ -111,13 +111,7 @@ module Padrino
       #
       def router
         unless @router
-          @router = Usher.new(:request_methods => [:request_method, :host, :port, :scheme],
-                              :ignore_trailing_delimiters => true,
-                              :generator => Usher::Util::Generators::URL.new,
-                              :delimiters => ['/', '.', '-'],
-                              :valid_regex => '[0-9A-Za-z\$_\+!\*\',]+',
-                              :detailed_failure => true)
-          @router.route_class = Padrino::Routing::Route
+          @router = HttpRouter.new
         end
         block_given? ? yield(@router) : @router
       end
@@ -141,12 +135,16 @@ module Padrino
           params[:format] = params[:format].to_s if params.has_key?(:format)
           params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end
-        url = router.generator.generate(name, params_array.empty? ? params : params_array << params)
+        url = if params_array.empty?
+          router.url(name, params)
+        else
+          router.url(name, *(params_array << params))
+        end
         url[0,0] = conform_uri(uri_root) if defined?(uri_root)
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
         url
-      rescue Usher::UnrecognizedException
+      rescue HttpRouter::UngeneratableRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise Padrino::Routing::UnrecognizedException.new(route_error)
       end
@@ -181,11 +179,6 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           path, name, options = *parse_route(path, options.dup)
 
-          # Usher Conditions
-          options[:conditions] ||= {}
-          options[:conditions][:request_method] = verb
-          options[:conditions][:host] = options.delete(:host) if options.key?(:host)
-
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
           unbound_method = instance_method("#{verb} #{path}")
@@ -198,8 +191,13 @@ module Padrino
           invoke_hook(:route_added, verb, path, block)
 
           # Usher route
-          route = router.add_route(path, options).to(block)
+          route = router.add(path)
           route.name(name) if name
+          route.send(verb.downcase.to_sym)
+          route.host(options.delete(:host)) if options.key?(:host)
+          route.default_values = options.delete(:default_values)
+          
+          route.to(block)
 
           # Add Sinatra conditions
           options.each { |option, args| send(option, *args) }
@@ -276,9 +274,9 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            path = "/"        if path.blank?               # Add a trailing delimiter if path is empty
-            path = "/" + path if path !~ %r{^\(?/} && path # Paths must start with a trailing delimiter
-            path.sub!(%r{/\?$}, '(/)')                     # Sinatra compat '/foo/?' => '/foo(/)'
+            #path = "/"        if path.blank?               # Add a trailing delimiter if path is empty
+            path[0,0] = "/" if path !~ %r{^\(?/} && path # Paths must start with a /
+            #path.sub!(%r{/\?$}, '(/)')                     # Sinatra compat '/foo/?' => '/foo(/)'
             path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
           end
 
@@ -310,7 +308,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_provides(path, format_params)
-          path << "(.:format)" unless path =~ /\(\.:format\)/
+          path << "(.:format)" unless path[-10, 10] == '(.:format)'
         end
 
         ##
@@ -406,9 +404,14 @@ module Padrino
         # Compatibility with usher
         #
         def route!(base=self.class, pass_block=nil)
-          if base.router and match = base.router.recognize(@request, @request.path_info)
-            if match.succeeded?
-              @block_params = match.params.map { |p| p.last }
+          if base.router and match = base.router.recognize(@request)
+            if match.is_a?(HttpRouter::RoutingError)
+              route_eval { 
+                match.headers.each{|k,v| response[k] = v}
+                status match.status
+              }
+            elsif match
+              @block_params = match.params
               (@params ||= {}).merge!(match.params_as_hash)
               pass_block = catch(:pass) do
                 # Run Sinatra Conditions
@@ -427,11 +430,6 @@ module Padrino
                   match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
                 end
               end
-            elsif match.request_method?
-              route_eval {
-                response['Allow'] = match.acceptable_responses_only_strings.join(", ")
-                status 405
-              }
             end
           end
 
