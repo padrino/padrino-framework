@@ -102,12 +102,12 @@ module Padrino
       alias :controllers :controller
 
       ##
-      # Usher router, for fatures and configurations see: http://github.com/joshbuddy/usher
+      # Using HTTPRouter, for features and configurations see: http://github.com/joshbuddy/http_router
       #
       # ==== Examples
       #
-      #   router.add_route('/greedy/{!:greed,.*}')
-      #   router.recognize_path('/simple')
+      #   router.add('/greedy/{!:greed,.*}')
+      #   router.recognize('/simple')
       #
       def router
         unless @router
@@ -401,7 +401,7 @@ module Padrino
 
       private
         ##
-        # Compatibility with usher
+        # Compatibility with http_router
         #
         def route!(base=self.class, pass_block=nil)
           if base.router and match = base.router.recognize(@request)
