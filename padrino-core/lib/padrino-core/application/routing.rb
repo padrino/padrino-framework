@@ -190,13 +190,13 @@ module Padrino
             end
           invoke_hook(:route_added, verb, path, block)
 
-          # Usher route
+          # HTTPRouter route construction
           route = router.add(path)
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.default_values = options.delete(:default_values)
-          
+
           route.to(block)
 
           # Add Sinatra conditions
