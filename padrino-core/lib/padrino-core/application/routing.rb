@@ -1,7 +1,6 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-
 module Padrino
   ##
   # Padrino provides advanced routing definition support to make routes and url generation much easier.
@@ -274,7 +273,7 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            path[0,0] = "/" if path !~ %r{^\(?/} && path # Paths must start with a /
+            path[0,0] = "/" if path !~ %r{^\(?/} && path   # Paths must start with a /
             path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
           end
 

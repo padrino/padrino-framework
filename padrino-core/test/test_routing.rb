@@ -1,7 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestRouting < Test::Unit::TestCase
-
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
@@ -698,7 +697,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar5", body
   end
 
-  should_eventually "parse params without explicit provides for every matching route" do
+  should "parse params without explicit provides for every matching route" do
     mock_app do
       get(:index, :map => "/foos/:bar") { "get bar = #{params[:bar]}" }
       post :create, :map => "/foos/:bar", :provides => [:html, :js] do
