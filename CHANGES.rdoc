@@ -2,7 +2,8 @@
 
 == 0.9.11 (Unreleased)
 
-* Updated usher version which fix a problem using :provides with dashes in the URL
+* Padrino now uses http_router instead of usher to handle url routing
+* Fix a problem using :provides with dashes in the URL
 * Improve the router's use of base uri's in url(). [Thanks to Lholden]
 * Support params as arrays for generation. More efficent generation
 * Added 405 support
