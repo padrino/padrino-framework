@@ -1,3 +1,5 @@
+require 'padrino-core/support_lite' unless defined?(SupportLite)
+
 module Padrino
   ##
   # Padrino enhances the Sinatra ‘render’ method to have support for automatic template engine detection,
@@ -66,6 +68,9 @@ module Padrino
         (@_cached_templates ||= {})[render_options] = template_file || []
       end
 
+      ##
+      # Retunrs the cached layout path.
+      #
       def fetch_layout_path
         layout_name = @layout || :application
         @_cached_layout ||= {}
@@ -79,6 +84,10 @@ module Padrino
     end
 
     module InstanceMethods
+      def content_type(type=nil, params={}) #:nodoc:
+        type.nil? ? @_content_type : super(type, params)
+      end
+
       private
         ##
         # Enhancing Sinatra render functionality for:

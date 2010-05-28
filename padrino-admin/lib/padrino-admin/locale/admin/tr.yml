@@ -1,0 +1,16 @@
+tr:
+  padrino:
+    admin:
+      save: Kaydet
+      cancel: Vazgeç
+      list: Liste
+      edit: Değiştir
+      new: Yeni
+      show: Göster
+      delete: Sil
+      confirm: emin misiniz?
+      created_at: Oluşturuldu
+      all: Hepsi
+      profile: Profil
+      settings: Ayarlar
+      logout: Çıkış

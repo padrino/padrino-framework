@@ -9,7 +9,7 @@ class <%= @app_name %> < Padrino::Application
   # set :public, "foo/bar"      # Location for static assets (default root/public)
   # set :reload, false          # Reload application files (default in development)
   # set :default_builder, "foo" # Set a custom form builder (default 'StandardFormBuilder')
-  # set :locale_path, "bar"     # Set path for I18n translations (default your_app/locales)
+  # set :locale_path, "bar"     # Set path for I18n translations (defaults to app/locale/)
   # enable  :sessions           # Disabled by default
   # disable :flash              # Disables rack-flash (enabled by default if sessions)
   # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
@@ -20,6 +20,7 @@ class <%= @app_name %> < Padrino::Application
   #
   #   configure :development do
   #     set :foo, :bar
+  #     disable :asset_stamp # no asset timestamping for dev
   #   end
   #
 

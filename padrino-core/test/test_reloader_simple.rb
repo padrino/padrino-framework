@@ -66,6 +66,7 @@ class TestSimpleReloader < Test::Unit::TestCase
 
       # Now we need to prevent to commit a new changed file so we revert it
       File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
+      Padrino.reload!
     end
 
     should 'correctly reset SimpleDemo fixture' do

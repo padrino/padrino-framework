@@ -150,12 +150,12 @@ module Padrino
       alias :url_for :url
 
       private
-      
+
         # Add prefix slash if its not present and remove trailing slashes.
         def conform_uri(uri_string)
           uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
         end
-        
+
         ##
         # Rewrite default because now routes can be:
         #
@@ -320,21 +320,21 @@ module Padrino
             url_format = $1.to_sym if $1
 
             if !url_format && matching_types.first
-               type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
-               accept_format = CONTENT_TYPE_ALIASES[type] || type
+              type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+              accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
 
-            matched_format = types.include?(:any) ||
+            matched_format = types.include?(:any)          ||
                              types.include?(accept_format) ||
-                             types.include?(url_format) ||
-                             (request.accept.empty? && types.include?(:html))
+                             types.include?(url_format)    ||
+                             (request.accept.empty? && types.include?(:html)) # This is only usefull for testing
 
             if matched_format
               @_content_type = url_format || accept_format || :html
               content_type(@_content_type, :charset => 'utf-8')
             end
 
-            matched_format || !matching_types.empty?
+            matched_format
           }
         end
         alias :respond_to :provides

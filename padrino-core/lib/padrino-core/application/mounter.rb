@@ -9,12 +9,16 @@ module Padrino
   #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   #
   class Mounter
+    class MounterException < RuntimeError #:nodoc:
+    end
+
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host
 
     def initialize(name, options={})
       @name      = name.underscore
       @app_class = options[:app_class] || name.classify
       @app_file  = options[:app_file]  || locate_app_file
+      raise MounterException, "Unable to locate app file for #{name}, try with :app_file => /path" unless @app_file
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @app_obj   = self.app_object
       @uri_root  = "/"
@@ -70,16 +74,26 @@ module Padrino
     # Return the class for the app
     #
     def app_object
-      app_class.constantize rescue Padrino.require_dependency(app_file)
-      app_class.constantize
+      begin
+        app_class.constantize
+      rescue
+        if app_file
+          Padrino.require_dependencies(app_file)
+          app_class.constantize
+        end
+      end
     end
 
     ##
     # Returns the determined location of the mounted application main file
     #
     def locate_app_file
-      callers_are_identical = File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-      callers_are_identical ? Padrino.first_caller : Padrino.mounted_root(name, "app.rb")
+      candidates  = []
+      candidates << app_object.app_file  if app_object.respond_to?(:app_file) && File.exist?(app_object.app_file)
+      candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
+      candidates << Padrino.mounted_root(name, "app.rb")
+      candidates << Padrino.root("app", "app.rb")
+      candidates.find { |candidate| File.exist?(candidate) }
     end
 
     ##
@@ -126,7 +140,7 @@ module Padrino
     def mount_core(*args)
       options = args.extract_options!
       app_class = args.size > 0 ? args.first.to_s.camelize : nil
-      options.reverse_merge!(:app_class => app_class, :app_file => Padrino.root("app", "app.rb"))
+      options.reverse_merge!(:app_class => app_class)
       mount("core", options).to("/")
     end
 

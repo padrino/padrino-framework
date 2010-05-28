@@ -246,7 +246,7 @@ module Padrino
         # Returns the timestamp mtime for an asset
         #
         def asset_timestamp(file_path)
-          return nil if file_path =~ /\?/
+          return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
           public_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
           stamp = Time.now.to_i unless public_path && File.exist?(public_path)
           stamp ||= File.mtime(public_path).to_i
