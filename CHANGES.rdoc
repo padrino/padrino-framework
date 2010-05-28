@@ -2,6 +2,9 @@
 
 == 0.9.11 (Unreleased)
 
+* Reorganized a bit ours "servers"
+* Padrino::Application.run! now perform Padrino.load! automatically (useful if you want to use MyApp.run!)
+* PADRINO_ROOT if not defined will be automatically detected
 * Improved reloader (that fixes also problems with MM)
 * Core refactoring
 * Fixed mounter in certain scenarios (i.e. single app file)

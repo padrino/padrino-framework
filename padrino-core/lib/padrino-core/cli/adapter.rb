@@ -4,13 +4,8 @@ module Padrino
       class << self
         # Start for the given options a rackup handler
         def start(options)
-
-          puts "=> Padrino/#{Padrino.version} has taken the stage #{options.environment} on port #{options.port}"
-
           if options.daemonize?
-
             stop # Need to stop a process if it exists
-
             fork do
               Process.setsid
               exit if fork
@@ -27,11 +22,11 @@ module Padrino
                 File.open(pid, 'w'){ |f| f.write("#{Process.pid}") }
               end
 
-              Padrino.run!(options.host, options.port, options.adapter)
+              Padrino.run!(options.symbolize_keys)
               exit
             end
           else
-            Padrino.run!(options.host, options.port, options.adapter)
+            Padrino.run!(options.symbolize_keys)
           end
         end
 

@@ -86,7 +86,6 @@ module Padrino
         # Return true if some thing changed and in the meanwhile fill MTIMES cache
         #
         def changed?
-          logger.debug "Check for new and changed files"
           changed = false
           rotation do |file, mtime|
             new_file = MTIMES[file].nil?
@@ -116,7 +115,6 @@ module Padrino
           if FILES_LOADED[file]
             FILES_LOADED[file].each do |fl|
               next if fl == file
-              logger.debug "Require dependency #{fl}"
               $LOADED_FEATURES.delete(fl)
               require(fl)
             end
@@ -129,7 +127,6 @@ module Padrino
           $LOADED_FEATURES.delete(file)
 
           begin
-            logger.debug "Require #{file}"
             require(file)
           rescue SyntaxError => ex
             logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
@@ -168,9 +165,7 @@ module Padrino
           object = parts[-1].to_s
           begin
             base.send(:remove_const, object)
-            logger.debug("Removed constant #{object} from #{base}")
           rescue NameError
-            logger.debug("Failed to remove constant #{object} from #{base}")
           end
 
           nil

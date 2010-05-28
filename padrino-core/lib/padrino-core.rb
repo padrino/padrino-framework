@@ -4,8 +4,9 @@ require 'padrino-core/support_lite'
 Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
 
-# Defines our PADRINO_ENV
-PADRINO_ENV = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development" unless defined?(PADRINO_ENV)
+# Defines our Constants
+PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
   class ApplicationLoadError < RuntimeError #:nodoc:
