@@ -403,7 +403,7 @@ module Padrino
         #
         def route!(base=self.class, pass_block=nil)
           if base.router and match = base.router.recognize(@request)
-            if match.is_a?(HttpRouter::RoutingError)
+            if !match.matched?
               route_eval { 
                 match.headers.each{|k,v| response[k] = v}
                 status match.status

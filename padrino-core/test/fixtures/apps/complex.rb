@@ -17,11 +17,11 @@ class Complex2Demo < Padrino::Application
 end
 
 Complex1Demo.controllers do
-  get("(/)"){ "Given random #{LibDemo.give_me_a_random}" }
+  get("/"){ "Given random #{LibDemo.give_me_a_random}" }
 end
 
 Complex2Demo.controllers do
-  get("(/)"){ "The magick number is: 20!" } # Change only the number!!!
+  get("/"){ "The magick number is: 20!" } # Change only the number!!!
 end
 
 Padrino.load!
