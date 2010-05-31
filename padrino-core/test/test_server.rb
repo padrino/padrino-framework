@@ -27,11 +27,11 @@ class ServerTest < Test::Unit::TestCase
 
   context 'for server functionality' do
     should "locates the appropriate Rack handler and calls ::run" do
-      Padrino.run!('foo.local', 9001, 'mock')
+      silence_logger { Padrino.run!(:host => 'foo.local', :port => 9001, :adapter => 'mock') }
     end
 
     should "falls back on the next server handler when not found" do
-      assert_raise(Padrino::Server::LoadError) { Padrino.run!('foo.local', 9001, 'foo') }
+      assert_raise(Padrino::Server::LoadError) { silence_logger {Padrino.run!(:host => 'foo.local', :port => 9001, :adapter => 'foo') } }
     end
   end
 end

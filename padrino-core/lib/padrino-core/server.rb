@@ -9,9 +9,9 @@ module Padrino
   #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
   #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "localhost", port: "3000", adapter: "mongrel"
   #
-  def self.run!(*args)
-    Padrino.load! unless Padrino.loaded?
-    Server.build(*args)
+  def self.run!(options={})
+    Padrino.load!
+    Server.build(options)
   end
 
   ##
@@ -24,7 +24,11 @@ module Padrino
     Handlers = %w[thin mongrel webrick] unless const_defined?(:Handlers)
 
     private
-      def self.build(host="localhost", port=3000, adapter=nil)
+      def self.build(options={})
+        host    = options[:host] || "localhost"
+        port    = options[:port] || 3000
+        adapter = options[:adapter]
+
         handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
 
         begin
@@ -33,6 +37,8 @@ module Padrino
           raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
           exit
         end
+
+        puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} on #{port}"
 
         handler.run Padrino.application, :Host => host, :Port => port do |server|
           trap(:INT) do

@@ -7,12 +7,12 @@ module Padrino
       return false if loaded?
       @_called_from = first_caller
       set_encoding
-      set_load_paths(*load_paths) # we set the padrino load paths
-      require_dependencies("#{root}/config/database.rb") # load db adapter
-      require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # load our libs
-      require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # load root models
-      require_dependencies("#{root}/config/apps.rb") # load configuration
-      Reloader::Stat.reload! # We need to fill our Stat::CACHE but we do that only for development
+      set_load_paths(*load_paths) # We set the padrino load paths
+      require_dependencies("#{root}/config/database.rb") # Load db adapter
+      require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # Load our libs
+      require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # Load root models
+      require_dependencies("#{root}/config/apps.rb") # Load configuration
+      Reloader::Stat.run! # We need to fill our Stat::CACHE
       Padrino.logger # Initialize our logger
       Thread.current[:padrino_loaded] = true
     end
@@ -21,9 +21,7 @@ module Padrino
     # Method for reloading required applications and their files
     #
     def reload!
-      return unless Reloader::Stat.changed?
       Reloader::Stat.reload! # detects the modified files
-      Padrino.mounted_apps.each { |m| m.app_object.reload! } # finally we reload all files for each app
     end
 
     ##
@@ -75,7 +73,7 @@ module Padrino
         # Now we try to require our dependencies
         files.each do |file|
           begin
-            require file
+            Reloader::Stat.safe_load(file)
             files.delete(file)
           rescue Exception => e
             errors << e
@@ -88,7 +86,6 @@ module Padrino
         break if files.empty?
       end
     end
-    alias :require_dependency :require_dependencies
 
     ##
     # Attempts to load all dependency libs that we need.
@@ -99,7 +96,6 @@ module Padrino
         Dir[path].each { |file| load(file) }
       end
     end
-    alias :load_dependency :load_dependencies
 
     ##
     # Concat to $LOAD_PATH the given paths

@@ -101,6 +101,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--mock=rr', '--test=riot', '--script=none') }
       assert_match /Applying.*?rr.*?mock/, buffer
       assert_match_in_file(/gem 'rr'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/require 'riot\/rr'/, '/tmp/sample_project/test/test_config.rb')
     end
 
     should "properly generater for rr and bacon" do
@@ -318,8 +319,10 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=riot', '--script=none') }
       assert_match /Applying.*?riot.*?test/, buffer
       assert_match_in_file(/gem 'riot'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/include Rack::Test::Methods/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Riot::Situation/, '/tmp/sample_project/test/test_config.rb')
+      assert_match_in_file(/Riot::Context/, '/tmp/sample_project/test/test_config.rb')
       assert_file_exists('/tmp/sample_project/test/test.rake')
     end
 

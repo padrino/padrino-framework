@@ -10,7 +10,7 @@ class TestApplication < Test::Unit::TestCase
   context 'for application functionality' do
 
     should 'check default options' do
-      assert_match __FILE__, PadrinoTestApp.app_file
+      assert File.identical?(__FILE__, PadrinoTestApp.app_file)
       assert_equal :test, PadrinoTestApp.environment
       assert_equal Padrino.root("views"), PadrinoTestApp.views
       assert PadrinoTestApp.raise_errors
