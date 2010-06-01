@@ -330,7 +330,7 @@ class TestRouting < Test::Unit::TestCase
         get("/new") { "new" }
       end
       controller :votes do
-        get("(/)") { "vote_index" }
+        get("/") { "vote_index" }
       end
     end
     get "/accounts"
