@@ -63,41 +63,41 @@ uk:
       half_a_minute: "півхвилини"
       less_than_x_seconds:
         one:   "менше секунди"
-        other: "менше {{count}} секунд"
+        other: "менше %{count} секунд"
       x_seconds:
         one:   "1 секунда"
-        other: "{{count}} секунд"
+        other: "%{count} секунд"
       less_than_x_minutes:
         one:   "менше хвилини"
-        other: "менше {{count}} хвилин"
+        other: "менше %{count} хвилин"
       x_minutes:
         one:   "1 хвилина"
-        other: "{{count}} хвилин"
+        other: "%{count} хвилин"
       about_x_hours:
         one:   "близько години"
-        other: "близько {{count}} годин"
+        other: "близько %{count} годин"
       x_days:
         one:   "1 день"
-        other: "{{count}} днів"
+        other: "%{count} днів"
       about_x_months:
         one:   "близько місяця"
-        other: "близько {{count}} місяців"
+        other: "близько %{count} місяців"
       x_months:
         one:   "1 місяць"
-        other: "{{count}} месяців"
+        other: "%{count} месяців"
       about_x_years:
         one:   "близько року"
-        other: "близько {{count}} років"
+        other: "близько %{count} років"
       over_x_years:
         one:   "більше року"
-        other: "більше {{count}} років"
+        other: "більше %{count} років"
       almost_x_years:
         one:   "майже рік"
-        other: "майжу {{count}} роки"
+        other: "майжу %{count} роки"
   models:
     errors:
       template:
         header:
-          one:    "Дані «{{model}}» не можуть бути збережені через 1 помилки"
-          other:  "Дані «{{model}}» не можуть бути збережені через {{count}} помилок"
+          one:    "Дані «%{model}» не можуть бути збережені через 1 помилки"
+          other:  "Дані «%{model}» не можуть бути збережені через %{count} помилок"
         body: "Допущені помилки в наступних полях:"

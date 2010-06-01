@@ -63,41 +63,41 @@ tr:
       half_a_minute: "30 saniye"
       less_than_x_seconds:
         one:   "1 saniyeden az"
-        other: "{{count}} saniyeden az"
+        other: "%{count} saniyeden az"
       x_seconds:
         one:   "1 saniye"
-        other: "{{count}} saniye"
+        other: "%{count} saniye"
       less_than_x_minutes:
         one:   "bir dakikadan az"
-        other: "{{count}} dakikadan az"
+        other: "%{count} dakikadan az"
       x_minutes:
         one:   "1 dakika"
-        other: "{{count}} dakika"
+        other: "%{count} dakika"
       about_x_hours:
         one:   "yaklaşık 1 saat"
-        other: "yaklaşık {{count}} saat"
+        other: "yaklaşık %{count} saat"
       x_days:
         one:   "1 gün"
-        other: "{{count}} gün"
+        other: "%{count} gün"
       about_x_months:
         one:   "yaklaşık 1 ay"
-        other: "yaklaşık {{count}} ay"
+        other: "yaklaşık %{count} ay"
       x_months:
         one:   "1 ay"
-        other: "{{count}} ay"
+        other: "%{count} ay"
       about_x_years:
         one:   "yaklaşık 1 yıl"
-        other: "yaklaşık {{count}} yıl"
+        other: "yaklaşık %{count} yıl"
       over_x_years:
         one:   "1 yıldan fazla"
-        other: "{{count}} yıldan fazla"
+        other: "%{count} yıldan fazla"
       almost_x_years:
         one:   "neredeyse 1 yıl"
-        other: "neredeyse {{count}} yıl"
+        other: "neredeyse %{count} yıl"
   models:
     errors:
       template:
         header:
-          one:    "1 hata oluştu; {{model}} kaydedilemedi"
-          other:  "{{count}} hata oluştu; {{model}} kaydedilemedi"
+          one:    "1 hata oluştu; %{model} kaydedilemedi"
+          other:  "%{count} hata oluştu; %{model} kaydedilemedi"
         body: "Hata oluşan alanlar:"

@@ -63,41 +63,41 @@ es:
       half_a_minute: "medio minuto"
       less_than_x_seconds:
         one:   "menos de un segundo"
-        other: "menos de {{count}} segundos"
+        other: "menos de %{count} segundos"
       x_seconds:
         one:   "1 segundo"
-        other: "{{count}} segundos"
+        other: "%{count} segundos"
       less_than_x_minutes:
         one:   "menos de un minuto"
-        other: "menos de {{count}} minutos"
+        other: "menos de %{count} minutos"
       x_minutes:
         one:   "1 minuto"
-        other: "{{count}} minutos"
+        other: "%{count} minutos"
       about_x_hours:
         one:   "hace 1 hora"
-        other: "hace {{count}} horas"
+        other: "hace %{count} horas"
       x_days:
         one:   "1 día"
-        other: "{{count}} días"
+        other: "%{count} días"
       about_x_months:
         one:   "hace 1 mes"
-        other: "hace {{count}} meses"
+        other: "hace %{count} meses"
       x_months:
         one:   "1 mes"
-        other: "{{count}} meses"
+        other: "%{count} meses"
       about_x_years:
         one:   "hace 1 año"
-        other: "hace {{count}} años"
+        other: "hace %{count} años"
       over_x_years:
         one:   "hace más de 1 año"
-        other: "hace más de {{count}} años"
+        other: "hace más de %{count} años"
       almost_x_years:
         one:   "casi 1 año"
-        other: "casi {{count}} años"
+        other: "casi %{count} años"
   models:
     errors:
       template:
         header:
-          one:    "1 error impidió que {{model}} se guardara"
-          other:  "{{count}} erroress impidieron que {{model}} se guardara"
+          one:    "1 error impidió que %{model} se guardara"
+          other:  "%{count} erroress impidieron que %{model} se guardara"
         body: "Hay problemas con los siguientes campos:"
