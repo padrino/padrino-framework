@@ -55,7 +55,8 @@ class TestRouting < Test::Unit::TestCase
 
   should 'generate basic urls'do
     mock_app do
-      get(:foo){ url(:foo) }
+      get(:foo){ "/foo" }
+      get(:foo, :with => :id){ |id| "/foo/#{id}" }
       get(:hash, :with => :id){ url(:hash, :id => 1) }
       get(:array, :with => :id){ url(:array, 23) }
       get(:hash_with_extra, :with => :id){ url(:hash_with_extra, :id => 1, :query => 'string') }
@@ -66,6 +67,8 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/foo"
     assert_equal "/foo", body
+    get "/foo/123"
+    assert_equal "/foo/123", body
     get "/hash/2"
     assert_equal "/hash/1", body
     get "/array/23"
