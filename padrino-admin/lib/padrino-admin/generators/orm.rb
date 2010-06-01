@@ -37,7 +37,7 @@ module Padrino
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
-            when :sequel       then @klass.db_schema.map { |k,v| Column.new(k, v[:type]) }
+            when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
