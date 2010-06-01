@@ -15,7 +15,7 @@ begin
     gem.rubyforge_project = 'padrino-helpers'
     gem.version = Padrino.version
     gem.add_runtime_dependency     "padrino-core",  "= #{Padrino.version}"
-    gem.add_runtime_dependency     "i18n",          ">= 0.3.2"
+    gem.add_runtime_dependency     "i18n",          ">= 0.4.0"
     gem.add_development_dependency "haml",          ">= 2.2.1"
     gem.add_development_dependency "shoulda",       ">= 2.10.3"
     gem.add_development_dependency "mocha",         ">= 0.9.7"

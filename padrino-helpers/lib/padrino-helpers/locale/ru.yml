@@ -63,41 +63,41 @@ ru:
       half_a_minute: "пол минуты"
       less_than_x_seconds:
         one:   "менее секунды"
-        other: "менее {{count}} секунд"
+        other: "менее %{count} секунд"
       x_seconds:
         one:   "1 секунда"
-        other: "{{count}} секунд"
+        other: "%{count} секунд"
       less_than_x_minutes:
         one:   "менее минуты"
-        other: "менее {{count}} минут"
+        other: "менее %{count} минут"
       x_minutes:
         one:   "1 минута"
-        other: "{{count}} минут"
+        other: "%{count} минут"
       about_x_hours:
         one:   "около часа"
-        other: "около {{count}} часов"
+        other: "около %{count} часов"
       x_days:
         one:   "1 день"
-        other: "{{count}} дней"
+        other: "%{count} дней"
       about_x_months:
         one:   "около месяца"
-        other: "около {{count}} месяцев"
+        other: "около %{count} месяцев"
       x_months:
         one:   "1 месяц"
-        other: "{{count}} месяцев"
+        other: "%{count} месяцев"
       about_x_years:
         one:   "около года"
-        other: "около {{count}} лет"
+        other: "около %{count} лет"
       over_x_years:
         one:   "более года"
-        other: "более {{count}} лет"
+        other: "более %{count} лет"
       almost_x_years:
         one:   "почти год"
-        other: "почти {{count}} года"
+        other: "почти %{count} года"
   models:
     errors:
       template:
         header:
-          one:    "Данные «{{model}}» не могут быть сохранены из-за 1 ошибки"
-          other:  "Данные «{{model}}» не могут быть сохранены из-за {{count}} ошибок"
+          one:    "Данные «%{model}» не могут быть сохранены из-за 1 ошибки"
+          other:  "Данные «%{model}» не могут быть сохранены из-за %{count} ошибок"
         body: "Допущены ошибки в следующих полях:"

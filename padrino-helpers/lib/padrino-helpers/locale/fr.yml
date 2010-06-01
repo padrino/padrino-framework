@@ -39,41 +39,41 @@ fr:
       half_a_minute: "une demi minute"
       less_than_x_seconds:
         one:   "infèrieur à une seconde"
-        other: "infèrieur à {{count}} secondes"
+        other: "infèrieur à %{count} secondes"
       x_seconds:
         one:   "1 seconde"
-        other: "{{count}} secondes"
+        other: "%{count} secondes"
       less_than_x_minutes:
         one:   "infèrieur à 1 minute"
-        other: "infèrieur à {{count}} minutes"
+        other: "infèrieur à %{count} minutes"
       x_minutes:
         one:   "1 minute"
-        other: "{{count}} minutes"
+        other: "%{count} minutes"
       about_x_hours:
         one:   "environ 1 heure"
-        other: "environ {{count}} heures"
+        other: "environ %{count} heures"
       x_days:
         one:   "1 jour"
-        other: "{{count}} jours"
+        other: "%{count} jours"
       about_x_months:
         one:   "environ 1 mois"
-        other: "environ {{count}} mois"
+        other: "environ %{count} mois"
       x_months:
         one:   "1 mois"
-        other: "{{count}} mois"
+        other: "%{count} mois"
       about_x_years:
         one:   "environ 1 ans"
-        other: "environ {{count}} ans"
+        other: "environ %{count} ans"
       over_x_years:
         one:   "plus d'un an"
-        other: "plus de {{count}} ans"
+        other: "plus de %{count} ans"
       almost_x_years:
         one:   "près d'un ans"
-        other: "près de {{count}} years"
+        other: "près de %{count} years"
   models:
     errors:
       template:
         header:
-          one:    "1 erreur a empêché ce {{model}} d'être sauvé"
-          other:  "{{count}} erreurs ont empêché ce {{model}} d'être sauvé"
+          one:    "1 erreur a empêché ce %{model} d'être sauvé"
+          other:  "%{count} erreurs ont empêché ce %{model} d'être sauvé"
         body: "Il y avait des problèmes avec les champs suivants:"
