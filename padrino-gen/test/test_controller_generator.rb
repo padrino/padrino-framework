@@ -14,6 +14,16 @@ class TestControllerGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/app/controllers/demo.rb')
     end
 
+    should "generate mailer in specified app" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
+      silence_logger { generate(:app, 'subby', '-r=/tmp/sample_project') }
+      silence_logger { generate(:controller, 'DemoItems','-a=/subby', '-r=/tmp/sample_project') }
+      assert_match_in_file(/Subby.controllers :demo_items do/m, @controller_path.gsub('app','subby'))
+      assert_match_in_file(/Subby.helpers do/m, '/tmp/sample_project/subby/helpers/demo_items_helper.rb')
+      assert_file_exists('/tmp/sample_project/subby/views/demo_items')
+      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
+    end
+
     should 'not fail if we don\'t have test component' do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=none') }
       silence_logger { generate(:controller, 'DemoItems', '-r=/tmp/sample_project') }
