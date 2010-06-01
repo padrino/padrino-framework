@@ -19,7 +19,7 @@ module Padrino
 
       argument :name, :desc => "The name of your padrino mailer"
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
-      class_option :app, :desc => "The application destination", :aliases => '-a', :default => "/app", :type => :string
+      class_option :app, :desc => "The application destination path", :aliases => '-a', :default => "/app", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
@@ -28,7 +28,7 @@ module Padrino
       def create_mailer
         self.destination_root = options[:root]
         if in_app_root?
-          app = options[:app].underscore
+          app = options[:app]
           check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
           @app_name = fetch_app_name(app)
