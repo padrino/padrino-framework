@@ -23,9 +23,9 @@ def setup_orm
     sequel.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{name}_test\"")
     'pg'
   else
-    sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_development.db\"")
-    sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_production.db\"")
-    sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_test.db\"")
+    sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_development.db\")")
+    sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_production.db\")")
+    sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{name}_test.db\")")
     'sqlite3-ruby'
   end
   create_file("config/database.rb", sequel)
