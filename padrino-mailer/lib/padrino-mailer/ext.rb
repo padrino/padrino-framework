@@ -3,11 +3,6 @@ module Mail
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
 
-    ##
-    # Shortcut for delivery_method
-    #
-    alias :via :delivery_method
-
     def initialize_with_app(*args, &block)
       @template_cache = Tilt::Cache.new
       # Check if we have an app passed into initialize
@@ -187,6 +182,17 @@ module Mail
     def defaults=(attributes)
       @_defaults = attributes
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
+    end
+    
+    # Shortcut for delivery_method with smarter smtp overwrites
+    def via(method = nil, settings = {})
+      if method.nil?
+        delivery_method
+      elsif method.to_sym != :smtp
+        delivery_method(method, settings)
+      elsif method.to_sym == :smtp && (settings.any? || delivery_method.class.to_s !~ /smtp/i)
+        delivery_method(method, settings)
+      end
     end
 
     ##
