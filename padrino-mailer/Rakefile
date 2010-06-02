@@ -1,15 +1,12 @@
 # coding:utf-8
-GEM_NAME = "padrino-mailer"
-
 require 'rubygems'
 require 'rubygems/specification'
 require 'rake'
 
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
-
 def gemspec
   @gemspec ||= begin
-    file = File.expand_path("../#{GEM_NAME}.gemspec", __FILE__)
+    gem_name =  File.basename(File.dirname(__FILE__))
+    file = File.expand_path("../#{gem_name}.gemspec", __FILE__)
     eval(File.read(file), binding, file)
   end
 end
@@ -44,7 +41,7 @@ end
 
 desc "Release the gem"
 task :release => :package do
-  system "gem push pkg/#{GEM_NAME}-#{Padrino.version}.gem"
+  system "gem push pkg/#{gemspec.name}-#{gemspec.version}.gem"
 end
 
 task :package => :gemspec
