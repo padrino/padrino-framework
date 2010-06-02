@@ -16,6 +16,7 @@
 * Improve the router's use of base uri's in url(). [Thanks to Lholden]
 * Support params as arrays for generation. More efficent generation
 * Added 405 support
+* Removed jeweler dependency and use dynamic gemspecs
 * Fixed / Updated German translations [Thanks to Gottlike]
 * Fixed a problem with extensions since Sinatra#register extend every thing
 * Fixed a problem when reloading apps
