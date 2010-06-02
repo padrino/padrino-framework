@@ -1,5 +1,6 @@
 ##
-# Manages Padrino version from the VERSION file managed by Jeweler
+# Manages current Padrino version for use in gem generation.
+# 
 # We put this in a separate file so you can get padrino version
 # without include full padrino core.
 #
