@@ -29,7 +29,7 @@ def rake_command(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
 
-%w(install gemspec build).each do |task_name|
+%w(install gemspec package).each do |task_name|
   desc "Run #{task_name} for all projects"
   task task_name do
     GEM_PATHS.each do |dir|
@@ -63,6 +63,41 @@ task :commit, [:message] do |t, args|
   system("git commit -a -m \"#{args.message}\"")
 end
 
+desc "Bumps the version number based on given version"
+task :bump, [:version] do |t, args|
+  raise "Please specify version=x.x.x !" unless args.version
+  version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
+  version_text = File.read(version_path).sub(/VERSION = '[\d\.]+'/, "VERSION = '#{args.version}'")
+  puts "Updating Padrino to version #{args.version}."
+  File.open(version_path, 'w') { |f| f.puts version_text }
+  Rake::Task['gemspec'].invoke
+  Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
+end
+
+desc "Executes a fresh install removing all padrino version and then reinstall all gems"
+task :fresh => [:uninstall, :install, :clean]
+
+desc "Release all padrino gems"
+task :publish do
+  puts "Pushing to rubygems..."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake_command("release") }
+  end
+  rake_command("clean")
+end
+
+desc "Run tests for all padrino stack gems"
+task :test do
+  # Omit the padrino metagem since no tests there
+  GEM_PATHS[0..-2].each do |gem|
+    # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
+    sh "cd #{File.join(ROOT, gem)} && #{Gem.ruby} -S rake test", :verbose => true
+  end
+end
+
+desc "Run tests for all padrino stack gems"
+task :default => :test
+
 desc "Generate documentation for the Padrino framework"
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc'
@@ -84,44 +119,10 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('padrino-mailer/README.rdoc')
 end
 
+
 desc "Publish doc on padrino.github.com"
 task :pdoc => :rdoc do
   puts "Publishing doc on padrinorb.com ..."
   Rake::SshDirPublisher.new("root@lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload
   FileUtils.rm_rf "doc"
 end
-
-desc "Bumps the version number based on given version"
-task :bump, [:version] do |t, args|
-  raise "Please specify version=x.x.x !" unless args.version
-  version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
-  version_text = File.read(version_path).sub(/VERSION = '[\d\.]+'/, "VERSION = '#{args.version}'")
-  puts "Updating Padrino to version #{args.version}."
-  File.open(version_path, 'w') { |f| f.puts version_text }
-  Rake::Task['gemspec'].invoke
-  Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
-end
-
-desc "Release all padrino gems"
-task :publish do
-  puts "Pushing to Gemcutter..."
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake_command("gemcutter:release") }
-  end
-  rake_command("clean")
-end
-
-desc "Run tests for all padrino stack gems"
-task :default => :test
-
-desc "Run tests for all padrino stack gems"
-task :test do
-  # Omit the padrino metagem since no tests there
-  GEM_PATHS[0..-2].each do |gem|
-    # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    sh "cd #{File.join(ROOT, gem)} && #{Gem.ruby} -S rake test", :verbose => true
-  end
-end
-
-desc "Execute a fresh install removing all padrino version and then reinstall all gems"
-task :fresh => [:uninstall, :install, :clean]

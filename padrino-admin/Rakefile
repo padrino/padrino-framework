@@ -1,54 +1,51 @@
+# coding:utf-8
+GEM_NAME = "padrino-admin"
+
 require 'rubygems'
+require 'rubygems/specification'
 require 'rake'
+
 require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "padrino-admin"
-    gem.summary = "Admin Dashboard for Padrino"
-    gem.description = "Admin View for Padrino applications"
-    gem.email = "padrinorb@gmail.com"
-    gem.homepage = "http://github.com/padrino/padrino-framework/tree/master/padrino-admin"
-    gem.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-    gem.rubyforge_project = 'padrino-admin'
-    gem.version = Padrino.version
-    gem.add_runtime_dependency     "padrino-core",    "= #{Padrino.version}"
-    gem.add_runtime_dependency     "padrino-gen",     "= #{Padrino.version}"
-    gem.add_runtime_dependency     "padrino-helpers", "= #{Padrino.version}"
-    gem.add_development_dependency "haml",            ">= 2.2.1"
-    gem.add_development_dependency "shoulda",         ">= 0"
-    gem.add_development_dependency "mocha",           ">= 0.9.7"
-    gem.add_development_dependency "rack-test",       ">= 0.5.0"
-    gem.add_development_dependency "webrat",          ">= 0.5.1"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+def gemspec
+  @gemspec ||= begin
+    file = File.expand_path("../#{GEM_NAME}.gemspec", __FILE__)
+    eval(File.read(file), binding, file)
   end
-  Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new { |r| r.doc_task = :none }
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'test'
-
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
 
 begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |rcov|
-    rcov.libs << 'test'
-    rcov.pattern = 'test/**/test_*.rb'
-    rcov.verbose = true
-    rcov.rcov_opts << ['--exclude /Gems/1.8/gems/,padrino-core,padrino-cache,padrino-gen,padrino-helpers,padrino-mailer']
-  end
+  require 'rake/gempackagetask'
 rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install relevance-rcov"
+  task(:gem) { $stderr.puts '`gem install rake` to package gems' }
+else
+  Rake::GemPackageTask.new(gemspec) do |pkg|
+    pkg.gem_spec = gemspec
   end
+  task :gem => :gemspec
 end
 
+desc "install the gem locally"
+task :install => :package do
+  sh %{gem install pkg/#{gemspec.name}-#{gemspec.version}}
+end
+
+desc "validate the gemspec"
+task :gemspec do
+  gemspec.validate
+end
+
+desc "Release the gem"
+task :release => :package do
+  system "gem push pkg/#{GEM_NAME}-#{Padrino.version}.gem"
+end
+
+task :package => :gemspec
 task :default => :test
