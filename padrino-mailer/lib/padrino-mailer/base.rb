@@ -53,8 +53,8 @@ module Padrino
         self.messages[name] = Proc.new { |*attrs|
           message = Mail::Message.new(self.app)
           message.defaults = self.defaults if self.defaults.any?
-          message.delivery_method(*delivery_settings)
           message.instance_exec(*attrs, &block)
+          message.delivery_method(*delivery_settings)
           message
         }
       end
