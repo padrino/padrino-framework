@@ -58,7 +58,7 @@ subgems = [
   # ["padrino-cache", "= #{gemspec.version}"],
 ]
 
-task :build => "lib/padrino.rb"
+task :package => "lib/padrino.rb"
 
 desc "Create padrino.rb"
 task "lib/padrino.rb" do
