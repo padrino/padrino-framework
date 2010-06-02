@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
-  s.date = %q{2010-05-27}
+  s.date = %q{2010-06-01}
   s.description = %q{Admin View for Padrino applications}
   s.email = %q{padrinorb@gmail.com}
   s.extra_rdoc_files = [
@@ -77,6 +77,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/locale/admin/it.yml",
      "lib/padrino-admin/locale/admin/pt_br.yml",
      "lib/padrino-admin/locale/admin/ru.yml",
+     "lib/padrino-admin/locale/admin/tr.yml",
      "lib/padrino-admin/locale/admin/uk.yml",
      "lib/padrino-admin/locale/orm/da.yml",
      "lib/padrino-admin/locale/orm/de.yml",
@@ -86,6 +87,7 @@ Gem::Specification.new do |s|
      "lib/padrino-admin/locale/orm/it.yml",
      "lib/padrino-admin/locale/orm/pt_br.yml",
      "lib/padrino-admin/locale/orm/ru.yml",
+     "lib/padrino-admin/locale/orm/tr.yml",
      "lib/padrino-admin/locale/orm/uk.yml",
      "lib/padrino-admin/utils/crypt.rb",
      "padrino-admin.gemspec",
