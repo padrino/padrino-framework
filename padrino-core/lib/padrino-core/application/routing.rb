@@ -235,6 +235,17 @@ module Padrino
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
+            # backwards compatability
+            if path == '(/)'
+              path = '/'
+              warn "(/) is deprecated, simply use / instead"
+            end
+
+            if path =~ /\(\/\)$/
+              path.gsub(/\(\/\)$/, '/?')
+              warn "(/) is deprecated, simply use /? instead"
+            end
+            
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
               path = process_path_for_with_params(path, with_params)
