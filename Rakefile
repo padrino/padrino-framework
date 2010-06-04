@@ -1,17 +1,21 @@
 # rake bump[X.X.X] && rake publish
 
-require 'pathname'
 require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
 require 'fileutils'
-require 'sdoc' unless RUBY_PLATFORM =~ /java/
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
+
+begin
+  require 'sdoc'
+rescue LoadError
+  puts "You need to install sdoc: gem install sdoc for generate correctly ours api docs."
+end
 
 include FileUtils
 
-ROOT        = Pathname(__FILE__).dirname.expand_path
+ROOT        = File.expand_path(File.dirname(__FILE__))
 GEM_NAME    = 'padrino-framework'
 
 padrino_gems = [
@@ -76,13 +80,12 @@ end
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]
 
-
 desc "Pushes repository to GitHub"
 task :push do
   puts "Pushing to github..."
-  sh "git tag v#{Padrino.version}"
+  sh "git tag #{Padrino.version}"
   sh "git push origin master"
-  sh "git push origin v#{Padrino.version}"
+  sh "git push origin #{Padrino.version}"
 end
 
 desc "Release all padrino gems"
@@ -91,7 +94,7 @@ task :publish => :push do
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("release") }
   end
-  rake_command("clean")
+  Rake::Task["clean"].invoke
 end
 
 desc "Run tests for all padrino stack gems"
@@ -126,7 +129,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('padrino-mailer/lib/**/*.rb')
   rdoc.rdoc_files.include('padrino-mailer/README.rdoc')
 end
-
 
 desc "Publish doc on padrino.github.com"
 task :pdoc => :rdoc do
