@@ -1,4 +1,4 @@
-# rake bump[version=X.X.X] && rake publish
+# rake bump[X.X.X] && rake publish
 
 require 'pathname'
 require 'rake/clean'
@@ -29,11 +29,11 @@ def rake_command(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
 
-%w(install gemspec package).each do |task_name|
-  desc "Run #{task_name} for all projects"
-  task task_name do
+%w(install gemspec package).each do |name|
+  desc "Run #{name} for all projects"
+  task name do
     GEM_PATHS.each do |dir|
-      Dir.chdir(dir) { rake_command(task_name) }
+      Dir.chdir(dir) { rake_command(name) }
     end
   end
 end
@@ -60,7 +60,7 @@ end
 
 desc "Commits all staged files"
 task :commit, [:message] do |t, args|
-  system("git commit -a -m \"#{args.message}\"")
+  system(%Q[git commit -a -m "#{args.message}"])
 end
 
 desc "Bumps the version number based on given version"
@@ -68,21 +68,25 @@ task :bump, [:version] do |t, args|
   raise "Please specify version=x.x.x !" unless args.version
   version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
   version_text = File.read(version_path).sub(/VERSION = '[\d\.]+'/, "VERSION = '#{args.version}'")
-  puts "Updating Padrino to version #{args.version}."
+  puts "Updating Padrino to version #{args.version}"
   File.open(version_path, 'w') { |f| f.puts version_text }
-  Rake::Task['gemspec'].invoke
   Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
 end
 
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]
 
-desc "Release all padrino gems"
-task :publish do
+
+desc "Pushes repository to GitHub"
+task :push do
   puts "Pushing to github..."
   sh "git tag v#{Padrino.version}"
   sh "git push origin master"
   sh "git push origin v#{Padrino.version}"
+end
+
+desc "Release all padrino gems"
+task :publish => :push do
   puts "Pushing to rubygems..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("release") }
