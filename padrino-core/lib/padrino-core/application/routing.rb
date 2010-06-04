@@ -235,7 +235,7 @@ module Padrino
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
-            # backwards compatability
+            # Backwards compatability
             if path == '(/)'
               path = '/'
               warn "(/) is deprecated, simply use / instead"
@@ -245,7 +245,7 @@ module Padrino
               path.gsub(/\(\/\)$/, '/?')
               warn "(/) is deprecated, simply use /? instead"
             end
-            
+
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
               path = process_path_for_with_params(path, with_params)
@@ -414,7 +414,7 @@ module Padrino
         def route!(base=self.class, pass_block=nil)
           if base.router and match = base.router.recognize(@request)
             if !match.matched?
-              route_eval { 
+              route_eval {
                 match.headers.each{|k,v| response[k] = v}
                 status match.status
               }
