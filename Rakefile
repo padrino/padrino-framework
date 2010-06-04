@@ -79,6 +79,10 @@ task :fresh => [:uninstall, :install, :clean]
 
 desc "Release all padrino gems"
 task :publish do
+  puts "Pushing to github..."
+  sh "git tag v#{Padrino.version}"
+  sh "git push origin master"
+  sh "git push origin v#{Padrino.version}"
   puts "Pushing to rubygems..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { rake_command("release") }
