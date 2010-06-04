@@ -68,6 +68,13 @@ module Padrino
       end
 
       ##
+      # Returns the routes of our app
+      #
+      def routes
+        router.routes
+      end
+
+      ##
       # Setup the application by registering initializers, load paths and logger
       # Invoked automatically when an application is first instantiated
       #
