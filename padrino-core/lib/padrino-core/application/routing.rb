@@ -189,10 +189,12 @@ module Padrino
             end
           invoke_hook(:route_added, verb, path, block)
 
+          verb_sym = verb.downcase.to_sym
+
           # HTTPRouter route construction
           route = router.add(path)
           route.name(name) if name
-          route.send(verb.downcase.to_sym)
+          route.send(verb_sym == :get ? :only_get : verb_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.default_values = options.delete(:default_values)
 
