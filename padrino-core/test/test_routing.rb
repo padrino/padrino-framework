@@ -52,6 +52,17 @@ class TestRouting < Test::Unit::TestCase
     get "/my/2/bar"
     assert_equal "2", body
   end
+  
+  should "not generate overlapping head urls" do
+    app = mock_app do
+      get("/main"){ "hello" }
+      post("/main"){ "hello" }
+    end
+    assert_equal 3, app.routes.size, "should generate GET, HEAD and PUT"
+    assert_equal ["GET"],  app.routes[0].as_options[:conditions][:request_method]
+    assert_equal ["HEAD"], app.routes[1].as_options[:conditions][:request_method]
+    assert_equal ["POST"], app.routes[2].as_options[:conditions][:request_method]
+  end
 
   should 'generate basic urls'do
     mock_app do
