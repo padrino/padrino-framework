@@ -30,15 +30,15 @@ end
 desc "Displays a listing of the named routes within a project"
 task :routes, :query, :needs => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
-    app_routes = app.app_object.routes
-    app_routes.reject! { |r| r.named.blank? || (r.as_options[:conditions][:request_method].nil? || r.as_options[:conditions][:request_method].include?('HEAD')) }
+    app_routes = app.app_object.router.routes
+    app_routes.reject! { |r| r.named.blank? || r.as_options[:conditions][:request_method].try(:first) == 'HEAD' }
     app_routes.reject! { |r| r.named.to_s !~ /#{args.query}/ } if args.query.present?
     next if app_routes.empty?
     shell.say "\nApplication: #{app.name}", :yellow
     app_routes.map! do |route|
       name_string     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
-      request_method = route.conditions[:request_method]
-      [request_method, name_string, route.original_path]
+      request_method = route.as_options[:conditions][:request_method].try(:first)
+      [request_method, name_string, route.path]
     end
     app_routes.unshift(["REQUEST", "URL", "PATH"])
     max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
