@@ -78,7 +78,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert_equal 1, @app.errors.size
       assert_equal 1, @app.after_filters.size
       assert_equal 2, @app.middleware.size # [Padrino::Logger::Rack, Padrino::Reloader::Rack]
-      assert_equal 4, @app.router.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
+      assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
       assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
       assert_equal 0, @app.templates.size
       @app.reload!
@@ -88,7 +88,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert_equal 1, @app.errors.size
       assert_equal 1, @app.after_filters.size
       assert_equal 2, @app.middleware.size # only logger Padrino::Logger::Rack
-      assert_equal 4, @app.router.routes.size # GET+HEAD of "/" = 2
+      assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
       assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
       assert_equal 0, @app.templates.size
     end

@@ -30,8 +30,8 @@ end
 desc "Displays a listing of the named routes within a project"
 task :routes, :query, :needs => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
-    app_routes = app.app_object.router.routes
-    app_routes.reject! { |r| r.named.blank?  || r.conditions[:request_method] == 'HEAD' }
+    app_routes = app.app_object.routes
+    app_routes.reject! { |r| r.named.blank? || (r.as_options[:conditions][:request_method].nil? || r.as_options[:conditions][:request_method].include?('HEAD')) }
     app_routes.reject! { |r| r.named.to_s !~ /#{args.query}/ } if args.query.present?
     next if app_routes.empty?
     shell.say "\nApplication: #{app.name}", :yellow
