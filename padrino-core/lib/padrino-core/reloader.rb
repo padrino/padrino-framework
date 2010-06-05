@@ -42,6 +42,22 @@ module Padrino
     end
 
     ##
+    # You can exclude some constant to be unloaded.
+    # Defaults exculded constants are: Padrino, Sinatra, HttpRouter
+    #
+    def self.exclude_constants
+      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base HttpRouter)
+    end
+
+    ##
+    # Reload always specified constants.
+    # Defaults: HttpRouter::RequestNode
+    #
+    def self.include_constants
+      @_include_constants ||= %w(HttpRouter::RequestNode)
+    end
+
+    ##
     # What makes it especially suited for use in a any environment is that
     # any file will only be checked once and there will only be made one system
     # call stat(2).
@@ -116,16 +132,25 @@ module Padrino
             FILES_LOADED[file].each do |fl|
               next if fl == file
               $LOADED_FEATURES.delete(fl)
-              require(fl)
             end
           end
-
-          klasses = ObjectSpace.classes.dup
-          files_loaded = $LOADED_FEATURES.dup
 
           # Now we can reload the file ignoring syntax errors
           $LOADED_FEATURES.delete(file)
 
+          # Now we can dup objects and loaded features
+          klasses = ObjectSpace.classes.dup
+          files_loaded = $LOADED_FEATURES.dup
+
+          # We can start to re-require old deps
+          if FILES_LOADED[file]
+            FILES_LOADED[file].each do |fl|
+              next if fl == file
+              require(fl)
+            end
+          end
+
+          # And finally our file to reload
           begin
             require(file)
           rescue SyntaxError => ex
@@ -150,7 +175,8 @@ module Padrino
         # to _subclasses_list. Plugins for ORMs and other libraries should keep this in mind.
         #
         def remove_constant(const)
-          return if const.superclass.to_s =~ /Padrino::Application|Sinatra::Application|Sinatra::Base/
+          return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) } &&
+                   !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) }
 
           superklass = const
           until (superklass = superklass.superclass).nil?
@@ -175,11 +201,13 @@ module Padrino
         # Search Ruby files in your +Padrino.root+ and monitor them for changes.
         #
         def rotation
-          paths = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
+          paths = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| !File.directory?(path) }
 
           files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
 
           files.map{ |file|
+            next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{base}/ }
+
             found, stat = figure_path(file, paths)
             next unless found && stat && mtime = stat.mtime
 

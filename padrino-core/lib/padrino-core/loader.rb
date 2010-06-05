@@ -86,6 +86,7 @@ module Padrino
         break if files.empty?
       end
     end
+    alias :require_dependency :require_dependencies
 
     ##
     # Attempts to load all dependency libs that we need.
@@ -96,6 +97,7 @@ module Padrino
         Dir[path].each { |file| load(file) }
       end
     end
+    alias :load_dependency :load_dependencies
 
     ##
     # Concat to $LOAD_PATH the given paths
