@@ -228,23 +228,14 @@ module Padrino
       end
 
       ##
-      # Remove unsafe chars from our javascript
-      #
-      def escape_javascript(html_content)
-        return '' unless html_content
-        javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n' }
-        javascript_mapping.merge("\r" => '\n', '"' => '\\"', "'" => "\\'")
-        escaped_string = html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { javascript_mapping[$1] }
-        escaped_string
-      end
-
-      ##
       # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino
       #
       #   js_escape_html("<h1>Hey</h1>")
       #
       def js_escape_html(html_content)
-        %Q["#{escape_javascript(html_content)}"]
+        return '' unless html_content
+        javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
+        html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { javascript_mapping[$1] }
       end
     end # FormatHelpers
   end # Helpers
