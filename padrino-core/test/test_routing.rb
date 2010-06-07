@@ -115,12 +115,12 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/c.json", body
     get "/c.ru"
     assert_equal 404, status
-    get "/d.json"
-    assert 404, status
     get "/d"
     assert_equal "/d.js?foo=bar", body
     get "/d.js"
     assert_equal "/d.js?foo=bar", body
+    get "/e.xml"
+    assert_equal 404, status
   end
 
   should "not allow Accept-Headers it does not provide" do
