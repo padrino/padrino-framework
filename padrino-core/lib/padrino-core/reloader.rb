@@ -6,8 +6,8 @@ module Padrino
   #
   module Reloader
     ##
-    # This class acts as a Rack middleware to be added to the application stack. This middleware performs a 
-    # check and reload for source files at the start of each request, but also respects a specified cool down time 
+    # This class acts as a Rack middleware to be added to the application stack. This middleware performs a
+    # check and reload for source files at the start of each request, but also respects a specified cool down time
     # during which no further action will be taken.
     #
     class Rack
@@ -42,22 +42,22 @@ module Padrino
 
     ##
     # Specified constants can be excluded from the code unloading process.
-    # Default excluded constants are: Padrino, Sinatra, HttpRouter
+    # Default excluded constants are: Padrino, Sinatra
     #
     def self.exclude_constants
-      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base HttpRouter)
+      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base)
     end
 
     ##
     # Specified constants can be configured to be reloaded on every request.
-    # Default included constants are: HttpRouter::RequestNode
+    # Default included constants are: [none]
     #
     def self.include_constants
-      @_include_constants ||= %w(HttpRouter::RequestNode)
+      @_include_constants ||= []
     end
 
     ##
-    # This reloader is suited for use in a many environments because each file 
+    # This reloader is suited for use in a many environments because each file
     # will only be checked once and only one system call to stat(2) is made.
     #
     # Please note that this will not reload files in the background, and does so
