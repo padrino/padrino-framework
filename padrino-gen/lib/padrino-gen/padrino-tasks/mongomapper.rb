@@ -1,4 +1,4 @@
-if defined?(MongoMapper) && defined?(I18n)
+if (defined?(MongoMapper) && defined?(I18n))
   namespace :mm do
     desc "Generates .yml files for I18n translations"
     task :translate => :environment do
