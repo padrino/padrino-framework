@@ -1,7 +1,7 @@
 ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
-require 'rubygems'
+require File.expand_path('../../../load_paths', __FILE__)
 require 'padrino-core'
 require 'test/unit'
 require 'rack/test'
