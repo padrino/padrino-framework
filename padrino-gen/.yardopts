@@ -1,0 +1,6 @@
+--quiet
+--exclude lib\/padrino-gen\/generators\/components
+--exclude lib\/padrino-gen\/padrino-tasks
+-
+LICENSE
+README.rdoc
