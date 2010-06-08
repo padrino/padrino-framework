@@ -5,4 +5,12 @@
     <%= permission.check_box :can_edit %>
     <%= permission.check_box :can_delete %>
   <% end %>
+  <% f.fields_for :addresses do |child_form| %>
+    <%= child_form.label :name %>
+    <%= child_form.text_field :name %>
+    <% unless child_form.object.new_record? %>
+      <%= child_form.check_box '_destroy' %>
+      <%= child_form.label '_destroy', 'Remove' %>
+    <% end %>
+  <% end %>
 <% end %>

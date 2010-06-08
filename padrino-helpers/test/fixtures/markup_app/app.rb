@@ -46,6 +46,13 @@ class MarkupUser
   def gender; 'male'; end
   def remember_me; '1'; end
   def permission; Permission.new; end
+  def addresses; [Address.new('Greenfield'), Address.new('Willowrun')]; end
+end
+
+class Address
+  attr_accessor :name
+  def initialize(name, existing); @name, @existing = name, existing; end
+  def new_record?; @existing; end
 end
 
 class Permission

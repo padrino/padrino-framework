@@ -91,9 +91,17 @@ module Padrino
           @template.submit_tag caption, options
         end
 
-        # f.simage_submitubmit "buttons/submit.png", :class => 'large'
+        # f.image_submit "buttons/submit.png", :class => 'large'
         def image_submit(source, options={})
           @template.image_submit_tag source, options
+        end
+        
+        # Supports nested fields for a child model within a form
+        # f.fields_for :addresses
+        # f.fields_for :addresses, address
+        # f.fields_for :addresses, @addresses
+        def fields_for(child_model, instance_or_collection=nil)
+          "Incomplete"
         end
 
         protected
