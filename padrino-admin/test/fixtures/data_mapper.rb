@@ -1,4 +1,5 @@
 require 'dm-core'
+require 'dm-migrations'
 require 'dm-validations'
 require 'dm-aggregates'
 require 'digest/sha1'

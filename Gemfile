@@ -10,11 +10,11 @@ gem "mail", ">= 2.2.0"
 gem "builder", ">= 2.1.2"
 
 group :db do
-  gem "dm-core", ">= 0.10.2"
-  gem "dm-validations", ">= 0.10.2"
-  gem "dm-aggregates", ">= 0.10.2"
-  gem "data_objects", ">= 0.10.2"
-  gem "do_sqlite3", ">= 0.10.2"
+  gem "dm-core", ">= 1.0"
+  gem "dm-migrations", ">= 1.0"
+  gem "dm-validations", ">= 1.0"
+  gem "dm-aggregates", ">= 1.0"
+  gem "dm-sqlite-adapter", ">= 1.0"
 end
 
 gem "rake",  ">= 0.8.7"
