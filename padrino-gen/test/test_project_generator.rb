@@ -302,6 +302,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/public/javascripts/ext-core.js')
       assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
     end
+    
+    should "properly generate for dojo" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=dojo') }
+      assert_match /Applying.*?dojo.*?script/, buffer
+      assert_file_exists('/tmp/sample_project/public/javascripts/dojo.js')
+      assert_file_exists('/tmp/sample_project/public/javascripts/application.js')
+    end
   end
 
   context "the generator for test component" do
