@@ -42,7 +42,7 @@ test::       rspec (default), bacon, shoulda, cucumber, testspec, riot
 renderer::   haml  (default), erb
 stylesheet:: sass  (default), less
 mock::       none  (default), mocha, rr
-script::     none  (default), jquery, prototype, mootools, rightjs, extcore
+script::     none  (default), jquery, prototype, mootools, rightjs, extcore, dojo
 orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, sequel, couchrest
 
 To learn more about the project generator, check out the guide to
