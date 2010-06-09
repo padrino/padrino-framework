@@ -199,29 +199,28 @@ class TestProjectGenerator < Test::Unit::TestCase
       should "properly generate default" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--script=none') }
         assert_match /Applying.*?datamapper.*?orm/, buffer
-        assert_match_in_file(/gem 'data_objects'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/gem 'datamapper'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/gem 'do_sqlite3'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'data_mapper'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'dm-sqlite-adapter'/, '/tmp/sample_project/Gemfile')
         assert_match_in_file(/DataMapper.setup/, '/tmp/sample_project/config/database.rb')
         assert_dir_exists('/tmp/sample_project/app/models')
       end
       
       should "properly generate for mysql" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=mysql') }
-        assert_match_in_file(/gem 'do_mysql'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'dm-mysql-adapter'/, '/tmp/sample_project/Gemfile')
         assert_match_in_file(%r{"mysql://}, '/tmp/sample_project/config/database.rb')
         assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate for sqlite" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=sqlite') }
-        assert_match_in_file(/gem 'do_sqlite3'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'dm-sqlite-adapter'/, '/tmp/sample_project/Gemfile')
         assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end
       
       should "properly generate for postgres" do
         buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--adapter=postgres') }
-        assert_match_in_file(/gem 'do_postgres'/, '/tmp/sample_project/Gemfile')
+        assert_match_in_file(/gem 'dm-postgres-adapter'/, '/tmp/sample_project/Gemfile')
         assert_match_in_file(%r{"postgres://}, '/tmp/sample_project/config/database.rb')
         assert_match_in_file(/sample_project_development/, '/tmp/sample_project/config/database.rb')
       end

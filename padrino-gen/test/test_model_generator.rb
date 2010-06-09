@@ -121,7 +121,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate gemfile gem" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=datamapper') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", '-r=/tmp/sample_project') }
-      assert_match_in_file(/gem 'datamapper'/m,'/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'data_mapper'/m,'/tmp/sample_project/Gemfile')
     end
 
     should "generate model file with fields" do
@@ -131,7 +131,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/property :name, String/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/property :age, Integer/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/property :created_at, DateTime/m, '/tmp/sample_project/app/models/user.rb')
-      assert_match_in_file(/gem 'datamapper'/m,'/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'data_mapper'/m,'/tmp/sample_project/Gemfile')
     end
 
     should "properly generate version numbers" do
