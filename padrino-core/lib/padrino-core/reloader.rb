@@ -140,11 +140,18 @@ module Padrino
           klasses = ObjectSpace.classes.dup
           files_loaded = $LOADED_FEATURES.dup
 
-          # start to re-require old dependencies
+          # Start to re-require old dependencies
           if FILES_LOADED[file]
             FILES_LOADED[file].each do |fl|
               next if fl == file
-              require(fl)
+              # Swich off for a while warnings expecially "already initialized constant" stuff
+              begin
+                verbosity = $-v
+                $-v = nil
+                require(fl)
+              ensure
+                $-v = verbosity
+              end
             end
           end
 
