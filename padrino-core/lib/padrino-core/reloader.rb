@@ -118,7 +118,7 @@ module Padrino
 
           logger.debug "Reloading #{file}" if reload
 
-          # removes all classes declared in the specified file
+          # Removes all classes declared in the specified file
           if klasses = LOADED_CLASSES.delete(file)
             klasses.each { |klass| remove_constant(klass) }
           end
@@ -136,7 +136,7 @@ module Padrino
           # Now reload the file ignoring any syntax errors
           $LOADED_FEATURES.delete(file)
 
-          # duplicate objects and loaded features in the file
+          # Duplicate objects and loaded features in the file
           klasses = ObjectSpace.classes.dup
           files_loaded = $LOADED_FEATURES.dup
 
@@ -153,7 +153,7 @@ module Padrino
           #
           # We need to reload MongoMapper dependencies for re-initialize them.
           #
-          # In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass 
+          # In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass
           # is not really necessary... but how to distinguish when it is (necessary) since it is not?
           #
           if FILES_LOADED[file]
