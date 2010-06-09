@@ -2,7 +2,8 @@
 
 == 0.9.11 (Unreleased)
 
-* Fixed compatibility with DM 1.0.
+* Added compatibility with AS 3.0
+* Fixed compatibility with DM 1.0
 * Added bundler support also for testing [Thanks to Ryanfitz]
 * Updated I18n dependency to version > 0.4.0
 * Padrino now uses http_router instead of usher to handle url routing

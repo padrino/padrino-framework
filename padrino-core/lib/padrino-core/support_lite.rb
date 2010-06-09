@@ -22,21 +22,34 @@
 #   * Symbol#to_proc
 #
 require 'rbconfig'
-require 'active_support/version'
+require 'active_support/core_ext/string/conversions'
 require 'active_support/core_ext/kernel'
 require 'active_support/core_ext/module'
 require 'active_support/deprecation'
 require 'active_support/core_ext/class/attribute_accessors'
 require 'active_support/core_ext/hash'
 require 'active_support/inflector'
-require 'active_support/core_ext/object'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/module'
 require 'active_support/ordered_hash'
 
-# AS 3.0 has been removed it because is now available in Ruby 1.8.7 and 1.9.
-require 'active_support/core_ext/symbol' if ActiveSupport::VERSION::MAJOR < 3
+begin
+  require 'active_support/core_ext/symbol'
+rescue LoadError
+  # AS 3.0 has been removed it because is now available in Ruby > 1.8.7 but we want keep Ruby 1.8.6 support.
+  class Symbol
+    ##
+    # Turns the symbol into a simple proc, which is especially useful for enumerations.
+    #
+    #   # The same as people.map { |p| p.name }
+    #   people.map(&:name)
+    #
+    def to_proc
+      Proc.new { |*args| args.shift.__send__(self, *args) }
+    end
+  end unless :to_proc.respond_to?(:to_proc)
+end
 
 ##
 # Used to know if this file was required

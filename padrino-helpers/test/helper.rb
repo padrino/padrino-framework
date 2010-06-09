@@ -7,8 +7,18 @@ require 'webrat'
 require 'padrino-helpers'
 
 # We need some extension for do our tests
-require 'active_support/core_ext/date'
-require 'active_support/core_ext/time'
+begin
+  # As 2.3.x
+  require 'active_support/core_ext/date'
+  require 'active_support/core_ext/time'
+rescue LoadError
+  # As 3.x
+  require 'active_support/core_ext/date/calculations'
+  require 'active_support/core_ext/date/conversions'
+  require 'active_support/core_ext/time/calculations'
+  require 'active_support/core_ext/time/conversions'
+end
+
 require 'active_support/core_ext/numeric'
 require 'active_support/duration'
 

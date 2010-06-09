@@ -4,6 +4,13 @@ require 'active_support/option_merger'
 require 'cgi'
 require 'i18n'
 
+# On ActiveSupport < 3.0.0 is called misc
+begin
+  require 'active_support/core_ext/object/with_options'
+rescue LoadError
+  require 'active_support/core_ext/object/misc'
+end
+
 Dir[File.dirname(__FILE__) + '/padrino-helpers/**/*.rb'].each {|file| require file }
 
 # Load our locales
