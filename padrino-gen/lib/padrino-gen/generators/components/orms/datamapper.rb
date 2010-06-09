@@ -22,25 +22,25 @@ DM
 
 def setup_orm
   dm = DM
-  require_dependencies 'data_objects', 'datamapper'
+  require_dependencies 'data_mapper'
   require_dependencies case options[:adapter]
-  when 'mysql'
-    dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://localhost/#{name}_development\"")
-    dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://localhost/#{name}_production\"")
-    dm.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{name}_test\"")
-    'do_mysql'
-  when 'postgres'
-    dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://localhost/#{name}_development\"")
-    dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://localhost/#{name}_production\"")
-    dm.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{name}_test\"")
-    'do_postgres'
-  else
-    dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_development.db\")")
-    dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_production.db\")")
-    dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_test.db\")")
-    'do_sqlite3'
+    when 'mysql'
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://localhost/#{name}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://localhost/#{name}_production\"")
+      dm.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{name}_test\"")
+      'dm-mysql-adapter'
+    when 'postgres'
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://localhost/#{name}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://localhost/#{name}_production\"")
+      dm.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{name}_test\"")
+      'dm-postgres-adapter'
+    else
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_development.db\")")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_production.db\")")
+      dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_test.db\")")
+      'dm-sqlite-adapter'
   end
-  
+
   create_file("config/database.rb", dm)
   empty_directory('app/models')
 end
