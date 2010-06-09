@@ -520,12 +520,15 @@ class TestFormBuilder < Test::Unit::TestCase
     end
   end
   
-  # READ: http://api.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#M002291
-  # http://ryandaigle.com/articles/2009/2/1/what-s-new-in-edge-rails-nested-attributes
   context 'for #fields_for method' do    
     setup do
       @telephone = stub(:class => "Telephone", :number => "4568769876")
       @user.stubs(:telephone).returns(@telephone)
+      @businesses = [ stub(:class => "Business", :name => "Silver", :new_record? => false, :id => 20) ]
+      @businesses << stub(:class => "Business", :name => "Gold", :new_record? => true)
+      @addresses = [ stub(:class => "Address", :name => "Foo", :new_record? => false, :id => 20, :businesses => @businesses) ]
+      @addresses << stub(:class => "Address", :name => "Bar", :new_record? => true, :businesses => @businesses)
+      @user.stubs(:addresses).returns(@addresses)
     end
     
     should "display nested children fields one-to-one within form" do
@@ -535,70 +538,105 @@ class TestFormBuilder < Test::Unit::TestCase
         child_form.check_box('_destroy')
       end
       assert_has_tag('label', :for => 'user_telephone_attributes_number') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_telephone_attributes_number', :name => 'user[telephone_attributes][number]') { actual_html }
-      assert_has_tag('input', :type => 'checkbox', :id => 'user_telephone_attributes__destroy', :name => 'user[telephone_attributes][_destroy]') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_telephone_attributes_number', :name => 'user[telephone_attributes][number]', :value => "4568769876") { actual_html }
+      assert_has_tag('input', :type => 'hidden', :name => 'user[telephone_attributes][_destroy]', :value => '0') { actual_html }
+      assert_has_tag('input', :type => 'checkbox', :id => 'user_telephone_attributes__destroy', :name => 'user[telephone_attributes][_destroy]', :value => '1') { actual_html }
     end
     
     should "display nested children fields one-to-many within form" do
       actual_html = standard_builder.fields_for :addresses do |child_form|
-        child_form.label(:name) + 
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
+        html = child_form.label(:name)
+        html << child_form.check_box('_destroy') unless child_form.object.new_record?
+        html << child_form.text_field(:name)
       end
-      assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_0_id', :name => "user[addresses_attributes][0][id]", :value => 20)
+      # Address 1 (Saved)
+      assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_0_id', :name => "user[addresses_attributes][0][id]", :value => '20') { actual_html }
       assert_has_tag('label', :for => 'user_addresses_attributes_0_name', :content => 'Name') { actual_html }
       assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_0_name', :name => 'user[addresses_attributes][0][name]') { actual_html }
       assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_0__destroy', :name => 'user[addresses_attributes][0][_destroy]') { actual_html }
+      # Address 2 (New)
+      assert_has_no_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_1_id') { actual_html }
+      assert_has_tag('label', :for => 'user_addresses_attributes_1_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_name', :name => 'user[addresses_attributes][1][name]') { actual_html }
+      assert_has_no_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_1__destroy') { actual_html }
     end
     
-    should_eventually "display fields for arbitrarily deep nested forms" do
+    should "display fields for explicit instance object" do
+      address = stub(:class => "Address", :name => "Baz", :new_record? => false, :id => 40)
+      actual_html = standard_builder.fields_for :addresses, address do |child_form|
+        child_form.label(:name) + 
+        child_form.text_field(:name) +
+        child_form.check_box('_destroy')
+      end
+      assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_0_id', :name => "user[addresses_attributes][0][id]", :value => '40') { actual_html }
+      assert_has_tag('label', :for => 'user_addresses_attributes_0_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_0_name', :name => 'user[addresses_attributes][0][name]', :value => "Baz") { actual_html }
+      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_0__destroy', :name => 'user[addresses_attributes][0][_destroy]', :value => '1') { actual_html }
+    end
+    
+    should "display fields for collection object" do
+      addresses = @addresses + [stub(:class => "Address", :name => "John", :new_record? => false, :id => 50)]
+      actual_html = standard_builder.fields_for :addresses, addresses do |child_form|
+        child_form.label(:name) + 
+        child_form.text_field(:name) +
+        child_form.check_box('_destroy')
+      end
+      # Address 1
+      assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_0_id', :name => "user[addresses_attributes][0][id]", :value => '20') { actual_html }
+      assert_has_tag('label', :for => 'user_addresses_attributes_0_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_0_name', :name => 'user[addresses_attributes][0][name]', :value => "Foo") { actual_html }
+      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_0__destroy', :name => 'user[addresses_attributes][0][_destroy]') { actual_html }
+      # Address 3
+      assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_2_id', :value => '50') { actual_html }
+      assert_has_tag('label', :for => 'user_addresses_attributes_2_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_2_name', :name => 'user[addresses_attributes][2][name]', :value => "John") { actual_html }
+      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_2__destroy') { actual_html }
+    end
+    
+    should "display fields for arbitrarily deep nested forms" do
       actual_html = standard_builder.fields_for :addresses do |child_form|
-        html = child_form.text_field(:name)
-        html << child_form.check_box('_destroy')
-        html << child_form.fields_for(:businesses) do |second_child_form|
+        child_form.fields_for(:businesses) do |second_child_form|
+          second_child_form.label(:name) +
           second_child_form.text_field(:name) +
           second_child_form.check_box('_destroy')
-        end
+        end.join
       end
-      assert_has_tag('label', :id => 'user_addresses_attributes_name') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_name', :name => 'user[addresses_attributes][1][name]') { actual_html }
-      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_delete', :name => 'user[addresses_attributes][1][_delete]') { actual_html }
+      assert_has_tag('label', :for => 'user_addresses_attributes_1_businesses_attributes_0_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_businesses_attributes_0_name', :name => 'user[addresses_attributes][1][businesses_attributes][0][name]') { actual_html }
     end
     
-    should_eventually "display fields for explicit instance object" do
-      actual_html = standard_builder.fields_for :addresses, @address do |child_form|
-        child_form.label(:name) + 
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
-      end
-      assert_has_tag('label', :id => 'user_addresses_attributes_name') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_name', :name => 'user[addresses_attributes][1][name]') { actual_html }
-      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_delete', :name => 'user[addresses_attributes][1][_delete]') { actual_html }
-    end
-    
-    should_eventually "display fields for collection object" do
-      actual_html = standard_builder.fields_for :addresses, @addresses do |child_form|
-        child_form.label(:name) + 
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
-      end
-      assert_has_tag('label', :id => 'user_addresses_attributes_name') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_name', :name => 'user[addresses_attributes][1][name]') { actual_html }
-      assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_delete', :name => 'user[addresses_attributes][1][_delete]') { actual_html }
-    end
-    
-    should_eventually "display nested children fields in erb" do
-      visit '/haml/fields_for'
-      assert_have_selector('label', :id => 'user_addresses_attributes_name') 
-      assert_have_selector('input', :type => 'text', :id => 'user_addresses_attributes_name', :name => 'user[addresses_attributes][1][name]') 
-      assert_have_selector('input', :type => 'checkbox', :id => 'user_addresses_attributes_delete', :name => 'user[addresses_attributes][1][_delete]')
-    end
-    
-    should_eventually "display nested children fields in haml" do
+    should "display nested children fields in erb" do
       visit '/erb/fields_for'
-      assert_have_selector('label', :id => 'user_addresses_attributes_name')
-      assert_have_selector('input', :type => 'text', :id => 'user_addresses_attributes_name', :name => 'user[addresses_attributes][1][name]') 
-      assert_have_selector('input', :type => 'checkbox', :id => 'user_addresses_attributes_delete', :name => 'user[addresses_attributes][1][_delete]') 
+      # Telephone
+      assert_have_selector('label', :for => 'markup_user_telephone_attributes_number')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_telephone_attributes_number', :name => 'markup_user[telephone_attributes][number]', :value => "62634576545")
+      # Address 1 (Saved)
+      assert_have_selector('input', :type => 'hidden', :id => 'markup_user_addresses_attributes_0_id', :name => "markup_user[addresses_attributes][0][id]", :value => '25')
+      assert_have_selector('label', :for => 'markup_user_addresses_attributes_0_name', :content => 'Name')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_addresses_attributes_0_name', :name => 'markup_user[addresses_attributes][0][name]')
+      assert_have_selector('input', :type => 'checkbox', :id => 'markup_user_addresses_attributes_0__destroy', :name => 'markup_user[addresses_attributes][0][_destroy]')
+      # Address 2 (New)
+      assert_have_no_selector('input', :type => 'hidden', :id => 'markup_user_addresses_attributes_1_id')
+      assert_have_selector('label', :for => 'markup_user_addresses_attributes_1_name', :content => 'Name')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_addresses_attributes_1_name', :name => 'markup_user[addresses_attributes][1][name]')
+      assert_have_no_selector('input', :type => 'checkbox', :id => 'markup_user_addresses_attributes_1__destroy')
+    end
+    
+    should "display nested children fields in haml" do
+      visit '/haml/fields_for'
+      # Telephone
+      assert_have_selector('label', :for => 'markup_user_telephone_attributes_number')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_telephone_attributes_number', :name => 'markup_user[telephone_attributes][number]', :value => "62634576545")
+      # Address 1 (Saved)
+      assert_have_selector('input', :type => 'hidden', :id => 'markup_user_addresses_attributes_0_id', :name => "markup_user[addresses_attributes][0][id]", :value => '25')
+      assert_have_selector('label', :for => 'markup_user_addresses_attributes_0_name', :content => 'Name')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_addresses_attributes_0_name', :name => 'markup_user[addresses_attributes][0][name]')
+      assert_have_selector('input', :type => 'checkbox', :id => 'markup_user_addresses_attributes_0__destroy', :name => 'markup_user[addresses_attributes][0][_destroy]')
+      # Address 2 (New)
+      assert_have_no_selector('input', :type => 'hidden', :id => 'markup_user_addresses_attributes_1_id')
+      assert_have_selector('label', :for => 'markup_user_addresses_attributes_1_name', :content => 'Name')
+      assert_have_selector('input', :type => 'text', :id => 'markup_user_addresses_attributes_1_name', :name => 'markup_user[addresses_attributes][1][name]')
+      assert_have_no_selector('input', :type => 'checkbox', :id => 'markup_user_addresses_attributes_1__destroy')
     end
   end
 

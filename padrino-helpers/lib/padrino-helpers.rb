@@ -1,6 +1,7 @@
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'cgi'
 require 'i18n'
+require 'enumerator'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
 

@@ -20,7 +20,7 @@ module Padrino
 
         # f.error_message_on(field)
         def error_message_on(field, options={})
-          @template.error_message_on(object_name, field, options)
+          @template.error_message_on(object_model_name, field, options)
         end
 
         # f.label :username, :caption => "Nickname"
@@ -102,19 +102,13 @@ module Padrino
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
         def fields_for(child_association, instance_or_collection=nil, &block)
-          if instance_or_collection.nil? # use associated object(s)
-            instance_or_collection = self.object.send(child_association)
-            if instance_or_collection.respond_to?(:each)
-              
-            else # single instance
-              child_instance = instance_or_collection
-              nested_options = { :parent => self.object, :type => 'many' }
-              # TODO you can specify a single instance for a one-many
-              # f.fields_for :addresses, address
-              @template.fields_for(child_instance, { :nested => nested_options }, &block)            
-            end
-          else # use explicit instance or collection
-    
+          default_collection = self.object.send(child_association)
+          include_index = default_collection.respond_to?(:each)
+          nested_objects = instance_or_collection.nil? ? Array(default_collection) : Array(instance_or_collection)
+          nested_options = { :parent => self, :association => child_association }
+          nested_objects.enum_with_index.map do |child_instance, index|
+            nested_options[:index] = include_index ? index : nil
+            @template.fields_for(child_instance,  { :nested => nested_options }, &block)
           end
         end
 
@@ -124,22 +118,10 @@ module Padrino
             [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
           end
 
-          # Returns the object's models name
-          #   => user_assignment
-          def object_name(explicit_object=object)
-            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('/', '-')
-          end
-
           # Returns true if the value matches the value in the field
           # field_has_value?(:gender, 'male')
           def values_matches_field?(field, value)
             value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
-          end
-
-          # Returns the value for the object's field
-          # field_value(:username) => "Joey"
-          def field_value(field)
-            @object && @object.respond_to?(field) ? @object.send(field) : ""
           end
 
           # Add a :invalid css class to the field if it contain an error
@@ -147,37 +129,68 @@ module Padrino
             error = @object.errors[field] rescue nil
             error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
           end
+          
+          # Returns the human name of the field. Look that use builtin I18n.
+          def field_human_name(field)
+            I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
+          end
 
           # Returns the name for the given field
           # field_name(:username) => "user[username]"
-          def field_name(field)
+          # field_name(:number) => "user[telephone_attributes][number]"
+          # field_name(:street) => "user[addresses_attributes][0][street]"
+          def field_name(field=nil)
+            result = []
             if root_form?
-              "#{object_name}[#{field}]"
-            elsif nested_form? && nested_form_type == 'many' # nested many field
-              "#{parent_object_name}[#{object_name}_attributes][#{field}]"
-            elsif nested_form? && nested_form_type == 'one'  # nested one field
-              "#{parent_object_name}[#{object_name}_attributes][#{field}]"
+              result << object_model_name
+            elsif nested_form?
+              parent_form = @options[:nested][:parent]
+              attributes_name = "#{@options[:nested][:association]}_attributes"
+              nested_index = @options[:nested][:index]
+              fragment = [parent_form.field_name, "[#{attributes_name}", "]"]
+              fragment.insert(2, "][#{nested_index}") if nested_index
+              result << fragment
             end
-          end
-
-          # Returns the human name of the field. Look that use builtin I18n.
-          def field_human_name(field)
-            I18n.translate("#{object_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
+            result << "[#{field}]" unless field.blank?
+            result.flatten.join
           end
 
           # Returns the id for the given field
           # field_id(:username) => "user_username"
           # field_id(:gender, :male) => "user_gender_male"
-          def field_id(field, value=nil)
+          # field_name(:number) => "user_telephone_attributes_number"
+          # field_name(:street) => "user_addresses_attributes_0_street"
+          def field_id(field=nil, value=nil)
+            result = []
             if root_form?
-              value.blank? ? "#{object_name}_#{field}" : "#{object_name}_#{field}_#{value}"
-            elsif nested_form? && nested_form_type == 'many' # nested field
-              value.blank? ? "#{parent_object_name}_#{object_name}_attributes_#{field}" : 
-                             "#{parent_object_name}_#{object_name}_attributes_#{field}_#{value}"
-            elsif nested_form? && nested_form_type == 'one'
-              value.blank? ? "#{parent_object_name}_#{object_name}_attributes_#{field}" : 
-                             "#{parent_object_name}_#{object_name}_attributes_#{field}_#{value}"
+              result << object_model_name
+            elsif nested_form?
+              parent_form = @options[:nested][:parent]
+              attributes_name = "#{@options[:nested][:association]}_attributes"
+              nested_index = @options[:nested][:index]
+              fragment = [parent_form.field_id, "_#{attributes_name}"]
+              fragment.push("_#{nested_index}") if nested_index
+              result << fragment
             end
+            result << "_#{field}" unless field.blank?
+            result << "_#{value}" unless value.blank?
+            result.flatten.join
+          end
+          
+          # Returns the child object if it exists
+          def nested_object_id
+            nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id            
+          end
+          
+          # Returns true if this form object is nested in a parent form
+          def nested_form?
+            @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
+          end
+          
+          # Returns the value for the object's field
+          # field_value(:username) => "Joey"
+          def field_value(field)
+            @object && @object.respond_to?(field) ? @object.send(field) : ""
           end
 
           # explicit_object is either a symbol or a record
@@ -185,25 +198,16 @@ module Padrino
           def build_object(object_or_symbol)
             object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
           end
+          
+           # Returns the object's models name
+          #   => user_assignment
+          def object_model_name(explicit_object=object)
+            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('/', '-')
+          end
 
           # Returns the class type for the given object
           def object_class(explicit_object)
             explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
-          end
-          
-          # Returns the parent object name for the parent form if present
-          def parent_object_name
-            object_name(@options[:nested][:parent]) if nested_form?
-          end
-          
-          # Returns the type (:one, :many) for the nested form object
-          def nested_form_type
-            @options[:nested][:type] if nested_form?
-          end
-          
-          # Returns true if this form object is nested in a parent form
-          def nested_form?
-            @options[:nested]
           end
           
           # Returns true if this form is the top-level (not nested)
