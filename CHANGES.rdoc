@@ -46,6 +46,7 @@
 * Adds support for a '--app' option to specify app name in project generator
 * Adds support for '--adapter' option which specifies what SQL adapter to use(for AR, Datamapper, Sequel)
 * Fixed escaping of javascript [Thanks to Ryan Fitzgerald]
+* Adds dojo.js as script component
 
 == 0.9.10
 
