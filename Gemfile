@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source :rubygems
 
 gem "sinatra", ">= 1.0.0"
 gem "http_router", ">= 0.2.2"
