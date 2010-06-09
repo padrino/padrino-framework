@@ -4,9 +4,10 @@ module Padrino
       class AbstractFormBuilder #:nodoc:
         attr_accessor :template, :object
 
-        def initialize(template, object)
+        def initialize(template, object, options={})
           @template = template
           @object   = build_object(object)
+          @options  = options
           raise "FormBuilder template must be initialized!" unless template
           raise "FormBuilder object must be not be nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
         end
@@ -100,8 +101,21 @@ module Padrino
         # f.fields_for :addresses
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
-        def fields_for(child_model, instance_or_collection=nil)
-          "Incomplete"
+        def fields_for(child_association, instance_or_collection=nil, &block)
+          if instance_or_collection.nil? # use associated object(s)
+            instance_or_collection = self.object.send(child_association)
+            if instance_or_collection.respond_to?(:each)
+              
+            else # single instance
+              child_instance = instance_or_collection
+              nested_options = { :parent => self.object, :type => 'many' }
+              # TODO you can specify a single instance for a one-many
+              # f.fields_for :addresses, address
+              @template.fields_for(child_instance, { :nested => nested_options }, &block)            
+            end
+          else # use explicit instance or collection
+    
+          end
         end
 
         protected
@@ -112,8 +126,8 @@ module Padrino
 
           # Returns the object's models name
           #   => user_assignment
-          def object_name
-            object.is_a?(Symbol) ? object : object.class.to_s.underscore.gsub('/', '-')
+          def object_name(explicit_object=object)
+            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('/', '-')
           end
 
           # Returns true if the value matches the value in the field
@@ -137,7 +151,13 @@ module Padrino
           # Returns the name for the given field
           # field_name(:username) => "user[username]"
           def field_name(field)
-            "#{object_name}[#{field}]"
+            if root_form?
+              "#{object_name}[#{field}]"
+            elsif nested_form? && nested_form_type == 'many' # nested many field
+              "#{parent_object_name}[#{object_name}_attributes][#{field}]"
+            elsif nested_form? && nested_form_type == 'one'  # nested one field
+              "#{parent_object_name}[#{object_name}_attributes][#{field}]"
+            end
           end
 
           # Returns the human name of the field. Look that use builtin I18n.
@@ -149,7 +169,15 @@ module Padrino
           # field_id(:username) => "user_username"
           # field_id(:gender, :male) => "user_gender_male"
           def field_id(field, value=nil)
-            value.blank? ? "#{object_name}_#{field}" : "#{object_name}_#{field}_#{value}"
+            if root_form?
+              value.blank? ? "#{object_name}_#{field}" : "#{object_name}_#{field}_#{value}"
+            elsif nested_form? && nested_form_type == 'many' # nested field
+              value.blank? ? "#{parent_object_name}_#{object_name}_attributes_#{field}" : 
+                             "#{parent_object_name}_#{object_name}_attributes_#{field}_#{value}"
+            elsif nested_form? && nested_form_type == 'one'
+              value.blank? ? "#{parent_object_name}_#{object_name}_attributes_#{field}" : 
+                             "#{parent_object_name}_#{object_name}_attributes_#{field}_#{value}"
+            end
           end
 
           # explicit_object is either a symbol or a record
@@ -161,6 +189,26 @@ module Padrino
           # Returns the class type for the given object
           def object_class(explicit_object)
             explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
+          end
+          
+          # Returns the parent object name for the parent form if present
+          def parent_object_name
+            object_name(@options[:nested][:parent]) if nested_form?
+          end
+          
+          # Returns the type (:one, :many) for the nested form object
+          def nested_form_type
+            @options[:nested][:type] if nested_form?
+          end
+          
+          # Returns true if this form object is nested in a parent form
+          def nested_form?
+            @options[:nested]
+          end
+          
+          # Returns true if this form is the top-level (not nested)
+          def root_form?
+            !nested_form?
           end
       end # AbstractFormBuilder
     end # FormBuilder

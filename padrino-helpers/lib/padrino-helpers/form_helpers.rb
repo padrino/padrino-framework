@@ -10,8 +10,8 @@ module Padrino
       #   form_for @user, '/register', :id => 'register' do |f| ... end
       #
       def form_for(object, url, settings={}, &block)
-        builder_class = configured_form_builder_class(settings[:builder])
-        form_html = capture_html(builder_class.new(self, object), &block)
+        builder_class = configured_form_builder_class(settings.delete(:builder))
+        form_html = capture_html(builder_class.new(self, object, settings), &block)
         form_tag(url, settings) { form_html }
       end
 
@@ -25,8 +25,8 @@ module Padrino
       #   fields_for :assignment do |assigment| ... end
       #
       def fields_for(object, settings={}, &block)
-        builder_class = configured_form_builder_class(settings[:builder])
-        fields_html = capture_html(builder_class.new(self, object), &block)
+        builder_class = configured_form_builder_class(settings.delete(:builder))
+        fields_html = capture_html(builder_class.new(self, object, settings), &block)
         concat_content fields_html
       end
 

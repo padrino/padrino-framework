@@ -46,7 +46,7 @@ class MarkupUser
   def gender; 'male'; end
   def remember_me; '1'; end
   def permission; Permission.new; end
-  def addresses; [Address.new('Greenfield'), Address.new('Willowrun')]; end
+  def addresses; [Address.new('Greenfield', true), Address.new('Willowrun', false)]; end
 end
 
 class Address
