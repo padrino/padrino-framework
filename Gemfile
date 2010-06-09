@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem "sinatra", ">= 1.0.0"
 gem "http_router", ">= 0.2.2"
 gem "thor", ">= 0.13.0"
-gem "activesupport", "<= 2.3.8", :require => 'active_support'
+gem "activesupport", "= 2.3.8", :require => 'active_support'
 gem "shoulda", ">= 2.10.3"
 gem "i18n", "0.4.1"
 gem "mail", ">= 2.2.0"
