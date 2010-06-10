@@ -1,8 +1,8 @@
 require 'sinatra/base'
 require 'padrino-core/support_lite'
 
-Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-core/application/*.rb'].sort.each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-core/*.rb'].sort.each {|file| require file }
 
 # Defines our Constants
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)

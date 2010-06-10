@@ -8,7 +8,7 @@ require 'padrino-core/support_lite'
 require 'mail'
 
 # Require respecting order our dependencies
-Dir[File.dirname(__FILE__) + '/padrino-mailer/**/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/padrino-mailer/**/*.rb'].sort.each {|file| require file }
 
 module Padrino
   ##

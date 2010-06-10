@@ -94,7 +94,7 @@ module Padrino
     #
     def load_dependencies(*paths)
       paths.each do |path|
-        Dir[path].each { |file| load(file) }
+        Dir[path].sort.each { |file| load(file) }
       end
     end
     alias :load_dependency :load_dependencies
