@@ -11,16 +11,12 @@ begin
   # As 2.3.x
   require 'active_support/core_ext/date'
   require 'active_support/core_ext/time'
+  require 'active_support/core_ext/numeric'
+  require 'active_support/duration'
 rescue LoadError
   # As 3.x
-  require 'active_support/core_ext/date/calculations'
-  require 'active_support/core_ext/date/conversions'
-  require 'active_support/core_ext/time/calculations'
-  require 'active_support/core_ext/time/conversions'
+  require 'active_support/time'
 end
-
-require 'active_support/core_ext/numeric'
-require 'active_support/duration'
 
 class Test::Unit::TestCase
   include Padrino::Helpers::OutputHelpers

@@ -7,44 +7,36 @@
 # 2) Loading custom method extensions or separate gem would conflict when AR or MM has been loaded.
 # 3) Datamapper is planning to move to ActiveSupport and away from extlib.
 #
-# Extensions required for Padrino:
-#
-#   * Class#cattr_accessor
-#   * Module#alias_method_chain
-#   * String#inflectors (classify, underscore, camelize, pluralize, etc)
-#   * Array#extract_options!
-#   * Object#blank?
-#   * Object#present?
-#   * Hash#slice, Hash#slice!
-#   * Hash#to_params
-#   * Hash#symbolize_keys, Hash.symbolize_keys!
-#   * Hash#reverse_merge, Hash#reverse_merge!
-#   * Symbol#to_proc
-#
-require 'rbconfig'
 require 'active_support/core_ext/string/conversions'
 require 'active_support/core_ext/kernel'
 require 'active_support/core_ext/module'
-require 'active_support/deprecation'
 require 'active_support/core_ext/class/attribute_accessors'
-require 'active_support/core_ext/hash'
+require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/hash/deep_merge'
+require 'active_support/core_ext/hash/reverse_merge'
+require 'active_support/core_ext/hash/slice'
 require 'active_support/inflector'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/module'
 require 'active_support/ordered_hash'
 
+if defined?(ActiveSupport::CoreExtensions::Hash)
+  # This mean that we are using AS 2.3.x
+  class Hash
+    include ActiveSupport::CoreExtensions::Hash::Keys
+    include ActiveSupport::CoreExtensions::Hash::DeepMerge
+    include ActiveSupport::CoreExtensions::Hash::ReverseMerge
+    include ActiveSupport::CoreExtensions::Hash::Slice
+  end
+end
+
 begin
   require 'active_support/core_ext/symbol'
 rescue LoadError
   # AS 3.0 has been removed it because is now available in Ruby > 1.8.7 but we want keep Ruby 1.8.6 support.
   class Symbol
-    ##
-    # Turns the symbol into a simple proc, which is especially useful for enumerations.
-    #
-    #   # The same as people.map { |p| p.name }
-    #   people.map(&:name)
-    #
+    # Turns the symbol into a simple proc, which is especially useful for enumerations like: people.map(&:name)
     def to_proc
       Proc.new { |*args| args.shift.__send__(self, *args) }
     end
@@ -55,32 +47,6 @@ end
 # Used to know if this file was required
 #
 module SupportLite; end
-
-module Padrino
-  ##
-  # This method return the correct location of padrino bin or
-  # exec it using Kernel#system with the given args
-  #
-  def self.bin(*args)
-    @_padrino_bin ||= [self.ruby_command, File.expand_path("../../../bin/padrino", __FILE__)]
-    args.empty? ? @_padrino_bin : system(args.unshift(@_padrino_bin).join(" "))
-  end
-
-  ##
-  # Return the path to the ruby interpreter taking into account multiple
-  # installations and windows extensions.
-  #
-  def self.ruby_command
-    @ruby_command ||= begin
-      ruby = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
-      ruby << Config::CONFIG['EXEEXT']
-
-      # escape string in case path to ruby executable contain spaces.
-      ruby.sub!(/.*\s.*/m, '"\&"')
-      ruby
-    end
-  end
-end
 
 module ObjectSpace
   class << self
