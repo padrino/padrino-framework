@@ -57,9 +57,9 @@ module Padrino
         # For migration files
         # returns the number of the latest(most current) migration file
         def return_last_migration_number
-          Dir[destination_root('db/migrate/*.rb')].map do |f|
+          Dir[destination_root('db/migrate/*.rb')].map { |f|
             File.basename(f).match(/^(\d+)/)[0].to_i
-          end.max.to_i || 0
+          }.max.to_i || 0
         end
 
         # Return true if the migration already exist
