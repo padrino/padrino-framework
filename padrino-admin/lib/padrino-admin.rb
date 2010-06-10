@@ -2,8 +2,8 @@ require 'padrino-core'
 require 'padrino-gen'
 require 'padrino-helpers'
 
-Dir[File.dirname(__FILE__) + '/padrino-admin/*.rb'].sort.each { |file| require file }
-Dir[File.dirname(__FILE__) + '/padrino-admin/{helpers,utils}/*.rb'].sort.each { |file| require file }
+FileSet.glob_require('padrino-admin/*.rb', __FILE__)
+FileSet.glob_require('padrino-admin/{helpers,utils}/*.rb', __FILE__)
 
 module Padrino
   ##
