@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'thor'
 
 module Padrino
@@ -19,7 +20,7 @@ module Padrino
       def start
         prepare :start
         require File.expand_path(File.dirname(__FILE__) + "/adapter")
-        require 'config/boot'
+        require File.expand_path('config/boot.rb')
         Padrino::Cli::Adapter.start(options)
       end
 
@@ -45,7 +46,7 @@ module Padrino
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
         ENV['PADRINO_LOG_LEVEL'] ||= "test"
         require File.expand_path(File.dirname(__FILE__) + '/rake')
-        silence(:stdout) { require 'config/boot' }
+        silence(:stdout) { require File.expand_path('config/boot.rb') }
         PadrinoTasks.init
       end
 
@@ -57,7 +58,7 @@ module Padrino
         puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
         require 'irb'
         require "irb/completion"
-        require 'config/boot'
+        require File.expand_path('config/boot.rb')
         require File.expand_path(File.dirname(__FILE__) + '/console')
         IRB.start
       end

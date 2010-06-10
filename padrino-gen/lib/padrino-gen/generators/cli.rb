@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'thor/group'
 
 module Padrino
@@ -20,7 +21,7 @@ module Padrino
           ENV['PADRINO_LOG_LEVEL'] ||= "test"
           boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
           if File.exist?(boot)
-            require boot
+            require File.expand_path(boot)
           else
             # If we are outside app we need to load support_lite
             require 'padrino-core/support_lite'

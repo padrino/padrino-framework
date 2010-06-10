@@ -1,6 +1,6 @@
 # Defines our constants
-PADRINO_ENV  = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development" unless defined?(PADRINO_ENV)
-PADRINO_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..')) unless defined? PADRINO_ROOT
+PADRINO_ENV  = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+PADRINO_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..')) unless defined?(PADRINO_ROOT)
 
 begin
   # Require the preresolved locked set of gems.

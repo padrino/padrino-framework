@@ -1,4 +1,5 @@
 require 'padrino-core/tasks'
+require 'padrino-core/command'
 
 module Padrino
   ##

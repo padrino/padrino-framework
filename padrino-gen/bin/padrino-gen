@@ -1,14 +1,12 @@
 #!/usr/bin/env ruby
-require 'rubygems'
+
+# We load padrino-gen
 padrino_gen_path = File.expand_path('../../lib', __FILE__)
 $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)
 
 # We try to load the vendored padrino-core if exist
 padrino_core_path = File.expand_path('../../../padrino-core/lib', __FILE__)
 $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.include?(padrino_core_path)
-
-padrino_local_path = Dir.pwd
-$:.unshift(padrino_local_path) if File.directory?(padrino_local_path) && !$:.include?(padrino_local_path)
 
 require 'padrino-gen'
 require 'padrino-gen/generators/cli'
