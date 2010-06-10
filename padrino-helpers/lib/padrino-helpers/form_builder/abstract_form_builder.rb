@@ -144,11 +144,9 @@ module Padrino
             if root_form?
               result << object_model_name
             elsif nested_form?
-              parent_form = @options[:nested][:parent]
-              attributes_name = "#{@options[:nested][:association]}_attributes"
-              nested_index = @options[:nested][:index]
-              fragment = [parent_form.field_name, "[#{attributes_name}", "]"]
-              fragment.insert(2, "][#{nested_index}") if nested_index
+              nested_options = @options[:nested]
+              fragment = [nested_options[:parent].field_name, "[#{nested_options[:association]}_attributes", "]"]
+              fragment.insert(2, "][#{nested_options[:index]}") if nested_options[:index]
               result << fragment
             end
             result << "[#{field}]" unless field.blank?
@@ -165,11 +163,9 @@ module Padrino
             if root_form?
               result << object_model_name
             elsif nested_form?
-              parent_form = @options[:nested][:parent]
-              attributes_name = "#{@options[:nested][:association]}_attributes"
-              nested_index = @options[:nested][:index]
-              fragment = [parent_form.field_id, "_#{attributes_name}"]
-              fragment.push("_#{nested_index}") if nested_index
+              nested_options = @options[:nested]
+              fragment = [nested_options[:parent].field_id, "_#{nested_options[:association]}_attributes"]
+              fragment.push("_#{nested_options[:index]}") if nested_options[:index]
               result << fragment
             end
             result << "_#{field}" unless field.blank?
