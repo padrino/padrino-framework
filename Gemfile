@@ -16,7 +16,7 @@ else
 end
 
 gem "shoulda", ">= 2.10.3"
-gem "i18n", ">=0.3.7"
+gem "i18n", ">=0.4.1"
 gem "mail", ">= 2.2.0"
 gem "builder", ">= 2.1.2"
 
