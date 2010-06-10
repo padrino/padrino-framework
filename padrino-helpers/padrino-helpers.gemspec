@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = 'lib'
   s.add_runtime_dependency(%q<padrino-core>, ["= #{Padrino.version}"])
-  s.add_runtime_dependency(%q<i18n>, [">= 0.4.1"])
+  s.add_runtime_dependency(%q<i18n>, [">= 0.3.7"])
   s.add_development_dependency(%q<haml>, [">= 2.2.1"])
   s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
