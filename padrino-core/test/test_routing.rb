@@ -336,22 +336,6 @@ class TestRouting < Test::Unit::TestCase
     get "/posts/new/"
     assert_equal "new", body
   end
-  
-  should_eventually "properly route to first foo with two similar routes" do
-    mock_app do
-      controllers do
-        get('/foo/') { "this is foo" }
-        get(:show, :map => "/foo/:bar/:id") { "/foo/#{params[:bar]}/#{params[:id]}" }
-      end
-    end
-    get "/foo"
-    assert_equal "this is foo", body
-    # TODO fix this in http_router, should pass
-    get "/foo/"
-    assert_equal "this is foo", body
-    get '/foo/5/10'
-    assert_equal "/foo/5/10", body
-  end
 
   should "ignore trailing delimiters within a named controller for unnamed actions" do
     mock_app do
@@ -750,5 +734,63 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "post bar = hello", body
     post "/foos/hello.js"
     assert_equal "post bar = hello", body
+  end
+  
+  should_eventually "properly route to first foo with two similar routes" do
+    mock_app do
+      controllers do
+        get('/foo/') { "this is foo" }
+        get(:show, :map => "/foo/:bar/:id") { "/foo/#{params[:bar]}/#{params[:id]}" }
+      end
+    end
+    get "/foo"
+    assert_equal "this is foo", body
+    # TODO fix this in http_router, should pass
+    get "/foo/"
+    assert_equal "this is foo", body
+    get '/foo/5/10'
+    assert_equal "/foo/5/10", body
+  end
+  
+  should_eventually "parse params with class level provides" do
+    mock_app do
+      controllers :posts do
+        provides :html, :js
+        post(:create, :map => "/foo/:bar/:baz/:id") { 
+          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}" 
+        }
+      end
+      controllers :topics do
+        provides :html, :js
+        get(:show, :map => "/foo/:bar/:baz/:id") { render "topics/show" }
+        post(:create, :map => "/foo/:bar/:baz") { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
+      end
+    end
+    post "/foo/bar/baz.js"
+    assert_equal "TOPICS CREATE bar - baz", body, "should parse params with explicit .js"
+    post @app.url(:topics, :create, :format => :js, :bar => 'bar', :baz => 'baz')
+    assert_equal "TOPICS CREATE bar - baz", body, "should parse params from generated url"
+    post "/foo/bar/baz/5.js"
+    assert_equal "POST CREATE bar - baz - 5", body
+    post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
+    assert_equal "POST CREATE bar - baz - 5", body
+  end
+  
+  should_eventually "parse params properly with inline provides" do
+    mock_app do
+      controllers :posts do
+        post(:create, :map => "/foo/:bar/:baz/:id", :provides => [:html, :js]) { 
+          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}" 
+        }
+      end
+      controllers :topics do
+        get(:show, :map => "/foo/:bar/:baz/:id", :provides => [:html, :js]) { render "topics/show" }
+        post(:create, :map => "/foo/:bar/:baz", :provides => [:html, :js]) { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
+      end
+    end
+    post @app.url(:topics, :create, :format => :js, :bar => 'bar', :baz => 'baz')
+    assert_equal "TOPICS CREATE bar - baz", body, "should properly post to topics create action"
+    post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
+    assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
   end
 end
