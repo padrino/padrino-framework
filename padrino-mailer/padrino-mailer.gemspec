@@ -14,11 +14,11 @@ Gem::Specification.new do |s|
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
   s.extra_rdoc_files = Dir["*.rdoc"]
-  s.files = %w(.document .gitignore .yardopts LICENSE README.rdoc Rakefile padrino-mailer.gemspec) + Dir.glob("{bin,lib,test}/**/*")
+  s.files = %w(.document .gitignore LICENSE README.rdoc Rakefile padrino-mailer.gemspec) + Dir.glob("{bin,lib,test}/**/*")
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = 'lib'
   s.add_runtime_dependency(%q<padrino-core>, ["= #{Padrino.version}"])
-  s.add_runtime_dependency(%q<mail>, [">= 2.2.0"])
+  s.add_runtime_dependency(%q<mail>, [">= 2.2.3"])
   s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
   s.add_development_dependency(%q<haml>, [">= 2.2.1"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
