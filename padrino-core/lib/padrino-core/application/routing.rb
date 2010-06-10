@@ -176,7 +176,7 @@ module Padrino
         #
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
-          path, name, options = *parse_route(path, options.dup)
+          path, name, options = *parse_route(path, options.dup, verb)
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
@@ -222,7 +222,7 @@ module Padrino
         # is parsed to reflect provides formats, controllers, parents, 'with' parameters,
         # and other options.
         #
-        def parse_route(path, options)
+        def parse_route(path, options, verb)
           # We need save our originals path/options so we can perform correctly cache.
           original = [path, options.dup]
 
@@ -236,14 +236,15 @@ module Padrino
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
             # Backwards compatability
+
             if path == '(/)'
               path = '/'
-              warn "(/) is deprecated, simply use / instead"
+              warn "WARNING! #{Padrino.first_caller}: #{verb} (/) is deprecated, simply use / instead" if verb != "HEAD"
             end
 
             if path =~ /\(\/\)$/
               path.gsub(/\(\/\)$/, '/?')
-              warn "(/) is deprecated, simply use /? instead"
+              warn "WARNING! #{Padrino.first_caller}: #{verb} (/) is deprecated, simply use /? instead" if verb != "HEAD"
             end
 
             # Now we need to parse our 'with' params
