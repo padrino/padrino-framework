@@ -5,7 +5,8 @@ gem "http_router", ">= 0.2.2"
 gem "thor", ">= 0.13.0"
 
 # If you want try our test on AS edge.
-# $ rake test AS=edge
+# $ AS=edge bundle install
+# $ AS=edge rake test
 if ENV['AS'] == "edge"
   puts "Using ActiveSupport 3.0.0.beta4"
   gem "activesupport", ">= 3.0.0.beta4", :require => nil
