@@ -10,6 +10,19 @@ $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.inclu
 padrino_local_path = Dir.pwd
 $:.unshift(padrino_local_path) if File.directory?(padrino_local_path) && !$:.include?(padrino_local_path)
 
+begin
+  require File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  if defined?(Gem)
+    Gem.cache
+    gem 'bundler'
+  else
+    require 'rubygems'
+  end
+  require 'bundler'
+  Bundler.setup
+end
+
 require 'padrino-gen'
 require 'padrino-gen/generators/cli'
 
