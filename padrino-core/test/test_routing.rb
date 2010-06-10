@@ -336,6 +336,22 @@ class TestRouting < Test::Unit::TestCase
     get "/posts/new/"
     assert_equal "new", body
   end
+  
+  should_eventually "properly route to first foo with two similar routes" do
+    mock_app do
+      controllers do
+        get('/foo/') { "this is foo" }
+        get(:show, :map => "/foo/:bar/:id") { "/foo/#{params[:bar]}/#{params[:id]}" }
+      end
+    end
+    get "/foo"
+    assert_equal "this is foo", body
+    # TODO fix this in http_router, should pass
+    get "/foo/"
+    assert_equal "this is foo", body
+    get '/foo/5/10'
+    assert_equal "/foo/5/10", body
+  end
 
   should "ignore trailing delimiters within a named controller for unnamed actions" do
     mock_app do
