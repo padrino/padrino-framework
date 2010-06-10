@@ -24,7 +24,7 @@ module Padrino
             require File.expand_path(boot)
           else
             # If we are outside app we need to load support_lite
-            require 'padrino-core/support_lite'
+            require 'padrino-core/support_lite' unless defined?(SupportLite)
           end
         rescue Exception => e
           puts "=> Problem loading config/boot.rb"

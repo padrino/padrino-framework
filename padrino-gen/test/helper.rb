@@ -6,7 +6,7 @@ require 'rack/test'
 require 'webrat'
 require 'thor/group'
 require 'padrino-gen'
-require 'padrino-core/support_lite'
+require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 Padrino::Generators.load_components!
 

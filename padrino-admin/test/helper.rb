@@ -15,7 +15,7 @@ require 'thor/group'
   end
 end
 
-require 'padrino-core/support_lite'
+require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
 
 Padrino::Generators.load_components!

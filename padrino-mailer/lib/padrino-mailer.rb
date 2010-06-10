@@ -4,7 +4,7 @@ begin
 rescue LoadError
   require 'sinatra/tilt'
 end
-require 'padrino-core/support_lite'
+require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'mail'
 
 # Require respecting order our dependencies
