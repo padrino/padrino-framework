@@ -94,7 +94,8 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults
-          @_controller, @_parents, @_defaults, @_provides = original_controller, original_parent, original_defaults, original_provides
+          @_controller, @_parents = original_controller, original_parent
+          @_defaults, @_provides  = original_defaults, original_provides
         else
           include(*args) if extensions.any?
         end
@@ -327,10 +328,7 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          @_provides ||= []
-          @_provides.concat(types)
-          @_provides.uniq!
-          @_provides.delete_if{|t| t == :any}
+          @_provides = (@_provides || []).concat(types).uniq.reject { |t| t == :any }
           mime_types = types.map{ |t| mime_type(t) }
 
           condition {
