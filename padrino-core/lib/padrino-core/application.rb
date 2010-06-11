@@ -49,7 +49,7 @@ module Padrino
         Padrino.require_dependencies(File.join(self.root, "/models/**/*.rb")) # Reload all models
         Padrino.require_dependencies(self.app_file) # Reload the app file
         register_initializers # Reload our middlewares
-        load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) } # Reload dependencies
+        require_load_paths # Reload dependencies
         default_filters! # Reload filters
         default_errors!  # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
