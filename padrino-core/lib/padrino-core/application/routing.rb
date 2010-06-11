@@ -1,4 +1,4 @@
-require '~/Development/http_router/lib/http_router' unless defined?(HttpRouter)
+require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
