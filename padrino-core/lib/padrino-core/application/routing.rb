@@ -51,11 +51,10 @@ module Padrino
       #     get "/show/:id" do; ...; end
       #   end
       #
-      # You can supply default values:
+      # and you can call directly these urls:
       #
-      #   controller :lang => :de do
-      #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
-      #   end
+      #   # => "/admin"
+      #   # => "/admin/show/1"
       #
       # You can supply provides to all controller routes:
       #
@@ -65,10 +64,24 @@ module Padrino
       #     get :foo do; "respond to html, xml and json"; end
       #   end
       #
-      # and you can call directly these urls:
+      # You can specify parent resources in padrino with the :parent option on the controller:
       #
-      #   # => "/admin"
-      #   # => "/admin/show/1"
+      #   controllers :product, :parent => :user do
+      #     get :index do
+      #       # url is generated as "/user/#{params[:user_id]}/product"
+      #       # url_for(:product, :index, :user_id => 5) => "/user/5/product"
+      #     end
+      #     get :show, :with => :id do
+      #       # url is generated as "/user/#{params[:user_id]}/product/show/#{params[:id]}"
+      #       # url_for(:product, :show, :user_id => 5, :id => 10) => "/user/5/product/show/10"
+      #     end
+      #   end
+      #
+      # You can supply default values:
+      #
+      #   controller :lang => :de do
+      #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
+      #   end
       #
       # In a controller before and after filters are scoped and didn't affect other controllers or main app.
       # In a controller layout are scoped and didn't affect others controllers and main app.
