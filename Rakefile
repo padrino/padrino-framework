@@ -54,7 +54,7 @@ end
 
 desc "Clean pkg and other stuff"
 task :uninstall do
-  sh "gem search --no-version padrino | grep padrino | xargs sudo gem uninstall -a"
+  sh "gem search --no-version padrino | grep padrino | xargs gem uninstall -a"
 end
 
 desc "Displays the current version"
