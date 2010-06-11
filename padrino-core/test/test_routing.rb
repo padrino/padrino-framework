@@ -752,7 +752,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/foo/5/10", body
   end
   
-  should_eventually "parse params with class level provides" do
+  should "parse params with class level provides" do
     mock_app do
       controllers :posts do
         provides :html, :js

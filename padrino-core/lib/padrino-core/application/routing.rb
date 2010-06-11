@@ -177,7 +177,9 @@ module Padrino
         #
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
-          path, name, options = *parse_route(path, options.dup, verb)
+          route_options = options.dup
+          route_options[:respond_to] = @_provides if @_provides && @_provides.size > 1
+          path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
@@ -325,6 +327,10 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
+          @_provides ||= []
+          @_provides.concat(types)
+          @_provides.uniq!
+          @_provides.delete_if{|t| t == :any}
           mime_types = types.map{ |t| mime_type(t) }
 
           condition {
