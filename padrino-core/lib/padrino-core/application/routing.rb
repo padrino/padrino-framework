@@ -277,8 +277,7 @@ module Padrino
               path = process_path_for_with_params(path, with_params)
             end
 
-            # Now we need to parse our provides with :respond_to backward compatibility
-            options[:provides] ||= options.delete(:respond_to)
+            # Now we need to parse our provides
             options.delete(:provides) if options[:provides].nil?
 
             if format_params = options[:provides]
@@ -374,7 +373,6 @@ module Padrino
             matched_format
           end
         end
-        alias :respond_to :provides
     end
 
     module InstanceMethods

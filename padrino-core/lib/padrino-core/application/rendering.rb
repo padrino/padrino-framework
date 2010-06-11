@@ -146,7 +146,7 @@ module Padrino
         #
         # ==== Example
         #
-        #   get "/foo", :respond_to => [:html, :js] do; render 'path/to/foo'; end
+        #   get "/foo", :provides => [:html, :js] do; render 'path/to/foo'; end
         #   # If you request "/foo.js" with I18n.locale == :ru => [:"/path/to/foo.ru.js", :erb]
         #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
         #

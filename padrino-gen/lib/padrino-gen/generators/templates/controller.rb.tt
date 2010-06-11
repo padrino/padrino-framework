@@ -4,7 +4,7 @@
   #   render 'index'
   # end
 
-  # get :sample, :map => "/sample/url", :respond_to => [:any, :js] do
+  # get :sample, :map => "/sample/url", :provides => [:any, :js] do
   #   case content_type
   #     when :js then ...
   #     else ...

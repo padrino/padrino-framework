@@ -150,7 +150,7 @@ and even configure the respond_to for each route:
 
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
-    get :show, :with => :id, :respond_to => :js do
+    get :show, :with => :id, :provides => :js do
       "Url is /admin/show/#{params[:id]}.#{params[:format]}"
     end
 
@@ -166,7 +166,7 @@ or auto lookup for current locale or content_type
 
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
-    get :show, :with => :id, :respond_to => [html, :js] do
+    get :show, :with => :id, :provides => [html, :js] do
       render "admin/show"
     end
   end

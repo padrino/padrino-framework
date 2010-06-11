@@ -2,6 +2,8 @@
 
 == 0.9.11 (Unreleased)
 
+* Dropped support of :respond_to in favor of :provides
+* Added provides in controller level App.controller :provides => [:json, :xml]
 * Added compatibility with AS 3.0
 * Fixed compatibility with DM 1.0
 * Added bundler support also for testing [Thanks to Ryanfitz]

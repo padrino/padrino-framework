@@ -43,7 +43,6 @@ module Mail
         @_provides = formats.flatten.compact
       end
     end
-    alias :respond_to :provides
 
     ##
     # Helper to add a text part to a multipart/alternative email.  If this and
@@ -183,7 +182,7 @@ module Mail
       @_defaults = attributes
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
     end
-    
+
     # Shortcut for delivery_method with smarter smtp overwrites
     def via(method = nil, settings = {})
       if method.nil?
@@ -227,6 +226,6 @@ module Mail
         # Setup the body if we don't have provides
         self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
-      
+
   end # Message
 end # Mail

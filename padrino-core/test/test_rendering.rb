@@ -73,7 +73,7 @@ class TestRendering < Test::Unit::TestCase
       create_view :foo, "erb file"
       create_view :foo, "js file", :format => :js
       mock_app do
-        get('/layout_test', :respond_to => [:html, :js]){ render :foo }
+        get('/layout_test', :provides => [:html, :js]){ render :foo }
       end
       get "/layout_test"
       assert_equal "this is an erb file", body
@@ -87,7 +87,7 @@ class TestRendering < Test::Unit::TestCase
       create_view :foo, "erb file"
       create_view :foo, "xml file", :format => :xml
       mock_app do
-        get('/layout_test', :respond_to => [:html, :xml]){ render :foo }
+        get('/layout_test', :provides => [:html, :xml]){ render :foo }
       end
       get "/layout_test"
       assert_equal "this is an erb file", body
@@ -99,7 +99,7 @@ class TestRendering < Test::Unit::TestCase
       create_layout :foo, "html file", :format => :html
 
       mock_app do
-        get('/content_type_test', :respond_to => [:html, :xml]) { render :foo }
+        get('/content_type_test', :provides => [:html, :xml]) { render :foo }
       end
 
       get "/content_type_test"
@@ -112,7 +112,7 @@ class TestRendering < Test::Unit::TestCase
       create_layout :foo, "html file", :format => :html
 
       mock_app do
-        get('/default_rendering_test', :respond_to => [:html, :xml]) { render :foo }
+        get('/default_rendering_test', :provides => [:html, :xml]) { render :foo }
       end
 
       @save = Padrino::Rendering::DEFAULT_RENDERING_OPTIONS
@@ -208,7 +208,7 @@ class TestRendering < Test::Unit::TestCase
       create_view :foo, "Im Js", :format => :js
       create_view :foo, "Im Erb"
       mock_app do
-        get("/foo", :respond_to => :js) { render :foo }
+        get("/foo", :provides => :js) { render :foo }
         get("/bar.js") { render :foo }
       end
       get "/foo.js"
@@ -223,9 +223,9 @@ class TestRendering < Test::Unit::TestCase
       create_view :foo, "Im Haml", :format => :haml
       create_view :foo, "Im Xml", :format => :xml
       mock_app do
-        get("/foo_normal", :respond_to => :js) { render 'foo' }
-        get("/foo_haml", :respond_to => :js) { render 'foo.haml' }
-        get("/foo_xml", :respond_to => :js) { render 'foo.xml' }
+        get("/foo_normal", :provides => :js) { render 'foo' }
+        get("/foo_haml", :provides => :js) { render 'foo.haml' }
+        get("/foo_xml", :provides => :js) { render 'foo.xml' }
       end
       get "/foo_normal.js"
       assert_equal "Im Js", body
@@ -282,7 +282,7 @@ class TestRendering < Test::Unit::TestCase
       create_view :foo, "Im English Js",  :format => :js, :locale => :en
       create_view :foo, "Im Italian Js",  :format => :js, :locale => :it
       mock_app do
-        get("/foo", :respond_to => [:html, :js]) { render :foo }
+        get("/foo", :provides => [:html, :js]) { render :foo }
       end
       I18n.locale = :none
       get "/foo.js"
@@ -321,7 +321,7 @@ class TestRendering < Test::Unit::TestCase
       create_view   :bar, "Im a json",      :format => :json
       mock_app do
         layout :foo
-        get("/bar", :respond_to => [:html, :js, :json]) { render :bar }
+        get("/bar", :provides => [:html, :js, :json]) { render :bar }
       end
       I18n.locale = :none
       get "/bar.js"
