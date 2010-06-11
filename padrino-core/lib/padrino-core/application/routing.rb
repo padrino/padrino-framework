@@ -54,7 +54,15 @@ module Padrino
       # You can supply default values:
       #
       #   controller :lang => :de do
-      #     get :index, :map => "/:lang" do; ...; end
+      #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
+      #   end
+      #
+      # You can supply provides to all controller routes:
+      #
+      #   controller :provides => [:html, :xml, :json] do
+      #     get :index do; "respond to html, xml and json"; end
+      #     post :index do; "respond to html, xml and json"; end
+      #     get :foo do; "respond to html, xml and json"; end
       #   end
       #
       # and you can call directly these urls:
@@ -171,10 +179,10 @@ module Padrino
         #   get :show, :with => :id, :parent => :user     # => "/user/:user_id/show/:id"
         #   get :show, :with => :id                       # => "/show/:id"
         #   get :show, :with => [:id, :name]              # => "/show/:id/:name"
-        #   get :list, :provides => :js                 # => "/list.{:format,js)"
-        #   get :list, :provides => :any                # => "/list(.:format)"
-        #   get :list, :provides => [:js, :json]        # => "/list.{!format,js|json}"
-        #   get :list, :provides => [:html, :js, :json] # => "/list(.{!format,js|json})"
+        #   get :list, :provides => :js                   # => "/list.{:format,js)"
+        #   get :list, :provides => :any                  # => "/list(.:format)"
+        #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
+        #   get :list, :provides => [:html, :js, :json]   # => "/list(.{!format,js|json})"
         #
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
