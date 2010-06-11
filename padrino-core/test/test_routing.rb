@@ -52,7 +52,7 @@ class TestRouting < Test::Unit::TestCase
     get "/my/2/bar"
     assert_equal "2", body
   end
-  
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
@@ -735,7 +735,7 @@ class TestRouting < Test::Unit::TestCase
     post "/foos/hello.js"
     assert_equal "post bar = hello", body
   end
-  
+
   should "properly route to first foo with two similar routes" do
     mock_app do
       controllers do
@@ -751,17 +751,15 @@ class TestRouting < Test::Unit::TestCase
     get '/foo/5/10'
     assert_equal "/foo/5/10", body
   end
-  
+
   should "parse params with class level provides" do
     mock_app do
-      controllers :posts do
-        provides :html, :js
-        post(:create, :map => "/foo/:bar/:baz/:id") { 
-          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}" 
+      controllers :posts, :provides => [:html, :js] do
+        post(:create, :map => "/foo/:bar/:baz/:id") {
+          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
         }
       end
-      controllers :topics do
-        provides :html, :js
+      controllers :topics, :provides => [:js, :html] do
         get(:show, :map => "/foo/:bar/:baz/:id") { render "topics/show" }
         post(:create, :map => "/foo/:bar/:baz") { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
       end
@@ -775,12 +773,12 @@ class TestRouting < Test::Unit::TestCase
     post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
     assert_equal "POST CREATE bar - baz - 5", body
   end
-  
+
   should "parse params properly with inline provides" do
     mock_app do
       controllers :posts do
-        post(:create, :map => "/foo/:bar/:baz/:id", :provides => [:html, :js]) { 
-          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}" 
+        post(:create, :map => "/foo/:bar/:baz/:id", :provides => [:html, :js]) {
+          "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
         }
       end
       controllers :topics do

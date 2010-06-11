@@ -78,8 +78,8 @@ module Padrino
           # Controller defaults
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
+          @_provides,   original_provides   = options.delete(:provides), @_provides
           @_defaults,   original_defaults   = options, @_defaults
-          @_provides,   original_provides   = [], @_provides
 
           # Application defaults
           @before_filters, original_before_filters = [],  @before_filters
@@ -179,7 +179,7 @@ module Padrino
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
-          route_options[:respond_to] = @_provides if @_provides && @_provides.size > 1
+          route_options[:provides] = @_provides if @_provides
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
@@ -328,10 +328,9 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          @_provides = (@_provides || []).concat(types).uniq.reject { |t| t == :any }
-          mime_types = types.map{ |t| mime_type(t) }
+          mime_types = types.map { |t| mime_type(t) }
 
-          condition {
+          condition do
             matching_types = (request.accept.map { |a| a.split(";")[0].strip } & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format = $1.to_sym if $1
@@ -352,7 +351,7 @@ module Padrino
             end
 
             matched_format
-          }
+          end
         end
         alias :respond_to :provides
     end
