@@ -177,9 +177,7 @@ module Padrino
         #
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
-          route_options = options.dup
-          route_options[:provides] = @_provides if @_provides
-          path, name, options = *parse_route(path, route_options, verb)
+          path, name, options = *parse_route(path, options.dup, verb)
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
@@ -327,8 +325,30 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          @_provides ||= []
-          @_provides.concat(types)
+          mime_types = types.map{ |t| mime_type(t) }
+
+          condition {
+            matching_types = (request.accept.map { |a| a.split(";")[0].strip } & mime_types)
+            request.path_info =~ /\.([^\.\/]+)$/
+            url_format = $1.to_sym if $1
+
+            if !url_format && matching_types.first
+              type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+              accept_format = CONTENT_TYPE_ALIASES[type] || type
+            end
+
+            matched_format = types.include?(:any)          ||
+                             types.include?(accept_format) ||
+                             types.include?(url_format)    ||
+                             (request.accept.empty? && types.include?(:html)) # This is only usefull for testing
+
+            if matched_format
+              @_content_type = url_format || accept_format || :html
+              content_type(@_content_type, :charset => 'utf-8')
+            end
+
+            matched_format
+          }
         end
         alias :respond_to :provides
     end
