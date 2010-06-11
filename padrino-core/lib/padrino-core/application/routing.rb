@@ -1,4 +1,4 @@
-require 'http_router' unless defined?(HttpRouter)
+require '~/Development/http_router/lib/http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
@@ -79,6 +79,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_defaults,   original_defaults   = options, @_defaults
+          @_provides,   original_provides   = [], @_provides
 
           # Application defaults
           @before_filters, original_before_filters = [],  @before_filters
@@ -93,7 +94,7 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults
-          @_controller, @_parents, @_defaults = original_controller, original_parent, original_defaults
+          @_controller, @_parents, @_defaults, @_provides = original_controller, original_parent, original_defaults, original_provides
         else
           include(*args) if extensions.any?
         end
@@ -176,7 +177,9 @@ module Padrino
         #
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
-          path, name, options = *parse_route(path, options.dup, verb)
+          route_options = options.dup
+          route_options[:provides] = @_provides if @_provides
+          path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
@@ -324,30 +327,8 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          mime_types = types.map{ |t| mime_type(t) }
-
-          condition {
-            matching_types = (request.accept.map { |a| a.split(";")[0].strip } & mime_types)
-            request.path_info =~ /\.([^\.\/]+)$/
-            url_format = $1.to_sym if $1
-
-            if !url_format && matching_types.first
-              type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
-              accept_format = CONTENT_TYPE_ALIASES[type] || type
-            end
-
-            matched_format = types.include?(:any)          ||
-                             types.include?(accept_format) ||
-                             types.include?(url_format)    ||
-                             (request.accept.empty? && types.include?(:html)) # This is only usefull for testing
-
-            if matched_format
-              @_content_type = url_format || accept_format || :html
-              content_type(@_content_type, :charset => 'utf-8')
-            end
-
-            matched_format
-          }
+          @_provides ||= []
+          @_provides.concat(types)
         end
         alias :respond_to :provides
     end
