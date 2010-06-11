@@ -736,7 +736,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "post bar = hello", body
   end
   
-  should_eventually "properly route to first foo with two similar routes" do
+  should "properly route to first foo with two similar routes" do
     mock_app do
       controllers do
         get('/foo/') { "this is foo" }
@@ -752,7 +752,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/foo/5/10", body
   end
   
-  should_eventually "parse params with class level provides" do
+  should "parse params with class level provides" do
     mock_app do
       controllers :posts do
         provides :html, :js
@@ -776,7 +776,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "POST CREATE bar - baz - 5", body
   end
   
-  should_eventually "parse params properly with inline provides" do
+  should "parse params properly with inline provides" do
     mock_app do
       controllers :posts do
         post(:create, :map => "/foo/:bar/:baz/:id", :provides => [:html, :js]) { 

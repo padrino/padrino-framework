@@ -1,7 +1,7 @@
 source :rubygems
 
 gem "sinatra", ">= 1.0.0"
-gem "http_router", ">= 0.2.2"
+gem "http_router", ">= 0.2.3"
 gem "thor", ">= 0.13.0"
 
 # If you want try our test on AS edge.

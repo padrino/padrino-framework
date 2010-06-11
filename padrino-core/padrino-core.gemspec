@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = 'lib'
   s.add_runtime_dependency(%q<sinatra>, [">= 1.0.0"])
-  s.add_runtime_dependency(%q<http_router>, [">= 0.2.2"])
+  s.add_runtime_dependency(%q<http_router>, [">= 0.2.3"])
   s.add_runtime_dependency(%q<thor>, [">= 0.13.0"])
   s.add_runtime_dependency(%q<activesupport>, [">= 2.3.8"])
   s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
