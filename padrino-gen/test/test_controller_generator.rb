@@ -14,7 +14,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       assert_no_file_exists('/tmp/app/controllers/demo.rb')
     end
 
-    should "generate mailer in specified app" do
+    should "generate controller in specified app" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
       silence_logger { generate(:app, 'subby', '-r=/tmp/sample_project') }
       silence_logger { generate(:controller, 'DemoItems','-a=/subby', '-r=/tmp/sample_project') }

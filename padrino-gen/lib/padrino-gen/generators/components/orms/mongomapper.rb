@@ -25,9 +25,10 @@ class !NAME!
 end
 MODEL
 
-def create_model_file(name, fields)
-  model_path = destination_root('app/models/', "#{name.to_s.underscore}.rb")
-  field_tuples = fields.collect { |value| value.split(":") }
+# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+def create_model_file(name, options={})
+  model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
+  field_tuples = options[:fields].collect { |value| value.split(":") }
   column_declarations = field_tuples.collect { |field, kind| "key :#{field}, #{kind.camelize}" }.join("\n  ")
   model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

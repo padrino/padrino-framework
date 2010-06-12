@@ -35,11 +35,21 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_raise(SystemExit) { silence_logger { generate(:model, 'user', '-r=/tmp/sample_project') } }
     end
 
-    should 'not fail if we don\'t have test component' do
+    should "not fail if we don't have test component" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=none', '-d=activerecord') }
       response_success = silence_logger { generate(:model, 'user', '-r=/tmp/sample_project') }
       assert_match_in_file(/class User < ActiveRecord::Base/m, '/tmp/sample_project/app/models/user.rb')
       assert_no_file_exists('/tmp/sample_project/test')
+    end
+
+    should "generate model in specified app" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper', '--script=none', '-t=bacon') }
+      silence_logger { generate(:app, 'subby', '-r=/tmp/sample_project') }
+      silence_logger { generate(:model, 'Post', "body:string", '-a=/subby', '-r=/tmp/sample_project') }
+      assert_match_in_file(/class Post\n\s+include DataMapper::Resource/m, '/tmp/sample_project/subby/models/post.rb')
+      assert_match_in_file(/property :body, String/m, '/tmp/sample_project/subby/models/post.rb')
+      assert_match_in_file(/migration 1, :create_posts do/m, "/tmp/sample_project/db/migrate/001_create_posts.rb")
+      assert_match_in_file(/gem 'data_mapper'/m,'/tmp/sample_project/Gemfile')
     end
 
     should "generate only generate model once" do
@@ -131,7 +141,6 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/property :name, String/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/property :age, Integer/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/property :created_at, DateTime/m, '/tmp/sample_project/app/models/user.rb')
-      assert_match_in_file(/gem 'data_mapper'/m,'/tmp/sample_project/Gemfile')
     end
 
     should "properly generate version numbers" do
