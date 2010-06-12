@@ -10,6 +10,7 @@
 * Updated I18n dependency to version > 0.4.0
 * Padrino now uses http_router instead of usher to handle url routing
 * Reorganized a bit ours "servers"
+* Added support for easily adding custom dependency paths with Padrino.custom_dependencies("...")
 * Padrino::Application.run! now perform Padrino.load! automatically (useful if you want to use MyApp.run!)
 * PADRINO_ROOT if not defined will be automatically detected
 * Improved reloader (that fixes also problems with MM)
