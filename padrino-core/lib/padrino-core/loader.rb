@@ -8,10 +8,7 @@ module Padrino
       @_called_from = first_caller
       set_encoding
       set_load_paths(*load_paths) # We set the padrino load paths
-      require_dependencies("#{root}/config/database.rb") # Load db adapter
-      require_dependencies("#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb") # Load our libs
-      require_dependencies("#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb") # Load root models
-      require_dependencies("#{root}/config/apps.rb") # Load configuration
+      dependency_paths.each { |path| require_dependency(path) }
       Reloader::Stat.run! # We need to fill our Stat::CACHE
       Padrino.logger # Initialize our logger
       Thread.current[:padrino_loaded] = true
@@ -87,6 +84,28 @@ module Padrino
       end
     end
     alias :require_dependency :require_dependencies
+
+    ##
+    # Returns default list of path globs to load as dependencies
+    #
+    def dependency_paths
+      # Load db adapter, libs, root models, app configuration
+      @dependency_paths ||= [
+        "#{root}/config/database.rb", "#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb",
+        "#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb", @custom_dependencies,
+        "#{root}/config/apps.rb"
+      ].flatten.compact
+    end
+
+    ##
+    # Appends custom dependency patterns to the be loaded for Padrino
+    # ==== Examples
+    #    Padrino.custom_dependencies("#{Padrino.root}/foo/bar/*.rb")
+    #
+    def custom_dependencies(*globs)
+      @custom_dependencies ||= []
+      @custom_dependencies.concat(globs)
+    end
 
     ##
     # Attempts to load all dependency libs that we need.
