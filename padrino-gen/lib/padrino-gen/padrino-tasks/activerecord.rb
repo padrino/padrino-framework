@@ -1,4 +1,8 @@
 if defined?(ActiveRecord)
+  # Fixes for Yardoc YRI Building
+  class ActiveRecord; end unless defined?(ActiveRecord)
+  class ActiveRecord::Schema; end unless defined?(ActiveRecord::Schema)
+
   namespace :ar do
     namespace :create do
       desc 'Create all the local databases defined in config/database.yml'
