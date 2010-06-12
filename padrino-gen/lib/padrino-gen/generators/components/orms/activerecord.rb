@@ -103,8 +103,9 @@ class !NAME! < ActiveRecord::Base
 end
 MODEL
 
-def create_model_file(name, fields)
-  model_path = destination_root('app/models/', "#{name.to_s.underscore}.rb")
+# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+def create_model_file(name, options={})
+  model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
   create_file(model_path, model_contents,:skip => true)
 end

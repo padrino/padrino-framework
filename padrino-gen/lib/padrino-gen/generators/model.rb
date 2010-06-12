@@ -20,6 +20,7 @@ module Padrino
       argument :name, :desc => "The name of your padrino model"
       argument :fields, :desc => "The fields for the model", :type => :array, :default => []
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :app, :desc => "The application destination path", :aliases => '-a', :default => "/app", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
 
@@ -29,6 +30,8 @@ module Padrino
       def create_model
         self.destination_root = options[:root]
         if in_app_root?
+          app = options[:app]
+          check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
           if invalids = invalid_fields(fields)
             say "Invalid field name:", :red
@@ -41,7 +44,7 @@ module Padrino
           end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
-          create_model_file(name, fields)
+          create_model_file(name, :fields => fields, :app => app)
           generate_model_test(name) if test?
           create_model_migration(migration_name, name, fields) unless options[:skip_migration]
         else
