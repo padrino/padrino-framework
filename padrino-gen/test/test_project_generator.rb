@@ -394,5 +394,14 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/register LessInitializer/m, '/tmp/sample_project/app/app.rb')
       assert_dir_exists('/tmp/sample_project/app/stylesheets')
     end
+    
+    should "properly generate for compass" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=compass') }
+      assert_match_in_file(/gem 'compass'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/Compass.configure_sass_plugin\!/, '/tmp/sample_project/lib/compass_plugin.rb')
+      assert_match_in_file(/module CompassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/compass_plugin.rb')
+      assert_match_in_file(/register CompassInitializer/m, '/tmp/sample_project/app/app.rb')
+      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+    end
   end
 end
