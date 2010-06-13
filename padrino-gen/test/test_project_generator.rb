@@ -401,7 +401,9 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Compass.configure_sass_plugin\!/, '/tmp/sample_project/lib/compass_plugin.rb')
       assert_match_in_file(/module CompassInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/compass_plugin.rb')
       assert_match_in_file(/register CompassInitializer/m, '/tmp/sample_project/app/app.rb')
-      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+
+      assert_file_exists('/tmp/sample_project/app/stylesheets/application.scss')
+      assert_file_exists('/tmp/sample_project/app/stylesheets/partials/_base.scss')
     end
   end
 end

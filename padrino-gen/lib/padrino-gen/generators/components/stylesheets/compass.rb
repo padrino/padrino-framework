@@ -34,5 +34,6 @@ def setup_stylesheet
   require_dependencies 'compass'
   create_file destination_root('/lib/compass_plugin.rb'), COMPASS_INIT
   inject_into_file destination_root('/app/app.rb'), COMPASS_REGISTER, :after => "register Padrino::Helpers\n"
-  empty_directory destination_root('/app/stylesheets')
+
+  directory "components/stylesheets/compass/", destination_root('/app/stylesheets')
 end
