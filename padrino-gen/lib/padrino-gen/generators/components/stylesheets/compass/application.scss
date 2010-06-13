@@ -31,3 +31,13 @@ body.bp {
 form.bp {
   @include blueprint-form; 
 }
+
+.two-col {
+  @include container;
+  background-color: #cccccc;
+  #header, #footer {
+    @include column(24); }
+  #sidebar {
+    @include column(3); }
+  #content {
+    @include column(21, true); } }
