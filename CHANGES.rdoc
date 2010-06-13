@@ -52,6 +52,7 @@
 * Adds support for '--adapter' option which specifies what SQL adapter to use(for AR, Datamapper, Sequel)
 * Fixed escaping of javascript [Thanks to Ryan Fitzgerald]
 * Adds dojo.js as script component
+* Adds compass component for stylesheets in project generator [Thanks to Ryan Fitzgerald]
 
 == 0.9.10
 
