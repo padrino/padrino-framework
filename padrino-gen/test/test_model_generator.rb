@@ -159,14 +159,14 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate migration with given fields" do
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=datamapper') }
-      silence_logger { generate(:model, 'person', "name:string", "created_at:datetime", "email:string", '-r=/tmp/sample_project') }
+      silence_logger { generate(:model, 'person', "name:string", "created_at:date_time", "email:string", '-r=/tmp/sample_project') }
       assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, '/tmp/sample_project/app/models/person.rb')
       migration_file_path = "/tmp/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/migration 1, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table :people do/m, migration_file_path)
-      assert_match_in_file(/column :name, "STRING"/m, migration_file_path)
-      assert_match_in_file(/column :created_at, "DATETIME"/m, migration_file_path)
-      assert_match_in_file(/column :email, "STRING"/m, migration_file_path)
+      assert_match_in_file(/column :name, String/m, migration_file_path)
+      assert_match_in_file(/column :created_at, DateTime/m, migration_file_path)
+      assert_match_in_file(/column :email, String/m, migration_file_path)
       assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
