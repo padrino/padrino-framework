@@ -351,21 +351,21 @@ module Padrino
           mime_types = types.map { |t| mime_type(t) }
 
           condition do
-            accepts = request.accept.map { |a| a.split(";")[0].strip }
-            accepts_any = accepts.find { |a| a == "*/*" }
-            matching_types = (accepts & mime_types)
+            accepts           = request.accept.map { |a| a.split(";")[0].strip }
+            matching_types    = (accepts & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
-            url_format = $1.to_sym if $1
+            url_format        = $1.to_sym if $1
 
             if !url_format && matching_types.first
               type = Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
 
-            matched_format = types.include?(:any)          ||
-                             types.include?(accept_format) ||
-                             types.include?(url_format)    ||
-                             ((accepts_any || request.accept.empty?) && types.include?(:html))
+            matched_format = types.include?(:any)            ||
+                             types.include?(accept_format)   ||
+                             types.include?(url_format)      ||
+                             accepts.any? { |a| a == "*/*" } ||
+                             (request.accept.empty? && types.include?(:html))
 
             if matched_format
               @_content_type = url_format || accept_format || :html
