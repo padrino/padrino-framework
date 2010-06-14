@@ -2,7 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
-* Fixed a DM issue with migrations after generation of a sqlite database
+* Fixed DM 1.0 rake tasks
 * Dropped support of :respond_to in favor of :provides
 * Added provides in controller level App.controller :provides => [:json, :xml]
 * Added compatibility with AS 3.0
