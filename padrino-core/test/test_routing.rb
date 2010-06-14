@@ -574,6 +574,17 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'html', body
   end
 
+  should "set content_type to :html if Accept */*" do
+    mock_app do
+      get("/foo", :provides => [:html, :js]) { content_type.to_s }
+    end
+    get '/foo', {}, {}
+    assert_equal 'html', body
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
+    assert_equal 'html', body
+  end
+
   should 'allows custom route-conditions to be set via route options' do
     protector = Module.new {
       def protect(*args)

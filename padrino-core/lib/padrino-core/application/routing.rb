@@ -351,7 +351,9 @@ module Padrino
           mime_types = types.map { |t| mime_type(t) }
 
           condition do
-            matching_types = (request.accept.map { |a| a.split(";")[0].strip } & mime_types)
+            accepts = request.accept.map { |a| a.split(";")[0].strip }
+            accepts_any = accepts.find { |a| a == "*/*" }
+            matching_types = (accepts & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format = $1.to_sym if $1
 
@@ -363,7 +365,7 @@ module Padrino
             matched_format = types.include?(:any)          ||
                              types.include?(accept_format) ||
                              types.include?(url_format)    ||
-                             (request.accept.empty? && types.include?(:html)) # This is only usefull for testing
+                             ((accepts_any || request.accept.empty?) && types.include?(:html))
 
             if matched_format
               @_content_type = url_format || accept_format || :html
