@@ -25,7 +25,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
     end
 
     should 'correctyl generate a new padrino admin application with default renderer' do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord') } }
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=activerecord', '-e=haml') } }
       assert_nothing_raised { silence_logger { generate(:admin_app, '--root=/tmp/sample_project') } }
       assert_file_exists('/tmp/sample_project')
       assert_file_exists('/tmp/sample_project/admin')

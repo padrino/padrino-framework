@@ -33,7 +33,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
     end
 
     should 'correctly generate a new padrino admin application default renderer' do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper') }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper','-e=haml') }
       silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
       silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project') }
       silence_logger { generate(:admin_page, 'person', '--root=/tmp/sample_project') }
@@ -67,7 +67,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
     end
 
     should 'correctly generate a new padrino admin application with multiple models' do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper') }
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '-d=datamapper','-e=haml') }
       silence_logger { generate(:admin_app, '--root=/tmp/sample_project') }
       silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", '-root=/tmp/sample_project') }
       silence_logger { generate(:model, 'page', "name:string", "body:string", '-root=/tmp/sample_project') }
