@@ -12,7 +12,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/class SampleProject < Padrino::Application/,'/tmp/sample_project/app/app.rb')
       assert_match_in_file(/Padrino.mount_core\("SampleProject"\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
-      assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
     
@@ -22,7 +21,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/class BaseApp < Padrino::Application/,'/tmp/sample_project/app/app.rb')
       assert_match_in_file(/Padrino.mount_core\("BaseApp"\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
-      assert_file_exists('/tmp/sample_project/spec/spec_helper.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
 
@@ -59,7 +57,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', '--root=/tmp') }
       components_chosen = YAML.load_file('/tmp/sample_project/.components')
       assert_equal 'none', components_chosen[:orm]
-      assert_equal 'rspec', components_chosen[:test]
+      assert_equal 'none', components_chosen[:test]
       assert_equal 'none', components_chosen[:mock]
       assert_equal 'none', components_chosen[:script]
       assert_equal 'haml', components_chosen[:renderer]
@@ -112,14 +110,14 @@ class TestProjectGenerator < Test::Unit::TestCase
     end
 
     should "properly generate for mocha and rspec" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--mock=mocha', '--script=none') }
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp','--test=rspec', '--mock=mocha', '--script=none') }
       assert_match /Applying.*?mocha.*?mock/, buffer
       assert_match_in_file(/gem 'mocha'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/conf.mock_with :mocha/m, '/tmp/sample_project/spec/spec_helper.rb')
     end
 
     should "properly generate for rr and rspec" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--mock=rr', '--script=none') }
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=rspec', '--mock=rr', '--script=none') }
       assert_match /Applying.*?rr.*?mock/, buffer
       assert_match_in_file(/gem 'rr'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/conf.mock_with :rr/m, '/tmp/sample_project/spec/spec_helper.rb')
