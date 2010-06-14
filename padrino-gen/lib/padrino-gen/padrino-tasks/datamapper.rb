@@ -53,7 +53,7 @@ if defined?(DataMapper)
         `mysql -u #{user} #{password ? "-p #{password}" : ''} -e "create database #{database}"`
         puts "<= dm:create executed"
       when 'sqlite3'
-        Rake::Task['dm:auto:migrate'].invoke
+        DataMapper.setup(DataMapper.repository.name, config)
       else
         raise "Adapter #{config[:adapter]} not supported for creating databases yet."
       end
