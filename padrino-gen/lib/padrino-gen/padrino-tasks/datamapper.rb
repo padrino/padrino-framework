@@ -82,12 +82,17 @@ if defined?(DataMapper)
           ]
           system(query.compact.join(" "))
           puts "<= dm:drop executed"
+        when 'sqlite3'
+          File.delete(config[:path]) if File.exist?(config[:path])
         else
           raise "Adapter #{config[:adapter]} not supported for dropping databases yet."
       end
     end
 
-    desc "Drop the database, and migrate from scratch"
-    task :reset => [:drop, :create, :migrate]
+    desc "Drop the database, migrate from scratch and initialize with the seed data"
+    task :reset => [:drop, :setup]
+
+    desc "Create the database migrate and initialize with the seed data"
+    task :setup => [:create, :migrate, :seed]
   end
 end

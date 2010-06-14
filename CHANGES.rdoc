@@ -2,6 +2,7 @@
 
 == 0.9.11 (Unreleased)
 
+* DM 1.0 and AR Tasks compat
 * Fixed DM 1.0 rake tasks
 * Dropped support of :respond_to in favor of :provides
 * Added provides in controller level App.controller :provides => [:json, :xml]
