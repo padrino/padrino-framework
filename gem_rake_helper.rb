@@ -5,7 +5,7 @@ def gemspec
   @gemspec ||= begin
     gem_name =  File.basename(File.dirname(RAKE_ROOT))
     file = File.expand_path("../#{gem_name}.gemspec", RAKE_ROOT)
-    eval(File.read(file), binding, file)
+    ::Gem::Specification.load(file)
   end
 end
 
