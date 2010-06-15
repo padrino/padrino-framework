@@ -52,7 +52,7 @@ end
 ##
 # Used to know if this file was required
 #
-module SupportLite; end
+module SupportLite; end unless defined?(SupportLite)
 
 module ObjectSpace
   class << self
@@ -96,7 +96,7 @@ class FileSet
   def self.glob_require(glob_pattern, file_path=nil)
     self.glob(glob_pattern, file_path) { |f| require f }
   end
-end
+end unless defined?(FileSet)
 
 ##
 # Loads our locales configuration files
