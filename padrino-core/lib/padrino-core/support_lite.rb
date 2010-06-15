@@ -7,21 +7,27 @@
 # 2) Loading custom method extensions or separate gem would conflict when AR or MM has been loaded.
 # 3) Datamapper is planning to move to ActiveSupport and away from extlib.
 #
-require 'active_support/core_ext/string/conversions'
-require 'active_support/core_ext/kernel'
-require 'active_support/core_ext/module'
-require 'active_support/core_ext/class/attribute_accessors'
-require 'active_support/core_ext/hash/keys'
-require 'active_support/core_ext/hash/deep_merge'
-require 'active_support/core_ext/hash/reverse_merge'
-require 'active_support/core_ext/hash/slice'
-require 'active_support/inflector'
-require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/array'
-require 'active_support/core_ext/module'
-require 'active_support/ordered_hash'
+require 'active_support/core_ext/string/conversions' unless String.method_defined?(:to_date)
+require 'active_support/core_ext/kernel'             unless Kernel.method_defined?(:silence_warnings)
+require 'active_support/core_ext/module'             unless Module.method_defined?(:alias_method_chain)
+require 'active_support/core_ext/class/attribute_accessors' unless Class.method_defined?(:cattr_reader)
+require 'active_support/core_ext/hash/keys'          unless Hash.method_defined?(:stringify_keys)
+require 'active_support/core_ext/hash/deep_merge'    unless Hash.method_defined?(:deep_merge)
+require 'active_support/core_ext/hash/reverse_merge' unless Hash.method_defined?(:reverse_merge)
+require 'active_support/core_ext/hash/slice'         unless Hash.method_defined?(:slice)
+require 'active_support/core_ext/object/blank'       unless Object.method_defined?(:present?)
+require 'active_support/core_ext/array'              unless Array.method_defined?(:from)
+require 'active_support/ordered_hash'                unless defined?(ActiveSupport::OrderedHash)
+require 'active_support/inflector'                   unless String.method_defined?(:humanize)
 
-if defined?(ActiveSupport::CoreExtensions::Hash)
+if defined?(ActiveSupport::CoreExtensions::String) && !String.method_defined?(:to_date)
+  # This mean that we are using AS 2.3.x
+  class String
+    include ActiveSupport::CoreExtensions::String::Conversions
+  end
+end
+
+if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice)
   # This mean that we are using AS 2.3.x
   class Hash
     include ActiveSupport::CoreExtensions::Hash::Keys
