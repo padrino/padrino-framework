@@ -19,6 +19,18 @@ class TestFormHelpers < Test::Unit::TestCase
       actual_html = form_tag('/register', :class => 'test') { text_field_tag(:username) }
       assert_has_tag('form input', :type => 'text', :name => "username") { actual_html }
     end
+    
+    should "display correct form with remote" do
+      actual_html = form_tag('/update', :class => 'put-form', :remote => true) { "Demo" }
+      assert_has_tag(:form, :class => "put-form", "data-remote" => 'true') { actual_html }
+      assert_has_no_tag(:form, "data-method" => 'post') { actual_html }
+    end
+    
+    should "display correct form with remote and method is put" do
+      actual_html = form_tag('/update', :method => 'put', :remote => true) { "Demo" }
+      assert_has_tag(:form, "data-remote" => 'true', "data-method" => 'put') { actual_html }
+      assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
+    end
 
     should "display correct form with method :put" do
       actual_html = form_tag('/update', :class => 'put-form', :method => "put") { "Demo" }

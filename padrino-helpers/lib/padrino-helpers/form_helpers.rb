@@ -39,10 +39,11 @@ module Padrino
       #
       def form_tag(url, options={}, &block)
         desired_method = options[:method]
-        options.delete(:method) if options[:method].to_s !~ /get|post/i
+        data_method = options.delete(:method) if options[:method].to_s !~ /get|post/i
         options.reverse_merge!(:method => 'post', :action => url)
         options[:enctype] = "multipart/form-data" if options.delete(:multipart)
         options["data-remote"] = "true" if options.delete(:remote)
+        options["data-method"] = data_method if data_method
         inner_form_html = hidden_form_method_field(desired_method) + capture_html(&block)
         concat_content content_tag('form', inner_form_html, options)
       end
