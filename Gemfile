@@ -14,7 +14,6 @@ group :core do
     gem "activesupport", ">= 3.0.0.beta4", :require => nil
     gem "tzinfo"
   else
-    puts "Using ActiveSupport 2.3.8"
     gem "activesupport", ">= 2.3.8", :require => nil
   end
 end
