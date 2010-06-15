@@ -13,7 +13,7 @@ $("form[data-remote=true]").live('submit', function(e) {
   var message = element.attr('data-confirm');
   if (message && !confirm(message)) { return false; }
   JSAdapter.sendRequest(element, { 
-    verb: element.attr('method') || 'post', 
+    verb: element.attr('data-method') || element.attr('method') || 'post', 
     url: element.attr('action'), 
     params: element.serializeArray()
   });
@@ -48,7 +48,7 @@ $("a[data-remote=true]").live('click', function(e) {
  * link_to 'delete item', '/destroy', :method => :delete
 **/
 
-$("a[data-method]").live('click', function(e) {
+$("a[data-method]:not([data-remote])").live('click', function(e) {
   if (e.stopped) return;
   JSAdapter.sendMethod($(e.target));
   e.preventDefault(); e.stopped = true;

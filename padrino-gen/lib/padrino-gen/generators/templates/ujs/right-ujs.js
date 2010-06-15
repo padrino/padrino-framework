@@ -16,7 +16,7 @@ Event.include({ halt: function() { this.stop(); this.stopped = true; }});
   var message = element.get('data-confirm');
   if (message && !confirm(message)) { return false; }
   JSAdapter.sendRequest(element, { 
-    verb: element.get('method') || 'post', 
+    verb: element.get('data-method') || element.get('method') || 'post', 
     url: element.get('action'), 
     params: element.values()
   });
@@ -51,7 +51,7 @@ Event.include({ halt: function() { this.stop(); this.stopped = true; }});
  * link_to 'delete item', '/destroy', :method => :delete
 **/
 
-"a[data-method]".on('click', function(e) {
+"a[data-method]:not([data-remote])".on('click', function(e) {
   if (e.stopped) return;
   JSAdapter.sendMethod(e.target);
   e.halt();

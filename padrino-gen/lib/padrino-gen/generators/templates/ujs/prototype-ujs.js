@@ -16,7 +16,7 @@ document.observe("dom:loaded", function() {
       var message = element.readAttribute('data-confirm');
       if (message && !confirm(message)) { return false; }
       JSAdapter.sendRequest(element, { 
-        verb: element.readAttribute('method') || 'post', 
+        verb:element.readAttribute('data-method') || element.readAttribute('method') || 'post', 
         url: element.readAttribute('action'), 
         params: element.serialize(true)
       });
@@ -58,7 +58,7 @@ document.observe("dom:loaded", function() {
   **/
   
   document.observe("click", function(e) {
-    var element = e.findElement("a[data-method]");
+    var element = e.findElement("a[data-method]:not([data-remote])");
     if (element) {
       if (e.stopped) return;
       JSAdapter.sendMethod(e.target);

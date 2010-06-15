@@ -19,7 +19,7 @@ document.body.delegateEvent('submit', { "form[data-remote=true]" :
     var message = element.get('data-confirm');
     if (message && !confirm(message)) { return false; }
     JSAdapter.sendRequest(element, { 
-      verb: element.get('method') || 'post', 
+      verb: element.get('data-method') || element.get('method') || 'post', 
       url: element.get('action'), 
       params: element.toQueryString()
     });
@@ -58,7 +58,7 @@ document.body.delegateEvent('click', { "a[data-remote]" :
  * link_to 'delete item', '/destroy', :method => :delete
 **/
 
-document.body.delegateEvent('click', { "a[data-method]" :
+document.body.delegateEvent('click', { "a[data-method]:not([data-remote])" :
   function(e) {
     if (e.stopped) return;
     console.log(e.target);
