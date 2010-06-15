@@ -1,7 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestPadrino < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
+  should "be a metagem that requires subgems" do
+    assert_nil defined?(Padrino::Mailer)
+    assert_nil defined?(Padrino::Helpers)
+    require File.expand_path('../../lib/padrino.rb', __FILE__)
+    assert_not_nil defined?(Padrino::Mailer)
+    assert_not_nil defined?(Padrino::Helpers)
   end
 end
