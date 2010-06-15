@@ -1,27 +1,44 @@
+require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
+
 source :rubygems
 
-gem "sinatra", ">= 1.0.0"
-gem "http_router", ">= 0.2.3"
-gem "thor", ">= 0.13.0"
-
-# If you want try our test on AS edge.
-# $ AS=edge bundle install
-# $ AS=edge rake test
-if ENV['AS'] == "edge"
-  puts "Using ActiveSupport 3.0.0.beta4"
-  gem "activesupport", ">= 3.0.0.beta4", :require => nil
-  gem "tzinfo"
-else
-  puts "Using ActiveSupport 2.3.8"
-  gem "activesupport", ">= 2.3.8", :require => nil
+group :core do
+  gem "sinatra", ">= 1.0.0"
+  gem "http_router", ">= 0.2.3"
+  gem "thor", ">= 0.13.0"
+  # If you want try our test on AS edge.
+  # $ AS=edge bundle install
+  # $ AS=edge rake test
+  if ENV['AS'] == "edge"
+    puts "Using ActiveSupport 3.0.0.beta4"
+    gem "activesupport", ">= 3.0.0.beta4", :require => nil
+    gem "tzinfo"
+  else
+    puts "Using ActiveSupport 2.3.8"
+    gem "activesupport", ">= 2.3.8", :require => nil
+  end
 end
 
-gem "tlsmail" if RUBY_VERSION == "1.8.6"
+group :cache do
+  gem "sinatra", ">= 0.9.2"
+end
 
-gem "shoulda", ">= 2.10.3"
-gem "i18n", ">=0.4.1"
-gem "mail", ">= 2.2.0"
-gem "builder", ">= 2.1.2"
+group :gen do
+  gem "bundler", ">= 0.9.7"
+end
+
+group :helpers do
+  gem "i18n", ">=0.4.1"
+end
+
+group :mailer do
+  gem "mail", ">= 2.2.0"
+  gem "tlsmail" if RUBY_VERSION == "1.8.6"
+end
+
+group :other do
+  gem "builder", ">= 2.1.2"
+end
 
 group :db do
   gem "dm-core", ">= 1.0"
@@ -31,8 +48,11 @@ group :db do
   gem "dm-sqlite-adapter", ">= 1.0"
 end
 
-gem "rake",  ">= 0.8.7"
-gem "mocha", ">= 0.9.8"
-gem "rack-test", ">= 0.5.0"
-gem "webrat", ">= 0.5.1"
-gem "haml", ">= 2.2.22"
+group :development do
+  gem "rake",  ">= 0.8.7"
+  gem "mocha", ">= 0.9.8"
+  gem "rack-test", ">= 0.5.0"
+  gem "webrat", ">= 0.5.1"
+  gem "haml", ">= 2.2.22"
+  gem "shoulda", ">= 2.10.3"
+end

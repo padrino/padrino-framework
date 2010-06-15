@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
-#
 require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require 'rubygems'
+require 'bundler'
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-admin}
@@ -20,9 +20,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<padrino-core>, ["= #{Padrino.version}"])
   s.add_runtime_dependency(%q<padrino-gen>, ["= #{Padrino.version}"])
   s.add_runtime_dependency(%q<padrino-helpers>, ["= #{Padrino.version}"])
-  s.add_development_dependency(%q<haml>, [">= 2.2.1"])
-  s.add_development_dependency(%q<shoulda>, [">= 0"])
-  s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
-  s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
-  s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
+  s.add_bundler_dependencies :development
 end

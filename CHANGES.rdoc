@@ -9,6 +9,7 @@
 * Added provides in controller level App.controller :provides => [:json, :xml]
 * Added compatibility with AS 3.0
 * Fixed compatibility with DM 1.0
+* Improves dependencies in a Gemfile and autoinjected into gemspecs
 * Allow models to be generated in subapps with --app flag
 * Added bundler support also for testing [Thanks to Ryanfitz]
 * Updated I18n dependency to version > 0.4.0

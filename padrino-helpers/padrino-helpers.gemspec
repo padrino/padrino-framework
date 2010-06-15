@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
-
 require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require 'rubygems'
+require 'bundler'
 
 Gem::Specification.new do |s|
   s.name = %q{padrino-helpers}
@@ -18,10 +18,5 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = 'lib'
   s.add_runtime_dependency(%q<padrino-core>, ["= #{Padrino.version}"])
-  s.add_runtime_dependency(%q<i18n>, [">= 0.4.1"])
-  s.add_development_dependency(%q<haml>, [">= 2.2.1"])
-  s.add_development_dependency(%q<shoulda>, [">= 2.10.3"])
-  s.add_development_dependency(%q<mocha>, [">= 0.9.7"])
-  s.add_development_dependency(%q<rack-test>, [">= 0.5.0"])
-  s.add_development_dependency(%q<webrat>, [">= 0.5.1"])
+  s.add_bundler_dependencies :helpers, :development
 end
