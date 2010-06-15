@@ -8,7 +8,7 @@ gem 'thin' # or mongrel
 # Component requirements
 
 # Test requirements
-gem 'rack-test', :require => 'rack/test', :group => 'test'
+
 
 <%- if options.dev? -%>
 # Padrino

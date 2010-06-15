@@ -49,6 +49,7 @@ end
 TEST
 
 def setup_test
+  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'rspec', :require => 'spec', :group => 'test'
   insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE

@@ -53,6 +53,7 @@ end
 TEST
 
 def setup_test
+  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'shoulda', :group => 'test'
   insert_test_suite_setup SHOULDA_SETUP
   create_file destination_root("test/test.rake"), SHOULDA_RAKE

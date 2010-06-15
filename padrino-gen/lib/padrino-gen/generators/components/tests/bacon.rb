@@ -47,6 +47,7 @@ TEST
 
 # Setup the testing configuration helper and dependencies
 def setup_test
+  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'bacon', :group => 'test'
   insert_test_suite_setup BACON_SETUP, :path => 'test/test_config.rb'
   create_file destination_root("test/test.rake"), BACON_RAKE

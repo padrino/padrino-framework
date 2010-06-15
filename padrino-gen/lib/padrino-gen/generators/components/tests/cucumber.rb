@@ -71,6 +71,7 @@ World(Cucumber::Web::URLs)
 TEST
 
 def setup_test
+  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'cucumber', :group => 'test'
   require_dependencies 'capybara', :group => 'test'
   insert_test_suite_setup CUCUMBER_SETUP, :path => "features/support/env.rb"

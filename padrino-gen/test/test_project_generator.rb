@@ -90,7 +90,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none') }
       assert_match_in_file(/gem 'padrino'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'rack-flash'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'rack-test'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'thin'/, '/tmp/sample_project/Gemfile')
     end
   end
 
@@ -313,6 +313,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly default generate for bacon" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=bacon', '--script=none') }
       assert_match /Applying.*?bacon.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'bacon'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Bacon::Context/, '/tmp/sample_project/test/test_config.rb')
@@ -322,6 +323,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for riot" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=riot', '--script=none') }
       assert_match /Applying.*?riot.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'riot'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/include Rack::Test::Methods/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
@@ -333,6 +335,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for rspec" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=rspec', '--script=none') }
       assert_match /Applying.*?rspec.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'rspec'.*?:require => "spec"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/spec/spec_helper.rb')
       assert_match_in_file(/Spec::Runner/, '/tmp/sample_project/spec/spec_helper.rb')
@@ -342,6 +345,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for shoulda" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=shoulda', '--script=none') }
       assert_match /Applying.*?shoulda.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'shoulda'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_project/test/test_config.rb')
@@ -351,6 +355,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for testspec" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=testspec', '--script=none') }
       assert_match /Applying.*?testspec.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'test-spec'.*?:require => "test\/spec"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Test::Unit::TestCase/, '/tmp/sample_project/test/test_config.rb')
@@ -360,6 +365,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for cucumber" do
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--test=cucumber', '--script=none') }
       assert_match /Applying.*?cucumber.*?test/, buffer
+      assert_match_in_file(/gem 'rack-test'.*?:require => "rack\/test".*?:group => "test"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'rspec'.*?:require => "spec"/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'cucumber'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/gem 'capybara'/, '/tmp/sample_project/Gemfile')

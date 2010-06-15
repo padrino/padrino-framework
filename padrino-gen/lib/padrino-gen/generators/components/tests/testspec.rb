@@ -46,6 +46,7 @@ end
 TEST
 
 def setup_test
+  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'test-spec', :require => 'test/spec', :group => 'test'
   insert_test_suite_setup TESTSPEC_SETUP
   create_file destination_root("test/test.rake"), TESTSPEC_RAKE
