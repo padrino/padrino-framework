@@ -13,7 +13,11 @@ module Padrino
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
     class ::HttpRouter::Route
-      attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout
+      attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+    end
+
+    class ::Sinatra::Request
+      attr_accessor :controller
     end
 
     class UnrecognizedException < RuntimeError #:nodoc:
@@ -233,6 +237,7 @@ module Padrino
             route.before_filters = @before_filters
             route.after_filters  = @after_filters
             route.use_layout     = @layout
+            route.controller     = @_controller
           else
             route.before_filters = []
             route.after_filters  = []
@@ -455,6 +460,8 @@ module Padrino
                 # If present set current controller layout
                 parent_layout = base.instance_variable_get(:@layout)
                 base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
+                # Provide access to the current controller to the request
+                request.controller = match.path.route.controller
                 # Now we can eval route, but because we have "throw halt" we need to be
                 # (en)sure to reset old layout and run controller after filters.
                 begin
