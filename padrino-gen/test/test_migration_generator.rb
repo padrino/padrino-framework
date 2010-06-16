@@ -102,8 +102,8 @@ class TestMigrationGenerator < Test::Unit::TestCase
       response_success = silence_logger { generate(:migration, *migration_params) }
       migration_file_path = "/tmp/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/migration\s1.*?:add_email_to_users/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?add_column :email, String/m, migration_file_path)
-      assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
+      assert_match_in_file(/modify_table :users.*?add_column :email, DataMapper::Property::String/m, migration_file_path)
+      assert_match_in_file(/add_column :age, DataMapper::Property::Integer/m, migration_file_path)
       assert_match_in_file(/modify_table :users.*?drop_column :email/m, migration_file_path)
       assert_match_in_file(/drop_column :age/m, migration_file_path)
     end
@@ -116,8 +116,8 @@ class TestMigrationGenerator < Test::Unit::TestCase
       assert_match_in_file(/migration\s1.*?:remove_email_from_users/m, migration_file_path)
       assert_match_in_file(/modify_table :users.*?drop_column :email/m, migration_file_path)
       assert_match_in_file(/drop_column :age/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?add_column :email, String/m, migration_file_path)
-      assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
+      assert_match_in_file(/modify_table :users.*?add_column :email, DataMapper::Property::String/m, migration_file_path)
+      assert_match_in_file(/add_column :age, DataMapper::Property::Integer/m, migration_file_path)
     end
 
     should "properly version migration files" do
