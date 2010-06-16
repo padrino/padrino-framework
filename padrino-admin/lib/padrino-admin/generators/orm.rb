@@ -33,7 +33,7 @@ module Padrino
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
-            when :datamapper   then @klass.properties
+            when :datamapper   then @klass.properties.map { |p| Column.new(p.name, p.primitive) } # Now datamapper returns always nil for property.type
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
