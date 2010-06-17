@@ -1,22 +1,22 @@
 ##
-# This file mounts each application within the Padrino project to a specific path.
-# You can mount additional applications using any of these below:
+# This file mounts each app in the Padrino project to a specified sub-uri.
+# You can mount additional applications using any of these commands below:
 #
 #   Padrino.mount("blog").to('/blog')
 #   Padrino.mount("blog", :app_class => "BlogApp").to('/blog')
 #   Padrino.mount("blog", :app_file =>  "/path/to/blog/app.rb").to('/blog')
 #
-# You can map also apps to a specified host:
+# You can also map apps to a specified host:
 #
 #   Padrino.mount_core("Blog").host("blog.example.org")
 #   Padrino.mount("Admin").host("admin.example.org")
 #   Padrino.mount("WebSite").host(/.*\.?example.org/)
 #   Padrino.mount("Foo").to("/foo").host("bar.example.org")
 #
-# Note 1: that mounted apps by default should be placed into 'apps/app_name'.
-# Note 2: if you use host match remember that it's important respect order.
+# Note 1: Mounted apps (by default) should be placed into the project root at '/app_name'.
+# Note 2: If you use the host matching remember to respect the order of the rules.
 #
-# By default, this file simply mounts the core app which was generated with this project.
+# By default, this file mounts the core app which was generated with this project.
 # However, the mounted core can be modified as needed:
 #
 #   Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
