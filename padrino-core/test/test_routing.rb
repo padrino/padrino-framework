@@ -170,6 +170,16 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "posts", body
   end
 
+  should "should inject the route into the request" do
+    mock_app do
+      controller :posts do
+        get(:index) { request.route.named.to_s }
+      end
+    end
+    get "/posts"
+    assert_equal "posts_index", body
+  end
+
   should "generate routes for format with controller" do
     mock_app do
       controller :posts do

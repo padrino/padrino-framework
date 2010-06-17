@@ -17,7 +17,15 @@ module Padrino
     end
 
     class ::Sinatra::Request
-      attr_accessor :controller
+      attr_accessor :match
+
+      def controller
+        route && route.controller
+      end
+
+      def route
+        match.matched? ? match.path.route : nil
+      end
     end
 
     class UnrecognizedException < RuntimeError #:nodoc:
@@ -461,7 +469,7 @@ module Padrino
                 parent_layout = base.instance_variable_get(:@layout)
                 base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
                 # Provide access to the current controller to the request
-                request.controller = match.path.route.controller
+                request.match = match
                 # Now we can eval route, but because we have "throw halt" we need to be
                 # (en)sure to reset old layout and run controller after filters.
                 begin
