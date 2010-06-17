@@ -66,16 +66,18 @@ module Padrino
 
       # Finish message
       def finish
-        say (<<-TEXT).gsub(/ {8}/,'')
+        unless options[:run_bundle]
+          say (<<-TEXT).gsub(/ {8}/,'')
 
-        =================================================================
-        #{name} is ready for development! Next, follow these steps:
-        =================================================================
-        1) cd #{name}
-        2) bundle install
-        =================================================================
+          =================================================================
+          #{name} is ready for development! Next, follow these steps:
+          =================================================================
+          1) cd #{name}
+          2) bundle install
+          =================================================================
 
-        TEXT
+          TEXT
+        end
       end
     end # Project
   end # Generators
