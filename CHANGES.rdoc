@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.9.11 (Unreleased)
+== 0.9.12 (Unreleased)
+
+== 0.9.11
 
 * Fixed provides with IE
 * DM 1.0 and AR Tasks compat
