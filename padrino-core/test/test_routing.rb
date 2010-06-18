@@ -706,6 +706,38 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar2", body
   end
 
+  should "parse two routes with the same path but different http verbs" do
+    mock_app do
+      get(:index) { "This is the get index" }
+      post(:index) { "This is the post index" }
+    end
+    get "/"
+    assert_equal "This is the get index", body
+    post "/"
+    assert_equal "This is the post index", body
+  end
+
+  should_eventually "parse two routes with the same path but different http verbs and provides" do
+    mock_app do
+      get(:index, :provides => [:html, :json]) { "This is the get index.#{content_type}" }
+      post(:index, :provides => [:html, :json]) { "This is the post index.#{content_type}" }
+    end
+    get "/"
+    assert_equal "This is the get index.html", body
+    post "/"
+    assert_equal "This is the post index.html", body
+    get "/.json"
+    assert_equal "This is the get index.json", body
+    get "/.js"
+    assert 404, status
+    assert_match "Sinatra doesn't know this ditty", body
+    post "/.json"
+    assert_equal "This is the post index.json", body
+    post "/.js"
+    assert_match "Sinatra doesn't know this ditty", body
+    assert 404, status
+  end
+
   should "work with params and parent options" do
     mock_app do
       controller :test2, :parent => :parent1, :parent1_id => 1 do
