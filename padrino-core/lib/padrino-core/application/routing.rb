@@ -245,7 +245,7 @@ module Padrino
             route.before_filters = @before_filters
             route.after_filters  = @after_filters
             route.use_layout     = @layout
-            route.controller     = @_controller
+            route.controller     = Array(@_controller).first.to_s
           else
             route.before_filters = []
             route.after_filters  = []
