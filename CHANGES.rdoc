@@ -1,6 +1,10 @@
 = CHANGES
 
-== 0.9.11 (Unreleased)
+== 0.9.12 (Unreleased)
+
+* Deprecated mount_core and remove references
+
+== 0.9.11
 
 * Fixed provides with IE
 * DM 1.0 and AR Tasks compat

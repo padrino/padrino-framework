@@ -25,9 +25,6 @@ class Account
   validates_format_of        :email,    :with => :email_address
   validates_format_of        :role,     :with => /[A-Za-z]/
 
-  # Callbacks
-  before :save, :generate_password
-
   ##
   # This method is for authentication purpose
   #
@@ -50,12 +47,16 @@ class Account
     crypted_password.decrypt(salt)
   end
 
+  ###
+  # Password setter generates salt and crypted_password
+  #
+  def password=(val)
+    return if val.blank?
+    attribute_set(:salt, Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--")) if new?
+    attribute_set(:crypted_password, val.encrypt(self.salt))
+  end
+
   private
-    def generate_password
-      return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new?
-      self.crypted_password = password.encrypt(self.salt)
-    end
 
     def password_required
       crypted_password.blank? || !password.blank?

@@ -10,7 +10,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp') } }
       assert_file_exists('/tmp/sample_project')
       assert_match_in_file(/class SampleProject < Padrino::Application/,'/tmp/sample_project/app/app.rb')
-      assert_match_in_file(/Padrino.mount_core\("SampleProject"\)/,'/tmp/sample_project/config/apps.rb')
+      assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
@@ -19,7 +19,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--app=base_app') } }
       assert_file_exists('/tmp/sample_project')
       assert_match_in_file(/class BaseApp < Padrino::Application/,'/tmp/sample_project/app/app.rb')
-      assert_match_in_file(/Padrino.mount_core\("BaseApp"\)/,'/tmp/sample_project/config/apps.rb')
+      assert_match_in_file(/Padrino.mount\("BaseApp"\).to\('\/'\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
     end
@@ -50,7 +50,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "place app specific names into correct files" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none') }
       assert_match_in_file(/class SampleProject < Padrino::Application/m, '/tmp/sample_project/app/app.rb')
-      assert_match_in_file(/Padrino.mount_core\("SampleProject"\)/m, '/tmp/sample_project/config/apps.rb')
+      assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/m, '/tmp/sample_project/config/apps.rb')
     end
 
     should "create components file containing options chosen with defaults" do

@@ -22,7 +22,7 @@ class ServerApp < Padrino::Application; end
 
 class ServerTest < Test::Unit::TestCase
   def setup
-    Padrino.mount_core("server_app")
+    Padrino.mount("server_app").to("/")
   end
 
   context 'for server functionality' do

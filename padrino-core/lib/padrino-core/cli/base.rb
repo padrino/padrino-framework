@@ -77,6 +77,7 @@ module Padrino
             raise SystemExit
           end
           ENV["PADRINO_ENV"] ||= options.environment.to_s
+          ENV["RACK_ENV"] = ENV["PADRINO_ENV"] # Also set this for middleware
           chdir(options.chdir)
           unless File.exist?('config/boot.rb')
             puts "=> Could not find boot file in: #{options.chdir}/config/boot.rb !!!"

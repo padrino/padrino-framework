@@ -34,14 +34,14 @@ class TestMounter < Test::Unit::TestCase
 
     should 'mount an app' do
       class ::AnApp < Padrino::Application; end
-      Padrino.mount_core("an_app")
+      Padrino.mount("an_app").to("/")
       assert_equal AnApp, Padrino.mounted_apps.first.app_obj
-      assert_equal ["core"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["an_app"], Padrino.mounted_apps.collect(&:name)
     end
 
     should 'mount a core' do
-      mounter = Padrino.mount_core("test", :app_file => __FILE__)
-      assert_equal "core", mounter.name
+      mounter = Padrino.mount("test", :app_file => __FILE__).to("/")
+      assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
       assert_equal Test, mounter.app_obj
       assert_equal __FILE__, mounter.app_file
@@ -50,8 +50,8 @@ class TestMounter < Test::Unit::TestCase
     end
 
     should 'mount a core to url' do
-      mounter = Padrino.mount_core("test", :app_file => __FILE__).to('/me')
-      assert_equal "core", mounter.name
+      mounter = Padrino.mount("test", :app_file => __FILE__).to('/me')
+      assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
       assert_equal Test, mounter.app_obj
       assert_equal __FILE__, mounter.app_file
