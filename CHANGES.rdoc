@@ -2,6 +2,8 @@
 
 == 0.9.12 (Unreleased)
 
+* Deprecated mount_core and remove references
+
 == 0.9.11
 
 * Fixed provides with IE

@@ -24,7 +24,7 @@ end
 
 ## If you want use this as a standalone app uncomment:
 #
-# Padrino.mount_core("SimpleDemo")
+# Padrino.mount("SimpleDemo").to("/")
 # Padrino.run! unless Padrino.loaded? # If you enable reloader prevent to re-run the app
 #
 # Then run it from your console: ruby -I"lib" test/fixtures/apps/simple.rb

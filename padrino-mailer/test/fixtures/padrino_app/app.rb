@@ -65,5 +65,5 @@ class PadrinoApp < Padrino::Application
   end
 end
 
-Padrino.mount_core("PadrinoApp")
+Padrino.mount("PadrinoApp").to("/")
 Padrino.load!
