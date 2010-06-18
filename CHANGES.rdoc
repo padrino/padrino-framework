@@ -3,6 +3,7 @@
 == 0.9.12 (Unreleased)
 
 * Deprecated mount_core and remove references
+* Fixed problem with czech translation file
 
 == 0.9.11
 
