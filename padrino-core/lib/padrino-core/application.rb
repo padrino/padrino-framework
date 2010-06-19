@@ -68,7 +68,11 @@ module Padrino
       end
 
       ##
-      # Returns the routes of our app
+      # Returns the routes of our app.
+      #
+      # ==== Examples
+      #
+      #   MyApp.routes
       #
       def routes
         router.routes

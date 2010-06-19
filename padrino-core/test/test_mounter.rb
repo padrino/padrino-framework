@@ -84,6 +84,47 @@ class TestMounter < Test::Unit::TestCase
       assert_equal Padrino.root("test", "app.rb"), Padrino.mounted_root("test", "app.rb")
     end
 
+    should "be able to access routes data for mounted apps" do
+      class ::OneApp < Padrino::Application
+        get("/test") { "test" }
+        get(:index, :provides => [:js, :json]) { "index" }
+        controllers :posts do
+          get(:index) { "index" }
+          get(:new, :provides => :js) { "new" }
+          get(:show, :provides => [:js, :html], :with => :id) { "show" }
+          post(:create, :provides => :js, :with => :id) { "create" }
+        end
+      end
+      class ::TwoApp < Padrino::Application
+        controllers :users do
+          get(:index) { "users" }
+          get(:new) { "users new" }
+          post(:create) { "users create" }
+          put(:update) { "users update" }
+          delete(:destroy) { "users delete" }
+        end
+      end
+
+      Padrino.mount("one_app").to("/")
+      Padrino.mount("two_app").to("/two_app")
+
+      assert_equal 11, Padrino.mounted_apps[0].routes.size
+      assert_equal 7, Padrino.mounted_apps[1].routes.size
+      assert_equal 5, Padrino.mounted_apps[0].named_routes.size
+      assert_equal 5, Padrino.mounted_apps[1].named_routes.size
+
+      first_route = Padrino.mounted_apps[0].named_routes[3]
+      assert_equal "posts_show", first_route.identifier.to_s
+      assert_equal "(:posts, :show)", first_route.name
+      assert_equal "GET", first_route.verb
+      assert_equal "/posts/show/:id(.:format)", first_route.path
+      another_route = Padrino.mounted_apps[1].named_routes[2]
+      assert_equal "users_create", another_route.identifier.to_s
+      assert_equal "(:users, :create)", another_route.name
+      assert_equal "POST", another_route.verb
+      assert_equal "/two_app/users/create", another_route.path
+    end
+
     should 'correctly instantiate a new padrino application' do
       mock_app do
         get("/demo_1"){ "Im Demo 1" }

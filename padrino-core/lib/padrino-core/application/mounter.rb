@@ -74,7 +74,7 @@ module Padrino
     # Return the class for the app
     #
     def app_object
-      begin
+      @_app_object ||= begin
         app_class.constantize
       rescue
         if app_file
@@ -82,6 +82,27 @@ module Padrino
           app_class.constantize
         end
       end
+    end
+
+    ###
+    # Returns the route objects for the mounted application
+    #
+    def routes
+      app_obj.routes
+    end
+
+    ###
+    # Returns the basic route information for each named route
+    #
+    #
+    def named_routes
+      app_obj.routes.map { |route|
+        name_array     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
+        request_method = route.as_options[:conditions][:request_method][0]
+        full_path = File.join(self.uri_root, route.path)
+        next if route.named.blank? || request_method == 'HEAD'
+        OpenStruct.new(:verb => request_method, :identifier => route.named, :name => name_array, :path => full_path)
+      }.compact
     end
 
     ##

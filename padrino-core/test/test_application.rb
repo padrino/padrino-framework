@@ -3,6 +3,10 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class PadrinoTestApp < Padrino::Application; end
 
 class TestApplication < Test::Unit::TestCase
+  def setup
+    Padrino.mounted_apps.clear
+  end
+
   def teardown
     remove_views
   end
@@ -29,7 +33,7 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.flash
     end
 
-    #compare to: test_routing: allow global provides
+    # compare to: test_routing: allow global provides
     should "set content_type to :html if none can be determined" do
       mock_app do
         provides :xml
@@ -46,6 +50,5 @@ class TestApplication < Test::Unit::TestCase
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal "Foo in html", body
     end
-
   end
 end
