@@ -4,7 +4,7 @@
 #
 #   Padrino.mount("blog").to('/blog')
 #   Padrino.mount("blog", :app_class => "BlogApp").to('/blog')
-#   Padrino.mount("blog", :app_file =>  "/path/to/blog/app.rb").to('/blog')
+#   Padrino.mount("blog", :app_file =>  "path/to/blog/app.rb").to('/blog')
 #
 # You can also map apps to a specified host:
 #
@@ -18,7 +18,7 @@
 # By default, this file mounts the parimary app which was generated with this project.
 # However, the mounted app can be modified as needed:
 #
-#   Padrino.mount(:app_file => "/path/to/file", :app_class => "Blog").to('/')
+#   Padrino.mount(:app_file => "path/to/file", :app_class => "Blog").to('/')
 #
 
 # Mounts the core application for this project

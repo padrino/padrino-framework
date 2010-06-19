@@ -28,7 +28,7 @@ module Padrino
       # Copies over the Padrino base admin application
       def create_app
         self.destination_root = options[:root]
-        @app_name = name.gsub(/\W/, "_").underscore.classify
+        @app_name = name.gsub(/\W/, "_").underscore.camelize
         if in_app_root?
           app_skeleton(name, options[:tiny])
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{name.underscore}\")"

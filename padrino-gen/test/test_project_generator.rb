@@ -3,6 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class TestProjectGenerator < Test::Unit::TestCase
   def setup
     `rm -rf /tmp/sample_project`
+    `rm -rf /tmp/warepedia`
   end
 
   context 'the project generator' do
@@ -48,9 +49,9 @@ class TestProjectGenerator < Test::Unit::TestCase
     end
 
     should "place app specific names into correct files" do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none') }
-      assert_match_in_file(/class SampleProject < Padrino::Application/m, '/tmp/sample_project/app/app.rb')
-      assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/m, '/tmp/sample_project/config/apps.rb')
+      silence_logger { generate(:project, 'warepedia', '--root=/tmp', '--script=none') }
+      assert_match_in_file(/class Warepedia < Padrino::Application/m, '/tmp/warepedia/app/app.rb')
+      assert_match_in_file(/Padrino.mount\("Warepedia"\).to\('\/'\)/m, '/tmp/warepedia/config/apps.rb')
     end
 
     should "create components file containing options chosen with defaults" do

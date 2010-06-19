@@ -156,7 +156,7 @@ module Padrino
 
           # Returns the class type for the given object
           def object_class(explicit_object)
-            explicit_object.is_a?(Symbol) ? explicit_object.to_s.classify.constantize : explicit_object.class
+            explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
           end
       end # AbstractFormBuilder
     end # FormBuilder

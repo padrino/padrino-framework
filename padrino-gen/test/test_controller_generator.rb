@@ -5,6 +5,7 @@ class TestControllerGenerator < Test::Unit::TestCase
     @controller_path = '/tmp/sample_project/app/controllers/demo_items.rb'
     @controller_test_path = '/tmp/sample_project/test/controllers/demo_items_controller_test.rb'
     `rm -rf /tmp/sample_project`
+    `rm -rf /tmp/warepedia`
   end
 
   context 'the controller generator' do
@@ -12,6 +13,22 @@ class TestControllerGenerator < Test::Unit::TestCase
       output = silence_logger { generate(:controller, 'demo', '-r=/tmp') }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/app/controllers/demo.rb')
+    end
+
+    should "generate controller within existing project" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
+      silence_logger { generate(:controller, 'DemoItems', '-r=/tmp/sample_project') }
+      assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
+      assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/app/helpers/demo_items_helper.rb')
+      assert_file_exists('/tmp/sample_project/app/views/demo_items')
+    end
+
+    should "generate controller within existing project with weird name" do
+      silence_logger { generate(:project, 'warepedia', '--root=/tmp', '--script=none', '-t=bacon') }
+      silence_logger { generate(:controller, 'DemoItems', '-r=/tmp/warepedia') }
+      assert_match_in_file(/Warepedia.controllers :demo_items do/m, "/tmp/warepedia/app/controllers/demo_items.rb")
+      assert_match_in_file(/Warepedia.helpers do/m, '/tmp/warepedia/app/helpers/demo_items_helper.rb')
+      assert_file_exists('/tmp/warepedia/app/views/demo_items')
     end
 
     should "generate controller in specified app" do
@@ -31,14 +48,6 @@ class TestControllerGenerator < Test::Unit::TestCase
       assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/app/helpers/demo_items_helper.rb')
       assert_file_exists('/tmp/sample_project/app/views/demo_items')
       assert_no_file_exists("/tmp/sample_project/test")
-    end
-
-    should "generate controller within existing application" do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
-      silence_logger { generate(:controller, 'DemoItems', '-r=/tmp/sample_project') }
-      assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
-      assert_match_in_file(/SampleProject.helpers do/m, '/tmp/sample_project/app/helpers/demo_items_helper.rb')
-      assert_file_exists('/tmp/sample_project/app/views/demo_items')
     end
 
     should "generate controller test for bacon" do

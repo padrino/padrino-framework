@@ -128,7 +128,7 @@ module Padrino
         unless File.exist?(destination_root(app))
           say
           say "================================================================="
-          say "We didn't found #{app.underscore.classify}! Available apps are:"
+          say "We didn't found #{app.underscore.camelize}! Available apps are:"
           say "================================================================="
           Padrino.mounted_apps.each do |app|
             say " - #{app.app_object}"
