@@ -742,7 +742,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "This is the post index", body
   end
 
-  should_eventually "parse two routes with the same path but different http verbs and provides" do
+  should "parse two routes with the same path but different http verbs and provides" do
     mock_app do
       get(:index, :provides => [:html, :json]) { "This is the get index.#{content_type}" }
       post(:index, :provides => [:html, :json]) { "This is the post index.#{content_type}" }
@@ -754,13 +754,13 @@ class TestRouting < Test::Unit::TestCase
     get "/.json"
     assert_equal "This is the get index.json", body
     get "/.js"
-    assert 404, status
+    assert_equal 404, status
     assert_match "Sinatra doesn't know this ditty", body
     post "/.json"
     assert_equal "This is the post index.json", body
     post "/.js"
     assert_match "Sinatra doesn't know this ditty", body
-    assert 404, status
+    assert_equal 404, status
   end
 
   should "work with params and parent options" do

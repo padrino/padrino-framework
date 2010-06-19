@@ -361,9 +361,8 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          mime_types = types.map { |t| mime_type(t) }
-
           condition do
+            mime_types        = types.map { |t| mime_type(t) }
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
             matching_types    = (accepts & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
@@ -378,7 +377,7 @@ module Padrino
                              types.include?(accept_format)   ||
                              types.include?(url_format)      ||
                              accepts.any? { |a| a == "*/*" } ||
-                             (request.accept.empty? && types.include?(:html))
+                             ((!url_format) && request.accept.empty? && types.include?(:html))
 
             if matched_format
               @_content_type = url_format || accept_format || :html

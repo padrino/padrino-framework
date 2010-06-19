@@ -302,7 +302,8 @@ class TestRendering < Test::Unit::TestCase
       get "/foo.js"
       assert_equal "Im Italian Js", body
       I18n.locale = :en
-      assert_raise(RuntimeError) { get "/foo.pk" }
+      get "/foo.pk"
+      assert_equal 404, status
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -343,7 +344,8 @@ class TestRendering < Test::Unit::TestCase
       I18n.locale = :en
       get "/bar.json"
       assert_equal "Im a json", body
-      assert_raise(RuntimeError) { get "/bar.pk" }
+      get "/bar.pk"
+      assert_equal 404, status
     end
 
     should 'renders erb with blocks' do
