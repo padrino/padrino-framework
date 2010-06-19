@@ -4,6 +4,7 @@
 
 * Deprecated mount_core and remove references
 * Fixed problem with czech translation file
+* Fixed a problem with routes with same path but different verbs and provides
 
 == 0.9.11
 
