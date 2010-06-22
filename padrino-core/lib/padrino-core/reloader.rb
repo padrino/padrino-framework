@@ -84,7 +84,7 @@ module Padrino
             # If the file is related to their app (i.e. a controller/mailer/helper)
             if app = Padrino.mounted_apps.find { |a| file =~ /^#{File.dirname(a.app_file)}/ }
               # We need to reload their own app
-              app.app_object.reload!
+              app.app_obj.reload!
               # App reloading will also perform safe_load of itself so we can go next
               if File.identical?(app.app_file, file)
                 MTIMES[file] = mtime # This prevent a loop
