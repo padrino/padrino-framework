@@ -19,7 +19,7 @@ module Padrino
       @app_class = options[:app_class] || @name.camelize
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
-      ensure_app_file! && ensure_app_object!
+      ensure_app_file! || ensure_app_object!
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @uri_root  = "/"
     end

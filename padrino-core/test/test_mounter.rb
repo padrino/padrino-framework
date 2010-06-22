@@ -39,7 +39,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal ["an_app"], Padrino.mounted_apps.collect(&:name)
     end
 
-    should 'mount a core' do
+    should 'mount a primary app to root uri' do
       mounter = Padrino.mount("test", :app_file => __FILE__).to("/")
       assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
@@ -49,7 +49,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
-    should 'mount a core to url' do
+    should 'mount a primary app to sub_uri' do
       mounter = Padrino.mount("test", :app_file => __FILE__).to('/me')
       assert_equal "test", mounter.name
       assert_equal "Test", mounter.app_class
@@ -57,6 +57,16 @@ class TestMounter < Test::Unit::TestCase
       assert_equal __FILE__, mounter.app_file
       assert_equal "/me", mounter.uri_root
       assert_equal File.dirname(mounter.app_file), mounter.app_root
+    end
+
+    should "raise error when app has no located file" do
+      assert_raise(Padrino::Mounter::MounterException) { Padrino.mount("tester_app").to('/test') }
+      assert_equal 0, Padrino.mounted_apps.size
+    end
+
+    should "raise error when app has no located object" do
+      assert_raise(Padrino::Mounter::MounterException) { Padrino.mount("tester_app", :app_file => "/path/to/file.rb").to('/test') }
+      assert_equal 0, Padrino.mounted_apps.size
     end
 
     should 'mount multiple apps' do
