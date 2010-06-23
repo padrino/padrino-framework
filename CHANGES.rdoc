@@ -2,6 +2,8 @@
 
 == 0.9.13 (Unreleased)
 
+* Application generator should create public subfolder
+* Refactored application mounter class
 * Fixed a naming bug in relation to using classify to manipulate project name
 * Refactored and enhanced rake routes (and rake routes:app)
 
