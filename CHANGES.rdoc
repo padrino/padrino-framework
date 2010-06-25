@@ -2,6 +2,7 @@
 
 == 0.9.13 (Unreleased)
 
+* Fixed a problem with padrino g the alias of padrino-gen
 * Fixed a naming bug in relation to using classify to manipulate project name
 * Refactored and enhanced rake routes (and rake routes:app)
 

@@ -1,5 +1,10 @@
-require 'padrino-core/tasks'
-require 'padrino-core/command'
+# begin
+  require 'padrino-core/tasks'
+  require 'padrino-core/command'
+# rescue LoadError
+#   require 'rubygems' unless defined?(Gem)
+#   gem 'padrino-core'
+# end
 
 module Padrino
   ##
