@@ -22,6 +22,7 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/demo/helpers')
       assert_file_exists('/tmp/sample_project/demo/views')
       assert_file_exists('/tmp/sample_project/demo/views/layouts')
+      assert_dir_exists('/tmp/sample_project/public/demo')
       assert_match_in_file 'Padrino.mount("Demo").to("/demo")', '/tmp/sample_project/config/apps.rb'
       assert_match_in_file 'class Demo < Padrino::Application', '/tmp/sample_project/demo/app.rb'
     end
@@ -35,6 +36,7 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/demo/controllers.rb')
       assert_file_exists('/tmp/sample_project/demo/mailers.rb')
       assert_dir_exists('/tmp/sample_project/demo/views/mailers')
+      assert_dir_exists('/tmp/sample_project/public/demo')
       assert_match_in_file(/:notifier/,'/tmp/sample_project/demo/mailers.rb')
       assert_no_file_exists('/tmp/sample_project/demo/helpers')
       assert_no_file_exists('/tmp/sample_project/demo/controllers')
