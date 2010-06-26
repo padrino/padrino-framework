@@ -23,7 +23,7 @@ Dir["lib/tasks/**/*.rake"].
 # setting up the required environment for Padrino
 task :environment do
   Padrino.mounted_apps.each do |app|
-    app.app_object.setup_application!
+    app.app_obj.setup_application!
   end
 end
 

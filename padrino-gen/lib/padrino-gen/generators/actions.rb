@@ -131,7 +131,7 @@ module Padrino
           say "We didn't found #{app.underscore.camelize}! Available apps are:"
           say "================================================================="
           Padrino.mounted_apps.each do |app|
-            say " - #{app.app_object}"
+            say " - #{app.app_class}"
           end
           say "================================================================="
           say

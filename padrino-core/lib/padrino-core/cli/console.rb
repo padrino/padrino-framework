@@ -15,6 +15,6 @@ end
 
 # Load apps
 Padrino.mounted_apps.each do |app|
-  puts "=> Loading Application #{app.app_object}"
-  app.app_object.setup_application!
+  puts "=> Loading Application #{app.app_class}"
+  app.app_obj.setup_application!
 end

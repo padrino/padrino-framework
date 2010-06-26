@@ -95,7 +95,7 @@ module Padrino
     # Makes two Mounters equal if they have the same name and uri_root
     #
     def ==(other)
-      other.is_a?(Mounter) && self.name == other.name && self.uri_root == other.uri_root
+      other.is_a?(Mounter) && self.app_class == other.app_class && self.uri_root == other.uri_root
     end
     
     protected
@@ -139,7 +139,7 @@ module Padrino
     end
     
     ###
-    # Raises an exception unless app_object is defined properly
+    # Raises an exception unless app_obj is defined properly
     #
     def ensure_app_object!
       message = "Unable to locate app for '#{name}', try with :app_class => 'MyAppClass'"
@@ -168,8 +168,7 @@ module Padrino
     # Inserts a Mounter object into the mounted applications (avoids duplicates)
     #
     def insert_mounted_app(mounter)
-      return false if Padrino.mounted_apps.include?(mounter)
-      Padrino.mounted_apps << mounter
+      Padrino.mounted_apps.push(mounter) unless Padrino.mounted_apps.include?(mounter)
     end
 
     ##
@@ -181,7 +180,7 @@ module Padrino
     #   Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
     #
     def mount_core(*args)
-      # TODO Remove this in 0.9.13 or before 1.0
+      # TODO Remove this in 0.9.14 or pre 1.0
       warn "DEPRECATION! #{Padrino.first_caller}: Padrino.mount_core has been deprecated.\nUse Padrino.mount('AppName').to('/') instead"
       options = args.extract_options!
       app_class = args.size > 0 ? args.first.to_s.camelize : nil
