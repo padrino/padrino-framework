@@ -4,7 +4,7 @@ source :rubygems
 
 group :core do
   gem "sinatra", ">= 1.0.0"
-  gem "http_router", ">= 0.2.5"
+  gem "http_router", ">= 0.3.0"
   gem "thor", ">= 0.13.0"
   # If you want try our test on AS edge.
   # $ AS=edge bundle install
