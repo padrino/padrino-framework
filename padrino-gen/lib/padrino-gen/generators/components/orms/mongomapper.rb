@@ -9,7 +9,7 @@ end
 MONGO
 
 def setup_orm
-  require_dependencies 'mongo_ext', :require => 'mongo'
+  require_dependencies 'bson_ext', :require => 'mongo'
   require_dependencies 'mongo_mapper'
   create_file("config/database.rb", MONGO.gsub(/!NAME!/, name.underscore))
   empty_directory('app/models')

@@ -230,6 +230,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongomapper', '--script=none') }
       assert_match /Applying.*?mongomapper.*?orm/, buffer
       assert_match_in_file(/gem 'mongo_mapper'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/MongoMapper.database/, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')
     end
@@ -238,6 +239,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongoid', '--script=none') }
       assert_match /Applying.*?mongoid.*?orm/, buffer
       assert_match_in_file(/gem 'mongoid'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
       assert_match_in_file(/Mongoid.database/, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')
     end
