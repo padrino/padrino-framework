@@ -4,6 +4,11 @@
 
 * Application generator should create public subfolder
 * Refactored application mounter class
+* updated mongomapper to use bson_ext
+* use entity code instead of copyright symbol
+* ensure app generation creates own public folder
+* fix padrino g alias
+* fixed distance_of_time_in_words helper(Thanks to Yannick Koechlin)
 
 == 0.9.13
 
