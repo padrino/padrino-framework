@@ -10,7 +10,7 @@ class TestFormBuilder < Test::Unit::TestCase
 
   def setup
     role_types = [stub(:name => 'Admin', :id => 1), stub(:name => 'Moderate', :id => 2),  stub(:name => 'Limited', :id => 3)]
-    @user = stub(:errors => {:a => "must be present", :b => "must be valid"}, :class => 'User', :first_name => "Joe", :session_id => 54)
+    @user = stub(:errors => {:a => "must be present", :b => "must be valid", :email => "Must be valid", :first_name => []}, :class => 'User', :first_name => "Joe", :email => '', :session_id => 54)
     @user.stubs(:role_types => role_types, :role => "1")
     @user_none = stub(:errors => {}, :class => 'User')
   end
@@ -93,6 +93,16 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+    end
+
+    should "have a class of 'invalid' for fields with errors" do
+      actual_html = form_for(@user, '/register') {|f| f.text_field(:email) }
+      assert_has_tag(:input, :type => 'text', :name => 'user[email]', :id => 'user_email', :class => 'invalid') {actual_html }
+    end
+
+    should "not have a class of 'invalid' for fields with no errors" do
+      actual_html = form_for(@user, '/register') {|f| f.text_field(:first_name) }
+      assert_has_no_tag(:input, :type => 'text', :name => 'user[first_name]', :id => 'user_first_name', :class => 'invalid') {actual_html }
     end
   end
 

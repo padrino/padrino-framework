@@ -2,6 +2,8 @@
 
 == 0.9.15 (Unreleased)
 
+* Fixes issue with invalid class on form helpers
+
 == 0.9.14
 
 * Application generator should create public subfolder
