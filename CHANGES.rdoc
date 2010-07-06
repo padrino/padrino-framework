@@ -2,7 +2,7 @@
 
 == 0.9.15 (Unreleased)
 
-* Fixes issue with invalid class on form fields
+* Fixes issue with invalid class on form fields [Thanks RichGuk!]
 * Adds a span around 'required' note for form fields
 
 == 0.9.14
