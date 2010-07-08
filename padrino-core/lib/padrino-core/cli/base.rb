@@ -86,7 +86,7 @@ module Padrino
         end
 
       protected
-        def self.banner(task)
+        def self.banner(task=nil, *args)
           "padrino #{task.name}"
         end
 
