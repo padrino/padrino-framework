@@ -3,6 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class TestProjectGenerator < Test::Unit::TestCase
   def setup
     `rm -rf /tmp/sample_project`
+    `rm -rf /tmp/project.com`
     `rm -rf /tmp/warepedia`
   end
 
@@ -14,6 +15,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/,'/tmp/sample_project/config/apps.rb')
       assert_file_exists('/tmp/sample_project/config/boot.rb')
       assert_file_exists('/tmp/sample_project/public/favicon.ico')
+    end
+    
+    should "generate a valid name" do
+      silence_logger { generate(:project, 'project.com', '--root=/tmp') } 
+      assert_file_exists('/tmp/project.com')
+      assert_match_in_file(/class ProjectCom < Padrino::Application/,'/tmp/project.com/app/app.rb')
+      assert_match_in_file(/Padrino.mount\("ProjectCom"\).to\('\/'\)/,'/tmp/project.com/config/apps.rb')
     end
     
     should "allow specifying alternate application name" do
@@ -131,13 +139,14 @@ class TestProjectGenerator < Test::Unit::TestCase
     context "for sequel" do
       should "properly generate default" do
         @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
-        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=sequel', '--script=none') }
+        buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=sequel', '--script=none') }
         assert_match /Applying.*?sequel.*?orm/, buffer
-        assert_match_in_file(/gem 'sequel'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/Sequel.connect/, '/tmp/sample_project/config/database.rb')
-        assert_match_in_file(%r{sqlite://}, '/tmp/sample_project/config/database.rb')
-        assert_dir_exists('/tmp/sample_project/app/models')
+        assert_match_in_file(/gem 'sequel'/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby'/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/Sequel.connect/, '/tmp/project.com/config/database.rb')
+        assert_match_in_file(%r{sqlite://}, '/tmp/project.com/config/database.rb')
+        assert_match_in_file(%r{project_com}, '/tmp/project.com/config/database.rb')
+        assert_dir_exists('/tmp/project.com/app/models')
       end
       
       should "properly generate mysql" do
@@ -164,12 +173,13 @@ class TestProjectGenerator < Test::Unit::TestCase
 
     context "for activerecord" do
       should "properly generate default" do
-        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=activerecord', '--script=none') }
+        buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=activerecord', '--script=none') }
         assert_match /Applying.*?activerecord.*?orm/, buffer
-        assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/sample_project/config/database.rb')
-        assert_dir_exists('/tmp/sample_project/app/models')
+        assert_match_in_file(/gem 'activerecord', :require => "active_record"/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/ActiveRecord::Base.establish_connection/, '/tmp/project.com/config/database.rb')
+        assert_match_in_file(/project_com/, '/tmp/project.com/config/database.rb')
+        assert_dir_exists('/tmp/project.com/app/models')
       end
       
       should "properly generate mysql" do
@@ -196,12 +206,13 @@ class TestProjectGenerator < Test::Unit::TestCase
 
     context "for datamapper" do
       should "properly generate default" do
-        buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=datamapper', '--script=none') }
+        buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=datamapper', '--script=none') }
         assert_match /Applying.*?datamapper.*?orm/, buffer
-        assert_match_in_file(/gem 'data_mapper'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/gem 'dm-sqlite-adapter'/, '/tmp/sample_project/Gemfile')
-        assert_match_in_file(/DataMapper.setup/, '/tmp/sample_project/config/database.rb')
-        assert_dir_exists('/tmp/sample_project/app/models')
+        assert_match_in_file(/gem 'data_mapper'/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/gem 'dm-sqlite-adapter'/, '/tmp/project.com/Gemfile')
+        assert_match_in_file(/DataMapper.setup/, '/tmp/project.com/config/database.rb')
+        assert_match_in_file(/project_com/, '/tmp/project.com/config/database.rb')
+        assert_dir_exists('/tmp/project.com/app/models')
       end
       
       should "properly generate for mysql" do
@@ -225,32 +236,34 @@ class TestProjectGenerator < Test::Unit::TestCase
       end
     end
 
-
     should "properly generate for mongomapper" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongomapper', '--script=none') }
+      buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=mongomapper', '--script=none') }
       assert_match /Applying.*?mongomapper.*?orm/, buffer
-      assert_match_in_file(/gem 'mongo_mapper'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/MongoMapper.database/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+      assert_match_in_file(/gem 'mongo_mapper'/, '/tmp/project.com/Gemfile')
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/project.com/Gemfile')
+      assert_match_in_file(/MongoMapper.database/, '/tmp/project.com/config/database.rb')
+      assert_match_in_file(/project_com/, '/tmp/project.com/config/database.rb')
+      assert_dir_exists('/tmp/project.com/app/models')
     end
 
     should "properly generate for mongoid" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongoid', '--script=none') }
+      buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=mongoid', '--script=none') }
       assert_match /Applying.*?mongoid.*?orm/, buffer
-      assert_match_in_file(/gem 'mongoid'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/Mongoid.database/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+      assert_match_in_file(/gem 'mongoid'/, '/tmp/project.com/Gemfile')
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/project.com/Gemfile')
+      assert_match_in_file(/Mongoid.database/, '/tmp/project.com/config/database.rb')
+      assert_match_in_file(/project_com/, '/tmp/project.com/config/database.rb')
+      assert_dir_exists('/tmp/project.com/app/models')
     end
 
 
     should "properly generate for couchrest" do
-      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=couchrest', '--script=none') }
+      buffer = silence_logger { generate(:project, 'project.com', '--root=/tmp', '--orm=couchrest', '--script=none') }
       assert_match /Applying.*?couchrest.*?orm/, buffer
-      assert_match_in_file(/gem 'couchrest'/, '/tmp/sample_project/Gemfile')
-      assert_match_in_file(/CouchRest.database!/, '/tmp/sample_project/config/database.rb')
-      assert_dir_exists('/tmp/sample_project/app/models')
+      assert_match_in_file(/gem 'couchrest'/, '/tmp/project.com/Gemfile')
+      assert_match_in_file(/CouchRest.database!/, '/tmp/project.com/config/database.rb')
+      assert_match_in_file(/project_com/, '/tmp/project.com/config/database.rb')
+      assert_dir_exists('/tmp/project.com/app/models')
     end
   end
 
