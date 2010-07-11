@@ -88,7 +88,7 @@ class Test::Unit::TestCase
   end
 
   def assert_no_match_in_file(pattern, file)
-    File.exists?(file) ? !assert_match(pattern, File.read(file)) : assert_file_exists(file)
+    File.exists?(file) ? assert_no_match(pattern, File.read(file)) : assert_file_exists(file)
   end
 
   # Delegate other missing methods to response.
