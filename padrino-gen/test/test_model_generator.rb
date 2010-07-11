@@ -171,7 +171,30 @@ class TestModelGenerator < Test::Unit::TestCase
     end
   end
 
-  # MONGOMAPPER
+  # SEQUEL
+  context "model generator using sequel" do
+    should "generate model file with given properties" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=sequel') }
+      silence_logger { generate(:model, 'user', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_project') }
+      assert_match_in_file(/class User < Sequel::Model/m, '/tmp/sample_project/app/models/user.rb')
+    end
+
+    should "generate migration file with given properties" do
+      current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=sequel') }
+      silence_logger { generate(:model, 'person', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_project') }
+      migration_file_path = "/tmp/sample_project/db/migrate/001_create_people.rb"
+      assert_match_in_file(/class Person < Sequel::Model/m, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
+      assert_match_in_file(/create_table :people/m, migration_file_path)
+      assert_match_in_file(/String :name/m,   migration_file_path)
+      assert_match_in_file(/Integer :age/m,   migration_file_path)
+      assert_match_in_file(/DateTime :created/m,  migration_file_path)
+      assert_match_in_file(/drop_table :people/m, migration_file_path)
+    end
+  end
+
+  # MONGODB
   context "model generator using mongomapper" do
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=mongomapper') }
@@ -210,27 +233,27 @@ class TestModelGenerator < Test::Unit::TestCase
     end
   end
 
-  # SEQUEL
-  context "model generator using sequel" do
-    should "generate model file with given properties" do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=sequel') }
-      silence_logger { generate(:model, 'user', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_project') }
-      assert_match_in_file(/class User < Sequel::Model/m, '/tmp/sample_project/app/models/user.rb')
+  # REDIS
+  context "model generator using ohm" do
+    should "generate model file with no properties" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=ohm') }
+      silence_logger { generate(:model, 'person', '-r=/tmp/sample_project') }
+      assert_match_in_file(/class Person < Ohm::Model/, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/include Ohm::Timestamping/, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/include Ohm::Typecast/, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/# attribute :name/m, '/tmp/sample_project/app/models/person.rb')   
+      assert_match_in_file(/# reference :venue, Venue/m, '/tmp/sample_project/app/models/person.rb')    
     end
-
-    should "generate migration file with given properties" do
-      current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=sequel') }
-      silence_logger { generate(:model, 'person', "name:string", "age:integer", "created:datetime", '-r=/tmp/sample_project') }
-      migration_file_path = "/tmp/sample_project/db/migrate/001_create_people.rb"
-      assert_match_in_file(/class Person < Sequel::Model/m, '/tmp/sample_project/app/models/person.rb')
-      assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/String :name/m,   migration_file_path)
-      assert_match_in_file(/Integer :age/m,   migration_file_path)
-      assert_match_in_file(/DateTime :created/m,  migration_file_path)
-      assert_match_in_file(/drop_table :people/m, migration_file_path)
-    end
+    
+    should "generate model file with given fields" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=ohm') }
+      silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_project') }
+      assert_match_in_file(/class User < Ohm::Model/, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :name/m, '/tmp/sample_project/app/models/user.rb')
+      assert_no_match_in_file(/, String/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :age/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :email/m, '/tmp/sample_project/app/models/user.rb')
+    end   
   end
 
   context "model generator testing files" do
