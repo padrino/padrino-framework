@@ -30,6 +30,7 @@ module Padrino
         self.destination_root = options[:root]
         @app_name = name.gsub(/\W/, "_").underscore.camelize
         if in_app_root?
+          self.behavior = :revoke if options[:destroy]
           app_skeleton(name, options[:tiny])
           empty_directory destination_root("public/#{name}")
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{name.underscore}\")"
