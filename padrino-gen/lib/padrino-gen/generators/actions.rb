@@ -104,6 +104,7 @@ module Padrino
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
       # require_dependencies 'mocha', 'bacon', :group => 'test'
+      # require_dependencies 'json', :version => ">=1.2.3"
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
@@ -112,10 +113,14 @@ module Padrino
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
       # insert_into_gemfile(name, :group => 'test', :require => 'foo')
+      # insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
+        version = options.delete(:version)
         gem_options   = options.map { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
-        include_text  = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
+        write_option = gem_options.present? ? ", #{gem_options}" : ""
+        write_version = version.present? ? ", #{version.inspect}" : ""
+        include_text  = "gem '#{name}'"<< write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
