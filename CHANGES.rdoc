@@ -7,6 +7,8 @@
 * Adds a span around 'required' note for form fields
 * Fixes padrino bin command to properly display help
 * Stores component file in project after choices are validated
+* Added Ohm support [Thanks to lusis]
+* Updated require_dependencies to take a version
 
 == 0.9.14
 
