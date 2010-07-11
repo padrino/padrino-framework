@@ -44,16 +44,17 @@ module Padrino
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
         app_skeleton('app', options[:tiny])
-        store_component_config('.components')
         template "templates/Gemfile.tt", destination_root("Gemfile")
       end
 
       # For each component, retrieve a valid choice and then execute the associated generator
       def setup_components
+        @_components = options.dup.slice(*self.class.component_types)
         self.class.component_types.each do |comp|
-          choice = resolve_valid_choice(comp)
+          choice = @_components[comp] = resolve_valid_choice(comp)
           execute_component_setup(comp, choice)
         end
+        store_component_config('.components')
       end
 
       # Bundle all required components using bundler and Gemfile

@@ -65,15 +65,16 @@ module Padrino
       # Returns true if the option passed is a valid choice for component
       # valid_option?(:mock, 'rr')
       def valid_choice?(component, choice)
-        self.class.available_choices_for(component).include? choice.to_sym
+        choice.present? && self.class.available_choices_for(component).include?(choice.to_sym)
       end
 
       # Creates a component_config file at the destination containing all component options
       # Content is a yamlized version of a hash containing component name mapping to chosen value
       def store_component_config(destination)
+        components = @_components || options
         create_file(destination) do
-          self.class.component_types.inject({}) { |result, component|
-            result[component] = options[component].to_s; result
+          self.class.component_types.inject({}) { |result, comp|
+            result[comp] = components[comp].to_s; result
           }.to_yaml
         end
       end
