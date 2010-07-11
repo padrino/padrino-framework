@@ -9,7 +9,7 @@
 * Stores component file in project after choices are validated
 * Added Ohm support [Thanks to lusis]
 * Updated require_dependencies to take a version
-
+* fixes app destroy option
 == 0.9.14
 
 * Application generator should create public subfolder
