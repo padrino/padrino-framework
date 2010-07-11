@@ -62,6 +62,22 @@ module Padrino
         require File.expand_path(File.dirname(__FILE__) + '/console')
         IRB.start
       end
+      
+      desc "generate", "Executes the Padrino generator with given options."
+      def generate(*args)
+        # Build Padrino g as an alias of padrino-gen
+        begin
+          # We try to load the vendored padrino-gen if exist
+          padrino_gen_path = File.expand_path('../../../../../padrino-gen/lib', __FILE__)
+          $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)
+          require 'padrino-core/command'
+          require 'padrino-gen/command'
+          ARGV.shift
+          Padrino.bin_gen(ARGV)
+        rescue
+          puts "<= You need padrino-gen! Run: gem install padrino-gen"
+        end
+      end
 
       desc "version", "Show current Padrino Version"
       map "-v" => :version, "--version" => :version

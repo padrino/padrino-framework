@@ -4,6 +4,7 @@
 
 * Fixes issue with invalid class on form fields [Thanks RichGuk!]
 * Adds a span around 'required' note for form fields
+* Fixes padrino bin command to properly display help
 
 == 0.9.14
 
