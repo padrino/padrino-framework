@@ -48,7 +48,7 @@ class Test::Unit::TestCase
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
   end
-  
+
   # assert_file_exists('/tmp/app')
   def assert_file_exists(file_path)
     assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"

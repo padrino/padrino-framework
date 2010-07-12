@@ -2,6 +2,8 @@
 
 == 0.9.15 (Unreleased)
 
+* Added Before/After load hooks
+* Fixes DataMapper.finalize
 * Fixes issue with invalid class on form fields [Thanks RichGuk!]
 * Enhances Datamapper database creation (Thanks lusis!)
 * Adds a span around 'required' note for form fields
@@ -9,7 +11,8 @@
 * Stores component file in project after choices are validated
 * Added Ohm support [Thanks to lusis]
 * Updated require_dependencies to take a version
-* fixes app destroy option
+* Fixes app destroy option
+
 == 0.9.14
 
 * Application generator should create public subfolder

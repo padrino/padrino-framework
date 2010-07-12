@@ -11,7 +11,7 @@ SEQUEL
 def setup_orm
   sequel = SEQUEL
   db = @app_name.underscore
-  require_dependencies 'sequel'  
+  require_dependencies 'sequel'
   require_dependencies case options[:adapter]
   when 'mysql'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")

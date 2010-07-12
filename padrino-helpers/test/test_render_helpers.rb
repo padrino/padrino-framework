@@ -46,5 +46,4 @@ class TestRenderHelpers < Test::Unit::TestCase
       assert_have_selector 'p', :content => "Extra is bar"
     end
   end
-
 end

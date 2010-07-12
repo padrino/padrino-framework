@@ -58,8 +58,8 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_match_in_file(/DemoApp.mailer :demo/m, '/tmp/sample_project/demo_app/mailers/demo.rb')
       assert_dir_exists('/tmp/sample_project/demo_app/views/mailers/demo')
     end
-  
-    # only destroys what it generated. 
+
+    # only destroys what it generated.
     # hence, the folder will still exists if other changes were made to it.
     should "destroys itself" do
       silence_logger { generate(:project, 'sample_project','--root=/tmp') }

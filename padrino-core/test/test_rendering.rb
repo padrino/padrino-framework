@@ -365,5 +365,4 @@ class TestRendering < Test::Unit::TestCase
       assert_equal 'THIS. IS. SPARTA!', body
     end
   end
-
 end

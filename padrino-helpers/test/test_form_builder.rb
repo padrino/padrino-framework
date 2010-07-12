@@ -38,12 +38,12 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_has_tag('form', :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'text', :name => 'outer-user_account[username]') { actual_html }
     end
-    
+
     should "display correct form html with remote option" do
       actual_html = form_for(@user, '/update', :remote => true) { "Demo" }
       assert_has_tag('form', :action => '/update', :method => 'post', "data-remote" => 'true') { actual_html }
     end
-    
+
     should "display correct form html with remote option and method put" do
       actual_html = form_for(@user, '/update', :remote => true, :method => 'put') { "Demo" }
       assert_has_tag('form', :method => 'post', "data-method" => 'put', "data-remote" => 'true') { actual_html }
