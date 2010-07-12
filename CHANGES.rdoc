@@ -2,14 +2,15 @@
 
 == 0.9.15 (Unreleased)
 
+* Fixes options_for_select helper selected logic and added test
 * Added Before/After load hooks
 * Fixes DataMapper.finalize
-* Fixes issue with invalid class on form fields [Thanks RichGuk!]
-* Enhances Datamapper database creation (Thanks lusis!)
+* Fixes issue with invalid class on form fields [Thanks RichGuk]
+* Enhances Datamapper database creation [Thanks Lusis]
 * Adds a span around 'required' note for form fields
 * Fixes padrino bin command to properly display help
 * Stores component file in project after choices are validated
-* Added Ohm support [Thanks to lusis]
+* Added Ohm support [Thanks to Lusis]
 * Updated require_dependencies to take a version
 * Fixes app destroy option
 
