@@ -44,6 +44,7 @@ def setup_orm
 
   create_file("config/database.rb", dm)
   empty_directory('app/models')
+  insert_hook("DataMapper.finalize", :after_load)
 end
 
 DM_MODEL = (<<-MODEL) unless defined?(DM_MODEL)

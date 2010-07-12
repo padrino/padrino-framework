@@ -50,6 +50,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/property :body, String/m, '/tmp/sample_project/subby/models/post.rb')
       assert_match_in_file(/migration 1, :create_posts do/m, "/tmp/sample_project/db/migrate/001_create_posts.rb")
       assert_match_in_file(/gem 'data_mapper'/m,'/tmp/sample_project/Gemfile')
+      assert_match_in_file(/DataMapper.finalize/m,'/tmp/sample_project/config/boot.rb')
     end
 
     should "generate only generate model once" do
@@ -241,10 +242,10 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class Person < Ohm::Model/, '/tmp/sample_project/app/models/person.rb')
       assert_match_in_file(/include Ohm::Timestamping/, '/tmp/sample_project/app/models/person.rb')
       assert_match_in_file(/include Ohm::Typecast/, '/tmp/sample_project/app/models/person.rb')
-      assert_match_in_file(/# attribute :name/m, '/tmp/sample_project/app/models/person.rb')   
-      assert_match_in_file(/# reference :venue, Venue/m, '/tmp/sample_project/app/models/person.rb')    
+      assert_match_in_file(/# attribute :name/m, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/# reference :venue, Venue/m, '/tmp/sample_project/app/models/person.rb')
     end
-    
+
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=ohm') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_project') }
@@ -253,7 +254,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_no_match_in_file(/, String/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/attribute :age/m, '/tmp/sample_project/app/models/user.rb')
       assert_match_in_file(/attribute :email/m, '/tmp/sample_project/app/models/user.rb')
-    end   
+    end
   end
 
   context "model generator testing files" do

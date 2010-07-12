@@ -124,12 +124,18 @@ module Padrino
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
-      ## Return true if our project has test component
+      # Inserts an hook before or after load in our boot.rb
+      # insert_hook("DataMapper.finalize", :after_load)
+      def insert_hook(include_text, where)
+        inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
+      end
+
+      # Return true if our project has test component
       def test?
         fetch_component_choice(:test).to_s != 'none'
       end
 
-      ## Raise SystemExit if the app is inexistent
+      # Raise SystemExit if the app is inexistent
       def check_app_existence(app)
         unless File.exist?(destination_root(app))
           say

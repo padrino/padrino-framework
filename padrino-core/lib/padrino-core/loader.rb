@@ -1,5 +1,38 @@
 module Padrino
   class << self
+
+    ##
+    # Hooks to be called before a load/reload
+    #
+    # ==== Examples
+    #
+    #   before_load do
+    #     pre_initialize_something
+    #   end
+    #
+    #
+    def before_load(&block)
+      @_before_load ||= []
+      @_before_load << Proc.new(&block) if block_given?
+      @_before_load
+    end
+
+    ##
+    # Hooks to be called after a load/reload
+    #
+    # ==== Examples
+    #
+    #   after_load do
+    #     DataMapper.finalize
+    #   end
+    #
+    #
+    def after_load(&block)
+      @_after_load ||= []
+      @_after_load << Proc.new(&block) if block_given?
+      @_after_load
+    end
+
     ##
     # Requires necessary dependencies as well as application files from root lib and models
     #
@@ -8,9 +41,11 @@ module Padrino
       @_called_from = first_caller
       set_encoding
       set_load_paths(*load_paths) # We set the padrino load paths
+      Padrino.logger # Initialize our logger
+      before_load.each { |bl| bl.call } # Run before hooks
       dependency_paths.each { |path| require_dependency(path) }
       Reloader::Stat.run! # We need to fill our Stat::CACHE
-      Padrino.logger # Initialize our logger
+      after_load.each { |al| al.call } # Run after hooks
       Thread.current[:padrino_loaded] = true
     end
 
@@ -18,7 +53,9 @@ module Padrino
     # Method for reloading required applications and their files
     #
     def reload!
+      before_load.each { |bl| bl.call } # Run before hooks
       Reloader::Stat.reload! # detects the modified files
+      after_load.each { |al| al.call } # Run after hooks
     end
 
     ##
