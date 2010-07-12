@@ -23,5 +23,4 @@ class TestDependencies < Test::Unit::TestCase
       assert_equal ["C", "B"], B_result
     end
   end
-
 end

@@ -28,7 +28,7 @@ module Padrino
       class_option :adapter,      :desc => "SQL adapter for ORM (sqlite, mysql, postgres)",           :aliases => '-a', :default => "sqlite", :type => :string
 
       # Definitions for the available customizable components
-      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest], :default => :none
+      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm], :default => :none
       component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot], :default => :none
       component_option :mock,       "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
@@ -44,16 +44,17 @@ module Padrino
         self.destination_root = File.join(options[:root], name)
         directory("project/", destination_root)
         app_skeleton('app', options[:tiny])
-        store_component_config('.components')
         template "templates/Gemfile.tt", destination_root("Gemfile")
       end
 
       # For each component, retrieve a valid choice and then execute the associated generator
       def setup_components
+        @_components = options.dup.slice(*self.class.component_types)
         self.class.component_types.each do |comp|
-          choice = resolve_valid_choice(comp)
+          choice = @_components[comp] = resolve_valid_choice(comp)
           execute_component_setup(comp, choice)
         end
+        store_component_config('.components')
       end
 
       # Bundle all required components using bundler and Gemfile

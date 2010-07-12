@@ -1,9 +1,28 @@
 = CHANGES
 
-== 0.9.14 (Unreleased)
+== 0.9.15 (Unreleased)
+
+* Fixes options_for_select helper selected logic and added test
+* Added Before/After load hooks
+* Fixes DataMapper.finalize
+* Fixes issue with invalid class on form fields [Thanks RichGuk]
+* Enhances Datamapper database creation [Thanks Lusis]
+* Adds a span around 'required' note for form fields
+* Fixes padrino bin command to properly display help
+* Stores component file in project after choices are validated
+* Added Ohm support [Thanks to Lusis]
+* Updated require_dependencies to take a version
+* Fixes app destroy option
+
+== 0.9.14
 
 * Application generator should create public subfolder
 * Refactored application mounter class
+* Updated mongomapper to use bson_ext
+* Use entity code instead of copyright symbol
+* Ensure app generation creates own public folder
+* Fixed padrino g alias
+* Fixed distance_of_time_in_words helper [Thanks to Yannick Koechlin]
 
 == 0.9.13
 

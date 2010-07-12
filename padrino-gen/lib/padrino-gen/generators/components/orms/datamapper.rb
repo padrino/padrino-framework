@@ -22,27 +22,29 @@ DM
 
 def setup_orm
   dm = DM
+  db = @app_name.underscore
   require_dependencies 'data_mapper'
   require_dependencies case options[:adapter]
     when 'mysql'
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{name}_development\"")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://root@localhost/#{name}_production\"")
-      dm.gsub!(/!DB_TEST!/,"\"mysql://root@localhost/#{name}_test\"")
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{db}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://root@localhost/#{db}_production\"")
+      dm.gsub!(/!DB_TEST!/,"\"mysql://root@localhost/#{db}_test\"")
       'dm-mysql-adapter'
     when 'postgres'
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://root@localhost/#{name}_development\"")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://root@localhost/#{name}_production\"")
-      dm.gsub!(/!DB_TEST!/,"\"postgres://root@localhost/#{name}_test\"")
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://root@localhost/#{db}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://root@localhost/#{db}_production\"")
+      dm.gsub!(/!DB_TEST!/,"\"postgres://root@localhost/#{db}_test\"")
       'dm-postgres-adapter'
     else
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_development.db\")")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_production.db\")")
-      dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{name}_test.db\")")
+      dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_development.db\")")
+      dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_production.db\")")
+      dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_test.db\")")
       'dm-sqlite-adapter'
   end
 
   create_file("config/database.rb", dm)
   empty_directory('app/models')
+  insert_hook("DataMapper.finalize", :after_load)
 end
 
 DM_MODEL = (<<-MODEL) unless defined?(DM_MODEL)

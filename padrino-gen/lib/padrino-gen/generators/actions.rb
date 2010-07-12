@@ -65,15 +65,16 @@ module Padrino
       # Returns true if the option passed is a valid choice for component
       # valid_option?(:mock, 'rr')
       def valid_choice?(component, choice)
-        self.class.available_choices_for(component).include? choice.to_sym
+        choice.present? && self.class.available_choices_for(component).include?(choice.to_sym)
       end
 
       # Creates a component_config file at the destination containing all component options
       # Content is a yamlized version of a hash containing component name mapping to chosen value
       def store_component_config(destination)
+        components = @_components || options
         create_file(destination) do
-          self.class.component_types.inject({}) { |result, component|
-            result[component] = options[component].to_s; result
+          self.class.component_types.inject({}) { |result, comp|
+            result[comp] = components[comp].to_s; result
           }.to_yaml
         end
       end
@@ -103,6 +104,7 @@ module Padrino
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
       # require_dependencies 'mocha', 'bacon', :group => 'test'
+      # require_dependencies 'json', :version => ">=1.2.3"
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
@@ -111,19 +113,29 @@ module Padrino
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
       # insert_into_gemfile(name, :group => 'test', :require => 'foo')
+      # insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
+        version = options.delete(:version)
         gem_options   = options.map { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
-        include_text  = "gem '#{name}'" << (gem_options.present? ? ", #{gem_options}" : "") << "\n"
+        write_option = gem_options.present? ? ", #{gem_options}" : ""
+        write_version = version.present? ? ", #{version.inspect}" : ""
+        include_text  = "gem '#{name}'"<< write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
-      ## Return true if our project has test component
+      # Inserts an hook before or after load in our boot.rb
+      # insert_hook("DataMapper.finalize", :after_load)
+      def insert_hook(include_text, where)
+        inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
+      end
+
+      # Return true if our project has test component
       def test?
         fetch_component_choice(:test).to_s != 'none'
       end
 
-      ## Raise SystemExit if the app is inexistent
+      # Raise SystemExit if the app is inexistent
       def check_app_existence(app)
         unless File.exist?(destination_root(app))
           say

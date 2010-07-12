@@ -75,21 +75,22 @@ SQLITE
 
 def setup_orm
   ar = AR
+  db = @app_name.underscore
   case options[:adapter]
   when 'mysql'
-    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_development\"")
-    ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_production\"")
-    ar.gsub! /!DB_TEST/, MYSQL.gsub(/!DB_NAME!/,"\"#{name}_test\"")
+    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_development\"")
+    ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_production\"")
+    ar.gsub! /!DB_TEST/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_test\"")
     require_dependencies 'mysql'
   when 'postgres'
-    ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_development\"")
-    ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_production\"")
-    ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{name}_test\"")
+    ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_development\"")
+    ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_production\"")
+    ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_test\"")
     require_dependencies 'pg', :require => 'postgres'
   else
-    ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_development.db\")")
-    ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_production.db\")")
-    ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{name}_test.db\")")    
+    ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_development.db\")")
+    ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_production.db\")")
+    ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_test.db\")")
     require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record'

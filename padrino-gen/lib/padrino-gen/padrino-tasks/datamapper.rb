@@ -43,7 +43,7 @@ if defined?(DataMapper)
     desc "Create the database"
     task :create => :environment do
       config = DataMapper.repository.adapter.options.symbolize_keys
-      user, password = config[:user], config[:password]
+      user, password, host = config[:user], config[:password], config[:host]
       database       = config[:database]  || config[:path].sub(/\//, "")
       charset        = config[:charset]   || ENV['CHARSET']   || 'utf8'
       collation      = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
@@ -53,10 +53,11 @@ if defined?(DataMapper)
           system("createdb", "-E", charset, "-U", user, database)
           puts "<= dm:create executed"
         when 'mysql'
-          system(
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), "-e",
-            "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
-          )
+          query = [
+            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
+            "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}".inspect
+          ]
+          system(query.compact.join(" "))
           puts "<= dm:create executed"
         when 'sqlite3'
           DataMapper.setup(DataMapper.repository.name, config)
@@ -68,7 +69,7 @@ if defined?(DataMapper)
     desc "Drop the database (postgres and mysql only)"
     task :drop => :environment do
       config = DataMapper.repository.adapter.options.symbolize_keys
-      user, password = config[:user], config[:password]
+      user, password, host = config[:user], config[:password], config[:host]
       database       = config[:database] || config[:path].sub(/\//, "")
       puts "=> Dropping database '#{database}'"
       case config[:adapter]
@@ -77,7 +78,7 @@ if defined?(DataMapper)
           puts "<= dm:drop executed"
         when 'mysql'
           query = [
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), "-e",
+            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
             "DROP DATABASE IF EXISTS #{database}".inspect
           ]
           system(query.compact.join(" "))

@@ -58,5 +58,20 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_match_in_file(/DemoApp.mailer :demo/m, '/tmp/sample_project/demo_app/mailers/demo.rb')
       assert_dir_exists('/tmp/sample_project/demo_app/views/mailers/demo')
     end
+
+    # only destroys what it generated.
+    # hence, the folder will still exists if other changes were made to it.
+    should "destroys itself" do
+      silence_logger { generate(:project, 'sample_project','--root=/tmp') }
+      silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project') }
+      output = silence_logger { generate(:app, 'demo', '--root=/tmp/sample_project', '-d') }
+      assert_no_match(/has been mounted/, output)
+      assert_no_dir_exists('/tmp/sample_project/public/demo')
+      assert_no_file_exists('/tmp/sample_project/demo/app.rb')
+      assert_no_dir_exists('/tmp/sample_project/demo/controllers')
+      assert_no_dir_exists('/tmp/sample_project/demo/helpers')
+      assert_no_dir_exists('/tmp/sample_project/demo/views')
+      assert_no_match_in_file(/Padrino\.mount\("Demo"\).to\("\/demo"\)/,'/tmp/sample_project/config/apps.rb')
+    end
   end
 end

@@ -123,11 +123,7 @@ module Padrino
           # Add a :invalid css class to the field if it contain an error
           def field_error(field, options)
             error = @object.errors[field] rescue nil
-            if error
-              [options[:class], :invalid].flatten.compact.join(" ")
-            else
-              options[:class]
-            end
+            error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
           end
 
           # Returns the name for the given field
