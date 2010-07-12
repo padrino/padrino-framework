@@ -62,7 +62,7 @@ module Padrino
         require File.expand_path(File.dirname(__FILE__) + '/console')
         IRB.start
       end
-      
+
       desc "generate", "Executes the Padrino generator with given options."
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
@@ -78,6 +78,10 @@ module Padrino
           puts "<= You need padrino-gen! Run: gem install padrino-gen"
         end
       end
+      desc "g", "Executes the Padrino generator with given options."
+      alias :g :generate
+      desc "gen", "Executes the Padrino generator with given options."
+      alias :gen :generate
 
       desc "version", "Show current Padrino Version"
       map "-v" => :version, "--version" => :version
