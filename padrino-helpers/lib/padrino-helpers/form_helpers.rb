@@ -357,7 +357,7 @@ module Padrino
         return '' if option_items.blank?
         option_items.collect do |caption, value|
           value ||= caption
-          content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /#{value}|#{caption}/)
+          content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /^(#{value}|#{caption})$/)
         end
       end
 

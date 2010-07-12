@@ -351,6 +351,14 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag('select option', :content => 'Blue', :value => 'blue1') { actual_html }
       assert_has_tag('select option', :content => 'Black', :value => 'black1') { actual_html }
     end
+    
+    should "display options selected only for exact match" do
+      options = [['One', '1'], ['1', '10'], ['Two', "-1"]]
+      actual_html = select_tag(:range, :options => options, :selected => '-1')
+      assert_has_tag(:select, :name => 'range') { actual_html }
+      assert_has_tag('select option', :selected => 'selected', :count => 1) { actual_html }
+      assert_has_tag('select option', :content => 'Two', :value => '-1', :selected => 'selected') { actual_html }
+    end
 
     should "display select tag in erb" do
       visit '/erb/form_tag'
