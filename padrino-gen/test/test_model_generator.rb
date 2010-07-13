@@ -250,10 +250,9 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=ohm') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_project') }
       assert_match_in_file(/class User < Ohm::Model/, '/tmp/sample_project/app/models/user.rb')
-      assert_match_in_file(/attribute :name/m, '/tmp/sample_project/app/models/user.rb')
-      assert_no_match_in_file(/, String/m, '/tmp/sample_project/app/models/user.rb')
-      assert_match_in_file(/attribute :age/m, '/tmp/sample_project/app/models/user.rb')
-      assert_match_in_file(/attribute :email/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :name, String/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :age, Integer/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/attribute :email, String/m, '/tmp/sample_project/app/models/user.rb')
     end
   end
 

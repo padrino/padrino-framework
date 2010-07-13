@@ -38,6 +38,7 @@ class !NAME! < Ohm::Model
 
   # Examples:
   # attribute :name
+  # attribute :email, String 
   # reference :venue, Venue
   # set :participants, Person
   # counter :votes
@@ -56,7 +57,7 @@ MODEL
 def create_model_file(name, options={})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
     field_tuples = options[:fields].collect { |value| value.split(":") }
-    column_declarations = field_tuples.collect { |field, kind| "attribute :#{field}" }.join("\n  ")
+    column_declarations = field_tuples.collect { |field, kind| "attribute :#{field}, #{kind.camelize}" }.join("\n  ")
     model_contents = OHM_MODEL.gsub(/!NAME!/, name.to_s.camelize)
     model_contents.gsub!(/!FIELDS!/, column_declarations)
     create_file(model_path, model_contents)
