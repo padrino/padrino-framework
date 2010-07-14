@@ -10,28 +10,11 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 class Riot::Situation
   include Rack::Test::Methods
+  ##
+  # You can handle all padrino applications using instead:
+  #   Padrino.application
+  CLASS_NAME.tap { |app|  }
 
-  # The Rack app under test.
-  def app
-    defined?(@app) ? @app : build_app
-  end
-
-  private
-
-  def build_app
-    config_file = File.read(find_config_file)
-    Rack::Builder.new { instance_eval(config_file) }.to_app
-  end
-
-  def find_config_file
-    if Dir.glob("config.ru").length > 0
-      File.join(Dir.pwd,"config.ru")
-    elsif Dir.pwd != "/"
-      Dir.chdir("..") { find_config_file }
-    else
-      raise "Cannot find config.ru"
-    end
-  end
 end
 
 class Riot::Context

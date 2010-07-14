@@ -360,6 +360,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Riot::Situation/, '/tmp/sample_project/test/test_config.rb')
       assert_match_in_file(/Riot::Context/, '/tmp/sample_project/test/test_config.rb')
+      assert_match_in_file(/SampleProject\.tap/, '/tmp/sample_project/test/test_config.rb')
       assert_file_exists('/tmp/sample_project/test/test.rake')
     end
 
