@@ -1,5 +1,5 @@
-module Mail
-  class Message
+module Mail #:nodoc:
+  class Message #:nodoc:
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
 

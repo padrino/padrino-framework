@@ -136,6 +136,7 @@ module Padrino
 
     ##
     # Appends custom dependency patterns to the be loaded for Padrino
+    #
     # ==== Examples
     #    Padrino.custom_dependencies("#{Padrino.root}/foo/bar/*.rb")
     #

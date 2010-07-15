@@ -12,19 +12,23 @@ module Padrino
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
-    class ::HttpRouter::Route
-      attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+    class ::HttpRouter #:nodoc:
+      class Route #:nodoc:
+        attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+      end
     end
 
-    class ::Sinatra::Request
-      attr_accessor :match
+    module ::Sinatra #:nodoc:
+      class Request #:nodoc:
+        attr_accessor :match
 
-      def controller
-        route && route.controller
-      end
+        def controller
+          route && route.controller
+        end
 
-      def route
-        match.matched? ? match.path.route : nil
+        def route
+          match.matched? ? match.path.route : nil
+        end
       end
     end
 
