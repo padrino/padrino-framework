@@ -27,6 +27,19 @@ class TestRouting < Test::Unit::TestCase
     }
   end
 
+  should 'accept regexp routes' do
+    mock_app do
+      get(%r{/fob|/baz}) { "regexp" }
+      get("/foo")        { "str" }
+    end
+    get "/foo"
+    assert_equal "str", body
+    get "/fob"
+    assert_equal "regexp", body
+    get "/baz"
+    assert_equal "regexp", body
+  end
+
   should "parse routes with question marks" do
     mock_app do
       get("/foo/?"){ "okey" }

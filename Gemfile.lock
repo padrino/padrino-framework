@@ -1,134 +1,145 @@
-GEM
-  remote: http://rubygems.org/
-  specs:
-    activesupport (2.3.8)
-    activesupport (2.3.8)
-    addressable (2.1.2)
-    addressable (2.1.2)
-    builder (2.1.2)
-    builder (2.1.2)
-    data_objects (0.10.2)
-      addressable (~> 2.1)
-    data_objects (0.10.2)
-      addressable (~> 2.1)
-    dm-aggregates (1.0.0)
-      dm-core (~> 1.0.0)
-    dm-aggregates (1.0.0)
-      dm-core (~> 1.0.0)
-    dm-core (1.0.0)
-      addressable (~> 2.1)
-      extlib (~> 0.9.15)
-    dm-core (1.0.0)
-      addressable (~> 2.1)
-      extlib (~> 0.9.15)
-    dm-do-adapter (1.0.0)
-      data_objects (~> 0.10.1)
-      dm-core (~> 1.0.0)
-    dm-do-adapter (1.0.0)
-      data_objects (~> 0.10.1)
-      dm-core (~> 1.0.0)
-    dm-migrations (1.0.0)
-      dm-core (~> 1.0.0)
-    dm-migrations (1.0.0)
-      dm-core (~> 1.0.0)
-    dm-sqlite-adapter (1.0.0)
-      dm-do-adapter (~> 1.0.0)
-      do_sqlite3 (~> 0.10.2)
-    dm-sqlite-adapter (1.0.0)
-      dm-do-adapter (~> 1.0.0)
-      do_sqlite3 (~> 0.10.2)
-    dm-validations (1.0.0)
-      dm-core (~> 1.0.0)
-    dm-validations (1.0.0)
-      dm-core (~> 1.0.0)
-    do_sqlite3 (0.10.2)
-      data_objects (= 0.10.2)
-    do_sqlite3 (0.10.2)
-      data_objects (= 0.10.2)
-    extlib (0.9.15)
-    extlib (0.9.15)
-    haml (3.0.13)
-    haml (3.0.13)
-    http_router (0.3.1)
-      rack (>= 1.0)
-      url_mount (>= 0.2.1)
-    http_router (0.3.1)
-      rack (>= 1.0)
-      url_mount (>= 0.2.1)
-    i18n (0.4.1)
-    i18n (0.4.1)
-    mail (2.2.5)
-      activesupport (>= 2.3.6)
-      mime-types
-      treetop (>= 1.4.5)
-    mail (2.2.5)
-      activesupport (>= 2.3.6)
-      mime-types
-      treetop (>= 1.4.5)
-    mime-types (1.16)
-    mime-types (1.16)
-    mocha (0.9.8)
-      rake
-    mocha (0.9.8)
-      rake
-    nokogiri (1.4.2)
-    nokogiri (1.4.2)
-    polyglot (0.3.1)
-    polyglot (0.3.1)
-    rack (1.2.1)
-    rack (1.2.1)
-    rack-test (0.5.4)
-      rack (>= 1.0)
-    rack-test (0.5.4)
-      rack (>= 1.0)
-    rake (0.8.7)
-    rake (0.8.7)
-    shoulda (2.11.1)
-    shoulda (2.11.1)
-    sinatra (1.0)
-      rack (>= 1.0)
-    sinatra (1.0)
-      rack (>= 1.0)
-    thor (0.13.7)
-    thor (0.13.7)
-    treetop (1.4.8)
-      polyglot (>= 0.3.1)
-    treetop (1.4.8)
-      polyglot (>= 0.3.1)
-    url_mount (0.2.1)
-      rack
-    url_mount (0.2.1)
-      rack
-    webrat (0.7.1)
-      nokogiri (>= 1.2.0)
-      rack (>= 1.0)
-      rack-test (>= 0.5.3)
-    webrat (0.7.1)
-      nokogiri (>= 1.2.0)
-      rack (>= 1.0)
-      rack-test (>= 0.5.3)
+--- 
+dependencies: 
+  dm-validations: 
+    group: 
+    - :db
+    version: ">= 1.0"
+  http_router: 
+    group: 
+    - :core
+    version: ">= 0.3.3"
+  rake: 
+    group: 
+    - :development
+    version: ">= 0.8.7"
+  haml: 
+    group: 
+    - :development
+    version: ">= 2.2.22"
+  shoulda: 
+    group: 
+    - :development
+    version: ">= 2.10.3"
+  thor: 
+    group: 
+    - :core
+    version: ">= 0.13.0"
+  dm-aggregates: 
+    group: 
+    - :db
+    version: ">= 1.0"
+  dm-core: 
+    group: 
+    - :db
+    version: ">= 1.0"
+  mail: 
+    group: 
+    - :mailer
+    version: ">= 2.2.0"
+  webrat: 
+    group: 
+    - :development
+    version: ">= 0.5.1"
+  mocha: 
+    group: 
+    - :development
+    version: ">= 0.9.8"
+  sinatra: 
+    group: 
+    - :cache
+    version: ">= 0.9.2"
+  dm-sqlite-adapter: 
+    group: 
+    - :db
+    version: ">= 1.0"
+  bundler: 
+    group: 
+    - :gen
+    version: ">= 0.9.7"
+  i18n: 
+    group: 
+    - :helpers
+    version: ">= 0.4.1"
+  rack-test: 
+    group: 
+    - :development
+    version: ">= 0.5.0"
+  activesupport: 
+    group: 
+    - :core
+    version: ">= 2.3.8"
+    require: []
 
-PLATFORMS
-  ruby
-
-DEPENDENCIES
-  activesupport (>= 2.3.8)
-  builder (>= 2.1.2)
-  bundler (>= 0.9.7)
-  dm-aggregates (>= 1.0)
-  dm-core (>= 1.0)
-  dm-migrations (>= 1.0)
-  dm-sqlite-adapter (>= 1.0)
-  dm-validations (>= 1.0)
-  haml (>= 2.2.22)
-  http_router (>= 0.3.0)
-  i18n (>= 0.4.1)
-  mail (>= 2.2.0)
-  mocha (>= 0.9.8)
-  rack-test (>= 0.5.0)
-  rake (>= 0.8.7)
-  shoulda (>= 2.10.3)
-  sinatra (>= 0.9.2)
-  sinatra (>= 1.0.0)
-  thor (>= 0.13.0)
-  webrat (>= 0.5.1)
+  builder: 
+    group: 
+    - :other
+    version: ">= 2.1.2"
+  dm-migrations: 
+    group: 
+    - :db
+    version: ">= 1.0"
+specs: 
+- rake: 
+    version: 0.8.7
+- activesupport: 
+    version: 2.3.8
+- addressable: 
+    version: 2.1.2
+- builder: 
+    version: 2.1.2
+- bundler: 
+    version: 0.9.26
+- data_objects: 
+    version: 0.10.2
+- extlib: 
+    version: 0.9.15
+- dm-core: 
+    version: 1.0.0
+- dm-aggregates: 
+    version: 1.0.0
+- dm-do-adapter: 
+    version: 1.0.0
+- dm-migrations: 
+    version: 1.0.0
+- do_sqlite3: 
+    version: 0.10.2
+- dm-sqlite-adapter: 
+    version: 1.0.0
+- dm-validations: 
+    version: 1.0.0
+- haml: 
+    version: 3.0.13
+- rack: 
+    version: 1.2.1
+- url_mount: 
+    version: 0.2.1
+- http_router: 
+    version: 0.3.3
+- i18n: 
+    version: 0.4.1
+- mime-types: 
+    version: "1.16"
+- polyglot: 
+    version: 0.3.1
+- treetop: 
+    version: 1.4.8
+- mail: 
+    version: 2.2.5
+- mocha: 
+    version: 0.9.8
+- nokogiri: 
+    version: 1.4.2
+- rack-test: 
+    version: 0.5.4
+- shoulda: 
+    version: 2.11.1
+- sinatra: 
+    version: "1.0"
+- thor: 
+    version: 0.13.7
+- webrat: 
+    version: 0.7.1
+hash: ddb36061a6b6eafd860579c2114135a6d9528153
+sources: 
+- Rubygems: 
+    uri: http://gemcutter.org

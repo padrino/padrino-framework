@@ -231,12 +231,17 @@ module Padrino
           invoke_hook(:route_added, verb, path, block)
 
           # HTTPRouter route construction
-          route = router.add(path)
+          route = case path
+          when Regexp
+            router.add('/?').partial.arbitrary{|request| request.env['PATH_INFO'] =~ path}
+          else
+            router.add(path)
+          end
+
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.default_values = options.delete(:default_values)
-
           route.to(block)
 
           # Add Sinatra conditions
