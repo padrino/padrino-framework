@@ -232,10 +232,10 @@ module Padrino
 
           # HTTPRouter route construction
           route = case path
-          when Regexp
-            router.add('/?').partial.arbitrary{|request| request.env['PATH_INFO'] =~ path}
-          else
-            router.add(path)
+            when Regexp
+              router.add('/?').partial.arbitrary { |request| request.env['PATH_INFO'] =~ path }
+            else
+              router.add(path)
           end
 
           route.name(name) if name
@@ -282,18 +282,6 @@ module Padrino
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
-            # Backwards compatability
-
-            if path == '(/)'
-              path = '/'
-              warn "WARNING! #{Padrino.first_caller}: #{verb} (/) is deprecated, simply use / instead" if verb != "HEAD"
-            end
-
-            if path =~ /\(\/\)$/
-              path.gsub(/\(\/\)$/, '/?')
-              warn "WARNING! #{Padrino.first_caller}: #{verb} (/) is deprecated, simply use /? instead" if verb != "HEAD"
-            end
-
             # Now we need to parse our 'with' params
             if with_params = options.delete(:with)
               path = process_path_for_with_params(path, with_params)

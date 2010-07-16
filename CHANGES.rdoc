@@ -2,6 +2,8 @@
 
 == 0.9.15 (Unreleased)
 
+* Added regex support in routes
+* Removed some deprecations
 * Fixes options_for_select helper selected logic and added test
 * Added Before/After load hooks
 * Fixes DataMapper.finalize
