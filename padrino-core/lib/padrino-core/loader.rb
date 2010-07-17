@@ -108,11 +108,11 @@ module Padrino
         files.each do |file|
           begin
             Reloader::Stat.safe_load(file)
-            files.delete(file)
           rescue Exception => e
             errors << e
             failed << files
           end
+          files.delete(file)
         end
 
         # Stop processing if nothing loads or if everything has loaded
