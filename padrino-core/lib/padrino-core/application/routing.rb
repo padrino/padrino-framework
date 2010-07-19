@@ -144,13 +144,11 @@ module Padrino
       #
       # ==== Examples
       #
-      #   router.add('/greedy/{!:greed,.*}')
+      #   router.add('/greedy/:greed')
       #   router.recognize('/simple')
       #
       def router
-        unless @router
-          @router = HttpRouter.new
-        end
+        @router ||= HttpRouter.new
         block_given? ? yield(@router) : @router
       end
       alias :urls :router
@@ -262,6 +260,10 @@ module Padrino
           end
 
           route
+        end
+
+        def current_controller
+          @_controller && @_controller.last
         end
 
         ##
