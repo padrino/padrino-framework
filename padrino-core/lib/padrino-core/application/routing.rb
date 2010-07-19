@@ -216,7 +216,8 @@ module Padrino
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
-          route_options[:provides] = @_provides if @_provides
+          route_options[:provides] ||= @_provides if @_provides
+          route_options[:provides] ||= [:html]
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
@@ -358,6 +359,7 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
+          @_provides = types.map { |t| t.to_sym }
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
