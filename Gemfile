@@ -19,7 +19,7 @@ group :core do
 end
 
 group :cache do
-  gem "sinatra", ">= 0.9.2"
+  gem "sinatra", ">= 1.0.0"
 end
 
 group :gen do
