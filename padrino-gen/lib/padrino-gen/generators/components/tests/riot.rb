@@ -3,7 +3,6 @@ PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 # Specify your app using the #app helper inside a context.
-# If you don't specify one, Riot::Rack will recursively look for a config.ru file.
 # Takes either an app class or a block argument.
 # app { Padrino.application }
 # app { CLASS_NAME.tap { |app| } }
