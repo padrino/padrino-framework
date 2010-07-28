@@ -17,6 +17,7 @@
 * Fixes app destroy option
 * Adds Dutch translation [Thanks to Martijin]
 * Adds Polish translation [Thanks to kriss]
+* Adds Template/Plugin generation
 
 == 0.9.14
 
@@ -133,7 +134,6 @@
 * Added default values for controllers
 * Updated sequel generation to work with sqlite3.
 * Fixes support for index routes with params.
-* Includes template generation support for a project.
 * Fixes SASS reload plugin issue on 1.9.X.
 * Fixes an issue with generator not casing controller / model names
 * Fixes issue with mounter and locating the app file
