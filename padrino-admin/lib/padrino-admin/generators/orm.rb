@@ -14,7 +14,7 @@ module Padrino
           @orm            = orm.to_sym
           @columns        = columns
           @column_fields  = column_fields
-          raise OrmError, "Model #{name} was not found!" if @columns.nil? && @klass.nil?
+          raise OrmError, "Model '#{name}' could not be found!" if @columns.nil? && @klass.nil?
         end
 
         def field_type(type)

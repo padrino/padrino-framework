@@ -12,7 +12,7 @@ module Padrino
       # Include related modules
       include Thor::Actions
 
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
 
       # We need to TRY to load boot because some of our app dependencies maybe have
       # custom generators, so is necessary know who are.

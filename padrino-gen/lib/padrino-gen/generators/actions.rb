@@ -81,7 +81,7 @@ module Padrino
 
       # Returns the root for this thor class (also aliased as destination root).
       def destination_root(*paths)
-        File.join(@destination_stack.last, paths)
+        File.expand_path(File.join(@destination_stack.last, paths))
       end
 
       # Returns true if inside a Padrino application
@@ -130,7 +130,16 @@ module Padrino
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
-      # Return true if our project has test component
+      # Registers and Creates Initializer.
+      # initializer :test, "some stuff here"
+      def initializer(name,data=nil)
+        @_init_name, @_init_data = name, data
+        register = "  register #{name.to_s.camelize}Initializer\n"
+        inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
+        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb")
+      end
+
+      ## Return true if our project has test component
       def test?
         fetch_component_choice(:test).to_s != 'none'
       end

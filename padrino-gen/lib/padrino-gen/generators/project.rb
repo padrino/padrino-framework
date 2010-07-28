@@ -14,6 +14,7 @@ module Padrino
       # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
+      include Padrino::Generators::Runner
       include Padrino::Generators::Components::Actions
 
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
@@ -26,6 +27,7 @@ module Padrino
       class_option :dev,          :desc => "Use padrino from a git checkout",                                           :default => false,    :type => :boolean
       class_option :tiny,         :desc => "Generate tiny app skeleton",                              :aliases => '-i', :default => false,    :type => :boolean
       class_option :adapter,      :desc => "SQL adapter for ORM (sqlite, mysql, postgres)",           :aliases => '-a', :default => "sqlite", :type => :string
+      class_option :template,     :desc => "Generate project from template",                          :aliases => '-p', :default => nil,      :type => :string
 
       # Definitions for the available customizable components
       component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm], :default => :none
@@ -42,13 +44,19 @@ module Padrino
       def setup_project
         @app_name = (options[:app] || name).gsub(/\W/, "_").underscore.camelize
         self.destination_root = File.join(options[:root], name)
-        directory("project/", destination_root)
-        app_skeleton('app', options[:tiny])
-        template "templates/Gemfile.tt", destination_root("Gemfile")
+        if options[:template] # Run the template to create project
+          execute_runner(:template, options[:template])
+        else # generate project without template
+          directory("project/", destination_root)
+          app_skeleton('app', options[:tiny])
+          store_component_config('.components')
+          template "templates/Gemfile.tt", destination_root("Gemfile")
+        end
       end
 
       # For each component, retrieve a valid choice and then execute the associated generator
       def setup_components
+        return if options[:template]
         @_components = options.dup.slice(*self.class.component_types)
         self.class.component_types.each do |comp|
           choice = @_components[comp] = resolve_valid_choice(comp)

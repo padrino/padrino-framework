@@ -49,6 +49,11 @@ if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice
     include ActiveSupport::CoreExtensions::Hash::DeepMerge
     include ActiveSupport::CoreExtensions::Hash::ReverseMerge
     include ActiveSupport::CoreExtensions::Hash::Slice
+    
+    def ordered_collect(&block)
+      keys = self.stringify_keys.keys.sort
+      keys.collect { |key| block.call(key, self[key.to_sym]) }
+    end
   end
 end
 
