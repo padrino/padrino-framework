@@ -64,7 +64,7 @@ module Padrino
 
           admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root])
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
-          admin_app.invoke
+          admin_app.invoke_all
 
           template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
           template "templates/account/seeds.rb.tt",                      destination_root("db/seeds.rb")

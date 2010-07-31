@@ -9,7 +9,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen admin_page [Model]"; end
+      def self.banner; "padrino-gen admin_page [model]"; end
 
       # Include related modules
       include Thor::Actions
