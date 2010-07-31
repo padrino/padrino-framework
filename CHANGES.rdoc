@@ -17,6 +17,7 @@
 * Fixes app destroy option
 * Adds Dutch translation [Thanks to Martijin]
 * Adds Polish translation [Thanks to kriss]
+* Adds Template/Plugin generation
 
 == 0.9.14
 
