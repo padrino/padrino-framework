@@ -27,7 +27,7 @@ PATH
   specs:
     padrino-core (0.9.14)
       activesupport (>= 2.3.8)
-      http_router (>= 0.3.3)
+      http_router (>= 0.3.6)
       sinatra (>= 1.0.0)
       thor (>= 0.13.0)
 
@@ -76,16 +76,23 @@ GEM
       do_sqlite3 (~> 0.10.2)
     dm-validations (1.0.0)
       dm-core (~> 1.0.0)
+    do_jdbc (0.10.2-java)
+      data_objects (= 0.10.2)
+    do_sqlite3 (0.10.2-java)
+      data_objects (= 0.10.2)
+      do_jdbc (= 0.10.2)
+      jdbc-sqlite3 (>= 3.5.8)
     do_sqlite3 (0.10.2)
       data_objects (= 0.10.2)
     extlib (0.9.15)
     fakeweb (1.2.8)
     git (1.2.5)
     haml (3.0.15)
-    http_router (0.3.5)
+    http_router (0.3.6)
       rack (>= 1.0)
       url_mount (>= 0.2.1)
     i18n (0.4.1)
+    jdbc-sqlite3 (3.6.3.054)
     mail (2.2.5)
       activesupport (>= 2.3.6)
       mime-types
@@ -93,6 +100,8 @@ GEM
     mime-types (1.16)
     mocha (0.9.8)
       rake
+    nokogiri (1.4.3.1-java)
+      weakling (>= 0.0.3)
     nokogiri (1.4.3.1)
     polyglot (0.3.1)
     rack (1.2.1)
@@ -107,12 +116,14 @@ GEM
       polyglot (>= 0.3.1)
     url_mount (0.2.1)
       rack
+    weakling (0.0.4-java)
     webrat (0.7.1)
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES

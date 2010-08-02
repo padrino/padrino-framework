@@ -15,7 +15,6 @@ class TestPluginGenerator < Test::Unit::TestCase
       assert_no_match_in_file(/enable \:raise_errors/,'/tmp/sample_project/app/app.rb')
       assert_no_match_in_file(/rack\_hoptoad/, '/tmp/sample_project/Gemfile')
     end
-
   end
 
   context 'the project generator with template' do
@@ -35,18 +34,13 @@ class TestPluginGenerator < Test::Unit::TestCase
       expects_generated :app, "testapp -r=/tmp/sample_project"
       expects_generated :controller, "users get:index -r=/tmp/sample_project --app=testapp"
     end
-
-
   end
 
   context "with resolving urls" do
-    setup do
-      @project_class = Padrino::Generators::Project.dup
-    end
 
     should "resolve generic url properly" do
       template_file = 'http://www.example.com/test.rb'
-      project_gen = @project_class.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
+      project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
       project_gen.expects(:apply).with(template_file).returns(true).once
       silence_logger { project_gen.invoke_all }
     end
@@ -55,7 +49,7 @@ class TestPluginGenerator < Test::Unit::TestCase
       FakeWeb.register_uri(:get, "http://gist.github.com/357045", :body => '<a href="/raw/357045/4356/blog_template.rb">raw</a>')
       template_file = 'http://gist.github.com/357045'
       resolved_path = 'http://gist.github.com/raw/357045/4356/blog_template.rb'
-      project_gen = @project_class.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
+      project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       silence_logger { project_gen.invoke_all }
     end
@@ -63,14 +57,14 @@ class TestPluginGenerator < Test::Unit::TestCase
     should "resolve official template" do
       template_file = 'sampleblog'
       resolved_path = "http://github.com/padrino/padrino-recipes/raw/master/templates/sampleblog_template.rb"
-      project_gen = @project_class.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
+      project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       silence_logger { project_gen.invoke_all }
     end
 
     should "resolve local file" do
       template_file = 'path/to/local/file.rb'
-      project_gen = @project_class.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
+      project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", '-r=/tmp'], {})
       project_gen.expects(:apply).with(File.expand_path(template_file)).returns(true).once
       silence_logger { project_gen.invoke_all }
     end
@@ -78,7 +72,7 @@ class TestPluginGenerator < Test::Unit::TestCase
     should "resolve official plugin" do
       template_file = 'hoptoad'
       resolved_path = "http://github.com/padrino/padrino-recipes/raw/master/plugins/hoptoad_plugin.rb"
-      plugin_gen = Padrino::Generators::Plugin.dup
+      plugin_gen = Padrino::Generators::Plugin
       plugin_gen.any_instance.expects(:apply).with(nil)
       plugin_gen.any_instance.expects(:apply).with(resolved_path).returns(true).once
       silence_logger { plugin_gen.start([ template_file, '-r=/tmp']) }
