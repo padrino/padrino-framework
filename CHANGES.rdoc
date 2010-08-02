@@ -2,6 +2,7 @@
 
 == 0.9.15 (Unreleased)
 
+* Adds Template/Plugin generation
 * Added regex support in routes
 * Removed some deprecations
 * Fixes options_for_select helper selected logic and added test
@@ -16,8 +17,7 @@
 * Updated require_dependencies to take a version
 * Fixes app destroy option
 * Adds Dutch translation [Thanks to Martijin]
-* Adds Polish translation [Thanks to kriss]
-* Adds Template/Plugin generation
+* Adds Polish translation [Thanks to Kriss]
 
 == 0.9.14
 

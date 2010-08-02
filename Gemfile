@@ -1,40 +1,5 @@
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
-
 source :rubygems
-
-group :core do
-  gem "sinatra", ">= 1.0.0"
-  gem "http_router", ">= 0.3.3"
-  gem "thor", ">= 0.13.0"
-  # If you want try our test on AS edge.
-  # $ AS=edge bundle install
-  # $ AS=edge rake test
-  if ENV['AS'] == "edge"
-    puts "Using ActiveSupport 3.0.0.beta4"
-    gem "activesupport", ">= 3.0.0.beta4", :require => nil
-    gem "tzinfo"
-  else
-    gem "activesupport", ">= 2.3.8", :require => nil
-  end
-end
-
-group :cache do
-  gem "sinatra", ">= 1.0.0"
-end
-
-group :gen do
-  gem "bundler", ">= 0.9.7"
-  gem "git"
-end
-
-group :helpers do
-  gem "i18n", ">=0.4.1"
-end
-
-group :mailer do
-  gem "mail", ">= 2.2.0"
-  gem "tlsmail" if RUBY_VERSION == "1.8.6"
-end
 
 group :other do
   gem "builder", ">= 2.1.2"
@@ -57,3 +22,11 @@ group :development do
   gem "haml", ">= 2.2.22"
   gem "shoulda", ">= 2.10.3"
 end
+
+gem "padrino",         :path => "padrino"
+gem "padrino-admin",   :path => "padrino-admin"
+gem "padrino-cache",   :path => "padrino-cache"
+gem "padrino-core",    :path => "padrino-core"
+gem "padrino-gen",     :path => "padrino-gen"
+gem "padrino-helpers", :path => "padrino-helpers"
+gem "padrino-mailer",  :path => "padrino-mailer"

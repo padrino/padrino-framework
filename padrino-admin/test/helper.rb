@@ -7,14 +7,6 @@ require 'rack/test'
 require 'rack'
 require 'shoulda'
 require 'thor/group'
-
-# We try to load the vendored padrino-core if exist
-%w(core gen helpers).each do |lib|
-  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{lib}/lib")
-    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{lib}/lib"
-  end
-end
-
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
 
