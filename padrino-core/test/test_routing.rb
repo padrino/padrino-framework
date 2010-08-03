@@ -789,7 +789,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/parent1/1/test2/url3?foo=bar3", url
     get url
     assert_equal "bar3", body
-    
+
     url = @app.url(:test2, :url4, :with1 => 'awith1', :foo => 'bar4')
     assert_equal "/parent1/1/test2/url4/awith1?foo=bar4", url
     get url
@@ -871,5 +871,26 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "TOPICS CREATE bar - baz", body, "should properly post to topics create action"
     post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
     assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
+  end
+
+  should 'takes multiple definitions of a route' do
+    mock_app do
+      user_agent(/Foo/)
+      get '/foo' do
+        'foo'
+      end
+
+      get '/foo' do
+        'not foo'
+      end
+    end
+
+    get '/foo', {}, 'HTTP_USER_AGENT' => 'Foo'
+    assert ok?
+    assert_equal 'foo', body
+
+    get '/foo'
+    assert ok?
+    assert_equal 'not foo', body
   end
 end
