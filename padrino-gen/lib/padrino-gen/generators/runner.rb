@@ -7,7 +7,7 @@ module Padrino
       # Generates project scaffold based on a given template file
       # project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
       def project(options={})
-        components = options.ordered_collect { |component,value| "--#{component}=#{value}" }
+        components = options.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen #{name} #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift("project"))
@@ -71,17 +71,18 @@ module Padrino
         # execute_runner(:template, 'http://gist.github.com/357045')
         def execute_runner(kind, template_file)
           # Determine resolved template path
+          template_file = template_file.to_s
           template_path = case
-          when template_file =~ %r{^http://} && template_file !~ /gist/
-            template_file
-          when template_file =~ /gist/ && template_file !~ /raw/
-            raw_link, _ = *open(template_file).read.scan(/<a\s+href\s?\=\"(.*?)\"\>raw/)
-            raw_link ? "http://gist.github.com#{raw_link[0]}" : template_file
-          when File.extname(template_file).blank? # referencing official plugin (i.e hoptoad)
-            "http://github.com/padrino/padrino-recipes/raw/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
-          else # local file on system
-            File.expand_path(template_file)
-          end
+            when template_file =~ %r{^http://} && template_file !~ /gist/
+              template_file
+            when template_file =~ /gist/ && template_file !~ /raw/
+              raw_link, _ = *open(template_file).read.scan(/<a\s+href\s?\=\"(.*?)\"\>raw/)
+              raw_link ? "http://gist.github.com#{raw_link[0]}" : template_file
+            when File.extname(template_file).blank? # referencing official plugin (i.e hoptoad)
+              "http://github.com/padrino/padrino-recipes/raw/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
+            else # local file on system
+              File.expand_path(template_file)
+            end
           self.apply(template_path)
         end
     end # Runner

@@ -33,9 +33,13 @@ module Padrino
           say "Available plugins:", :green
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
         else # executing the plugin instructions
-          self.behavior = :revoke if options[:destroy]
-          self.destination_root = options[:root]
-          execute_runner(:plugin, plugin_file)
+          if in_app_root?
+            self.behavior = :revoke if options[:destroy]
+            self.destination_root = options[:root]
+            execute_runner(:plugin, plugin_file)
+          else
+            say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          end
         end
       end
     end # Plugins

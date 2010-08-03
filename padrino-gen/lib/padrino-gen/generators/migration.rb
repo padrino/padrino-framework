@@ -36,7 +36,7 @@ module Padrino
             raise SystemExit
           end
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
     end # Migration

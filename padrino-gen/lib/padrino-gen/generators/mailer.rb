@@ -37,7 +37,7 @@ module Padrino
           template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
           empty_directory destination_root(app, 'views', 'mailers', @mailer_basename)
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
     end # Mailer

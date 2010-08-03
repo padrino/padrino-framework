@@ -101,6 +101,11 @@ module Padrino
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
+      # Returns the project name
+      def fetch_project_name
+        File.basename(@destination_stack.last)
+      end
+
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
       # require_dependencies 'mocha', 'bacon', :group => 'test'
@@ -139,9 +144,28 @@ module Padrino
         template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb")
       end
 
-      ## Return true if our project has test component
+      # Return true if our project has test component
       def test?
         fetch_component_choice(:test).to_s != 'none'
+      end
+
+      # Return true if we have a tiny skeleton
+      def tiny?
+        File.exist?(destination_root("app/controllers.rb"))
+      end
+
+      # Ask something to the user and receives a response.
+      #
+      # ==== Example
+      #
+      #   ask("What is your name?")
+      #   ask("Path for ruby", "/usr/local/bin/ruby") => "Path for ruby (leave blank for /usr/local/bin/ruby):"
+      #
+      def ask(statement, default=nil, color=nil)
+        default_text = default ? " (leave blank for #{default}):" : nil
+        say("#{statement}#{default_text} ", color)
+        result = $stdin.gets.strip
+        result.blank? ? default : result
       end
 
       # Raise SystemExit if the app is inexistent
