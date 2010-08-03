@@ -223,7 +223,7 @@ module Padrino
         def rotation
           paths = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| !File.directory?(path) }
 
-          files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
+          files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten.uniq
 
           files.map{ |file|
             next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{base}/ }
