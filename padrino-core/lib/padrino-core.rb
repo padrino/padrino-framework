@@ -44,7 +44,7 @@ module Padrino
     end
 
     ##
-    # Default encoding to UTF8 if it has not already been set to something else.
+    # Default encoding to UTF8.
     #
     def set_encoding
       if RUBY_VERSION < '1.9'

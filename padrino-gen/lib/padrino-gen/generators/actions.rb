@@ -101,11 +101,6 @@ module Padrino
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
-      # Returns the project name
-      def fetch_project_name
-        File.basename(@destination_stack.last)
-      end
-
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
       # require_dependencies 'mocha', 'bacon', :group => 'test'
@@ -137,11 +132,16 @@ module Padrino
 
       # Registers and Creates Initializer.
       # initializer :test, "some stuff here"
-      def initializer(name,data=nil)
+      def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
         register = "  register #{name.to_s.camelize}Initializer\n"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
         template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb")
+      end
+
+      def require_contrib(contrib)
+        contrib = File.join("padrino-contrib", contrib) + "\n"
+        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "Padrino::Load!"
       end
 
       # Return true if our project has test component
