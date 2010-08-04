@@ -231,7 +231,7 @@ module Padrino
           # HTTPRouter route construction
           route = case path
             when Regexp
-              router.add('/?').partial.arbitrary { |request| request.env['PATH_INFO'] =~ path }
+              router.add('/?*').match_path(path)
             else
               router.add(path)
           end
