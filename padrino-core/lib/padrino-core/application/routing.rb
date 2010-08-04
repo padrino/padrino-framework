@@ -239,6 +239,7 @@ module Padrino
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
+          route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
           route.to(block)
 

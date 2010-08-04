@@ -66,6 +66,17 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "2", body
   end
 
+  should "match user agents" do
+    app = mock_app do
+      get("/main", :agent => /IE/){ "hello IE" }
+      get("/main"){ "hello" }
+    end
+    get "/main"
+    assert_equal "hello", body
+    get "/main", {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    assert_equal "hello IE", body
+  end
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
