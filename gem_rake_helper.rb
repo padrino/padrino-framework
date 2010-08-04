@@ -3,7 +3,7 @@ require 'rake' unless defined?(Rake)
 
 # Runs the sh command with sudo if the rake command is run with sudo
 def sudo_sh(command)
-  command = `whoami`.strip! == "root" ? "sudo #{command}" : command
+  command = `whoami`.strip! != "root" ? "sudo #{command}" : command
   sh command
 end
 
