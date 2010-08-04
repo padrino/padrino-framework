@@ -873,7 +873,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
   end
 
-  should 'takes multiple definitions of a route' do
+  should_eventually 'takes multiple definitions of a route' do
     mock_app do
       user_agent(/Foo/)
       get '/foo' do
