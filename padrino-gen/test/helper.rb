@@ -51,7 +51,7 @@ class Test::Unit::TestCase
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
   end
-  
+
   # assert_file_exists('/tmp/app')
   def assert_file_exists(file_path)
     assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"
@@ -75,14 +75,14 @@ class Test::Unit::TestCase
 
   # expects_generated :model, "post title:string body:text"
   def expects_generated(generator, params="")
-    Padrino.expects(:bin_gen).with(generator,*params.split(' ')).returns(true)
+    Padrino.expects(:bin_gen).with(generator, *params.split(' ')).returns(true)
   end
 
-  # expects_created_project :test => :shoulda, :orm => :activerecord, :dev => true
+  # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
   def expects_generated_project(options={})
     settings = options.slice!(:name, :root)
     options.reverse_merge!(:name => 'sample_project', :root => '/tmp')
-    components = settings.ordered_collect { |component,value| "--#{component}=#{value}" }
+    components = settings.map { |component, value| "--#{component}=#{value}" }
     params = [options[:name], *components].push("-r=#{options[:root]}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end
@@ -107,7 +107,7 @@ class Test::Unit::TestCase
   end
 
   def expects
-    
+
   end
 
   # expects_rake "custom"
