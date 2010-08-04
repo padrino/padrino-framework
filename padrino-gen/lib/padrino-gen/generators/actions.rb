@@ -134,14 +134,16 @@ module Padrino
       # initializer :test, "some stuff here"
       def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
-        register = "  register #{name.to_s.camelize}Initializer\n"
+        register = data.present? ? "  register #{name.to_s.camelize}Initializer\n" : "  register #{name}"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
-        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb")
+        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
       end
 
+      # Insert the regired gem and add in boot.rb custom contribs.
       def require_contrib(contrib)
+        insert_into_gemfile 'padrino-contrib'
         contrib = File.join("padrino-contrib", contrib) + "\n"
-        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "Padrino::Load!"
+        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino::Load!"
       end
 
       # Return true if our project has test component
