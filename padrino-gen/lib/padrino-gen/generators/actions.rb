@@ -101,11 +101,6 @@ module Padrino
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
-      # Returns the project name
-      def fetch_project_name
-        File.basename(@destination_stack.last)
-      end
-
       # Adds all the specified gems into the Gemfile for bundler
       # require_dependencies 'active_record'
       # require_dependencies 'mocha', 'bacon', :group => 'test'
@@ -114,6 +109,7 @@ module Padrino
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
       end
+      alias :require_dependency :require_dependencies
 
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
@@ -137,11 +133,18 @@ module Padrino
 
       # Registers and Creates Initializer.
       # initializer :test, "some stuff here"
-      def initializer(name,data=nil)
+      def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
-        register = "  register #{name.to_s.camelize}Initializer\n"
+        register = data.present? ? "  register #{name.to_s.camelize}Initializer\n" : "  register #{name}\n"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
-        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb")
+        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
+      end
+
+      # Insert the regired gem and add in boot.rb custom contribs.
+      def require_contrib(contrib)
+        insert_into_gemfile 'padrino-contrib'
+        contrib = "require '" + File.join("padrino-contrib", contrib) + "'\n"
+        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino.load!"
       end
 
       # Return true if our project has test component
@@ -152,6 +155,12 @@ module Padrino
       # Return true if we have a tiny skeleton
       def tiny?
         File.exist?(destination_root("app/controllers.rb"))
+      end
+
+      # Run the bundler
+      def run_bundler
+        say "Bundling application dependencies using bundler...", :yellow
+        in_root { run 'bundle install' }
       end
 
       # Ask something to the user and receives a response.
