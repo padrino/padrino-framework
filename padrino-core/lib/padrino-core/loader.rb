@@ -111,8 +111,9 @@ module Padrino
           rescue Exception => e
             errors << e
             failed << files
+          ensure
+            files.delete(file)
           end
-          files.delete(file)
         end
 
         # Stop processing if nothing loads or if everything has loaded
