@@ -95,7 +95,7 @@ module Padrino
     #
     def require_dependencies(*paths)
       # Extract all files to load
-      files = paths.map { |path| Dir[path] }.flatten
+      files = paths.map { |path| Dir[path] }.flatten.uniq.sort
 
       while files.present?
         # We need a size to make sure things are loading
@@ -108,11 +108,10 @@ module Padrino
         files.each do |file|
           begin
             Reloader::Stat.safe_load(file)
+            files.delete(file)
           rescue Exception => e
             errors << e
-            failed << files
-          ensure
-            files.delete(file)
+            failed << file
           end
         end
 

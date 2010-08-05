@@ -634,8 +634,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'html', body
   end
 
-  should 'allows custom route-conditions to be set via route options' do
-    protector = Module.new {
+  should 'allows custom route-conditions to be set via route options and halt' do
+    protector = Module.new do
       def protect(*args)
         condition {
           unless authorize(params["user"], params["password"])
@@ -643,7 +643,7 @@ class TestRouting < Test::Unit::TestCase
           end
         }
       end
-    }
+    end
 
     mock_app do
       register protector
@@ -656,6 +656,40 @@ class TestRouting < Test::Unit::TestCase
 
       get "/", :protect => true do
         "hey"
+      end
+    end
+
+    get "/"
+    assert forbidden?
+    assert_equal "go away", body
+
+    get "/", :user => "foo", :password => "bar"
+    assert ok?
+    assert_equal "hey", body
+  end
+
+  should_eventually 'allows custom route-conditions to be set via route options using two routes' do
+    protector = Module.new do
+      def protect(*args)
+        condition { authorize(params["user"], params["password"]) }
+      end
+    end
+
+    mock_app do
+      register protector
+
+      helpers do
+        def authorize(username, password)
+          username == "foo" && password == "bar"
+        end
+      end
+
+      get "/", :protect => true do
+        "hey"
+      end
+
+      get "/" do
+        "go away"
       end
     end
 
@@ -882,26 +916,5 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "TOPICS CREATE bar - baz", body, "should properly post to topics create action"
     post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
     assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
-  end
-
-  should_eventually 'takes multiple definitions of a route' do
-    mock_app do
-      user_agent(/Foo/)
-      get '/foo' do
-        'foo'
-      end
-
-      get '/foo' do
-        'not foo'
-      end
-    end
-
-    get '/foo', {}, 'HTTP_USER_AGENT' => 'Foo'
-    assert ok?
-    assert_equal 'foo', body
-
-    get '/foo'
-    assert ok?
-    assert_equal 'not foo', body
   end
 end

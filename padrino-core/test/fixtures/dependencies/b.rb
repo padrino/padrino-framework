@@ -1,4 +1,4 @@
-B = "B"
+# But here we need some of c.rb and a.rb
+B_result = C
 
-# Here we need some of c.rb
-B_result = [C, B]
+B = "B"
