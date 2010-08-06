@@ -18,7 +18,7 @@ module Padrino
         attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
 
         def process_arbitrary_blocks(blocks)
-          blocks.each{|blk| arbitrary{|env| router.runner.instance_eval(&blk) != false } } if blocks
+          blocks.each { |blk| arbitrary { |env| router.runner.instance_eval(&blk) != false } } if blocks
         end
 
         def before_filters=(before_filters)
@@ -469,10 +469,10 @@ module Padrino
           base.router.runner = self
           if base.router and match = base.router.recognize(@request)
             if !match.matched?
-              route_eval {
-                match.headers.each{|k,v| response[k] = v}
+              route_eval do
+                match.headers.each {|k,v| response[k] = v}
                 status match.status
-              }
+              end
             elsif match
               @block_params = match.params
               (@params ||= {}).merge!(match.params_as_hash)
@@ -496,7 +496,7 @@ module Padrino
 
           # Run routes defined in superclass.
           if base.superclass.respond_to?(:router)
-            route! base.superclass, pass_block
+            route!(base.superclass, pass_block)
             return
           end
 
