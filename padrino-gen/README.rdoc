@@ -39,7 +39,7 @@ You can also instruct the generator to skip a certain component to avoid using o
 The available components and their default options are listed below:
 
 test::       rspec (default), bacon, shoulda, cucumber, testspec, riot
-renderer::   haml  (default), erb
+renderer::   haml  (default), erb, erubis
 stylesheet:: sass  (default), less, compass
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, rightjs, extcore, dojo
@@ -57,7 +57,7 @@ To learn more about the project generator, check out the guide to
 Padrino provides support for plugins to be executed within your application. For example:
 
   $ padrino-gen plugin hoptoad
-  
+
 would install the hoptoad middleware into your application automatically.
 
 To learn more about the plugin system, check out the guide to
