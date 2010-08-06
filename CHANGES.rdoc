@@ -2,6 +2,7 @@
 
 == 0.9.15 (Unreleased)
 
+* Fixed custom conditions
 * Adds Template/Plugin generation
 * Added regex support in routes
 * Removed some deprecations
