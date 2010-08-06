@@ -13,8 +13,23 @@ module Padrino
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
     class ::HttpRouter #:nodoc:
+      attr_accessor :runner
       class Route #:nodoc:
         attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+
+        def process_arbitrary_blocks(blocks)
+          blocks.each{|blk| arbitrary{|env| router.runner.instance_eval(&blk) != false } } if blocks
+        end
+
+        def before_filters=(before_filters)
+          process_arbitrary_blocks(before_filters)
+          @before_filters = before_filters
+        end
+
+        def custom_conditions=(custom_conditions)
+          process_arbitrary_blocks(custom_conditions)
+          @custom_conditions = custom_conditions
+        end
       end
     end
 
@@ -236,12 +251,12 @@ module Padrino
               router.add(path)
           end
 
+          #route.base = self
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
-          route.to(block)
 
           # Add Sinatra conditions
           options.each { |option, args| send(option, *args) }
@@ -258,6 +273,8 @@ module Padrino
             route.before_filters = []
             route.after_filters  = []
           end
+
+          route.to(block)
 
           route
         end
@@ -450,6 +467,7 @@ module Padrino
         # Compatibility with http_router
         #
         def route!(base=self.class, pass_block=nil)
+          base.router.runner = self
           if base.router and match = base.router.recognize(@request)
             if !match.matched?
               route_eval {
@@ -460,10 +478,6 @@ module Padrino
               @block_params = match.params
               (@params ||= {}).merge!(match.params_as_hash)
               pass_block = catch(:pass) do
-                # Run Sinatra Conditions
-                match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
-                # Run scoped before filters
-                match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
                 # If present set current controller layout
                 parent_layout = base.instance_variable_get(:@layout)
                 base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout

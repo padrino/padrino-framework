@@ -668,7 +668,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hey", body
   end
 
-  should_eventually 'allows custom route-conditions to be set via route options using two routes' do
+  should 'allows custom route-conditions to be set via route options using two routes' do
     protector = Module.new do
       def protect(*args)
         condition { authorize(params["user"], params["password"]) }
@@ -694,7 +694,6 @@ class TestRouting < Test::Unit::TestCase
     end
 
     get "/"
-    assert forbidden?
     assert_equal "go away", body
 
     get "/", :user => "foo", :password => "bar"
