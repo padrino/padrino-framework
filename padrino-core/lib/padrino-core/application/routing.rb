@@ -251,7 +251,6 @@ module Padrino
               router.add(path)
           end
 
-          #route.base = self
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
