@@ -68,8 +68,6 @@ module ObjectSpace
     def classes
       klasses = []
       ObjectSpace.each_object(Class)  { |o| klasses << o }
-      ObjectSpace.each_object(Module) { |o| klasses << o }
-      klasses.concat(ObjectSpace.constants)
       klasses
     end
   end

@@ -90,6 +90,7 @@ module Padrino
     # With +require_dependencies+ we don't have this problem.
     #
     # ==== Examples
+    #
     #   # For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
@@ -109,9 +110,14 @@ module Padrino
           begin
             Reloader::Stat.safe_load(file)
             files.delete(file)
-          rescue Exception => e
+          rescue LoadError => e
             errors << e
             failed << file
+          rescue NameError => e
+            errors << e
+            failed << file
+          rescue Exception => e
+            raise e
           end
         end
 
