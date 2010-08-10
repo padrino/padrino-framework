@@ -208,8 +208,8 @@ module Padrino
         # Searches Ruby files in your +Padrino.root+ and monitors them for any changes.
         #
         def rotation
-          paths  = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| !File.directory?(path) }
-          paths -= Padrino::Reloader.exclude
+          paths  = Dir[Padrino.root("*")].unshift(Padrino.root).
+                                          reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
           files  = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten.uniq
 
           files.map { |file|

@@ -2,6 +2,7 @@
 
 == 0.9.15 (Unreleased)
 
+* Fixed an issue with reloader
 * Added erubis support [Thanks Cored]
 * Fixed custom conditions
 * Adds Template/Plugin generation
