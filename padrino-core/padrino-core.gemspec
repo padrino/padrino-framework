@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = "lib"
   s.add_dependency("sinatra", ">= 1.0.0")
-  s.add_dependency("http_router", ">= 0.3.11")
+  s.add_dependency("http_router", ">= 0.3.12")
   s.add_dependency("thor", ">= 0.13.0")
   # If you want try our test on AS edge.
   # $ AS=edge rake test

@@ -816,7 +816,6 @@ class TestRouting < Test::Unit::TestCase
     post "/.json"
     assert_equal "This is the post index.json", body
     post "/.js"
-    assert_match "Sinatra doesn't know this ditty", body
     assert_equal 404, status
   end
 
