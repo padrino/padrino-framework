@@ -38,7 +38,7 @@ module Padrino
     end
 
     def sort!
-      @mapping = @mapping.sort_by { |h, p, m, a| [(-1.0 / 0.0), -p.size] }
+      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
     end
 
     def map(options={})
