@@ -21,6 +21,7 @@
 * Fixes app destroy option
 * Adds Dutch translation [Thanks to Martijin]
 * Adds Polish translation [Thanks to Kriss]
+* Added scss for stylesheet generation
 
 == 0.9.14
 

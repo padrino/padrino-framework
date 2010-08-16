@@ -455,5 +455,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/app/stylesheets/application.scss')
       assert_file_exists('/tmp/sample_project/app/stylesheets/partials/_base.scss')
     end
+
+    should "properly generate for scss" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=scss') }
+      assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/scss_init.rb')
+      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, '/tmp/sample_project/lib/scss_init.rb')
+      assert_match_in_file(/register ScssInitializer/m, '/tmp/sample_project/app/app.rb')
+      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+    end
+    
   end
 end
