@@ -275,6 +275,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Ohm.connect/, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')
     end
+
+    should "properly generate for mongomatic" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongomatic', '--script=none') }
+      assert_match /Applying.*?mongomatic.*?orm/, buffer
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'mongomatic'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, '/tmp/sample_project/config/database.rb')
+      assert_dir_exists('/tmp/sample_project/app/models')
+    end
   end
 
 
