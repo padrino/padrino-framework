@@ -22,6 +22,7 @@
 * Adds Dutch translation [Thanks to Martijin]
 * Adds Polish translation [Thanks to Kriss]
 * Added scss for stylesheet generation
+* Added +mongomatic+ as an orm component [Thanks to lusis]
 
 == 0.9.14
 
