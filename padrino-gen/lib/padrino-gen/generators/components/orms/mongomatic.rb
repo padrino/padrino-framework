@@ -44,7 +44,7 @@ class !NAME! < Mongomatic::Base
   #     be_present self['age'], "Age cannot be blank"
   #     be_present self['password'], "Password cannot be blank"
   #     be_a_number self['age'], "Age must be a number"
-  #     be_of_length self['password'], "Password must be at least 8 characters, :minimum => 8
+  #     be_of_length self['password'], "Password must be at least 8 characters", :minimum => 8
   #   end
   # end
 
