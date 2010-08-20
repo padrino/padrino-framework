@@ -23,18 +23,17 @@ class TestPluginGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "-p=#{example_template_path}", '-r=/tmp', '> /dev/null') }
     end
 
-    # TODO: check why this didn't work right now.
-    # before_should "invoke Padrino.bin_gen" do
-    #   expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
-    #   expects_generated :model, "post title:string body:text -r=/tmp/sample_project"
-    #   expects_generated :controller, "posts get:index get:new post:new -r=/tmp/sample_project"
-    #   expects_generated :migration, "AddEmailToUser email:string -r=/tmp/sample_project"
-    #   expects_generated :fake, "foo bar -r=/tmp/sample_project"
-    #   expects_dependencies 'nokogiri'
-    #   expects_initializer :test, "# Example"
-    #   expects_generated :app, "testapp -r=/tmp/sample_project"
-    #   expects_generated :controller, "users get:index -r=/tmp/sample_project --app=testapp"
-    # end
+    before_should "invoke Padrino.bin_gen" do
+      expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
+      expects_generated :model, "post title:string body:text -r=/tmp/sample_project"
+      expects_generated :controller, "posts get:index get:new post:new -r=/tmp/sample_project"
+      expects_generated :migration, "AddEmailToUser email:string -r=/tmp/sample_project"
+      expects_generated :fake, "foo bar -r=/tmp/sample_project"
+      expects_dependencies 'nokogiri'
+      expects_initializer :test, "# Example"
+      expects_generated :app, "testapp -r=/tmp/sample_project"
+      expects_generated :controller, "users get:index -r=/tmp/sample_project --app=testapp"
+    end
   end
 
   context "with resolving urls" do
@@ -70,14 +69,13 @@ class TestPluginGenerator < Test::Unit::TestCase
       silence_logger { project_gen.invoke_all }
     end
 
-    should_eventually "resolve official plugin" do
-      # Here we have a problem, using Padrino::Generators::Plugin.dup it's fine on 1.8 but not in 1.9
+    should "resolve official plugin" do
       template_file = 'hoptoad'
       resolved_path = "http://github.com/padrino/padrino-recipes/raw/master/plugins/hoptoad_plugin.rb"
-      plugin_gen = Padrino::Generators::Plugin.dup
-      plugin_gen.any_instance.expects(:apply).with(nil)
-      plugin_gen.any_instance.expects(:apply).with(resolved_path).returns(true).once
-      silence_logger { plugin_gen.start([ template_file, '-r=/tmp']) }
+      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ['-r=/tmp/sample_project'],{})
+      plugin_gen.expects(:in_app_root?).returns(true).once
+      plugin_gen.expects(:apply).with(resolved_path).returns(true).once
+      silence_logger { plugin_gen.invoke_all }
     end
   end
 
