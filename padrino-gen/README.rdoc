@@ -39,7 +39,7 @@ You can also instruct the generator to skip a certain component to avoid using o
 The available components and their default options are listed below:
 
 test::       rspec (default), bacon, shoulda, cucumber, testspec, riot
-renderer::   haml  (default), erb, erubis
+renderer::   haml  (default), erb, erubis, liquid
 stylesheet:: sass  (default), less, compass
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, rightjs, extcore, dojo
