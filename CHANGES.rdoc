@@ -23,6 +23,7 @@
 * Adds Polish translation [Thanks to Kriss]
 * Added scss for stylesheet generation
 * Added +mongomatic+ as an orm component [Thanks to lusis]
+* Added +liquid+ as an renderer component [Thanks to rwilcox]
 
 == 0.9.14
 
