@@ -7,6 +7,7 @@ require 'shoulda'
 require 'mocha'
 require 'rack/test'
 require 'padrino-core'
+require 'padrino-helpers'
 require 'padrino-mailer'
 
 class Test::Unit::TestCase
