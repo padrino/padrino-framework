@@ -256,6 +256,27 @@ class TestModelGenerator < Test::Unit::TestCase
     end
   end
 
+  # MONGOMATIC
+  context "model generator using mongomatic" do
+    should "generate model file with no properties" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=mongomatic') }
+      silence_logger { generate(:model, 'person', '-r=/tmp/sample_project') }
+      assert_match_in_file(/class Person < Mongomatic::Base/, '/tmp/sample_project/app/models/person.rb')
+      assert_match_in_file(/include Mongomatic::Expectations::Helper/m, '/tmp/sample_project/app/models/person.rb')
+    end
+
+    should "generate model file with given fields" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-d=mongomatic') }
+      silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", '-r=/tmp/sample_project') }
+      assert_match_in_file(/class User < Mongomatic::Base/, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/include Mongomatic::Expectations::Helper/, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/be_present self\['name'\]/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/be_present self\['age'\]/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/be_present self\['email'\]/m, '/tmp/sample_project/app/models/user.rb')
+      assert_match_in_file(/be_a_number self\['age'\]/m, '/tmp/sample_project/app/models/user.rb')
+    end
+  end
+
   context "model generator testing files" do
     # BACON
     should "generate test file for bacon" do

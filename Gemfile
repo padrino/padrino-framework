@@ -14,6 +14,8 @@ group :db do
 end
 
 group :development do
+  gem "rcov",  ">= 0.9.8"
+  gem "ruby-prof", ">= 0.9.1"
   gem "rake",  ">= 0.8.7"
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"

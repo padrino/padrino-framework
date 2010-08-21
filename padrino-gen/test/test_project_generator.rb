@@ -275,6 +275,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Ohm.connect/, '/tmp/sample_project/config/database.rb')
       assert_dir_exists('/tmp/sample_project/app/models')
     end
+
+    should "properly generate for mongomatic" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--orm=mongomatic', '--script=none') }
+      assert_match /Applying.*?mongomatic.*?orm/, buffer
+      assert_match_in_file(/gem 'bson_ext'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/gem 'mongomatic'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, '/tmp/sample_project/config/database.rb')
+      assert_dir_exists('/tmp/sample_project/app/models')
+    end
   end
 
 
@@ -295,6 +304,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match(/Applying.*?erubis.*?renderer/,buffer)
       assert_match_in_file(/gem 'erubis'/, '/tmp/sample_project/Gemfile')
     end
+
+    should "properly generate for liquid" do 
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--renderer=liquid','--script=none') }
+      assert_match(/Applying.*?liquid.*?renderer/,buffer)
+      assert_match_in_file(/gem 'liquid'/, '/tmp/sample_project/Gemfile')
+    end
+
   end
 
   context "the generator for script component" do
@@ -455,5 +471,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists('/tmp/sample_project/app/stylesheets/application.scss')
       assert_file_exists('/tmp/sample_project/app/stylesheets/partials/_base.scss')
     end
+
+    should "properly generate for scss" do
+      buffer = silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--renderer=haml','--script=none','--stylesheet=scss') }
+      assert_match_in_file(/gem 'haml'/, '/tmp/sample_project/Gemfile')
+      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, '/tmp/sample_project/lib/scss_init.rb')
+      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, '/tmp/sample_project/lib/scss_init.rb')
+      assert_match_in_file(/register ScssInitializer/m, '/tmp/sample_project/app/app.rb')
+      assert_dir_exists('/tmp/sample_project/app/stylesheets')
+    end
+    
   end
 end

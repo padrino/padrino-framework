@@ -41,7 +41,7 @@ end
 
 desc "Installs the gem locally"
 task :install => :package do
-  sudo_sh "gem install pkg/#{gemspec.name}-#{gemspec.version}"
+  sh "gem install pkg/#{gemspec.name}-#{gemspec.version}"
 end
 
 desc "Release the gem"
