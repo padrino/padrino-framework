@@ -109,6 +109,7 @@ GEM
       rack (>= 1.0)
     rake (0.8.7)
     rcov (0.9.8)
+    rcov (0.9.8-java)
     ruby-prof (0.9.1)
     shoulda (2.11.1)
     sinatra (1.0)
