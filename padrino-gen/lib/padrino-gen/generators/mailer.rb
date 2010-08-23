@@ -18,6 +18,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen mailer generates a new Padrino mailer"
 
       argument :name, :desc => "The name of your padrino mailer"
+      argument :actions, :desc => "The delivery actions to add to your mailer", :type => :array, :default => []
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :app, :desc => "The application destination path", :aliases => '-a', :default => "/app", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
@@ -32,6 +33,7 @@ module Padrino
           check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
           @app_name = fetch_app_name(app)
+          @actions = actions.map{|a| a.to_sym}
           @short_name = name.to_s.gsub(/mailer/i, '').underscore.downcase
           @mailer_basename = @short_name.underscore
           template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")

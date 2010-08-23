@@ -34,5 +34,15 @@
 #
 
 <%= @app_name %>.mailer :<%= @short_name %> do
+  <%- if @actions.nil? || @actions.empty? -%>
   # Message definitions here...
+  <%- else -%>
+    <%- @actions.each do |action| -%>
+
+  email <%=action.inspect%> do
+    # Your mailer goes here
+  end
+
+    <%- end -%>
+  <%- end -%>
 end

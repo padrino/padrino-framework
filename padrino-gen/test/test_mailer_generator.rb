@@ -20,6 +20,15 @@ class TestMailerGenerator < Test::Unit::TestCase
       assert_dir_exists('/tmp/sample_project/subby/views/mailers/demo')
     end
 
+    should "generate mailer in specified app with actions" do
+      silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
+      silence_logger { generate(:app, 'subby', '-r=/tmp/sample_project') }
+      silence_logger { generate(:mailer, 'demo', 'action1', 'action2', '-a=/subby', '-r=/tmp/sample_project') }
+      puts File.read('/tmp/sample_project/subby/mailers/demo.rb')
+      assert_match_in_file(/Subby.mailer :demo/m, '/tmp/sample_project/subby/mailers/demo.rb')
+      assert_dir_exists('/tmp/sample_project/subby/views/mailers/demo')
+    end
+
     should "support generating a new mailer extended from base" do
       silence_logger { generate(:project, 'sample_project', '--root=/tmp', '--script=none', '-t=bacon') }
       silence_logger { generate(:mailer, 'demo', '-r=/tmp/sample_project') }
