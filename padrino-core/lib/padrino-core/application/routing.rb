@@ -361,7 +361,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
+          parent_prefix = parent_params.flatten.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
           File.join(parent_prefix, path)
         end
 
