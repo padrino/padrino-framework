@@ -5,15 +5,7 @@ class PadrinoApp < Padrino::Application
   register Padrino::Helpers
   register Padrino::Mailer
 
-  set :delivery_method, :smtp => {
-    :address              => "smtp.gmail.com",
-    :port                 => 587,
-    :domain               => 'your.host.name',
-    :user_name            => '<username>',
-    :password             => '<password>',
-    :authentication       => 'plain',
-    :enable_starttls_auto => true
-  }
+  set :delivery_method, :test
 
   mailer :sample do
     email :birthday do |name, age|
