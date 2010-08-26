@@ -79,7 +79,9 @@ module Padrino
         #   deliver(:example, :message, "John")
         #
         def deliver(mailer_name, message_name, *attributes)
-          registered_mailers[mailer_name].messages[message_name].call(*attributes).deliver
+          message = registered_mailers[mailer_name].messages[message_name].call(*attributes)
+          message.delivery_method(*delivery_settings)
+          message.deliver
         end
 
         ##

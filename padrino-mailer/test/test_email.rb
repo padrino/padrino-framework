@@ -75,6 +75,7 @@ class TestEmail < Test::Unit::TestCase
       mock_app do
         register Padrino::Mailer
         set :views, File.dirname(__FILE__) + '/fixtures/views'
+        set :delivery_method, :test
         mailer :alternate do
           defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
           email :foo do
@@ -98,6 +99,7 @@ class TestEmail < Test::Unit::TestCase
     should 'send emails with app mailer defaults' do
       mock_app do
         register Padrino::Mailer
+        set :delivery_method, :test
         set :views, File.dirname(__FILE__) + '/fixtures/views'
         set :mailer_defaults, :from => 'padrino@from.com', :to => 'padrino@to.com', :subject => "This is a test"
         mailer :alternate do
@@ -122,6 +124,7 @@ class TestEmail < Test::Unit::TestCase
       mock_app do
         register Padrino::Mailer
         set :views, File.dirname(__FILE__) + '/fixtures/views'
+        set :delivery_method, :test
         mailer :alternate do
           email :foo do
             from    'padrino@me.com'
