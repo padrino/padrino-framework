@@ -138,7 +138,7 @@ task :pdoc => :rdoc do
   FileUtils.rm_rf "doc"
 end
 
-namespace :hudson do 
+namespace :hudson do
   namespace :coverage do
     desc "Delete aggregate coverage data."
     task(:clean) { rm_f "coverage.data" }

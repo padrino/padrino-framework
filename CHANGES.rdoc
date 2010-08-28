@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.15 (Unreleased)
+== 0.9.15
 
 * Fixed an issue with reloader
 * Added erubis support [Thanks Cored]
