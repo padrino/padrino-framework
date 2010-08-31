@@ -54,7 +54,7 @@ class Test::Unit::TestCase
     Rack::Lint.new(@app)
   end
 
-  # generate(:admin_app, '-r=/tmp/sample_project')
+  # generate(:admin_app, "-r=#{@apptmp}/sample_project")
   def generate(name, *params)
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
   end
