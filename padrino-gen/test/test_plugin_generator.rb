@@ -4,7 +4,6 @@ class TestPluginGenerator < Test::Unit::TestCase
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
     `mkdir -p #{@apptmp}`
-    #%w(sample_project sample_git sample_rake sample_admin).each { |proj| system("rm -rf /tmp/#{proj}") }
   end
 
   def teardown
