@@ -1,3 +1,4 @@
+#project :test => :shoulda, :orm => :activerecord, :dev => true
 project :test => :shoulda, :orm => :activerecord, :dev => true
 
 generate :model, "post title:string body:text"

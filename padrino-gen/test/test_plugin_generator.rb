@@ -8,7 +8,7 @@ class TestPluginGenerator < Test::Unit::TestCase
   end
 
   def teardown
-    #`rm -rf #{@apptmp}`
+    `rm -rf #{@apptmp}`
   end
 
   context "the plugin destroy option" do
@@ -26,8 +26,7 @@ class TestPluginGenerator < Test::Unit::TestCase
   context 'the project generator with template' do
     setup do
       example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
-      approot = @apptmp
-      silence_logger { generate(:project, 'sample_project', "-p=#{example_template_path}", "-r=#{approot}", '> /dev/null') }
+      silence_logger { generate(:project, 'sample_project', "-root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
     end
 
     before_should "invoke Padrino.bin_gen" do
