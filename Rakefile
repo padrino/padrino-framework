@@ -4,14 +4,12 @@ require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
-require 'rcov/rcovtask'
 require 'fileutils'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
-
 begin
   require 'sdoc'
 rescue LoadError
-  puts "You need to install sdoc: gem install sdoc for generate correctly ours api docs."
+  puts "You need to install sdoc: gem install sdoc to correctly generate our api docs."
 end
 
 include FileUtils
@@ -138,27 +136,32 @@ task :pdoc => :rdoc do
   FileUtils.rm_rf "doc"
 end
 
-namespace :hudson do
-  namespace :coverage do
-    desc "Delete aggregate coverage data."
-    task(:clean) { rm_f "coverage.data" }
-  end
-  desc 'Aggregate code coverage for unit, functional and integration tests'
-  task :coverage => "test:coverage:clean"
-  %w[unit functional integration].each do |target|
-    namespace :coverage do
-      %w[padrino padrino-admin padrino-helpers padrino-core padrino-mailer padrino-gen].each do |submodule|
-        Rcov::RcovTask.new(target) do |t|
-          t.libs << "#{submodule}/test"
-          t.libs << "#{submodule}/lib"
-          t.test_files = FileList["#{submodule}/test/*.rb", "#{submodule}/test/generators/*.rb"]
-          t.output_dir = "coverage/#{target}"
-          t.verbose = true
-          t.rcov_opts << '--aggregate coverage.data --sort coverage --text-report'
-          t.rcov_opts << '--exclude ".bundle/*,gems/*,test/fixtures/*"'
-        end
-      end
-    end
-    task :coverage => "test:coverage:#{target}"
-  end
+begin
+  require 'rcov/rcovtask'
+	namespace :hudson do
+	  namespace :coverage do
+	    desc "Delete aggregate coverage data."
+	    task(:clean) { rm_f "coverage.data" }
+	  end
+	  desc 'Aggregate code coverage for unit, functional and integration tests'
+	  task :coverage => "test:coverage:clean"
+	  %w[unit functional integration].each do |target|
+	    namespace :coverage do
+	      %w[padrino padrino-admin padrino-helpers padrino-core padrino-mailer padrino-gen].each do |submodule|
+		Rcov::RcovTask.new(target) do |t|
+		  t.libs << "#{submodule}/test"
+		  t.libs << "#{submodule}/lib"
+		  t.test_files = FileList["#{submodule}/test/*.rb", "#{submodule}/test/generators/*.rb"]
+		  t.output_dir = "coverage/#{target}"
+		  t.verbose = true
+		  t.rcov_opts << '--aggregate coverage.data --sort coverage --text-report'
+		  t.rcov_opts << '--exclude ".bundle/*,gems/*,test/fixtures/*"'
+		end
+	      end
+	    end
+	    task :coverage => "test:coverage:#{target}"
+	  end
+	end
+rescue LoadError
+  puts "Rcov is only supported on MRI 1.8. You can safely ignore this message on other platforms"
 end
