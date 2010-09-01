@@ -26,11 +26,11 @@ class TestPluginGenerator < Test::Unit::TestCase
   context 'the project generator with template' do
     setup do
       example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
-      silence_logger { generate(:project, 'sample_project', "-root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
     end
 
     before_should "invoke Padrino.bin_gen" do
-      expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true, :root => @apptmp
+      expects_generated_project :name => 'sample_project', :test => :shoulda, :orm => :activerecord, :dev => true, :root => @apptmp
       expects_generated :model, "post title:string body:text -r=#{@apptmp}/sample_project"
       expects_generated :controller, "posts get:index get:new post:new -r=#{@apptmp}/sample_project"
       expects_generated :migration, "AddEmailToUser email:string -r=#{@apptmp}/sample_project"
