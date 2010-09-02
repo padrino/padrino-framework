@@ -481,6 +481,7 @@ class TestRouting < Test::Unit::TestCase
         get(:index, :map => "/"){ "index" }
         get(:show, :with => :id, :map => "/show"){ "show #{params[:id]}" }
         get(:edit, :map => "/edit/:id/product"){ "edit #{params[:id]}" }
+        get(:wacky, :map => "/wacky-:id-:product_id"){ "wacky #{params[:id]}-#{params[:product_id]}" }
       end
     end
     get "/"
@@ -489,6 +490,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 1", body
     get "/edit/1/product"
     assert_equal "edit 1", body
+    get "/wacky-1-2"
+    assert_equal "wacky 1-2", body
   end
 
   should "apply parent to route" do
