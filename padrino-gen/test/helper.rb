@@ -2,6 +2,7 @@ require File.expand_path('../../../load_paths', __FILE__)
 require 'test/unit'
 require 'rack/test'
 require 'rack'
+require 'uuid'
 require 'shoulda'
 require 'mocha'
 require 'webrat'
@@ -80,10 +81,11 @@ class Test::Unit::TestCase
 
   # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
   def expects_generated_project(options={})
+    project_root = options[:root]
+    project_name = options[:name]
     settings = options.slice!(:name, :root)
-    options.reverse_merge!(:name => 'sample_project', :root => '/tmp')
     components = settings.map { |component, value| "--#{component}=#{value}" }
-    params = [options[:name], *components].push("-r=#{options[:root]}")
+    params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end
 
@@ -97,7 +99,7 @@ class Test::Unit::TestCase
 
   # expects_initializer :test, "# Example"
   def expects_initializer(name, body,options={})
-    options.reverse_merge!(:root => "/tmp/sample_project")
+    #options.reverse_merge!(:root => "/tmp/sample_project")
     path = File.join(options[:root],'lib',"#{name}_init.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
@@ -112,13 +114,13 @@ class Test::Unit::TestCase
 
   # expects_rake "custom"
   def expects_rake(command,options={})
-    options.reverse_merge!(:root => '/tmp')
+    #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
   end
 
   # expects_git :commit, "hello world"
   def expects_git(command,options={})
-    options.reverse_merge!(:root => '/tmp')
+    #options.reverse_merge!(:root => '/tmp')
     FileUtils.mkdir_p(options[:root])
       if command.to_s == 'init'
         args = options[:arguments] || options[:root]

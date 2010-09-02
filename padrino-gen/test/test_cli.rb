@@ -3,7 +3,12 @@ require 'padrino-gen/generators/cli'
 
 class TestCli < Test::Unit::TestCase
   def setup
-    `rm -rf /tmp/sample_project`
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    `mkdir -p #{@apptmp}`
+  end
+
+  def teardown
+    `rm -rf #{@apptmp}`
   end
 
   context 'the cli' do
@@ -14,8 +19,8 @@ class TestCli < Test::Unit::TestCase
     end
 
     should "work correctly if we have a project" do
-      silence_logger { generate(:project, 'sample_project', '--root=/tmp') }
-      assert_nothing_raised { silence_logger { generate(:cli, '--root=/tmp/sample_project') } }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_nothing_raised { silence_logger { generate(:cli, "--root=#{@apptmp}/sample_project") } }
     end
   end
 end

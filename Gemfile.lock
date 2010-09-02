@@ -1,31 +1,31 @@
 PATH
   remote: padrino
   specs:
-    padrino (0.9.14)
-      padrino-admin (= 0.9.14)
-      padrino-core (= 0.9.14)
-      padrino-gen (= 0.9.14)
-      padrino-helpers (= 0.9.14)
-      padrino-mailer (= 0.9.14)
+    padrino (0.9.15)
+      padrino-admin (= 0.9.15)
+      padrino-core (= 0.9.15)
+      padrino-gen (= 0.9.15)
+      padrino-helpers (= 0.9.15)
+      padrino-mailer (= 0.9.15)
 
 PATH
   remote: padrino-admin
   specs:
-    padrino-admin (0.9.14)
-      padrino-core (= 0.9.14)
-      padrino-gen (= 0.9.14)
-      padrino-helpers (= 0.9.14)
+    padrino-admin (0.9.15)
+      padrino-core (= 0.9.15)
+      padrino-gen (= 0.9.15)
+      padrino-helpers (= 0.9.15)
 
 PATH
   remote: padrino-cache
   specs:
-    padrino-cache (0.9.14)
-      padrino-core (= 0.9.14)
+    padrino-cache (0.9.15)
+      padrino-core (= 0.9.15)
 
 PATH
   remote: padrino-core
   specs:
-    padrino-core (0.9.14)
+    padrino-core (0.9.15)
       activesupport (>= 2.3.8)
       http_router (>= 0.3.13)
       sinatra (>= 1.0.0)
@@ -34,24 +34,24 @@ PATH
 PATH
   remote: padrino-gen
   specs:
-    padrino-gen (0.9.14)
+    padrino-gen (0.9.15)
       bundler (>= 1.0.0.rc.2)
       git
-      padrino-core (= 0.9.14)
+      padrino-core (= 0.9.15)
 
 PATH
   remote: padrino-helpers
   specs:
-    padrino-helpers (0.9.14)
+    padrino-helpers (0.9.15)
       i18n (>= 0.4.1)
-      padrino-core (= 0.9.14)
+      padrino-core (= 0.9.15)
 
 PATH
   remote: padrino-mailer
   specs:
-    padrino-mailer (0.9.14)
+    padrino-mailer (0.9.15)
       mail (>= 2.2.0)
-      padrino-core (= 0.9.14)
+      padrino-core (= 0.9.15)
 
 GEM
   remote: http://rubygems.org/
@@ -93,6 +93,7 @@ GEM
       url_mount (>= 0.2.1)
     i18n (0.4.1)
     jdbc-sqlite3 (3.6.3.054)
+    macaddr (1.0.0)
     mail (2.2.5)
       activesupport (>= 2.3.6)
       mime-types
@@ -109,7 +110,6 @@ GEM
       rack (>= 1.0)
     rake (0.8.7)
     rcov (0.9.8)
-    rcov (0.9.8-java)
     ruby-prof (0.9.1)
     shoulda (2.11.1)
     sinatra (1.0)
@@ -119,6 +119,8 @@ GEM
       polyglot (>= 0.3.1)
     url_mount (0.2.1)
       rack
+    uuid (2.3.1)
+      macaddr (~> 1.0)
     weakling (0.0.4-java)
     webrat (0.7.1)
       nokogiri (>= 1.2.0)
@@ -148,7 +150,8 @@ DEPENDENCIES
   padrino-mailer!
   rack-test (>= 0.5.0)
   rake (>= 0.8.7)
-  rcov (>= 0.9.8)
+  rcov (= 0.9.8)
   ruby-prof (>= 0.9.1)
   shoulda (>= 2.10.3)
+  uuid (>= 2.3.1)
   webrat (>= 0.5.1)
