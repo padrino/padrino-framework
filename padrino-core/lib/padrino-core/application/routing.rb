@@ -127,6 +127,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_map,        original_map        = options.delete(:map), @_map
           @_defaults,   original_defaults   = options, @_defaults
 
           # Application defaults
@@ -143,7 +144,7 @@ module Padrino
 
           # Controller defaults
           @_controller, @_parents = original_controller, original_parent
-          @_defaults, @_provides  = original_defaults, original_provides
+          @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
         else
           include(*args) if extensions.any?
         end
@@ -331,6 +332,9 @@ module Padrino
               parent_params = Array(@_parents) + Array(parent_params)
               path = process_path_for_parent_params(path, parent_params)
             end
+
+            # Add any controller level map to the front of the path
+            path = "#{@_map}/#{path}".squeeze('/') unless @_map.blank?
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path

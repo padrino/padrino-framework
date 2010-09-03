@@ -852,6 +852,26 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 404, status
   end
 
+  should "allow controller level mapping" do
+    mock_app do
+      controller :map => "controller-:id" do
+        get(:url3) { "#{params[:id]}" }
+        get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
+      end
+    end
+
+    url = @app.url(:url3, :id => 1)
+    assert_equal "/controller-1/url3", url
+    get url
+    assert_equal "1", body
+
+    url = @app.url(:url4, 1, 2)
+    assert_equal "/controller-1/test-2", url
+    get url
+    assert_equal "1, 2", body
+  end
+
+
   should "work with params and parent options" do
     mock_app do
       controller :test2, :parent => :parent1, :parent1_id => 1 do
@@ -902,7 +922,6 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/foo"
     assert_equal "this is foo", body
-    # TODO fix this in http_router, should pass
     get "/foo/"
     assert_equal "this is foo", body
     get '/foo/5/10'
