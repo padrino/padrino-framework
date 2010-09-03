@@ -198,6 +198,19 @@ module Padrino
       end
       alias :url_for :url
 
+      def get(path, *args, &block)
+        conditions = @conditions.dup
+        route('GET', path, *args, &block)
+
+        @conditions = conditions
+        route('HEAD', path, *args, &block)
+      end
+
+      def put(path, *args, &bk);    route 'PUT',    path, *args, &bk end
+      def post(path, *args, &bk);   route 'POST',   path, *args, &bk end
+      def delete(path, *args, &bk); route 'DELETE', path, *args, &bk end
+      def head(path, *args, &bk);   route 'HEAD',   path, *args, &bk end
+
       private
 
         # Add prefix slash if its not present and remove trailing slashes.
@@ -223,7 +236,17 @@ module Padrino
         #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
         #   get :list, :provides => [:html, :js, :json]   # => "/list(.{!format,js|json})"
         #
-        def route(verb, path, options={}, &block)
+        def route(verb, path, *args, &block)
+          options = case args.size
+          when 2
+            args.last.merge(:map => args.first)
+          when 1
+            args.first.is_a?(Hash) ? args.first : {:map => args.first}
+          when 0
+            {}
+          else
+            raise
+          end
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
