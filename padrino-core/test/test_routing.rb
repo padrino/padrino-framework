@@ -706,6 +706,34 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hey", body
   end
 
+  should "allow passing & halting in before filters" do
+    mock_app do
+      controller do
+        before { env['QUERY_STRING'] == 'secret' or pass }
+        get :index do
+          "secret index"
+        end
+      end
+
+      controller do
+        before { env['QUERY_STRING'] == 'halt' and halt 401, 'go away!' }
+        get :index do
+          "index"
+        end
+      end
+    end
+
+    get "/?secret"
+    assert_equal "secret index", body
+
+    get "/?halt"
+    assert_equal "go away!", body
+    assert_equal 401, status
+
+    get "/"
+    assert_equal "index", body
+  end
+
   should 'scope filters in the given controller' do
     mock_app do
       before { @global = 'global' }

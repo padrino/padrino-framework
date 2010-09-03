@@ -17,17 +17,13 @@ module Padrino
       class Route #:nodoc:
         attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
 
-        def process_arbitrary_blocks(blocks)
-          blocks.each { |blk| arbitrary { |env| router.runner.instance_eval(&blk) != false } } if blocks
-        end
-
         def before_filters=(before_filters)
-          process_arbitrary_blocks(before_filters)
+          before_filters.each { |blk| arbitrary { |env| catch(:pass) { router.runner.instance_eval(&blk); true } == true } } if before_filters
           @before_filters = before_filters
         end
 
         def custom_conditions=(custom_conditions)
-          process_arbitrary_blocks(custom_conditions)
+          custom_conditions.each { |blk| arbitrary { |env| router.runner.instance_eval(&blk) != false } } if custom_conditions
           @custom_conditions = custom_conditions
         end
       end
