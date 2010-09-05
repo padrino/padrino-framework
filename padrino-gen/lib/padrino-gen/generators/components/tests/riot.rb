@@ -12,8 +12,10 @@ class Riot::Situation
   ##
   # You can handle all padrino applications using instead:
   #   Padrino.application
-  CLASS_NAME.tap { |app|  }
-
+  
+  def app
+    CLASS_NAME.tap { |app|  }
+  end
 end
 
 class Riot::Context
