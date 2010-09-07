@@ -268,7 +268,7 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
-          path, *options[:with] = path if path.is_a?(Array)
+          path, *route_options[:with] = path if path.is_a?(Array)
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
