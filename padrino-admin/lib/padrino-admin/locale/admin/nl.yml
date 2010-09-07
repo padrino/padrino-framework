@@ -1,0 +1,16 @@
+nl:
+  padrino:
+    admin:
+      save: Opslaan
+      cancel: Annuleren
+      list: Lijst
+      edit: Bewerken
+      new: Nieuw
+      show: Toon
+      delete: Verwijderen
+      confirm: Weet u het zeker?
+      created_at: Aangemaakt op
+      all: Alle
+      profile: Profiel
+      settings: Voorkeuren
+      logout: Afmelden

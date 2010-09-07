@@ -44,11 +44,14 @@ module Padrino
     end
 
     ##
-    # Default encoding to UTF8 if it has not already been set to something else.
+    # Default encoding to UTF8.
     #
     def set_encoding
-      unless RUBY_VERSION >= '1.9'
-        $KCODE = 'U' if $KCODE == 'NONE' || $KCODE.blank?
+      if RUBY_VERSION < '1.9'
+        $KCODE='u'
+      else
+        Encoding.default_external = Encoding::UTF_8
+        Encoding.default_internal = Encoding::UTF_8
       end
       nil
     end

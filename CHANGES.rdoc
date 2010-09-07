@@ -1,7 +1,11 @@
 = CHANGES
 
-== 0.9.15 (Unreleased)
+== 0.9.15
 
+* Fixed an issue with reloader
+* Added erubis support [Thanks Cored]
+* Fixed custom conditions
+* Adds Template/Plugin generation
 * Added regex support in routes
 * Removed some deprecations
 * Fixes options_for_select helper selected logic and added test
@@ -15,6 +19,11 @@
 * Added Ohm support [Thanks to Lusis]
 * Updated require_dependencies to take a version
 * Fixes app destroy option
+* Adds Dutch translation [Thanks to Martijin]
+* Adds Polish translation [Thanks to Kriss]
+* Added scss for stylesheet generation
+* Added +mongomatic+ as an orm component [Thanks to lusis]
+* Added +liquid+ as an renderer component [Thanks to rwilcox]
 
 == 0.9.14
 

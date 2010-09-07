@@ -1,0 +1,5 @@
+module <%= "#{@_init_name.to_s.camelize}Initializer" %>
+  def self.registered(app)
+<%= @_init_data %>
+  end
+end

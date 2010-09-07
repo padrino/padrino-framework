@@ -81,7 +81,7 @@ module Padrino
 
       # Returns the root for this thor class (also aliased as destination root).
       def destination_root(*paths)
-        File.join(@destination_stack.last, paths)
+        File.expand_path(File.join(@destination_stack.last, paths))
       end
 
       # Returns true if inside a Padrino application
@@ -109,6 +109,7 @@ module Padrino
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
       end
+      alias :require_dependency :require_dependencies
 
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
@@ -130,9 +131,50 @@ module Padrino
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
+      # Registers and Creates Initializer.
+      # initializer :test, "some stuff here"
+      def initializer(name, data=nil)
+        @_init_name, @_init_data = name, data
+        register = data.present? ? "  register #{name.to_s.camelize}Initializer\n" : "  register #{name}\n"
+        inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
+        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
+      end
+
+      # Insert the regired gem and add in boot.rb custom contribs.
+      def require_contrib(contrib)
+        insert_into_gemfile 'padrino-contrib'
+        contrib = "require '" + File.join("padrino-contrib", contrib) + "'\n"
+        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino.load!"
+      end
+
       # Return true if our project has test component
       def test?
         fetch_component_choice(:test).to_s != 'none'
+      end
+
+      # Return true if we have a tiny skeleton
+      def tiny?
+        File.exist?(destination_root("app/controllers.rb"))
+      end
+
+      # Run the bundler
+      def run_bundler
+        say "Bundling application dependencies using bundler...", :yellow
+        in_root { run 'bundle install' }
+      end
+
+      # Ask something to the user and receives a response.
+      #
+      # ==== Example
+      #
+      #   ask("What is your name?")
+      #   ask("Path for ruby", "/usr/local/bin/ruby") => "Path for ruby (leave blank for /usr/local/bin/ruby):"
+      #
+      def ask(statement, default=nil, color=nil)
+        default_text = default ? " (leave blank for #{default}):" : nil
+        say("#{statement}#{default_text} ", color)
+        result = $stdin.gets.strip
+        result.blank? ? default : result
       end
 
       # Raise SystemExit if the app is inexistent

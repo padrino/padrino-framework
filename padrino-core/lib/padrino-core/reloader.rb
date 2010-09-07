@@ -189,22 +189,9 @@ module Padrino
         ##
         # Removes the specified class and constant.
         #
-        # Additionally this removes the specified class from the subclass list of every superclass that
-        # tracks it's subclasses in an array returned by _subclasses_list. Classes that wish to use this
-        # functionality are required to alias the reader for their list of subclasses
-        # to _subclasses_list. Plugins for ORMs and other libraries should keep this in mind.
-        #
         def remove_constant(const)
           return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) } &&
                    !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) }
-
-          superklass = const
-          until (superklass = superklass.superclass).nil?
-            if superklass.respond_to?(:_subclasses_list)
-              superklass.send(:_subclasses_list).delete(klass)
-              superklass.send(:_subclasses_list).delete(klass.to_s)
-            end
-          end
 
           parts = const.to_s.split("::")
           base = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
@@ -221,11 +208,11 @@ module Padrino
         # Searches Ruby files in your +Padrino.root+ and monitors them for any changes.
         #
         def rotation
-          paths = Dir[Padrino.root("*")].unshift(Padrino.root).reject { |path| !File.directory?(path) }
+          paths  = Dir[Padrino.root("*")].unshift(Padrino.root).
+                                          reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
+          files  = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten.uniq
 
-          files = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
-
-          files.map{ |file|
+          files.map { |file|
             next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{base}/ }
 
             found, stat = figure_path(file, paths)

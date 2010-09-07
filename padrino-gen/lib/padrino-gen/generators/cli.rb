@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'thor/group'
 
 module Padrino
@@ -12,13 +11,14 @@ module Padrino
       # Include related modules
       include Thor::Actions
 
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => nil, :type => :string
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
 
       # We need to TRY to load boot because some of our app dependencies maybe have
       # custom generators, so is necessary know who are.
       def load_boot
         begin
           ENV['PADRINO_LOG_LEVEL'] ||= "test"
+          ENV['BUNDLE_GEMFILE'] = File.join(options[:root], "Gemfile") if options[:root]
           boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
           if File.exist?(boot)
             require File.expand_path(boot)
@@ -27,7 +27,7 @@ module Padrino
             require 'padrino-core/support_lite' unless defined?(SupportLite)
           end
         rescue Exception => e
-          puts "=> Problem loading config/boot.rb"
+          puts "=> Problem loading #{boot}"
           puts ["=> #{e.message}", *e.backtrace].join("\n  ")
         end
       end

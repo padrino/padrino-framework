@@ -9,7 +9,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen admin_page [Model]"; end
+      def self.banner; "padrino-gen admin_page [model]"; end
 
       # Include related modules
       include Thor::Actions
@@ -43,7 +43,7 @@ module Padrino
             add_project_module(@orm.name_plural)
           end
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)" and return unless in_app_root?
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
     end # AdminPage

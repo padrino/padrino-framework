@@ -3,7 +3,7 @@ require 'rake' unless defined?(Rake)
 
 # Runs the sh command with sudo if the rake command is run with sudo
 def sudo_sh(command)
-  command = `whoami`.strip! == "root" ? "sudo #{command}" : command
+  command = `whoami`.strip! != "root" ? "sudo #{command}" : command
   sh command
 end
 
@@ -41,7 +41,7 @@ end
 
 desc "Installs the gem locally"
 task :install => :package do
-  sudo_sh "gem install pkg/#{gemspec.name}-#{gemspec.version}"
+  sh "gem install pkg/#{gemspec.name}-#{gemspec.version}"
 end
 
 desc "Release the gem"

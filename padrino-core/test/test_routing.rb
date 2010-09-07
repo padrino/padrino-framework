@@ -66,6 +66,27 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "2", body
   end
 
+  should "match user agents" do
+    app = mock_app do
+      get("/main", :agent => /IE/){ "hello IE" }
+      get("/main"){ "hello" }
+    end
+    get "/main"
+    assert_equal "hello", body
+    get "/main", {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    assert_equal "hello IE", body
+  end
+
+  should "use regex for parts of a route" do
+    app = mock_app do
+      get("/main/:id", :id => /\d+/){ "hello #{params[:id]}" }
+    end
+    get "/main/123"
+    assert_equal "hello 123", body
+    get "/main/asd"
+    assert_equal 404, status
+  end
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
@@ -470,6 +491,7 @@ class TestRouting < Test::Unit::TestCase
         get(:index, :map => "/"){ "index" }
         get(:show, :with => :id, :map => "/show"){ "show #{params[:id]}" }
         get(:edit, :map => "/edit/:id/product"){ "edit #{params[:id]}" }
+        get(:wacky, :map => "/wacky-:id-:product_id"){ "wacky #{params[:id]}-#{params[:product_id]}" }
       end
     end
     get "/"
@@ -478,23 +500,27 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 1", body
     get "/edit/1/product"
     assert_equal "edit 1", body
+    get "/wacky-1-2"
+    assert_equal "wacky 1-2", body
   end
 
   should "apply parent to route" do
     mock_app do
       controllers :project do
         get(:index, :parent => :user) { "index #{params[:user_id]}" }
+        get(:index, :parent => [:user, :section]) { "index #{params[:user_id]} #{params[:section_id]}" }
         get(:edit, :with => :id, :parent => :user) { "edit #{params[:id]} #{params[:user_id]}"}
         get(:show, :with => :id, :parent => [:user, :product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
     get "/user/1/project"
     assert_equal "index 1", body
+    get "/user/1/section/3/project"
+    assert_equal "index 1 3", body
     get "/user/1/project/edit/2"
     assert_equal "edit 2 1", body
     get "/user/1/product/2/project/show/3"
     assert_equal "show 3 1 2", body
-
   end
 
   should "apply parent to controller" do
@@ -623,8 +649,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'html', body
   end
 
-  should 'allows custom route-conditions to be set via route options' do
-    protector = Module.new {
+  should 'allows custom route-conditions to be set via route options and halt' do
+    protector = Module.new do
       def protect(*args)
         condition {
           unless authorize(params["user"], params["password"])
@@ -632,7 +658,7 @@ class TestRouting < Test::Unit::TestCase
           end
         }
       end
-    }
+    end
 
     mock_app do
       register protector
@@ -655,6 +681,67 @@ class TestRouting < Test::Unit::TestCase
     get "/", :user => "foo", :password => "bar"
     assert ok?
     assert_equal "hey", body
+  end
+
+  should 'allows custom route-conditions to be set via route options using two routes' do
+    protector = Module.new do
+      def protect(*args)
+        condition { authorize(params["user"], params["password"]) }
+      end
+    end
+
+    mock_app do
+      register protector
+
+      helpers do
+        def authorize(username, password)
+          username == "foo" && password == "bar"
+        end
+      end
+
+      get "/", :protect => true do
+        "hey"
+      end
+
+      get "/" do
+        "go away"
+      end
+    end
+
+    get "/"
+    assert_equal "go away", body
+
+    get "/", :user => "foo", :password => "bar"
+    assert ok?
+    assert_equal "hey", body
+  end
+
+  should "allow passing & halting in before filters" do
+    mock_app do
+      controller do
+        before { env['QUERY_STRING'] == 'secret' or pass }
+        get :index do
+          "secret index"
+        end
+      end
+
+      controller do
+        before { env['QUERY_STRING'] == 'halt' and halt 401, 'go away!' }
+        get :index do
+          "index"
+        end
+      end
+    end
+
+    get "/?secret"
+    assert_equal "secret index", body
+
+    get "/?halt"
+    assert_equal "go away!", body
+    assert_equal 401, status
+
+    get "/"
+    assert_equal "index", body
   end
 
   should 'scope filters in the given controller' do
@@ -772,9 +859,28 @@ class TestRouting < Test::Unit::TestCase
     post "/.json"
     assert_equal "This is the post index.json", body
     post "/.js"
-    assert_match "Sinatra doesn't know this ditty", body
     assert_equal 404, status
   end
+
+  should "allow controller level mapping" do
+    mock_app do
+      controller :map => "controller-:id" do
+        get(:url3) { "#{params[:id]}" }
+        get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
+      end
+    end
+
+    url = @app.url(:url3, :id => 1)
+    assert_equal "/controller-1/url3", url
+    get url
+    assert_equal "1", body
+
+    url = @app.url(:url4, 1, 2)
+    assert_equal "/controller-1/test-2", url
+    get url
+    assert_equal "1, 2", body
+  end
+
 
   should "work with params and parent options" do
     mock_app do
@@ -826,7 +932,6 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/foo"
     assert_equal "this is foo", body
-    # TODO fix this in http_router, should pass
     get "/foo/"
     assert_equal "this is foo", body
     get '/foo/5/10'

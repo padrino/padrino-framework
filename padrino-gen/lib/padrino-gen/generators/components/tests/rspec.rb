@@ -41,9 +41,9 @@ RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper.rb')
 
 describe "!NAME! Model" do
+  let(:!DNAME!) { !NAME!.new }
   it 'can be created' do
-    @!DNAME! = !NAME!.new
-    @!DNAME!.should_not be_nil
+    !DNAME!.should_not be_nil
   end
 end
 TEST

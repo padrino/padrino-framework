@@ -1,10 +1,8 @@
 #!/usr/bin/env ruby
-require 'rubygems' unless defined?(Gem)
+require 'rubygems' unless defined?(Gem) # Useful only on --dev mode
 
-# We load Padrino libs
 padrino_core_path = File.expand_path('../../lib', __FILE__)
 $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.include?(padrino_core_path)
 
-# We load our cli
 require 'padrino-core/cli/base'
 Padrino::Cli::Base.start(ARGV)

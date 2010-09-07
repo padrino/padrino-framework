@@ -357,7 +357,7 @@ module Padrino
         return '' if option_items.blank?
         option_items.collect do |caption, value|
           value ||= caption
-          content_tag(:option, caption, :value => value, :selected => selected_value.to_s =~ /^(#{value}|#{caption})$/)
+          content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
         end
       end
 
@@ -373,6 +373,20 @@ module Padrino
           configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
           configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
           configured_builder
+        end
+
+        
+        #
+        # Returns whether the option should be selected or not
+        #
+        def option_is_selected?(value, caption, selected_value)
+          if selected_value.is_a? Array
+            selected_value.any? do |selected| 
+              selected.to_s =~ /^(#{value}|#{caption})$/
+            end
+          else
+            selected_value.to_s =~ /^(#{value}|#{caption})$/
+          end
         end
     end # FormHelpers
   end # Helpers

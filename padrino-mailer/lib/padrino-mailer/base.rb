@@ -59,16 +59,16 @@ module Padrino
         }
       end
       alias :message :email
-      
+
       # Defines the default attributes for a message in this mailer (including app-wide defaults)
-      # 
+      #
       # ==== Examples
       #
       #   mailer :alternate do
       #    defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
       #    email(:foo) do ... end
-      #  end
-      # 
+      #   end
+      #
       def defaults(attributes=nil)
         if attributes.nil? # Retrieve the default values
           @app.respond_to?(:mailer_defaults) ? @app.mailer_defaults.merge(@defaults) : @defaults

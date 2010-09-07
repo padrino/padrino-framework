@@ -49,6 +49,11 @@ if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice
     include ActiveSupport::CoreExtensions::Hash::DeepMerge
     include ActiveSupport::CoreExtensions::Hash::ReverseMerge
     include ActiveSupport::CoreExtensions::Hash::Slice
+
+    def ordered_collect(&block)
+      keys = self.stringify_keys.keys.sort
+      keys.collect { |key| block.call(key, self[key.to_sym]) }
+    end
   end
 end
 
@@ -62,7 +67,7 @@ module ObjectSpace
     # Returns all the classes in the object space.
     def classes
       klasses = []
-      ObjectSpace.each_object(Class) {|o| klasses << o}
+      ObjectSpace.each_object(Class)  { |o| klasses << o }
       klasses
     end
   end
@@ -86,14 +91,14 @@ end unless Object.method_defined?(:full_const_get)
 class FileSet
   # Iterates over every file in the glob pattern and yields to a block
   # Returns the list of files matching the glob pattern
-  # FileSet.glob_require('padrino-core/application/*.rb', __FILE__) { |file| load file }
+  # FileSet.glob('padrino-core/application/*.rb', __FILE__) { |file| load file }
   def self.glob(glob_pattern, file_path=nil, &block)
     glob_pattern = File.join(File.dirname(file_path), glob_pattern) if file_path
     file_list = Dir.glob(glob_pattern).sort
     file_list.each { |file| block.call(file) }
     file_list
   end
-  
+
   # Requires each file matched in the glob pattern into the application
   # FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
   def self.glob_require(glob_pattern, file_path=nil)

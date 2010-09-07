@@ -64,7 +64,7 @@ module Padrino
 
           admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root])
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
-          admin_app.invoke
+          admin_app.invoke_all
 
           template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
           template "templates/account/seeds.rb.tt",                      destination_root("db/seeds.rb")
@@ -78,7 +78,7 @@ module Padrino
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
           gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
           return if self.behavior == :revoke
-          say (<<-TEXT).gsub(/ {10}/,'')
+          say((<<-TEXT).gsub(/ {10}/,''))
 
           =================================================================
           The admin panel has been mounted! Next, follow these steps:
@@ -90,7 +90,7 @@ module Padrino
 
           TEXT
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)" unless in_app_root?
+          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
     end # AdminApp

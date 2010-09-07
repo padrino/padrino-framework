@@ -13,8 +13,19 @@ module Padrino
     CONTENT_TYPE_ALIASES = { :htm => :html }
 
     class ::HttpRouter #:nodoc:
+      attr_accessor :runner
       class Route #:nodoc:
         attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+
+        def before_filters=(before_filters)
+          before_filters.each { |blk| arbitrary { |env| catch(:pass) { router.runner.instance_eval(&blk); true } == true } } if before_filters
+          @before_filters = before_filters
+        end
+
+        def custom_conditions=(custom_conditions)
+          custom_conditions.each { |blk| arbitrary { |env| router.runner.instance_eval(&blk) != false } } if custom_conditions
+          @custom_conditions = custom_conditions
+        end
       end
     end
 
@@ -116,6 +127,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_map,        original_map        = options.delete(:map), @_map
           @_defaults,   original_defaults   = options, @_defaults
 
           # Application defaults
@@ -132,7 +144,7 @@ module Padrino
 
           # Controller defaults
           @_controller, @_parents = original_controller, original_parent
-          @_defaults, @_provides  = original_defaults, original_provides
+          @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
         else
           include(*args) if extensions.any?
         end
@@ -144,13 +156,11 @@ module Padrino
       #
       # ==== Examples
       #
-      #   router.add('/greedy/{!:greed,.*}')
+      #   router.add('/greedy/:greed')
       #   router.recognize('/simple')
       #
       def router
-        unless @router
-          @router = HttpRouter.new
-        end
+        @router ||= HttpRouter.new
         block_given? ? yield(@router) : @router
       end
       alias :urls :router
@@ -216,8 +226,7 @@ module Padrino
         def route(verb, path, options={}, &block)
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
-          route_options[:provides] ||= @_provides if @_provides
-          route_options[:provides] ||= [:html]
+          route_options[:provides] = @_provides if @_provides
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
@@ -234,7 +243,7 @@ module Padrino
           # HTTPRouter route construction
           route = case path
             when Regexp
-              router.add('/?').partial.arbitrary { |request| request.env['PATH_INFO'] =~ path }
+              router.add('/?*').match_path(path)
             else
               router.add(path)
           end
@@ -242,8 +251,14 @@ module Padrino
           route.name(name) if name
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
+          route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
-          route.to(block)
+          options.delete_if do |option, args| 
+            if route.send(:significant_variable_names).include?(option)
+              route.matching(option => Array(args).first)
+              true
+            end
+          end
 
           # Add Sinatra conditions
           options.each { |option, args| send(option, *args) }
@@ -261,7 +276,13 @@ module Padrino
             route.after_filters  = []
           end
 
+          route.to(block)
+
           route
+        end
+
+        def current_controller
+          @_controller && @_controller.last
         end
 
         ##
@@ -318,6 +339,9 @@ module Padrino
               path = process_path_for_parent_params(path, parent_params)
             end
 
+            # Add any controller level map to the front of the path
+            path = "#{@_map}/#{path}".squeeze('/') unless @_map.blank?
+
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
             path[0,0] = "/" if path !~ %r{^\(?/} && path   # Paths must start with a /
@@ -343,7 +367,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
+          parent_prefix = parent_params.flatten.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
           File.join(parent_prefix, path)
         end
 
@@ -359,7 +383,6 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
-          @_provides = types.map { |t| t.to_sym }
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
@@ -449,20 +472,17 @@ module Padrino
         # Compatibility with http_router
         #
         def route!(base=self.class, pass_block=nil)
+          base.router.runner = self
           if base.router and match = base.router.recognize(@request)
             if !match.matched?
-              route_eval {
-                match.headers.each{|k,v| response[k] = v}
+              route_eval do
+                match.headers.each {|k,v| response[k] = v}
                 status match.status
-              }
+              end
             elsif match
               @block_params = match.params
               (@params ||= {}).merge!(match.params_as_hash)
               pass_block = catch(:pass) do
-                # Run Sinatra Conditions
-                match.path.route.custom_conditions.each { |cond| throw :pass if instance_eval(&cond) == false }
-                # Run scoped before filters
-                match.path.route.before_filters.each { |bef| throw :pass if instance_eval(&bef) == false }
                 # If present set current controller layout
                 parent_layout = base.instance_variable_get(:@layout)
                 base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
@@ -482,7 +502,7 @@ module Padrino
 
           # Run routes defined in superclass.
           if base.superclass.respond_to?(:router)
-            route! base.superclass, pass_block
+            route!(base.superclass, pass_block)
             return
           end
 

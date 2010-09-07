@@ -30,7 +30,6 @@ module Padrino
     DEV_PATH = File.expand_path("../../", File.dirname(__FILE__))
 
     class << self
-
       ##
       # Here we store our generators paths
       #
@@ -58,6 +57,7 @@ module Padrino
       def load_components!
         require 'padrino-gen/generators/actions'
         require 'padrino-gen/generators/components/actions'
+        require 'padrino-gen/generators/runner'
         load_paths.flatten.each { |file| require file  }
       end
     end
@@ -67,7 +67,7 @@ end # Padrino
 ##
 # We add our generators to Padrino::Genererator
 #
-Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{project,app,mailer,controller,model,migration}.rb']
+Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{project,app,mailer,controller,model,migration,plugin}.rb']
 
 ##
 # We add our tasks to padrino-core

@@ -34,7 +34,7 @@ Reloading::	Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user’s locale.
 
 Keep in mind, the user will be able to pull in these components
-{seperately into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
+{separately into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
 or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
 
 == Installation

@@ -4,17 +4,10 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 require File.expand_path('../../../load_paths', __FILE__)
 require 'test/unit'
 require 'rack/test'
+require 'uuid'
 require 'rack'
 require 'shoulda'
 require 'thor/group'
-
-# We try to load the vendored padrino-core if exist
-%w(core gen helpers).each do |lib|
-  if File.exist?(File.dirname(__FILE__) + "/../../padrino-#{lib}/lib")
-    $:.unshift File.dirname(__FILE__) + "/../../padrino-#{lib}/lib"
-  end
-end
-
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
 
@@ -61,7 +54,7 @@ class Test::Unit::TestCase
     Rack::Lint.new(@app)
   end
 
-  # generate(:admin_app, '-r=/tmp/sample_project')
+  # generate(:admin_app, "-r=#{@apptmp}/sample_project")
   def generate(name, *params)
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
   end
