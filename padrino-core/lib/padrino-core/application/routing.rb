@@ -246,7 +246,9 @@ module Padrino
         #   get :index, :parent => :user                  # => "/user/:user_id/index"
         #   get :show, :with => :id, :parent => :user     # => "/user/:user_id/show/:id"
         #   get :show, :with => :id                       # => "/show/:id"
+        #   get [:show, :id]                              # => "/show/:id"
         #   get :show, :with => [:id, :name]              # => "/show/:id/:name"
+        #   get [:show, :id, :name]                       # => "/show/:id/:name"
         #   get :list, :provides => :js                   # => "/list.{:format,js)"
         #   get :list, :provides => :any                  # => "/list(.:format)"
         #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
@@ -266,6 +268,7 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
+          path, *options[:with] = path if path.is_a?(Array)
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults

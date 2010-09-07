@@ -102,10 +102,15 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get(:foo){ "/foo" }
       get(:foo, :with => :id){ |id| "/foo/#{id}" }
+      get([:foo, :id]){ |id| "/foo/#{id}" }
       get(:hash, :with => :id){ url(:hash, :id => 1) }
+      get([:hash, :id]){ url(:hash, :id => 1) }
       get(:array, :with => :id){ url(:array, 23) }
+      get([:array, :id]){ url(:array, 23) }
       get(:hash_with_extra, :with => :id){ url(:hash_with_extra, :id => 1, :query => 'string') }
+      get([:hash_with_extra, :id]){ url(:hash_with_extra, :id => 1, :query => 'string') }
       get(:array_with_extra, :with => :id){ url(:array_with_extra, 23, :query => 'string') }
+      get([:array_with_extra, :id]){ url(:array_with_extra, 23, :query => 'string') }
       get("/old-bar/:id"){ params[:id] }
       post(:mix, :map => "/mix-bar/:id"){ params[:id] }
       get(:mix, :map => "/mix-bar/:id"){ params[:id] }
