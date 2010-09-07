@@ -13,7 +13,6 @@ PATH
   specs:
     padrino-admin (0.9.15)
       padrino-core (= 0.9.15)
-      padrino-gen (= 0.9.15)
       padrino-helpers (= 0.9.15)
 
 PATH
@@ -27,7 +26,7 @@ PATH
   specs:
     padrino-core (0.9.15)
       activesupport (>= 2.3.8)
-      http_router (>= 0.3.14)
+      http_router (>= 0.3.15)
       sinatra (>= 1.0.0)
       thor (>= 0.13.0)
 
@@ -88,7 +87,7 @@ GEM
     fakeweb (1.2.8)
     git (1.2.5)
     haml (3.0.15)
-    http_router (0.3.14)
+    http_router (0.3.15)
       rack (>= 1.0)
       url_mount (>= 0.2.1)
     i18n (0.4.1)

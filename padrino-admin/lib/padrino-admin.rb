@@ -1,5 +1,4 @@
 require 'padrino-core'
-require 'padrino-gen'
 require 'padrino-helpers'
 
 FileSet.glob_require('padrino-admin/*.rb', __FILE__)
@@ -30,4 +29,9 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
 ##
 # Now we need to add admin generators to padrino-gen
 #
-Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb']
+begin
+  require 'padrino-gen'
+  Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb']
+rescue LoadError
+
+end
