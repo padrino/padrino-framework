@@ -253,6 +253,12 @@ module Padrino
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
+          options.delete_if do |option, args| 
+            if route.send(:significant_variable_names).include?(option)
+              route.matching(option => Array(args).first)
+              true
+            end
+          end
 
           # Add Sinatra conditions
           options.each { |option, args| send(option, *args) }

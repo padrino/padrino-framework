@@ -77,6 +77,16 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hello IE", body
   end
 
+  should "use regex for parts of a route" do
+    app = mock_app do
+      get("/main/:id", :id => /\d+/){ "hello #{params[:id]}" }
+    end
+    get "/main/123"
+    assert_equal "hello 123", body
+    get "/main/asd"
+    assert_equal 404, status
+  end
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
