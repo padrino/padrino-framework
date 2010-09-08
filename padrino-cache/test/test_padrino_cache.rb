@@ -66,6 +66,23 @@ class TestPadrinoCache < Test::Unit::TestCase
     assert_equal 'test', body
   end
 
+  should 'delete based on urls' do
+    called = false
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get(:foo, :with => :id, :cache => true) { called ? 'test page again' : (called = 'test page') }
+      get(:delete_foo, :with => :id) { expire(:foo, params[:id]) }
+    end
+    get "/foo/12"
+    assert_equal 200, status
+    assert_equal 'test page', body
+    get "/delete_foo/12"
+    get "/foo/12"
+    assert_equal 200, status
+    assert_equal 'test page again', body
+  end
+
   should 'accept allow controller-wide caching' do
     called = false
     mock_app do
