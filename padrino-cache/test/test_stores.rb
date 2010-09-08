@@ -54,11 +54,18 @@ end
 
 class TestInMemoryStore < Test::Unit::TestCase
   def setup
-    @cache = Padrino::Cache::Store::Memory.new
+    @cache = Padrino::Cache::Store::Memory.new(50)
   end
 
   def teardown
   end
   
   eval COMMON_TESTS
+  
+  should "only store 50 entries" do
+    51.times { |i| @cache.set(i.to_s, i.to_s) }
+    assert_equal nil, @cache.get('0')
+    assert_equal '1', @cache.get('1')
+  end
+  
 end
