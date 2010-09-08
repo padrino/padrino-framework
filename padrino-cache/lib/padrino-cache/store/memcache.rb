@@ -18,8 +18,14 @@ module Padrino
           nil
         end
 
-        def set(key, value)
-          @backend.set(key, value)
+        def set(key, value, opts = nil)
+          if opts && opts[:expires_in]
+            expires_in = opts[:expires_in].to_i
+            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
+            @backend.set(key, value, expires_in)
+          else
+            @backend.set(key, value)
+          end
         end
 
         def delete(key)

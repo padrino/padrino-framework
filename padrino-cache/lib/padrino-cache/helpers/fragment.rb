@@ -6,7 +6,7 @@ module Padrino
 
         def cache(key, opts = nil, &block)
           if self.class.caching?
-            if value = self.class.cache_store.get(key, opts)
+            if value = self.class.cache_store.get(key)
               concat_content(value)
             else
               value = capture_html(&block)

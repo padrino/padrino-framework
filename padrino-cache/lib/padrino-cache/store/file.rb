@@ -6,7 +6,7 @@ module Padrino
           @root = root
         end
 
-        def get(key, opts = nil)
+        def get(key)
           init
           if ::File.exist?(path_for_key(key))
             contents = ::File.read(path_for_key(key))
@@ -27,7 +27,7 @@ module Padrino
           init
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
-            expires_in = Time.new.to_i + expires_in if expires_in < 84600
+            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
           else
             expires_in = -1
           end
