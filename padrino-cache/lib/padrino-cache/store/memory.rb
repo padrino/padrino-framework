@@ -8,7 +8,7 @@ module Padrino
 
         def get(key)
           if @index.key?(key) and value = @index[key]
-            expires_in, body, stored_key = value
+            expires_in, body = value
             if expires_in == -1 or Time.new.to_i < expires_in
               set(key, body, :expires_in => expires_in)
               body
@@ -30,7 +30,7 @@ module Padrino
             expires_in = -1
           end
           @entries.push(key)
-          @index[key] = [expires_in, value, key]
+          @index[key] = [expires_in, value]
           
           while @entries.size > @size
             delete(@entries.shift)
