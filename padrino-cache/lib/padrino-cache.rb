@@ -22,6 +22,7 @@ module Padrino
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page
         app.set :cache_store, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
+        app.disable :caching
       end
       alias :included :registered
 

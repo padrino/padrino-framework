@@ -5,6 +5,7 @@ class TestPadrinoCache < Test::Unit::TestCase
     called = false
     mock_app do
       register Padrino::Cache
+      enable :caching
       get("/foo"){ cache(:test) { called ? halt(500) : (called = 'test fragment') } }
     end
     get "/foo"
@@ -20,6 +21,7 @@ class TestPadrinoCache < Test::Unit::TestCase
     called = false
     mock_app do
       register Padrino::Cache
+      enable :caching
       get('/foo', :cache => true){ called ? halt(500) : (called = 'test page') }
     end
     get "/foo"
@@ -35,6 +37,7 @@ class TestPadrinoCache < Test::Unit::TestCase
     called = false
     mock_app do
       register Padrino::Cache
+      enable :caching
       get('/foo', :cache => true){ called ? 'test page again' : (called = 'test page') }
       get('/delete_foo'){ expire('/foo') }
     end
@@ -51,6 +54,7 @@ class TestPadrinoCache < Test::Unit::TestCase
   should 'accept custom cache keys' do
     mock_app do
       register Padrino::Cache
+      enable :caching
       get('/foo', :cache => proc{|env| "cached"}){ 'test' }
       get('/bar', :cache => proc{|env| "cached"}){ halt 500 }
     end
@@ -67,6 +71,7 @@ class TestPadrinoCache < Test::Unit::TestCase
     mock_app do
       controller :cache => true do
         register Padrino::Cache
+        enable :caching
         get("/foo"){ called ? halt(500) : (called = 'test') }
       end
     end
@@ -81,8 +86,9 @@ class TestPadrinoCache < Test::Unit::TestCase
   should 'allow cache disabling on a per route basis' do
     called = false
     mock_app do
+      register Padrino::Cache
+      enable :caching
       controller :cache => true do
-        register Padrino::Cache
         get("/foo", :cache => false){ called ? 'test again' : (called = 'test') }
       end
     end
@@ -97,8 +103,9 @@ class TestPadrinoCache < Test::Unit::TestCase
   should 'allow expiring for pages' do
     called = false
     mock_app do
+      register Padrino::Cache
+      enable :caching
       controller :cache => true do
-        register Padrino::Cache
         get("/foo") {
           expires_in 1
           called ? 'test again' : (called = 'test')
@@ -120,8 +127,9 @@ class TestPadrinoCache < Test::Unit::TestCase
   should 'allow expiring for fragments' do
     called = false
     mock_app do
+      register Padrino::Cache
+      enable :caching
       controller do
-        register Padrino::Cache
         get("/foo") {
           expires_in 1
           cache(:test, :expires_in => 2) do
@@ -141,4 +149,21 @@ class TestPadrinoCache < Test::Unit::TestCase
     assert_equal 200, status
     assert_equal 'test again', body
   end
+
+  should 'allow disabling of the cache' do
+    called = false
+    mock_app do
+      register Padrino::Cache
+      disable :caching
+      controller :cache => true do
+        get("/foo"){ called ? halt(500) : (called = 'test') }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 500, status
+  end
+
 end
