@@ -5,6 +5,7 @@ module Padrino
 
       autoload :File,     'padrino-cache/store/file'
       autoload :Memcache, 'padrino-cache/store/memcache'
+      autoload :Memory,   'padrino-cache/store/memory'
     end
   end
 end

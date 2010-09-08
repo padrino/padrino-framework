@@ -7,7 +7,7 @@ end
 module Padrino
   module Cache
     module Store
-      class File
+      class Memcache
         def initialize(*args)
           @backend = Memcached.new(*args)
         end
