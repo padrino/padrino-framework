@@ -4,12 +4,12 @@ module Padrino
       module Fragment
         include Padrino::Helpers::OutputHelpers
 
-        def cache(key, &block)
-          if value = self.class.cache_store.get(key)
+        def cache(key, opts = nil, &block)
+          if value = self.class.cache_store.get(key, opts)
             concat_content(value)
           else
             value = capture_html(&block)
-            self.class.cache_store.set(key, value)
+            self.class.cache_store.set(key, value, opts)
             concat_content(value)
           end
         end

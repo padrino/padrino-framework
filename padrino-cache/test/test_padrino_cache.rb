@@ -94,7 +94,7 @@ class TestPadrinoCache < Test::Unit::TestCase
     assert_equal 'test again', body
   end
 
-  should 'allow expiring' do
+  should 'allow expiring for pages' do
     called = false
     mock_app do
       controller :cache => true do
@@ -102,6 +102,31 @@ class TestPadrinoCache < Test::Unit::TestCase
         get("/foo") {
           expires_in 1
           called ? 'test again' : (called = 'test')
+        }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    sleep 2
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test again', body
+  end
+
+  should 'allow expiring for fragments' do
+    called = false
+    mock_app do
+      controller do
+        register Padrino::Cache
+        get("/foo") {
+          expires_in 1
+          cache(:test, :expires_in => 2) do
+            called ? 'test again' : (called = 'test')
+          end
         }
       end
     end
