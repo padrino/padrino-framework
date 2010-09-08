@@ -3,21 +3,3 @@ RAKE_ROOT = __FILE__
 
 require 'rubygems'
 require File.expand_path(File.dirname(__FILE__) + '/../gem_rake_helper')
-
-# rake test
-require 'rake/testtask'
-Rake::TestTask.new(:test_helpers) do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_padrino_cache.rb'
-  test.verbose = true
-end
-
-# rake test
-require 'rake/testtask'
-Rake::TestTask.new(:test_stores) do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_stores.rb'
-  test.verbose = true
-end
-
-task :test => [:test_stores, :test_helpers]

@@ -55,8 +55,8 @@ class TestPadrinoCache < Test::Unit::TestCase
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => proc{|env| "cached"}){ 'test' }
-      get('/bar', :cache => proc{|env| "cached"}){ halt 500 }
+      get('/foo', :cache => proc{|req| "cached"}){ 'test' }
+      get('/bar', :cache => proc{|req| "cached"}){ halt 500 }
     end
     get "/foo"
     assert_equal 200, status
