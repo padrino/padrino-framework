@@ -45,7 +45,17 @@ module Padrino
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
-
+    
+    class Parent < String
+      attr_accessor :optional
+      alias_method :optional?, :optional
+      
+      def initialize(value, optional=false) 
+        super(value.to_s)
+        self.optional = optional
+      end
+    end
+    
     ##
     # Main class that register this extension
     #
@@ -150,6 +160,32 @@ module Padrino
         end
       end
       alias :controllers :controller
+
+      ##
+      # Provides many parents with shallowing.  
+      #
+      # ==== Examples
+      # 
+      #   controllers :product do
+      #     parent :shop, :optional => true
+      #     parent :category, :optional => true
+      #     get :show, :with => :id do
+      #       # generated urls:
+      #       #   "/product/show/#{params[:id]}"
+      #       #   "/shop/#{params[:shop_id]}/product/show/#{params[:id]}"
+      #       #   "/shop/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}"
+      #       # url_for(:product, :show, :id => 10) => "/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/shop/5/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/shop/5/category/1/product/show/10"
+      #     end
+      #   end   
+      #
+      def parent(name, options={})
+        defaults = { :optional => false }
+        options = defaults.merge(options)
+        @_parents = Array(@_parents) unless @_parents.is_a?(Array)
+        @_parents << Parent.new(name, options[:optional])
+      end
 
       ##
       # Using HTTPRouter, for features and configurations see: http://github.com/joshbuddy/http_router
@@ -370,7 +406,11 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.flatten.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
+          parent_prefix = parent_params.flatten.compact.uniq.collect do |param| 
+            part = "/#{param}/:#{param}_id"
+            part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+            part
+          end.join("")
           File.join(parent_prefix, path)
         end
 
