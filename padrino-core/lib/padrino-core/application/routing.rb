@@ -266,7 +266,6 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
-          route_options[:cache] = @_cache if @_cache
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
@@ -289,7 +288,7 @@ module Padrino
           end
 
           route.name(name) if name
-          route.cache = options.delete(:cache)
+          route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)

@@ -20,7 +20,6 @@ module Padrino
       def registered(app)
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
-        app.helpers 
         app.set :cache_store, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
       end
       alias :included :registered

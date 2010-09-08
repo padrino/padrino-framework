@@ -20,14 +20,14 @@ class TestPadrinoCache < Test::Unit::TestCase
     called = false
     mock_app do
       register Padrino::Cache
-      get('/foo', :cache => true){ called ? halt(500) : (called = 'test fragment') }
+      get('/foo', :cache => true){ called ? halt(500) : (called = 'test page') }
     end
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test fragment', body
+    assert_equal 'test page', body
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test fragment', body
+    assert_equal 'test page', body
     assert_not_equal false, called
   end
 
@@ -35,16 +35,63 @@ class TestPadrinoCache < Test::Unit::TestCase
     called = false
     mock_app do
       register Padrino::Cache
-      get('/foo', :cache => true){ called ? 'test fragment again' : (called = 'test fragment') }
+      get('/foo', :cache => true){ called ? 'test page again' : (called = 'test page') }
       get('/delete_foo'){ expire('/foo') }
     end
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test fragment', body
+    assert_equal 'test page', body
     get "/delete_foo"
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test fragment again', body
+    assert_equal 'test page again', body
     assert_not_equal false, called
   end
+
+  should 'accept custom cache keys' do
+    mock_app do
+      register Padrino::Cache
+      get('/foo', :cache => proc{|env| "cached"}){ 'test' }
+      get('/bar', :cache => proc{|env| "cached"}){ halt 500 }
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/bar"
+    assert_equal 200, status
+    assert_equal 'test', body
+  end
+
+  should 'accept allow controller-wide caching' do
+    called = false
+    mock_app do
+      controller :cache => true do
+        register Padrino::Cache
+        get("/foo"){ called ? halt(500) : (called = 'test') }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+  end
+
+  should 'allow cache disabling on a per route basis' do
+    called = false
+    mock_app do
+      controller :cache => true do
+        register Padrino::Cache
+        get("/foo", :cache => false){ called ? 'test again' : (called = 'test') }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test again', body
+  end
+
 end
