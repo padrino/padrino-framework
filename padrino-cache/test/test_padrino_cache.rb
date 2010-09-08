@@ -94,4 +94,26 @@ class TestPadrinoCache < Test::Unit::TestCase
     assert_equal 'test again', body
   end
 
+  should 'allow expiring' do
+    called = false
+    mock_app do
+      controller :cache => true do
+        register Padrino::Cache
+        get("/foo") {
+          expires_in 1
+          called ? 'test again' : (called = 'test')
+        }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    sleep 2
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test again', body
+  end
 end

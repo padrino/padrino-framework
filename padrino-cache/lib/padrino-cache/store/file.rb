@@ -6,14 +6,32 @@ module Padrino
           @root = root
         end
 
-        def get(key)
+        def get(key, opts = nil)
           init
-          ::File.exist?(path_for_key(key)) ? ::File.read(path_for_key(key)) : nil
+          if ::File.exist?(path_for_key(key))
+            contents = ::File.read(path_for_key(key))
+            expires_in, body = contents.split("\n", 2)
+            expires_in = expires_in.to_i
+            if expires_in == -1 or Time.new.to_i < expires_in
+              body
+            else
+              delete(key)
+              nil
+            end
+          else
+            nil
+          end
         end
 
-        def set(key, value)
+        def set(key, value, opts = nil)
           init
-          ::File.open(path_for_key(key), 'w') { |f| f << value.to_s } if value
+          if opts && opts[:expires_in]
+            expires_in = opts[:expires_in].to_i
+            expires_in = Time.new.to_i + expires_in if expires_in < 84600
+          else
+            expires_in = -1
+          end
+          ::File.open(path_for_key(key), 'w') { |f| f << expires_in.to_s << "\n" << value.to_s } if value
         end
 
         def delete(key)
