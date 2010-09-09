@@ -15,11 +15,26 @@ module Padrino
     class ::HttpRouter #:nodoc:
       attr_accessor :runner
       class Route #:nodoc:
-        attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+        attr_reader :before_filters, :after_filters
+        attr_accessor :custom_conditions, :use_layout, :controller, :cache
 
-        def before_filters=(before_filters)
-          before_filters.each { |blk| arbitrary { |env| catch(:pass) { router.runner.instance_eval(&blk); true } == true } } if before_filters
-          @before_filters = before_filters
+        def add_before_filter(filter)
+          @before_filters ||= []
+          @before_filters << filter
+          arbitrary { |env| catch(:pass) { router.runner.instance_eval(&filter); true } == true }
+        end
+
+        def add_after_filter(filter)
+          @after_filters ||= []
+          @after_filters << filter
+        end
+
+        def before_filters=(filters)
+          filters.each { |filter| add_before_filter(filter) } if filters
+        end
+
+        def after_filters=(filters)
+          filters.each { |filter| add_after_filter(filter) } if filters
         end
 
         def custom_conditions=(custom_conditions)
@@ -127,6 +142,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_cache,      original_cache      = options.delete(:cache), @_cache
           @_map,        original_map        = options.delete(:map), @_map
           @_defaults,   original_defaults   = options, @_defaults
 
@@ -143,7 +159,7 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults
-          @_controller, @_parents = original_controller, original_parent
+          @_controller, @_parents, @_cache = original_controller, original_parent, original_cache
           @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
         else
           include(*args) if extensions.any?
@@ -272,6 +288,7 @@ module Padrino
           end
 
           route.name(name) if name
+          route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
@@ -287,6 +304,8 @@ module Padrino
           options.each { |option, args| send(option, *args) }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
+
+          invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
           # Add Application defaults
           if @_controller
@@ -514,10 +533,11 @@ module Padrino
                 # Now we can eval route, but because we have "throw halt" we need to be
                 # (en)sure to reset old layout and run controller after filters.
                 begin
-                  route_eval(&match.destination)
+                  @_response_buffer = catch(:halt) { route_eval(&match.destination) }
+                  throw :halt, @_response_buffer
                 ensure
                   base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if match.path.route.after_filters
                 end
               end
             end
