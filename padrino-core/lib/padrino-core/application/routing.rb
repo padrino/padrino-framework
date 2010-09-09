@@ -320,12 +320,10 @@ module Padrino
 
           # HTTPRouter route construction
           route = case path
-            when Regexp
-              router.add('/?*').match_path(path)
-            else
-              router.add(path)
+            when Regexp then router.add('/?*').match_path(path)
+            else             router.add(path)
           end
-          
+
           route.name(name) if name
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
@@ -427,6 +425,7 @@ module Padrino
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
             path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
             path.sub!(%r{/(\))?$}, '\\1') if path != "/"   # Remove latest trailing delimiter
+            path.gsub!(/\/(\(\.|$)/, '\\1')                # Remove trailing slashes
           end
 
           # Merge in option defaults

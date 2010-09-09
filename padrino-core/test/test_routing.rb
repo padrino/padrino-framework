@@ -1003,6 +1003,18 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/foo/5/10", body
   end
 
+  should "index routes should be optional when nested" do
+    mock_app do
+      controller '/users', :provides => [:json] do
+        get '/' do
+          "foo"
+        end
+      end
+    end
+    get "/users.json"
+    assert_equal "foo", body
+  end
+
   should "parse params with class level provides" do
     mock_app do
       controllers :posts, :provides => [:html, :js] do
