@@ -1,7 +1,6 @@
 require File.expand_path('../../../load_paths', __FILE__)
 require 'test/unit'
 require 'shoulda'
-require 'mocha'
 require 'rack/test'
 require 'webrat'
 require 'padrino-cache'
@@ -64,3 +63,5 @@ module Webrat
     end
   end
 end
+
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'helper')

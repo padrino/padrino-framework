@@ -763,6 +763,24 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hey", body
   end
 
+  should "allow concise routing" do
+    mock_app do
+      get :index, ":id" do
+        params[:id]
+      end
+
+      get :map, "route/:id" do
+        params[:id]
+      end
+    end
+
+    get "/123"
+    assert_equal "123", body
+
+    get "/route/123"
+    assert_equal "123", body
+  end
+
   should "allow passing & halting in before filters" do
     mock_app do
       controller do
