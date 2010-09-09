@@ -38,6 +38,20 @@ class TestMemcacheStore < Test::Unit::TestCase
   eval COMMON_TESTS
 end
 
+class TestMemcacheStore < Test::Unit::TestCase
+  def setup
+    @redis = Thread.new { `redis-server` }
+    @cache = Padrino::Cache::Store::Redis.new('redis://127.0.0.1:6379/0')
+  end
+
+  def teardown
+    @redis.exit!
+  end
+  
+  eval COMMON_TESTS
+end
+
+
 class TestFileStore < Test::Unit::TestCase
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"

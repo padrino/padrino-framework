@@ -22,6 +22,7 @@ group :development do
   gem "haml", ">= 2.2.22"
   gem "shoulda", ">= 2.10.3"
   gem "memcached", ">= 0.20.1"
+  gem "redis", ">= 2.0.0"
   gem "uuid", ">= 2.3.1"
   platforms :mri_18 do
 	gem "rcov", "0.9.8"
