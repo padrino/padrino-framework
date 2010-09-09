@@ -40,12 +40,13 @@ end
 
 class TestRedisStore < Test::Unit::TestCase
   def setup
-    #`echo "daemonize yes" | redis-server -`
+    # We're going to assume redis is running for now until I can clean this whole thread thing up
+    #`echo 'daemonize yes' | redis-server -` 
     @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
   end
 
   def teardown
-    #`killall -TERM redis-server`
+    @cache.flushdb
   end
   
   eval COMMON_TESTS

@@ -28,6 +28,19 @@ module Padrino
         def delete(key)
           @backend.del(key)
         end
+
+        def flushdb
+          @backend.flushdb
+        end
+
+        def flushall
+          @backend.flushall
+        end
+
+        def shutdown
+          @backend.shutdown
+        end
+
       end
     end
   end
