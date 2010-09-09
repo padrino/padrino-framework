@@ -23,6 +23,7 @@ padrino_gems = [
   "padrino-helpers",
   "padrino-mailer",
   "padrino-admin",
+  "padrino-cache",
   "padrino"
 ]
 
