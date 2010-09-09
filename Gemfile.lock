@@ -90,6 +90,7 @@ GEM
       activesupport (>= 2.3.6)
       mime-types
       treetop (>= 1.4.5)
+    memcached (1)
     mime-types (1.16)
     mocha (0.9.8)
       rake
@@ -129,6 +130,7 @@ DEPENDENCIES
   dm-validations (>= 1.0)
   fakeweb (>= 1.2.8)
   haml (>= 2.2.22)
+  memcached (>= 0.20.1)
   mocha (>= 0.9.8)
   padrino!
   padrino-admin!

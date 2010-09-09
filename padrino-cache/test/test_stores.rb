@@ -27,25 +27,25 @@ HERE_DOC
 
 class TestMemcacheStore < Test::Unit::TestCase
   def setup
-    `memcached -p60123 -U60123 -d`
+    `memcached -p60123 -U60123 -d` 
     @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:60123')
   end
 
   def teardown
-    `killall memcached`
+    `killall -TERM memcached`
   end
   
   eval COMMON_TESTS
 end
 
-class TestMemcacheStore < Test::Unit::TestCase
+class TestRedisStore < Test::Unit::TestCase
   def setup
-    @redis = Thread.new { `redis-server` }
-    @cache = Padrino::Cache::Store::Redis.new('redis://127.0.0.1:6379/0')
+    #`echo "daemonize yes" | redis-server -`
+    @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
   end
 
   def teardown
-    @redis.exit!
+    #`killall -TERM redis-server`
   end
   
   eval COMMON_TESTS
