@@ -325,7 +325,7 @@ module Padrino
             else
               router.add(path)
           end
-
+          
           route.name(name) if name
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
@@ -425,8 +425,8 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            path[0,0] = "/" if path !~ %r{^\(?/} && path   # Paths must start with a /
-            path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
+            path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
+            path.sub!(%r{/(\))?$}, '\\1') if path != "/"   # Remove latest trailing delimiter
           end
 
           # Merge in option defaults
@@ -449,11 +449,11 @@ module Padrino
         #
         def process_path_for_parent_params(path, parent_params)
           parent_prefix = parent_params.flatten.compact.uniq.collect do |param| 
-            part = "/#{param}/:#{param}_id"
+            part = "#{param}/:#{param}_id/"
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?
             part
-          end.join("")
-          File.join(parent_prefix, path)
+          end
+          [parent_prefix, path].flatten.join("")
         end
 
         ##
