@@ -90,7 +90,6 @@ GEM
       activesupport (>= 2.3.6)
       mime-types
       treetop (>= 1.4.5)
-    memcached (0.20.1)
     mime-types (1.16)
     mocha (0.9.8)
       rake
@@ -101,6 +100,7 @@ GEM
       rack (>= 1.0)
     rake (0.8.7)
     rcov (0.9.8)
+    redis (2.0.6)
     ruby-prof (0.9.2)
     shoulda (2.11.3)
     sinatra (1.0)
@@ -129,7 +129,6 @@ DEPENDENCIES
   dm-validations (>= 1.0)
   fakeweb (>= 1.2.8)
   haml (>= 2.2.22)
-  memcached (>= 0.20.1)
   mocha (>= 0.9.8)
   padrino!
   padrino-admin!
@@ -141,6 +140,7 @@ DEPENDENCIES
   rack-test (>= 0.5.0)
   rake (>= 0.8.7)
   rcov (= 0.9.8)
+  redis (>= 2.0.0)
   ruby-prof (>= 0.9.1)
   shoulda (>= 2.10.3)
   uuid (>= 2.3.1)
