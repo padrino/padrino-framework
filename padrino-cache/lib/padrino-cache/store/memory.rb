@@ -31,7 +31,7 @@ module Padrino
           end
           @entries.push(key)
           @index[key] = [expires_in, value]
-          
+
           while @entries.size > @size
             delete(@entries.shift)
           end
@@ -40,7 +40,7 @@ module Padrino
         def delete(key)
           @index.delete(key)
         end
-      end
-    end
-  end
-end
+      end # Memory
+    end # Store
+  end # Cache
+end # Padrino

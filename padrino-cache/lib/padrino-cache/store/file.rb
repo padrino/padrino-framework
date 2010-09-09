@@ -43,7 +43,7 @@ module Padrino
         def path_for_key(key)
           ::File.join(@root, Rack::Utils.escape(key.to_s))
         end
-        
+
         def init
           unless @init
             FileUtils.rm_rf(@root)
@@ -51,7 +51,7 @@ module Padrino
             @init = true
           end
         end
-      end
-    end
-  end
-end
+      end # File
+    end # Store
+  end # Cache
+end # Padrino

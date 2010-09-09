@@ -40,8 +40,7 @@ module Padrino
         def shutdown
           @backend.shutdown
         end
-
-      end
-    end
-  end
-end
+      end # Redis
+    end # Store
+  end # Cache
+end # Padrino

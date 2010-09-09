@@ -20,12 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency("sinatra", ">= 1.0.0")
   s.add_dependency("http_router", ">= 0.3.16")
   s.add_dependency("thor", ">= 0.13.0")
-  # If you want try our test on AS edge.
-  # $ AS=edge rake test
-  if ENV['AS'] == "edge"
-    s.add_dependency("activesupport", ">= 3.0.0.beta4")
-    s.add_dependency("tzinfo")
-  else
-    s.add_dependency("activesupport", ">= 2.3.8")
-  end
+  s.add_dependency("activesupport", ">= 3.0.0")
+  s.add_dependency("tzinfo")
 end

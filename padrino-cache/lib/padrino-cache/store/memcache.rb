@@ -31,7 +31,7 @@ module Padrino
         def delete(key)
           @backend.delete(key)
         end
-      end
-    end
-  end
-end
+      end # Memcached
+    end # Store
+  end # Cache
+end # Padrino

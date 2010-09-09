@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/store_helper')
+require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 COMMON_TESTS = <<-HERE_DOC
 should 'set and get a value' do
@@ -27,28 +27,28 @@ HERE_DOC
 
 class TestMemcacheStore < Test::Unit::TestCase
   def setup
-    `memcached -p60123 -U60123 -d` 
+    `memcached -p60123 -U60123 -d`
     @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:60123')
   end
 
   def teardown
     `killall -TERM memcached`
   end
-  
+
   eval COMMON_TESTS
 end
 
 class TestRedisStore < Test::Unit::TestCase
   def setup
     # We're going to assume redis is running for now until I can clean this whole thread thing up
-    #`echo 'daemonize yes' | redis-server -` 
+    #`echo 'daemonize yes' | redis-server -`
     @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
   end
 
   def teardown
     @cache.flushdb
   end
-  
+
   eval COMMON_TESTS
 end
 
@@ -63,7 +63,7 @@ class TestFileStore < Test::Unit::TestCase
   def teardown
     FileUtils.rm_rf(@apptmp)
   end
-  
+
   eval COMMON_TESTS
 end
 
@@ -74,13 +74,13 @@ class TestInMemoryStore < Test::Unit::TestCase
 
   def teardown
   end
-  
+
   eval COMMON_TESTS
-  
+
   should "only store 50 entries" do
     51.times { |i| @cache.set(i.to_s, i.to_s) }
     assert_equal nil, @cache.get('0')
     assert_equal '1', @cache.get('1')
   end
-  
+
 end

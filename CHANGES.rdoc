@@ -2,6 +2,7 @@
 
 == 0.9.16 (Unreleased)
 
+* Now only AS > 3.0
 * Added padrino-cache
 * Added redis backend for padrino-cache
 * Added dom helpers [Thanks to nu7hatch]
