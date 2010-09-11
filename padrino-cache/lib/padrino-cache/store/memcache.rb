@@ -10,6 +10,8 @@ module Padrino
       class Memcache
         def initialize(*args)
           @backend = Memcached.new(*args)
+        rescue
+          raise
         end
 
         def get(key)
@@ -30,6 +32,10 @@ module Padrino
 
         def delete(key)
           @backend.delete(key)
+        end
+        
+        def flush
+          @backend.flush
         end
       end # Memcached
     end # Store

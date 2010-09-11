@@ -39,6 +39,10 @@ module Padrino
           FileUtils.rm_rf(path_for_key(key))
         end
 
+        def flush
+          FileUtils.rm_rf(@root)
+        end
+
         private
         def path_for_key(key)
           ::File.join(@root, Rack::Utils.escape(key.to_s))

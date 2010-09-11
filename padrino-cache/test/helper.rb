@@ -6,3 +6,20 @@ require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'h
 require 'padrino-cache'
 require 'fileutils'
 require 'uuid'
+
+class Test::Unit::TestCase
+
+  def executable_on_path(binary)
+    @matches = []
+
+    ENV['PATH'].split(":").each do |path|
+      bintest = File.executable?("#{path}/#{binary}")
+      pathmatch = "#{path}/#{binary}"
+      @matches << pathmatch if bintest == true
+    end
+
+    @matches.length == 1 ? @matches.first : false
+
+  end
+
+end

@@ -40,6 +40,10 @@ module Padrino
         def delete(key)
           @index.delete(key)
         end
+
+        def flush
+          @index = Hash.new
+        end
       end # Memory
     end # Store
   end # Cache

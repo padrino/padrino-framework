@@ -26,32 +26,43 @@ end
 HERE_DOC
 
 class TestMemcacheStore < Test::Unit::TestCase
+
   def setup
-    `memcached -p60123 -U60123 -d`
-    @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:60123')
+    begin
+      # we're just going to assume memcached is running on the default port
+      @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1)
+      # This is because memcached doesn't raise until it actually tries to DO something. LAME!
+      @cache.get('heartbeat')
+    rescue
+      # so that didn't work. Let's just fake it
+      @cache = Padrino::Cache::Store::Memory.new(50)
+    end
   end
 
   def teardown
-    `killall -TERM memcached`
+    @cache.flush
   end
 
   eval COMMON_TESTS
 end
 
 class TestRedisStore < Test::Unit::TestCase
+
   def setup
     # We're going to assume redis is running for now until I can clean this whole thread thing up
-    #`echo 'daemonize yes' | redis-server -`
-    @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+    begin
+      @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+    rescue
+      @cache = Padrino::Cache::Store::Memory.new(50)
+    end
   end
 
   def teardown
-    @cache.flushdb
+    @cache.flush
   end
 
   eval COMMON_TESTS
 end
-
 
 class TestFileStore < Test::Unit::TestCase
   def setup
@@ -61,7 +72,7 @@ class TestFileStore < Test::Unit::TestCase
   end
 
   def teardown
-    FileUtils.rm_rf(@apptmp)
+    @cache.flush
   end
 
   eval COMMON_TESTS
@@ -73,6 +84,7 @@ class TestInMemoryStore < Test::Unit::TestCase
   end
 
   def teardown
+    @cache.flush
   end
 
   eval COMMON_TESTS
