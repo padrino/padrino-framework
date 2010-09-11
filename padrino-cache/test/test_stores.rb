@@ -32,7 +32,7 @@ class TestMemcacheStore < Test::Unit::TestCase
       # we're just going to assume memcached is running on the default port
       @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1)
       # This is because memcached doesn't raise until it actually tries to DO something. LAME!
-      @cache.get('heartbeat')
+      @cache.set('ping','alive')
     rescue
       # so that didn't work. Let's just fake it
       @cache = Padrino::Cache::Store::Memory.new(50)
@@ -52,6 +52,8 @@ class TestRedisStore < Test::Unit::TestCase
     # We're going to assume redis is running for now until I can clean this whole thread thing up
     begin
       @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+      # redis client also doesn't raise until it actually attempts an operation
+      @cache.set('ping','alive')
     rescue
       @cache = Padrino::Cache::Store::Memory.new(50)
     end
