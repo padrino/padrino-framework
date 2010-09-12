@@ -25,45 +25,43 @@ should 'delete a value' do
 end
 HERE_DOC
 
-class TestMemcacheStore < Test::Unit::TestCase
+begin
+  # we're just going to assume memcached is running on the default port
+  Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive')
 
-  def setup
-    begin
-      # we're just going to assume memcached is running on the default port
+  class TestMemcacheStore < Test::Unit::TestCase
+    def setup
       @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1)
-      # This is because memcached doesn't raise until it actually tries to DO something. LAME!
-      @cache.set('ping','alive')
-    rescue
-      # so that didn't work. Let's just fake it
-      @cache = Padrino::Cache::Store::Memory.new(50)
+      @cache.flush
     end
-  end
 
-  def teardown
-    @cache.flush
-  end
+    def teardown
+      @cache.flush
+    end
 
-  eval COMMON_TESTS
+    eval COMMON_TESTS
+  end
+rescue
+  warn "Skipping memcached tests"
 end
 
-class TestRedisStore < Test::Unit::TestCase
 
-  def setup
-    # We're going to assume redis is running for now until I can clean this whole thread thing up
-    begin
+begin
+  Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive')
+  class TestRedisStore < Test::Unit::TestCase
+    def setup
       @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
-      # redis client also doesn't raise until it actually attempts an operation
-      @cache.set('ping','alive')
-    rescue
-      @cache = Padrino::Cache::Store::Memory.new(50)
+      @cache.flush
     end
-  end
 
-  def teardown
-    @cache.flush
-  end
+    def teardown
+      @cache.flush
+    end
 
-  eval COMMON_TESTS
+    eval COMMON_TESTS
+  end
+rescue
+  warn "Skipping redis tests"
 end
 
 class TestFileStore < Test::Unit::TestCase
