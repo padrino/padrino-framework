@@ -32,14 +32,6 @@ module Padrino
         def flush
           @backend.flushdb
         end
-
-        def flushall
-          @backend.flushall
-        end
-
-        def shutdown
-          @backend.shutdown
-        end
       end # Redis
     end # Store
   end # Cache
