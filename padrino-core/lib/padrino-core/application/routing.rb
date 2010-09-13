@@ -15,11 +15,26 @@ module Padrino
     class ::HttpRouter #:nodoc:
       attr_accessor :runner
       class Route #:nodoc:
-        attr_accessor :custom_conditions, :before_filters, :after_filters, :use_layout, :controller
+        attr_reader :before_filters, :after_filters
+        attr_accessor :custom_conditions, :use_layout, :controller, :cache
 
-        def before_filters=(before_filters)
-          before_filters.each { |blk| arbitrary { |env| catch(:pass) { router.runner.instance_eval(&blk); true } == true } } if before_filters
-          @before_filters = before_filters
+        def add_before_filter(filter)
+          @before_filters ||= []
+          @before_filters << filter
+          arbitrary { |env| catch(:pass) { router.runner.instance_eval(&filter); true } == true }
+        end
+
+        def add_after_filter(filter)
+          @after_filters ||= []
+          @after_filters << filter
+        end
+
+        def before_filters=(filters)
+          filters.each { |filter| add_before_filter(filter) } if filters
+        end
+
+        def after_filters=(filters)
+          filters.each { |filter| add_after_filter(filter) } if filters
         end
 
         def custom_conditions=(custom_conditions)
@@ -45,7 +60,17 @@ module Padrino
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
-
+    
+    class Parent < String
+      attr_accessor :optional
+      alias_method :optional?, :optional
+      
+      def initialize(value, optional=false) 
+        super(value.to_s)
+        self.optional = optional
+      end
+    end
+    
     ##
     # Main class that register this extension
     #
@@ -127,6 +152,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_cache,      original_cache      = options.delete(:cache), @_cache
           @_map,        original_map        = options.delete(:map), @_map
           @_defaults,   original_defaults   = options, @_defaults
 
@@ -143,13 +169,39 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults
-          @_controller, @_parents = original_controller, original_parent
+          @_controller, @_parents, @_cache = original_controller, original_parent, original_cache
           @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
         else
           include(*args) if extensions.any?
         end
       end
       alias :controllers :controller
+
+      ##
+      # Provides many parents with shallowing.  
+      #
+      # ==== Examples
+      # 
+      #   controllers :product do
+      #     parent :shop, :optional => true
+      #     parent :category, :optional => true
+      #     get :show, :with => :id do
+      #       # generated urls:
+      #       #   "/product/show/#{params[:id]}"
+      #       #   "/shop/#{params[:shop_id]}/product/show/#{params[:id]}"
+      #       #   "/shop/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}"
+      #       # url_for(:product, :show, :id => 10) => "/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/shop/5/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/shop/5/category/1/product/show/10"
+      #     end
+      #   end   
+      #
+      def parent(name, options={})
+        defaults = { :optional => false }
+        options = defaults.merge(options)
+        @_parents = Array(@_parents) unless @_parents.is_a?(Array)
+        @_parents << Parent.new(name, options[:optional])
+      end
 
       ##
       # Using HTTPRouter, for features and configurations see: http://github.com/joshbuddy/http_router
@@ -198,6 +250,19 @@ module Padrino
       end
       alias :url_for :url
 
+      def get(path, *args, &block)
+        conditions = @conditions.dup
+        route('GET', path, *args, &block)
+
+        @conditions = conditions
+        route('HEAD', path, *args, &block)
+      end
+
+      def put(path, *args, &bk);    route 'PUT',    path, *args, &bk end
+      def post(path, *args, &bk);   route 'POST',   path, *args, &bk end
+      def delete(path, *args, &bk); route 'DELETE', path, *args, &bk end
+      def head(path, *args, &bk);   route 'HEAD',   path, *args, &bk end
+
       private
 
         # Add prefix slash if its not present and remove trailing slashes.
@@ -217,16 +282,29 @@ module Padrino
         #   get :index, :parent => :user                  # => "/user/:user_id/index"
         #   get :show, :with => :id, :parent => :user     # => "/user/:user_id/show/:id"
         #   get :show, :with => :id                       # => "/show/:id"
+        #   get [:show, :id]                              # => "/show/:id"
         #   get :show, :with => [:id, :name]              # => "/show/:id/:name"
+        #   get [:show, :id, :name]                       # => "/show/:id/:name"
         #   get :list, :provides => :js                   # => "/list.{:format,js)"
         #   get :list, :provides => :any                  # => "/list(.:format)"
         #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
         #   get :list, :provides => [:html, :js, :json]   # => "/list(.{!format,js|json})"
         #
-        def route(verb, path, options={}, &block)
+        def route(verb, path, *args, &block)
+          options = case args.size
+          when 2
+            args.last.merge(:map => args.first)
+          when 1
+            args.first.is_a?(Hash) ? args.first : {:map => args.first}
+          when 0
+            {}
+          else
+            raise
+          end
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
+          path, *route_options[:with] = path if path.is_a?(Array)
           path, name, options = *parse_route(path, route_options, verb)
 
           # Sinatra defaults
@@ -242,22 +320,29 @@ module Padrino
 
           # HTTPRouter route construction
           route = case path
-            when Regexp
-              router.add('/?*').match_path(path)
-            else
-              router.add(path)
+            when Regexp then router.add('/?*').match_path(path)
+            else             router.add(path)
           end
 
           route.name(name) if name
+          route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
+          options.delete_if do |option, args| 
+            if route.send(:significant_variable_names).include?(option)
+              route.matching(option => Array(args).first)
+              true
+            end
+          end
 
           # Add Sinatra conditions
           options.each { |option, args| send(option, *args) }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
+
+          invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
           # Add Application defaults
           if @_controller
@@ -338,8 +423,9 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
-            path[0,0] = "/" if path !~ %r{^\(?/} && path   # Paths must start with a /
-            path.sub!(%r{/$}, '') if path != "/"           # Remove latest trailing delimiter
+            path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
+            path.sub!(%r{/(\))?$}, '\\1') if path != "/"   # Remove latest trailing delimiter
+            path.gsub!(/\/(\(\.|$)/, '\\1')                # Remove trailing slashes
           end
 
           # Merge in option defaults
@@ -361,8 +447,12 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.flatten.uniq.collect { |param| "#{param}/:#{param}_id" }.join("/")
-          File.join(parent_prefix, path)
+          parent_prefix = parent_params.flatten.compact.uniq.collect do |param| 
+            part = "#{param}/:#{param}_id/"
+            part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+            part
+          end
+          [parent_prefix, path].flatten.join("")
         end
 
         ##
@@ -485,10 +575,11 @@ module Padrino
                 # Now we can eval route, but because we have "throw halt" we need to be
                 # (en)sure to reset old layout and run controller after filters.
                 begin
-                  route_eval(&match.destination)
+                  @_response_buffer = catch(:halt) { route_eval(&match.destination) }
+                  throw :halt, @_response_buffer
                 ensure
                   base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false }
+                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if match.path.route.after_filters
                 end
               end
             end

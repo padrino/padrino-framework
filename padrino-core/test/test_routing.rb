@@ -77,6 +77,16 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hello IE", body
   end
 
+  should "use regex for parts of a route" do
+    app = mock_app do
+      get("/main/:id", :id => /\d+/){ "hello #{params[:id]}" }
+    end
+    get "/main/123"
+    assert_equal "hello 123", body
+    get "/main/asd"
+    assert_equal 404, status
+  end
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
@@ -92,10 +102,15 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get(:foo){ "/foo" }
       get(:foo, :with => :id){ |id| "/foo/#{id}" }
+      get([:foo, :id]){ |id| "/foo/#{id}" }
       get(:hash, :with => :id){ url(:hash, :id => 1) }
+      get([:hash, :id]){ url(:hash, :id => 1) }
       get(:array, :with => :id){ url(:array, 23) }
+      get([:array, :id]){ url(:array, 23) }
       get(:hash_with_extra, :with => :id){ url(:hash_with_extra, :id => 1, :query => 'string') }
+      get([:hash_with_extra, :id]){ url(:hash_with_extra, :id => 1, :query => 'string') }
       get(:array_with_extra, :with => :id){ url(:array_with_extra, 23, :query => 'string') }
+      get([:array_with_extra, :id]){ url(:array_with_extra, 23, :query => 'string') }
       get("/old-bar/:id"){ params[:id] }
       post(:mix, :map => "/mix-bar/:id"){ params[:id] }
       get(:mix, :map => "/mix-bar/:id"){ params[:id] }
@@ -537,6 +552,48 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 3 1 2", body
     assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
   end
+  
+  should "apply parent with shallowing to controller" do 
+    mock_app do 
+      controller :project do
+        parent :user
+        parent :shop, :optional => true
+        get(:index) { "index #{params[:user_id]} #{params[:shop_id]}" }
+        get(:edit, :with => :id) { "edit #{params[:id]} #{params[:user_id]} #{params[:shop_id]}" }
+        get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]} #{params[:shop_id]}" }
+      end
+    end
+    
+    user_project_url = "/user/1/project"
+    get user_project_url
+    assert_equal "index 1 ", body
+    assert_equal user_project_url, @app.url(:project, :index, :user_id => 1)
+
+    user_project_edit_url = "/user/1/project/edit/2"
+    get user_project_edit_url
+    assert_equal "edit 2 1 ", body
+    assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2)
+
+    user_product_project_url = "/user/1/product/2/project/show/3"
+    get user_product_project_url
+    assert_equal "show 3 1 2 ", body
+    assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
+
+    user_project_url = "/user/1/shop/1/project"
+    get user_project_url
+    assert_equal "index 1 1", body
+    assert_equal user_project_url, @app.url(:project, :index, :user_id => 1, :shop_id => 1)
+
+    user_project_edit_url = "/user/1/shop/1/project/edit/2"
+    get user_project_edit_url
+    assert_equal "edit 2 1 1", body
+    assert_equal user_project_edit_url, @app.url(:project, :edit, :user_id => 1, :id => 2, :shop_id => 1)
+
+    user_product_project_url = "/user/1/shop/1/product/2/project/show/3"
+    get user_product_project_url
+    assert_equal "show 3 1 2 1", body
+    assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3, :shop_id => 1)
+  end
 
   should "use default values" do
     mock_app do
@@ -704,6 +761,24 @@ class TestRouting < Test::Unit::TestCase
     get "/", :user => "foo", :password => "bar"
     assert ok?
     assert_equal "hey", body
+  end
+
+  should "allow concise routing" do
+    mock_app do
+      get :index, ":id" do
+        params[:id]
+      end
+
+      get :map, "route/:id" do
+        params[:id]
+      end
+    end
+
+    get "/123"
+    assert_equal "123", body
+
+    get "/route/123"
+    assert_equal "123", body
   end
 
   should "allow passing & halting in before filters" do
@@ -926,6 +1001,18 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "this is foo", body
     get '/foo/5/10'
     assert_equal "/foo/5/10", body
+  end
+
+  should "index routes should be optional when nested" do
+    mock_app do
+      controller '/users', :provides => [:json] do
+        get '/' do
+          "foo"
+        end
+      end
+    end
+    get "/users.json"
+    assert_equal "foo", body
   end
 
   should "parse params with class level provides" do

@@ -306,8 +306,8 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
       silence_logger { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
-      assert_match_in_file(/@some_user\.should_not be_nil/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
+      assert_match_in_file(/let\(:some_user\) \{ SomeUser.new \}/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
+      assert_match_in_file(/some_user\.should_not be_nil/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
     end
 
     # SHOULDA

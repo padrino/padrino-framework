@@ -12,6 +12,12 @@ rescue LoadError
   puts "You need to install sdoc: gem install sdoc to correctly generate our api docs."
 end
 
+begin
+  require 'memcached'
+rescue LoadError
+  puts "The memcached gem only works on certain VM versions. It's safe to ignore this"
+end
+
 include FileUtils
 
 ROOT        = File.expand_path(File.dirname(__FILE__))
@@ -23,6 +29,7 @@ padrino_gems = [
   "padrino-helpers",
   "padrino-mailer",
   "padrino-admin",
+  "padrino-cache",
   "padrino"
 ]
 
