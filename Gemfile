@@ -26,10 +26,10 @@ group :development do
   platforms :mri_18 do
 	gem "rcov", "0.9.8"
 	gem "ruby-prof", ">= 0.9.1"
+	gem "system_timer", ">= 1.0"
   end
   platforms :mri do
 	gem "memcached", ">= 0.20.1"
-        gem "system_timer", ">= 1.0"
   end
 end
 
