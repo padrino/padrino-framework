@@ -321,6 +321,12 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    should "properly generate for mustache" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=mustache','--script=none') }
+      assert_match(/Applying.*?mustache.*?renderer/,buffer)
+      assert_match_in_file(/gem 'mustache'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
   end
 
   context "the generator for script component" do
