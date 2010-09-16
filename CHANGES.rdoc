@@ -17,6 +17,7 @@
 * Support Sinatra before blocks correctly
 * Added support for shallowing in controllers
 * Remove padrino-admin dependency on padrino-gen [Thanks to selman]
+* Added rendering support for mustache templates [Thanks to NivekNodle]
 
 == 0.9.15
 

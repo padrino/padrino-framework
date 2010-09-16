@@ -2,7 +2,7 @@ MUSTACHE_INIT = <<-MUSTACHE
 
     require 'mustache/sinatra'
     app.register Mustache::Sinatra
-    require 'app/views/layout'
+    app.set :layout, 'app/views/layout.rb'
     app.set :mustache, {
       :views => 'app/views/',
       :templates => 'app/templates/'
