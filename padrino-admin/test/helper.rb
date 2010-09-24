@@ -59,12 +59,6 @@ class Test::Unit::TestCase
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
   end
 
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
-    assert_match pattern, File.read(file)
-  end
-
   # Assert_file_exists('/tmp/app')
   def assert_file_exists(file_path)
     assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"

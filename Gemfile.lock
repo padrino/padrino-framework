@@ -57,7 +57,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     activesupport (3.0.0)
-    addressable (2.2.0)
+    addressable (2.2.1)
     builder (2.1.2)
     data_objects (0.10.2)
       addressable (~> 2.1)
@@ -87,7 +87,7 @@ GEM
       url_mount (>= 0.2.1)
     i18n (0.4.1)
     macaddr (1.0.0)
-    mail (2.2.5)
+    mail (2.2.6.1)
       activesupport (>= 2.3.6)
       mime-types
       treetop (>= 1.4.5)
@@ -102,7 +102,7 @@ GEM
       rack (>= 1.0)
     rake (0.8.7)
     rcov (0.9.8)
-    redis (2.0.6)
+    redis (2.0.7)
     ruby-prof (0.9.2)
     shoulda (2.11.3)
     sinatra (1.0)

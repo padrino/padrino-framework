@@ -54,6 +54,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
       assert_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
@@ -84,6 +85,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
       assert_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"

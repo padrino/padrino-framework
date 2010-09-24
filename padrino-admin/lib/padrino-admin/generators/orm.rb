@@ -7,14 +7,14 @@ module Padrino
 
         def initialize(name, orm, columns=nil, column_fields=nil)
           name            = name.to_s
-          @klass_name     = name.classify
-          @klass          = name.classify.constantize rescue nil
+          @klass_name     = name.camelize
+          @klass          = @klass_name.constantize rescue nil
           @name_plural    = name.underscore.pluralize
           @name_singular  = name.underscore
           @orm            = orm.to_sym
           @columns        = columns
           @column_fields  = column_fields
-          raise OrmError, "Model '#{name}' could not be found!" if @columns.nil? && @klass.nil?
+          raise OrmError, "Model '#{klass_name}' could not be found!" if @columns.nil? && @klass.nil?
         end
 
         def field_type(type)

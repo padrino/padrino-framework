@@ -61,13 +61,21 @@ module Padrino
     class UnrecognizedException < RuntimeError #:nodoc:
     end
     
+    ##
+    # Keeps information about parent scope.
+    #
     class Parent < String
-      attr_accessor :optional
+      attr_reader :map
+      attr_reader :optional
+      attr_reader :options
+
       alias_method :optional?, :optional
       
-      def initialize(value, optional=false) 
+      def initialize(value, options={})
         super(value.to_s)
-        self.optional = optional
+        @map      = options.delete(:map)
+        @optional = options.delete(:optional)
+        @options  = options
       end
     end
     
@@ -183,24 +191,24 @@ module Padrino
       # ==== Examples
       # 
       #   controllers :product do
-      #     parent :shop, :optional => true
+      #     parent :shop, :optional => true, :map => "/my/stand"
       #     parent :category, :optional => true
       #     get :show, :with => :id do
       #       # generated urls:
       #       #   "/product/show/#{params[:id]}"
-      #       #   "/shop/#{params[:shop_id]}/product/show/#{params[:id]}"
-      #       #   "/shop/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}"
+      #       #   "/my/stand/#{params[:shop_id]}/product/show/#{params[:id]}"
+      #       #   "/my/stand/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}"
       #       # url_for(:product, :show, :id => 10) => "/product/show/10"
-      #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/shop/5/product/show/10"
-      #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/shop/5/category/1/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/my/stand/5/product/show/10"
+      #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/my/stand/5/category/1/product/show/10"
       #     end
       #   end   
       #
       def parent(name, options={})
-        defaults = { :optional => false }
+        defaults = { :optional => false, :map => name.to_s }
         options = defaults.merge(options)
         @_parents = Array(@_parents) unless @_parents.is_a?(Array)
-        @_parents << Parent.new(name, options[:optional])
+        @_parents << Parent.new(name, options)
       end
 
       ##
@@ -276,7 +284,9 @@ module Padrino
         # ==== Examples
         #
         #   get :index                                    # => "/"
+        #   get :index, "/"                               # => "/"
         #   get :index, :map => "/"                       # => "/"
+        #   get :show, "/show-me"                         # => "/show-me"
         #   get :show,  :map => "/show-me"                # => "/show-me"
         #   get "/foo/bar"                                # => "/show"
         #   get :index, :parent => :user                  # => "/user/:user_id/index"
@@ -295,12 +305,18 @@ module Padrino
           when 2
             args.last.merge(:map => args.first)
           when 1
-            args.first.is_a?(Hash) ? args.first : {:map => args.first}
+            map = args.shift if args.first.is_a?(String)
+            if args.first.is_a?(Hash)
+              map ? args.first.merge(:map => map) : args.first
+            else
+              {:map => map || args.first}
+            end
           when 0
             {}
           else
             raise
           end
+          
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
@@ -356,7 +372,6 @@ module Padrino
           end
 
           route.to(block)
-
           route
         end
 
@@ -447,8 +462,9 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.flatten.compact.uniq.collect do |param| 
-            part = "#{param}/:#{param}_id/"
+          parent_prefix = parent_params.flatten.compact.uniq.collect do |param|
+            map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
+            part = "#{map}/:#{param}_id/"
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?
             part
           end

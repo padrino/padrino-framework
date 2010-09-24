@@ -255,7 +255,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar", body
     assert_equal "/bar", @app.url(:bar)
   end
-
+  
   should 'remove index from path' do
     mock_app do
       get(:index){ "index" }
@@ -509,6 +509,16 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "wacky 1-2", body
   end
 
+  should 'apply maps when given path is kind of hash' do
+    mock_app do 
+      controllers :admin do 
+        get(:foobar, "/foo/bar"){ "foobar" }
+      end
+    end
+    get "/foo/bar"
+    assert_equal "foobar", body
+  end
+
   should "apply parent to route" do
     mock_app do
       controllers :project do
@@ -593,6 +603,20 @@ class TestRouting < Test::Unit::TestCase
     get user_product_project_url
     assert_equal "show 3 1 2 1", body
     assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3, :shop_id => 1)
+  end
+  
+  should "respect map in parents with shallowing" do 
+    mock_app do 
+      controller :project do
+        parent :shop, :map => "/foo/bar"
+        get(:index) { "index #{params[:shop_id]}" }
+      end
+    end
+    
+    shop_project_url = "/foo/bar/1/project"
+    get shop_project_url
+    assert_equal "index 1", body
+    assert_equal shop_project_url, @app.url(:project, :index, :shop_id => 1)
   end
 
   should "use default values" do

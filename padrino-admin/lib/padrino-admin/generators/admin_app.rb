@@ -46,10 +46,15 @@ module Padrino
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
 
-          Padrino::Generators::Model.start([
+          account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
-            "-r=#{options[:root]}", "-s=#{options[:skip_migration]}", "-d=#{options[:destroy]}"
-          ])
+            "-r=#{options[:root]}"
+          ]
+
+          account_params << "-s" if options[:skip_migration]
+          account_params << "-d" if options[:destroy]
+
+          Padrino::Generators::Model.start(account_params)
 
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
