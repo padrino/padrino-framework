@@ -1,7 +1,8 @@
 = CHANGES
 
-== 0.9.16 (Unreleased)
+== 0.9.16
 
+* Fixed problems with admin
 * Now only AS > 3.0
 * Added padrino-cache
 * Added redis backend for padrino-cache
