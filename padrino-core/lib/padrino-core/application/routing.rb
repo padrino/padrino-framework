@@ -21,7 +21,7 @@ module Padrino
         def add_before_filter(filter)
           @before_filters ||= []
           @before_filters << filter
-          arbitrary { |env| catch(:pass) { router.runner.instance_eval(&filter); true } == true }
+          arbitrary { |req, ps, dest| catch(:pass) { router.runner.params = ps; router.runner.instance_eval(&filter); true } == true }
         end
 
         def add_after_filter(filter)
@@ -38,7 +38,7 @@ module Padrino
         end
 
         def custom_conditions=(custom_conditions)
-          custom_conditions.each { |blk| arbitrary { |env| router.runner.instance_eval(&blk) != false } } if custom_conditions
+          custom_conditions.each { |blk| arbitrary { |req, params, dest| router.runner.instance_eval(&blk) != false } } if custom_conditions
           @custom_conditions = custom_conditions
         end
       end
@@ -368,8 +368,8 @@ module Padrino
             route.use_layout     = @layout
             route.controller     = Array(@_controller).first.to_s
           else
-            route.before_filters = []
-            route.after_filters  = []
+            route.before_filters = @before_filters || []
+            route.after_filters  = @after_filters || []
           end
 
           route.to(block)
