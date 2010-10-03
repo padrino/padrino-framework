@@ -240,6 +240,7 @@ module Padrino
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names.join("_").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
+          params.delete_if { |k,v| v.nil? }
           params[:format] = params[:format].to_s if params.has_key?(:format)
           params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
         end

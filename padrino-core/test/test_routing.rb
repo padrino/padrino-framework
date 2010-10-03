@@ -900,6 +900,15 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar", body
   end
 
+  should 'ignore nil params' do
+    mock_app do
+      get(:testing, :provides => [:html, :json]) do
+      end
+    end
+    assert_equal '/testing.html', @app.url(:testing, :format => :html)
+    assert_equal '/testing', @app.url(:testing, :format => nil)
+  end
+
   should 'work with controller and arbitrary params' do
     mock_app do
       get(:testing) { params[:foo] }
