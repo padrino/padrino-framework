@@ -574,6 +574,9 @@ class TestRouting < Test::Unit::TestCase
       end
     end
     
+    assert_equal "/user/1/project", @app.url(:project, :index, :user_id => 1, :shop_id => nil)
+    assert_equal "/user/1/shop/23/project", @app.url(:project, :index, :user_id => 1, :shop_id => 23)
+
     user_project_url = "/user/1/project"
     get user_project_url
     assert_equal "index 1 ", body
