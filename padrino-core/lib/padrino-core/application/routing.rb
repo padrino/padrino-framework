@@ -414,9 +414,11 @@ module Padrino
             # Build our controller
             controller = Array(@_controller).collect { |c| c.to_s }
 
+            absolute_map = map && map[0] == ?/
+
             unless controller.empty?
               # Now we need to add our controller path only if not mapped directly
-              if map.blank?
+              if map.blank? and !absolute_map
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
                 path = File.join(controller_path, path)
@@ -429,13 +431,13 @@ module Padrino
             end
 
             # Now we need to parse our 'parent' params and parent scope
-            if parent_params = options.delete(:parent) || @_parents
+            if !absolute_map and parent_params = options.delete(:parent) || @_parents
               parent_params = Array(@_parents) + Array(parent_params)
               path = process_path_for_parent_params(path, parent_params)
             end
 
             # Add any controller level map to the front of the path
-            path = "#{@_map}/#{path}".squeeze('/') unless @_map.blank?
+            path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
             path.gsub!(%r{/?index/?}, '')                  # Remove index path
