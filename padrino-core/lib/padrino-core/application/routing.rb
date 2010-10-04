@@ -395,7 +395,7 @@ module Padrino
 
           if path.kind_of?(Symbol) # path i.e :index or :show
             name = path                       # The route name
-            path = map || path.to_s           # The route path
+            path = map ? map.dup : path.to_s  # The route path
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"

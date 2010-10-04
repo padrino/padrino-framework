@@ -501,6 +501,8 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/"
     assert_equal "index", body
+    get @app.url(:admin, :index)
+    assert_equal "index", body
     get "/show/1"
     assert_equal "show 1", body
     get "/edit/1/product"
