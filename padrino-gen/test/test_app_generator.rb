@@ -34,7 +34,7 @@ class TestAppGenerator < Test::Unit::TestCase
 
     should "generate tiny app skeleton" do
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") } }
-      assert_nothing_raised { silence_logger { generate(:app,'demo','--tiny',"--root=#{@apptmp}/sample_project") } }
+      assert_nothing_raised { silence_logger { generate(:app, 'demo','--tiny',"--root=#{@apptmp}/sample_project") } }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/demo")
       assert_file_exists("#{@apptmp}/sample_project/demo/helpers.rb")

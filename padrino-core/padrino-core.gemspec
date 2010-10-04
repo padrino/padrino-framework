@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.add_dependency("sinatra", ">= 1.0.0")
   s.add_dependency("http_router", "~> 0.4.0")
-  s.add_dependency("thor", ">= 0.13.0")
+  s.add_dependency("thor", ">=0.14.3")
   s.add_dependency("activesupport", ">= 3.0.0")
   s.add_dependency("tzinfo")
 end
