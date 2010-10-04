@@ -4,6 +4,7 @@
 
 * Fixed a problem with routing
 * Fixed utf-8 problems in forms using _utf8/_e/_snowman tag
+* Refactored our extension of Mail according to new changes.
 
 == 0.9.16
 
