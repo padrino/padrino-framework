@@ -1,5 +1,10 @@
 = CHANGES
 
+== 0.9.17
+
+* Fixed a problem with routing
+* Fixed utf-8 problems in forms using _utf8/_e/_snowman tag
+
 == 0.9.16
 
 * Fixed problems with admin
