@@ -501,6 +501,8 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/"
     assert_equal "index", body
+    get @app.url(:admin, :index)
+    assert_equal "index", body
     get "/show/1"
     assert_equal "show 1", body
     get "/edit/1/product"
@@ -574,6 +576,9 @@ class TestRouting < Test::Unit::TestCase
       end
     end
     
+    assert_equal "/user/1/project", @app.url(:project, :index, :user_id => 1, :shop_id => nil)
+    assert_equal "/user/1/shop/23/project", @app.url(:project, :index, :user_id => 1, :shop_id => 23)
+
     user_project_url = "/user/1/project"
     get user_project_url
     assert_equal "index 1 ", body
@@ -900,6 +905,15 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar", body
   end
 
+  should 'ignore nil params' do
+    mock_app do
+      get(:testing, :provides => [:html, :json]) do
+      end
+    end
+    assert_equal '/testing.html', @app.url(:testing, :format => :html)
+    assert_equal '/testing', @app.url(:testing, :format => nil)
+  end
+
   should 'work with controller and arbitrary params' do
     mock_app do
       get(:testing) { params[:foo] }
@@ -970,6 +984,25 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "1, 2", body
   end
 
+  should 'use absolute and relative maps' do
+    mock_app do
+      controller :one do
+        parent :three
+        get :index, :map => 'one' do; end
+        get :index2, :map => '/one' do; end
+      end
+
+      controller :two, :map => 'two' do
+        parent :three
+        get :index, :map => 'two' do; end
+        get :index2, :map => '/two', :with => :id do; end
+      end
+    end
+    assert_equal "/three/three_id/one", @app.url(:one, :index, 'three_id')
+    assert_equal "/one", @app.url(:one, :index2)
+    assert_equal "/two/three/three_id/two", @app.url(:two, :index, 'three_id')
+    assert_equal "/two/four_id", @app.url(:two, :index2, 'four_id')
+  end
 
   should "work with params and parent options" do
     mock_app do
