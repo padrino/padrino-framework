@@ -929,6 +929,17 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'josh', username_from_before_filter
   end
 
+  should "be able to access params normally when a before filter is specified" do
+    mock_app do
+      before { }
+      get :index do
+        params.inspect
+      end
+    end
+    get '/?test=what'
+    assert_equal '{"test"=>"what"}', body
+  end
+
   should 'work with controller and arbitrary params' do
     mock_app do
       get(:testing) { params[:foo] }
