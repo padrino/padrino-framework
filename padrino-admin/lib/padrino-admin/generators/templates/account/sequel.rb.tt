@@ -43,7 +43,7 @@ class Account < ::Sequel::Model
   # This method is used to retrieve the original password.
   #
   def password_clean
-    crypted_password.decrypt(salt)
+    self.crypted_password.decrypt(salt)
   end
 
   private
