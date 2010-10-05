@@ -21,7 +21,17 @@ module Padrino
         def add_before_filter(filter)
           @before_filters ||= []
           @before_filters << filter
-          arbitrary { |req, ps, dest| catch(:pass) { router.runner.params = ps; router.runner.instance_eval(&filter); true } == true }
+          arbitrary { |req, params, dest|
+            old_params = router.runner.params
+            result = catch(:pass) {
+              router.runner.params ||= {}
+              router.runner.params.merge!(params)
+              router.runner.instance_eval(&filter)
+              true
+            } == true
+            router.runner.params = old_params
+            result
+          }
         end
 
         def add_after_filter(filter)
