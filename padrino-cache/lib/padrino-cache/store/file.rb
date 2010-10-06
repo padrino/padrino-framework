@@ -36,7 +36,7 @@ module Padrino
 
         def delete(key)
           init
-          FileUtils.rm_rf(path_for_key(key))
+          Array(key).each { |k| FileUtils.rm_rf(path_for_key(k)) }
         end
 
         def flush
