@@ -90,5 +90,24 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
     end
+    
+    should 'not conflict with existing seeds file' do
+      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') } }
+      
+      # Add seeds file
+      FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/db')
+      File.open(@apptmp + '/sample_project/db/seeds.rb', 'w+') do |seeds_rb|
+        seeds_rb.puts "# Old Seeds Content"
+      end
+
+      silence_logger do
+        $stdout.expects(:print).with { |value| value =~ /Overwrite\s.*?\/db\/seeds.rb/ }.never
+        $stdin.stubs(:gets).returns('y')
+        generate(:admin_app, "--root=#{@apptmp}/sample_project") 
+      end
+      
+      assert_match_in_file '# Old Seeds Content', "#{@apptmp}/sample_project/db/seeds.rb"
+      assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
+    end
   end
 end

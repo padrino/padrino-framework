@@ -72,7 +72,13 @@ module Padrino
           admin_app.invoke_all
 
           template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
-          template "templates/account/seeds.rb.tt",                      destination_root("db/seeds.rb")
+          
+          if File.exist?(destination_root("db/seeds.rb"))
+            append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
+          else
+            template "templates/account/seeds.rb.tt",                    destination_root("db/seeds.rb")
+          end
+          
           template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
