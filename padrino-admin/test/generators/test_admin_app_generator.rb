@@ -95,7 +95,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') } }
       
       # Add seeds file
-      FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/db')
+      FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
       File.open(@apptmp + '/sample_project/db/seeds.rb', 'w+') do |seeds_rb|
         seeds_rb.puts "# Old Seeds Content"
       end
