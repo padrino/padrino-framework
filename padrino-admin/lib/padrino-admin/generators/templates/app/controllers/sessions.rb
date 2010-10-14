@@ -8,6 +8,10 @@ Admin.controllers :sessions do
     if account = Account.authenticate(params[:email], params[:password])
       set_current_account(account)
       redirect url(:base, :index)
+    elsif ENV['PADRINO_ENV'] == 'development' && params[:bypass]
+      account = Account.first
+      set_current_account(account)
+      redirect url(:base, :index)
     else
       flash[:warning] = "Login or password wrong."
       redirect url(:sessions, :new)
