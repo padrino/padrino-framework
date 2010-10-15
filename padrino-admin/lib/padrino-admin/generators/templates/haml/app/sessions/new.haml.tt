@@ -21,7 +21,7 @@
                 .left
                   %label.label.right Password
                 .right=password_field_tag :password, :value => params[:password], :class => :text_field
-              - if ENV["PADRINO_ENV"] == 'development'
+              -if Padrino.env == :development
                 .group.wat-cf
                   .left
                     %label.label.right Bypass login?

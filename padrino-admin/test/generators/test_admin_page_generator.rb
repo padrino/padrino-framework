@@ -52,7 +52,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.haml"
       end
       assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "elsif ENV['PADRINO_ENV'] == 'development' && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
+      assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.haml"
     end
 
@@ -71,7 +71,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.erb"
       end
       assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "elsif ENV['PADRINO_ENV'] == 'development' && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
+      assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.erb"
     end
 
