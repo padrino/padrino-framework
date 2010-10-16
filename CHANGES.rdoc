@@ -8,6 +8,8 @@
 * Correct path in spec [Thanks to Spllr]
 * Bypass admin login in development
 * Norwegian translation [Thanks to Fossmo]
+* Updated generator for new rspec version [Thanks to rosstimson]
+* Additional generator for old rspec version
 
 == 0.9.18
 
