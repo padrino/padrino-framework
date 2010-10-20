@@ -1,4 +1,7 @@
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
+
+base_path = File.expand_path(File.dirname(__FILE__), __FILE__)
+
 source :rubygems
 
 group :other do
@@ -24,19 +27,19 @@ group :development do
   gem "redis", ">= 2.0.0"
   gem "uuid", ">= 2.3.1"
   platforms :mri_18 do
-	gem "rcov", "0.9.8"
-	gem "ruby-prof", ">= 0.9.1"
-	gem "system_timer", ">= 1.0"
+    gem "rcov", "0.9.8"
+    gem "ruby-prof", ">= 0.9.1"
+    gem "system_timer", ">= 1.0"
   end
   platforms :mri do
-	gem "memcached", ">= 0.20.1"
+    gem "memcached", ">= 0.20.1"
   end
 end
 
-gem "padrino",         :path => "padrino"
-gem "padrino-admin",   :path => "padrino-admin"
-gem "padrino-cache",   :path => "padrino-cache"
-gem "padrino-core",    :path => "padrino-core"
-gem "padrino-gen",     :path => "padrino-gen"
-gem "padrino-helpers", :path => "padrino-helpers"
-gem "padrino-mailer",  :path => "padrino-mailer"
+gem "padrino",         :path => "/#{base_path}/padrino"
+gem "padrino-admin",   :path => "/#{base_path}/padrino-admin"
+gem "padrino-cache",   :path => "/#{base_path}/padrino-cache"
+gem "padrino-core",    :path => "/#{base_path}/padrino-core"
+gem "padrino-gen",     :path => "/#{base_path}/padrino-gen"
+gem "padrino-helpers", :path => "/#{base_path}/padrino-helpers"
+gem "padrino-mailer",  :path => "/#{base_path}/padrino-mailer"
