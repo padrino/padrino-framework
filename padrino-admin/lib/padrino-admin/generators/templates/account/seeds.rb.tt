@@ -5,7 +5,7 @@
 #   name = shell.ask("What's your name?")
 #   shell.say name
 #
-email     = shell.ask "Which email do you want use for loggin into admin?"
+email     = shell.ask "Which email do you want use for logging into admin?"
 password  = shell.ask "Tell me the password to use:"
 
 shell.say ""
@@ -20,7 +20,7 @@ if account.valid?
   shell.say "   password: #{password}"
   shell.say "================================================================="
 else
-  shell.say "Sorry but some thing went worng!"
+  shell.say "Sorry but some thing went wrong!"
   shell.say ""
   account.errors.full_messages.each { |m| shell.say "   - #{m}" }
 end

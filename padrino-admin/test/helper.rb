@@ -7,6 +7,7 @@ require 'rack/test'
 require 'uuid'
 require 'rack'
 require 'shoulda'
+require 'mocha'
 require 'thor/group'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'

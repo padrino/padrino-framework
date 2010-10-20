@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = "lib"
   s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("bundler", ">= 1.0.0.rc.2")
+  s.add_dependency("bundler", ">= 1.0.2")
   s.add_dependency("git")
 end

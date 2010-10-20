@@ -21,5 +21,11 @@
                 .left
                   %label.label.right Password
                 .right=password_field_tag :password, :value => params[:password], :class => :text_field
+              -if Padrino.env == :development
+                .group.wat-cf
+                  .left
+                    %label.label.right Bypass login?
+                  .right=check_box_tag :bypass
+
               .group.navform.wat-cf
                 .right=submit_tag('Sign In', :class => :button)

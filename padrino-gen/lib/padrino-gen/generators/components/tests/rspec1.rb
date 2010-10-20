@@ -29,11 +29,11 @@ end
 TEST
 
 RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
-require 'rspec/core/rake_task'
+require 'spec/rake/spectask'
 
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = "./spec/**/*_spec.rb"
-  # Put spec opts in a file named .rspec in root
+Spec::Rake::SpecTask.new(:spec) do |t|
+  t.spec_files = Dir['spec/**/*_spec.rb']
+  t.spec_opts  = %w(-fs --color)
 end
 TEST
 
@@ -50,7 +50,7 @@ TEST
 
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'rspec', :group => 'test'
+  require_dependencies 'rspec', :version => "~> 1.2.3", :require => 'spec', :group => 'test'
   insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE
 end
