@@ -1,10 +1,10 @@
-require File.expand_path(File.dirname(__FILE__) + '/../tasks')
 require 'rake'
 Rake.application.instance_variable_set(:@rakefile, __FILE__)
 
 module PadrinoTasks
   def self.init
-    Padrino::Tasks.files.flatten.uniq.each { |ext| load(ext) rescue puts "<= Failed load #{ext}" } unless @_init
+    task_files = Dir[File.dirname(__FILE__) + "/padrino-tasks/**/*.rb"]
+    task_files.flatten.uniq.each { |ext| load(ext) rescue puts "<= Failed load #{ext}" } unless @_init
     Rake.application.init
     Rake.application.top_level
     @_init = true
