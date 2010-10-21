@@ -8,7 +8,7 @@ Admin.controllers :sessions do
     if account = Account.authenticate(params[:email], params[:password])
       set_current_account(account)
       redirect url(:base, :index)
-    elsif ENV['PADRINO_ENV'] == 'development' && params[:bypass]
+    elsif Padrino.env == :development && params[:bypass]
       account = Account.first
       set_current_account(account)
       redirect url(:base, :index)

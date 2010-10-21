@@ -79,7 +79,7 @@ def setup_test
   create_file destination_root("features/add.feature"), CUCUMBER_FEATURE
   create_file destination_root("features/step_definitions/add_steps.rb"), CUCUMBER_STEP
   create_file destination_root("cucumber.yml"), CUCUMBER_YML
-  require_dependencies 'rspec', :require => 'spec', :group => 'test'
+  require_dependencies 'rspec', :group => 'test'
   insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE
 end

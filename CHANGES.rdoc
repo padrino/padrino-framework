@@ -1,10 +1,28 @@
 = CHANGES
 
+== 0.9.19(unreleased)
+
+* Arrayify keys for invalidation in padrino-cache
+* Fixed few typos errors [Thanks to Philtr]
+* Fix conflict on seeds.rb when generating admin [Thanks to Spllr]
+* Correct path in spec [Thanks to Spllr]
+* Bypass admin login in development
+* Norwegian translation [Thanks to Fossmo]
+* Updated generator for new rspec version [Thanks to rosstimson]
+* Additional generator for old rspec version
+* Fixed issue with views folder not being generated in projects
+
+== 0.9.18
+
+* Updated to use latest http_router
+* Fix undefined method crypted_password when using Postgresql + Sequel [Thanks to Commuter]
+* Preserve params for after use by a before filter 
+* Fix const scope for Rack::Mime [Thanks to spllr]
+
 == 0.9.17
 
-* Fixed a problem with routing
-* Fixed utf-8 problems in forms using _utf8/_e/_snowman tag
-* Refactored our extension of Mail according to new changes.
+* Fixed a problem with routing of “/”
+* Added utf-8 feature in forms using utf8/_e/snowman tag
 
 == 0.9.16
 
