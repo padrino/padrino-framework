@@ -18,6 +18,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
+      assert_dir_exists("#{@apptmp}/sample_project/app/views")
+      assert_dir_exists("#{@apptmp}/sample_project/app/views/layouts")
     end
 
     should "generate a valid name" do
@@ -44,6 +46,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/app/helpers.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/mailers.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/views/mailers")
+      assert_dir_exists("#{@apptmp}/sample_project/app/views/layouts")
       assert_match_in_file(/:notifier/,"#{@apptmp}/sample_project/app/mailers.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/controllers")

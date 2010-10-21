@@ -197,10 +197,13 @@ module Padrino
           template "templates/helper.rb.tt", destination_root(app, "helpers.rb")
           @short_name = 'notifier'
           template "templates/mailer.rb.tt", destination_root(app, "mailers.rb")
+          empty_directory destination_root(app, "views", "layouts")
           empty_directory destination_root(app, "views", "mailers")
         else # generate standard folders
-          empty_directory destination_root("#{app}/controllers/")
-          empty_directory destination_root("#{app}/helpers/")
+          empty_directory destination_root(app, 'controllers')
+          empty_directory destination_root(app, 'helpers')
+          empty_directory destination_root(app, 'views')
+          empty_directory destination_root(app, 'views', 'layouts')
         end
       end
 
