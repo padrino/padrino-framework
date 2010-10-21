@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.19
+== 0.9.19(unreleased)
 
 * Arrayify keys for invalidation in padrino-cache
 * Fixed few typos errors [Thanks to Philtr]
@@ -10,6 +10,7 @@
 * Norwegian translation [Thanks to Fossmo]
 * Updated generator for new rspec version [Thanks to rosstimson]
 * Additional generator for old rspec version
+* Fixed issue with views folder not being generated in projects
 
 == 0.9.18
 
