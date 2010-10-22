@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.19(unreleased)
+== 0.9.19 (unreleased)
 
 * Arrayify keys for invalidation in padrino-cache
 * Fixed few typos errors [Thanks to Philtr]
@@ -8,15 +8,16 @@
 * Correct path in spec [Thanks to Spllr]
 * Bypass admin login in development
 * Norwegian translation [Thanks to Fossmo]
-* Updated generator for new rspec version [Thanks to rosstimson]
+* Updated generator for new rspec version [Thanks to Rosstimson]
 * Additional generator for old rspec version
 * Fixed issue with views folder not being generated in projects
+* Fixed the listing headers of admin pages, now is plural [Thanks to Rosstimson]
 
 == 0.9.18
 
 * Updated to use latest http_router
 * Fix undefined method crypted_password when using Postgresql + Sequel [Thanks to Commuter]
-* Preserve params for after use by a before filter 
+* Preserve params for after use by a before filter
 * Fix const scope for Rack::Mime [Thanks to spllr]
 
 == 0.9.17
