@@ -41,19 +41,11 @@ module Padrino
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
         content = content.join("\n") if content.respond_to?(:join)
-        identity_tag_attributes.each { |attr| options[attr] = attr.to_s if options[attr]  }
+        options.each { |a, v| options[a] = a.to_s if [true, 0].include? v }
         html_attrs = options.collect { |a, v| v.nil? || v == false ? nil : "#{a}=\"#{v}\"" }.compact.join(" ")
         base_tag = (html_attrs.present? ? "<#{name} #{html_attrs}" : "<#{name}")
         base_tag << (open_tag ? ">" : (content ? ">#{content}</#{name}>" : " />"))
       end
-
-      private
-        ##
-        # Returns a list of attributes which can only contain an identity value (i.e selected)
-        #
-        def identity_tag_attributes
-          [:checked, :disabled, :selected, :multiple]
-        end
     end # TagHelpers
   end # Helpers
 end # Padrino
