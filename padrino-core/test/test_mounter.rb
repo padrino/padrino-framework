@@ -146,5 +146,17 @@ class TestMounter < Test::Unit::TestCase
       get '/demo_2'
       assert_equal "Im Demo 2", body
     end
+
+    should "not clobber the public setting when mounting an app" do
+      class ::PublicApp < Padrino::Application
+        set :root, "/root"
+        set :public, File.expand_path(File.dirname(__FILE__))
+      end
+
+      Padrino.mount("public_app").to("/public")
+      res = Rack::MockRequest.new(Padrino.application).get("/public/test_mounter.rb")
+      assert res.ok?
+      assert_equal File.read(__FILE__), res.body
+    end
   end
 end
