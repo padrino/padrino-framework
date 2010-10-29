@@ -6,7 +6,7 @@
   .content
     %h2.title
       =pat(:all)
-      =mt(:<%= @orm.name_singular %>)
+      =mt(:<%= @orm.name_plural %>)
     .inner
       %table.table
         %tr
