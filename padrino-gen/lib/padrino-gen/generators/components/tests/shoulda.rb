@@ -42,7 +42,7 @@ TEST
 SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
-class !NAME!ControllerTest < Test::Unit::TestCase
+class !NAME!Test < Test::Unit::TestCase
   context "!NAME! Model" do
     should 'construct new instance' do
       @!DNAME! = !NAME!.new
