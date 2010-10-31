@@ -9,9 +9,10 @@
 * Bypass admin login in development
 * Norwegian translation [Thanks to Fossmo]
 * Updated generator for new rspec version [Thanks to Rosstimson]
-* Additional generator for old rspec version
+* Updated generator to work with legacy rspec version
 * Fixed issue with views folder not being generated in projects
 * Fixed the listing headers of admin pages, now is plural [Thanks to Rosstimson]
+* Fixed model migration removal [Thanks to sob]
 
 == 0.9.18
 
