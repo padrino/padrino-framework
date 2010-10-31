@@ -314,7 +314,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate test file for shoulda" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda', '-d=activerecord') }
       silence_logger { generate(:model, 'SomePerson', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class SomePersonControllerTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
+      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
