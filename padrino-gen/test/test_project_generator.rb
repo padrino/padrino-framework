@@ -139,8 +139,22 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
 
+    should "properly generate for mocha and rspec1" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}",'--test=rspec1', '--mock=mocha', '--script=none') }
+      assert_match(/Applying.*?mocha.*?mock/, buffer)
+      assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+    end
+
     should "properly generate for rr and rspec" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+      assert_match(/Applying.*?rr.*?mock/, buffer)
+      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+    end
+
+    should "properly generate for rr and rspec1" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec1', '--mock=rr', '--script=none') }
       assert_match(/Applying.*?rr.*?mock/, buffer)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
@@ -427,7 +441,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'rspec'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-      assert_match_in_file(/Spec::Runner/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
     end
 
@@ -466,7 +480,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'capybara'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/features/support/env.rb")
-      assert_match_in_file(/Spec::Runner/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/Capybara.app = /, "#{@apptmp}/sample_project/features/support/env.rb")
       assert_match_in_file(/World\(Cucumber::Web::URLs\)/, "#{@apptmp}/sample_project/features/support/url.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
