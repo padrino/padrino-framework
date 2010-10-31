@@ -8,7 +8,7 @@ module Padrino
         #             :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
         def output_model_migration(filename, name, columns, options={})
           if behavior == :revoke
-            remove_migration(name)
+            remove_migration(filename)
           else
             return if migration_exist?(filename)
             model_name = name.to_s.pluralize
