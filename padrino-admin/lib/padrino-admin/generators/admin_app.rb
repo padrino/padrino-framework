@@ -47,7 +47,7 @@ module Padrino
           directory "templates/assets",  destination_root("public", "admin")
 
           account_params = [
-            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
+            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-r=#{options[:root]}"
           ]
 
