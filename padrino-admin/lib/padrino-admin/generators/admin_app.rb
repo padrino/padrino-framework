@@ -97,14 +97,20 @@ module Padrino
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
           gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
           return if self.behavior == :revoke
+
+          instructions = []
+          instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
+          instructions << "Run 'padrino rake dm:migrate'" if orm == :datamapper
+          instructions << "Run 'padrino rake seed'"
+          instructions << "Visit the admin panel in the browser at '/admin'"
+          instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
+
           say((<<-TEXT).gsub(/ {10}/,''))
 
           =================================================================
           The admin panel has been mounted! Next, follow these steps:
           =================================================================
-            1) Run migrations (if necessary)
-            2) Run 'padrino rake seed'
-            3) Visit the admin panel in the browser at '/admin'
+          #{instructions.join("\n")}
           =================================================================
 
           TEXT
