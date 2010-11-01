@@ -43,6 +43,7 @@ module Padrino
 
           ext = fetch_component_choice(:renderer)
 
+          empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
 
@@ -78,7 +79,13 @@ module Padrino
           else
             template "templates/account/seeds.rb.tt",                    destination_root("db/seeds.rb")
           end
-          
+
+          empty_directory destination_root("admin/controllers")
+          empty_directory destination_root("admin/views")
+          empty_directory destination_root("admin/views/base")
+          empty_directory destination_root("admin/views/layouts")
+          empty_directory destination_root("admin/views/sessions")
+
           template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
