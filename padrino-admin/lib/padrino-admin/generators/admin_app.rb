@@ -85,6 +85,7 @@ module Padrino
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
           add_project_module :accounts
+          require_dependencies('bcrypt-ruby', :require => 'bcrypt')
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
           gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
