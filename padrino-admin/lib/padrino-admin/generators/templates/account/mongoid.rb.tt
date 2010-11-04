@@ -1,6 +1,6 @@
 class Account
   include Mongoid::Document
-  attr_accessor :password
+  attr_accessor :password, :password_confirmation
 
   # Fields
   field :name,             :type => String

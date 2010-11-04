@@ -67,6 +67,6 @@ class Account < CouchRest::ExtendedDocument
         # there is an id, make sure updates are being applied to same account
         return true if self["_id"] == account["_id"]
       end
-      [false, "Email has already been taken"] 
+      [false, "Email has already been taken"]
     end
 end

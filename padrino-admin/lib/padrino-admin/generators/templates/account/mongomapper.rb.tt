@@ -1,6 +1,6 @@
 class Account
   include MongoMapper::Document
-  attr_accessor :password
+  attr_accessor :password, :password_confirmation
 
   # Keys
   key :name,             String

@@ -2,6 +2,7 @@
 
 == 0.9.19 (unreleased)
 
+* Now Admin password are undecryptable [Thanks to Sob]
 * Arrayify keys for invalidation in padrino-cache
 * Fixed few typos errors [Thanks to Philtr]
 * Fix conflict on seeds.rb when generating admin [Thanks to Spllr]
