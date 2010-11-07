@@ -9,7 +9,7 @@ module Padrino
       def project(options={})
         components = options.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
-        say "=> Executing: padrino-gen #{name} #{params.join(" ")}", :magenta
+        say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift("project"))
       end
 
