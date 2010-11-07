@@ -92,12 +92,12 @@ def setup_orm
   when 'mysql'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_development\"")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_production\"")
-    ar.gsub! /!DB_TEST/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_test\"")
+    ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"\"#{db}_test\"")
     require_dependencies 'mysql'
   when 'mysql2'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"\"#{db}_development\"")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"\"#{db}_production\"")
-    ar.gsub! /!DB_TEST/, MYSQL2.gsub(/!DB_NAME!/,"\"#{db}_test\"")
+    ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"\"#{db}_test\"")
     require_dependencies 'mysql2'
   when 'postgres'
     ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_development\"")
