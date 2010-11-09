@@ -2,6 +2,9 @@
 
 == 0.9.19 (unreleased)
 
+* Sinatra 1.1 compat
+* Fixed couchrest dependencies [Thanks to 21studios]
+* Added a basic index file [Thanks to 21studios]
 * Now Admin password are undecryptable [Thanks to Sob]
 * Arrayify keys for invalidation in padrino-cache
 * Fixed few typos errors [Thanks to Philtr]
