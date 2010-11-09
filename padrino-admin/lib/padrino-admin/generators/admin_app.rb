@@ -68,7 +68,7 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root])
+          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root], :destroy => options[:destroy])
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
