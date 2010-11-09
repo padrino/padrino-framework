@@ -49,7 +49,11 @@ module Padrino
         end
       rescue RuntimeError => e
         if e.message =~ /no acceptor/
-          puts "=> Someone is already performing on port #{port}!"
+          if port < 1024 && RUBY_PLATFORM !~ /mswin|win|mingw/ && Process.uid != 0
+            puts "=> Only root may open a priviledged port #{port}!"
+          else
+            puts "=> Someone is already performing on port #{port}!"
+          end
         else
           raise e
         end
