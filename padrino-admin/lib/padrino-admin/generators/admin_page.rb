@@ -34,13 +34,15 @@ module Padrino
             self.behavior = :revoke if options[:destroy]
             ext = fetch_component_choice(:renderer)
 
+            empty_directory destination_root("/admin/views/#{@orm.name_plural}")
+
             template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")
             template "templates/#{ext}/page/_form.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/_form.#{ext}")
             template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root("/admin/views/#{@orm.name_plural}/edit.#{ext}")
             template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
             template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
 
-            add_project_module(@orm.name_plural)
+            add_project_module(@orm.name_plural) unless options[:destroy]
           end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"

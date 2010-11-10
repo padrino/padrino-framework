@@ -70,7 +70,7 @@ module Padrino
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
-    
+
     ##
     # Keeps information about parent scope.
     #
@@ -80,7 +80,7 @@ module Padrino
       attr_reader :options
 
       alias_method :optional?, :optional
-      
+
       def initialize(value, options={})
         super(value.to_s)
         @map      = options.delete(:map)
@@ -88,7 +88,7 @@ module Padrino
         @options  = options
       end
     end
-    
+
     ##
     # Main class that register this extension
     #
@@ -175,15 +175,13 @@ module Padrino
           @_defaults,   original_defaults   = options, @_defaults
 
           # Application defaults
-          @before_filters, original_before_filters = [],  @before_filters
-          @after_filters,  original_after_filters  = [],  @after_filters
-          @layout,         original_layout         = nil, @layout
+          @filters,     original_filters = { :before => [], :after => [] }, @filters
+          @layout,      original_layout         = nil, @layout
 
           instance_eval(&block)
 
           # Application defaults
-          @before_filters = original_before_filters
-          @after_filters  = original_after_filters
+          @filters        = original_filters
           @layout         = original_layout
 
           # Controller defaults
@@ -196,10 +194,10 @@ module Padrino
       alias :controllers :controller
 
       ##
-      # Provides many parents with shallowing.  
+      # Provides many parents with shallowing.
       #
       # ==== Examples
-      # 
+      #
       #   controllers :product do
       #     parent :shop, :optional => true, :map => "/my/stand"
       #     parent :category, :optional => true
@@ -212,7 +210,7 @@ module Padrino
       #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/my/stand/5/product/show/10"
       #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/my/stand/5/category/1/product/show/10"
       #     end
-      #   end   
+      #   end
       #
       def parent(name, options={})
         defaults = { :optional => false, :map => name.to_s }
@@ -327,7 +325,7 @@ module Padrino
           else
             raise
           end
-          
+
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
@@ -357,7 +355,7 @@ module Padrino
           route.host(options.delete(:host)) if options.key?(:host)
           route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
           route.default_values = options.delete(:default_values)
-          options.delete_if do |option, args| 
+          options.delete_if do |option, args|
             if route.send(:significant_variable_names).include?(option)
               route.matching(option => Array(args).first)
               true
@@ -373,13 +371,13 @@ module Padrino
 
           # Add Application defaults
           if @_controller
-            route.before_filters = @before_filters
-            route.after_filters  = @after_filters
+            route.before_filters = @filters[:before]
+            route.after_filters  = @filters[:after]
             route.use_layout     = @layout
             route.controller     = Array(@_controller).first.to_s
           else
-            route.before_filters = @before_filters || []
-            route.after_filters  = @after_filters || []
+            route.before_filters = @filters[:before] || []
+            route.after_filters  = @filters[:after]  || []
           end
 
           route.to(block)

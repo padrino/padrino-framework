@@ -1,7 +1,5 @@
-require 'digest/sha1'
-
 class Account < ActiveRecord::Base
-  attr_accessor :password
+  attr_accessor :password, :password_confirmation
 
   # Validations
   validates_presence_of     :email, :role
@@ -15,28 +13,23 @@ class Account < ActiveRecord::Base
   validates_format_of       :role,     :with => /[A-Za-z]/
 
   # Callbacks
-  before_save :generate_password
+  before_save :encrypt_password
 
   ##
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
     account = first(:conditions => { :email => email }) if email.present?
-    account && account.password_clean == password ? account : nil
+    account && account.has_password?(password) ? account : nil
   end
 
-  ##
-  # This method is used to retrieve the original password.
-  #
-  def password_clean
-    crypted_password.decrypt(salt)
+  def has_password?(password)
+    ::BCrypt::Password.new(crypted_password) == password
   end
 
   private
-    def generate_password
-      return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new_record?
-      self.crypted_password = password.encrypt(self.salt)
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password)
     end
 
     def password_required

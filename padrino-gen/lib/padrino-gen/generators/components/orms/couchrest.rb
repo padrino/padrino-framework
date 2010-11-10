@@ -9,6 +9,7 @@ COUCHREST
 
 def setup_orm
   require_dependencies 'couchrest'
+  require_dependencies 'couchrest_extended_document'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')

@@ -42,7 +42,7 @@ TEST
 SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
-class !NAME!ControllerTest < Test::Unit::TestCase
+class !NAME!Test < Test::Unit::TestCase
   context "!NAME! Model" do
     should 'construct new instance' do
       @!DNAME! = !NAME!.new
@@ -56,6 +56,9 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'shoulda', :group => 'test'
   insert_test_suite_setup SHOULDA_SETUP
+  if options[:orm] == "activerecord"
+    inject_into_file destination_root("test/test_config.rb"), "require 'shoulda/active_record'\n\n", :before => /class.*?\n/
+  end
   create_file destination_root("test/test.rake"), SHOULDA_RAKE
 end
 

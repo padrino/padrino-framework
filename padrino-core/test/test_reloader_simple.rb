@@ -74,9 +74,9 @@ class TestSimpleReloader < Test::Unit::TestCase
       get "/rand"
       assert ok?
       last_body = body
-      assert_equal 2, @app.before_filters.size # one is ours the other is default_filter for content type
+      assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
       assert_equal 1, @app.errors.size
-      assert_equal 1, @app.after_filters.size
+      assert_equal 1, @app.filters[:after].size
       assert_equal 2, @app.middleware.size # [Padrino::Logger::Rack, Padrino::Reloader::Rack]
       assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
       assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
@@ -84,9 +84,9 @@ class TestSimpleReloader < Test::Unit::TestCase
       @app.reload!
       get "/rand"
       assert_not_equal last_body, body
-      assert_equal 2, @app.before_filters.size # one is ours the other is default_filter for content type
+      assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
       assert_equal 1, @app.errors.size
-      assert_equal 1, @app.after_filters.size
+      assert_equal 1, @app.filters[:after].size
       assert_equal 2, @app.middleware.size # only logger Padrino::Logger::Rack
       assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
       assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]

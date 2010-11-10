@@ -43,11 +43,12 @@ module Padrino
 
           ext = fetch_component_choice(:renderer)
 
+          empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
 
           account_params = [
-            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "salt:string", "role:string",
+            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-r=#{options[:root]}"
           ]
 
@@ -67,36 +68,49 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root])
+          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root], :destroy => options[:destroy])
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
           template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
-          
+
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
           else
             template "templates/account/seeds.rb.tt",                    destination_root("db/seeds.rb")
           end
-          
+
+          empty_directory destination_root("admin/controllers")
+          empty_directory destination_root("admin/views")
+          empty_directory destination_root("admin/views/base")
+          empty_directory destination_root("admin/views/layouts")
+          empty_directory destination_root("admin/views/sessions")
+
           template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
           add_project_module :accounts
+          require_dependencies('bcrypt-ruby', :require => 'bcrypt')
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
           gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
           return if self.behavior == :revoke
+
+          instructions = []
+          instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
+          instructions << "Run 'padrino rake dm:migrate'" if orm == :datamapper
+          instructions << "Run 'padrino rake seed'"
+          instructions << "Visit the admin panel in the browser at '/admin'"
+          instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
+
           say((<<-TEXT).gsub(/ {10}/,''))
 
           =================================================================
           The admin panel has been mounted! Next, follow these steps:
           =================================================================
-            1) Run migrations (if necessary)
-            2) Run 'padrino rake seed'
-            3) Visit the admin panel in the browser at '/admin'
+          #{instructions.join("\n")}
           =================================================================
 
           TEXT

@@ -1,5 +1,3 @@
-require 'digest/sha1'
-
 class Account
   include DataMapper::Resource
   include DataMapper::Validate
@@ -11,7 +9,6 @@ class Account
   property :surname,          String
   property :email,            String
   property :crypted_password, String
-  property :salt,             String
   property :role,             String
 
   # Validations
@@ -30,7 +27,7 @@ class Account
   #
   def self.authenticate(email, password)
     account = first(:conditions => { :email => email }) if email.present?
-    account && account.password_clean == password ? account : nil
+    account && account.has_password?(password) ? account : nil
   end
 
   ##
@@ -40,25 +37,16 @@ class Account
     get(id) rescue nil
   end
 
-  ##
-  # This method is used to retrieve the original password.
-  #
-  def password_clean
-    crypted_password.decrypt(salt)
-  end
-
-  ###
-  # Password setter generates salt and crypted_password
-  #
-  def password=(val)
-    return if val.blank?
-    attribute_set(:salt, Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--")) if new?
-    attribute_set(:crypted_password, val.encrypt(self.salt))
+  def has_password?(password)
+    ::BCrypt::Password.new(crypted_password) == password
   end
 
   private
-
     def password_required
       crypted_password.blank? || !password.blank?
+    end
+
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password)
     end
 end

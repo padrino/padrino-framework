@@ -314,7 +314,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate test file for shoulda" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda', '-d=activerecord') }
       silence_logger { generate(:model, 'SomePerson', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class SomePersonControllerTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
+      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
@@ -348,12 +348,13 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_no_file_exists("#{@apptmp}/sample_project/spec/models/user_spec.rb")
     end
 
-    should "destroy the model migration" do
+    should "destroy the right model migration" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
-      silence_logger { generate(:model, 'Person', "-r=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
-      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_users.rb")
+      silence_logger { generate(:model, 'bar_foo', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'foo', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'foo', "-r=#{@apptmp}/sample_project", '-d') }
+      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_foos.rb")
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_bar_foos.rb")
     end
 
     should "destroy foo's model migration" do 
