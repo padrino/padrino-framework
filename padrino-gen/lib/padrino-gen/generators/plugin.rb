@@ -1,9 +1,10 @@
 require 'padrino-core/cli/base' unless defined?(Padrino::Cli::Base)
+require 'net/https'
 
 module Padrino
   module Generators
     class Plugin < Thor::Group
-      PLUGIN_URL = 'http://github.com/padrino/padrino-recipes/tree/master/plugins'
+      PLUGIN_URL = 'https://github.com/padrino/padrino-recipes/tree/master/plugins'
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:plugin, self)
 
@@ -29,7 +30,16 @@ module Padrino
       # Create the Padrino Plugin
       def setup_plugin
         if options[:list] # list method ran here
-          plugins = open(PLUGIN_URL).read.scan(%r{/plugins/(\w+)_plugin.rb}).uniq
+          plugins = {}
+          uri = URI.parse(PLUGIN_URL)
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = true if uri.scheme == "https"
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          http.start do
+            http.request_get(uri.path) do |res|
+              plugins = res.body.scan(%r{/plugins/(\w+)_plugin.rb}).uniq
+            end
+          end
           say "Available plugins:", :green
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
         else # executing the plugin instructions
