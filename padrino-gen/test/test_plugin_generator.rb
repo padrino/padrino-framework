@@ -51,9 +51,9 @@ class TestPluginGenerator < Test::Unit::TestCase
     end
 
     should "resolve gist url properly" do
-      FakeWeb.register_uri(:get, "http://gist.github.com/357045", :body => '<a href="/raw/357045/4356/blog_template.rb">raw</a>')
-      template_file = 'http://gist.github.com/357045'
-      resolved_path = 'http://gist.github.com/raw/357045/4356/blog_template.rb'
+      FakeWeb.register_uri(:get, "https://gist.github.com/357045", :body => '<a href="/raw/357045/4356/blog_template.rb">raw</a>')
+      template_file = 'https://gist.github.com/357045'
+      resolved_path = 'https://gist.github.com/raw/357045/4356/blog_template.rb'
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       silence_logger { project_gen.invoke_all }
@@ -61,7 +61,7 @@ class TestPluginGenerator < Test::Unit::TestCase
 
     should "resolve official template" do
       template_file = 'sampleblog'
-      resolved_path = "http://github.com/padrino/padrino-recipes/raw/master/templates/sampleblog_template.rb"
+      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/templates/sampleblog_template.rb"
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       silence_logger { project_gen.invoke_all }
@@ -76,7 +76,7 @@ class TestPluginGenerator < Test::Unit::TestCase
 
     should "resolve official plugin" do
       template_file = 'hoptoad'
-      resolved_path = "http://github.com/padrino/padrino-recipes/raw/master/plugins/hoptoad_plugin.rb"
+      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/plugins/hoptoad_plugin.rb"
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once

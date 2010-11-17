@@ -18,6 +18,7 @@
 * Fixed issue with views folder not being generated in projects
 * Fixed the listing headers of admin pages, now is plural [Thanks to Rosstimson]
 * Fixed model migration removal [Thanks to sob]
+* Updated plugins to pull using https
 
 == 0.9.18
 
