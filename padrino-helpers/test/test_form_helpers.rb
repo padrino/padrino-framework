@@ -22,13 +22,13 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display correct form with remote" do
       actual_html = form_tag('/update', :"accept-charset" => "utf-8", :class => 'put-form', :remote => true) { "Demo" }
-      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "utf-8", "data-remote" => 'true') { actual_html }
+      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "utf-8", :"data-remote" => 'true') { actual_html }
       assert_has_no_tag(:form, "data-method" => 'post') { actual_html }
     end
 
     should "display correct form with remote and method is put" do
       actual_html = form_tag('/update', :"accept-charset" => "utf-8", :method => 'put', :remote => true) { "Demo" }
-      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "utf-8", "data-method" => 'put') { actual_html }
+      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "utf-8", :"data-method" => 'put') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 

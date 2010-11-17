@@ -2,6 +2,7 @@ module Mail #:nodoc:
   class Message #:nodoc:
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
+    attr_reader :template_cache
 
     def initialize_with_app(*args, &block)
       @template_cache = Tilt::Cache.new
