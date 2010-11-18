@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.9.20
+
+* Now before_load hooks are called before each *require_dependency*
+
 == 0.9.19
 
 * Sinatra 1.1 compat
