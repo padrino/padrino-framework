@@ -33,7 +33,7 @@ module Padrino
         def delete(key)
           @backend.delete(key)
         end
-        
+
         def flush
           @backend.flush
         end

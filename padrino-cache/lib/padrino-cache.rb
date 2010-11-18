@@ -1,8 +1,7 @@
 require 'fileutils'
 require 'padrino-core'
 require 'padrino-helpers'
-#FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)
-Dir.glob(File.dirname(__FILE__) + '/padrino-cache/helpers/*.rb') {|file| require file}
+FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)
 
 module Padrino
   module Cache

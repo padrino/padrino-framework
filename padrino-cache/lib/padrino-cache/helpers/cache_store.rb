@@ -9,7 +9,7 @@ module Padrino
             self.class.cache_store.delete(self.class.url(*key))
           end
         end
-      end
-    end
-  end
-end
+      end # CacheStore
+    end # Helpers
+  end # Cache
+end # Padrino

@@ -5,6 +5,7 @@ module Padrino
         def expires_in(time)
           @_last_expires_in = time
         end
+
         def self.padrino_route_added(route, verb, path, args, options, block)
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {
@@ -25,7 +26,7 @@ module Padrino
             })
           end
         end
-      end
-    end
-  end
-end
+      end # Page
+    end # Helpers
+  end # Cache
+end # Padrino

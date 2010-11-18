@@ -15,7 +15,7 @@ module Padrino
             end
           end
         end
-      end
-    end
-  end
-end
+      end # Fragment
+    end # Helpers
+  end # Cache
+end # Padrino
