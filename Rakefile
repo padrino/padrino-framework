@@ -70,7 +70,7 @@ end
 
 desc "Commits all staged files"
 task :commit, [:message] do |t, args|
-  system(%Q[git commit -a -m "#{args.message}"])
+  sh "git commit -a -m \"#{args.message}\""
 end
 
 desc "Bumps the version number based on given version"
@@ -106,9 +106,9 @@ end
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
-  GEM_PATHS[0..-2].each do |gem|
+  GEM_PATHS[0..-2].each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    sh "cd #{File.join(ROOT, gem)} && #{Gem.ruby} -S rake test", :verbose => true
+    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test", :verbose => true
   end
 end
 
