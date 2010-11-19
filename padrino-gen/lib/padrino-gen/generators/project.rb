@@ -31,7 +31,7 @@ module Padrino
 
       # Definitions for the available customizable components
       component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic], :default => :none
-      component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec1, :rspec, :shoulda, :cucumber, :bacon, :testspec, :riot], :default => :none
+      component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot], :default => :none
       component_option :mock,       "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
       component_option :renderer,   "template engine",    :aliases => '-e', :choices => [:haml, :erb, :erubis, :liquid], :default => :haml
