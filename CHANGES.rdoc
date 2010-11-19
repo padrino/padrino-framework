@@ -3,6 +3,7 @@
 == 0.9.20
 
 * Now before_load hooks are called before each *require_dependency*
+* Removed Rspec1 generator
 
 == 0.9.19
 
