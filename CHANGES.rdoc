@@ -1,6 +1,11 @@
 = CHANGES
 
-== 0.9.19 (unreleased)
+== 0.9.20
+
+* Now before_load hooks are called before each *require_dependency*
+* Removed Rspec1 generator
+
+== 0.9.19
 
 * Sinatra 1.1 compat
 * Fixed destroy admin/app/page [Thanks to Sob]
@@ -17,8 +22,8 @@
 * Updated generator to work with legacy rspec version
 * Fixed issue with views folder not being generated in projects
 * Fixed the listing headers of admin pages, now is plural [Thanks to Rosstimson]
-* Fixed model migration removal [Thanks to sob]
-* Updated plugins to pull using https
+* Fixed model migration removal [Thanks to Sob]
+* Updated plugins to pull using https [Thanks to Sob]
 
 == 0.9.18
 

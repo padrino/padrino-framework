@@ -70,7 +70,7 @@ end
 
 desc "Commits all staged files"
 task :commit, [:message] do |t, args|
-  system(%Q[git commit -a -m "#{args.message}"])
+  sh "git commit -a -m \"#{args.message}\""
 end
 
 desc "Bumps the version number based on given version"
@@ -106,9 +106,9 @@ end
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
-  GEM_PATHS[0..-2].each do |gem|
+  GEM_PATHS[0..-2].each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    sh "cd #{File.join(ROOT, gem)} && #{Gem.ruby} -S rake test", :verbose => true
+    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test", :verbose => true
   end
 end
 
@@ -139,36 +139,36 @@ end
 desc "Publish doc on padrino.github.com"
 task :pdoc => :rdoc do
   puts "Publishing doc on padrinorb.com ..."
-  Rake::SshDirPublisher.new("root@lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload
+  Rake::SshDirPublisher.new("root@srv2.lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload
   FileUtils.rm_rf "doc"
 end
 
 begin
   require 'rcov/rcovtask'
-	namespace :hudson do
-	  namespace :coverage do
-	    desc "Delete aggregate coverage data."
-	    task(:clean) { rm_f "coverage.data" }
-	  end
-	  desc 'Aggregate code coverage for unit, functional and integration tests'
-	  task :coverage => "test:coverage:clean"
-	  %w[unit functional integration].each do |target|
-	    namespace :coverage do
-	      %w[padrino padrino-admin padrino-helpers padrino-core padrino-mailer padrino-gen].each do |submodule|
-		Rcov::RcovTask.new(target) do |t|
-		  t.libs << "#{submodule}/test"
-		  t.libs << "#{submodule}/lib"
-		  t.test_files = FileList["#{submodule}/test/*.rb", "#{submodule}/test/generators/*.rb"]
-		  t.output_dir = "coverage/#{target}"
-		  t.verbose = true
-		  t.rcov_opts << '--aggregate coverage.data --sort coverage --text-report'
-		  t.rcov_opts << '--exclude ".bundle/*,gems/*,test/fixtures/*"'
-		end
-	      end
-	    end
-	    task :coverage => "test:coverage:#{target}"
-	  end
-	end
+  namespace :hudson do
+    namespace :coverage do
+      desc "Delete aggregate coverage data."
+      task(:clean) { rm_f "coverage.data" }
+    end
+    desc 'Aggregate code coverage for unit, functional and integration tests'
+    task :coverage => "test:coverage:clean"
+    %w[unit functional integration].each do |target|
+      namespace :coverage do
+        %w[padrino padrino-admin padrino-helpers padrino-core padrino-mailer padrino-gen].each do |submodule|
+    Rcov::RcovTask.new(target) do |t|
+      t.libs << "#{submodule}/test"
+      t.libs << "#{submodule}/lib"
+      t.test_files = FileList["#{submodule}/test/*.rb", "#{submodule}/test/generators/*.rb"]
+      t.output_dir = "coverage/#{target}"
+      t.verbose = true
+      t.rcov_opts << '--aggregate coverage.data --sort coverage --text-report'
+      t.rcov_opts << '--exclude ".bundle/*,gems/*,test/fixtures/*"'
+    end
+        end
+      end
+      task :coverage => "test:coverage:#{target}"
+    end
+  end
 rescue LoadError
   puts "Rcov is only supported on MRI 1.8. You can safely ignore this message on other platforms"
 end

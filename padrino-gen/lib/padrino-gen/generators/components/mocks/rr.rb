@@ -3,8 +3,6 @@ def setup_mock
   case options[:test].to_s
     when 'rspec'
       inject_into_file 'spec/spec_helper.rb', "  conf.mock_with :rr\n", :after => "RSpec.configure do |conf|\n"
-    when 'rspec1'
-      inject_into_file 'spec/spec_helper.rb', "  conf.mock_with :rr\n", :after => "Spec::Runner.configure do |conf|\n"
     when 'riot'
       inject_into_file "test/test_config.rb","require 'riot/rr'\n", :after => "\"/../config/boot\")\n"
     else

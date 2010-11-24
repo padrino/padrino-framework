@@ -42,10 +42,8 @@ module Padrino
       set_encoding
       set_load_paths(*load_paths) # We set the padrino load paths
       Padrino.logger # Initialize our logger
-      before_load.each { |bl| bl.call } # Run before hooks
       dependency_paths.each { |path| require_dependency(path) }
       Reloader::Stat.run! # We need to fill our Stat::CACHE
-      after_load.each { |al| al.call } # Run after hooks
       Thread.current[:padrino_loaded] = true
     end
 
@@ -53,9 +51,7 @@ module Padrino
     # Method for reloading required applications and their files
     #
     def reload!
-      before_load.each { |bl| bl.call } # Run before hooks
       Reloader::Stat.reload! # detects the modified files
-      after_load.each { |al| al.call } # Run after hooks
     end
 
     ##
@@ -108,7 +104,9 @@ module Padrino
         # Now we try to require our dependencies
         files.each do |file|
           begin
+            before_load.each { |bl| bl.call } # Run before hooks
             Reloader::Stat.safe_load(file)
+            after_load.each { |al| al.call } # Run after hooks
             files.delete(file)
           rescue LoadError => e
             errors << e

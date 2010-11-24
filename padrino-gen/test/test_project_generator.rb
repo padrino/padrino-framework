@@ -29,13 +29,13 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/class ProjectCom < Padrino::Application/,"#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file(/Padrino.mount\("ProjectCom"\).to\('\/'\)/,"#{@apptmp}/project.com/config/apps.rb")
     end
-    
+
     should "display the right path" do
       buffer = silence_logger { generate(:project, 'project', "--root=/tmp") }
       assert_file_exists("/tmp/project")
       assert_match(/cd \/tmp\/project/, buffer)
     end
-    
+
 
     should "allow specifying alternate application name" do
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') } }
@@ -139,27 +139,12 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
 
-    should "properly generate for mocha and rspec1" do
-      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}",'--test=rspec1', '--mock=mocha', '--script=none') }
-      assert_match(/Applying.*?mocha.*?mock/, buffer)
-      assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-    end
-
     should "properly generate for rr and rspec" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
       assert_match(/Applying.*?rr.*?mock/, buffer)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
-
-    should "properly generate for rr and rspec1" do
-      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec1', '--mock=rr', '--script=none') }
-      assert_match(/Applying.*?rr.*?mock/, buffer)
-      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-    end
-
   end
 
   context "the generator for orm components" do
@@ -333,14 +318,14 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match(/Applying.*?haml.*?renderer/, buffer)
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
     end
-    
-    should "properly generate for erubis" do 
+
+    should "properly generate for erubis" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erubis','--script=none') }
       assert_match(/Applying.*?erubis.*?renderer/,buffer)
       assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
-    should "properly generate for liquid" do 
+    should "properly generate for liquid" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=liquid','--script=none') }
       assert_match(/Applying.*?liquid.*?renderer/,buffer)
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
@@ -421,18 +406,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
     end
 
-    should "properly generate for rspec1" do
-      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec1', '--script=none') }
-      assert_match(/Applying.*?rspec.*?test/, buffer)
-      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'rspec'.*?"~>\s*1.2.3".*?:require => "spec"/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-      assert_match_in_file(/Spec::Runner/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-      assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
-    end
-    
     should "properly generate for rspec" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--script=none') }
       assert_match(/Applying.*?rspec.*?test/, buffer)
@@ -527,6 +500,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
-    
+
   end
 end

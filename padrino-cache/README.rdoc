@@ -1,6 +1,6 @@
 = Painless Page and Fragment Caching (padrino-cache)
 
-Not implemented yet.
+Not documented yet.
 
 == Copyright
 
