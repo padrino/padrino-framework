@@ -134,7 +134,27 @@ class TestMounter < Test::Unit::TestCase
       assert_equal "POST", another_route.verb
       assert_equal "/two_app/users/create", another_route.path
     end
+    
+    should 'correctly build urls for one app with different mount points' do
+      class ::OneApp < Padrino::Application
+        controllers do
+          get(:index) { "index" }
+          get(:foo) { "foo" }
+          get(:bar) { url(:foo) }
+        end
+      end
 
+      Padrino.mount("one_app").to("/one_app")
+      Padrino.mount("one_app", :app_class => "OneApp").to("/two_app")
+      
+      res = Rack::MockRequest.new(Padrino.application).get("/one_app/bar")
+      assert res.ok?
+      assert_equal '/one_app/foo', res.body
+      res = Rack::MockRequest.new(Padrino.application).get("/two_app/bar")
+      assert res.ok?
+      assert_equal '/two_app/foo', res.body
+    end
+    
     should 'correctly instantiate a new padrino application' do
       mock_app do
         get("/demo_1"){ "Im Demo 1" }
