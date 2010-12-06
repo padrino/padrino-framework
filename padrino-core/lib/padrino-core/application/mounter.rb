@@ -97,9 +97,16 @@ module Padrino
     def ==(other)
       other.is_a?(Mounter) && self.app_class == other.app_class && self.uri_root == other.uri_root
     end
-    
+
+    ##
+    # Returns the class object for the app if defined, nil otherwise
+    #
+    def app_constant
+      app_class.constantize if Object.const_defined?(app_class)
+    end
+
     protected
-    
+
     ##
     # Locates and requires the file to load the app constant
     #
@@ -121,13 +128,6 @@ module Padrino
       candidates << Padrino.mounted_root(name, "app.rb")
       candidates << Padrino.root("app", "app.rb")
       candidates.find { |candidate| File.exist?(candidate) }
-    end
-    
-    ##
-    # Returns the class object for the app if defined, nil otherwise
-    #
-    def app_constant
-      app_class.constantize if Object.const_defined?(app_class)
     end
     
     ###
