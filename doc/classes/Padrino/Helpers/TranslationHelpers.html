@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers::TranslationHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers::TranslationHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-helpers/lib/padrino-helpers/translation_helpers_rb.html">padrino-helpers/lib/padrino-helpers/translation_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000152">l</a></li>
+        
+        <li><a href="#M000151">localize</a></li>
+        
+        <li><a href="#M000150">t</a></li>
+        
+        <li><a href="#M000149">translate</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000152"></a><b>l</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="TranslationHelpers.html#M000151">localize</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000151"></a><b>localize</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Delegates to I18n.localize with no additional functionality.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="TranslationHelpers.html#M000152">l</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000151_source')" id="l_M000151_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/9f8ac99f040135683700865fa27ce972d815115d/padrino-helpers/lib/padrino-helpers/translation_helpers.rb#L15" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000151_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/translation_helpers.rb, line 15</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">localize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">localize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000150"></a><b>t</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="TranslationHelpers.html#M000149">translate</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000149"></a><b>translate</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Delegates to I18n.translate with no additional functionality.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="TranslationHelpers.html#M000150">t</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000149_source')" id="l_M000149_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/9f8ac99f040135683700865fa27ce972d815115d/padrino-helpers/lib/padrino-helpers/translation_helpers.rb#L7" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000149_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/translation_helpers.rb, line 7</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">translate</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">translate</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

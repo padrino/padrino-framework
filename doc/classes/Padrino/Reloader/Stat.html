@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Reloader::Stat</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Reloader::Stat</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-core/lib/padrino-core/reloader_rb.html">padrino-core/lib/padrino-core/reloader.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+This reloader is suited for use in a many environments because each file
+will only be checked once and only one system call to stat(2) is made.
+</p>
+<p>
+Please note that this will not reload files in the background, and does so
+only when explicitly invoked.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000006">changed?</a></li>
+        
+        <li><a href="#M000010">figure_path</a></li>
+        
+        <li><a href="#M000005">reload!</a></li>
+        
+        <li><a href="#M000008">remove_constant</a></li>
+        
+        <li><a href="#M000009">rotation</a></li>
+        
+        <li><a href="#M000007">safe_load</a></li>
+        
+        <li><a href="#M000011">safe_stat</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">CACHE</td>
+            <td>=</td>
+            <td class="attr-value">{}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MTIMES</td>
+            <td>=</td>
+            <td class="attr-value">{}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">FILES_LOADED</td>
+            <td>=</td>
+            <td class="attr-value">{}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">LOADED_CLASSES</td>
+            <td>=</td>
+            <td class="attr-value">{}</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000006"></a><b>changed?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if any file changes are detected and populates the <a
+href="Stat.html#MTIMES">MTIMES</a> cache
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000006_source')" id="l_M000006_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L102" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000006_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 102</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">changed?</span>
+          <span class="ruby-identifier">changed</span> = <span class="ruby-keyword kw">false</span>
+          <span class="ruby-identifier">rotation</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span>, <span class="ruby-identifier">mtime</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">new_file</span> = <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>].<span class="ruby-identifier">nil?</span>
+            <span class="ruby-identifier">previous_mtime</span> = <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">mtime</span>
+            <span class="ruby-identifier">changed</span> = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_file</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">mtime</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">previous_mtime</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">changed</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000010"></a><b>figure_path</b>(file, paths)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Takes a relative or absolute <tt>file</tt> name and a couple possible
+<tt>paths</tt> that the <tt>file</tt> might reside in. Returns the full
+path and File::Stat for that path.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000010_source')" id="l_M000010_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L231" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000010_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 231</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">figure_path</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">paths</span>)
+          <span class="ruby-identifier">found</span> = <span class="ruby-constant">CACHE</span>[<span class="ruby-identifier">file</span>]
+          <span class="ruby-identifier">found</span> = <span class="ruby-identifier">file</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">found</span> <span class="ruby-keyword kw">and</span> <span class="ruby-constant">Pathname</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file</span>).<span class="ruby-identifier">absolute?</span>
+          <span class="ruby-identifier">found</span>, <span class="ruby-identifier">stat</span> = <span class="ruby-identifier">safe_stat</span>(<span class="ruby-identifier">found</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">found</span>, <span class="ruby-identifier">stat</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">found</span>
+
+          <span class="ruby-identifier">paths</span>.<span class="ruby-identifier">find</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">possible_path</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">path</span> = <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">possible_path</span>, <span class="ruby-identifier">file</span>)
+            <span class="ruby-identifier">found</span>, <span class="ruby-identifier">stat</span> = <span class="ruby-identifier">safe_stat</span>(<span class="ruby-identifier">path</span>)
+            <span class="ruby-keyword kw">return</span> <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">found</span>), <span class="ruby-identifier">stat</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">found</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-keyword kw">false</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000005"></a><b>reload!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Reload all files with changes detected.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000005_source')" id="l_M000005_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L76" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000005_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 76</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reload!</span>
+          <span class="ruby-identifier">rotation</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span>, <span class="ruby-identifier">mtime</span><span class="ruby-operator">|</span>
+            <span class="ruby-comment cmt"># Retrive the last modified time</span>
+            <span class="ruby-identifier">new_file</span> = <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>].<span class="ruby-identifier">nil?</span>
+            <span class="ruby-identifier">previous_mtime</span> = <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">mtime</span>
+            <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Detected a new file #{file}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_file</span>
+            <span class="ruby-comment cmt"># We skip to next file if it is not new and not modified</span>
+            <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">new_file</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">mtime</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">previous_mtime</span>
+            <span class="ruby-comment cmt"># If the file is related to their app (i.e. a controller/mailer/helper)</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">app</span> = <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">mounted_apps</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{File.dirname(a.app_file)}/</span> }
+              <span class="ruby-comment cmt"># We need to reload their own app</span>
+              <span class="ruby-identifier">app</span>.<span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">reload!</span>
+              <span class="ruby-comment cmt"># App reloading will also perform safe_load of itself so we can go next</span>
+              <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">identical?</span>(<span class="ruby-identifier">app</span>.<span class="ruby-identifier">app_file</span>, <span class="ruby-identifier">file</span>)
+                <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>] = <span class="ruby-identifier">mtime</span> <span class="ruby-comment cmt"># This prevent a loop</span>
+                <span class="ruby-keyword kw">next</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-comment cmt"># Now we can reload our file</span>
+            <span class="ruby-identifier">safe_load</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">mtime</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000008"></a><b>remove_constant</b>(const)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Removes the specified class and constant.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000008_source')" id="l_M000008_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L192" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000008_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 192</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_constant</span>(<span class="ruby-identifier">const</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Reloader</span>.<span class="ruby-identifier">exclude_constants</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">base</span><span class="ruby-operator">|</span> (<span class="ruby-identifier">const</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{base}/</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">const</span>.<span class="ruby-identifier">superclass</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{base}/</span>) } <span class="ruby-operator">&amp;&amp;</span>
+                   <span class="ruby-operator">!</span><span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Reloader</span>.<span class="ruby-identifier">include_constants</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">base</span><span class="ruby-operator">|</span> (<span class="ruby-identifier">const</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{base}/</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">const</span>.<span class="ruby-identifier">superclass</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{base}/</span>) }
+
+          <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">const</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;::&quot;</span>)
+          <span class="ruby-identifier">base</span> = <span class="ruby-identifier">parts</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Object</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Object</span>.<span class="ruby-identifier">full_const_get</span>(<span class="ruby-identifier">parts</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;::&quot;</span>))
+          <span class="ruby-identifier">object</span> = <span class="ruby-identifier">parts</span>[<span class="ruby-value">-1</span>].<span class="ruby-identifier">to_s</span>
+          <span class="ruby-keyword kw">begin</span>
+            <span class="ruby-identifier">base</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:remove_const</span>, <span class="ruby-identifier">object</span>)
+          <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">NameError</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000009"></a><b>rotation</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Searches Ruby files in your <tt>Padrino.root</tt> and monitors them for any
+changes.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000009_source')" id="l_M000009_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L210" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000009_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 210</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rotation</span>
+          <span class="ruby-identifier">paths</span>  = <span class="ruby-constant">Dir</span>[<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">&quot;*&quot;</span>)].<span class="ruby-identifier">unshift</span>(<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>).
+                                          <span class="ruby-identifier">reject</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Reloader</span>.<span class="ruby-identifier">exclude</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">path</span>) <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">path</span>) }
+          <span class="ruby-identifier">files</span>  = <span class="ruby-identifier">paths</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">Dir</span>[<span class="ruby-node">&quot;#{path}/**/*.rb&quot;</span>] }.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+
+          <span class="ruby-identifier">files</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Reloader</span>.<span class="ruby-identifier">exclude</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">base</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{base}/</span> }
+
+            <span class="ruby-identifier">found</span>, <span class="ruby-identifier">stat</span> = <span class="ruby-identifier">figure_path</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">paths</span>)
+            <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">found</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">stat</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">mtime</span> = <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">mtime</span>
+
+            <span class="ruby-constant">CACHE</span>[<span class="ruby-identifier">file</span>] = <span class="ruby-identifier">found</span>
+
+            <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">found</span>, <span class="ruby-identifier">mtime</span>)
+          }.<span class="ruby-identifier">compact</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000007"></a><b>safe_load</b>(file, mtime=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+A safe Kernel::load which issues the necessary hooks depending on results
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000007_source')" id="l_M000007_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L116" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000007_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 116</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">safe_load</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">mtime</span>=<span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">reload</span> = <span class="ruby-identifier">mtime</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">mtime</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>]
+
+          <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Reloading #{file}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">reload</span>
+
+          <span class="ruby-comment cmt"># Removes all classes declared in the specified file</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klasses</span> = <span class="ruby-constant">LOADED_CLASSES</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">file</span>)
+            <span class="ruby-identifier">klasses</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span><span class="ruby-operator">|</span> <span class="ruby-identifier">remove_constant</span>(<span class="ruby-identifier">klass</span>) }
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-comment cmt"># Keeps track of which constants were loaded and the files</span>
+          <span class="ruby-comment cmt"># that have been added so that the constants can be removed</span>
+          <span class="ruby-comment cmt"># and the files can be removed from $LOADED_FEAUTRES</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-constant">FILES_LOADED</span>[<span class="ruby-identifier">file</span>]
+            <span class="ruby-constant">FILES_LOADED</span>[<span class="ruby-identifier">file</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">fl</span><span class="ruby-operator">|</span>
+              <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fl</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">file</span>
+              <span class="ruby-identifier">$LOADED_FEATURES</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">fl</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-comment cmt"># Now reload the file ignoring any syntax errors</span>
+          <span class="ruby-identifier">$LOADED_FEATURES</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">file</span>)
+
+          <span class="ruby-comment cmt"># Duplicate objects and loaded features in the file</span>
+          <span class="ruby-identifier">klasses</span> = <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">classes</span>.<span class="ruby-identifier">dup</span>
+          <span class="ruby-identifier">files_loaded</span> = <span class="ruby-identifier">$LOADED_FEATURES</span>.<span class="ruby-identifier">dup</span>
+
+          <span class="ruby-comment cmt"># Start to re-require old dependencies</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># Why we need to reload the dependencies i.e. of a model?</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># In some circumstances (i.e. with MongoMapper) reloading a model require:</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># 1) Clean objectspace</span>
+          <span class="ruby-comment cmt"># 2) Reload model dependencies</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># We need to clean objectspace because for example we don't need to apply two times validations keys etc...</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># We need to reload MongoMapper dependencies for re-initialize them.</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-comment cmt"># In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass</span>
+          <span class="ruby-comment cmt"># is not really necessary... but how to distinguish when it is (necessary) since it is not?</span>
+          <span class="ruby-comment cmt">#</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-constant">FILES_LOADED</span>[<span class="ruby-identifier">file</span>]
+            <span class="ruby-constant">FILES_LOADED</span>[<span class="ruby-identifier">file</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">fl</span><span class="ruby-operator">|</span>
+              <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fl</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">file</span>
+              <span class="ruby-comment cmt"># Swich off for a while warnings expecially &quot;already initialized constant&quot; stuff</span>
+              <span class="ruby-keyword kw">begin</span>
+                <span class="ruby-identifier">verbosity</span> = <span class="ruby-identifier">$-v</span>
+                <span class="ruby-identifier">$-v</span> = <span class="ruby-keyword kw">nil</span>
+                <span class="ruby-identifier">require</span>(<span class="ruby-identifier">fl</span>)
+              <span class="ruby-keyword kw">ensure</span>
+                <span class="ruby-identifier">$-v</span> = <span class="ruby-identifier">verbosity</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-comment cmt"># And finally reload the specified file</span>
+          <span class="ruby-keyword kw">begin</span>
+            <span class="ruby-identifier">require</span>(<span class="ruby-identifier">file</span>)
+          <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SyntaxError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">ex</span>
+            <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Cannot require #{file} because of syntax error: #{ex.message}&quot;</span>
+          <span class="ruby-keyword kw">ensure</span>
+            <span class="ruby-constant">MTIMES</span>[<span class="ruby-identifier">file</span>] = <span class="ruby-identifier">mtime</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">mtime</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-comment cmt"># Store the file details after successful loading</span>
+          <span class="ruby-constant">LOADED_CLASSES</span>[<span class="ruby-identifier">file</span>] = <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">classes</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">klasses</span>
+          <span class="ruby-constant">FILES_LOADED</span>[<span class="ruby-identifier">file</span>]   = <span class="ruby-identifier">$LOADED_FEATURES</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">files_loaded</span>
+
+          <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000011"></a><b>safe_stat</b>(file)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000011_source')" id="l_M000011_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L246" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000011_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 246</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">safe_stat</span>(<span class="ruby-identifier">file</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">file</span>
+          <span class="ruby-identifier">stat</span> = <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">file</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">file</span>, <span class="ruby-identifier">stat</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">file?</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>, <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOTDIR</span>
+          <span class="ruby-constant">CACHE</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">file</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">false</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

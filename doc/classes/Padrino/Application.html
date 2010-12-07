@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Application</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/application_rb.html">padrino-core/lib/padrino-core/application.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Sinatra::Application
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+Subclasses of this become independent <a href="../Padrino.html">Padrino</a>
+applications (stemming from Sinatra::Application) These subclassed
+applications can be easily mounted into other <a
+href="../Padrino.html">Padrino</a> applications as well.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000044">calculate_paths</a></li>
+        
+        <li><a href="#M000040">default_configuration!</a></li>
+        
+        <li><a href="#M000043">default_errors!</a></li>
+        
+        <li><a href="#M000042">default_filters!</a></li>
+        
+        <li><a href="#M000041">default_routes!</a></li>
+        
+        <li><a href="#M000048">find_view_path</a></li>
+        
+        <li><a href="#M000046">load_paths</a></li>
+        
+        <li><a href="#M000034">new</a></li>
+        
+        <li><a href="#M000045">register_initializers</a></li>
+        
+        <li><a href="#M000035">reload!</a></li>
+        
+        <li><a href="#M000047">require_load_paths</a></li>
+        
+        <li><a href="#M000036">reset_routes!</a></li>
+        
+        <li><a href="#M000037">routes</a></li>
+        
+        <li><a href="#M000039">run!</a></li>
+        
+        <li><a href="#M000038">setup_application!</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000034"></a><b>new</b>(*args, &amp;bk)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Hooks into when a new instance of the application is created This is used
+because putting the configuration into inherited doesn&#8217;t take into
+account overwritten app settings inside subclassed definitions Only
+performs the setup first time application is initialized.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000034_source')" id="l_M000034_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L30" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000034_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 30</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>)
+        <span class="ruby-identifier">setup_application!</span>
+        <span class="ruby-keyword kw">super</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000035"></a><b>reload!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Reloads the application files from all defined load paths
+</p>
+<p>
+This method is used from our <a href="../Padrino.html">Padrino</a> <a
+href="Reloader.html">Reloader</a> during development mode in order to
+reload the source files.
+</p>
+<h4>Examples</h4>
+<pre>
+  MyApp.reload!
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000035_source')" id="l_M000035_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L45" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000035_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 45</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reload!</span>
+        <span class="ruby-identifier">reset!</span> <span class="ruby-comment cmt"># Reset sinatra app</span>
+        <span class="ruby-identifier">reset_routes!</span> <span class="ruby-comment cmt"># Remove all existing user-defined application routes</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">require_dependencies</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">root</span>, <span class="ruby-value str">&quot;/models.rb&quot;</span>)) <span class="ruby-comment cmt"># Reload models class</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">require_dependencies</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">root</span>, <span class="ruby-value str">&quot;/models/**/*.rb&quot;</span>)) <span class="ruby-comment cmt"># Reload all models</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">require_dependencies</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">app_file</span>) <span class="ruby-comment cmt"># Reload the app file</span>
+        <span class="ruby-identifier">register_initializers</span> <span class="ruby-comment cmt"># Reload our middlewares</span>
+        <span class="ruby-identifier">require_load_paths</span> <span class="ruby-comment cmt"># Reload dependencies</span>
+        <span class="ruby-identifier">default_filters!</span> <span class="ruby-comment cmt"># Reload filters</span>
+        <span class="ruby-identifier">default_errors!</span>  <span class="ruby-comment cmt"># Reload our errors</span>
+        <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">reload!</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">I18n</span>) <span class="ruby-comment cmt"># Reload also our translations</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000036"></a><b>reset_routes!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Resets application routes to only routes not defined by the user
+</p>
+<h4>Examples</h4>
+<pre>
+  MyApp.reset_routes!
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000036_source')" id="l_M000036_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L65" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000036_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 65</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reset_routes!</span>
+        <span class="ruby-identifier">router</span>.<span class="ruby-identifier">reset!</span>
+        <span class="ruby-identifier">default_routes!</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000037"></a><b>routes</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the routes of our app.
+</p>
+<h4>Examples</h4>
+<pre>
+  MyApp.routes
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000037_source')" id="l_M000037_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L77" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000037_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 77</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">routes</span>
+        <span class="ruby-identifier">router</span>.<span class="ruby-identifier">routes</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000039"></a><b>run!</b>(options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Run the <a href="../Padrino.html">Padrino</a> app as a self-hosted server
+using Thin, Mongrel or WEBrick (in that order)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000039_source')" id="l_M000039_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L105" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000039_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 105</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run!</span>(<span class="ruby-identifier">options</span>={})
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">load!</span>
+        <span class="ruby-identifier">set</span> <span class="ruby-identifier">options</span>
+        <span class="ruby-identifier">handler</span>      = <span class="ruby-identifier">detect_rack_handler</span>
+        <span class="ruby-identifier">handler_name</span> = <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/.*::/</span>, <span class="ruby-value str">''</span>)
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;=&gt; #{self.name}/#{Padrino.version} has taken the stage #{Padrino.env} on #{port}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">handler_name</span> <span class="ruby-operator">=~</span><span class="ruby-regexp re">/cgi/i</span>
+        <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">:Host</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">bind</span>, <span class="ruby-identifier">:Port</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">port</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">server</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">trap</span>(<span class="ruby-identifier">:INT</span>) <span class="ruby-keyword kw">do</span>
+            <span class="ruby-comment cmt">## Use thins' hard #stop! if available, otherwise just #stop</span>
+            <span class="ruby-identifier">server</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:stop!</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">server</span>.<span class="ruby-identifier">stop!</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">server</span>.<span class="ruby-identifier">stop</span>
+            <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;&lt;= #{self.name} has ended his set (crowd applauds)&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">handler_name</span> <span class="ruby-operator">=~</span><span class="ruby-regexp re">/cgi/i</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:running</span>, <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EADDRINUSE</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;&lt;= Someone is already performing on port #{port}!&quot;</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000038"></a><b>setup_application!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Setup the application by registering initializers, load paths and logger
+Invoked automatically when an application is first instantiated
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000038_source')" id="l_M000038_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L85" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000038_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 85</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setup_application!</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@_configured</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">calculate_paths</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">register_initializers</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">require_load_paths</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">disable</span> <span class="ruby-identifier">:logging</span> <span class="ruby-comment cmt"># We need do that as default because Sinatra use commonlogger.</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">default_filters!</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">default_routes!</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">default_errors!</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">I18n</span>)
+          <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">load_path</span> <span class="ruby-operator">+=</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">locale_path</span>
+          <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">reload!</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-ivar">@_configured</span> = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Class Protected methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000044"></a><b>calculate_paths</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Calculates any required paths after app_file and root have been properly
+configured Executes as part of the setup_application! method
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000044_source')" id="l_M000044_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L188" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000044_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 188</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calculate_paths</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">ApplicationSetupError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;Please define 'app_file' option for #{self.name} app!&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">app_file</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:views</span>, <span class="ruby-identifier">find_view_path</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">find_view_path</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:images_path</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">public</span>, <span class="ruby-value str">&quot;/images&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:images_path</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000040"></a><b>default_configuration!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Defines default settings for <a href="../Padrino.html">Padrino</a>
+application
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000040_source')" id="l_M000040_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L127" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000040_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 127</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default_configuration!</span>
+          <span class="ruby-comment cmt"># Overwriting Sinatra defaults</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:app_file</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">caller_files</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">$0</span>) <span class="ruby-comment cmt"># Assume app file is first caller</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:environment</span>, <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">env</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:raise_errors</span>, <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">development?</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:reload</span>, <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">development?</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:logging</span>, <span class="ruby-keyword kw">false</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:sessions</span>, <span class="ruby-keyword kw">false</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:public</span>, <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">'public'</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">uri_root</span>) }
+          <span class="ruby-comment cmt"># Padrino specific</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:uri_root</span>, <span class="ruby-value str">&quot;/&quot;</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:reload</span>, <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">development?</span> }
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:app_name</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">to_sym</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:default_builder</span>, <span class="ruby-value str">'StandardFormBuilder'</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:flash</span>, <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">Rack</span><span class="ruby-operator">::</span><span class="ruby-constant">Flash</span>)
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:authentication</span>, <span class="ruby-keyword kw">false</span>
+          <span class="ruby-comment cmt"># Padrino locale</span>
+          <span class="ruby-identifier">set</span> <span class="ruby-identifier">:locale_path</span>, <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">root</span>, <span class="ruby-value str">&quot;/locale/**/*.{rb,yml}&quot;</span>)] }
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000043"></a><b>default_errors!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+This log errors for production environments
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000043_source')" id="l_M000043_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L172" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000043_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 172</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default_errors!</span>
+          <span class="ruby-identifier">configure</span> <span class="ruby-identifier">:production</span> <span class="ruby-keyword kw">do</span>
+            <span class="ruby-identifier">error</span> <span class="ruby-operator">::</span><span class="ruby-constant">Exception</span> <span class="ruby-keyword kw">do</span>
+              <span class="ruby-identifier">boom</span> = <span class="ruby-identifier">env</span>[<span class="ruby-value str">'sinatra.error'</span>]
+              <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">error</span> [<span class="ruby-node">&quot;#{boom.class} - #{boom.message}:&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">boom</span>.<span class="ruby-identifier">backtrace</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n &quot;</span>)
+              <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span> = <span class="ruby-value">500</span>
+              <span class="ruby-identifier">content_type</span> <span class="ruby-value str">'text/html'</span>
+              <span class="ruby-value str">'&lt;h1&gt;Internal Server Error&lt;/h1&gt;'</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000042"></a><b>default_filters!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+This filter it&#8217;s used for know the format of the request, and
+automatically set the content type.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000042_source')" id="l_M000042_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L162" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000042_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 162</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default_filters!</span>
+          <span class="ruby-identifier">before</span> <span class="ruby-keyword kw">do</span>
+            <span class="ruby-ivar">@_content_type</span> = <span class="ruby-identifier">:html</span>
+            <span class="ruby-identifier">response</span>[<span class="ruby-value str">'Content-Type'</span>] = <span class="ruby-value str">'text/html;charset=utf-8'</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000041"></a><b>default_routes!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+We need to add almost <em>sinatra</em> images.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000041_source')" id="l_M000041_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L150" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000041_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 150</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default_routes!</span>
+          <span class="ruby-identifier">configure</span> <span class="ruby-identifier">:development</span> <span class="ruby-keyword kw">do</span>
+            <span class="ruby-identifier">get</span> <span class="ruby-value str">'/__sinatra__/:image.png'</span> <span class="ruby-keyword kw">do</span>
+              <span class="ruby-identifier">filename</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-keyword kw">__FILE__</span>) <span class="ruby-operator">+</span> <span class="ruby-node">&quot;/images/#{params[:image]}.png&quot;</span>
+              <span class="ruby-identifier">send_file</span> <span class="ruby-identifier">filename</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000048"></a><b>find_view_path</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the path to the views directory from root by returning the first
+that is found
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000048_source')" id="l_M000048_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L221" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000048_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 221</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">find_view_path</span>
+          <span class="ruby-ivar">@view_paths</span> = [<span class="ruby-value str">&quot;views&quot;</span>].<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">root</span>, <span class="ruby-identifier">path</span>) }
+          <span class="ruby-ivar">@view_paths</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">'/**/*'</span>)].<span class="ruby-identifier">any?</span> }
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000046"></a><b>load_paths</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the <a href="Application.html#M000046">load_paths</a> for the
+application (relative to the application root)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000046_source')" id="l_M000046_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L206" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000046_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 206</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_paths</span>
+          <span class="ruby-ivar">@load_paths</span> <span class="ruby-operator">||=</span> [<span class="ruby-value str">&quot;urls.rb&quot;</span>, <span class="ruby-value str">&quot;config/urls.rb&quot;</span>, <span class="ruby-value str">&quot;mailers/*.rb&quot;</span>, <span class="ruby-value str">&quot;mailers.rb&quot;</span>,
+                           <span class="ruby-value str">&quot;controllers/**/*.rb&quot;</span>, <span class="ruby-value str">&quot;controllers.rb&quot;</span>, <span class="ruby-value str">&quot;helpers/**/*.rb&quot;</span>, <span class="ruby-value str">&quot;helpers.rb&quot;</span>]
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000045"></a><b>register_initializers</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Requires the <a href="../Padrino.html">Padrino</a> middleware
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000045_source')" id="l_M000045_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L197" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000045_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 197</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">register_initializers</span>
+          <span class="ruby-identifier">use</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">Rack</span>    <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">logger</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">level</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+          <span class="ruby-identifier">use</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Reloader</span><span class="ruby-operator">::</span><span class="ruby-constant">Rack</span>  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">reload?</span>
+          <span class="ruby-identifier">use</span> <span class="ruby-constant">Rack</span><span class="ruby-operator">::</span><span class="ruby-constant">Flash</span>              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">flash?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">sessions?</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000047"></a><b>require_load_paths</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Requires all files within the application load paths
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000047_source')" id="l_M000047_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d538f2d270bbead210a21dbd197a922f3a55cf9c/padrino-core/lib/padrino-core/application.rb#L214" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000047_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application.rb, line 214</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">require_load_paths</span>
+          <span class="ruby-identifier">load_paths</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">require_dependencies</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">root</span>, <span class="ruby-identifier">path</span>)) }
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

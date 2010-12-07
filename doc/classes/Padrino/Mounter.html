@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Mounter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Mounter</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/application/mounter_rb.html">padrino-core/lib/padrino-core/application/mounter.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Object
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+Represents a particular mounted padrino application Stores the name of the
+application (app folder name) and url mount path
+</p>
+<h4>Examples</h4>
+<pre>
+  Mounter.new(&quot;blog_app&quot;, :app_class =&gt; &quot;Blog&quot;).to(&quot;/blog&quot;)
+  Mounter.new(&quot;blog_app&quot;, :app_file =&gt; &quot;/path/to/blog/app.rb&quot;).to(&quot;/blog&quot;)
+</pre>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000069">==</a></li>
+        
+        <li><a href="#M000072">app_constant</a></li>
+        
+        <li><a href="#M000073">ensure_app_file!</a></li>
+        
+        <li><a href="#M000074">ensure_app_object!</a></li>
+        
+        <li><a href="#M000065">host</a></li>
+        
+        <li><a href="#M000071">locate_app_file</a></li>
+        
+        <li><a href="#M000070">locate_app_object</a></li>
+        
+        <li><a href="#M000066">map_onto</a></li>
+        
+        <li><a href="#M000068">named_routes</a></li>
+        
+        <li><a href="#M000063">new</a></li>
+        
+        <li><a href="#M000067">routes</a></li>
+        
+        <li><a href="#M000064">to</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="Mounter/MounterException.html">Padrino::Mounter::MounterException</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>name</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>uri_root</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>app_file</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>app_class</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>app_root</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>app_obj</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>app_host</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000063"></a><b>new</b>(name, options={})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000063_source')" id="l_M000063_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L17" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000063_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 17</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+      <span class="ruby-ivar">@name</span>      = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>
+      <span class="ruby-ivar">@app_class</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:app_class</span>] <span class="ruby-operator">||</span> <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">camelize</span>
+      <span class="ruby-ivar">@app_file</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:app_file</span>]  <span class="ruby-operator">||</span> <span class="ruby-identifier">locate_app_file</span>
+      <span class="ruby-ivar">@app_obj</span>   = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:app_obj</span>]   <span class="ruby-operator">||</span> <span class="ruby-identifier">app_constant</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">locate_app_object</span>
+      <span class="ruby-identifier">ensure_app_file!</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ensure_app_object!</span>
+      <span class="ruby-ivar">@app_root</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:app_root</span>]  <span class="ruby-operator">||</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-ivar">@app_file</span>)
+      <span class="ruby-ivar">@uri_root</span>  = <span class="ruby-value str">&quot;/&quot;</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000069"></a><b>==</b>(other)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Makes two Mounters equal if they have the same name and <a
+href="Mounter.html#uri_root">uri_root</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000069_source')" id="l_M000069_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L97" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000069_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 97</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
+      <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Mounter</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">app_class</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">app_class</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">uri_root</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">uri_root</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000065"></a><b>host</b>(mount_host)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Registers the mounted application onto <a
+href="../Padrino.html">Padrino</a> for the given host
+</p>
+<h4>Examples</h4>
+<pre>
+  Mounter.new(&quot;blog_app&quot;).to(&quot;/blog&quot;).host(&quot;blog.padrino.org&quot;)
+  Mounter.new(&quot;blog_app&quot;).host(&quot;blog.padrino.org&quot;)
+  Mounter.new(&quot;catch_all&quot;).host(/.*\.padrino.org/)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000065_source')" id="l_M000065_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L49" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000065_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 49</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">host</span>(<span class="ruby-identifier">mount_host</span>)
+      <span class="ruby-ivar">@app_host</span> = <span class="ruby-identifier">mount_host</span>
+      <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">insert_mounted_app</span>(<span class="ruby-keyword kw">self</span>)
+      <span class="ruby-keyword kw">self</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000066"></a><b>map_onto</b>(router)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Maps <a href="../Padrino.html">Padrino</a> application onto a <a
+href="Router.html">Padrino::Router</a> For use in constructing a Rack
+application
+</p>
+<pre>
+  @app.map_onto(router)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000066_source')" id="l_M000066_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L61" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000066_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 61</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">map_onto</span>(<span class="ruby-identifier">router</span>)
+      <span class="ruby-identifier">app_data</span>, <span class="ruby-identifier">app_obj</span> = <span class="ruby-keyword kw">self</span>, <span class="ruby-ivar">@app_obj</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:uri_root</span>, <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">uri_root</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:app_name</span>, <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">name</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:app_file</span>, <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">app_file</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">app_file</span>)
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:root</span>,     <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">app_root</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">app_root</span>.<span class="ruby-identifier">blank?</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:public</span>,   <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">'public'</span>, <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">uri_root</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">public</span>)
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:static</span>,   <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">public</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">setup_application!</span> <span class="ruby-comment cmt"># We need to initialize here the app.</span>
+      <span class="ruby-identifier">router</span>.<span class="ruby-identifier">map</span>(<span class="ruby-identifier">:to</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">app_obj</span>, <span class="ruby-identifier">:path</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">uri_root</span>, <span class="ruby-identifier">:host</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">app_data</span>.<span class="ruby-identifier">app_host</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000068"></a><b>named_routes</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the basic route information for each named route
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000068_source')" id="l_M000068_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L84" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000068_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 84</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">named_routes</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">routes</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">route</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">name_array</span>     = <span class="ruby-node">&quot;(#{route.named.to_s.split(&quot;_&quot;).map { |piece| %Q[:#{piece}] }.join(&quot;, &quot;)})&quot;</span>
+        <span class="ruby-identifier">request_method</span> = <span class="ruby-identifier">route</span>.<span class="ruby-identifier">as_options</span>[<span class="ruby-identifier">:conditions</span>][<span class="ruby-identifier">:request_method</span>][<span class="ruby-value">0</span>]
+        <span class="ruby-identifier">full_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">uri_root</span>, <span class="ruby-identifier">route</span>.<span class="ruby-identifier">path</span>)
+        <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">named</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">request_method</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'HEAD'</span>
+        <span class="ruby-constant">OpenStruct</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">:verb</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">request_method</span>, <span class="ruby-identifier">:identifier</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">named</span>, <span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name_array</span>, <span class="ruby-identifier">:path</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">full_path</span>)
+      }.<span class="ruby-identifier">compact</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000067"></a><b>routes</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the route objects for the mounted application
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000067_source')" id="l_M000067_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L76" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000067_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 76</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">routes</span>
+      <span class="ruby-identifier">app_obj</span>.<span class="ruby-identifier">routes</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000064"></a><b>to</b>(mount_url)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Registers the mounted application onto <a
+href="../Padrino.html">Padrino</a>
+</p>
+<h4>Examples</h4>
+<pre>
+  Mounter.new(&quot;blog_app&quot;).to(&quot;/blog&quot;)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000064_source')" id="l_M000064_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L34" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000064_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 34</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to</span>(<span class="ruby-identifier">mount_url</span>)
+      <span class="ruby-ivar">@uri_root</span>  = <span class="ruby-identifier">mount_url</span>
+      <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">insert_mounted_app</span>(<span class="ruby-keyword kw">self</span>)
+      <span class="ruby-keyword kw">self</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000072"></a><b>app_constant</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the class object for the app if defined, nil otherwise
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000072_source')" id="l_M000072_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L129" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000072_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 129</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">app_constant</span>
+      <span class="ruby-identifier">app_class</span>.<span class="ruby-identifier">constantize</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Object</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">app_class</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000073"></a><b>ensure_app_file!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Raises an exception unless <a href="Mounter.html#app_file">app_file</a> is
+located properly
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000073_source')" id="l_M000073_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L136" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000073_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 136</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ensure_app_file!</span>
+      <span class="ruby-identifier">message</span> = <span class="ruby-node">&quot;Unable to locate source file for app '#{name}', try with :app_file =&gt; '/path/app.rb'&quot;</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">MounterException</span>, <span class="ruby-identifier">message</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@app_file</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000074"></a><b>ensure_app_object!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Raises an exception unless <a href="Mounter.html#app_obj">app_obj</a> is
+defined properly
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000074_source')" id="l_M000074_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L144" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000074_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 144</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ensure_app_object!</span>
+      <span class="ruby-identifier">message</span> = <span class="ruby-node">&quot;Unable to locate app for '#{name}', try with :app_class =&gt; 'MyAppClass'&quot;</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">MounterException</span>, <span class="ruby-identifier">message</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@app_obj</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000071"></a><b>locate_app_file</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the determined location of the mounted application main file
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000071_source')" id="l_M000071_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L117" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000071_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 117</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">locate_app_file</span>
+      <span class="ruby-identifier">candidates</span>  = []
+      <span class="ruby-identifier">candidates</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">app_constant</span>.<span class="ruby-identifier">app_file</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">app_constant</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:app_file</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">app_constant</span>.<span class="ruby-identifier">app_file</span>.<span class="ruby-identifier">to_s</span>)
+      <span class="ruby-identifier">candidates</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">first_caller</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">identical?</span>(<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">first_caller</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">called_from</span>.<span class="ruby-identifier">to_s</span>)
+      <span class="ruby-identifier">candidates</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">mounted_root</span>(<span class="ruby-identifier">name</span>, <span class="ruby-value str">&quot;app.rb&quot;</span>)
+      <span class="ruby-identifier">candidates</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">&quot;app&quot;</span>, <span class="ruby-value str">&quot;app.rb&quot;</span>)
+      <span class="ruby-identifier">candidates</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">candidate</span><span class="ruby-operator">|</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">candidate</span>) }
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000070"></a><b>locate_app_object</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Locates and requires the file to load the app constant
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000070_source')" id="l_M000070_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8eae014d12b275426a676a48d9fcdf142613d653/padrino-core/lib/padrino-core/application/mounter.rb#L106" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000070_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/mounter.rb, line 106</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">locate_app_object</span>
+      <span class="ruby-ivar">@_app_object</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">begin</span>
+        <span class="ruby-identifier">ensure_app_file!</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">require_dependencies</span>(<span class="ruby-identifier">app_file</span>)
+        <span class="ruby-identifier">app_constant</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

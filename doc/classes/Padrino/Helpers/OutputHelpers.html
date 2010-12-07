@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers::OutputHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers::OutputHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-helpers/lib/padrino-helpers/output_helpers_rb.html">padrino-helpers/lib/padrino-helpers/output_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000155">block_is_template?</a></li>
+        
+        <li><a href="#M000153">capture_html</a></li>
+        
+        <li><a href="#M000154">concat_content</a></li>
+        
+        <li><a href="#M000156">content_for</a></li>
+        
+        <li><a href="#M000157">yield_content</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000155"></a><b>block_is_template?</b>(block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if the block is from an ERB or HAML template; false otherwise.
+Used to determine if html should be returned or concatted to view
+</p>
+<h4>Examples</h4>
+<pre>
+  block_is_template?(block)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000155_source')" id="l_M000155_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/076b83204fd31f0611649fcf217c9a78ef85f330/padrino-helpers/lib/padrino-helpers/output_helpers.rb#L47" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000155_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/output_helpers.rb, line 47</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">block_is_template?</span>(<span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">block</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">block_is_erb?</span>(<span class="ruby-identifier">block</span>) <span class="ruby-operator">||</span> (<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:block_is_haml?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">block_is_haml?</span>(<span class="ruby-identifier">block</span>)))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000153"></a><b>capture_html</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Captures the html from a block of template code for erb or haml
+</p>
+<h4>Examples</h4>
+<pre>
+  capture_html(&amp;block) =&gt; &quot;...html...&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000153_source')" id="l_M000153_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/076b83204fd31f0611649fcf217c9a78ef85f330/padrino-helpers/lib/padrino-helpers/output_helpers.rb#L11" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000153_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/output_helpers.rb, line 11</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:is_haml?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">is_haml?</span>
+          <span class="ruby-identifier">block_is_haml?</span>(<span class="ruby-identifier">block</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">capture_haml</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>
+        <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">has_erb_buffer?</span>
+          <span class="ruby-identifier">result_text</span> = <span class="ruby-identifier">capture_erb</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+          <span class="ruby-identifier">result_text</span>.<span class="ruby-identifier">present?</span> <span class="ruby-value">? </span><span class="ruby-identifier">result_text</span> <span class="ruby-operator">:</span> (<span class="ruby-identifier">block_given?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>))
+        <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt"># theres no template to capture, invoke the block directly</span>
+          <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000154"></a><b>concat_content</b>(text=&quot;&quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Outputs the given text to the templates buffer directly
+</p>
+<h4>Examples</h4>
+<pre>
+  concat_content(&quot;This will be output to the template buffer in erb or haml&quot;)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000154_source')" id="l_M000154_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/076b83204fd31f0611649fcf217c9a78ef85f330/padrino-helpers/lib/padrino-helpers/output_helpers.rb#L29" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000154_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/output_helpers.rb, line 29</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">concat_content</span>(<span class="ruby-identifier">text</span>=<span class="ruby-value str">&quot;&quot;</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:is_haml?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">is_haml?</span>
+          <span class="ruby-identifier">haml_concat</span>(<span class="ruby-identifier">text</span>)
+        <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">has_erb_buffer?</span>
+          <span class="ruby-identifier">erb_concat</span>(<span class="ruby-identifier">text</span>)
+        <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt"># theres no template to concat, return the text directly</span>
+          <span class="ruby-identifier">text</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000156"></a><b>content_for</b>(key, content = nil, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Capture a block or text of content to be rendered at a later time. Your
+blocks can also receive values, which are passed to them by <tt><a
+href="OutputHelpers.html#M000157">yield_content</a></tt>
+</p>
+<h4>Examples</h4>
+<pre>
+  content_for(:name) { ...content... }
+  content_for(:name) { |name| ...content... }
+  content_for(:name, &quot;I'm Jeff&quot;)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000156_source')" id="l_M000156_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/076b83204fd31f0611649fcf217c9a78ef85f330/padrino-helpers/lib/padrino-helpers/output_helpers.rb#L61" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000156_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/output_helpers.rb, line 61</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">content_for</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">content</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">content_blocks</span>[<span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_sym</span>] <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-identifier">block</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">content</span> })
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000157"></a><b>yield_content</b>(key, *args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Render the captured content blocks for a given key. You can also pass
+values to the content blocks by passing them as arguments after the key.
+</p>
+<h4>Examples</h4>
+<pre>
+  yield_content :include
+  yield_content :head, &quot;param1&quot;, &quot;param2&quot;
+  yield_content(:title) || &quot;My page title&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000157_source')" id="l_M000157_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/076b83204fd31f0611649fcf217c9a78ef85f330/padrino-helpers/lib/padrino-helpers/output_helpers.rb#L76" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000157_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/output_helpers.rb, line 76</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">yield_content</span>(<span class="ruby-identifier">key</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-identifier">blocks</span> = <span class="ruby-identifier">content_blocks</span>[<span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_sym</span>]
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">blocks</span>.<span class="ruby-identifier">empty?</span>
+        <span class="ruby-identifier">blocks</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">content</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">content</span>)
+        }.<span class="ruby-identifier">join</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

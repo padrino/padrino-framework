@@ -342,7 +342,7 @@ if defined?(ActiveRecord)
               locale     = "#{lang}:" + "\n" +
                            "  models:" + "\n" +
                            "    #{m}:" + "\n" +
-                           "      name: #{klass.human_name}" + "\n" +
+                           "      name: #{klass.model_name.human}" + "\n" +
                            "      attributes:" + "\n" +
                            columns.collect { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
               print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush

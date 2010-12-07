@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>README.rdoc</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />README.rdoc</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-mailer/README.rdoc</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>2010-11-24 12:40:54 +0100</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><h1>Simple Mailer Support (padrino-mailer)</h1>
+<h3>Overview</h3>
+<p>
+This component creates an easy and intuitive interface for delivering email
+within a Sinatra application. The mail library is utilized to do the bulk
+of the work. There is full support for rendering email templates, using an
+html content type and for file attachments. The <a
+href="../../classes/Padrino.html">Padrino</a> Mailer uses a familiar
+Sinatra syntax similar to that of defining routes for a controller.
+</p>
+<h3>Usage</h3>
+<p>
+Let&#8217;s take a look at using the Mailer in an application. By default,
+the Mailer uses the built-in sendmail command on the server. However, smtp
+is also supported using the following configuration:
+</p>
+<pre>
+  # Example for configuring gmail smtp
+  set :delivery_method, :smtp =&gt; {
+    :address              =&gt; &quot;smtp.gmail.com&quot;,
+    :port                 =&gt; 587,
+    :domain               =&gt; 'your.host.name',
+    :user_name            =&gt; '&lt;username&gt;',
+    :password             =&gt; '&lt;password&gt;',
+    :authentication       =&gt; 'plain',
+    :enable_starttls_auto =&gt; true
+  }
+</pre>
+<p>
+Once the delivery settings have been defined, the default will become smtp
+delivery but can be overwritten in each message.
+</p>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> supports sending quick
+emails (using either sendmail or smtp) right from your controllers. This is
+ideal for ‘one-off’ emails where the ‘full’ mailer declaration is
+simply unnecessary.
+</p>
+<p>
+Delivering an email from within your controller is simple:
+</p>
+<pre>
+  # app/controllers/session.rb
+  post :create do
+    email(:to =&gt; &quot;john@smith.com&quot;, :subject =&gt; &quot;Successfully Registered!&quot;, :body =&gt; &quot;Test Body&quot;)
+  end
+</pre>
+<p>
+<a href="../../classes/Padrino.html">Padrino</a> also supports structured
+mailer declarations. We can define a new mailer using a <tt>mailer</tt>
+block.
+</p>
+<pre>
+  # app/mailers/sample_mailer.rb
+  MyAppName.mailers :sample do
+    email :registration do |name|
+      from    'admin@site.com'
+      to      'user@domain.com'
+      subject 'Welcome to the site!'
+      locals  :name =&gt; name
+      content_type 'html'        # optional, defaults to plain/text
+      charset 'windows-1252'     # optional, defaults to utf-8
+      via     :sendmail          # optional, smtp if defined otherwise sendmail
+      render  'registration'
+    end
+  end
+</pre>
+<p>
+In addition to a standard body, <a
+href="../../classes/Padrino.html">Padrino</a> also easily supports
+multi-part emails:
+</p>
+<pre>
+  # app/mailers/sample_mailer.rb
+  MyAppName.mailers :sample do
+    email :registration do |name|
+      to      'padrino@test.lindsaar.net'
+      subject &quot;nested multipart&quot;
+      from    &quot;test@example.com&quot;
+
+      text_part { render('multipart/basic.plain') }
+      html_part { render('multipart/basic.html')  }
+    end
+  end
+</pre>
+<p>
+Defaults can also be declared on a per-mailer or app-wide basis:
+</p>
+<pre>
+  # app/app.rb
+  set :mailer_defaults, :from =&gt; 'admin@site.com'
+
+  # app/mailers/sample_mailer.rb
+  MyAppName.mailers :sample do
+    defaults :content_type =&gt; 'html'
+    email :registration do |name, age|
+      # Uses default 'content_type' and 'from' values but can also overwrite them
+      to      'user@domain.com'
+      subject 'Welcome to the site!'
+      locals  :name =&gt; name
+      render  'registration'
+    end
+  end
+</pre>
+<p>
+This defines a message called &#8216;<tt>registration</tt>&#8217; with the
+specified attributes. The <tt>body</tt> method is invoking the render
+function passing the <tt>name</tt> attribute to the body message template
+which is defined in <tt>[views_path]/mailers/sample/registration.erb</tt>
+as shown below:
+</p>
+<pre>
+  # ./views/mailers/sample/registration.erb
+  This is the body of the email and can access the &lt;%= name %&gt; that was passed in from the mailer definition
+  That's all there is to defining the body of the email which can be plain text or html
+</pre>
+<p>
+Once the mailer definition has been completed and the template has been
+defined, the email can be sent using:
+</p>
+<pre>
+  deliver(:sample, :registration_email, &quot;Bob&quot;, &quot;21&quot;)
+</pre>
+<p>
+And that will then deliver the email according the the configured options.
+This is all you need to send basic emails.
+</p>
+<p>
+The mailer also supports the attachment of files and various other options.
+Be sure to check out the <a
+href="http://www.padrinorb.com/guides/padrino-mailer">Padrino Mailer</a>
+guide for more details on usage.
+</p>
+<h2>Copyright</h2>
+<p>
+Copyright &#169; 2010 <a href="../../classes/Padrino.html">Padrino</a>. See
+LICENSE for details.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

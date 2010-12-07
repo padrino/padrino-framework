@@ -8,7 +8,7 @@ class Account
   property :name,             String
   property :surname,          String
   property :email,            String
-  property :crypted_password, String
+  property :crypted_password, BCryptHash
   property :role,             String
 
   # Validations
@@ -21,6 +21,8 @@ class Account
   validates_uniqueness_of    :email,    :case_sensitive => false
   validates_format_of        :email,    :with => :email_address
   validates_format_of        :role,     :with => /[A-Za-z]/
+  
+  before :save, :encrypt_password
 
   ##
   # This method is for authentication purpose

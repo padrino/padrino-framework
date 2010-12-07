@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Reloader</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Reloader</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/reloader_rb.html">padrino-core/lib/padrino-core/reloader.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+High performance source code reloader middleware
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000002">exclude</a></li>
+        
+        <li><a href="#M000003">exclude_constants</a></li>
+        
+        <li><a href="#M000004">include_constants</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Reloader/Stat.html">Padrino::Reloader::Stat</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Reloader/Rack.html">Padrino::Reloader::Rack</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000002"></a><b>exclude</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Specified folders can be excluded from the code reload detection process.
+Default excluded directories at Padrino.root are: test, spec, features,
+tmp, config, lib, db and public
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000002_source')" id="l_M000002_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L39" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000002_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 39</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">exclude</span>
+      <span class="ruby-ivar">@_exclude</span> <span class="ruby-operator">||=</span> <span class="ruby-node">%w(test spec tmp features config lib public db)</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-identifier">path</span>) }
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000003"></a><b>exclude_constants</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Specified constants can be excluded from the code unloading process.
+Default excluded constants are: <a href="../Padrino.html">Padrino</a>,
+Sinatra
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000003_source')" id="l_M000003_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L47" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000003_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 47</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">exclude_constants</span>
+      <span class="ruby-ivar">@_exclude_constants</span> <span class="ruby-operator">||=</span> <span class="ruby-node">%w(Padrino::Application Sinatra::Application Sinatra::Base)</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000004"></a><b>include_constants</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Specified constants can be configured to be reloaded on every request.
+Default included constants are: [none]
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000004_source')" id="l_M000004_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/53e735555d8455c16e1e5bec191b02c603a60917/padrino-core/lib/padrino-core/reloader.rb#L55" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000004_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/reloader.rb, line 55</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">include_constants</span>
+      <span class="ruby-ivar">@_include_constants</span> <span class="ruby-operator">||=</span> []
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

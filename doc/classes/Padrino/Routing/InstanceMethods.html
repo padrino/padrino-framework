@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Routing::InstanceMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Routing::InstanceMethods</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-core/lib/padrino-core/application/routing_rb.html">padrino-core/lib/padrino-core/application/routing.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000106">content_type</a></li>
+        
+        <li><a href="#M000105">static!</a></li>
+        
+        <li><a href="#M000104">static_file?</a></li>
+        
+        <li><a href="#M000102">url</a></li>
+        
+        <li><a href="#M000103">url_for</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000106"></a><b>content_type</b>(type=nil, params={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return the request format, this is useful when we need to respond to a
+given <a href="InstanceMethods.html#M000106">content_type</a> like:
+</p>
+<h4>Examples</h4>
+<pre>
+  get :index, :provides =&gt; :any do
+    case content_type
+      when :js    then ...
+      when :json  then ...
+      when :html  then ...
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000106_source')" id="l_M000106_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/62e86296cf29bc3e5f6bee96435042fbc192c5f5/padrino-core/lib/padrino-core/application/routing.rb#L577" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000106_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 577</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">content_type</span>(<span class="ruby-identifier">type</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">params</span>={})
+        <span class="ruby-identifier">type</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-value">? </span><span class="ruby-ivar">@_content_type</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">params</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000105"></a><b>static!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Method for deliver static files.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000105_source')" id="l_M000105_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/62e86296cf29bc3e5f6bee96435042fbc192c5f5/padrino-core/lib/padrino-core/application/routing.rb#L557" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000105_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 557</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">static!</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span> = <span class="ruby-identifier">static_file?</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">path_info</span>)
+          <span class="ruby-identifier">env</span>[<span class="ruby-value str">'sinatra.static_file'</span>] = <span class="ruby-identifier">path</span>
+          <span class="ruby-identifier">send_file</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">:disposition</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000104"></a><b>static_file?</b>(path_info)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+This is mostly just a helper so request.path_info isn&#8217;t changed when
+serving files from the public directory
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000104_source')" id="l_M000104_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/62e86296cf29bc3e5f6bee96435042fbc192c5f5/padrino-core/lib/padrino-core/application/routing.rb#L544" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000104_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 544</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">static_file?</span>(<span class="ruby-identifier">path_info</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">public_dir</span> = <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">public</span>).<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">public_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">public_dir</span>)
+
+        <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">public_dir</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">path_info</span>))
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">public_dir</span>.<span class="ruby-identifier">length</span>] <span class="ruby-operator">!=</span> <span class="ruby-identifier">public_dir</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span>(<span class="ruby-identifier">path</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">path</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000102"></a><b>url</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Instance method for url generation like:
+</p>
+<h4>Examples</h4>
+<pre>
+  url(:show, :id =&gt; 1)
+  url(:show, :name =&gt; :test)
+  url(&quot;/show/:id/:name&quot;, :id =&gt; 1, :name =&gt; foo)
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="InstanceMethods.html#M000103">url_for</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000102_source')" id="l_M000102_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/62e86296cf29bc3e5f6bee96435042fbc192c5f5/padrino-core/lib/padrino-core/application/routing.rb#L535" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000102_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 535</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">url</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">url</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000103"></a><b>url_for</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="InstanceMethods.html#M000102">url</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

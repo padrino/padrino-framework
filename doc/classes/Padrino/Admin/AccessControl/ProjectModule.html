@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::AccessControl::ProjectModule</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Admin::AccessControl::ProjectModule</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-admin/lib/padrino-admin/access_control_rb.html">padrino-admin/lib/padrino-admin/access_control.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Object
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+Project Module class
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000131">human_name</a></li>
+        
+        <li><a href="#M000132">path</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>name</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000131"></a><b>human_name</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the name of the project module. If a symbol it translate/humanize
+them for you.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000131_source')" id="l_M000131_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L128" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000131_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 128</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">human_name</span>
+          <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">?</span> <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-node">&quot;padrino.admin.menu.#{@name}&quot;</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">humanize</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@name</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000132"></a><b>path</b>(prefix=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return the path of the project module. If a prefix given will be prepended.
+</p>
+<h4>Examples</h4>
+<pre>
+  # =&gt; /accounts/new
+  project_module.path
+  # =&gt; /admin/accounts
+  project_module.path(&quot;/admin&quot;)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000132_source')" id="l_M000132_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L142" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000132_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 142</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">path</span>(<span class="ruby-identifier">prefix</span>=<span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">path</span> = <span class="ruby-identifier">prefix</span> <span class="ruby-value">? </span><span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">prefix</span>, <span class="ruby-ivar">@path</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@path</span>
+          <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'RACK_BASE_URI'</span>].<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'RACK_BASE_URI'</span>]
+          <span class="ruby-identifier">path</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

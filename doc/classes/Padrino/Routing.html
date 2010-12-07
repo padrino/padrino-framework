@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Routing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Routing</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/application/routing_rb.html">padrino-core/lib/padrino-core/application/routing.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+<a href="../Padrino.html">Padrino</a> provides advanced routing definition
+support to make routes and url generation much easier. This routing system
+supports named route aliases and easy access to url paths. The benefits of
+this is that instead of having to hard-code route urls into every area of
+your application, now we can just define the urls in a single spot and then
+attach an alias which can be used to refer to the url throughout the
+application.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000081">registered</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Routing/ClassMethods.html">Padrino::Routing::ClassMethods</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Routing/InstanceMethods.html">Padrino::Routing::InstanceMethods</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Routing/Parent.html">Padrino::Routing::Parent</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Routing/UnrecognizedException.html">Padrino::Routing::UnrecognizedException</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">CONTENT_TYPE_ALIASES</td>
+            <td>=</td>
+            <td class="attr-value">{ :htm =&gt; :html }</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000081"></a><b>registered</b>(app)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000081_source')" id="l_M000081_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/62e86296cf29bc3e5f6bee96435042fbc192c5f5/padrino-core/lib/padrino-core/application/routing.rb#L96" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000081_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 96</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">registered</span>(<span class="ruby-identifier">app</span>)
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:include</span>, <span class="ruby-constant">InstanceMethods</span>)
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">ClassMethods</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

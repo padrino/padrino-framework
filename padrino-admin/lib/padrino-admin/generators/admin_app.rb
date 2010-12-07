@@ -46,9 +46,12 @@ module Padrino
           empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           directory "templates/assets",  destination_root("public", "admin")
+          
+          if orm == :string crypted_field_type = "string" 
+          if orm == :datamapper crypted_field_type "text"
 
           account_params = [
-            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+            "account", "name:string", "surname:string", "email:string", "crypted_password:#{crypted_field_type}", "role:string",
             "-r=#{options[:root]}"
           ]
 

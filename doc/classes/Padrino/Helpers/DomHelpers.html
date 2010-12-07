@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers::DomHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers::DomHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-helpers/lib/padrino-helpers/dom_helpers_rb.html">padrino-helpers/lib/padrino-helpers/dom_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000229">dom_class</a></li>
+        
+        <li><a href="#M000228">dom_id</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000229"></a><b>dom_class</b>(object, prefix=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Create DOM class name from given object. You can also specify optional
+prefix.
+</p>
+<h4>Examples</h4>
+<pre>
+  @user = User.new
+  dom_class(@user, &quot;new&quot;) # =&gt; new_user
+  dom_class(@user)        # =&gt; user
+
+  @user.save
+  @user.id                # =&gt; 11
+  dom_class(@user)        # =&gt; user
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000229_source')" id="l_M000229_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/37a5a219b6b9932162a0f3c2ff6760b65842fe02/padrino-helpers/lib/padrino-helpers/dom_helpers.rb#L38" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000229_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/dom_helpers.rb, line 38</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dom_class</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">prefix</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-identifier">chain</span> = []
+        <span class="ruby-identifier">chain</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">prefix</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">prefix</span>
+        <span class="ruby-identifier">chain</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">&quot;/&quot;</span>, <span class="ruby-value str">&quot;_&quot;</span>)
+        <span class="ruby-identifier">chain</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'_'</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000228"></a><b>dom_id</b>(object, prefix=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Create DOM id from given object. You can also specify optional prefix.
+</p>
+<h4>Examples</h4>
+<pre>
+  @user = User.new
+  dom_id(@user, &quot;new&quot;)  # =&gt; &quot;new_user&quot;
+
+  @user.save
+  @user.id              # =&gt; 10
+  dom_id(@user)         # =&gt; user_10
+  dom_id(@user, &quot;edit&quot;) # =&gt; edit_user_10
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000228_source')" id="l_M000228_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/37a5a219b6b9932162a0f3c2ff6760b65842fe02/padrino-helpers/lib/padrino-helpers/dom_helpers.rb#L17" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000228_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/dom_helpers.rb, line 17</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dom_id</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">prefix</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-identifier">chain</span> = []
+        <span class="ruby-identifier">chain</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">prefix</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">prefix</span>
+        <span class="ruby-identifier">chain</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">&quot;/&quot;</span>, <span class="ruby-value str">&quot;_&quot;</span>)
+        <span class="ruby-identifier">chain</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">id</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value str">'id'</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">id</span>
+        <span class="ruby-identifier">chain</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'_'</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

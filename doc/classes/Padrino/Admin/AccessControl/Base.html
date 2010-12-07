@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::AccessControl::Base</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Admin::AccessControl::Base</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-admin/lib/padrino-admin/access_control_rb.html">padrino-admin/lib/padrino-admin/access_control.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Object
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000125">allowed?</a></li>
+        
+        <li><a href="#M000124">project_modules</a></li>
+        
+        <li><a href="#M000123">roles</a></li>
+        
+        <li><a href="#M000122">roles_for</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000125"></a><b>allowed?</b>(account=nil, path=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return true if the given account is allowed to see the given path.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000125_source')" id="l_M000125_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L61" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000125_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 61</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">allowed?</span>(<span class="ruby-identifier">account</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">path</span>=<span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">path</span> = <span class="ruby-value str">&quot;/&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span>.<span class="ruby-identifier">blank?</span>
+          <span class="ruby-identifier">role</span> = <span class="ruby-identifier">account</span>.<span class="ruby-identifier">role</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+          <span class="ruby-identifier">authorizations</span> = <span class="ruby-ivar">@authorizations</span>.<span class="ruby-identifier">find_all</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">auth</span><span class="ruby-operator">|</span> <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">roles</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:any</span>) }
+          <span class="ruby-identifier">allowed_paths</span>  = <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:allowed</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+          <span class="ruby-identifier">denied_paths</span>   = <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:denied</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">account</span>
+            <span class="ruby-identifier">denied_paths</span>.<span class="ruby-identifier">clear</span>
+            <span class="ruby-identifier">authorizations</span> = <span class="ruby-ivar">@authorizations</span>.<span class="ruby-identifier">find_all</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">auth</span><span class="ruby-operator">|</span> <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">roles</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">role</span>) }
+            <span class="ruby-identifier">allowed_paths</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:allowed</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+            <span class="ruby-identifier">authorizations</span> = <span class="ruby-ivar">@authorizations</span>.<span class="ruby-identifier">find_all</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">auth</span><span class="ruby-operator">|</span> <span class="ruby-operator">!</span><span class="ruby-identifier">auth</span>.<span class="ruby-identifier">roles</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">role</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">auth</span>.<span class="ruby-identifier">roles</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:any</span>) }
+            <span class="ruby-identifier">denied_paths</span>  <span class="ruby-operator">+=</span> <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:allowed</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+            <span class="ruby-identifier">denied_paths</span>  <span class="ruby-operator">+=</span> <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:denied</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">allowed_paths</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{p}/</span> }
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">denied_paths</span>.<span class="ruby-identifier">any?</span>  { <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{p}/</span> }
+          <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000124"></a><b>project_modules</b>(account)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return an array of <a href="Base.html#M000124">project_modules</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000124_source')" id="l_M000124_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L52" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000124_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 52</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">project_modules</span>(<span class="ruby-identifier">account</span>)
+          <span class="ruby-identifier">role</span> = <span class="ruby-identifier">account</span>.<span class="ruby-identifier">role</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">:any</span>
+          <span class="ruby-identifier">authorizations</span> = <span class="ruby-ivar">@authorizations</span>.<span class="ruby-identifier">find_all</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">auth</span><span class="ruby-operator">|</span> <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">roles</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">role</span>) }
+          <span class="ruby-identifier">authorizations</span>.<span class="ruby-identifier">collect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:project_modules</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000123"></a><b>roles</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return an array of roles
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000123_source')" id="l_M000123_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L45" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000123_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 45</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">roles</span>
+          <span class="ruby-ivar">@roles</span>.<span class="ruby-identifier">uniq</span>.<span class="ruby-identifier">reject</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span> <span class="ruby-identifier">r</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:any</span> }
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000122"></a><b>roles_for</b>(*roles, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+We map project modules for a given role or roles
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000122_source')" id="l_M000122_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/181a0b8ba5d44a0520b3449b1effe257a54e0e4b/padrino-admin/lib/padrino-admin/access_control.rb#L33" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000122_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/access_control.rb, line 33</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">roles_for</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">roles</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Admin</span><span class="ruby-operator">::</span><span class="ruby-constant">AccessControlError</span>, <span class="ruby-value str">&quot;You must define an Account Model!&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">Account</span>)
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Admin</span><span class="ruby-operator">::</span><span class="ruby-constant">AccessControlError</span>, <span class="ruby-node">&quot;Role #{role} must be present and must be a symbol!&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">roles</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span> <span class="ruby-operator">!</span><span class="ruby-identifier">r</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Symbol</span>) } <span class="ruby-operator">||</span> <span class="ruby-identifier">roles</span>.<span class="ruby-identifier">empty?</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Admin</span><span class="ruby-operator">::</span><span class="ruby-constant">AccessControlError</span>, <span class="ruby-value str">&quot;You can't merge :any with other roles&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">roles</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">roles</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span> <span class="ruby-identifier">r</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:any</span> }
+
+          <span class="ruby-ivar">@roles</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">roles</span>
+          <span class="ruby-ivar">@authorizations</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Authorization</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">roles</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    
