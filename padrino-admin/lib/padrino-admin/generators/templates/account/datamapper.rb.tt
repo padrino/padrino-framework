@@ -22,6 +22,9 @@ class Account
   validates_format_of        :email,    :with => :email_address
   validates_format_of        :role,     :with => /[A-Za-z]/
 
+  # Callbacks
+  before :save, :encrypt_password
+
   ##
   # This method is for authentication purpose
   #
