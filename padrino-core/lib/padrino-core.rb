@@ -40,9 +40,12 @@ module Padrino
       raise ApplicationLoadError, "At least one app must be mounted!" unless self.mounted_apps && self.mounted_apps.any?
       router = Padrino::Router.new
       self.mounted_apps.each { |app| app.map_onto(router) }
-      if @builder
-        @builder.run(router)
-        @builder.to_app
+      
+      unless middleware.empty?
+        builder = Rack::Builder.new
+        middleware.each { |c,a,b| builder.use(c, *a, &b) }
+        builder.run router
+        builder.to_app
       else
         router
       end
@@ -85,27 +88,22 @@ module Padrino
     # A Rack::Builder object that allows to add middlewares in front of all
     # Padrino applications
     # 
-    def middlewares
-      @builder ||= Rack::Builder.new
-      if block_given?
-        yield @builder
-      else
-        @builder
-      end
+    def middleware
+      @middleware ||= []
     end
     
     ##
     # Clears all previously configured middlewares
     # 
-    def clear_middlewares!
-      @builder = nil
+    def clear_middleware!
+      @middleware = []
     end
     
     ##
     # Convenience method for adding a Middleware to the whole padrino app.
     # 
-    def use(*args)
-      middlewares.use(*args)
+    def use(m, *args, &block)
+      middleware << [m, args, block]
     end
   end # self
 end # Padrino

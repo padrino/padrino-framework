@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestCore < Test::Unit::TestCase
   def teardown
-    Padrino.clear_middlewares!
+    Padrino.clear_middleware!
   end
   
   context 'for core functionality' do
@@ -54,7 +54,7 @@ class TestCore < Test::Unit::TestCase
         end
       }
 
-      Padrino.middlewares.use(test)
+      Padrino.use(test)
       
       res = Rack::MockRequest.new(Padrino.application).get("/")
       assert_equal "yes", res["Middleware-Called"]
