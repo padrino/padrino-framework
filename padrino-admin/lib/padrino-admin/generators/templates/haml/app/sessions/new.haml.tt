@@ -26,6 +26,5 @@
                   .left
                     %label.label.right Bypass login?
                   .right=check_box_tag :bypass
-
               .group.navform.wat-cf
                 .right=submit_tag('Sign In', :class => :button)
