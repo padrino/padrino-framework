@@ -20,9 +20,9 @@ module Padrino
       def call(env)
         if @cooldown and Time.now > @last + @cooldown
           if Thread.list.size > 1
-            Thread.exclusive { Padrino.mounted_apps.each {|app| app.app_constant.reload! } }
+            Thread.exclusive { Padrino.reload! }
           else
-            Padrino.mounted_apps.each {|app| app.app_constant.reload! }
+            Padrino.reload!
           end
 
           @last = Time.now
