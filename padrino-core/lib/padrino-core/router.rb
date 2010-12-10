@@ -75,5 +75,5 @@ module Padrino
       end
       [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{rPath}"]]
     end
-  end
-end
+  end # Router
+end # Padrino

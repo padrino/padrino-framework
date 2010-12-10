@@ -24,4 +24,3 @@
         record_invalid: "Valideringsfeil: %{errors}"
         content_type: "fileformatet er ikke støttet"
   activerecord: *activemodel
-

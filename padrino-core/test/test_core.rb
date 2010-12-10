@@ -4,9 +4,9 @@ class TestCore < Test::Unit::TestCase
   def teardown
     Padrino.clear_middleware!
   end
-  
+
   context 'for core functionality' do
-    
+
     should 'check some global methods' do
       assert_respond_to Padrino, :root
       assert_respond_to Padrino, :env
@@ -40,7 +40,7 @@ class TestCore < Test::Unit::TestCase
       Padrino.mounted_apps.clear
       assert_raise(Padrino::ApplicationLoadError) { Padrino.application.new }
     end
-    
+
     should "add middlewares in front if specified" do
       test = Class.new {
         def initialize(app)
@@ -50,12 +50,12 @@ class TestCore < Test::Unit::TestCase
         def call(env)
           status, headers, body = @app.call(env)
           headers["Middleware-Called"] = "yes"
-          return status, headers, body 
+          return status, headers, body
         end
       }
 
       Padrino.use(test)
-      
+
       res = Rack::MockRequest.new(Padrino.application).get("/")
       assert_equal "yes", res["Middleware-Called"]
     end

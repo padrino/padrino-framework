@@ -129,7 +129,7 @@ module Padrino
       candidates << Padrino.root("app", "app.rb")
       candidates.find { |candidate| File.exist?(candidate) }
     end
-    
+
     ###
     # Raises an exception unless app_file is located properly
     #
@@ -137,7 +137,7 @@ module Padrino
       message = "Unable to locate source file for app '#{name}', try with :app_file => '/path/app.rb'"
       raise MounterException, message unless @app_file
     end
-    
+
     ###
     # Raises an exception unless app_obj is defined properly
     #

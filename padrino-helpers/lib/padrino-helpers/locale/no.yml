@@ -89,4 +89,3 @@
           one:    "En feil forhindrer %{model} å bli lagret"
           other:  "%{count} feil forhindrer denne %{model} i å bli lagret"
         body: "Det er problemer med følgende felter:"
-

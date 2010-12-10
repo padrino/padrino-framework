@@ -365,11 +365,11 @@ class TestRendering < Test::Unit::TestCase
       assert_equal 'THIS. IS. SPARTA!', body
     end
   end
-  
+
   context "for project root views" do
     should 'resolve template from it' do
       with_view :shared, "<%= 1+2 %>", :views => "/root" do
-        with_view :normal, "<%= 2+2 %>" do 
+        with_view :normal, "<%= 2+2 %>" do
           mock_app do
             set :root_views, File.expand_path(File.dirname(__FILE__) + "/root")
             get("/shared") { render "/shared" }
@@ -382,10 +382,10 @@ class TestRendering < Test::Unit::TestCase
         end
       end
     end
-    
-    should 'properly resolve shared layout' do 
+
+    should 'properly resolve shared layout' do
       create_layout :foo, "foo layout <%= yield %>", :views => "/root"
-      with_view :foo, "<%= 2+2 %>" do 
+      with_view :foo, "<%= 2+2 %>" do
         mock_app do
           set :root_views, File.expand_path(File.dirname(__FILE__) + "/root")
           get("/foo") { render "/foo", :layout => :foo }

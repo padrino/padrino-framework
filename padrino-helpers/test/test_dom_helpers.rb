@@ -25,7 +25,7 @@ class TestDomHelpers < Test::Unit::TestCase
       assert_equal dom_id(test_obj), "test_object_10"
     end
   end
-  
+
   context 'for #dom_class method' do
     should "return DOM class name based on name of given object" do
       assert_equal dom_class(TestObject.new), "test_object"

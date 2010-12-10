@@ -24,7 +24,7 @@ class !NAME! < Mongomatic::Base
   # Staying true to the "ad-hoc" nature of MongoDB,
   # there are no explicit column definitions in the
   # model file.
- 
+
   # However you can "fake it" by making a column
   # required using expectations
   # For the sake of padrino g model,
@@ -34,7 +34,7 @@ class !NAME! < Mongomatic::Base
   # the expectation: be_a_number
   # Future enhancement may allow a regex for
   # String datatypes
- 
+
 
   # Examples
   # def validate

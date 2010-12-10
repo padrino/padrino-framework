@@ -30,7 +30,7 @@ Text Helpers:: Useful formatting like: relative_time_ago, js_escape_html, saniti
 Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
 Admin:: Builtin Admin interface (like Django)
 Logging:: Provide a unified logger that can interact with your ORM or any library.
-Reloading::	Automatically reloads server code during development.
+Reloading::  Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user’s locale.
 
 Keep in mind, the user will be able to pull in these components

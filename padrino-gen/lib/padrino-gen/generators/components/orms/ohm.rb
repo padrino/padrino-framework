@@ -38,7 +38,7 @@ class !NAME! < Ohm::Model
 
   # Examples:
   # attribute :name
-  # attribute :email, String 
+  # attribute :email, String
   # reference :venue, Venue
   # set :participants, Person
   # counter :votes

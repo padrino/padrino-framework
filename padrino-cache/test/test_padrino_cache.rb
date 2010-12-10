@@ -182,5 +182,4 @@ class TestPadrinoCache < Test::Unit::TestCase
     get "/foo"
     assert_equal 500, status
   end
-
 end
