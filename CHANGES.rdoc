@@ -10,6 +10,7 @@
 * Fixed DataMapper Admin Adapter and Encrypt Passwords
 * Changed default ActiveRecord config with :reconnect => true
 * Added basic erubis support to the admin
+* Require only require 'spec_helper' in rspec tests
 
 == 0.9.19
 
