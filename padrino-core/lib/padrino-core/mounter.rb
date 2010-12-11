@@ -172,23 +172,6 @@ module Padrino
     end
 
     ##
-    # Mounts the core application onto Padrino project with given app settings (file, class, root)
-    #
-    # ==== Examples
-    #
-    #   Padrino.mount_core("Blog")
-    #   Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
-    #
-    def mount_core(*args)
-      # TODO Remove this in 0.9.14 or pre 1.0
-      warn "DEPRECATION! #{Padrino.first_caller}: Padrino.mount_core has been deprecated.\nUse Padrino.mount('AppName').to('/') instead"
-      options = args.extract_options!
-      app_class = args.size > 0 ? args.first.to_s.camelize : nil
-      options.reverse_merge!(:app_class => app_class)
-      mount("core", options).to("/")
-    end
-
-    ##
     # Mounts a new sub-application onto Padrino project
     #
     #   Padrino.mount("blog_app").to("/blog")

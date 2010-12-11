@@ -12,6 +12,7 @@
 * Added basic erubis support to the admin
 * Require only require 'spec_helper' in rspec tests
 * Added padrino-cache to our padrino meta-gem
+* Removed mount_core
 
 == 0.9.19
 
