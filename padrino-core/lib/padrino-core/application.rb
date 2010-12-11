@@ -140,7 +140,6 @@ module Padrino
           set :default_builder, 'StandardFormBuilder'
           set :flash, defined?(Rack::Flash)
           set :authentication, false
-          set :root_views, false
           # Padrino locale
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
         end
@@ -188,7 +187,7 @@ module Padrino
         #
         def calculate_paths
           raise ApplicationSetupError.new("Please define 'app_file' option for #{self.name} app!") unless self.app_file
-          path = find_view_path and set :views, path
+          set :views, find_view_path if find_view_path
           set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
         end
 
@@ -220,8 +219,8 @@ module Padrino
         # Returns the path to the views directory from root by returning the first that is found
         #
         def find_view_path
-          view_paths = ["views"].collect { |path| File.join(self.root, path) }
-          view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
+          @view_paths = ["views"].collect { |path| File.join(self.root, path) }
+          @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
     end # self
 

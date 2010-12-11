@@ -76,7 +76,6 @@ module Padrino
         @_cached_layout ||= {}
         cached_layout_path = @_cached_layout[layout_name]
         return cached_layout_path if cached_layout_path
-        #views = "{#{[views, root_views].join(",")}}" if root_views
         has_layout_at_root = Dir["#{views}/#{layout_name}.*"].any?
         layout_path = has_layout_at_root ? layout_name.to_sym : File.join('layouts', layout_name.to_s).to_sym
         @_cached_layout[layout_name] = layout_path unless reload_templates?
@@ -109,7 +108,7 @@ module Padrino
           options.merge!(data) && data = nil if data.is_a?(Hash)
 
           # If an engine is a string then this is a likely a path to be resolved
-          data, engine, views = *resolve_template(engine, options) if data.nil?
+          data, engine = *resolve_template(engine, options) if data.nil?
 
           # Sinatra 1.0 requires an outvar for erb and erubis templates
           options[:outvar] ||= '@_out_buf' if [:erb, :erubis] & [engine]
@@ -121,7 +120,7 @@ module Padrino
           end
 
           # Pass arguments to Sinatra render method
-          super(engine, data, options.dup.merge(:views => views), locals, &block)
+          super(engine, data, options.dup, locals, &block)
         end
 
         ##
@@ -160,18 +159,15 @@ module Padrino
 
           # Resolve view path and options
           options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
-          view_path = options.delete(:views) || settings.views || "./views"
+          view_path = options.delete(:views) || settings.views || settings.views || "./views"
           target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
           template_path = template_path.chomp(".#{target_extension}")
 
           # Generate potential template candidates
-          search_paths = [view_path]
-          search_paths << settings.root_views if settings.root_views
-          templates = Dir[File.join("{#{search_paths.join(',')}}", template_path) + ".*"].map do |file|
+          templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
             template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
-            template_file   = file.sub(/(#{search_paths.join("|")})/, '').chomp(".#{template_engine}").to_sym # retrieves template filename
-            template_root   = $1
-            [template_file, template_engine, template_root] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
+            template_file   = file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+            [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
           end
 
           # Check if we have a valid content type
@@ -179,15 +175,15 @@ module Padrino
 
           # Resolve final template to render
           located_template =
-            templates.find { |file, e, v| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
-            templates.find { |file, e, v| file.to_s == "#{template_path}.#{locale}" && valid_content_type } ||
-            templates.find { |file, e, v| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
-            templates.find { |file, e, v| file.to_s == "#{template_path}.#{content_type}" } ||
-            templates.find { |file, e, v| file.to_s == "#{template_path}" && valid_content_type } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && valid_content_type } ||
+            templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
+            templates.find { |file, e| file.to_s == "#{template_path}" && valid_content_type } ||
             templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
 
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-          raise TemplateNotFound, "Template path '#{template_path}' could not be located in '#{search_paths.join(";")}'!" if !located_template && options[:raise_exceptions]
+          raise TemplateNotFound, "Template path '#{template_path}' could not be located in '#{view_path}'!" if !located_template && options[:raise_exceptions]
           located_template
         end
 

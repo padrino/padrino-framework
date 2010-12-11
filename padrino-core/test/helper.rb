@@ -65,24 +65,22 @@ class Test::Unit::TestCase
   alias :response :last_response
 
   def create_template(name, content, options={})
-    options[:views] ||= "/views"
-    FileUtils.mkdir_p(File.join(File.dirname(__FILE__), options[:views]))
-    FileUtils.mkdir_p(File.join(File.dirname(__FILE__), options[:views], "layouts"))
-    path  = name.to_s
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
+    path  = "/views/#{name}"
     path += ".#{options.delete(:locale)}" if options[:locale].present?
     path += ".#{options[:format]}" if options[:format].present?
     path += ".erb" unless options[:format].to_s =~ /haml|rss|atom/
     path += ".builder" if options[:format].to_s =~ /rss|atom/
-    file  = File.join(File.dirname(__FILE__), options[:views], path)
+    file  = File.dirname(__FILE__) + path
     File.open(file, 'w') { |io| io.write content }
     file
   end
   alias :create_view   :create_template
   alias :create_layout :create_template
 
-  def remove_views(options={})
-    options[:views] ||= "/views"
-    FileUtils.rm_rf(File.join(File.dirname(__FILE__), options[:views]))
+  def remove_views
+    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
   end
 
   def with_template(name, content, options={})
@@ -92,7 +90,7 @@ class Test::Unit::TestCase
   ensure
     # Remove temp layout
     File.unlink(template) rescue nil
-    remove_views(options)
+    remove_views
   end
   alias :with_view   :with_template
   alias :with_layout :with_template
