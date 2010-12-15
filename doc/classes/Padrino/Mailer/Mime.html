@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Mailer::Mime</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Mailer::Mime</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-mailer/lib/padrino-mailer/mime_rb.html">padrino-mailer/lib/padrino-mailer/mime.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000394">mime_type</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">MIME_TYPES</td>
+            <td>=</td>
+            <td class="attr-value">{         &quot;text/html&quot;  =&gt; :html,         &quot;text/plain&quot; =&gt; :plain,         &quot;text/xml&quot;   =&gt; :xml       }</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+List of most common mime-types, selected various sources according to their
+usefulness in a emailg scope for Ruby users.
+</p>
+<p>
+You can add your own mime types like:
+</p>
+<pre>
+  Padrino::Mailer::MIME_TYPES.merge!(&quot;text/xml&quot; =&gt; :xml)
+</pre>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000394"></a><b>mime_type</b>(mime, fallback=:plain)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns Symbol with mime type if found, otherwise use <tt>fallback</tt>.
+<tt>mime</tt> should be the content type like &#8220;text/plain&#8220;
+<tt>fallback</tt> may be any symbol
+</p>
+<p>
+Also see the documentation for <a
+href="Mime.html#MIME_TYPES">MIME_TYPES</a>
+</p>
+<h4>Examples</h4>
+<pre>
+  =&gt; :plain
+  Padrino::Mailer::Mime.mime_type('text/plain')
+  =&gt; :html
+  Padrino::Mailer::Mime.mime_type('text/html')
+</pre>
+<p>
+This is a shortcut for:
+</p>
+<pre>
+  Padrino::Mailer::Mime::MIME_TYPES.fetch('text/plain', :plain)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000394_source')" id="l_M000394_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/db429172c3609b47d710fc4da278c2b0bb7c886b/padrino-mailer/lib/padrino-mailer/mime.rb#L23" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000394_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-mailer/lib/padrino-mailer/mime.rb, line 23</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">mime_type</span>(<span class="ruby-identifier">mime</span>, <span class="ruby-identifier">fallback</span>=<span class="ruby-identifier">:plain</span>)
+        <span class="ruby-constant">MIME_TYPES</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">mime</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>, <span class="ruby-identifier">fallback</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Rendering</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Rendering</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/application/rendering_rb.html">padrino-core/lib/padrino-core/application/rendering.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+<a href="../Padrino.html">Padrino</a> enhances the Sinatra ‘render’
+method to have support for automatic template engine detection, enhanced
+layout functionality, locale enabled rendering, among other features.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000106">registered</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Rendering/ClassMethods.html">Padrino::Rendering::ClassMethods</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Rendering/InstanceMethods.html">Padrino::Rendering::InstanceMethods</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Rendering/TemplateNotFound.html">Padrino::Rendering::TemplateNotFound</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">IGNORE_FILE_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">[       /~$/ # This is for Gedit     ]</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+This is an array of file patterns to ignore. If your editor add a suffix
+during editing to your files please add it like:
+</p>
+<pre>
+  Padrino::Rendering::IGNORE_FILE_PATTERN &lt;&lt; /~$/
+</pre>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DEFAULT_RENDERING_OPTIONS</td>
+            <td>=</td>
+            <td class="attr-value">{ :strict_format =&gt; false, :raise_exceptions =&gt; true }</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Default rendering options used in the render-method
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000106"></a><b>registered</b>(app)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000106_source')" id="l_M000106_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/85f274c225c44e3dbaee39477d4951d61efcfe85/padrino-core/lib/padrino-core/application/rendering.rb#L31" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000106_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/rendering.rb, line 31</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">registered</span>(<span class="ruby-identifier">app</span>)
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:include</span>, <span class="ruby-constant">InstanceMethods</span>)
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">ClassMethods</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Admin::Helpers::AuthenticationHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Admin::Helpers::AuthenticationHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-admin/lib/padrino-admin/helpers/authentication_helpers_rb.html">padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000283">allowed?</a></li>
+        
+        <li><a href="#M000281">current_account</a></li>
+        
+        <li><a href="#M000280">logged_in?</a></li>
+        
+        <li><a href="#M000285">login_required</a></li>
+        
+        <li><a href="#M000284">project_modules</a></li>
+        
+        <li><a href="#M000287">redirect_back_or_default</a></li>
+        
+        <li><a href="#M000282">set_current_account</a></li>
+        
+        <li><a href="#M000286">store_location!</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000283"></a><b>allowed?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if the <tt><a
+href="AuthenticationHelpers.html#M000281">current_account</a></tt> is
+allowed to see the requested path
+</p>
+<p>
+For configure this role please refer to:
++Padrino::Admin::AccessControl::Base+
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000283_source')" id="l_M000283_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L36" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000283_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 36</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">allowed?</span>
+          <span class="ruby-identifier">access_control</span>.<span class="ruby-identifier">allowed?</span>(<span class="ruby-identifier">current_account</span>, <span class="ruby-identifier">request</span>.<span class="ruby-identifier">path_info</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000281"></a><b>current_account</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the <a
+href="AuthenticationHelpers.html#M000281">current_account</a>, it&#8217;s
+an instance of <tt>Account</tt> model
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000281_source')" id="l_M000281_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L15" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000281_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 15</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">current_account</span>
+          <span class="ruby-ivar">@current_account</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">login_from_session</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000280"></a><b>logged_in?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if <tt><a
+href="AuthenticationHelpers.html#M000281">current_account</a></tt> is
+logged and active.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000280_source')" id="l_M000280_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L8" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000280_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 8</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">logged_in?</span>
+          <span class="ruby-operator">!</span><span class="ruby-identifier">current_account</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000285"></a><b>login_required</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns a helper useful in a <tt>before_filter</tt> for check if an account
+are: <tt>logged_in?</tt> and <tt>allowed?</tt>
+</p>
+<p>
+By default this method is used in <a href="../../Admin.html">Admin</a>
+Apps.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000285_source')" id="l_M000285_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L53" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000285_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 53</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">login_required</span>
+          <span class="ruby-identifier">store_location!</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">store_location</span>
+          <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">access_denied</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">allowed?</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000284"></a><b>project_modules</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns project modules for the current account
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000284_source')" id="l_M000284_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L43" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000284_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 43</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">project_modules</span>
+          <span class="ruby-identifier">access_control</span>.<span class="ruby-identifier">project_modules</span>(<span class="ruby-identifier">current_account</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000287"></a><b>redirect_back_or_default</b>(default)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Redirect the account to the page that requested an authentication or if the
+account is not allowed/logged return it to a default page
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000287_source')" id="l_M000287_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L69" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000287_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 69</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">redirect_back_or_default</span>(<span class="ruby-identifier">default</span>)
+          <span class="ruby-identifier">return_to</span> = <span class="ruby-identifier">session</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:return_to</span>)
+          <span class="ruby-identifier">redirect</span>(<span class="ruby-identifier">return_to</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000282"></a><b>set_current_account</b>(account=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Override the <a
+href="AuthenticationHelpers.html#M000281">current_account</a>, you must
+provide an instance of Account Model
+</p>
+<h4>Examples:</h4>
+<pre>
+    set_current_account(Account.authenticate(params[:email], params[:password])
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000282_source')" id="l_M000282_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L26" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000282_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 26</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_current_account</span>(<span class="ruby-identifier">account</span>=<span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">session</span>[<span class="ruby-identifier">settings</span>.<span class="ruby-identifier">session_id</span>] = <span class="ruby-identifier">account</span> <span class="ruby-value">? </span><span class="ruby-identifier">account</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+          <span class="ruby-ivar">@current_account</span> = <span class="ruby-identifier">account</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000286"></a><b>store_location!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Store in session[:return_to] the env[&#8216;HTTP_REFERER&#8217;]
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000286_source')" id="l_M000286_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb#L61" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000286_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-admin/lib/padrino-admin/helpers/authentication_helpers.rb, line 61</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">store_location!</span>
+          <span class="ruby-identifier">session</span>[<span class="ruby-identifier">:return_to</span>] = <span class="ruby-identifier">env</span>[<span class="ruby-value str">'HTTP_REFERER'</span>]
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

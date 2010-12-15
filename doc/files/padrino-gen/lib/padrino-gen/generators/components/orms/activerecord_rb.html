@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>activerecord.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />activerecord.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/orms/activerecord.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">AR</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-AR) unless defined?(AR) ## # You can use other adapters like: # #   ActiveRecord::Base.configurations[:development] = { #     :adapter   =&gt; 'mysql', #     :encoding  =&gt; 'utf8', #     :reconnect =&gt; true, #     :database  =&gt; 'your_database', #     :pool      =&gt; 5, #     :username  =&gt; 'root', #     :password  =&gt; '', #     :host      =&gt; 'localhost', #     :socket    =&gt; '/tmp/mysql.sock' #   } # ActiveRecord::Base.configurations[:development] = { !DB_DEVELOPMENT! }  ActiveRecord::Base.configurations[:production] = { !DB_PRODUCTION! }  ActiveRecord::Base.configurations[:test] = { !DB_TEST! }  # Setup our logger ActiveRecord::Base.logger = logger  # Include Active Record class name as root for JSON serialized output. ActiveRecord::Base.include_root_in_json = true  # Store the full class name (including module namespace) in STI type column. ActiveRecord::Base.store_full_sti_class = true  # Use ISO 8601 format for JSON serialized times and dates. ActiveSupport.use_standard_json_time_format = true  # Don't escape HTML entities in JSON, leave that for the #json_escape helper. # if you're including raw json in an HTML page. ActiveSupport.escape_html_entities_in_json = false  # Now we can estabilish connection with our db ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env]) AR ) unless defined?(AR)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MYSQL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MYSQL)   :adapter   =&gt; 'mysql',   :encoding  =&gt; 'utf8',   :reconnect =&gt; true,   :database  =&gt; !DB_NAME!,   :pool      =&gt; 5,   :username  =&gt; 'root',   :password  =&gt; '',   :host      =&gt; 'localhost',   :socket    =&gt; '/tmp/mysql.sock' MYSQL )</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MYSQL2</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MYSQL2)   :adapter   =&gt; 'mysql2',   :encoding  =&gt; 'utf8',   :reconnect =&gt; true,   :database  =&gt; !DB_NAME!,   :pool      =&gt; 5,   :username  =&gt; 'root',   :password  =&gt; '',   :host      =&gt; 'localhost',   :socket    =&gt; '/tmp/mysql.sock' MYSQL2 )</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">POSTGRES</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-POSTGRES)   :adapter   =&gt; 'postgresql',   :database  =&gt; !DB_NAME!,   :username  =&gt; 'root',   :password  =&gt; '',   :host      =&gt; 'localhost',   :port      =&gt; 5432 POSTGRES )</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SQLITE</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-SQLITE)   :adapter =&gt; 'sqlite3',   :database =&gt; !DB_NAME! SQLITE )</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">AR_MODEL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MODEL) unless defined?(AR_MODEL) class !NAME! &lt; ActiveRecord::Base  end MODEL ) unless defined?(AR_MODEL)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">AR_MIGRATION</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION) unless defined?(AR_MIGRATION) class !FILECLASS! &lt; ActiveRecord::Migration   def self.up     !UP!   end    def self.down     !DOWN!   end end MIGRATION ) unless defined?(AR_MIGRATION)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">AR_MODEL_UP_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG) create_table :!TABLE! do |t|   !FIELDS! end MIGRATION ).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">AR_MODEL_DOWN_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION) unless defined?(AR_MODEL_DOWN_MG) drop_table :!TABLE! MIGRATION ) unless defined?(AR_MODEL_DOWN_MG)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">AR_CHANGE_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG) change_table :!TABLE! do |t|   !COLUMNS! end MIGRATION ).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

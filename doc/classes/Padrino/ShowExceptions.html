@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::ShowExceptions</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::ShowExceptions</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/application/showexceptions_rb.html">padrino-core/lib/padrino-core/application/showexceptions.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+This module extend Sinatra::ShowExceptions adding <a
+href="../Padrino.html">Padrino</a> as &#8220;Framework&#8220;
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000093">frame_class_with_padrino</a></li>
+        
+        <li><a href="#M000092">included</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000092"></a><b>included</b>(base)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000092_source')" id="l_M000092_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/5fd832b28edc3ed6ea08d01555ec644256cac94e/padrino-core/lib/padrino-core/application/showexceptions.rb#L7" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000092_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/showexceptions.rb, line 7</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">included</span>(<span class="ruby-identifier">base</span>)
+      <span class="ruby-identifier">base</span>.<span class="ruby-identifier">alias_method_chain</span> <span class="ruby-identifier">:frame_class</span>, <span class="ruby-identifier">:padrino</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000093"></a><b>frame_class_with_padrino</b>(frame)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000093_source')" id="l_M000093_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/5fd832b28edc3ed6ea08d01555ec644256cac94e/padrino-core/lib/padrino-core/application/showexceptions.rb#L11" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000093_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/showexceptions.rb, line 11</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">frame_class_with_padrino</span>(<span class="ruby-identifier">frame</span>)
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">frame</span>.<span class="ruby-identifier">filename</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/lib\/sinatra.*\.rb|lib\/padrino.*\.rb/</span>
+        <span class="ruby-value str">&quot;framework&quot;</span>
+      <span class="ruby-keyword kw">elsif</span> (<span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">Gem</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">frame</span>.<span class="ruby-identifier">filename</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-constant">Gem</span>.<span class="ruby-identifier">dir</span>)) <span class="ruby-operator">||</span>
+            <span class="ruby-identifier">frame</span>.<span class="ruby-identifier">filename</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\/bin\/(\w+)$/</span> <span class="ruby-operator">||</span>
+            <span class="ruby-identifier">frame</span>.<span class="ruby-identifier">filename</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/Ruby\/Gems/</span>
+        <span class="ruby-value str">&quot;system&quot;</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-value str">&quot;app&quot;</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

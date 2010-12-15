@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Routing::ClassMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Routing::ClassMethods</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-core/lib/padrino-core/application/routing_rb.html">padrino-core/lib/padrino-core/application/routing.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000090">controller</a></li>
+        
+        <li><a href="#M000091">controllers</a></li>
+        
+        <li><a href="#M000102">delete</a></li>
+        
+        <li><a href="#M000099">get</a></li>
+        
+        <li><a href="#M000103">head</a></li>
+        
+        <li><a href="#M000094">parent</a></li>
+        
+        <li><a href="#M000101">post</a></li>
+        
+        <li><a href="#M000100">put</a></li>
+        
+        <li><a href="#M000095">router</a></li>
+        
+        <li><a href="#M000097">url</a></li>
+        
+        <li><a href="#M000098">url_for</a></li>
+        
+        <li><a href="#M000096">urls</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000090"></a><b>controller</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Method for organize in a better way our routes like:
+</p>
+<pre>
+  controller :admin do
+    get :index do; ...; end
+    get :show, :with =&gt; :id  do; ...; end
+  end
+</pre>
+<p>
+Now you can call your actions with:
+</p>
+<pre>
+  url(:admin_index) # =&gt; &quot;/admin&quot;
+  url(:admin_show, :id =&gt; 1) # &quot;/admin/show/1&quot;
+</pre>
+<p>
+You can instead using named routes follow the sinatra way like:
+</p>
+<pre>
+  controller &quot;/admin&quot; do
+    get &quot;/index&quot; do; ...; end
+    get &quot;/show/:id&quot; do; ...; end
+  end
+</pre>
+<p>
+and you can call directly these urls:
+</p>
+<pre>
+  # =&gt; &quot;/admin&quot;
+  # =&gt; &quot;/admin/show/1&quot;
+</pre>
+<p>
+You can supply provides to all controller routes:
+</p>
+<pre>
+  controller :provides =&gt; [:html, :xml, :json] do
+    get :index do; &quot;respond to html, xml and json&quot;; end
+    post :index do; &quot;respond to html, xml and json&quot;; end
+    get :foo do; &quot;respond to html, xml and json&quot;; end
+  end
+</pre>
+<p>
+You can specify parent resources in padrino with the :parent option on the
+controller:
+</p>
+<pre>
+  controllers :product, :parent =&gt; :user do
+    get :index do
+      # url is generated as &quot;/user/#{params[:user_id]}/product&quot;
+      # url_for(:product, :index, :user_id =&gt; 5) =&gt; &quot;/user/5/product&quot;
+    end
+    get :show, :with =&gt; :id do
+      # url is generated as &quot;/user/#{params[:user_id]}/product/show/#{params[:id]}&quot;
+      # url_for(:product, :show, :user_id =&gt; 5, :id =&gt; 10) =&gt; &quot;/user/5/product/show/10&quot;
+    end
+  end
+</pre>
+<p>
+You can supply default values:
+</p>
+<pre>
+  controller :lang =&gt; :de do
+    get :index, :map =&gt; &quot;/:lang&quot; do; &quot;params[:lang] == :de&quot;; end
+  end
+</pre>
+<p>
+In a controller before and after filters are scoped and didn&#8217;t affect
+other controllers or main app. In a controller layout are scoped and
+didn&#8217;t affect others controllers and main app.
+</p>
+<pre>
+  controller :posts do
+    layout :post
+    before { foo }
+    after  { bar }
+  end
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="ClassMethods.html#M000091">controllers</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000090_source')" id="l_M000090_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L165" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000090_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 165</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">controller</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+          <span class="ruby-identifier">options</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">extract_options!</span>
+
+          <span class="ruby-comment cmt"># Controller defaults</span>
+          <span class="ruby-ivar">@_controller</span>, <span class="ruby-identifier">original_controller</span> = <span class="ruby-identifier">args</span>, <span class="ruby-ivar">@_controller</span>
+          <span class="ruby-ivar">@_parents</span>,    <span class="ruby-identifier">original_parent</span>     = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:parent</span>), <span class="ruby-ivar">@_parents</span>
+          <span class="ruby-ivar">@_provides</span>,   <span class="ruby-identifier">original_provides</span>   = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:provides</span>), <span class="ruby-ivar">@_provides</span>
+          <span class="ruby-ivar">@_cache</span>,      <span class="ruby-identifier">original_cache</span>      = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:cache</span>), <span class="ruby-ivar">@_cache</span>
+          <span class="ruby-ivar">@_map</span>,        <span class="ruby-identifier">original_map</span>        = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:map</span>), <span class="ruby-ivar">@_map</span>
+          <span class="ruby-ivar">@_defaults</span>,   <span class="ruby-identifier">original_defaults</span>   = <span class="ruby-identifier">options</span>, <span class="ruby-ivar">@_defaults</span>
+
+          <span class="ruby-comment cmt"># Application defaults</span>
+          <span class="ruby-ivar">@filters</span>,     <span class="ruby-identifier">original_filters</span> = { <span class="ruby-identifier">:before</span> =<span class="ruby-operator">&gt;</span> [], <span class="ruby-identifier">:after</span> =<span class="ruby-operator">&gt;</span> [] }, <span class="ruby-ivar">@filters</span>
+          <span class="ruby-ivar">@layout</span>,      <span class="ruby-identifier">original_layout</span>         = <span class="ruby-keyword kw">nil</span>, <span class="ruby-ivar">@layout</span>
+
+          <span class="ruby-identifier">instance_eval</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+
+          <span class="ruby-comment cmt"># Application defaults</span>
+          <span class="ruby-ivar">@filters</span>        = <span class="ruby-identifier">original_filters</span>
+          <span class="ruby-ivar">@layout</span>         = <span class="ruby-identifier">original_layout</span>
+
+          <span class="ruby-comment cmt"># Controller defaults</span>
+          <span class="ruby-ivar">@_controller</span>, <span class="ruby-ivar">@_parents</span>, <span class="ruby-ivar">@_cache</span> = <span class="ruby-identifier">original_controller</span>, <span class="ruby-identifier">original_parent</span>, <span class="ruby-identifier">original_cache</span>
+          <span class="ruby-ivar">@_defaults</span>, <span class="ruby-ivar">@_provides</span>, <span class="ruby-ivar">@_map</span>  = <span class="ruby-identifier">original_defaults</span>, <span class="ruby-identifier">original_provides</span>, <span class="ruby-identifier">original_map</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">include</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">extensions</span>.<span class="ruby-identifier">any?</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000091"></a><b>controllers</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="ClassMethods.html#M000090">controller</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000102"></a><b>delete</b>(path, *args, &amp;bk)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000102_source')" id="l_M000102_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L280" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000102_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 280</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>); <span class="ruby-identifier">route</span> <span class="ruby-value str">'DELETE'</span>, <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span> <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000099"></a><b>get</b>(path, *args, &amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000099_source')" id="l_M000099_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L270" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000099_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 270</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">conditions</span> = <span class="ruby-ivar">@conditions</span>.<span class="ruby-identifier">dup</span>
+        <span class="ruby-identifier">route</span>(<span class="ruby-value str">'GET'</span>, <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+
+        <span class="ruby-ivar">@conditions</span> = <span class="ruby-identifier">conditions</span>
+        <span class="ruby-identifier">route</span>(<span class="ruby-value str">'HEAD'</span>, <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000103"></a><b>head</b>(path, *args, &amp;bk)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000103_source')" id="l_M000103_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L281" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000103_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 281</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">head</span>(<span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>);   <span class="ruby-identifier">route</span> <span class="ruby-value str">'HEAD'</span>,   <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span> <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000094"></a><b>parent</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Provides many parents with shallowing.
+</p>
+<h4>Examples</h4>
+<pre>
+  controllers :product do
+    parent :shop, :optional =&gt; true, :map =&gt; &quot;/my/stand&quot;
+    parent :category, :optional =&gt; true
+    get :show, :with =&gt; :id do
+      # generated urls:
+      #   &quot;/product/show/#{params[:id]}&quot;
+      #   &quot;/my/stand/#{params[:shop_id]}/product/show/#{params[:id]}&quot;
+      #   &quot;/my/stand/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}&quot;
+      # url_for(:product, :show, :id =&gt; 10) =&gt; &quot;/product/show/10&quot;
+      # url_for(:product, :show, :shop_id =&gt; 5, :id =&gt; 10) =&gt; &quot;/my/stand/5/product/show/10&quot;
+      # url_for(:product, :show, :shop_id =&gt; 5, :category_id =&gt; 1, :id =&gt; 10) =&gt; &quot;/my/stand/5/category/1/product/show/10&quot;
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000094_source')" id="l_M000094_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L215" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000094_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 215</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parent</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">defaults</span> = { <span class="ruby-identifier">:optional</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">:map</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span> }
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">defaults</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+        <span class="ruby-ivar">@_parents</span> = <span class="ruby-constant">Array</span>(<span class="ruby-ivar">@_parents</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@_parents</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+        <span class="ruby-ivar">@_parents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Parent</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000101"></a><b>post</b>(path, *args, &amp;bk)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000101_source')" id="l_M000101_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L279" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000101_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 279</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">post</span>(<span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>);   <span class="ruby-identifier">route</span> <span class="ruby-value str">'POST'</span>,   <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span> <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000100"></a><b>put</b>(path, *args, &amp;bk)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000100_source')" id="l_M000100_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L278" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000100_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 278</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">put</span>(<span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span>);    <span class="ruby-identifier">route</span> <span class="ruby-value str">'PUT'</span>,    <span class="ruby-identifier">path</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">bk</span> <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000095"></a><b>router</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Using HTTPRouter, for features and configurations see: <a
+href="http://github.com/joshbuddy/http_router">github.com/joshbuddy/http_router</a>
+</p>
+<h4>Examples</h4>
+<pre>
+  router.add('/greedy/:greed')
+  router.recognize('/simple')
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="ClassMethods.html#M000096">urls</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000095_source')" id="l_M000095_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L230" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000095_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 230</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">router</span>
+        <span class="ruby-ivar">@router</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">HttpRouter</span>.<span class="ruby-identifier">new</span>
+        <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>(<span class="ruby-ivar">@router</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@router</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000097"></a><b>url</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Instance method for url generation like:
+</p>
+<h4>Examples</h4>
+<pre>
+  url(:show, :id =&gt; 1)
+  url(:show, 1)
+  url(:show, :name =&gt; :test)
+  url(&quot;/show/:id/:name&quot;, :id =&gt; 1, :name =&gt; foo)
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="ClassMethods.html#M000098">url_for</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000097_source')" id="l_M000097_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-core/lib/padrino-core/application/routing.rb#L246" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000097_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/application/routing.rb, line 246</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">url</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-identifier">params</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">extract_options!</span>  <span class="ruby-comment cmt"># parameters is hash at end</span>
+        <span class="ruby-identifier">names</span>, <span class="ruby-identifier">params_array</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">partition</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)}
+        <span class="ruby-identifier">name</span> = <span class="ruby-identifier">names</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;_&quot;</span>).<span class="ruby-identifier">to_sym</span>    <span class="ruby-comment cmt"># route name is concatenated with underscores</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+          <span class="ruby-identifier">params</span>.<span class="ruby-identifier">delete_if</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">nil?</span> }
+          <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:format</span>] = <span class="ruby-identifier">params</span>[<span class="ruby-identifier">:format</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:format</span>)
+          <span class="ruby-identifier">params</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-identifier">v</span>.<span class="ruby-identifier">to_param</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:to_param</span>) }
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">url</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params_array</span>.<span class="ruby-identifier">empty?</span>
+          <span class="ruby-identifier">router</span>.<span class="ruby-identifier">url</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">params</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">router</span>.<span class="ruby-identifier">url</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span>(<span class="ruby-identifier">params_array</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">params</span>))
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">url</span>[<span class="ruby-value">0</span>,<span class="ruby-value">0</span>] = <span class="ruby-identifier">conform_uri</span>(<span class="ruby-identifier">uri_root</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-identifier">uri_root</span>)
+        <span class="ruby-identifier">url</span>[<span class="ruby-value">0</span>,<span class="ruby-value">0</span>] = <span class="ruby-identifier">conform_uri</span>(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'RACK_BASE_URI'</span>]) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'RACK_BASE_URI'</span>]
+        <span class="ruby-identifier">url</span> = <span class="ruby-value str">&quot;/&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">url</span>.<span class="ruby-identifier">blank?</span>
+        <span class="ruby-identifier">url</span>
+      <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">HttpRouter</span><span class="ruby-operator">::</span><span class="ruby-constant">UngeneratableRouteException</span>
+        <span class="ruby-identifier">route_error</span> = <span class="ruby-node">&quot;route mapping for url(#{name.inspect}) could not be found!&quot;</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Routing</span><span class="ruby-operator">::</span><span class="ruby-constant">UnrecognizedException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">route_error</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000098"></a><b>url_for</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="ClassMethods.html#M000097">url</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000096"></a><b>urls</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="ClassMethods.html#M000095">router</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

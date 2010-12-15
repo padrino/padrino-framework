@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>cucumber.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />cucumber.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/tests/cucumber.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">CUCUMBER_SETUP</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST) unless defined?(CUCUMBER_SETUP) PADRINO_ENV = 'test' unless defined?(PADRINO_ENV) require File.expand_path(File.dirname(__FILE__) + &quot;/../../config/boot&quot;)  require 'capybara/cucumber' require 'spec/expectations'  ## # You can handle all padrino applications using instead: #   Padrino.application Capybara.app = CLASS_NAME.tap { |app|  } TEST ) unless defined?(CUCUMBER_SETUP)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CUCUMBER_YML</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST) unless defined?(CUCUMBER_YML) default: --tags ~@wip --strict features html_report: --tags ~@wip --strict --format html --out=features_report.html features TEST ) unless defined?(CUCUMBER_YML)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CUCUMBER_FEATURE</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST) unless defined?(CUCUMBER_FEATURE) Feature: Addition   In order to avoid silly mistakes   As a math idiot   I want to be told the sum of two numbers    Scenario: Add two numbers     Given I visit the calculator page     And I fill in '50' for 'first'     And I fill in '70' for 'second'     When I press 'Add'     Then I should see 'Answer: 120' TEST ) unless defined?(CUCUMBER_FEATURE)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CUCUMBER_STEP</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST) unless defined?(CUCUMBER_STEP) Given /^I visit the calculator page$/ do   visit '/add' end  Given /^I fill in '(.*)' for '(.*)'$/ do |value, field|   fill_in(field, :with =&gt; value) end  When /^I press '(.*)'$/ do |name|   click_button(name) end  Then /^I should see '(.*)'$/ do |text|   response_body.should contain(/#\{text}/m) end TEST ) unless defined?(CUCUMBER_STEP)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CUCUMBER_URL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST) unless defined?(CUCUMBER_URL) module Cucumber   module Web     module URLs       def url_for(*names)         Capybara.app.url_for(*names)       end       alias_method :url, :url_for        def absolute_url_for(*names)         &quot;http://www.example.com&quot; + Capybara.app.url_for(*names)       end       alias_method :absolute_url, :absolute_url_for     end   end end  World(Cucumber::Web::URLs) TEST ) unless defined?(CUCUMBER_URL)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

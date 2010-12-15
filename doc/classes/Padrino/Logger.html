@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Logger</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Logger</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-core/lib/padrino-core/logger_rb.html">padrino-core/lib/padrino-core/logger.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            <a href="../Object.html">Object</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+Extensions to the built in Ruby logger.
+</p>
+<h4>Examples</h4>
+<pre>
+  logger.debug &quot;foo&quot;
+  logger.warn  &quot;bar&quot;
+</pre>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000083"><<</a></li>
+        
+        <li><a href="#M000081">close</a></li>
+        
+        <li><a href="#M000078">colored_level</a></li>
+        
+        <li><a href="#M000080">flush</a></li>
+        
+        <li><a href="#M000077">new</a></li>
+        
+        <li><a href="#M000082">push</a></li>
+        
+        <li><a href="#M000079">set_color</a></li>
+        
+        <li><a href="#M000076">setup!</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="Logger/Rack.html">Padrino::Logger::Rack</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">Levels</td>
+            <td>=</td>
+            <td class="attr-value">{       :fatal =&gt; 7,       :error =&gt; 6,       :warn  =&gt; 4,       :info  =&gt; 3,       :debug =&gt; 0     } unless const_defined?(:Levels)</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Ruby (standard) logger levels:
+</p>
+<table>
+<tr><td valign="top">:fatal:</td><td>An unhandleable error that results in a program crash
+
+</td></tr>
+<tr><td valign="top">:error:</td><td>A handleable error condition
+
+</td></tr>
+<tr><td valign="top">:warn:</td><td>A warning
+
+</td></tr>
+<tr><td valign="top">:info:</td><td>generic (useful) information about system operation
+
+</td></tr>
+<tr><td valign="top">:debug:</td><td>low-level information for developers
+
+</td></tr>
+</table>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">Config</td>
+            <td>=</td>
+            <td class="attr-value">{       :production  =&gt; { :log_level =&gt; :warn,  :stream =&gt; :to_file },       :development =&gt; { :log_level =&gt; :debug, :stream =&gt; :stdout },       :test        =&gt; { :log_level =&gt; :debug, :stream =&gt; :null }     }</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Configuration for a given environment, possible options are:
+</p>
+<table>
+<tr><td valign="top">:log_level:</td><td>Once of [:fatal, :error, :warn, :info, :debug]
+
+</td></tr>
+<tr><td valign="top">:stream:</td><td>Once of [:to_file, :null, :stdout, :stderr] our your custom stream
+
+</td></tr>
+<tr><td valign="top">:log_level:</td><td>The log level from, e.g. :fatal or :info. Defaults to :debug in the
+production environment and :debug otherwise.
+
+</td></tr>
+<tr><td valign="top">:<a href="Logger.html#auto_flush">auto_flush</a>:</td><td>Whether the log should automatically flush after new messages are added.
+Defaults to true.
+
+</td></tr>
+<tr><td valign="top">:format_datetime:</td><td>Format of datetime. Defaults to: &#8220;%d/%b/%Y %H:%M:%S&#8220;
+
+</td></tr>
+<tr><td valign="top">:format_message:</td><td>Format of message. Defaults to: &#8220;&#8221;%s - - [%s]
+"%s"&#8220;&#8220;
+
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  Padrino::Logger::Config[:development] = { :log_level =&gt; :debug, :to_file }
+  # or you can edit our defaults
+  Padrino::Logger::Config[:development][:log_level] = :error
+  # or you can use your stream
+  Padrino::Logger::Config[:development][:stream] = StringIO.new
+</pre>
+<p>
+Defaults are:
+</p>
+<pre>
+  :production  =&gt; { :log_level =&gt; :warn, :stream =&gt; :to_file }
+  :development =&gt; { :log_level =&gt; :debug, :stream =&gt; :stdout }
+  :test        =&gt; { :log_level =&gt; :fatal, :stream =&gt; :null }
+</pre>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CLEAR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[0m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Embed in a String to clear all previous ANSI sequences.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">BOLD</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[1m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+The start of an ANSI bold sequence.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">BLACK</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[30m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to black.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RED</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[31m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to red.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">GREEN</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[32m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to green.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">YELLOW</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[33m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to yellow.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">BLUE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[34m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to blue.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MAGENTA</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[35m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to magenta.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CYAN</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[36m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to cyan.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">WHITE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\e[37m&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Set the terminal&#8217;s foreground ANSI color to white.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ColoredLevels</td>
+            <td>=</td>
+            <td class="attr-value">{       :fatal =&gt; [BOLD, RED],       :error =&gt; [RED],       :warn  =&gt; [YELLOW],       :info  =&gt; [GREEN],       :debug =&gt; [CYAN]     } unless defined?(ColoredLevels)</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Colors for levels
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>level</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>auto_flush</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>buffer</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>log</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>init_args</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000077"></a><b>new</b>(options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+To initialize the logger you create a new object, proxies to set_log.
+</p>
+<h4>Options</h4>
+<table>
+<tr><td valign="top">:stream:</td><td>Either an IO object or a name of a logfile. Defaults to $stdout
+
+</td></tr>
+<tr><td valign="top">:log_level:</td><td>The log level from, e.g. :fatal or :info. Defaults to :debug in the
+production environment and :debug otherwise.
+
+</td></tr>
+<tr><td valign="top">:<a href="Logger.html#auto_flush">auto_flush</a>:</td><td>Whether the log should automatically flush after new messages are added.
+Defaults to true.
+
+</td></tr>
+<tr><td valign="top">:format_datetime:</td><td>Format of datetime. Defaults to: &#8220;%d/%b/%Y %H:%M:%S&#8220;
+
+</td></tr>
+<tr><td valign="top">:format_message:</td><td>Format of message. Defaults to: &#8220;&#8221;%s - - [%s]
+"%s"&#8220;&#8220;
+
+</td></tr>
+</table>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000077_source')" id="l_M000077_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L150" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000077_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 150</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
+      <span class="ruby-ivar">@buffer</span>            = []
+      <span class="ruby-ivar">@auto_flush</span>        = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:auto_flush</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:auto_flush</span>] <span class="ruby-operator">:</span> <span class="ruby-keyword kw">true</span>
+      <span class="ruby-ivar">@level</span>             = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:log_level</span>] <span class="ruby-operator">?</span> <span class="ruby-constant">Levels</span>[<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:log_level</span>]] <span class="ruby-operator">:</span> <span class="ruby-constant">Levels</span>[<span class="ruby-identifier">:debug</span>]
+      <span class="ruby-ivar">@log</span>               = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:stream</span>]  <span class="ruby-operator">||</span> <span class="ruby-identifier">$stdout</span>
+      <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">sync</span>          = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-ivar">@mutex</span>             = <span class="ruby-ivar">@@mutex</span>[<span class="ruby-ivar">@log</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+      <span class="ruby-ivar">@format_datetime</span>   = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:format_datetime</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;%d/%b/%Y %H:%M:%S&quot;</span>
+      <span class="ruby-ivar">@format_message</span>    = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:format_message</span>]  <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;%s - [%s] \&quot;%s\&quot;&quot;</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000076"></a><b>setup!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Setup a new logger
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000076_source')" id="l_M000076_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L120" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000076_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 120</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">setup!</span>
+      <span class="ruby-identifier">config_level</span> = (<span class="ruby-constant">PADRINO_LOG_LEVEL</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">env</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">:test</span>).<span class="ruby-identifier">to_sym</span> <span class="ruby-comment cmt"># need this for PADRINO_LOG_LEVEL</span>
+      <span class="ruby-identifier">config</span> = <span class="ruby-constant">Config</span>[<span class="ruby-identifier">config_level</span>]
+      <span class="ruby-identifier">stream</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:stream</span>]
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:to_file</span>
+          <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span>(<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">&quot;log&quot;</span>)) <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">&quot;log&quot;</span>))
+          <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">root</span>(<span class="ruby-value str">&quot;log&quot;</span>, <span class="ruby-node">&quot;#{Padrino.env}.log&quot;</span>), <span class="ruby-value str">&quot;a+&quot;</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:null</span>   <span class="ruby-keyword kw">then</span> <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:stdout</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">$stdout</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:stderr</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">$stderr</span>
+        <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:stream</span>] <span class="ruby-comment cmt"># return itself, probabilly is a custom stream.</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>[<span class="ruby-identifier">:padrino_logger</span>] = <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">:stream</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">stream</span>))
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000083"></a><b>&lt;&lt;</b>(message = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Directly append message to the log.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000083_source')" id="l_M000083_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L208" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000083_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 208</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-operator">&lt;&lt;</span>(<span class="ruby-identifier">message</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">message</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">message</span>[<span class="ruby-value">-1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?\n</span>
+      <span class="ruby-ivar">@buffer</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">message</span>
+      <span class="ruby-identifier">flush</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@auto_flush</span>
+      <span class="ruby-identifier">message</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000081"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Close and remove the current log object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000081_source')" id="l_M000081_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L191" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000081_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 191</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+      <span class="ruby-identifier">flush</span>
+      <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:close</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@log</span>.<span class="ruby-identifier">tty?</span>
+      <span class="ruby-ivar">@log</span> = <span class="ruby-keyword kw">nil</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000078"></a><b>colored_level</b>(level)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Colorize our level
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000078_source')" id="l_M000078_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L164" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000078_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 164</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">colored_level</span>(<span class="ruby-identifier">level</span>)
+      <span class="ruby-identifier">style</span> = <span class="ruby-constant">ColoredLevels</span>[<span class="ruby-identifier">level</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">to_sym</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;&quot;</span>)
+      <span class="ruby-node">&quot;#{style}#{level.to_s.upcase.rjust(7)}#{CLEAR}&quot;</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000080"></a><b>flush</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Flush the entire buffer to the log object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000080_source')" id="l_M000080_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L181" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000080_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 181</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">flush</span>
+      <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+      <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+        <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">write</span>(<span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>).<span class="ruby-identifier">join</span>(<span class="ruby-value str">''</span>))
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000082"></a><b>push</b>(message = nil, level = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Appends a message to the log. The methods yield to an optional block and
+the output of this block will be appended to the message.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000082_source')" id="l_M000082_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L201" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000082_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 201</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">push</span>(<span class="ruby-identifier">message</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">level</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-keyword kw">self</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@format_message</span> <span class="ruby-operator">%</span> [<span class="ruby-identifier">colored_level</span>(<span class="ruby-identifier">level</span>), <span class="ruby-identifier">set_color</span>(<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-ivar">@format_datetime</span>), <span class="ruby-identifier">:yellow</span>), <span class="ruby-identifier">message</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">strip</span>]
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000079"></a><b>set_color</b>(string, color, bold=false)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Set a color for our string. Color can be a symbol/string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000079_source')" id="l_M000079_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2c325a57199ae40e3af333cdb0a3890a64087142/padrino-core/lib/padrino-core/logger.rb#L172" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000079_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-core/lib/padrino-core/logger.rb, line 172</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_color</span>(<span class="ruby-identifier">string</span>, <span class="ruby-identifier">color</span>, <span class="ruby-identifier">bold</span>=<span class="ruby-keyword kw">false</span>)
+      <span class="ruby-identifier">color</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">color</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">upcase</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">color</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+      <span class="ruby-identifier">bold</span>  = <span class="ruby-identifier">bold</span> <span class="ruby-value">? </span><span class="ruby-constant">BOLD</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>
+      <span class="ruby-node">&quot;#{bold}#{color}#{string}#{CLEAR}&quot;</span>
+    <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

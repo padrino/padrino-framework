@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Generators::Runner</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Generators::Runner</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-gen/lib/padrino-gen/generators/runner_rb.html">padrino-gen/lib/padrino-gen/generators/runner.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000178">app</a></li>
+        
+        <li><a href="#M000176">generate</a></li>
+        
+        <li><a href="#M000179">git</a></li>
+        
+        <li><a href="#M000173">project</a></li>
+        
+        <li><a href="#M000177">rake</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000178"></a><b>app</b>(name, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Executes <a href="App.html">App</a> generator. Accepts an optional block
+allowing generation inside subapp. app :name app :name do
+</p>
+<pre>
+ generate :model, &quot;posts title:string&quot;
+</pre>
+<p>
+end
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000178_source')" id="l_M000178_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-gen/lib/padrino-gen/generators/runner.rb#L38" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000178_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/runner.rb, line 38</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">app</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;=&gt; Executing: padrino-gen app #{name} -r=#{destination_root}&quot;</span>, <span class="ruby-identifier">:magenta</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">bin_gen</span>(<span class="ruby-identifier">:app</span>, <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-node">&quot;-r=#{destination_root}&quot;</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+          <span class="ruby-ivar">@_app_name</span> = <span class="ruby-identifier">name</span>
+          <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>
+          <span class="ruby-ivar">@_app_name</span> = <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000176"></a><b>generate</b>(type, arguments=&quot;&quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Executes generator command for specified type with given arguments generate
+:model, &#8220;post title:string body:text&#8221; generate :controller,
+&#8220;posts get:index get:new post:new&#8221; generate :migration,
+&#8220;AddEmailToUser email:string&#8220;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000176_source')" id="l_M000176_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-gen/lib/padrino-gen/generators/runner.rb#L20" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000176_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/runner.rb, line 20</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">arguments</span>=<span class="ruby-value str">&quot;&quot;</span>)
+        <span class="ruby-identifier">params</span> = <span class="ruby-identifier">arguments</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot; &quot;</span>).<span class="ruby-identifier">push</span>(<span class="ruby-node">&quot;-r=#{destination_root}&quot;</span>)
+        <span class="ruby-identifier">params</span>.<span class="ruby-identifier">push</span>(<span class="ruby-node">&quot;--app=#{@_app_name}&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@_app_name</span>
+        <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;=&gt; Executing: padrino-gen #{type} #{params.join(&quot; &quot;)}&quot;</span>, <span class="ruby-identifier">:magenta</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">bin_gen</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">params</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">type</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000179"></a><b>git</b>(action, arguments=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Executes git commmands in project using Grit git :init git :add,
+&#8220;.&#8221; git :commit, &#8220;hello world&#8220;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000179_source')" id="l_M000179_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-gen/lib/padrino-gen/generators/runner.rb#L52" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000179_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/runner.rb, line 52</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">git</span>(<span class="ruby-identifier">action</span>, <span class="ruby-identifier">arguments</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">cd</span>(<span class="ruby-identifier">destination_root</span>) <span class="ruby-keyword kw">do</span>
+          <span class="ruby-identifier">require</span> <span class="ruby-value str">'git'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Git</span>)
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">action</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'init'</span>
+            <span class="ruby-operator">::</span><span class="ruby-constant">Git</span>.<span class="ruby-identifier">init</span>(<span class="ruby-identifier">arguments</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">destination_root</span>)
+            <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;Git repo has been initialized&quot;</span>, <span class="ruby-identifier">:green</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-ivar">@_git</span> <span class="ruby-operator">||=</span> <span class="ruby-operator">::</span><span class="ruby-constant">Git</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">destination_root</span>)
+            <span class="ruby-ivar">@_git</span>.<span class="ruby-identifier">method</span>(<span class="ruby-identifier">action</span>).<span class="ruby-identifier">call</span>(<span class="ruby-identifier">arguments</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000173"></a><b>project</b>(options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Generates project scaffold based on a given template file project :test =>
+:shoulda, :orm => :activerecord, :renderer => &#8220;haml&#8220;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000173_source')" id="l_M000173_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-gen/lib/padrino-gen/generators/runner.rb#L9" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000173_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/runner.rb, line 9</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">project</span>(<span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">components</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">component</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;--#{component}=#{value}&quot;</span> }
+        <span class="ruby-identifier">params</span> = [<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">components</span>].<span class="ruby-identifier">push</span>(<span class="ruby-node">&quot;-r=#{destination_root(&quot;../&quot;)}&quot;</span>)
+        <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;=&gt; Executing: padrino-gen project #{params.join(&quot; &quot;)}&quot;</span>, <span class="ruby-identifier">:magenta</span>
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">bin_gen</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">params</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-value str">&quot;project&quot;</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000177"></a><b>rake</b>(command)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Executes rake command with given arguments rake &#8220;custom task1
+task2&#8220;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000177_source')" id="l_M000177_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-gen/lib/padrino-gen/generators/runner.rb#L29" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000177_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/runner.rb, line 29</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rake</span>(<span class="ruby-identifier">command</span>)
+        <span class="ruby-constant">Padrino</span>.<span class="ruby-identifier">bin</span>(<span class="ruby-value str">&quot;rake&quot;</span>, <span class="ruby-identifier">command</span>, <span class="ruby-node">&quot;-c=#{destination_root}&quot;</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

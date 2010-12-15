@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>mongomatic.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />mongomatic.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/orms/mongomatic.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">MONGOMATIC</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MONGO) unless defined?(MONGOMATIC)  case Padrino.env   when :development then Mongomatic.db = Mongo::Connection.new.db(&quot;!NAME!_development&quot;)   when :production then Mongomatic.db = Mongo::Connection.new.db(&quot;!NAME!_production&quot;)   when :test then Mongomatic.db = Mongo::Connection.new.db(&quot;!NAME!_test&quot;) end MONGO ) unless defined?(MONGOMATIC)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MONGOMATIC_MODEL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MODEL) unless defined?(MONGOMATIC_MODEL) class !NAME! &lt; Mongomatic::Base   include Mongomatic::Expectations::Helper    # Mongomatic does not have the traditional   # model definition that AR/MM/DM et. al. have.   # Staying true to the &quot;ad-hoc&quot; nature of MongoDB,   # there are no explicit column definitions in the   # model file.    # However you can &quot;fake it&quot; by making a column   # required using expectations   # For the sake of padrino g model,   # we'll assume that any property defined   # on the command-line is required   # In the case of Integer types, we'll add   # the expectation: be_a_number   # Future enhancement may allow a regex for   # String datatypes     # Examples   # def validate   #   expectations do   #     be_present self['name'], &quot;Name cannot be blank&quot;   #     be_present self['email'], &quot;Email cannot be blank&quot;   #     be_present self['age'], &quot;Age cannot be blank&quot;   #     be_present self['password'], &quot;Password cannot be blank&quot;   #     be_a_number self['age'], &quot;Age must be a number&quot;   #     be_of_length self['password'], &quot;Password must be at least 8 characters&quot;, :minimum =&gt; 8   #   end   # end    # def create_indexes   #   self.collection.create_index('name', :unique =&gt; true)   #   self.collection.create_index('email', :unique =&gt; true)   #   self.collection.create_index('age')   # end   def validate     expectations do       !FIELDS!       !INTEGERS!     end   end  end MODEL ) unless defined?(MONGOMATIC_MODEL)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

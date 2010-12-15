@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers::AssetTagHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers::AssetTagHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-helpers/lib/padrino-helpers/asset_tag_helpers_rb.html">padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000326">asset_path</a></li>
+        
+        <li><a href="#M000311">button_to</a></li>
+        
+        <li><a href="#M000321">favicon_tag</a></li>
+        
+        <li><a href="#M000317">feed_tag</a></li>
+        
+        <li><a href="#M000304">flash_tag</a></li>
+        
+        <li><a href="#M000325">image_path</a></li>
+        
+        <li><a href="#M000322">image_tag</a></li>
+        
+        <li><a href="#M000324">javascript_include_tag</a></li>
+        
+        <li><a href="#M000306">link_to</a></li>
+        
+        <li><a href="#M000318">mail_to</a></li>
+        
+        <li><a href="#M000320">meta_tag</a></li>
+        
+        <li><a href="#M000323">stylesheet_link_tag</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000326"></a><b>asset_path</b>(kind, source)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the path to the specified asset (css or javascript)
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates: /javascripts/application.js?1269008689
+  asset_path :js, :application
+
+  # Generates: /stylesheets/application.css?1269008689
+  asset_path :css, :application
+
+  # Generates: /images/example.jpg?1269008689
+  asset_path :images, 'example.jpg'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000326_source')" id="l_M000326_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L219" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000326_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 219</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">asset_path</span>(<span class="ruby-identifier">kind</span>, <span class="ruby-identifier">source</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">source</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">source</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^http/</span>
+        <span class="ruby-identifier">asset_folder</span>  = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">kind</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:css</span> <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'stylesheets'</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:js</span>  <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'javascripts'</span>
+          <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">kind</span>.<span class="ruby-identifier">to_s</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">source</span> = <span class="ruby-identifier">source</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\s/</span>, <span class="ruby-value str">''</span>)
+        <span class="ruby-identifier">ignore_extension</span> = (<span class="ruby-identifier">asset_folder</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">kind</span>.<span class="ruby-identifier">to_s</span>) <span class="ruby-comment cmt"># don't append extension</span>
+        <span class="ruby-identifier">source</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;.#{kind}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">ignore_extension</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">source</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/\.#{kind}/</span>
+        <span class="ruby-identifier">result_path</span>   = <span class="ruby-identifier">source</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">source</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">%r{^/}</span> <span class="ruby-comment cmt"># absolute path</span>
+        <span class="ruby-identifier">result_path</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">uri_root_path</span>(<span class="ruby-identifier">asset_folder</span>, <span class="ruby-identifier">source</span>)
+        <span class="ruby-identifier">timestamp</span> = <span class="ruby-identifier">asset_timestamp</span>(<span class="ruby-identifier">result_path</span>)
+        <span class="ruby-node">&quot;#{result_path}#{timestamp}&quot;</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000311"></a><b>button_to</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a form containing a single button that submits to the url.
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates:
+  # &lt;form class=&quot;form&quot; action=&quot;/admin/accounts/destroy/2&quot; method=&quot;post&quot;&gt;
+  #   &lt;input type=&quot;hidden&quot; value=&quot;delete&quot; name=&quot;_method&quot; /&gt;
+  #   &lt;input type=&quot;submit&quot; value=&quot;Delete&quot; /&gt;
+  # &lt;/form&gt;
+  button_to 'Delete', url(:accounts_destroy, :id =&gt; account), :method =&gt; :delete, :class =&gt; :form
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000311_source')" id="l_M000311_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L63" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000311_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 63</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">button_to</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">name</span>, <span class="ruby-identifier">url</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], <span class="ruby-identifier">args</span>[<span class="ruby-value">1</span>]
+        <span class="ruby-identifier">options</span>   = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">extract_options!</span>
+        <span class="ruby-identifier">desired_method</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:method</span>]
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:method</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:method</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!~</span> <span class="ruby-regexp re">/get|post/i</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:method</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'post'</span>, <span class="ruby-identifier">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:enctype</span>] = <span class="ruby-value str">&quot;multipart/form-data&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:multipart</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;data-remote&quot;</span>] = <span class="ruby-value str">&quot;true&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:remote</span>)
+        <span class="ruby-identifier">inner_form_html</span>  = <span class="ruby-identifier">hidden_form_method_field</span>(<span class="ruby-identifier">desired_method</span>)
+        <span class="ruby-identifier">inner_form_html</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">submit_tag</span>(<span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">content_tag</span>(<span class="ruby-value str">'form'</span>, <span class="ruby-identifier">inner_form_html</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000321"></a><b>favicon_tag</b>(source,options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Generates a favicon link. looks inside images folder
+</p>
+<h4>Examples</h4>
+<pre>
+  favicon_tag 'favicon.png'
+  favicon_tag 'icons/favicon.png'
+  # or override some options
+  favicon_tag 'favicon.png', :type =&gt; 'image/ico'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000321_source')" id="l_M000321_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L140" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000321_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 140</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">favicon_tag</span>(<span class="ruby-identifier">source</span>,<span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">type</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">extname</span>(<span class="ruby-identifier">source</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'.'</span>,<span class="ruby-value str">''</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">dup</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">image_path</span>(<span class="ruby-identifier">source</span>), <span class="ruby-identifier">:rel</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'icon'</span>, <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;image/#{type}&quot;</span>)
+        <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">:link</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000317"></a><b>feed_tag</b>(mime, url, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a link tag that browsers and news readers can use to auto-detect an
+RSS or ATOM feed.
+</p>
+<h3>Options</h3>
+<pre>
+  :rel::   Specify the relation of this link, defaults to &quot;alternate&quot;
+  :type::  Override the auto-generated mime type
+  :title:: Specify the title of the link, defaults to the type
+</pre>
+<h3>Examples</h3>
+<pre>
+  # Generates: &lt;link type=&quot;application/atom+xml&quot; rel=&quot;alternate&quot; href=&quot;/blog/posts.atom&quot; title=&quot;ATOM&quot; /&gt;
+  feed_tag :atom, url(:blog, :posts, :format =&gt; :atom), :title =&gt; &quot;ATOM&quot;
+  # Generates: &lt;link type=&quot;application/rss+xml&quot; rel=&quot;alternate&quot; href=&quot;/blog/posts.rss&quot; title=&quot;rss&quot; /&gt;
+  feed_tag :rss, url(:blog, :posts, :format =&gt; :rss)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000317_source')" id="l_M000317_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L92" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000317_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 92</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">feed_tag</span>(<span class="ruby-identifier">mime</span>, <span class="ruby-identifier">url</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">full_mime</span> = (<span class="ruby-identifier">mime</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:atom</span>) <span class="ruby-operator">?</span> <span class="ruby-value str">'application/atom+xml'</span> <span class="ruby-operator">:</span> <span class="ruby-value str">'application/rss+xml'</span>
+        <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:link</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge</span>(<span class="ruby-identifier">:rel</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'alternate'</span>, <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">full_mime</span>, <span class="ruby-identifier">:title</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">mime</span>, <span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000304"></a><b>flash_tag</b>(kind, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a div to display the flash of given type if it exists
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates: &lt;div class=&quot;notice&quot;&gt;flash-notice&lt;/div&gt;
+  flash_tag(:notice, :id =&gt; 'flash-notice')
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000304_source')" id="l_M000304_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L11" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000304_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 11</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">flash_tag</span>(<span class="ruby-identifier">kind</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">flash_text</span> = <span class="ruby-identifier">flash</span>[<span class="ruby-identifier">kind</span>]
+        <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">flash_text</span>.<span class="ruby-identifier">blank?</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">kind</span>)
+        <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:div</span>, <span class="ruby-identifier">flash_text</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000325"></a><b>image_path</b>(src)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the path to the image, either relative or absolute. We search it in
+your <tt>appname.public</tt> like app/public/images for inclusion. You can
+provide also a full path.
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates: /images/foo.jpg?1269008689
+  image_path(&quot;foo.jpg&quot;)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000325_source')" id="l_M000325_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L201" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000325_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 201</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">image_path</span>(<span class="ruby-identifier">src</span>)
+        <span class="ruby-identifier">asset_path</span>(<span class="ruby-identifier">:images</span>, <span class="ruby-identifier">src</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000322"></a><b>image_tag</b>(url, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates an image element with given url and options
+</p>
+<h4>Examples</h4>
+<pre>
+  image_tag('icons/avatar.png')
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000322_source')" id="l_M000322_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L153" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000322_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 153</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">image_tag</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:src</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">image_path</span>(<span class="ruby-identifier">url</span>))
+        <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">:img</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000324"></a><b>javascript_include_tag</b>(*sources)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns an html script tag for each of the sources provided. You can pass
+in the filename without extension or a symbol and we search it in your
+<tt>appname.public</tt> like app/public/javascript for inclusion. You can
+provide also a full path.
+</p>
+<h4>Examples</h4>
+<pre>
+  javascript_include_tag 'application', :extjs
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000324_source')" id="l_M000324_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L184" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000324_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 184</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">javascript_include_tag</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sources</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">sources</span>.<span class="ruby-identifier">extract_options!</span>.<span class="ruby-identifier">symbolize_keys</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text/javascript'</span>, <span class="ruby-identifier">:content</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;&quot;</span>)
+        <span class="ruby-identifier">sources</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">source</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">:script</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge</span>(<span class="ruby-identifier">:src</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">asset_path</span>(<span class="ruby-identifier">:js</span>, <span class="ruby-identifier">source</span>)))
+        }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000306"></a><b>link_to</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a link element with given name, url and options
+</p>
+<h4>Examples</h4>
+<pre>
+  link_to('click me', '/dashboard', :class =&gt; 'linky')
+  link_to('click me', '/dashboard', :remote =&gt; true)
+  link_to('click me', '/dashboard', :method =&gt; :delete)
+  link_to('click me', :class =&gt; 'blocky') do ... end
+</pre>
+<p>
+Note that you can pass :<tt>if</tt> or :<tt>unless</tt> conditions, but if
+you provide :current as condition padrino return true/false if the
+request.path_info match the given url
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000306_source')" id="l_M000306_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L31" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000306_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 31</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">link_to</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">extract_options!</span>
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">parse_js_attributes</span>(<span class="ruby-identifier">options</span>) <span class="ruby-comment cmt"># parses remote, method and confirm options</span>
+        <span class="ruby-identifier">anchor</span>  = <span class="ruby-node">&quot;##{CGI.escape options.delete(:anchor).to_s}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:anchor</span>]
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+          <span class="ruby-identifier">url</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">anchor</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">anchor</span> <span class="ruby-operator">||</span> <span class="ruby-value str">'javascript:void(0);'</span>
+          <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url</span>)
+          <span class="ruby-identifier">link_content</span> = <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">parse_conditions</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">options</span>)
+          <span class="ruby-identifier">result_link</span> = <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:a</span>, <span class="ruby-identifier">link_content</span>, <span class="ruby-identifier">options</span>)
+          <span class="ruby-identifier">block_is_template?</span>(<span class="ruby-identifier">block</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">concat_content</span>(<span class="ruby-identifier">result_link</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">result_link</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">name</span>, <span class="ruby-identifier">url</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], (<span class="ruby-identifier">args</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">anchor</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">anchor</span> <span class="ruby-operator">||</span> <span class="ruby-value str">'javascript:void(0);'</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">parse_conditions</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">options</span>)
+          <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url</span>)
+          <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:a</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000318"></a><b>mail_to</b>(email, caption=nil, mail_options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a mail link element with given name and caption
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates: &lt;a href=&quot;mailto:me@demo.com&quot;&gt;me@demo.com&lt;/a&gt;
+  mail_to &quot;me@demo.com&quot;
+  # Generates: &lt;a href=&quot;mailto:me@demo.com&quot;&gt;My Email&lt;/a&gt;
+  mail_to &quot;me@demo.com&quot;, &quot;My Email&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000318_source')" id="l_M000318_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L107" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000318_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 107</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mail_to</span>(<span class="ruby-identifier">email</span>, <span class="ruby-identifier">caption</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">mail_options</span>={})
+        <span class="ruby-identifier">html_options</span> = <span class="ruby-identifier">mail_options</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-identifier">:cc</span>, <span class="ruby-identifier">:bcc</span>, <span class="ruby-identifier">:subject</span>, <span class="ruby-identifier">:body</span>)
+        <span class="ruby-identifier">mail_query</span> = <span class="ruby-constant">Rack</span><span class="ruby-operator">::</span><span class="ruby-constant">Utils</span>.<span class="ruby-identifier">build_query</span>(<span class="ruby-identifier">mail_options</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\+/</span>, <span class="ruby-value str">'%20'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'%40'</span>, <span class="ruby-value str">'@'</span>)
+        <span class="ruby-identifier">mail_href</span> = <span class="ruby-node">&quot;mailto:#{email}&quot;</span>; <span class="ruby-identifier">mail_href</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;?#{mail_query}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">mail_query</span>.<span class="ruby-identifier">present?</span>
+        <span class="ruby-identifier">link_to</span>((<span class="ruby-identifier">caption</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">email</span>), <span class="ruby-identifier">mail_href</span>, <span class="ruby-identifier">html_options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000320"></a><b>meta_tag</b>(content, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a meta element with the content and given options
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generates: &lt;meta name=&quot;keywords&quot; content=&quot;weblog,news&quot;&gt;
+  meta_tag &quot;weblog,news&quot;, :name =&gt; &quot;keywords&quot;
+
+  # Generates: &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+  meta_tag &quot;text/html; charset=UTF-8&quot;, 'http-equiv' =&gt; &quot;Content-Type&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000320_source')" id="l_M000320_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L125" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000320_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 125</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">meta_tag</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-value str">&quot;content&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">content</span>)
+        <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">:meta</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000323"></a><b>stylesheet_link_tag</b>(*sources)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns an html script tag for each of the sources provided. You can pass
+in the filename without extension or a symbol and we search it in your
+<tt>appname.public</tt> like app/public/stylesheets for inclusion. You can
+provide also a full path.
+</p>
+<h4>Examples</h4>
+<pre>
+  stylesheet_link_tag 'style', 'application', 'layout'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000323_source')" id="l_M000323_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/d65b37710d71c54ec799aa4331f6a8c523b5ffcb/padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb#L167" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000323_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb, line 167</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stylesheet_link_tag</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sources</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">sources</span>.<span class="ruby-identifier">extract_options!</span>.<span class="ruby-identifier">symbolize_keys</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:media</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'screen'</span>, <span class="ruby-identifier">:rel</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'stylesheet'</span>, <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text/css'</span>)
+        <span class="ruby-identifier">sources</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">source</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">:link</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge</span>(<span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">asset_path</span>(<span class="ruby-identifier">:css</span>, <span class="ruby-identifier">source</span>)))
+        }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    
