@@ -1,14 +1,4 @@
-/*
- *
- *    Amro
- *    by Sandro Duarte
- *       sandro[at]gmail.com
- *
- *    dark green        #008080
- *    light yellow      #F6F5CD
- *    orange            #E8C53B
- *    light green       #76BBA5
- *    light             #F3F4EC
+@import colors
 
 .small
   font-size: 11px
@@ -35,17 +25,17 @@
 
 a
   &:link, &:visited, &:hover, &:active
-    color: #008080
+    color: $color1
 
 h1, h2, h3
-  color: #008080
+  color: $color1
 
 a
   -moz-outline: none
 
 body
   color: #222
-  background: #F6F5CD
+  background: $color2
   font-family: helvetica,Arial,sans-serif
 
 hr
@@ -56,7 +46,7 @@ p
   margin: 10px 0
 
 #header
-  background: #008080
+  background: $color1
   h1
     padding: 15px 0
     font-size: 28px
@@ -94,12 +84,12 @@ p
   .block
     background: #FFF
   .notice
-    background: #76BBA5
+    background: $color4
     color: #fff
   h3
-    background: #008080
+    background: $color1
     color: #FFF
-    border-bottom: 6px solid #E8C53B
+    border-bottom: 6px solid $color3
 
 #main-navigation ul li
   padding-left: 15px
@@ -118,16 +108,16 @@ p
     border-bottom: 1px solid #F0F0EE
     text-decoration: none
   &:hover, &:active
-    background: #76BBA5
+    background: $color4
     color: #FFF
 
 #main-navigation
-  background: #E8C53B
+  background: $color3
   ul li
-    background: #E8C53B
+    background: $color3
     margin-right: 0
     &.active
-      background: #F6F5CD
+      background: $color2
     a
       &:link, &:visited, &:hover, &:active
         text-decoration: none
@@ -150,26 +140,26 @@ p
   -webkit-border-radius: 3px
 
 .secondary-navigation li a:hover
-  background: #76BBA5
+  background: $color4
 
 #main-navigation ul li.active a
   &:link, &:visited, &:hover, &:active
-    color: #008080
+    color: $color1
 
 .secondary-navigation
-  background: #008080
-  border-bottom: 6px solid #E8C53B
+  background: $color1
+  border-bottom: 6px solid $color3
   ul li
     &.active
-      background-color: #E8C53B
+      background-color: $color3
       a
-        background-color: #E8C53B
+        background-color: $color3
     a
       padding: 8px 12px
 
 #footer .block
   color: #FFF
-  background: #E8C53B
+  background: $color3
   p
     margin: 0
     padding: 10px
@@ -182,21 +172,21 @@ p
       color: #bbb
       border-color: #bbb
     &.current
-      background: #008080
+      background: $color1
       color: #FFF
-      border-color: #008080
+      border-color: $color1
   a, span
-    color: #008080
-    border-color: #008080
+    color: $color1
+    border-color: $color1
   a:hover
     color: #FFF
-    background: #008080
+    background: $color1
 
 /* tables
 
 .table
   th
-    background: #008080
+    background: $color1
     color: #FFF
   td
     border-bottom: 1px solid #F0F0EE
@@ -215,7 +205,7 @@ p
     border: 1px solid #CFCFCF
   input.button
     padding: 5px 10px 5px 10px
-    background-color: #008080
+    background-color: $color1
     text-decoration: none
     cursor: pointer
     color: #FFF
@@ -223,7 +213,7 @@ p
     border: 0px
     margin: 0px
   .button:hover
-    background: #E8C53B
+    background: $color3
   .description
     font-style: italic
     color: #8C8C8C
@@ -266,7 +256,7 @@ ul.list li
 #box .block
   background: #FFF
   h2
-    background: #008080
+    background: $color1
     color: #FFF
 
 /* rounded borders
