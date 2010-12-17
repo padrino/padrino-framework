@@ -6,6 +6,7 @@ COMPASS_INIT = (<<-COMPASS).gsub(/^ {10}/, '') unless defined?(COMPASS_INIT)
 module CompassInitializer
   def self.registered(app)
     require 'sass/plugin/rack'
+    require 'compass'
 
     Compass.configuration do |config|
       config.project_path = Padrino.root
