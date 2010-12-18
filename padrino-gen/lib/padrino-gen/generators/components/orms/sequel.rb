@@ -43,7 +43,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
+  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.camelize)
   create_file(model_path, model_contents)
 end
 
