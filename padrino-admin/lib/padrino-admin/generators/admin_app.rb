@@ -46,7 +46,7 @@ module Padrino
           empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           
-          if File.exist?(destination_root("config/compass.comfig"))
+          if File.exist?(destination_root("config/compass.config"))
             directory "templates/assets/sass",  destination_root("app/stylesheets","admin")
           else
             directory "templates/assets/stylesheets",  destination_root("public","admin")
