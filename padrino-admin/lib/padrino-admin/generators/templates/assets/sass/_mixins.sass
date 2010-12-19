@@ -1,0 +1,4056 @@
+@mixin reidb-greenish
+  
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #a2b0b6
+  
+  .hightlight
+    background-color: #d6e7c7
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #81B953
+  
+  h1, h2, h3
+    color: #3B5526
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #e4ebe4
+    font-family: helvetica, arial, sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #c9deb7
+    h1
+      padding: 20px 0
+      font-weight: bold
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #3B5526
+  
+  #main
+    .block .content
+      background: #FFF
+      padding-top: 1px
+      h2
+        margin-left: 15px
+    .content
+      border: 1px solid #81B953
+  
+  #sidebar
+    .block
+      background: #FFF
+      border: none
+    h3
+      padding: 8px 12px
+      background: #3B5526
+      color: #FFF
+      font-weight: bold
+      border-bottom: 5px solid #81B953
+    ul li a
+      &:link, &:visited
+        background: #FFF
+        border-bottom: 1px solid #F0F0EE
+        text-decoration: none
+      &:hover, &:active
+        background: #D3E8C1
+        color: #FFF
+  
+  #main-navigation
+    background: #44721e
+    margin-right: 20px
+    padding: 7px 7px 0 7px
+    ul li
+      background: #91B96F
+      margin-right: 7px
+      a
+        padding: 10px 10px 5px 10px
+      &.active
+        background: #e4ebe4
+        border: 1px solid #91B96F
+        border-bottom: none
+        font-weight: bold
+      a
+        &:hover, &:link, &:visited, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:active
+      color: #3B5526
+    &:hover
+      color: #fff
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #3B5526
+    border-bottom: 5px solid #81b953
+    ul li
+      a
+        display: block
+        padding: 8px 12px
+      &.active
+        background: #81b953
+        font-weight: bold
+        a:hover
+          background-color: #81B953
+    li a:hover
+      background: #81B953
+  
+  #footer .block
+    color: #FFF
+    background: #3B5526
+    p
+      margin: 0
+      padding: 5px
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #262626
+      color: #FFF
+      border-color: #262626
+    a
+      color: #262626
+      border-color: #262626
+      &:hover
+        color: #FFF
+        background: #262626
+  
+  /* tables
+  
+  .table
+    th
+      background: #253618
+      color: #FFF
+    tr th
+      padding: 5px
+    td
+      border-bottom: 1px solid #F0F0EE
+    tr
+      &.odd
+        background: #ebfadf
+      &.even
+        background: #d3e8c1
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #262626
+    textarea.text_area
+      width: 100%
+      border: 1px solid #262626
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #3B5526
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #81B953
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      color: #fff
+      background: #3B5526
+      border-bottom: 5px solid #81b953
+    .content
+      border: 1px solid #81b953
+  
+  /* login
+  
+  #block-login h2
+    background: #3B5526
+    border-bottom: 5px solid #81b953
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin warehouse
+  a
+    &:link, &:visited
+      color: #07b
+      text-decoration: none
+    color: #d30
+    &:hover, &:active
+      color: #d30
+  
+  h1, h2, h3
+    color: #444
+  
+  body
+    color: #333
+    background: #EBEBEB
+    font: normal 12px / 1.5em "Lucida Grande", "Helvetica Neue", Arial, sans-serif
+  
+  hr
+    background: #aaa
+  
+  p
+    font-size: 12px
+    line-height: 20px
+  
+  input.check_box
+    vertical-align: middle
+  
+  #header h1
+    font-size: 28px
+    padding: 5px 0
+    margin: 5px 0
+  
+  .hightlight
+    background-color: #ffc
+  
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999
+  
+  #header
+    background: #232C30
+    h1 a
+      &:link, &:active, &:hover, &:visited
+        color: #eaeaea
+  
+  #main
+    background: #EBEBEB
+    width: 73%
+    .block
+      -moz-border-radius-topleft: 4px
+      -moz-border-radius-topright: 4px
+      padding: 0
+      margin-bottom: 20px
+      padding-bottom: 20px
+      background: transparent
+      .content
+        border-left: 1px solid #ddd
+        border-top: 1px solid #ddd
+        border-bottom: 1px solid #ccc
+        border-right: 1px solid #ccc
+        background: #fff
+      h2.title
+        margin: 10px 0 5px 0
+        background-color: none
+        padding: 5px 5px 5px 15px
+        font-size: 18px
+        color: #456
+  
+  .main_container
+    padding: 10px
+  
+  #footer
+    background-color: #ddd
+    border-top: 1px solid #bbb
+    .block
+      font-size: 11px
+      background-color: #ddd
+      padding: 0 10px
+      text-align: right
+  
+  /* #sidebar .block { background: #FFF; padding-bottom:0px; }
+  
+  #sidebar
+    .notice
+      background-color: #ffc
+      padding: 0 10px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #fff
+      border-left: 1px solid #fff
+      h2
+        font-size: 16px
+        margin: 5px 0
+        border-bottom: 1px solid #456
+      p
+        font-size: 12px
+    .block
+      padding-bottom: 0
+      .content
+        padding: 0 10px
+    h3
+      background: #fff
+      border-bottom: 1px solid #ccc
+      border-right: 1px solid #ccc
+      border-left: 1px solid #ddd
+      border-top: 1px solid #ddd
+      padding: 5px 10px
+      color: #333
+      font-weight: bold
+    ul
+      li a
+        &:link, &:visited
+          font-size: 12px
+        &:hover, &:active
+          background: none
+          color: #444
+          font-size: 12px
+          text-decoration: underline
+      &.navigation li
+        &.last a
+          border-bottom: none
+        a
+          &:link, &:visited
+            padding: 5px 10px
+            color: #6a6a6a
+            text-decoration: none
+          &:hover
+            text-decoration: underline
+    .block .sidebar-block h4
+      border-bottom: 1px dotted #aaa
+  
+  #main-navigation ul li
+    background: #456
+    border-top: 1px solid #5C738A
+    color: #eee
+    border-top-left-radius: 5px
+    border-top-right-radius: 5px
+    &:hover
+      border-top-color: #7593B0
+      background-color: #576C82 !important
+      color: #fff
+    &.active
+      border-top: 1px solid #fff
+      background-color: #eee !important
+      color: #333
+    a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+    &:link, &:visited
+      color: #CDE
+      border-bottom: 1px dotted #345
+    &:hover
+      color: #fff
+      border-bottom: 1px dotted #CDE
+      text-decoration: none
+  
+  #main-navigation ul li
+    a
+      font-size: 12px
+      padding: 3px 10px
+    &.active a
+      &:link, &:visited, &:hover, &:active
+        color: #364b69
+  
+  .secondary-navigation
+    background: #eaeaea
+    border-bottom: 0px
+    ul li
+      background: #456
+      border-top: 1px solid #5C738A
+      color: #eee
+      margin-right: 5px
+      border-top-left-radius: 5px
+      border-top-right-radius: 5px
+      a
+        padding: 3px 10px
+      &.active
+        &:hover
+          background: #fff !important
+          border-top: 1px solid #ccc
+          border-right: 1px solid #ccc
+        border-top: 1px solid #ddd
+        border-left: 1px solid #ddd
+        border-right: 1px solid #ccc
+        border-bottom: 1px solid #fff
+        margin-bottom: -1px
+        background-color: #fff !important
+        color: #333
+        a
+          color: #333
+      &:hover
+        border-top-color: #7593B0
+        background-color: #576C82 !important
+        color: #fff
+  
+  /* pagination
+  
+  .pagination
+    span
+      &.current
+        background: #576C82
+        color: #FFF
+        border: 1px solid #7593B0
+        -moz-border-radius: 5px
+      &.disabled
+        background: #eee
+        color: #aaa
+        border: 1px solid #ddd
+        -moz-border-radius: 5px
+    a
+      color: #364B69
+      border: 1px solid #ddd
+      -moz-border-radius: 5px
+      font-size: 11px
+      &:hover
+        color: #444
+        background: #eaeaea
+        border: 1px solid #576C82
+  
+  /* tables
+  
+  .table
+    th
+      background: #576C82
+      color: #FFF
+      font-weight: normal
+      padding: 3px
+      a.toggle
+        display: block
+        width: 12px
+        height: 12px
+        background: transparent url('images/tick.png') center no-repeat
+        text-indent: -9999px
+        -moz-outline: none
+      &.first
+        width: 30px
+        text-align: center
+    td
+      border-bottom: 1px solid #AAA
+  
+  /* forms
+  
+  .form
+    input.text, textarea.textarea
+      border: 1px solid #ddd
+      padding: 5px
+      width: 99%
+    input
+      &.text_field, &.password_field
+        border-right: 1px solid #ddd
+        border-bottom: 1px solid #ddd
+        border-top: 2px solid #ccc
+        border-left: 2px solid #ccc
+        width: 99%
+    textarea.text_area
+      border-right: 1px solid #ddd
+      border-bottom: 1px solid #ddd
+      border-top: 2px solid #ccc
+      border-left: 2px solid #ccc
+      width: 99%
+    .navform
+      padding: 10px
+      background-color: #eee
+      font-size: 14px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #eee
+      border-left: 1px solid #eee
+      input
+        font-size: 14px
+  
+  .description
+    color: #aaa
+    font-family: Georgia, serif
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 5px
+      width: 80%
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #ddf
+      background-color: #eef
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    .item .avatar
+      border-color: #F0F0EE
+      margin: 3px 10px 0 0
+    .left
+      padding: 5px 5px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    border: 1px solid #ddd
+    border-radius: 10px
+    h2
+      background: #576C82
+      color: #FFF
+      border-top-left-radius: 5px
+      border-top-right-radius: 5px
+
+
+@mixin bec-green
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #33f
+  
+  h1, h2, h3
+    color: #444
+  
+  body
+    color: #222
+    background: #e5e5e5
+    font-family: "Bitstream Vera Sans", verdana, sans-serif
+  
+  hr
+    background: #f0f0ee
+  
+  p
+    font-size: 14px
+    line-height: 20px
+  
+  input.check_box
+    vertical-align: middle
+  
+  #header h1
+    font-size: 28px
+    padding: 5px 0
+    margin: 5px 0
+  
+  .hightlight
+    background-color: #ffc
+  
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999
+  
+  #header
+    background: #48625B
+    h1 a
+      &:link, &:active, &:hover, &:visited
+        color: #FFF
+  
+  #main
+    background: #e5e5e5
+    width: 69%
+    .block
+      -moz-border-radius-topleft: 4px
+      -moz-border-radius-topright: 4px
+      padding: 0
+      margin-bottom: 20px
+      padding-bottom: 20px
+      background: #fff
+      h2.title
+        margin: 0 0 20px 0
+        background-color: #E9FAE6
+        padding: 5px 5px 5px 15px
+        font-size: 18px
+  
+  .main_container
+    padding: 10px
+  
+  /* #sidebar .block { background: #FFF; padding-bottom:0px; }
+  
+  #sidebar
+    .notice
+      background-color: #ffc
+      padding: 0 10px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #fff
+      border-left: 1px solid #fff
+      h2
+        font-size: 16px
+        margin: 5px 0
+        border-bottom: 1px solid #aaa
+      p
+        font-size: 12px
+    .block
+      padding-bottom: 0
+      .content
+        padding: 0 10px
+    h3
+      background: #c7d8d8
+      border-bottom: 1px solid #999
+      padding: 5px 10px
+    ul
+      li a
+        &:link, &:visited
+          font-size: 14px
+        &:hover, &:active
+          background: #E9FAE6
+          color: #444
+          font-size: 14px
+          text-decoration: underline
+      &.navigation li
+        &.last a
+          border-bottom: none
+        a
+          &:link, &:visited
+            padding: 5px 10px
+            color: #444
+            text-decoration: none
+          &:hover
+            text-decoration: underline
+    .block .sidebar-block h4
+      border-bottom: 1px solid #bbb
+  
+  #main-navigation ul li
+    background: #30423E
+    &:hover
+      background: #23302D
+    &.active
+      background: #e5e5e5
+    a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #main-navigation ul li
+    a
+      font-size: 14px
+      padding: 4px 10px
+    &.active a
+      &:link, &:visited, &:hover, &:active
+        color: #333
+  
+  #user-navigation ul li a:hover
+    text-decoration: underline
+  
+  .secondary-navigation
+    background: #48625B
+    border-bottom-color: #30423e
+    border-bottom: 5px solid #30423e
+    ul li
+      &.active
+        background-color: #30423e
+      &:hover
+        background-color: #23302d
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #30423e
+      color: #FFF
+      border: 1px solid #30423e
+      -moz-border-radius: 5px
+    a
+      color: #364B69
+      border: 1px solid #ddd
+      -moz-border-radius: 5px
+      &:hover
+        color: #444
+        background: #E9FAE6
+  
+  /* tables
+  
+  .table
+    th
+      background: #48625B
+      color: #FFF
+      font-weight: normal
+      padding: 3px
+      a.toggle
+        display: block
+        width: 12px
+        height: 12px
+        background: transparent url('images/tick.png') center no-repeat
+        text-indent: -9999px
+        -moz-outline: none
+      &.first
+        width: 30px
+        text-align: center
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input.text, textarea.textarea
+      border: 1px solid #ddd
+      padding: 5px
+      width: 95%
+    .navform
+      padding: 10px
+      background-color: #E9FAE6
+      font-size: 14px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #eee
+      border-left: 1px solid #eee
+      input
+        font-size: 14px
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 5px
+      width: 80%
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #ddf
+      background-color: #eef
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    .item .avatar
+      border-color: #F0F0EE
+      margin: 3px 10px 0 0
+    .left
+      padding: 5px 5px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #48625B
+      color: #FFF
+
+
+@mixin kathleene
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999999
+  
+  .hightlight
+    background-color: #FFFFCC
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #AF0000
+  
+  h1, h2, h3
+    color: #AF0000
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #f0f0ee
+    font-family: helvetica, arial, sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #AF0000
+    h1
+      padding: 20px 0
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    h3
+      background: #AF0000
+      color: #FFF
+      border-bottom: 5px solid #2a0000
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #470E0E
+      color: #FFF
+  
+  #main-navigation
+    background: #2a0000
+    ul li
+      background: #2a0000
+      margin-right: 0
+      &.active
+        background: #f0f0ee
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  .secondary-navigation li a:hover
+    background: #470E0E
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #2a0000
+  
+  .secondary-navigation
+    background: #AF0000
+    border-bottom-color: #2a0000
+    ul li.active
+      background-color: #2a0000
+      a:hover
+        background-color: #2a0000
+  
+  #footer .block
+    color: #FFF
+    background: #2a0000
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #2a0000
+      color: #FFF
+      border-color: #2a0000
+    a
+      color: #2a0000
+      border-color: #2a0000
+      &:hover
+        color: #FFF
+        background: #2a0000
+  
+  /* tables
+  
+  .table
+    th
+      background: #100000
+      border-bottom: 3px solid #700000
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #2a0000
+    textarea.text_area
+      width: 100%
+      border: 1px solid #2a0000
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #AF0000
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #2A0000
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #AF0000
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+  
+  .secondary-navigation
+    border-bottom-width: 5px
+
+
+@mixin bec
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #33f
+  
+  h1, h2, h3
+    color: #444
+  
+  body
+    color: #333
+    background: #e5e5e5
+    font-family: Verdana, Arial, "Bitstream Vera Sans", sans-serif
+  
+  hr
+    background: #f0f0ee
+  
+  p
+    font-size: 12px
+    line-height: 20px
+  
+  input.check_box
+    vertical-align: middle
+  
+  #header h1
+    font-size: 28px
+    padding: 5px 0
+    margin: 5px 0
+  
+  .hightlight
+    background-color: #ffc
+  
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999
+  
+  #header
+    background: #006666
+    h1 a
+      &:link, &:active, &:hover, &:visited
+        color: #FFF
+  
+  #main
+    background: #e5e5e5
+    width: 73%
+    .block
+      -moz-border-radius-topleft: 4px
+      -moz-border-radius-topright: 4px
+      padding: 0
+      margin-bottom: 20px
+      padding-bottom: 20px
+      background: #fff
+      h2.title
+        margin: 0 0 20px 0
+        background-color: #E6FAFA
+        padding: 5px 5px 5px 15px
+        font-size: 18px
+  
+  .main_container
+    padding: 10px
+  
+  #footer .block p
+    color: #aaa
+    font-size: 11px
+  
+  /* #sidebar .block { background: #FFF; padding-bottom:0px; }
+  
+  #sidebar
+    .notice
+      background-color: #ffc
+      padding: 0 10px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #fff
+      border-left: 1px solid #fff
+      h2
+        font-size: 16px
+        margin: 5px 0
+        border-bottom: 1px solid #aaa
+      p
+        font-size: 12px
+    .block
+      padding-bottom: 0
+      .content
+        padding: 0 10px
+    h3
+      background: #c7d8d8
+      border-bottom: 1px solid #999
+      padding: 5px 10px
+    ul
+      li a
+        &:link, &:visited
+          font-size: 12px
+        &:hover, &:active
+          background: #e1efef
+          color: #444
+          font-size: 12px
+          text-decoration: underline
+      &.navigation li
+        &.last a
+          border-bottom: none
+        a
+          &:link, &:visited
+            padding: 5px 10px
+            color: #444
+            text-decoration: none
+          &:hover
+            text-decoration: underline
+    .block .sidebar-block h4
+      border-bottom: 1px solid #bbb
+  
+  #main-navigation ul li
+    background: #008c8c
+    &:hover
+      background: #00b2b2
+    &.active
+      background: #f0f0ee
+    a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #main-navigation ul li
+    a
+      font-size: 12px
+      padding: 4px 10px
+    &.active a
+      &:link, &:visited, &:hover, &:active
+        color: #364b69
+  
+  #user-navigation ul li a:hover
+    text-decoration: underline
+  
+  .secondary-navigation
+    background: #006666
+    border-bottom-color: #008c8c
+    border-bottom: 5px solid #008c8c
+    ul li
+      &.active
+        background-color: #008c8c
+      &:hover
+        background-color: #00b2b2
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #008c8c
+      color: #FFF
+      border: 1px solid #008c8c
+      -moz-border-radius: 5px
+    a
+      color: #364B69
+      border: 1px solid #ddd
+      -moz-border-radius: 5px
+      font-size: 11px
+      &:hover
+        color: #444
+        background: #E6FAFA
+  
+  /* tables
+  
+  .table
+    th
+      background: #006666
+      color: #FFF
+      font-weight: normal
+      padding: 3px
+      a.toggle
+        display: block
+        width: 12px
+        height: 12px
+        background: transparent url('images/tick.png') center no-repeat
+        text-indent: -9999px
+        -moz-outline: none
+      &.first
+        width: 30px
+        text-align: center
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input.text, textarea.textarea
+      border: 1px solid #ddd
+      padding: 5px
+      width: 99%
+    .navform
+      padding: 10px
+      background-color: #f1f8f8
+      font-size: 14px
+      border-bottom: 1px solid #ddd
+      border-right: 1px solid #ddd
+      border-top: 1px solid #eee
+      border-left: 1px solid #eee
+      input
+        font-size: 14px
+  
+  .description
+    color: #aaa
+    font-family: Georgia, serif
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 5px
+      width: 80%
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #ddf
+      background-color: #eef
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    .item .avatar
+      border-color: #F0F0EE
+      margin: 3px 10px 0 0
+    .left
+      padding: 5px 5px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #006666
+      color: #FFF
+
+
+@mixin amro
+  /*
+   *
+   *    Amro
+   *    by Sandro Duarte
+   *       sandro[at]gmail.com
+   *
+   *    dark green        #008080
+   *    light yellow      #F6F5CD
+   *    orange            #E8C53B
+   *    light green       #76BBA5
+   *    light             #F3F4EC
+  
+  .small
+    font-size: 11px
+    font-style: normal
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.4em
+  
+  .gray
+    color: #999999
+    font-family: Georgia, serif
+    font-size: 13px
+    font-style: italic
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.6em
+  
+  .hightlight
+    background-color: #ffff88
+    font-weight: bold
+    color: #36393d
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #008080
+  
+  h1, h2, h3
+    color: #008080
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #F6F5CD
+    font-family: helvetica,Arial,sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  p
+    margin: 10px 0
+  
+  #header
+    background: #008080
+    h1
+      padding: 15px 0
+      font-size: 28px
+      font-style: normal
+      font-weight: bold
+      text-transform: normal
+      letter-spacing: -1px
+      line-height: 1.2em
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+    p
+      font-size: 13px
+      line-height: 1.45em
+    h2
+      font-size: 22px
+      font-style: normal
+      font-weight: bold
+      letter-spacing: -1px
+      line-height: 1.2em
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    .notice
+      background: #76BBA5
+      color: #fff
+    h3
+      background: #008080
+      color: #FFF
+      border-bottom: 6px solid #E8C53B
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #76BBA5
+      color: #FFF
+  
+  #main-navigation
+    background: #E8C53B
+    ul li
+      background: #E8C53B
+      margin-right: 0
+      &.active
+        background: #F6F5CD
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #fff
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #fff
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation a.logout
+    background: #cc0000
+    padding: 2px 6px
+    -moz-border-radius: 4px
+    -webkit-border-radius: 3px
+  
+  .secondary-navigation li a:hover
+    background: #76BBA5
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #008080
+  
+  .secondary-navigation
+    background: #008080
+    border-bottom: 6px solid #E8C53B
+    ul li
+      &.active
+        background-color: #E8C53B
+        a
+          background-color: #E8C53B
+      a
+        padding: 8px 12px
+  
+  #footer .block
+    color: #FFF
+    background: #E8C53B
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span
+      &.disabled
+        color: #bbb
+        border-color: #bbb
+      &.current
+        background: #008080
+        color: #FFF
+        border-color: #008080
+    a, span
+      color: #008080
+      border-color: #008080
+    a:hover
+      color: #FFF
+      background: #008080
+  
+  /* tables
+  
+  .table
+    th
+      background: #008080
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+    tr.even
+      background: #EFF3E4
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #CFCFCF
+    textarea.text_area
+      width: 100%
+      border: 1px solid #CFCFCF
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #008080
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #E8C53B
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #008080
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+@mixin blue
+  .small
+    font-size: 12px
+  
+  .gray
+    color: #999999
+  
+  .hightlight
+    background-color: #FFFFCC
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #2F427A
+  
+  h1, h2, h3
+    color: #2F427A
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #f0f0ee
+    font-family: helvetica, arial, sans-serif
+    font-size: 14px
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #2F427A
+    h1
+      padding: 20px 0
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    .notice
+      background: #FFFFCC
+    h3
+      background: #2F427A
+      color: #FFF
+      border-bottom: 10px solid #262626
+      font-size: 15px
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #316291
+      color: #FFF
+  
+  #main-navigation
+    background: #262626
+    ul li
+      background: #262626
+      margin-right: 0
+      &.active
+        background: #f0f0ee
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  .secondary-navigation li a:hover
+    background: #5C637A
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #2F427A
+    border-bottom-color: #262626
+    font-size: 15px
+    ul li.active
+      background-color: #262626
+      a:hover
+        background-color: #262626
+  
+  #footer .block
+    color: #FFF
+    background: #262626
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span, a
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      padding-top: 4px
+    span.current
+      background: #262626
+      color: #FFF
+      border-color: #262626
+    a
+      color: #262626
+      border-color: #262626
+      &:hover
+        color: #FFF
+        background: #262626
+  
+  /* tables
+  
+  .table
+    th
+      background: #262626
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #262626
+    textarea.text_area
+      width: 100%
+      border: 1px solid #262626
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #2F427A
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #262626
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #2F427A
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin default
+  /*
+   *
+   *    Drastic Dark
+   *    by Juan Maria Martinez Arce
+   *       juan[at]insignia4u.com
+   *
+   *    light grey:                 #cfcfcf
+   *    medium grey:                #36393d
+   *    dark grey:                  #1a1a1a
+   *    interactive action yellow   #ffff88
+   *    red                         #cc0000
+   *    light blue                  #E6EEFC
+   *    dark blue                   #0B43A8
+  
+  .small
+    font-size: 11px
+    font-style: normal
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.4em
+  
+  .gray
+    color: #999999
+    font-family: Georgia, serif
+    font-size: 13px
+    font-style: italic
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.6em
+  
+  .hightlight
+    background-color: #ffff88
+    font-weight: bold
+    color: #36393d
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #36393d
+  
+  h1, h2, h3
+    color: #36393d
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #cfcfcf
+    font-family: helvetica, arial, sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #36393d
+    h1
+      padding: 15px 0
+      font-size: 28px
+      font-style: normal
+      font-weight: bold
+      text-transform: normal
+      letter-spacing: -1px
+      line-height: 1.2em
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+    a.logout
+      background: #cc0000
+      padding: 1px 4px
+      -moz-border-radius: 4px
+      -webkit-border-radius: 3px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+      font-size: 22px
+      font-style: normal
+      font-weight: bold
+      text-transform: normal
+      letter-spacing: -1px
+      line-height: 1.2em
+    p
+      font-size: 13px
+      font-style: normal
+      font-weight: normal
+      text-transform: normal
+      letter-spacing: normal
+      line-height: 1.45em
+  
+  #sidebar
+    .block
+      background: #FFF
+      h4
+        font-weight: bold
+    .notice
+      background: #E6EEFC
+      h4
+        color: #0B43A8
+    h3
+      background: #36393d
+      color: #FFF
+      border-bottom: 5px solid #1a1a1a
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #666666
+      color: #ffffff
+  
+  #main-navigation
+    background: #1a1a1a
+    ul li
+      background: #1a1a1a
+      margin-right: 0
+      &.active
+        background: #f0f0ee
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  .secondary-navigation li a:hover
+    background: #666666
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #1a1a1a
+  
+  .secondary-navigation
+    background: #36393d
+    border-bottom-color: #1a1a1a
+    ul li.active
+      background-color: #1a1a1a
+      a:hover
+        background-color: #1a1a1a
+  
+  #footer
+    .block
+      color: #FFF
+      background: #1a1a1a
+    a
+      color: #FFF
+    .block p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    a
+      background: #cfcfcf
+      -moz-border-radius: 3px
+      border: 1px solid #c1c1c1
+    span
+      background: #cfcfcf
+      -moz-border-radius: 3px
+      border: 1px solid #c1c1c1
+      &.current
+        background: #36393d
+        color: #FFF
+        border: 1px solid #36393d
+    a
+      color: #1a1a1a
+      &:hover
+        border: 1px solid #666
+  
+  /* tables
+  
+  .table
+    th
+      background: #36393d
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+    tr.even
+      background: #ebebeb
+  
+  /* forms
+  
+  .form
+    label.label
+      color: #666666
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #cfcfcf
+    textarea.text_area
+      width: 100%
+      border: 1px solid #cfcfcf
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #36393D
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #1A1A1A
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #36393d
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+  
+  .secondary-navigation
+    border-bottom-width: 5px
+
+
+@mixin orange
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999999
+  
+  .hightlight
+    background-color: #FFFFCC
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #ff7900
+  
+  h1, h2, h3
+    color: #ff7900
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #f0f0ee
+    font-family: helvetica, arial, sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #ff7900
+    h1 a
+      &:link, &:active, &:hover, &:visited
+        color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    h3
+      background: #ff7900
+      color: #FFF
+      border-bottom: 10px solid #262626
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #863800
+      color: #FFF
+  
+  #main-navigation
+    background: #262626
+    ul li
+      background: #262626
+      margin-right: 0
+      &.active
+        background: #f0f0ee
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  .secondary-navigation li a:hover
+    background: #863800
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #ff7900
+    border-bottom-color: #262626
+    ul li.active
+      background-color: #262626
+      a:hover
+        background-color: #262626
+  
+  #footer .block
+    color: #FFF
+    background: #262626
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #262626
+      color: #FFF
+      border-color: #262626
+    a
+      color: #262626
+      border-color: #262626
+      &:hover
+        color: #FFF
+        background: #262626
+  
+  /* tables
+  
+  .table
+    th
+      background: #262626
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input.text, textarea
+      width: 100%
+      border: 1px solid #262626
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #FF7900
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #843700
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 5px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #ff7900
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin djime-cerulean
+  /**
+   * Cerulean web-app-theme made for Djime: http://github.com/mikl/djime/
+   *
+   * Please note that we're using CSSEdit's @group comment syntax.
+   *
+   * Colour sheme:
+   *   Cerulean:       #007BA7
+   *   Bright blue:    #01B8DE
+   *   Near-white:     #F7F7F8
+   *   Silver grey:    #C2C8D1
+   *   Dark blue:      #001C26
+   *
+   * http://www.colourlovers.com/palette/646252/Cerulean_touch
+  
+  /* @group General styles
+  
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999
+  
+  .hightlight
+    background-color: #ffc
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #007BA7
+  
+  h1, h2, h3
+    color: #007BA7
+  
+  body
+    color: #222
+    background: #C2C8D1
+    font-family: "Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif
+  
+  hr
+    background: #EEF0F0
+    color: #EEF0F0
+  
+  /* @end
+  
+  /* @group Header
+  
+  #header
+    background: #007BA7
+    h1
+      padding: 20px 0
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #F7F7F8
+  
+  /* @end
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #F7F7F8
+    padding-top: 1px
+    h2
+      margin-left: 15px
+  
+  /* @group Main navigation
+  
+  #main-navigation
+    ul li
+      padding-left: 0
+      a
+        padding: 8px 0
+        padding: 8px 15px
+        &:hover
+          background-color: #001C26
+      &.active a
+        background-color: #C2C8D1
+        background: -webkit-gradient(linear, left top, left bottom, from(#c2c8d1), to(#c2c8d1), color-stop(0.5, #f7f7f8), color-stop(0.5, #f7f7f8))
+    background-color: #005573
+  
+  /* @end
+  
+  /* @group Secondary navigation
+  
+  .secondary-navigation
+    li a:hover
+      background: #005573
+    background: #007BA7
+    border-bottom-width: 7px
+    border-bottom-color: #005573
+    ul li.active
+      background-color: #005573
+      a:hover
+        background-color: #005573
+  
+  /* @end
+  
+  /* @group Sidebar
+  
+  #sidebar
+    .block
+      background: #F7F7F8
+    h3
+      background: #007BA7
+      color: #F7F7F8
+      border-bottom: 7px solid #005573
+    ul li a
+      &:link, &:visited
+        background: #F7F7F8
+        border-bottom: 1px solid #EEF0F0
+        text-decoration: none
+      &:hover, &:active
+        background: #005573
+        color: #F7F7F8
+  
+  /* @end
+  
+  #main-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #F7F7F8
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #F7F7F8
+  
+  #user-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #F7F7F8
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #001C26
+  
+  #footer .block
+    color: #F7F7F8
+    background: #005573
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #005573
+      color: #F7F7F8
+      border-color: #005573
+    a, span
+      color: #001C26
+      border-color: #005573
+    a:hover
+      color: #F7F7F8
+      background: #005573
+  
+  /* tables
+  
+  .table
+    th
+      background: #C2C8D1
+      color: #001C26
+    td
+      border-bottom: 1px solid #EEF0F0
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #001C26
+    textarea.text_area
+      width: 100%
+      border: 1px solid #001C26
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #007BA7
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #005573
+    .description
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* @group Flash messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #e0d300
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #8ec4df
+      background-color: #dffaff
+  
+  /* @end
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #EEF0F0
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #EEF0F0
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #F7F7F8
+    h2
+      background: #005573
+      color: #F7F7F8
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+      a
+        -moz-border-radius-topleft: 4px
+        -webkit-border-top-left-radius: 4px
+        -moz-border-radius-topright: 4px
+        -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin ruby
+  .small
+    font-size: 11px
+  
+  .gray
+    color: #999999
+  
+  .hightlight
+    background-color: #FFFFCC
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #7A1818
+  
+  h1, h2, h3
+    color: #7A1818
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #e5e5e5
+    font-family: helvetica, arial, sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  #header
+    background: #7A1818
+    h1
+      padding: 15px 0
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    h3
+      background: #7A1818
+      color: #FFF
+      border-bottom: 10px solid #262626
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #470E0E
+      color: #FFF
+  
+  #main-navigation
+    background: #262626
+    ul li
+      background: #262626
+      margin-right: 0
+      &.active
+        background: #e5e5e5
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation
+    ul li a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+    a.logout
+      background: #cc0000
+      padding: 2px 6px
+      -moz-border-radius: 4px
+      -webkit-border-radius: 3px
+  
+  .secondary-navigation li a:hover
+    background: #470E0E
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #7A1818
+    border-bottom-color: #262626
+    ul li.active
+      background-color: #262626
+      a:hover
+        background-color: #262626
+  
+  #footer .block
+    color: #FFF
+    background: #262626
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span.current
+      background: #262626
+      color: #FFF
+      border-color: #262626
+    a
+      color: #262626
+      border-color: #262626
+      &:hover
+        color: #FFF
+        background: #262626
+  
+  /* tables
+  
+  .table
+    th
+      background: #262626
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #262626
+    textarea.text_area
+      width: 100%
+      border: 1px solid #262626
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #7A1818
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #470E0E
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #7A1818
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin olive
+  .small
+    font-size: 11px
+    font-style: normal
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.4em
+  
+  .gray
+    color: #999999
+    font-family: Georgia, serif
+    font-size: 13px
+    font-style: italic
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.6em
+  
+  .hightlight
+    background-color: #ffff88
+    font-weight: bold
+    color: #36393d
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #A3AB74
+  
+  h1, h2, h3
+    color: #A3AB74
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #EFF3E4
+    font-family: helvetica,Arial,sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  p
+    margin: 10px 0
+  
+  #header
+    background: #5E634E
+    h1
+      padding: 15px 0
+      font-size: 28px
+      font-style: normal
+      font-weight: bold
+      text-transform: normal
+      letter-spacing: -1px
+      line-height: 1.2em
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+    p
+      font-size: 13px
+      line-height: 1.45em
+    h2
+      font-size: 22px
+      font-style: normal
+      font-weight: bold
+      letter-spacing: -1px
+      line-height: 1.2em
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    .notice
+      background: #869453
+      color: #fff
+    h3
+      background: #5E634E
+      color: #FFF
+      border-bottom: 6px solid #DACF77
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #ADBFD6
+      color: #FFF
+  
+  #main-navigation
+    background: #DACF77
+    ul li
+      background: #DACF77
+      margin-right: 0
+      &.active
+        background: #EFF3E4
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation
+    ul li a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+    a.logout
+      background: #cc0000
+      padding: 2px 6px
+      -moz-border-radius: 4px
+      -webkit-border-radius: 3px
+  
+  .secondary-navigation li a:hover
+    background: #ADBFD6
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #5E634E
+    border-bottom: 6px solid #DACF77
+    ul li
+      &.active
+        background-color: #DACF77
+        a:hover
+          background-color: #DACF77
+      a
+        padding: 8px 12px
+  
+  #footer .block
+    color: #FFF
+    background: #262626
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span
+      &.disabled
+        color: #bbb
+        border-color: #bbb
+      &.current
+        background: #869453
+        color: #FFF
+        border-color: #869453
+    a, span
+      color: #869453
+      border-color: #869453
+    a:hover
+      color: #FFF
+      background: #869453
+  
+  /* tables
+  
+  .table
+    th
+      background: #5E634E
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+    tr.even
+      background: #EFF3E4
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #CFCFCF
+    textarea.text_area
+      width: 100%
+      border: 1px solid #CFCFCF
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #5E634E
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #ADBFD6
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #869453
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+
+@mixin corpus
+  .small
+    font-size: 11px
+    font-style: normal
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.4em
+  
+  .gray
+    color: #999999
+    font-family: Georgia, serif
+    font-size: 13px
+    font-style: italic
+    font-weight: normal
+    text-transform: normal
+    letter-spacing: normal
+    line-height: 1.6em
+  
+  .hightlight
+    background-color: #ffff88
+    font-weight: bold
+    color: #36393d
+  
+  a
+    &:link, &:visited, &:hover, &:active
+      color: #A3AB74
+  
+  h1, h2, h3
+    color: #A3AB74
+  
+  a
+    -moz-outline: none
+  
+  body
+    color: #222
+    background: #EFF3E4
+    font-family: helvetica,Arial,sans-serif
+  
+  hr
+    background: #f0f0ee
+    color: #f0f0ee
+  
+  p
+    margin: 10px 0
+  
+  #header
+    background: #5E634E
+    h1
+      padding: 15px 0
+      font-size: 28px
+      font-style: normal
+      font-weight: bold
+      text-transform: normal
+      letter-spacing: -1px
+      line-height: 1.2em
+      a
+        &:link, &:active, &:hover, &:visited
+          color: #FFF
+  
+  #user-navigation
+    top: auto
+    bottom: 5px
+    right: 25px
+  
+  #main .block .content
+    background: #FFF
+    padding-top: 1px
+    h2
+      margin-left: 15px
+    p
+      font-size: 13px
+      line-height: 1.45em
+    h2
+      font-size: 22px
+      font-style: normal
+      font-weight: bold
+      letter-spacing: -1px
+      line-height: 1.2em
+      margin-left: 15px
+  
+  #sidebar
+    .block
+      background: #FFF
+    .notice
+      background: #869453
+      color: #fff
+    h3
+      background: #5E634E
+      color: #FFF
+      border-bottom: 6px solid #DACF77
+  
+  #main-navigation ul li
+    padding-left: 15px
+    a
+      padding: 8px 0
+    &.active
+      padding: 0
+      margin-left: 15px
+      margin-left: 15px
+      a
+        padding: 8px 15px
+  
+  #sidebar ul li a
+    &:link, &:visited
+      background: #FFF
+      border-bottom: 1px solid #F0F0EE
+      text-decoration: none
+    &:hover, &:active
+      background: #ADBFD6
+      color: #FFF
+  
+  #main-navigation
+    background: #DACF77
+    ul li
+      background: #DACF77
+      margin-right: 0
+      &.active
+        background: #EFF3E4
+      a
+        &:link, &:visited, &:hover, &:active
+          text-decoration: none
+          color: #FFF
+  
+  .secondary-navigation ul li a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+  
+  #user-navigation
+    ul li a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+    a.logout
+      background: #cc0000
+      padding: 2px 6px
+      -moz-border-radius: 4px
+      -webkit-border-radius: 3px
+  
+  .secondary-navigation li a:hover
+    background: #ADBFD6
+  
+  #main-navigation ul li.active a
+    &:link, &:visited, &:hover, &:active
+      color: #262626
+  
+  .secondary-navigation
+    background: #5E634E
+    border-bottom: 6px solid #DACF77
+    ul li
+      &.active
+        background-color: #DACF77
+        a:hover
+          background-color: #DACF77
+      a
+        padding: 8px 12px
+  
+  #footer .block
+    color: #FFF
+    background: #262626
+    p
+      margin: 0
+      padding: 10px
+  
+  /* pagination
+  
+  .pagination
+    span
+      &.disabled
+        color: #bbb
+        border-color: #bbb
+      &.current
+        background: #869453
+        color: #FFF
+        border-color: #869453
+    a, span
+      color: #869453
+      border-color: #869453
+    a:hover
+      color: #FFF
+      background: #869453
+  
+  /* tables
+  
+  .table
+    th
+      background: #5E634E
+      color: #FFF
+    td
+      border-bottom: 1px solid #F0F0EE
+    tr.even
+      background: #EFF3E4
+  
+  /* forms
+  
+  .form
+    input
+      &.text_field, &.password_field
+        width: 100%
+        border: 1px solid #CFCFCF
+    textarea.text_area
+      width: 100%
+      border: 1px solid #CFCFCF
+    input.button
+      padding: 5px 10px 5px 10px
+      background-color: #5E634E
+      text-decoration: none
+      cursor: pointer
+      color: #FFF
+      font-size: 14px
+      border: 0px
+      margin: 0px
+    .button:hover
+      background: #ADBFD6
+    .description
+      font-style: italic
+      color: #8C8C8C
+      font-size: .9em
+  
+  /* flash-messages
+  
+  .flash
+    .message
+      -moz-border-radius: 3px
+      -webkit-border-radius: 3px
+      text-align: center
+      margin: 0 auto 15px
+      p
+        margin: 8px
+    .error
+      border: 1px solid #fbb
+      background-color: #fdd
+    .warning
+      border: 1px solid #fffaaa
+      background-color: #ffffcc
+    .notice
+      border: 1px solid #1FDF00
+      background-color: #BBFFB6
+  
+  /* lists
+  
+  ul.list li
+    border-bottom-color: #F0F0EE
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    .item .avatar
+      border-color: #F0F0EE
+      border-width: 1px
+      border-style: solid
+      padding: 2px
+  
+  /* box
+  
+  #box .block
+    background: #FFF
+    h2
+      background: #869453
+      color: #FFF
+  
+  /* rounded borders
+  
+  #main
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #main-navigation
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    li
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation, #main .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #sidebar
+    .block, h3
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  ul.list li, #footer .block, .form input.button
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+  
+  #box .block
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+    h2
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation
+    li.first a, ul li.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+  
+  .table th
+    &.first
+      -moz-border-radius-topleft: 4px
+      -webkit-border-top-left-radius: 4px
+    &.last
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+  
+  .secondary-navigation ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  
+  #sidebar
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+    .block
+      -moz-border-radius-bottomleft: 4px
+      -webkit-border-bottom-left-radius: 4px
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+  
+  #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
