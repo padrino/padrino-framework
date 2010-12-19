@@ -15,6 +15,7 @@
 * Removed mount_core
 * Fix camelized model names in model generation
 * Added slim renderer component
+* Now the content format can be set explicitly in a param [Thanks to qzio]
 
 == 0.9.19
 
