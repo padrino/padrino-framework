@@ -331,6 +331,11 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    should "properly generate for slim" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim','--script=none') }
+      assert_match(/Applying.*?slim.*?renderer/,buffer)
+      assert_match_in_file(/gem 'slim'/, "#{@apptmp}/sample_project/Gemfile")
+    end
   end
 
   context "the generator for script component" do
