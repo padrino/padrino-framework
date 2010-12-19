@@ -45,7 +45,12 @@ module Padrino
 
           empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
-          directory "templates/assets",  destination_root("public", "admin")
+          
+          if File.exist?(destination_root("config/compass.comfig"))
+            directory "templates/assets/sass",  destination_root("app/stylesheets","admin")
+          else
+            directory "templates/assets/stylesheets",  destination_root("public","admin")
+          end
 
           account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
