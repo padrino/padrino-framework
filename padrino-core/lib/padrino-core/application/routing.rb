@@ -501,7 +501,9 @@ module Padrino
             request.path_info =~ /\.([^\.\/]+)$/
             url_format        = $1.to_sym if $1
 
-            if !url_format && matching_types.first
+            if params[:format]
+              accept_format = params[:format]
+            elsif !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
