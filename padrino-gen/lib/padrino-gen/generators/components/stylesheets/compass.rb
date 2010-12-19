@@ -20,12 +20,34 @@ COMPASS_REGISTER = (<<-COMPASSR).gsub(/^ {10}/, '') unless defined?(COMPASS_REGI
   register CompassInitializer\n
 COMPASSR
 
+COMPASS_CONFIGURATION = (<<-COMPASSC).gsub(/^ {10}/, '') unless defined?(COMPASS_CONFIGURATION)
+project_path = "."
+project_type = :stand_alone
+http_path = "/"
+sass_dir = "./app/stylesheets"
+css_dir = "./public/stylesheets"
+http_stylesheets_path = "/stylesheets"
+images_dir = "./public/images"
+http_images_path = "/images"
+javascripts_dir = "./public/javascripts"
+http_javascripts_path = "/javascripts"
+output_style = :compressed
+
+require 'socket'
+hostname = Socket.gethostbyname(Socket.gethostname).first
+asset_host do |asset|
+  "http://assets%d.\#{hostname}" % (asset.hash % 4)
+end
+COMPASSC
+
+COMPASS_REGISTER = (<<-COMPASSR).gsub(/^ {10}/, '') unless defined?(COMPASS_REGISTER)
+  register CompassInitializer\n
+COMPASSR
+
 def setup_stylesheet
   require_dependencies 'compass'
   create_file destination_root('/lib/compass_plugin.rb'), COMPASS_INIT
   inject_into_file destination_root('/app/app.rb'), COMPASS_REGISTER, :after => "register Padrino::Helpers\n"
-  
-  copy_file "components/stylesheets/compass/compass.config", destination_root('/config/compass.config')
-  remove_file "components/stylesheets/compass/compass.config"
+  create_file destination_root('/config/compass.config'), COMPASS_CONFIGURATION
   directory "components/stylesheets/compass/", destination_root('/app/stylesheets')
 end

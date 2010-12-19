@@ -46,12 +46,14 @@ module Padrino
           empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           
-          if File.exist?(destination_root("config/compass.config"))
+          if File.exist?(destination_root("config/compass.config")) 
             directory "templates/assets/sass",  destination_root("app/stylesheets","admin")
+            compass_init_admin = "\tregister CompassInitializer\n"    
+            inject_into_file destination_root('/admin/app.rb'), compass_init_admin, :after => "register Padrino::Helpers\n"
           else
-            directory "templates/assets/stylesheets",  destination_root("public","admin")
+            directory "templates/assets",  destination_root("public", "admin")
           end
-
+          
           account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-r=#{options[:root]}"
