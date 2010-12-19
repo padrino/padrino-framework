@@ -21,7 +21,7 @@ module Padrino
         # Add access_control permission in our app.rb
         #
         def add_project_module(controller)
-          permission = "      role.project_module :#{controller}, \"/#{controller}\"\n"        
+          permission = "      role.project_module :#{controller}, \"/#{controller}\"\n"
           inject_into_file destination_root("/admin/app.rb"), permission, :after => "access_control.roles_for :admin do |role|\n"
         end
       end # Actions

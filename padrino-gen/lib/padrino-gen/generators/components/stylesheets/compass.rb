@@ -6,11 +6,9 @@ COMPASS_INIT = (<<-COMPASS).gsub(/^ {10}/, '') unless defined?(COMPASS_INIT)
 module CompassInitializer
   def self.registered(app)
     require 'sass/plugin/rack'
-
-    Compass.add_project_configuration './config/compass.config'
+    Compass.add_project_configuration 'config/compass.config'
     Compass.configure_sass_plugin!
     Compass.handle_configuration_change!
-
     app.use Sass::Plugin::Rack
   end
 end
@@ -24,20 +22,15 @@ COMPASS_CONFIGURATION = (<<-COMPASSC).gsub(/^ {10}/, '') unless defined?(COMPASS
 project_path = "."
 project_type = :stand_alone
 http_path = "/"
-sass_dir = "./app/stylesheets"
-css_dir = "./public/stylesheets"
+sass_dir = "app/stylesheets"
+css_dir = "public/stylesheets"
 http_stylesheets_path = "/stylesheets"
-images_dir = "./public/images"
+images_dir = "public/images"
 http_images_path = "/images"
-javascripts_dir = "./public/javascripts"
+javascripts_dir = "public/javascripts"
 http_javascripts_path = "/javascripts"
 output_style = :compressed
-
-require 'socket'
-hostname = Socket.gethostbyname(Socket.gethostname).first
-asset_host do |asset|
-  "http://assets%d.\#{hostname}" % (asset.hash % 4)
-end
+relative_assets = true
 COMPASSC
 
 COMPASS_REGISTER = (<<-COMPASSR).gsub(/^ {10}/, '') unless defined?(COMPASS_REGISTER)

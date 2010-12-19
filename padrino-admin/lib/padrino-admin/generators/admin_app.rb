@@ -46,10 +46,9 @@ module Padrino
           empty_directory destination_root("admin")
           directory "templates/app",     destination_root("admin")
           
-          if File.exist?(destination_root("config/compass.config")) 
+          if File.exist?(destination_root("config/compass.config"))
             directory "templates/assets/sass",  destination_root("app/stylesheets","admin")
-            compass_init_admin = "\tregister CompassInitializer\n"    
-            inject_into_file destination_root('/admin/app.rb'), compass_init_admin, :after => "register Padrino::Helpers\n"
+            inject_into_file destination_root('/admin/app.rb'), "\tregister CompassInitializer\n", :after => "register Padrino::Helpers\n"           
           else
             directory "templates/assets",  destination_root("public", "admin")
           end
@@ -95,7 +94,17 @@ module Padrino
 
           template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
-          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+          
+          if File.exist?(destination_root("config/compass.config"))
+            copy_file "templates/#{ext}/app/layouts/application.#{ext}.tt", "templates/#{ext}/app/layouts/application.#{ext}.compass.tt"
+            gsub_file destination_root("templates/#{ext}/app/layouts/application.#{ext}.compass.tt"), "stylesheet_link_tag :base, \"themes/<%= options[:theme] %>/style\"", "stylesheet_link_tag \"/stylesheets/admin/base\""
+            template destination_root("templates/#{ext}/app/layouts/application.#{ext}.compass.tt"), destination_root("admin/views/layouts/application.#{ext}")
+            inject_into_file destination_root('/app/stylesheets/admin/base.sass'), "\n@include #{options[:theme]}\n\n", :after => "@import mixins\n"            
+            remove_dir destination_root("templates")
+          else
+            template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+          end
+
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
           add_project_module :accounts
