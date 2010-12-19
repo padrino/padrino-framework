@@ -13,6 +13,8 @@
 * Require only require 'spec_helper' in rspec tests
 * Added padrino-cache to our padrino meta-gem
 * Removed mount_core
+* Fix camelized model names in model generation
+* Added slim renderer component
 
 == 0.9.19
 
