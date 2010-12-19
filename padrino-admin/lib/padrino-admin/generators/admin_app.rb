@@ -97,15 +97,17 @@ module Padrino
           
           if File.exist?(destination_root("config/compass.config"))
             copy_file "templates/#{ext}/app/layouts/application.#{ext}.tt", "templates/#{ext}/app/layouts/application.#{ext}.compass.tt"
+            copy_file "templates/#{ext}/app/sessions/new.#{ext}.tt", "templates/#{ext}/app/sessions/new.#{ext}.compass.tt"
             gsub_file destination_root("templates/#{ext}/app/layouts/application.#{ext}.compass.tt"), "stylesheet_link_tag :base, \"themes/<%= options[:theme] %>/style\"", "stylesheet_link_tag \"/stylesheets/admin/base\""
+            gsub_file destination_root("templates/#{ext}/app/sessions/new.#{ext}.compass.tt"), "stylesheet_link_tag :base, \"themes/<%= options[:theme] %>/style\"", "stylesheet_link_tag \"/stylesheets/admin/base\""
             template destination_root("templates/#{ext}/app/layouts/application.#{ext}.compass.tt"), destination_root("admin/views/layouts/application.#{ext}")
-            inject_into_file destination_root('/app/stylesheets/admin/base.sass'), "\n@include #{options[:theme]}\n\n", :after => "@import mixins\n"            
+            template destination_root("templates/#{ext}/app/sessions/new.#{ext}.compass.tt"), destination_root("admin/views/sessions/new.#{ext}")
+            inject_into_file destination_root('/app/stylesheets/admin/base.sass'), "\n@include #{options[:theme]}\n\n", :after => "@import mixins\n"
             remove_dir destination_root("templates")
           else
             template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+            template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
           end
-
-          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
           add_project_module :accounts
           require_dependencies('bcrypt-ruby', :require => 'bcrypt')
