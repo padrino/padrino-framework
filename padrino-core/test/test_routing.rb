@@ -1137,4 +1137,18 @@ class TestRouting < Test::Unit::TestCase
     post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
     assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
   end
+
+  should "have overideable format" do
+    mock_app do
+      ::Rack::Mime::MIME_TYPES[".other"] = "text/html"
+      before do
+        params[:format] ||= 'other'
+      end
+      get("/format_test", :provides => [:html, :other]){ content_type }
+    end
+    get "/format_test"
+    assert_equal "other", body
+  end
+
+
 end
