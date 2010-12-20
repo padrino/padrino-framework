@@ -1,3 +1,3 @@
 def setup_renderer
-    require_dependencies 'erubis'
+  require_dependencies 'erubis'
 end

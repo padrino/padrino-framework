@@ -94,5 +94,4 @@ class TestInMemoryStore < Test::Unit::TestCase
     assert_equal nil, @cache.get('0')
     assert_equal '1', @cache.get('1')
   end
-
 end

@@ -4,6 +4,18 @@
 
 * Now before_load hooks are called before each *require_dependency*
 * Removed Rspec1 generator
+* Upgraded router to 0.5.0
+* Merged shared_views [Thanks to Wprater]
+* Allow adding middlewares in front of the router
+* Fixed DataMapper Admin Adapter and Encrypt Passwords
+* Changed default ActiveRecord config with :reconnect => true
+* Added basic erubis support to the admin
+* Require only require 'spec_helper' in rspec tests
+* Added padrino-cache to our padrino meta-gem
+* Removed mount_core
+* Fix camelized model names in model generation
+* Added slim renderer component
+* Now the content format can be set explicitly in a param [Thanks to qzio]
 
 == 0.9.19
 

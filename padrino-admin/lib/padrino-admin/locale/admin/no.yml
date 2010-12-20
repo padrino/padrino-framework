@@ -1,11 +1,11 @@
 "no":
   padrino:
     admin:
-      save: Lagre 
-      cancel: Avbryt 
+      save: Lagre
+      cancel: Avbryt
       list: Liste
       edit: Rediger
-      new: Ny 
+      new: Ny
       show: Vis
       delete: Slett
       confirm: Er du sikker?
@@ -14,4 +14,3 @@
       profile: Profil
       settings: Instillinger
       logout: Logg ut
-

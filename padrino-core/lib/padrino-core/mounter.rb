@@ -97,9 +97,16 @@ module Padrino
     def ==(other)
       other.is_a?(Mounter) && self.app_class == other.app_class && self.uri_root == other.uri_root
     end
-    
+
+    ##
+    # Returns the class object for the app if defined, nil otherwise
+    #
+    def app_constant
+      app_class.constantize if Object.const_defined?(app_class)
+    end
+
     protected
-    
+
     ##
     # Locates and requires the file to load the app constant
     #
@@ -122,14 +129,7 @@ module Padrino
       candidates << Padrino.root("app", "app.rb")
       candidates.find { |candidate| File.exist?(candidate) }
     end
-    
-    ##
-    # Returns the class object for the app if defined, nil otherwise
-    #
-    def app_constant
-      app_class.constantize if Object.const_defined?(app_class)
-    end
-    
+
     ###
     # Raises an exception unless app_file is located properly
     #
@@ -137,7 +137,7 @@ module Padrino
       message = "Unable to locate source file for app '#{name}', try with :app_file => '/path/app.rb'"
       raise MounterException, message unless @app_file
     end
-    
+
     ###
     # Raises an exception unless app_obj is defined properly
     #
@@ -169,23 +169,6 @@ module Padrino
     #
     def insert_mounted_app(mounter)
       Padrino.mounted_apps.push(mounter) unless Padrino.mounted_apps.include?(mounter)
-    end
-
-    ##
-    # Mounts the core application onto Padrino project with given app settings (file, class, root)
-    #
-    # ==== Examples
-    #
-    #   Padrino.mount_core("Blog")
-    #   Padrino.mount_core(:app_file => "/path/to/file", :app_class => "Blog")
-    #
-    def mount_core(*args)
-      # TODO Remove this in 0.9.14 or pre 1.0
-      warn "DEPRECATION! #{Padrino.first_caller}: Padrino.mount_core has been deprecated.\nUse Padrino.mount('AppName').to('/') instead"
-      options = args.extract_options!
-      app_class = args.size > 0 ? args.first.to_s.camelize : nil
-      options.reverse_merge!(:app_class => app_class)
-      mount("core", options).to("/")
     end
 
     ##

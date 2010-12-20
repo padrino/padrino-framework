@@ -5,7 +5,7 @@ AR = (<<-AR) unless defined?(AR)
 #   ActiveRecord::Base.configurations[:development] = {
 #     :adapter   => 'mysql',
 #     :encoding  => 'utf8',
-#     :reconnect => false,
+#     :reconnect => true,
 #     :database  => 'your_database',
 #     :pool      => 5,
 #     :username  => 'root',
@@ -49,7 +49,7 @@ AR
 MYSQL = (<<-MYSQL)
   :adapter   => 'mysql',
   :encoding  => 'utf8',
-  :reconnect => false,
+  :reconnect => true,
   :database  => !DB_NAME!,
   :pool      => 5,
   :username  => 'root',
@@ -61,7 +61,7 @@ MYSQL
 MYSQL2 = (<<-MYSQL2)
   :adapter   => 'mysql2',
   :encoding  => 'utf8',
-  :reconnect => false,
+  :reconnect => true,
   :database  => !DB_NAME!,
   :pool      => 5,
   :username  => 'root',
@@ -124,7 +124,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.downcase.camelize)
+  model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.camelize)
   create_file(model_path, model_contents,:skip => true)
 end
 

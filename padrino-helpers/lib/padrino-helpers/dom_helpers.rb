@@ -1,11 +1,11 @@
 module Padrino
   module Helpers
-    module DomHelpers 
+    module DomHelpers
       ##
       # Create DOM id from given object. You can also specify optional prefix.
       #
       # ==== Examples
-      # 
+      #
       #   @user = User.new
       #   dom_id(@user, "new")  # => "new_user"
       #
@@ -13,7 +13,7 @@ module Padrino
       #   @user.id              # => 10
       #   dom_id(@user)         # => user_10
       #   dom_id(@user, "edit") # => edit_user_10
-      #   
+      #
       def dom_id(object, prefix=nil)
         chain = []
         chain << prefix if prefix
@@ -21,11 +21,11 @@ module Padrino
         chain << object.id if object.respond_to?('id') && object.id
         chain.join('_')
       end
-      
+
       ##
-      # Create DOM class name from given object. You can also specify optional 
+      # Create DOM class name from given object. You can also specify optional
       # prefix.
-      # 
+      #
       # ==== Examples
       #
       #   @user = User.new

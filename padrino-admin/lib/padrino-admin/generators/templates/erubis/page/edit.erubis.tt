@@ -1,0 +1,18 @@
+<div class="block">
+  <div class="secondary-navigation">
+    <ul class="wat-cf">
+      <li class="first"><%%= link_to pat(:list), url(:<%= @orm.name_plural %>, :index) %></li>
+      <li><%%= link_to pat(:new), url(:<%= @orm.name_plural %>, :new) %></li>
+      <li class="active"><%%= link_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id) %></li>
+    </ul>
+  </div>
+  <div class="content">
+    <h2 class="title"><%%= pat(:edit) %> <%% mt(:<%= @orm.name_singular %>) %></h2>
+    <div class="inner">
+      <%% form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :update, :id => @<%= @orm.name_singular %>.id), :method => :put, :class => :form do |f| %>
+        <%%= partial "<%= @orm.name_plural %>/form", :locals => { :f => f } %>
+      <%% end %>
+    </div>
+  </div>
+</div>
+<%% content_for :sidebar, partial("base/sidebar") %>

@@ -63,7 +63,7 @@ module Padrino
         end
 
         def route
-          match.matched? ? match.path.route : nil
+          match.respond_to?(:path) ? match.path.route : nil
         end
       end
     end
@@ -501,7 +501,9 @@ module Padrino
             request.path_info =~ /\.([^\.\/]+)$/
             url_format        = $1.to_sym if $1
 
-            if !url_format && matching_types.first
+            if params[:format]
+              accept_format = params[:format]
+            elsif !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
@@ -585,29 +587,31 @@ module Padrino
         def route!(base=self.class, pass_block=nil)
           base.router.runner = self
           if base.router and match = base.router.recognize(@request)
-            if !match.matched?
-              route_eval do
-                match.headers.each {|k,v| response[k] = v}
-                status match.status
+            if match.first.respond_to?(:path)
+              match.each do |matched_path|
+                request.match = matched_path
+                @block_params = matched_path.param_values
+                (@params ||= {}).merge!(matched_path.params)
+                pass_block = catch(:pass) do
+                  # If present set current controller layout
+                  parent_layout = base.instance_variable_get(:@layout)
+                  base.instance_variable_set(:@layout, matched_path.path.route.use_layout) if matched_path.path.route.use_layout
+                  # Provide access to the current controller to the request
+                  # Now we can eval route, but because we have "throw halt" we need to be
+                  # (en)sure to reset old layout and run controller after filters.
+                  begin
+                    @_response_buffer = catch(:halt) { route_eval(&matched_path.path.route.dest) }
+                    throw :halt, @_response_buffer
+                  ensure
+                    base.instance_variable_set(:@layout, parent_layout) if matched_path.path.route.use_layout
+                    matched_path.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if matched_path.path.route.after_filters
+                  end
+                end
               end
             elsif match
-              @block_params = match.params
-              (@params ||= {}).merge!(match.params_as_hash)
-              pass_block = catch(:pass) do
-                # If present set current controller layout
-                parent_layout = base.instance_variable_get(:@layout)
-                base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
-                # Provide access to the current controller to the request
-                request.match = match
-                # Now we can eval route, but because we have "throw halt" we need to be
-                # (en)sure to reset old layout and run controller after filters.
-                begin
-                  @_response_buffer = catch(:halt) { route_eval(&match.destination) }
-                  throw :halt, @_response_buffer
-                ensure
-                  base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if match.path.route.after_filters
-                end
+              route_eval do
+                match[1].each {|k,v| response[k] = v}
+                status match[0]
               end
             end
           end

@@ -255,7 +255,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "bar", body
     assert_equal "/bar", @app.url(:bar)
   end
-  
+
   should 'remove index from path' do
     mock_app do
       get(:index){ "index" }
@@ -512,8 +512,8 @@ class TestRouting < Test::Unit::TestCase
   end
 
   should 'apply maps when given path is kind of hash' do
-    mock_app do 
-      controllers :admin do 
+    mock_app do
+      controllers :admin do
         get(:foobar, "/foo/bar"){ "foobar" }
       end
     end
@@ -564,9 +564,9 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 3 1 2", body
     assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3)
   end
-  
-  should "apply parent with shallowing to controller" do 
-    mock_app do 
+
+  should "apply parent with shallowing to controller" do
+    mock_app do
       controller :project do
         parent :user
         parent :shop, :optional => true
@@ -575,7 +575,7 @@ class TestRouting < Test::Unit::TestCase
         get(:show, :with => :id, :parent => :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]} #{params[:shop_id]}" }
       end
     end
-    
+
     assert_equal "/user/1/project", @app.url(:project, :index, :user_id => 1, :shop_id => nil)
     assert_equal "/user/1/shop/23/project", @app.url(:project, :index, :user_id => 1, :shop_id => 23)
 
@@ -609,15 +609,15 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "show 3 1 2 1", body
     assert_equal user_product_project_url, @app.url(:project, :show, :user_id => 1, :product_id => 2, :id => 3, :shop_id => 1)
   end
-  
-  should "respect map in parents with shallowing" do 
-    mock_app do 
+
+  should "respect map in parents with shallowing" do
+    mock_app do
       controller :project do
         parent :shop, :map => "/foo/bar"
         get(:index) { "index #{params[:shop_id]}" }
       end
     end
-    
+
     shop_project_url = "/foo/bar/1/project"
     get shop_project_url
     assert_equal "index 1", body
@@ -916,7 +916,7 @@ class TestRouting < Test::Unit::TestCase
 
   should 'be able to access params in a before filter' do
     username_from_before_filter = nil
-    
+
     mock_app do
       before do
         username_from_before_filter = params[:username]
@@ -1137,4 +1137,18 @@ class TestRouting < Test::Unit::TestCase
     post @app.url(:posts, :create, :format => :js, :bar => 'bar', :baz => 'baz', :id => 5)
     assert_equal "POST CREATE bar - baz - 5", body, "should properly post to create action"
   end
+
+  should "have overideable format" do
+    mock_app do
+      ::Rack::Mime::MIME_TYPES[".other"] = "text/html"
+      before do
+        params[:format] ||= 'other'
+      end
+      get("/format_test", :provides => [:html, :other]){ content_type }
+    end
+    get "/format_test"
+    assert_equal "other", body
+  end
+
+
 end

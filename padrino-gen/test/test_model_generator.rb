@@ -86,6 +86,13 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
     end
 
+    should "generate model file with camelized name" do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+    end
+
     should "generate migration file with no fields" do
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
@@ -140,6 +147,13 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'data_mapper'/m,"#{@apptmp}/sample_project/Gemfile")
     end
 
+    should "generate model file with camelized name" do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
+      silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class ChunkyBacon\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+    end
+
     should "generate model file with fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
@@ -183,6 +197,13 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created:datetime", "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/user.rb")
+    end
+
+    should "generate model file with camelized name" do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class ChunkyBacon < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
     end
 
     should "generate migration file with given properties" do

@@ -21,5 +21,4 @@ class Test::Unit::TestCase
     @matches.length == 1 ? @matches.first : false
 
   end
-
 end

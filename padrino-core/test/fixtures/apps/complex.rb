@@ -14,6 +14,7 @@ end
 class Complex2Demo < Padrino::Application
   set :reload, true
   get("/old"){ "Old Sinatra Way" }
+  get("/"){ "The magick number is: 12!" } # Change only the number!!!
 end
 
 Complex1Demo.controllers do
@@ -21,7 +22,6 @@ Complex1Demo.controllers do
 end
 
 Complex2Demo.controllers do
-  get("/"){ "The magick number is: 16!" } # Change only the number!!!
 end
 
 Padrino.load!
