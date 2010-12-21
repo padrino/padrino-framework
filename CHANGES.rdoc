@@ -15,7 +15,9 @@
 * Removed mount_core
 * Fix camelized model names in model generation
 * Added slim renderer component
-* Now the content format can be set explicitly in a param [Thanks to qzio]
+* Now the content format can be set explicitly in a param [Thanks to Qzio]
+* Fixed I18n load_path [Thanks to Pirj]
+* Updated column proprieties for DataMapper
 
 == 0.9.19
 

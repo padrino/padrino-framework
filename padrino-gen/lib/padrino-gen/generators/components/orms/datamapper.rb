@@ -82,7 +82,7 @@ MIGRATION
 
 DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
-  column :id, DataMapper::Property::Integer, :serial => true
+  column :id, Integer, :serial => true
   !FIELDS!
 end
 MIGRATION
@@ -93,7 +93,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}" },
+       :column_format => Proc.new { |field, kind| "column :#{field}, #{kind.classify}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
@@ -106,7 +106,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, DataMapper::Property::#{kind.classify}" },
+    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
     :remove => Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end
