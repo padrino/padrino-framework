@@ -1142,13 +1142,11 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       ::Rack::Mime::MIME_TYPES[".other"] = "text/html"
       before do
-        params[:format] ||= 'other'
+        params[:format] ||= :other
       end
       get("/format_test", :provides => [:html, :other]){ content_type }
     end
     get "/format_test"
     assert_equal "other", body
   end
-
-
 end
