@@ -74,9 +74,6 @@ module Padrino
         # Reload all files with changes detected.
         #
         def reload!
-          # Reload apps
-          Padrino.mounted_apps.each {|app| app.app_constant.reload! }
-
           # Detect changed files
           rotation do |file, mtime|
             # Retrive the last modified time
