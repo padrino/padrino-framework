@@ -2,7 +2,14 @@
 .group
   =f.label :<%= column[:name] %>
   =f.error_message_on :<%= column[:name] %>
+  <%- case column[:field_type] -%>
+  <%- when :enum -%>
+  =f.select :<%= column[:name] %>, :class => :<%= column[:field_type] %>, :options => <%= column[:options][:values_getter] %>
+  <%- when :association -%>
+  =f.select :<%= column[:name] %>, :class => :<%= column[:field_type] %>, :collection => <%= column[:options][:klass]%>.all, :fields => [:name, :id]
+  <%- else -%>
   =f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
+  <%- end -%>
   %span.description Ex: a simple text
 
 <%- end -%>

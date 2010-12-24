@@ -25,16 +25,19 @@ module Padrino
             when :string                      then :text_field
             when :text                        then :text_area
             when :boolean                     then :check_box
+            when :trueclass                   then :check_box
+            when :association                 then :association
+            when :enum                        then :enum
             else :text_field
           end
         end
 
-        Column = Struct.new(:name, :type) # for compatibility
+        Column = Struct.new(:name, :type, :options) # for compatibility
 
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
-            when :datamapper   then @klass.properties.map { |p| Column.new(p.name, p.primitive || p.type) }
+            when :datamapper   then @klass.properties.map { |p| datamapper_property_converter(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
@@ -48,8 +51,9 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { :name => column.name, :field_type => field_type(column.type) }
+            { :name => column.name, :field_type => field_type(column.type), :options => column.options }
           end
+          @column_fields
         end
 
         def all
@@ -87,6 +91,23 @@ module Padrino
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
+        end
+
+        def datamapper_property_converter(property)
+          relationship = @klass.relationships[property.name.to_s.sub(/_id$/, '')]
+          options = nil
+          type = property.primitive || property.type
+          type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
+          type = :text if type == :string && property.length > 300
+          if (property.respond_to?(:flag_map))
+            type = :enum
+            options = { :values_getter => "#{property.model}.properties[:#{property.name}].flag_map.to_a.sort.map { |ind, name| name }" }
+          end
+          if relationship
+            type = :association
+            options = { :klass => relationship.parent_model }
+          end
+          Column.new(property.name, type, options)
         end
 
         def destroy
