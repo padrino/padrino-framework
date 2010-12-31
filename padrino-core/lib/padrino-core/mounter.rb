@@ -102,7 +102,16 @@ module Padrino
     # Returns the class object for the app if defined, nil otherwise
     #
     def app_constant
-      app_class.constantize if Object.const_defined?(app_class)
+      klass = Object
+      for piece in app_class.split("::")
+        piece = piece.to_sym
+        if klass.const_defined?(piece)
+          klass = klass.const_get(piece)
+        else
+          return
+        end
+      end
+      klass
     end
 
     protected
