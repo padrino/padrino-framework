@@ -63,7 +63,7 @@ module Padrino
         end
 
         def route
-          match.respond_to?(:path) ? match.path.route : nil
+          (!match.nil? && match.respond_to?(:path)) ? match.path.route : nil
         end
       end
     end
