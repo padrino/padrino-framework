@@ -18,6 +18,7 @@
 * Fixed I18n load_path [Thanks to Pirj]
 * Updated column proprieties for DataMapper
 * Sinatra 1.1.2 compat [Thanks to Greg Edwards]
+* Now Mounter accept namespaced applications [Thanks to Mcmire]
 
 == 0.9.19
 
