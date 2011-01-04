@@ -20,7 +20,6 @@
 * Updated column proprieties for DataMapper
 * Sinatra 1.1.2 compat [Thanks to Greg Edwards]
 
-
 == 0.9.19
 
 * Sinatra 1.1 compat
