@@ -150,6 +150,7 @@ module Padrino
         def default_routes!
           configure :development do
             get '/__sinatra__/:image.png' do
+              content_type :png
               filename = File.dirname(__FILE__) + "/images/#{params[:image]}.png"
               send_file filename
             end

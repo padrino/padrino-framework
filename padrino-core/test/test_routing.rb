@@ -1144,7 +1144,7 @@ class TestRouting < Test::Unit::TestCase
       before do
         params[:format] ||= :other
       end
-      get("/format_test", :provides => [:html, :other]){ content_type }
+      get("/format_test", :provides => [:html, :other]){ content_type.to_s }
     end
     get "/format_test"
     assert_equal "other", body
