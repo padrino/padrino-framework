@@ -1,5 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
+class FooError < RuntimeError; end
+
+
 class TestRouting < Test::Unit::TestCase
   should 'ignore trailing delimiters for basic route' do
     mock_app do
@@ -1148,5 +1151,18 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/format_test"
     assert_equal "other", body
+  end
+
+  should 'invokes handlers registered with ::error when raised' do
+    mock_app do
+      set :raise_errors, false
+      error(FooError) { 'Foo!' }
+      get '/' do
+        raise FooError
+      end
+    end
+    get '/'
+    assert_equal 500, status
+    assert_equal 'Foo!', body
   end
 end
