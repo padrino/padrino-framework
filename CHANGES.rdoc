@@ -18,6 +18,7 @@
 * Fixed I18n load_path [Thanks to Pirj]
 * Updated column proprieties for DataMapper
 * Now Mounter accept namespaced applications [Thanks to Mcmire]
+* Updated ar:translate to be more compat with AS 3.+
 
 == 0.9.19
 
