@@ -132,7 +132,7 @@ module Padrino
         # => "/layouts/custom"
         #
         def resolved_layout
-          located_layout = resolve_template(settings.fetch_layout_path, :strict_format => true, :raise_exceptions => false)
+          located_layout = resolve_template(settings.fetch_layout_path, :raise_exceptions => false)
           located_layout ? located_layout[0] : false
         end
 
