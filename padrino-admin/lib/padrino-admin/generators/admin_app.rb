@@ -56,7 +56,9 @@ module Padrino
           account_params << "-d" if options[:destroy]
 
           Padrino::Generators::Model.start(account_params)
-
+          # Can't add this through model generator as it does not have /admin loaded yet
+          # so run it and remove it and copy admin version over to admin path.
+          remove_file destination_root('app','models','account.rb')
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
           column_fields = [
@@ -72,7 +74,7 @@ module Padrino
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt",                     destination_root("app", "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt",                     destination_root("admin", "models", "account.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
