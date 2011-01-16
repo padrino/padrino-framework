@@ -14,7 +14,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
     should "fail outside app root" do
       output = silence_logger { generate(:migration, 'add_email_to_users', '-r=/tmp') }
       assert_match(/not at the root/, output)
-      assert_no_file_exists("#{@apptmp}/db/migration")
+      assert_no_file_exists("#{@apptmp}/db/migrate")
     end
 
     should "fail if we don't use an adapter" do
