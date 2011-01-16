@@ -19,6 +19,8 @@
 * Updated column proprieties for DataMapper
 * Now Mounter accept namespaced applications [Thanks to Mcmire]
 * Updated ar:translate to be more compat with AS 3.+
+* remove strict_format in layouts to work with Sinatra as a standalone
+* Change Padrino Admin to generate model in own app, not default generated app.
 
 == 0.9.19
 
