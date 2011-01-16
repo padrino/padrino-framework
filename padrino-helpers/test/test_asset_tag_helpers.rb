@@ -80,9 +80,9 @@ class TestAssetTagHelpers < Test::Unit::TestCase
     should "display link element for mail to with caption and mail options" do
       actual_html = mail_to('test@demo.com', "My Email", :subject => 'demo test', :class => 'demo', :cc => 'foo@test.com')
       assert_has_tag(:a, :class => 'demo') { actual_html }
-      assert_match /mailto\:test\@demo.com\?/, actual_html
-      assert_match /cc=foo\@test\.com/, actual_html
-      assert_match /subject\=demo\%20test/, actual_html
+      assert_match %r{mailto\:test\@demo.com\?}, actual_html
+      assert_match %r{cc=foo\@test\.com}, actual_html
+      assert_match %r{subject\=demo\%20test}, actual_html
     end
 
     should "display mail link element in haml" do
@@ -146,6 +146,10 @@ class TestAssetTagHelpers < Test::Unit::TestCase
     should "not use a timestamp if stamp setting is false" do
       self.class.expects(:asset_stamp).returns(false)
       assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
+    end
+    should "have xhtml convention tag" do
+      self.class.expects(:asset_stamp).returns(false)
+      assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" />'
     end
   end
 
