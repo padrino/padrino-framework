@@ -4,11 +4,21 @@ class Person
   def self.properties
     [:id, :name, :age, :email].map { |c| OpenStruct.new(:name => c) }
   end
+
+  def self.relationships
+    {}
+  end
 end
 
 class Page
   def self.properties
-    [:id, :name, :body].map { |c| OpenStruct.new(:name => c) }
+    [:id, :name, :body, :owner_id].map { |c| OpenStruct.new(:name => c) }
+  end
+
+  def self.relationships
+    {
+      "owner" => OpenStruct.new(:parent_model => "Person")
+    }
   end
 end
 
@@ -102,6 +112,8 @@ class TestAdminPageGenerator < Test::Unit::TestCase
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
       end
+      assert_match_in_file "select :owner_id", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
+      assert_match_in_file ":collection => Person.all", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
       assert_match_in_file 'role.project_module :pages, "/pages"', "#{@apptmp}/sample_project/admin/app.rb"
     end
   end
