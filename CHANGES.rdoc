@@ -4,7 +4,6 @@
 
 * Removed Rspec1 generator
 * Upgraded router to 0.5.0
-* Merged shared_views [Thanks to Wprater]
 * Allow adding middlewares in front of the router
 * Fixed DataMapper Admin Adapter and Encrypt Passwords
 * Changed default ActiveRecord config with :reconnect => true
