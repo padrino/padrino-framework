@@ -177,6 +177,13 @@ module Mail #:nodoc:
     end
 
     ##
+    # Return the default encoding
+    #
+    def self.default_encoding
+      "utf-8"
+    end
+
+    ##
     # Modify the default attributes for this message (if not explicitly specified)
     #
     def defaults=(attributes)

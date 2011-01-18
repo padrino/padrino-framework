@@ -21,6 +21,7 @@
 * Updated ar:translate to be more compat with AS 3.+
 * remove strict_format in layouts to work with Sinatra as a standalone
 * Change Padrino Admin to generate model in own app, not default generated app.
+* Sinatra 1.1.2 Compat
 
 == 0.9.19
 

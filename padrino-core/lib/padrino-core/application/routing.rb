@@ -63,10 +63,15 @@ module Padrino
         end
 
         def route
-          match.respond_to?(:path) ? match.path.route : nil
+          if match.nil?
+            path = Rack::Utils.unescape(path_info)
+            path.empty? ? "/" : path
+          else
+            match.path.route
+          end
         end
-      end
-    end
+      end # Request
+    end # Sinatra
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
