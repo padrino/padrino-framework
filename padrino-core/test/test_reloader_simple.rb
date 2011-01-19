@@ -32,13 +32,13 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert_equal 200, status
       get "/__sinatra__/404.png"
       assert_equal 200, status
-      assert_equal "image/png", response["Content-Type"]
+      assert_match /image\/png/, response["Content-Type"]
       @app.reset_routes!
       get "/"
       assert_equal 404, status
       get "/__sinatra__/404.png"
       assert_equal 200, status
-      assert_equal "image/png", response["Content-Type"]
+      assert_match /image\/png/, response["Content-Type"]
     end
   end
 
