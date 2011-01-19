@@ -21,54 +21,54 @@ class TestFormBuilder < Test::Unit::TestCase
 
   context 'for #form_for method' do
     should "display correct form html" do
-      actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "utf-8", :method => 'post') { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/register', :id => 'register', :method => 'post', :content => "Demo") { actual_html }
+      actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :id => 'register', :method => 'post', :content => "Demo") { actual_html }
       assert_has_tag('form input[type=hidden]', :name => '_method', :count => 0) { actual_html } # no method action field
     end
 
     should "display correct form html with fake object" do
-      actual_html = form_for(:markup_user, '/register', :id => 'register', :"accept-charset" => "utf-8", :method => 'post') { |f| f.text_field :username }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/register', :id => 'register', :method => 'post') { actual_html }
+      actual_html = form_for(:markup_user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.text_field :username }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :id => 'register', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'text', :name => 'markup_user[username]') { actual_html }
       assert_has_tag('form input[type=hidden]', :name => '_method', :count => 0) { actual_html } # no method action field
     end
 
     should "display correct form html for namespaced object" do
-      actual_html = form_for(Outer::UserAccount.new, '/register', :"accept-charset" => "utf-8", :method => 'post') { |f| f.text_field :username }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/register', :method => 'post') { actual_html }
+      actual_html = form_for(Outer::UserAccount.new, '/register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.text_field :username }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'text', :name => 'outer-user_account[username]') { actual_html }
     end
 
     should "display correct form html with remote option" do
-      actual_html = form_for(@user, '/update', :"accept-charset" => "utf-8", :remote => true) { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/update', :method => 'post', "data-remote" => 'true') { actual_html }
+      actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :remote => true) { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/update', :method => 'post', "data-remote" => 'true') { actual_html }
     end
 
     should "display correct form html with remote option and method put" do
-      actual_html = form_for(@user, '/update', :"accept-charset" => "utf-8", :remote => true, :method => 'put') { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :method => 'post', "data-method" => 'put', "data-remote" => 'true') { actual_html }
+      actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :remote => true, :method => 'put') { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :method => 'post', "data-method" => 'put', "data-remote" => 'true') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 
     should "display correct form html with method :put" do
-      actual_html = form_for(@user, '/update', :"accept-charset" => "utf-8", :method => 'put') { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/update', :method => 'post') { actual_html }
+      actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :method => 'put') { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/update', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 
     should "display correct form html with method :delete" do
-      actual_html = form_for(@user, '/destroy', :"accept-charset" => "utf-8", :method => 'delete') { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/destroy', :method => 'post') { actual_html }
+      actual_html = form_for(@user, '/destroy', :"accept-charset" => "UTF-8", :method => 'delete') { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/destroy', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'delete') { actual_html }
     end
 
     should "display correct form html with multipart" do
-      actual_html = form_for(@user, '/register', :"accept-charset" => "utf-8", :multipart => true) { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "utf-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
+      actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8", :multipart => true) { "Demo" }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
     end
 
     should "support changing form builder type" do
-      form_html = proc { form_for(@user, '/register', :"accept-charset" => "utf-8", :builder => "AbstractFormBuilder") { |f| f.text_field_block(:name) } }
+      form_html = proc { form_for(@user, '/register', :"accept-charset" => "UTF-8", :builder => "AbstractFormBuilder") { |f| f.text_field_block(:name) } }
       assert_raise(NoMethodError) { form_html.call }
     end
 

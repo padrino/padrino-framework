@@ -21,6 +21,7 @@
 * remove strict_format in layouts to work with Sinatra as a standalone
 * Change Padrino Admin to generate model in own app, not default generated app.
 * Sinatra 1.1.2 Compat
+* Test compatibility with Sinatra 1.1.0 and 1.1.2
 
 == 0.9.19
 
