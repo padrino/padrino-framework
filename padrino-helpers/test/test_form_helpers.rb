@@ -10,49 +10,49 @@ class TestFormHelpers < Test::Unit::TestCase
 
   context 'for #form_tag method' do
     should "display correct forms in ruby" do
-      actual_html = form_tag('/register', :"accept-charset" => "utf-8", :class => 'test', :method => "post") { "Demo" }
-      assert_has_tag(:form, :"accept-charset" => "utf-8", :class => "test") { actual_html }
+      actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test', :method => "post") { "Demo" }
+      assert_has_tag(:form, :"accept-charset" => "UTF-8", :class => "test") { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => '_method', :count => 0) { actual_html }
     end
 
     should "display correct text inputs within form_tag" do
-      actual_html = form_tag('/register', :"accept-charset" => "utf-8", :class => 'test') { text_field_tag(:username) }
+      actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test') { text_field_tag(:username) }
       assert_has_tag('form input', :type => 'text', :name => "username") { actual_html }
     end
 
     should "display correct form with remote" do
-      actual_html = form_tag('/update', :"accept-charset" => "utf-8", :class => 'put-form', :remote => true) { "Demo" }
-      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "utf-8", :"data-remote" => 'true') { actual_html }
+      actual_html = form_tag('/update', :"accept-charset" => "UTF-8", :class => 'put-form', :remote => true) { "Demo" }
+      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "UTF-8", :"data-remote" => 'true') { actual_html }
       assert_has_no_tag(:form, "data-method" => 'post') { actual_html }
     end
 
     should "display correct form with remote and method is put" do
-      actual_html = form_tag('/update', :"accept-charset" => "utf-8", :method => 'put', :remote => true) { "Demo" }
-      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "utf-8", :"data-method" => 'put') { actual_html }
+      actual_html = form_tag('/update', :"accept-charset" => "UTF-8", :method => 'put', :remote => true) { "Demo" }
+      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "UTF-8", :"data-method" => 'put') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 
     should "display correct form with method :put" do
-      actual_html = form_tag('/update', :"accept-charset" => "utf-8", :class => 'put-form', :method => "put") { "Demo" }
-      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "utf-8", :method => 'post') { actual_html }
+      actual_html = form_tag('/update', :"accept-charset" => "UTF-8", :class => 'put-form', :method => "put") { "Demo" }
+      assert_has_tag(:form, :class => "put-form", :"accept-charset" => "UTF-8", :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 
     should "display correct form with method :delete and charset" do
-      actual_html = form_tag('/remove', :"accept-charset" => "utf-8", :class => 'delete-form', :method => "delete") { "Demo" }
-      assert_has_tag(:form, :class => "delete-form", :"accept-charset" => "utf-8", :method => 'post') { actual_html }
+      actual_html = form_tag('/remove', :"accept-charset" => "UTF-8", :class => 'delete-form', :method => "delete") { "Demo" }
+      assert_has_tag(:form, :class => "delete-form", :"accept-charset" => "UTF-8", :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'delete') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_utf8") { actual_html }
     end
 
     should "display correct form with charset" do
-      actual_html = form_tag('/charset', :"accept-charset" => "utf-8", :class => 'charset-form') { "Demo" }
-      assert_has_tag(:form, :class => "charset-form", :"accept-charset" => "utf-8", :method => 'post') { actual_html }
+      actual_html = form_tag('/charset', :"accept-charset" => "UTF-8", :class => 'charset-form') { "Demo" }
+      assert_has_tag(:form, :class => "charset-form", :"accept-charset" => "UTF-8", :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_utf8") { actual_html }
     end
 
     should "display correct form with multipart encoding" do
-      actual_html = form_tag('/remove', :"accept-charset" => "utf-8", :multipart => true) { "Demo" }
+      actual_html = form_tag('/remove', :"accept-charset" => "UTF-8", :multipart => true) { "Demo" }
       assert_has_tag(:form, :enctype => "multipart/form-data") { actual_html }
     end
 
