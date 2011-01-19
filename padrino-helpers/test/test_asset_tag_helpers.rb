@@ -140,7 +140,7 @@ class TestAssetTagHelpers < Test::Unit::TestCase
     end
     should "display image tag relative link with incorrect spacing" do
       time = stop_time_for_test
-      assert_has_tag('img.photo', :src => "/images/relative/pic.gif?#{time.to_i}") {
+      assert_has_tag('img.photo', :src => "/images/%20relative/%20pic.gif%20%20?#{time.to_i}") {
         image_tag(' relative/ pic.gif  ', :class => 'photo') }
     end
     should "not use a timestamp if stamp setting is false" do

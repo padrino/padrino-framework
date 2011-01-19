@@ -223,7 +223,7 @@ module Padrino
           when :js  then 'javascripts'
           else kind.to_s
         end
-        source = source.to_s.gsub(/\s/, '')
+        source = source.to_s.gsub(/\s/, '%20')
         ignore_extension = (asset_folder.to_s == kind.to_s) # don't append extension
         source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
         result_path   = source if source =~ %r{^/} # absolute path
