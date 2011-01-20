@@ -365,18 +365,18 @@ class TestRouting < Test::Unit::TestCase
   should 'use named controllers' do
     mock_app do
       controller :admin do
-        get(:index){ "index" }
+        get(:index, :with => :id){ params[:id] }
         get(:show, :with => :id){ "show #{params[:id]}" }
       end
       controllers :foo, :bar do
         get(:index){ "foo_bar_index" }
       end
     end
-    get "/admin"
-    assert_equal "index", body
+    get "/admin/1"
+    assert_equal "1", body
     get "/admin/show/1"
     assert_equal "show 1", body
-    assert_equal "/admin", @app.url(:admin_index)
+    assert_equal "/admin/1", @app.url(:admin_index, :id => 1)
     assert_equal "/admin/show/1", @app.url(:admin_show, :id => 1)
     get "/foo/bar"
     assert_equal "foo_bar_index", body
