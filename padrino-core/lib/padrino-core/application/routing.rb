@@ -349,10 +349,7 @@ module Padrino
           invoke_hook(:route_added, verb, path, block)
 
           # HTTPRouter route construction
-          route = case path
-            when Regexp then router.add('/?*').match_path(path)
-            else             router.add(path)
-          end
+          route = router.add(path)
 
           route.name(name) if name
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
@@ -596,8 +593,15 @@ module Padrino
             if match.first.respond_to?(:path)
               match.each do |matched_path|
                 request.match = matched_path
-                @block_params = matched_path.param_values
-                (@params ||= {}).merge!(matched_path.params)
+                if request.match.path.route.regex?
+                  params_list = @request.env['rack.request.query_hash']['router.regex_match'].to_a
+                  params_list.shift
+                  @block_params = params_list
+                  (@params ||= {}).merge!(:captures => params_list)
+                else
+                  @block_params = matched_path.param_values
+                  (@params ||= {}).merge!(matched_path.params)
+                end
                 pass_block = catch(:pass) do
                   # If present set current controller layout
                   parent_layout = base.instance_variable_get(:@layout)

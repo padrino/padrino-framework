@@ -34,6 +34,9 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get(%r{/fob|/baz}) { "regexp" }
       get("/foo")        { "str" }
+      get %r{/([0-9]+)/} do |num|
+       "Your lucky number: #{num} #{params[:captures].first}"
+      end
     end
     get "/foo"
     assert_equal "str", body
@@ -41,6 +44,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "regexp", body
     get "/baz"
     assert_equal "regexp", body
+    get "/1234/"
+    assert_equal "Your lucky number: 1234 1234", body
   end
 
   should "parse routes with question marks" do
