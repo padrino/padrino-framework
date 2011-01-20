@@ -382,6 +382,17 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo_bar_index", body
   end
 
+  should 'use map and with' do
+    mock_app do
+      get :index, :map => '/bugs', :with => :id do
+        params[:id]
+      end
+    end
+    get '/bugs/4'
+    assert_equal '4', body
+    assert_equal "/bugs/4", @app.url(:index, :id => 4)
+  end
+
   should "ignore trailing delimiters within a named controller" do
     mock_app do
       controller :posts do
