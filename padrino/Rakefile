@@ -12,7 +12,7 @@ subgems = [
   ["padrino-mailer", "= #{gemspec.version}"],
   ["padrino-gen", "= #{gemspec.version}"],
   ["padrino-admin", "= #{gemspec.version}"]
-  # ["padrino-cache", "= #{gemspec.version}"],
+  ["padrino-cache", "= #{gemspec.version}"],
 ]
 
 task :package => "lib/padrino.rb"

@@ -23,6 +23,7 @@ group :development do
   gem "fakeweb",  ">=1.2.8"
   gem "webrat", ">= 0.5.1"
   gem "haml", ">= 2.2.22"
+  gem "phocus"
   gem "shoulda", ">= 2.10.3"
   gem "redis", ">= 2.0.0"
   gem "uuid", ">= 2.3.1"

@@ -34,6 +34,9 @@ class TestRouting < Test::Unit::TestCase
     mock_app do
       get(%r{/fob|/baz}) { "regexp" }
       get("/foo")        { "str" }
+      get %r{/([0-9]+)/} do |num|
+       "Your lucky number: #{num} #{params[:captures].first}"
+      end
     end
     get "/foo"
     assert_equal "str", body
@@ -41,6 +44,8 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "regexp", body
     get "/baz"
     assert_equal "regexp", body
+    get "/1234/"
+    assert_equal "Your lucky number: 1234 1234", body
   end
 
   should "parse routes with question marks" do
@@ -365,21 +370,32 @@ class TestRouting < Test::Unit::TestCase
   should 'use named controllers' do
     mock_app do
       controller :admin do
-        get(:index){ "index" }
+        get(:index, :with => :id){ params[:id] }
         get(:show, :with => :id){ "show #{params[:id]}" }
       end
       controllers :foo, :bar do
         get(:index){ "foo_bar_index" }
       end
     end
-    get "/admin"
-    assert_equal "index", body
+    get "/admin/1"
+    assert_equal "1", body
     get "/admin/show/1"
     assert_equal "show 1", body
-    assert_equal "/admin", @app.url(:admin_index)
+    assert_equal "/admin/1", @app.url(:admin_index, :id => 1)
     assert_equal "/admin/show/1", @app.url(:admin_show, :id => 1)
     get "/foo/bar"
     assert_equal "foo_bar_index", body
+  end
+
+  should 'use map and with' do
+    mock_app do
+      get :index, :map => '/bugs', :with => :id do
+        params[:id]
+      end
+    end
+    get '/bugs/4'
+    assert_equal '4', body
+    assert_equal "/bugs/4", @app.url(:index, :id => 4)
   end
 
   should "ignore trailing delimiters within a named controller" do
