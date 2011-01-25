@@ -1,5 +1,12 @@
 = CHANGES
 
+== 0.9.21
+
+* Support of regex captures in routes
+* Fixed routing issues with :index
+* Creation of empty directories for images/javascripts/stylesheets/tmp
+* Updated mongomapper adapter to use rails3 branch
+
 == 0.9.20
 
 * Removed Rspec1 generator

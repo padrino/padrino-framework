@@ -10,7 +10,7 @@ MONGO
 
 def setup_orm
   require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'mongo_mapper'
+  require_dependencies 'mongo_mapper', :git => "git://github.com/jnunemaker/mongomapper.git", :branch => "rails3"
   create_file("config/database.rb", MONGO.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
 end
