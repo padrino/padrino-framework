@@ -7,8 +7,9 @@ class Account
   property :id,               Serial
   property :name,             String
   property :surname,          String
-  property :email,            String
-  property :crypted_password, String
+  property :email,            String, :length => 100
+  # BCrypt gives you a 60 character string
+  property :crypted_password, String, :length => 60
   property :role,             String
 
   # Validations
