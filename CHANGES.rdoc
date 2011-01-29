@@ -7,6 +7,7 @@
 * Creation of empty directories for images/javascripts/stylesheets/tmp
 * Updated mongomapper adapter to use rails3 branch
 * Removed snowtag
+* Updated datamapper gen to store correctly passwords
 
 == 0.9.20
 
