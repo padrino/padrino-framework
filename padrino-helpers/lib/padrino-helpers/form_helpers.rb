@@ -46,7 +46,7 @@ module Padrino
         options["data-method"] = data_method if data_method
         options["accept-charset"] ||= "UTF-8"
         inner_form_html  = hidden_form_method_field(desired_method)
-        inner_form_html += hidden_field_tag(:"_utf8", :value => "&#9731;") + capture_html(&block)
+        inner_form_html += capture_html(&block)
         concat_content content_tag('form', inner_form_html, options)
       end
 

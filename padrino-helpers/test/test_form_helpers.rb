@@ -42,13 +42,11 @@ class TestFormHelpers < Test::Unit::TestCase
       actual_html = form_tag('/remove', :"accept-charset" => "UTF-8", :class => 'delete-form', :method => "delete") { "Demo" }
       assert_has_tag(:form, :class => "delete-form", :"accept-charset" => "UTF-8", :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'delete') { actual_html }
-      assert_has_tag('form input', :type => 'hidden', :name => "_utf8") { actual_html }
     end
 
     should "display correct form with charset" do
       actual_html = form_tag('/charset', :"accept-charset" => "UTF-8", :class => 'charset-form') { "Demo" }
       assert_has_tag(:form, :class => "charset-form", :"accept-charset" => "UTF-8", :method => 'post') { actual_html }
-      assert_has_tag('form input', :type => 'hidden', :name => "_utf8") { actual_html }
     end
 
     should "display correct form with multipart encoding" do

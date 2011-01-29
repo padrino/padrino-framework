@@ -6,6 +6,7 @@
 * Fixed routing issues with :index
 * Creation of empty directories for images/javascripts/stylesheets/tmp
 * Updated mongomapper adapter to use rails3 branch
+* Removed snowtag
 
 == 0.9.20
 
