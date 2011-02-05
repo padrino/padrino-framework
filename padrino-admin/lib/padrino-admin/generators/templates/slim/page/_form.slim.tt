@@ -1,0 +1,14 @@
+<%- @orm.column_fields.each do |column| -%>
+.group
+  ==f.label :<%= column[:name] %>
+  ==f.error_message_on :<%= column[:name] %>
+  ==f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
+  br
+  span.description Ex: a simple text
+
+<%- end -%>
+
+.group.navform.wat-cf
+  ==f.submit pat(:save), :class => :button
+  =="&nbsp;"
+  ==f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => :button
