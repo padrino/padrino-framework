@@ -19,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency("padrino-helpers", Padrino.version)
   s.add_dependency("padrino-mailer",  Padrino.version)
   s.add_dependency("padrino-gen",     Padrino.version)
+  s.add_dependency("padrino-cache",   Padrino.version)
   s.add_dependency("padrino-admin",   Padrino.version)
 end
