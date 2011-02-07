@@ -10,7 +10,7 @@ module Padrino
       #
       def capture_html(*args, &block)
         if self.respond_to?(:is_haml?) && is_haml?
-          block_is_haml?(block) ? capture_haml(*args, &block) : block.call
+          block_is_haml?(block) ? capture_haml(*args, &block) : block.call(*args)
         elsif has_erb_buffer?
           result_text = capture_erb(*args, &block)
           result_text.present? ? result_text : (block_given? && block.call(*args))
