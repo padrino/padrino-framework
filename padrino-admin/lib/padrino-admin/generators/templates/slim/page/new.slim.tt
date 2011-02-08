@@ -1,0 +1,15 @@
+.block
+  .secondary-navigation
+    ul.wat-cf
+      li.first==link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
+      li.active==link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
+  .content
+    h2.title
+      =pat(:new)
+      =="&nbsp;"
+      =mt(:<%= @orm.name_singular %>)
+    .inner
+      ==form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create), :class => :form do |f|
+        ==partial "<%= @orm.name_plural %>/form", :locals => { :f => f }
+
+-content_for :sidebar, partial("base/sidebar")

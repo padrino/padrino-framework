@@ -8,6 +8,7 @@
 * Updated mongomapper adapter to use rails3 branch
 * Removed snowtag
 * Updated datamapper gen to store correctly passwords
+* Add Slim template to Padrino Admin[Thanks to Matthew Winter]
 
 == 0.9.20
 
