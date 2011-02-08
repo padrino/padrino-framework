@@ -990,6 +990,16 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "This is the post index", body
   end
 
+  should_eventually "use optionals params" do
+    mock_app do
+      get(:index, :map => "/(:foo)/(:bar)") { "#{params[:foo]}-#{params[:bar]}" }
+    end
+    get "/foo"
+    assert_equal "foo-", body
+    get "/foo/bar"
+    assert_equal "foo-bar", body
+  end
+
   should "parse two routes with the same path but different http verbs and provides" do
     mock_app do
       get(:index, :provides => [:html, :json]) { "This is the get index.#{content_type}" }
