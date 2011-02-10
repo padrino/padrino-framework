@@ -1,12 +1,12 @@
 if defined?(Mongoid)
-  namespace :mongoid do
+  namespace :mi do
 
     desc 'Drops all the collections for the database for the current Padrino.env'
     task :drop => :environment do
       Mongoid.master.collections.select {|c| c.name !~ /system/ }.each(&:drop)
     end
 
-    # Helper to retrieve a list of models.  
+    # Helper to retrieve a list of models.
     def get_mongoid_models
       documents = []
       Dir.glob('app/models/*.rb').sort.each do |file|
@@ -101,7 +101,7 @@ if defined?(Mongoid)
         end
       end
 
-      puts "DONE! Run `padrino rake mongoid:cleanup_old_collections` to remove old collections"
+      puts "DONE! Run `padrino rake mi:cleanup_old_collections` to remove old collections"
     end
 
     desc "Clean up old collections backed up by objectid_convert"
@@ -111,6 +111,5 @@ if defined?(Mongoid)
         collection.db["#{collection.name}_old"].drop
       end
     end
-
   end
 end
