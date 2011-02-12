@@ -38,7 +38,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_raise(::NameError) { silence_logger { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
     end
 
-
     should "display the right path" do
       buffer = silence_logger { generate(:project, 'project', "--root=/tmp") }
       assert_file_exists("/tmp/project")

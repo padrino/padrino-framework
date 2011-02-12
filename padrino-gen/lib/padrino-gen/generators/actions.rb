@@ -207,6 +207,15 @@ module Padrino
         end
       end
 
+      # Ensure that project name is valid, else raise an NameError
+      def valid_constant?(name)
+        if name =~ /^\d/
+          raise ::NameError, "Project name #{name} cannot start with numbers"
+        elsif name =~ /^\W/
+          raise ::NameError, "Project name #{name} cannot start with non-word character"
+        end 
+      end
+
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported

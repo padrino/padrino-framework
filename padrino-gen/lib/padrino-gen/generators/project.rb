@@ -104,16 +104,6 @@ module Padrino
         say(text)
       end
 
-      no_tasks do
-        def valid_constant?(string)
-          if string =~ /^\d/
-            raise ::NameError, "Project name #{string} cannot start with numbers"
-          elsif string =~ /^\W/
-            raise ::NameError, "Project name #{string} cannot start with non-word character"
-          end
-        end
-      end
-
     end # Project
   end # Generators
 end # Padrino
