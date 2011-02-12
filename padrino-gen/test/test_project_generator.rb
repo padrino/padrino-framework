@@ -33,6 +33,12 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Padrino.mount\("ProjectCom"\).to\('\/'\)/,"#{@apptmp}/project.com/config/apps.rb")
     end
 
+    should "raise an Error when given invalid constant names" do
+      assert_raise(::NameError) { silence_logger { generate(:project, "123asdf", "--root=#{@apptmp}") } }
+      assert_raise(::NameError) { silence_logger { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
+    end
+
+
     should "display the right path" do
       buffer = silence_logger { generate(:project, 'project', "--root=/tmp") }
       assert_file_exists("/tmp/project")

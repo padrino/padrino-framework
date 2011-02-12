@@ -42,6 +42,7 @@ module Padrino
 
       # Copies over the Padrino base application App
       def setup_project
+        valid_constant?(options[:app] || name)
         @app_name = (options[:app] || name).gsub(/\W/, "_").underscore.camelize
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
@@ -102,6 +103,17 @@ module Padrino
         end
         say(text)
       end
+
+      no_tasks do
+        def valid_constant?(string)
+          if string =~ /^\d/
+            raise ::NameError, "Project name #{string} cannot start with numbers"
+          elsif string =~ /^\W/
+            raise ::NameError, "Project name #{string} cannot start with non-word character"
+          end
+        end
+      end
+
     end # Project
   end # Generators
 end # Padrino
