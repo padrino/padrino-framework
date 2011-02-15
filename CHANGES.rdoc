@@ -13,6 +13,7 @@
 * Include padrino-cache gem as part of standard install
 * Added Rake Task for Mongoid
 * Ensure project name are valid
+* Removed erubis support
 
 == 0.9.20
 
