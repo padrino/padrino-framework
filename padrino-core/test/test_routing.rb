@@ -1127,6 +1127,17 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo", body
   end
 
+  should "use provides as conditional" do
+    mock_app do
+      provides :json
+      get "/" do
+        "foo"
+      end
+    end
+    get "/.json"
+    assert_equal "foo", body
+  end
+
   should "parse params with class level provides" do
     mock_app do
       controllers :posts, :provides => [:html, :js] do
