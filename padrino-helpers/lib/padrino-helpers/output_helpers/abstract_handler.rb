@@ -34,6 +34,19 @@ module Padrino
         end
 
         ##
+        # Returns extension of the template
+        #
+        # ==== Examples
+        #
+        #  @handler.template_extension => "erubis"
+        #
+        def template_extension
+          caller.find { |c| c =~ /\/views\// }[/\.([\w]*?)\:/, 1] rescue nil
+          # "/some/path/app/views/posts/foo.html.erubis:3:in `evaluate_source'"
+          # => "erubis"
+        end
+
+        ##
         # Returns true if the current template type is same as this handlers; false otherwise.
         #
         # ==== Examples
