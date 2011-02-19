@@ -347,7 +347,7 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag(:select, :multiple => 'multiple', :name => 'favorite_color[]') { actual_html }
     end
 
-    should "display options with values and selected" do
+    should "display options with values and single selected" do
       options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
       actual_html = select_tag(:favorite_color, :options => options, :selected => 'green1')
       assert_has_tag(:select, :name => 'favorite_color') { actual_html }
@@ -355,6 +355,16 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag('select option', :content => 'Green', :value => 'green1', :selected => 'selected') { actual_html }
       assert_has_tag('select option', :content => 'Blue', :value => 'blue1') { actual_html }
       assert_has_tag('select option', :content => 'Black', :value => 'black1') { actual_html }
+    end
+
+    should "display option with values and multiple selected" do
+      options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
+      actual_html = select_tag(:favorite_color, :options => options, :selected => ['green1', 'Black'])
+      assert_has_tag(:select, :name => 'favorite_color') { actual_html }
+      assert_has_tag('select option', :selected => 'selected', :count => 2) { actual_html }
+      assert_has_tag('select option', :content => 'Green', :value => 'green1', :selected => 'selected') { actual_html }
+      assert_has_tag('select option', :content => 'Blue', :value => 'blue1') { actual_html }
+      assert_has_tag('select option', :content => 'Black', :value => 'black1', :selected => 'selected') { actual_html }
     end
 
     should "display options selected only for exact match" do

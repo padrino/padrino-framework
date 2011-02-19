@@ -381,13 +381,9 @@ module Padrino
         #
         # Returns whether the option should be selected or not
         #
-        def option_is_selected?(value, caption, selected_value)
-          if selected_value.is_a? Array
-            selected_value.any? do |selected|
-              selected.to_s =~ /^(#{value}|#{caption})$/
-            end
-          else
-            selected_value.to_s =~ /^(#{value}|#{caption})$/
+        def option_is_selected?(value, caption, selected_values)
+          Array(selected_values).any? do |selected|
+            [value.to_s, caption.to_s].include?(selected.to_s)
           end
         end
     end # FormHelpers

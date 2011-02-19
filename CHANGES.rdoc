@@ -14,6 +14,7 @@
 * Added Rake Task for Mongoid
 * Ensure project name are valid
 * Removed erubis support
+* Improves select_tag 'selected' option
 
 == 0.9.20
 
