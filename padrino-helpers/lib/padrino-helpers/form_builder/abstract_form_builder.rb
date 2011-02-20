@@ -96,7 +96,7 @@ module Padrino
         def image_submit(source, options={})
           @template.image_submit_tag source, options
         end
-        
+
         # Supports nested fields for a child model within a form
         # f.fields_for :addresses
         # f.fields_for :addresses, address
@@ -104,12 +104,12 @@ module Padrino
         def fields_for(child_association, instance_or_collection=nil, &block)
           default_collection = self.object.send(child_association)
           include_index = default_collection.respond_to?(:each)
-          nested_objects = instance_or_collection.nil? ? Array(default_collection) : Array(instance_or_collection)
           nested_options = { :parent => self, :association => child_association }
-          nested_objects.enum_with_index.map do |child_instance, index|
+          nested_objects = instance_or_collection ? Array(instance_or_collection) : Array(default_collection)
+          result = nested_objects.each_with_index.map do |child_instance, index|
             nested_options[:index] = include_index ? index : nil
             @template.fields_for(child_instance,  { :nested => nested_options }, &block)
-          end
+          end.join("\n")
         end
 
         protected
@@ -129,7 +129,7 @@ module Padrino
             error = @object.errors[field] rescue nil
             error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
           end
-          
+
           # Returns the human name of the field. Look that use builtin I18n.
           def field_human_name(field)
             I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
@@ -176,17 +176,17 @@ module Padrino
             result << "_#{value}" unless value.blank?
             result.flatten.join
           end
-          
+
           # Returns the child object if it exists
           def nested_object_id
-            nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id            
+            nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id
           end
-          
+
           # Returns true if this form object is nested in a parent form
           def nested_form?
             @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
           end
-          
+
           # Returns the value for the object's field
           # field_value(:username) => "Joey"
           def field_value(field)
@@ -198,7 +198,7 @@ module Padrino
           def build_object(object_or_symbol)
             object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
           end
-          
+
            # Returns the object's models name
           #   => user_assignment
           def object_model_name(explicit_object=object)
@@ -209,7 +209,7 @@ module Padrino
           def object_class(explicit_object)
             explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
           end
-          
+
           # Returns true if this form is the top-level (not nested)
           def root_form?
             !nested_form?

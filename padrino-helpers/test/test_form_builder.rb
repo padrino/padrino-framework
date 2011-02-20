@@ -9,10 +9,12 @@ class TestFormBuilder < Test::Unit::TestCase
   end
 
   def setup
-    role_types = [stub(:name => 'Admin', :id => 1), stub(:name => 'Moderate', :id => 2),  stub(:name => 'Limited', :id => 3)]
-    @user = stub(:errors => {:a => "must be present", :b => "must be valid", :email => "Must be valid", :first_name => []}, :class => 'User', :first_name => "Joe", :email => '', :session_id => 54)
+    role_types = [mock_model('Role', :name => "Admin", :id => 1),
+      mock_model('Role', :name => 'Moderate', :id => 2),  mock_model('Role', :name => 'Limited', :id => 3)]
+    @user = mock_model("User", :first_name => "Joe", :email => '', :session_id => 54)
+    @user.stubs(:errors => {:a => "must be present", :b => "must be valid", :email => "Must be valid", :first_name => []})
     @user.stubs(:role_types => role_types, :role => "1")
-    @user_none = stub(:errors => {}, :class => 'User')
+    @user_none = mock_model("User")
   end
 
   def standard_builder(object=@user)
@@ -519,21 +521,21 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector '#demo2 input', :type => 'image', :class => 'image', :src => "/images/buttons/ok.png?#{@stamp}"
     end
   end
-  
-  context 'for #fields_for method' do    
+
+  context 'for #fields_for method' do
     setup do
-      @telephone = stub(:class => "Telephone", :number => "4568769876")
+      @telephone = mock_model("Telephone", :number => "4568769876")
       @user.stubs(:telephone).returns(@telephone)
-      @businesses = [ stub(:class => "Business", :name => "Silver", :new_record? => false, :id => 20) ]
-      @businesses << stub(:class => "Business", :name => "Gold", :new_record? => true)
-      @addresses = [ stub(:class => "Address", :name => "Foo", :new_record? => false, :id => 20, :businesses => @businesses) ]
-      @addresses << stub(:class => "Address", :name => "Bar", :new_record? => true, :businesses => @businesses)
+      @businesses = [ mock_model("Business", :name => "Silver", :new_record? => false, :id => 20) ]
+      @businesses <<  mock_model("Business", :name => "Gold", :new_record? => true)
+      @addresses = [ mock_model("Address", :name => "Foo", :new_record? => false, :id => 20, :businesses => @businesses) ]
+      @addresses <<  mock_model("Address", :name => "Bar", :new_record? => true, :businesses => @businesses)
       @user.stubs(:addresses).returns(@addresses)
     end
-    
+
     should "display nested children fields one-to-one within form" do
       actual_html = standard_builder.fields_for :telephone do |child_form|
-        child_form.label(:number) + 
+        child_form.label(:number) +
         child_form.text_field(:number) +
         child_form.check_box('_destroy')
       end
@@ -542,9 +544,9 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_has_tag('input', :type => 'hidden', :name => 'user[telephone_attributes][_destroy]', :value => '0') { actual_html }
       assert_has_tag('input', :type => 'checkbox', :id => 'user_telephone_attributes__destroy', :name => 'user[telephone_attributes][_destroy]', :value => '1') { actual_html }
     end
-    
+
     should "display nested children fields one-to-many within form" do
-      actual_html = standard_builder.fields_for :addresses do |child_form|
+      actual_html = standard_builder.fields_for(:addresses) do |child_form|
         html = child_form.label(:name)
         html << child_form.check_box('_destroy') unless child_form.object.new_record?
         html << child_form.text_field(:name)
@@ -560,24 +562,24 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_name', :name => 'user[addresses_attributes][1][name]') { actual_html }
       assert_has_no_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_1__destroy') { actual_html }
     end
-    
+
     should "display fields for explicit instance object" do
-      address = stub(:class => "Address", :name => "Baz", :new_record? => false, :id => 40)
-      actual_html = standard_builder.fields_for :addresses, address do |child_form|
-        child_form.label(:name) + 
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
+      address = mock_model("Address", :name => "Page", :new_record? => false, :id => 40)
+      actual_html = standard_builder.fields_for(:addresses, address) do |child_form|
+        html = child_form.label(:name)
+        html << child_form.text_field(:name)
+        html << child_form.check_box('_destroy')
       end
       assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_0_id', :name => "user[addresses_attributes][0][id]", :value => '40') { actual_html }
       assert_has_tag('label', :for => 'user_addresses_attributes_0_name', :content => 'Name') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_0_name', :name => 'user[addresses_attributes][0][name]', :value => "Baz") { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_0_name', :name => 'user[addresses_attributes][0][name]', :value => "Page") { actual_html }
       assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_0__destroy', :name => 'user[addresses_attributes][0][_destroy]', :value => '1') { actual_html }
     end
-    
+
     should "display fields for collection object" do
-      addresses = @addresses + [stub(:class => "Address", :name => "John", :new_record? => false, :id => 50)]
-      actual_html = standard_builder.fields_for :addresses, addresses do |child_form|
-        child_form.label(:name) + 
+      addresses = @addresses + [mock_model("Address", :name => "Walter", :new_record? => false, :id => 50)]
+      actual_html = standard_builder.fields_for(:addresses, addresses) do |child_form|
+        child_form.label(:name) +
         child_form.text_field(:name) +
         child_form.check_box('_destroy')
       end
@@ -589,22 +591,22 @@ class TestFormBuilder < Test::Unit::TestCase
       # Address 3
       assert_has_tag('input', :type => 'hidden', :id => 'user_addresses_attributes_2_id', :value => '50') { actual_html }
       assert_has_tag('label', :for => 'user_addresses_attributes_2_name', :content => 'Name') { actual_html }
-      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_2_name', :name => 'user[addresses_attributes][2][name]', :value => "John") { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_2_name', :name => 'user[addresses_attributes][2][name]', :value => "Walter") { actual_html }
       assert_has_tag('input', :type => 'checkbox', :id => 'user_addresses_attributes_2__destroy') { actual_html }
     end
-    
+
     should "display fields for arbitrarily deep nested forms" do
       actual_html = standard_builder.fields_for :addresses do |child_form|
         child_form.fields_for(:businesses) do |second_child_form|
           second_child_form.label(:name) +
           second_child_form.text_field(:name) +
           second_child_form.check_box('_destroy')
-        end.join
+        end
       end
       assert_has_tag('label', :for => 'user_addresses_attributes_1_businesses_attributes_0_name', :content => 'Name') { actual_html }
       assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_businesses_attributes_0_name', :name => 'user[addresses_attributes][1][businesses_attributes][0][name]') { actual_html }
     end
-    
+
     should "display nested children fields in erb" do
       visit '/erb/fields_for'
       # Telephone
@@ -621,7 +623,7 @@ class TestFormBuilder < Test::Unit::TestCase
       assert_have_selector('input', :type => 'text', :id => 'markup_user_addresses_attributes_1_name', :name => 'markup_user[addresses_attributes][1][name]')
       assert_have_no_selector('input', :type => 'checkbox', :id => 'markup_user_addresses_attributes_1__destroy')
     end
-    
+
     should "display nested children fields in haml" do
       visit '/haml/fields_for'
       # Telephone
