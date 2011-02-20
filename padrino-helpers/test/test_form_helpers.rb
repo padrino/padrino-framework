@@ -93,7 +93,7 @@ class TestFormHelpers < Test::Unit::TestCase
 
   context 'for #error_messages_for method' do
     should "display correct error messages list in ruby" do
-      user = stub(:class => "User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
       actual_html = error_messages_for(user)
       assert_has_tag('div.field-errors') { actual_html }
       assert_has_tag('div.field-errors h2', :content => "2 errors prohibited this User from being saved") { actual_html }

@@ -70,6 +70,14 @@ class Test::Unit::TestCase
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
+
+  # mock_model("Business", :new_record? => true) => <Business>
+  def mock_model(klazz, options={})
+    options.reverse_merge!(:class => klazz, :new_record? => false, :id => 20, :errors => {})
+    record = stub(options)
+    record.stubs(:to_ary => [record])
+    record
+  end
 end
 
 module Webrat
