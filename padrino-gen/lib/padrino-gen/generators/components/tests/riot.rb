@@ -27,7 +27,7 @@ class Riot::Context
   #     asserts(:status).equals(200)
   #   end
   def app(app=nil, &block)
-    setup { @app = (app || block) }
+    setup { @app = (app || block.call) }
   end
 end
 
