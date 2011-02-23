@@ -229,7 +229,7 @@ module Padrino
         result_path   = source if source =~ %r{^/} # absolute path
         result_path ||= uri_root_path(asset_folder, source)
         timestamp = asset_timestamp(result_path)
-        "#{result_path}#{timestamp}"
+        "#{asset_hostname}#{result_path}#{timestamp}"
       end
 
       private
@@ -240,6 +240,18 @@ module Padrino
         def uri_root_path(*paths)
           root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
           File.join(ENV['RACK_BASE_URI'].to_s, root_uri || '/', *paths)
+        end
+
+        ##
+        # Returns the hostname to use when managing static assets and
+        # spreading the load across multiple servers
+        #
+        def asset_hostname
+          host = self.class.asset_host if self.class.respond_to?(:asset_host)
+          host ||= ''
+          host_count = self.class.asset_host_count if self.class.respond_to?(:asset_host_count)
+          host_count ||= 1
+          host.gsub('%d', rand(host_count).to_s)
         end
 
         ##
