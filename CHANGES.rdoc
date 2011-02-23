@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.21
+== 0.9.21 (Unreleased)
 
 * Support of regex captures in routes
 * Fixed routing issues with :index
@@ -15,6 +15,7 @@
 * Ensure project name are valid
 * Removed erubis support
 * Improves select_tag 'selected' option
+* Basic nested form support
 
 == 0.9.20
 
