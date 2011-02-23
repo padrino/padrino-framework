@@ -152,6 +152,8 @@ A form_for using these basic fields might look like:
     %p
       = f.submit "Create", :class => 'button'
 
+Forms can also accept nested attributes using `fields_for` within the form builder in recent releases. Check out the guide for {Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers] to learn more about nested forms.
+
 There is also an additional StandardFormBuilder which builds on the abstract fields that can be used within a form_for.
 
 A form_for using these standard fields might be:
