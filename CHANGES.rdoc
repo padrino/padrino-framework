@@ -17,6 +17,7 @@
 * Improves select_tag 'selected' option
 * Basic nested form support
 * Updated mongoid adapter to use 2.0.0.beta.20
+* Remove legacy bundler setup from config/boot.rb
 
 == 0.9.20
 
