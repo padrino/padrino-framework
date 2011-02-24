@@ -247,11 +247,11 @@ module Padrino
         # spreading the load across multiple servers
         #
         def asset_hostname
-          host = self.class.asset_host if self.class.respond_to?(:asset_host)
-          host ||= ''
+          return nil if !self.class.respond_to?(:asset_host)
+          host = self.class.asset_host
           host_count = self.class.asset_host_count if self.class.respond_to?(:asset_host_count)
           host_count ||= 1
-          host.gsub('%d', rand(host_count).to_s)
+          host.gsub('%d', rand(host_count))
         end
 
         ##
