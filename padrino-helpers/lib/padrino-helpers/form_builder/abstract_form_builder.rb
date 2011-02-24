@@ -20,7 +20,8 @@ module Padrino
 
         # f.error_message_on(field)
         def error_message_on(field, options={})
-          @template.error_message_on(object_model_name, field, options)
+          # @template.error_message_on(object_model_name, field, options)
+          @template.error_message_on(object, field, options)
         end
 
         # f.label :username, :caption => "Nickname"
