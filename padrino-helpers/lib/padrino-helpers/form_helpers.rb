@@ -171,7 +171,6 @@ module Padrino
       #   error_message_on :post, :title, :prepend => "This title", :append => "(or it won't work)"
       #
       def error_message_on(object, field, options={})
-        # object = instance_variable_get("@#{object}")
         object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
         error  = object.errors[field] rescue nil
         if error
