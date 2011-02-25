@@ -23,6 +23,7 @@
 * Fixed optional parameter routing test
 * Fixes error_message_on object name bug [Thanks craigp]
 * Removed default index page
+* Fetch Layout Path in app/views and app/views/layouts with :layout => :foo
 
 == 0.9.20
 

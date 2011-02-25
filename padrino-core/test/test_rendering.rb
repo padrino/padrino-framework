@@ -159,6 +159,22 @@ class TestRendering < Test::Unit::TestCase
     end
   end
 
+  should 'solve layout in layouts paths' do
+    create_layout :foo, "foo layout <%= yield %>"
+    create_layout :"layouts/bar", "bar layout <%= yield %>"
+    mock_app do
+      get("/") { render :erb, "none" }
+      get("/foo") { render :erb, "foo", :layout => :foo }
+      get("/bar") { render :erb, "bar", :layout => :bar }
+    end
+    get "/"
+    assert_equal "none", body
+    get "/foo"
+    assert_equal "foo layout foo", body
+    get "/bar"
+    assert_equal "bar layout bar", body
+  end
+
   context 'for application render functionality' do
 
     should 'be compatible with sinatra render' do

@@ -40,10 +40,14 @@ module Padrino
       # Use layout like rails does or if a block given then like sinatra.
       # If used without a block, sets the current layout for the route.
       #
-      # By default, searches in your +app+/+views+/+layouts+/+application+.(+haml+|+erb+|+xxx+)
+      # By default, searches in your:
+      #
+      # +app+/+views+/+layouts+/+application+.(+haml+|+erb+|+xxx+)
+      # +app+/+views+/+layout_name+.(+haml+|+erb+|+xxx+)
       #
       # If you define +layout+ :+custom+ then searches for your layouts in
       # +app+/+views+/+layouts+/+custom+.(+haml+|+erb+|+xxx+)
+      # +app+/+views+/+custom+.(+haml+|+erb+|+xxx+)
       #
       def layout(name=:layout, &block)
         return super(name, &block) if block_given?
@@ -71,8 +75,8 @@ module Padrino
       ##
       # Retunrs the cached layout path.
       #
-      def fetch_layout_path
-        layout_name = @layout || :application
+      def fetch_layout_path(given_layout=nil)
+        layout_name = given_layout || @layout || :application
         @_cached_layout ||= {}
         cached_layout_path = @_cached_layout[layout_name]
         return cached_layout_path if cached_layout_path
@@ -117,6 +121,9 @@ module Padrino
           if (options[:layout].nil? || options[:layout] == true) && !settings.templates.has_key?(:layout)
             options[:layout] = resolved_layout || false # We need to force layout false so sinatra don't try to render it
             logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout].present?
+          elsif options[:layout].present?
+            options[:layout] = settings.fetch_layout_path(options[:layout])
+            logger.debug "Resolving layout #{options[:layout]}" if defined?(logger)
           end
 
           # Pass arguments to Sinatra render method
