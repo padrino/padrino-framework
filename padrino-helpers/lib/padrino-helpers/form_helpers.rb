@@ -163,6 +163,7 @@ module Padrino
       #
       #   # => <span class="error">can't be blank</div>
       #   error_message_on :post, :title
+      #   error_message_on @post, :title
       #
       #   # => <div class="custom" style="border:1px solid red">can't be blank</div>
       #   error_message_on :post, :title, :tag => :id, :class => :custom, :style => "border:1px solid red"

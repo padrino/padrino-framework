@@ -131,6 +131,26 @@ class TestFormHelpers < Test::Unit::TestCase
     end
   end
 
+  context 'for #error_message_on method' do
+    should "display correct error message on specified model name in ruby" do
+      @user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      actual_html = error_message_on(:user, :a, :prepend => "foo", :append => "bar")
+      assert_has_tag('span.error', :content => "foo 1 bar") { actual_html }
+    end
+
+    should "display correct error message on specified object in ruby" do
+      @bob = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      actual_html = error_message_on(@bob, :a, :prepend => "foo", :append => "bar")
+      assert_has_tag('span.error', :content => "foo 1 bar") { actual_html }
+    end
+
+    should "display no message when error isn't present" do
+      @user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      actual_html = error_message_on(:user, :fake, :prepend => "foo", :append => "bar")
+      assert actual_html.blank?
+    end
+  end
+
   context 'for #label_tag method' do
     should "display label tag in ruby" do
       actual_html = label_tag(:username, :class => 'long-label', :caption => "Nickname")

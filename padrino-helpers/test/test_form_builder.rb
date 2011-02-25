@@ -186,6 +186,24 @@ class TestFormBuilder < Test::Unit::TestCase
     end
   end
 
+  context 'for #error_message_on method' do
+    should "display correct form html with no record" do
+      actual_html = standard_builder(@user_none).error_message_on(:name)
+      assert actual_html.blank?
+    end
+
+    should "display error for specified invalid object" do
+      actual_html = standard_builder(@user).error_message_on(:a, :prepend => "foo", :append => "bar")
+      assert_has_tag('span.error', :content => "foo must be present bar") { actual_html }
+    end
+
+    should "display error for specified invalid object not matching class name" do
+      @bob = mock_model("User", :first_name => "Frank", :errors => { :foo => "must be bob" })
+      actual_html = standard_builder(@bob).error_message_on(:foo, :prepend => "foo", :append => "bar")
+      assert_has_tag('span.error', :content => "foo must be bob bar") { actual_html }
+    end
+  end
+
   context 'for #label method' do
     should "display correct label html" do
       actual_html = standard_builder.label(:first_name, :class => 'large', :caption => "F. Name: ")
