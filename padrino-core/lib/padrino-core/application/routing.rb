@@ -597,10 +597,10 @@ module Padrino
                   params_list = @request.env['rack.request.query_hash']['router.regex_match'].to_a
                   params_list.shift
                   @block_params = params_list
-                  (@params ||= {}).merge!(:captures => params_list)
+                  @params.update({:captures => params_list}.merge(@params || {}))
                 else
                   @block_params = matched_path.param_values
-                  (@params ||= {}).merge!(matched_path.params)
+                  @params.update(matched_path.params.merge(@params || {}))
                 end
                 pass_block = catch(:pass) do
                   # If present set current controller layout

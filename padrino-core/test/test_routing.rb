@@ -222,6 +222,18 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "mini", body
   end
 
+  should "support not_found" do
+    mock_app do
+      not_found do
+        response.status = 404
+        'whatever'
+      end
+    end
+    get '/'
+    assert_equal 'whatever', body
+    assert_equal 404, status
+  end
+
   should "should inject the route into the request" do
     mock_app do
       controller :posts do
@@ -230,6 +242,22 @@ class TestRouting < Test::Unit::TestCase
     end
     get "/posts"
     assert_equal "posts_index", body
+  end
+
+  should "preserve the format if you set it manually" do
+    mock_app do
+      before do
+        params[:format] = :json
+      end
+
+      get "test", :provides => [:html, :json] do
+        params[:format].inspect
+      end
+    end
+    get "/test"
+    assert_equal ":json", body
+    get "/test.html"
+    assert_equal ":json", body
   end
 
   should "generate routes for format with controller" do
