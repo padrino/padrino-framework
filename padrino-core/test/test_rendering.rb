@@ -177,17 +177,21 @@ class TestRendering < Test::Unit::TestCase
 
   should_eventually 'render something also if layout was not found' do
     create_layout :application, "application layout for <%= yield %>"
+    create_view :foo, "xml.rss", :format => :rss
     mock_app do
       get("/") { render :erb, "index" }
-      get("/foo", :provides => :js) { render :erb, "js" }
+      get("/foo", :provides => :rss) { render('foo.rss') }
+      get("/baz", :provides => :js) { render(:erb, 'baz') }
       get("/bar") { render :haml, "haml" }
     end
     get "/"
     assert_equal "application layout for index", body
-    get "/foo.js"
-    assert_equal "js", body
+    get "/foo.rss"
+    assert_equal "<rss/>", body.chomp
+    get "/baz.js"
+    assert_equal "baz", body
     get "/bar"
-    assert_equal "haml", body
+    assert_equal "application layout for haml", body.chomp
   end
 
   context 'for application render functionality' do
