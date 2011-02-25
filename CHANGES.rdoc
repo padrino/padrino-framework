@@ -14,10 +14,13 @@
 * Added Rake Task for Mongoid
 * Ensure project name are valid
 * Removed erubis support
+* Refactored the output handlers for helpers
 * Improves select_tag 'selected' option
-* Basic nested form support
+* Basic nested object form support
 * Updated mongoid adapter to use 2.0.0.beta.20
 * Remove legacy bundler setup from config/boot.rb
+* Change to routes to fix param assembly order
+* Fixed optional parameter routing test
 * Fixes error_message_on object name bug [Thanks craigp]
 * Removed default index page
 
