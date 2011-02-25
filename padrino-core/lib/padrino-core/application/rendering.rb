@@ -119,7 +119,7 @@ module Padrino
 
           # Resolve layouts similar to in Rails
           if (options[:layout].nil? || options[:layout] == true) && !settings.templates.has_key?(:layout)
-            options[:layout] = resolved_layout || false # We need to force layout false so sinatra don't try to render it
+            options[:layout] = resolved_layout[0] || false # We need to force layout false so sinatra don't try to render it
             logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout])
@@ -139,8 +139,8 @@ module Padrino
         # => "/layouts/custom"
         #
         def resolved_layout
-          located_layout = resolve_template(settings.fetch_layout_path, :raise_exceptions => false)
-          located_layout ? located_layout[0] : false
+          located_layout = resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true)
+          located_layout ? located_layout : [false, nil]
         end
 
         ##
