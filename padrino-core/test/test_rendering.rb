@@ -183,7 +183,7 @@ class TestRendering < Test::Unit::TestCase
       get("/bar") { render :haml, "haml" }
     end
     get "/"
-    assert_equal "application layout for foo", body
+    assert_equal "application layout for index", body
     get "/foo.js"
     assert_equal "js", body
     get "/bar"
