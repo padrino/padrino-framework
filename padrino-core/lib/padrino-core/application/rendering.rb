@@ -134,16 +134,17 @@ module Padrino
         end
 
         ##
-        # Returns the located layout to be used for the rendered template (if available)
+        # Returns the located layout tuple to be used for the rendered template (if available)
         #
         # ==== Example
         #
-        # resolve_layout(true)
-        # => "/layouts/custom"
+        # resolve_layout
+        # => ["/layouts/custom", :erb]
+        # => [nil, nil]
         #
         def resolved_layout
           located_layout = resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true)
-          located_layout ? located_layout : [false, nil]
+          located_layout ? located_layout : [nil, nil]
         end
 
         ##
