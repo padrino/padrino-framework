@@ -175,6 +175,18 @@ class TestRendering < Test::Unit::TestCase
     assert_equal "bar layout bar", body
   end
 
+  should_eventually 'render something also if layout was not found' do
+    create_layout :application, "application layout for <%= yield %>"
+    mock_app do
+      get("/") { render :erb, "foo" }
+      get("/bar", :provides => :js) { render :erb, "js" }
+    end
+    get "/"
+    assert_equal "application layout for foo", body
+    get "/bar.js"
+    assert_equal "js", body
+  end
+
   context 'for application render functionality' do
 
     should 'be compatible with sinatra render' do
