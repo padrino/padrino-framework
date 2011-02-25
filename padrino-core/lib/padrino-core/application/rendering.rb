@@ -119,7 +119,10 @@ module Padrino
 
           # Resolve layouts similar to in Rails
           if (options[:layout].nil? || options[:layout] == true) && !settings.templates.has_key?(:layout)
-            options[:layout] = resolved_layout[0] || false # We need to force layout false so sinatra don't try to render it
+            layout_path, layout_engine = *resolved_layout
+            options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
+            options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
+            options[:layout_engine] = layout_engine || engine if options[:layout]
             logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout])
