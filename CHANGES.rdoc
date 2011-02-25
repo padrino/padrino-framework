@@ -24,6 +24,7 @@
 * Fixes error_message_on object name bug [Thanks craigp]
 * Removed default index page
 * Fetch Layout Path in app/views and app/views/layouts with :layout => :foo
+* Fixes issue with layout and format resolution in render
 
 == 0.9.20
 
