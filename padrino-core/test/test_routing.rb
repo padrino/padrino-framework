@@ -1018,9 +1018,9 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "This is the post index", body
   end
 
-  should_eventually "use optionals params" do
+  should "use optionals params" do
     mock_app do
-      get(:index, :map => "/(:foo)/(:bar)") { "#{params[:foo]}-#{params[:bar]}" }
+      get(:index, :map => "/(:foo(/:bar))") { "#{params[:foo]}-#{params[:bar]}" }
     end
     get "/foo"
     assert_equal "foo-", body
