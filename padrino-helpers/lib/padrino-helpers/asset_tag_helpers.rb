@@ -251,7 +251,7 @@ module Padrino
           host = self.class.asset_host
           host_count = self.class.asset_host_count if self.class.respond_to?(:asset_host_count)
           host_count ||= 1
-          host.gsub('%d', rand(host_count))
+          host.gsub('%d', rand(host_count).to_s)
         end
 
         ##
