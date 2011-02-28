@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.9.21 (Unreleased)
+== 0.9.22 (Unreleased)
+
+== 0.9.21
 
 * Support of regex captures in routes
 * Fixed routing issues with :index
