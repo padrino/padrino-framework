@@ -175,6 +175,7 @@ module Padrino
           @_controller, original_controller = args, @_controller
           @_parents,    original_parent     = options.delete(:parent), @_parents
           @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_use_format, original_use_format = options.delete(:use_format), @_use_format
           @_cache,      original_cache      = options.delete(:cache), @_cache
           @_map,        original_map        = options.delete(:map), @_map
           @_defaults,   original_defaults   = options, @_defaults
@@ -192,6 +193,7 @@ module Padrino
           # Controller defaults
           @_controller, @_parents, @_cache = original_controller, original_parent, original_cache
           @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
+          @_use_format = original_use_format
         else
           include(*args) if extensions.any?
         end
@@ -417,7 +419,7 @@ module Padrino
             # Now we need to parse our provides
             options.delete(:provides) if options[:provides].nil?
 
-            if format_params = options[:provides]
+            if @_use_format or format_params = options[:provides]
               process_path_for_provides(path, format_params)
             end
 
@@ -497,6 +499,7 @@ module Padrino
         # Allow paths for the given request head or request format
         #
         def provides(*types)
+          @_use_format = true
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
