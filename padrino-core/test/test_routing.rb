@@ -228,10 +228,17 @@ class TestRouting < Test::Unit::TestCase
         response.status = 404
         'whatever'
       end
+
+      get :index, :map => "/" do
+        'index'
+      end
     end
-    get '/'
+    get '/something'
     assert_equal 'whatever', body
     assert_equal 404, status
+    get '/'
+    assert_equal 'index', body
+    assert_equal 200, status
   end
 
   should "should inject the route into the request" do
