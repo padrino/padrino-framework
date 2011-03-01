@@ -79,4 +79,4 @@ The individual Padrino sub-gems also contain README's which outlines their funct
 
 == Copyright
 
-Copyright (c) 2010 Padrino. See LICENSE for details.
+Copyright (c) 2011 Padrino. See LICENSE for details.
