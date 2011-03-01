@@ -36,7 +36,7 @@ class Account
   end
 
   private
-    def generate_password
+    def encrypt_password
       self.crypted_password = ::BCrypt::Password.create(password)
     end
 
