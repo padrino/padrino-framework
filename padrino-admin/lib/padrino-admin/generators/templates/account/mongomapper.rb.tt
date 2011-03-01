@@ -37,7 +37,7 @@ class Account
 
   private
     def generate_password
-      self.crypted_password = ::BCrypt::Password.create(password)
+      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
     end
 
     def password_required
