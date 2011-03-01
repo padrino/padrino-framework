@@ -2,6 +2,8 @@
 
 == 0.9.22 (Unreleased)
 
+* Fix no more password encryption when password is blank
+
 == 0.9.21
 
 * Support of regex captures in routes
