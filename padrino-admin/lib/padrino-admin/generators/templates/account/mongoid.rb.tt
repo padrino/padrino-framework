@@ -43,11 +43,11 @@ class Account
   end
 
   private
-    def enctrypt_password
-      self.crypted_password = ::BCrypt::Password.create(self.password) if self.password.present?
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(self.password)
     end
 
     def password_required
-      crypted_password.blank? || !password.blank?
+      crypted_password.blank? || self.password.present?
     end
 end

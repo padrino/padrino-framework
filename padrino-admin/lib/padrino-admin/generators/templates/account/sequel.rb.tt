@@ -43,10 +43,10 @@ class Account < ::Sequel::Model
 
   private
     def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
+      self.crypted_password = ::BCrypt::Password.create(password)
     end
 
     def password_required
-      crypted_password.blank? || !password.blank?
+      crypted_password.blank? || password.present?
     end
 end

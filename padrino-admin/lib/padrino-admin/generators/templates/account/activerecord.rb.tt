@@ -24,7 +24,7 @@ class Account < ActiveRecord::Base
   end
 
   def has_password?(password)
-    ::BCrypt::Password.new(crypted_password) == password if password.present?
+    ::BCrypt::Password.new(crypted_password) == password
   end
 
   private
@@ -33,6 +33,6 @@ class Account < ActiveRecord::Base
     end
 
     def password_required
-      crypted_password.blank? || !password.blank?
+      crypted_password.blank? || password.present?
     end
 end
