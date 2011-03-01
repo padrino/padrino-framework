@@ -13,7 +13,7 @@ class Account < ActiveRecord::Base
   validates_format_of       :role,     :with => /[A-Za-z]/
 
   # Callbacks
-  before_save :encrypt_password
+  before_save :encrypt_password, :if => :password_required
 
   ##
   # This method is for authentication purpose
@@ -29,7 +29,7 @@ class Account < ActiveRecord::Base
 
   private
     def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
+      self.crypted_password = ::BCrypt::Password.create(password)
     end
 
     def password_required
