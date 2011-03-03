@@ -131,6 +131,7 @@ module Padrino
           set :raise_errors, true if development?
           set :reload, true if development?
           set :logging, false
+          set :padrino_logging, true
           set :sessions, false
           set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
@@ -196,7 +197,7 @@ module Padrino
         # Requires the Padrino middleware
         #
         def register_initializers
-          use Padrino::Logger::Rack    if Padrino.logger && Padrino.logger.level == 0
+          use Padrino::Logger::Rack    if Padrino.logger && (Padrino.logger.level == 0 && padrino_logging?)
           use Padrino::Reloader::Rack  if reload?
           use Rack::Flash              if flash? && sessions?
         end

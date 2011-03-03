@@ -20,6 +20,7 @@ class TestApplication < Test::Unit::TestCase
       assert_equal Padrino.root("views"), PadrinoTestApp.views
       assert PadrinoTestApp.raise_errors
       assert !PadrinoTestApp.logging
+      assert PadrinoTestApp.padrino_logging
       assert !PadrinoTestApp.sessions
     end
 
