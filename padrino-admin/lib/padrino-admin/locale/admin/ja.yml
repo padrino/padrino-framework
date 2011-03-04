@@ -1,0 +1,16 @@
+ja:
+  padrino:
+    admin:
+      save: 保存
+      cancel: キャンセル
+      list: 一覧
+      edit: 編集
+      new: 新規
+      show: 詳細
+      delete: 削除
+      confirm: 本当に削除しますか？
+      created_at: 作成日時
+      all: 全ての
+      profile: プロフィール
+      settings: 設定
+      logout: ログアウト
