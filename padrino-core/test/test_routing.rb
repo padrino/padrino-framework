@@ -178,6 +178,15 @@ class TestRouting < Test::Unit::TestCase
     get "/a", {}, {"HTTP_ACCEPT" => "application/yaml"}
     assert_equal 406, status
   end
+  
+  should "not set content_type to :html if Accept */* and html not in provides" do
+    mock_app do
+      get("/foo", :provides => [:json, :xml]) { content_type.to_s }
+    end
+    
+    get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
+    assert_equal 'json', body
+  end
 
   should "not default to HTML if HTML is not provided and no type is given" do
     mock_app do
