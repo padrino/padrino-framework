@@ -1,0 +1,26 @@
+ja:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "は、次の値のうちどれかでなければなりません:"
+        exclusion: "は、使用できない値です"
+        invalid: "は、不正な値です"
+        confirmation: "は、条件を満たしません"
+        accepted: "は、受け入れられなければなりません"
+        empty: "は、空であってはなりません"
+        blank: "は、空欄であってはなりません"
+        too_long: "は、長すぎます (最大 %{count} 文字)"
+        too_short: "は、短すぎます (少なくとも %{count} 文字)"
+        wrong_length: "の文字数が不正です (%{count} 文字であること)"
+        taken: "は、すでに利用された値です"
+        not_a_number: "は、数字である必要があります"
+        greater_than: "は、 %{count} より大きな値である必要があります"
+        greater_than_or_equal_to: "は、 %{count} 以上の値である必要があります"
+        equal_to: "は、 %{count} と等しい値である必要があります"
+        less_than: "は、 %{count} より少ない値である必要があります"
+        less_than_or_equal_to: "は、 %{count} 以下の値である必要があります"
+        odd: "は、奇数でなければなりません"
+        even: "は、偶数でなければなりません"
+        record_invalid: "不正なレコードです: %{errors}"
+        content_type: "そのファイルフォーマットはサポートされていません。"
+  activerecord: *activemodel
