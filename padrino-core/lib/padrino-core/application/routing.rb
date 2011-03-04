@@ -250,7 +250,7 @@ module Padrino
       #   url(:show, :name => :test)
       #   url("/show/:id/:name", :id => 1, :name => foo)
       #
-      def url(*args)
+      def url(*args)        
         params = args.extract_options!  # parameters is hash at end
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names.join("_").to_sym    # route name is concatenated with underscores
@@ -541,6 +541,9 @@ module Padrino
       #   url("/show/:id/:name", :id => 1, :name => foo)
       #
       def url(*args)
+        # Sinatra compatibility
+        return super if String === args[0] && !(Hash === args[1])
+        
         self.class.url(*args)
       end
       alias :url_for :url
