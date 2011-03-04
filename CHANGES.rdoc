@@ -4,6 +4,13 @@
 
 * Fix no more password encryption when password is blank
 * Fix mongoid dependency
+* Fix admin mongomapper template to encrypt password
+* Allow disabling of Padrino::Logger via :padrino_logging 
+* Use Sinatra::Base instead for performance
+* Added Japanese Translations [Thanks to udzura]
+* set status to 406 on non-provided ACCEPTS
+* returns first provided mime-type on ACCEPT = */*
+* assume */* if no ACCEPT header is given
 
 == 0.9.21
 
