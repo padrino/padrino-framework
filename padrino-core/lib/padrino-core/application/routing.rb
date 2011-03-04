@@ -520,6 +520,13 @@ module Padrino
                              accepts.any? { |a| a == "*/*" } ||
                              ((!url_format) && request.accept.empty? && types.include?(:html))
 
+            # per rfc: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            # answer with 406 if accept is given but types to not match any
+            # provided type
+            if !url_format && !accepts.empty? && !matched_format
+              halt 406
+            end
+            
             if matched_format
               @_content_type = url_format || accept_format || :html
               content_type(@_content_type, :charset => 'utf-8')

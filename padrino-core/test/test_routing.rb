@@ -170,13 +170,13 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 404, status
   end
 
-  should "not allow Accept-Headers it does not provide" do
+  should "return 406 on Accept-Headers it does not provide" do
     mock_app do
       get(:a, :provides => [:html, :js]){ content_type }
     end
 
     get "/a", {}, {"HTTP_ACCEPT" => "application/yaml"}
-    assert_equal 404, status
+    assert_equal 406, status
   end
 
   should "not default to HTML if HTML is not provided and no type is given" do
