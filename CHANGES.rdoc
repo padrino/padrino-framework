@@ -3,6 +3,7 @@
 == 0.9.23 (Unreleased)
 
 * Allow 406 on (.format) urls via a flag
+* Adds method_override flag to Padrino by default
 
 == 0.9.22
 

@@ -132,6 +132,7 @@ module Padrino
           set :reload, true if development?
           set :logging, false
           set :padrino_logging, true
+          set :method_override, true
           set :sessions, false
           set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
