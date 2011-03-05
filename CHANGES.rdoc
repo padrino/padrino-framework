@@ -2,12 +2,14 @@
 
 == 0.9.23 (Unreleased)
 
+* Allow 406 on (.format) urls via a flag
+
 == 0.9.22
 
 * Fix no more password encryption when password is blank
 * Fix mongoid dependency
 * Fix admin mongomapper template to encrypt password
-* Allow disabling of Padrino::Logger via :padrino_logging 
+* Allow disabling of Padrino::Logger via :padrino_logging
 * Use Sinatra::Base instead of Sinatra::Application
 * Added Japanese Translations [Thanks to udzura]
 * set status to 406 on non-provided ACCEPTS
