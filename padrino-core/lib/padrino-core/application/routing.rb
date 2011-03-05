@@ -533,6 +533,12 @@ module Padrino
               halt 406
             end
             
+            if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
+              if url_format && !matched_format
+                halt 406
+              end
+            end
+            
             if matched_format
               @_content_type = url_format || accept_format || :html
               content_type(@_content_type, :charset => 'utf-8')

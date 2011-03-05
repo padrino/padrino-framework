@@ -179,6 +179,25 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 406, status
   end
   
+  should "return 406 on file extensions it does not provide and flag is set" do
+    mock_app do
+      set :treat_format_as_accept, true
+      get(:a, :provides => [:html, :js]){ content_type }
+    end
+
+    get "/a.xml", {}, {}
+    assert_equal 406, status
+  end
+  
+  should "return 404 on file extensions it does not provide and flag is not set" do
+    mock_app do
+      get(:a, :provides => [:html, :js]){ content_type }
+    end
+
+    get "/a.xml", {}, {}
+    assert_equal 404, status
+  end
+  
   should "not set content_type to :html if Accept */* and html not in provides" do
     mock_app do
       get("/foo", :provides => [:json, :xml]) { content_type.to_s }
