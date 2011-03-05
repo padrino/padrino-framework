@@ -181,7 +181,7 @@ class TestRouting < Test::Unit::TestCase
   
   should "return 406 on file extensions it does not provide and flag is set" do
     mock_app do
-      set :treat_format_as_accept, true
+      enable :treat_format_as_accept
       get(:a, :provides => [:html, :js]){ content_type }
     end
 

@@ -496,8 +496,32 @@ module Padrino
         end
 
         ##
-        # Allow paths for the given request head or request format
+        # Allows routing by MIME-types specified in the URL or ACCEPT header.
+        # 
+        # By default, if a non-provided mime-type is specified in a URL, the
+        # route will not match an thus return a 404.
+        # 
+        # Setting the :treat_format_as_accept option to true allows treating
+        # missing mime types specified in the URL as if they were specified
+        # in the ACCEPT header and thus return 406.
+        # 
+        # If no type is specified, the first in the provides-list will be 
+        # returned.
         #
+        # ==== Examples
+        #   get "/a", :provides => [:html, :js] 
+        #      # => GET /a      => :html
+        #      # => GET /a.js   => :js
+        #      # => GET /a.xml  => 404
+        # 
+        #   get "/b", :provides => [:html]
+        #      # => GET /b; ACCEPT: html => html
+        #      # => GET /b; ACCEPT: js   => 406
+        # 
+        #   enable :treat_format_as_accept
+        #   get "/c", :provides => [:html, :js] 
+        #      # => GET /c.xml => 406
+        # 
         def provides(*types)
           @_use_format = true
           condition do
