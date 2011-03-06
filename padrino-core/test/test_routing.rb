@@ -6,7 +6,6 @@ class FooError < RuntimeError; end
 class TestRouting < Test::Unit::TestCase
   should 'use padrinos url method' do
     mock_app do
-      
     end
 
     assert_equal @app.method(:url).owner, Padrino::Routing::ClassMethods
@@ -28,27 +27,26 @@ class TestRouting < Test::Unit::TestCase
   end
 
   should 'fail with unrecognized route exception when not found' do
-    unrecognized_app = mock_app do
+    mock_app do
       get(:index){ "okey" }
     end
-    assert_nothing_raised { get unrecognized_app.url_for(:index) }
+    assert_nothing_raised { get @app.url_for(:index) }
     assert_equal "okey", body
     assert_raises(Padrino::Routing::UnrecognizedException) {
-      get unrecognized_app.url_for(:fake)
+      get @app.url_for(:fake)
     }
   end
-  
-  should 'generate a url using route string' do
-    app = mock_app do
-      get(:index){ "okey" }
+
+  should_eventually 'generate a url using route string with params' do
+    mock_app do
+      get("/show/:id/:name"){ "okey" }
     end
-    
-    url = app.url_for("/show/:id/:name", :id => 1, :name => "foo")
-    assert_equal url, "/show/1/foo"
+
+    assert_equal "/show/1/foo", @app.url_for("/show/:id/:name", :id => 1, :name => "foo")
   end
-  
+
   should 'work correctly with sinatra redirects' do
-    app = mock_app do
+    mock_app do
       get(:index){ redirect url(:index) }
     end
     
