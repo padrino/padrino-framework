@@ -502,10 +502,17 @@ module Padrino
           @_use_format = true
           condition do
             mime_types        = types.map { |t| mime_type(t) }
-            accepts           = request.accept.map { |a| a.split(";")[0].strip }
-            matching_types    = (accepts & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format        = $1.to_sym if $1
+            accepts           = request.accept.map { |a| a.split(";")[0].strip }
+            
+            # per rfc2616-sec14:
+            # Assume */* if no ACCEPT header is given.
+            if accepts.empty? || accepts.any? { |a| a == "*/*" }
+              matching_types  = mime_types.slice(0,1)
+            else
+              matching_types  = (accepts & mime_types)
+            end
 
             if params[:format]
               accept_format = params[:format]
@@ -517,9 +524,15 @@ module Padrino
             matched_format = types.include?(:any)            ||
                              types.include?(accept_format)   ||
                              types.include?(url_format)      ||
-                             accepts.any? { |a| a == "*/*" } ||
                              ((!url_format) && request.accept.empty? && types.include?(:html))
 
+            # per rfc2616-sec14:
+            # answer with 406 if accept is given but types to not match any
+            # provided type
+            if !url_format && !accepts.empty? && !matched_format
+              halt 406
+            end
+            
             if matched_format
               @_content_type = url_format || accept_format || :html
               content_type(@_content_type, :charset => 'utf-8')

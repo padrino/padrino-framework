@@ -196,13 +196,31 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 404, status
   end
 
-  should "not allow Accept-Headers it does not provide" do
+  should "return 406 on Accept-Headers it does not provide" do
     mock_app do
       get(:a, :provides => [:html, :js]){ content_type }
     end
 
     get "/a", {}, {"HTTP_ACCEPT" => "application/yaml"}
-    assert_equal 404, status
+    assert_equal 406, status
+  end
+  
+  should "not set content_type to :html if Accept */* and html not in provides" do
+    mock_app do
+      get("/foo", :provides => [:json, :xml]) { content_type.to_s }
+    end
+    
+    get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
+    assert_equal 'json', body
+  end
+  
+  should "return the first content type in provides if accept header is empty" do
+    mock_app do
+      get(:a, :provides => [:js]){ content_type.to_s }
+    end
+
+    get "/a", {}, {}
+    assert_equal "js", body
   end
 
   should "not default to HTML if HTML is not provided and no type is given" do
@@ -211,7 +229,7 @@ class TestRouting < Test::Unit::TestCase
     end
 
     get "/a", {}, {}
-    assert_equal 404, status
+    assert_equal "application/javascript;charset=utf-8", content_type
   end
 
   should "not match routes if url_format and http_accept is provided but not included" do
@@ -371,14 +389,16 @@ class TestRouting < Test::Unit::TestCase
       get(:d, :provides => [:html, :js]){ "html,js"}
     end
     get "/a"
-    assert_equal 404, status
+    assert_equal 200, status
+    assert_equal "js", body
     get "/a.js"
     assert_equal "js", body
     get "/b"
     assert_equal "any", body
     assert_raise(RuntimeError) { get "/b.foo" }
     get "/c"
-    assert_equal 404, status
+    assert_equal 200, status
+    assert_equal "js,json", body
     get "/c.js"
     assert_equal "js,json", body
     get "/c.json"
@@ -759,8 +779,8 @@ class TestRouting < Test::Unit::TestCase
     assert ok?
     assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
 
-    get '/foo', {}, { :accept => 'text/html' }
-    assert not_found?
+    get '/foo', {}, { "HTTP_ACCEPT" => 'text/html' }
+    assert_equal 406, status
   end
 
   should "works allow global provides" do
@@ -774,8 +794,8 @@ class TestRouting < Test::Unit::TestCase
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Foo in xml', body
     get '/foo'
-    assert not_found?
-
+    assert_equal 'Foo in xml', body
+    
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Bar in html', body
   end
