@@ -6,7 +6,7 @@ module Padrino
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   #
-  class Application < Sinatra::Application
+  class Application < Sinatra::Base
     register Padrino::Routing   # Support for advanced routing, controllers, url_for
     register Padrino::Rendering # Support for enhanced rendering with template detection
 
