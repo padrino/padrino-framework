@@ -4,6 +4,8 @@
 
 * Allow 406 on (.format) urls via a flag
 * Adds method_override flag to Padrino by default
+* Routing compatibility with the Sinatra 1.2 url method
+* Padrino now requires to ~> sinatra 1.2.0
 
 == 0.9.22
 
