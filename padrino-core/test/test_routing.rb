@@ -4,6 +4,11 @@ class FooError < RuntimeError; end
 
 
 class TestRouting < Test::Unit::TestCase
+  should 'use padrinos url method' do
+    mock_app { }
+    assert_equal @app.method(:url).owner, Padrino::Routing::ClassMethods
+  end
+
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
@@ -28,6 +33,23 @@ class TestRouting < Test::Unit::TestCase
     assert_raises(Padrino::Routing::UnrecognizedException) {
       get @app.url_for(:fake)
     }
+  end
+
+  should_eventually 'generate a url using route string with params' do
+    mock_app do
+      get("/show/:id/:name"){ "okey" }
+    end
+
+    assert_equal "/show/1/foo", @app.url_for("/show/:id/:name", :id => 1, :name => "foo")
+  end
+
+  should 'work correctly with sinatra redirects' do
+    mock_app do
+      get(:index){ redirect url(:index) }
+    end
+
+    get "/"
+    assert_equal "http://example.org/", headers['Location']
   end
 
   should 'accept regexp routes' do
@@ -1298,5 +1320,14 @@ class TestRouting < Test::Unit::TestCase
     get '/'
     assert_equal 500, status
     assert_equal 'Foo!', body
+  end
+
+  should 'have MethodOverride middleware' do
+    mock_app do
+      put('/') { 'okay' }
+    end
+    post '/', {'_method'=>'PUT'}, {}
+    assert_equal 200, status
+    assert_equal 'okay', body
   end
 end
