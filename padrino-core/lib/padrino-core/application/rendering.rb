@@ -170,7 +170,7 @@ module Padrino
 
           # Resolve view path and options
           options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
-          view_path = options.delete(:views) || settings.views || settings.views || "./views"
+          view_path = options.delete(:views) || settings.views || "./views"
           target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
           template_path = template_path.chomp(".#{target_extension}")
 
