@@ -10,9 +10,9 @@ document.observe("dom:loaded", function() {
   **/
 
   document.observe("submit", function(e) {
-    e.stop();
     var element = e.findElement("form[data-remote=true]");
     if (element) {
+      e.stop();
       var message = element.readAttribute('data-confirm');
       if (message && !confirm(message)) { return false; }
       JSAdapter.sendRequest(element, { 
@@ -65,6 +65,7 @@ document.observe("dom:loaded", function() {
       e.stop();
     }
   });  
+  
 });
 
 /* JSAdapter */
