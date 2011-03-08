@@ -68,10 +68,10 @@ var JSAdapter = {
       data: params || [],
       dataType: 'script',
 
-      beforeSend: function(request) { element.trigger("ajax:loading", {request: request}); },
-      complete:   function(request) { element.trigger("ajax:complete", {request: request}); },
-      success:    function(request) { element.trigger("ajax:success", {request: request}); },
-      error:      function(request) { element.trigger("ajax:failure", {request: request}); }
+      beforeSend: function(request) { element.trigger("ajax:loading",  [ request ]); },
+      complete:   function(request) { element.trigger("ajax:complete", [ request ]); },
+      success:    function(request) { element.trigger("ajax:success",  [ request ]); },
+      error:      function(request) { element.trigger("ajax:failure",  [ request ]); }
     });
     element.trigger("ajax:after");
   },
