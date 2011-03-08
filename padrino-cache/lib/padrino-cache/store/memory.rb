@@ -2,6 +2,9 @@ module Padrino
   module Cache
     module Store
       class Memory
+        # Initialize Memory Store with memory size
+        # Padrino::Cache::Store::Memory.new 10000
+        #
         def initialize(size = 5000)
           @size, @entries, @index = size, [], {}
         end

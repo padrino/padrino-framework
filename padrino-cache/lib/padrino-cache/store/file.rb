@@ -2,6 +2,9 @@ module Padrino
   module Cache
     module Store
       class File
+        # Initialize File store with File root
+        # Padrino::Cache::Store::File.new "path/to"
+        #
         def initialize(root)
           @root = root
         end
