@@ -1,6 +1,66 @@
 = Painless Page and Fragment Caching (padrino-cache)
 
-Not documented yet.
+=== Overview
+
+This component enables caching of an application's response contents on
+both page- and fragment-levels. Output cached in this manner is
+persisted, until it expires or is actively expired, in a configurable store
+of your choosing. Several common caching stores are supported out of the box.
+
+=== Caching Quickstart
+
+Padrino-cache can reduce the processing load on your site very effectively
+with minimal configuration.
+
+By default, the component caches pages in a file store at <tt>tmp/cache</tt>
+within your project root. Entries in this store correspond directly
+to the request issued to your server. In other words, responses are
+cached based on request URL, with one cache entry per URL.
+
+This behavior is referred to as "page-level caching." If this strategy meets
+your needs, you can enable it very easily:
+
+  # Basic, page-level caching
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/foo', :cache => true do
+      expires_in 30 # expire cached version at least every 30 seconds
+      'Hello world'
+    end
+  end
+
+You can also cache on a controller-wide basis:
+
+  # Controller-wide caching example
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/' do
+      'Hello world'
+    end
+
+    # Requests to routes within '/admin'
+    controller '/admin', :cache => true do
+      expires_in 60
+
+      get '/foo' do
+        'Url is /admin/foo'
+      end
+
+      get '/bar' do
+        'Url is /admin/bar'
+      end
+    end
+  end
+
+If you specify <tt>:cache => true</tt> but do not invoke <tt>expires_in</tt>,
+the response will be cached indefinitely. Most of the time, you will want to
+specify the expiry of a cache entry by <tt>expires_in</tt>. Even a relatively
+low value--1 or 2 seconds--can greatly increase application efficiency, especially
+when enabled on a very active part of your domain.
 
 == Copyright
 
