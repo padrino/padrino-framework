@@ -361,6 +361,14 @@ class TestFormHelpers < Test::Unit::TestCase
       actual_html = select_tag(:favorite_color, :disabled => true, :options => ['only', 'option'])
       assert_has_tag(:select, :disabled => 'disabled') { actual_html }
     end
+    
+    should "take a range as a collection for options" do
+      actual_html = select_tag(:favorite_color, :options => (1..3))
+      assert_has_tag(:select) { actual_html }
+      assert_has_tag('select option', :value => '1') { actual_html }
+      assert_has_tag('select option', :value => '2') { actual_html }
+      assert_has_tag('select option', :value => '3') { actual_html }
+    end
 
     should "display select tag in ruby with multiple attribute" do
       actual_html = select_tag(:favorite_color, :multiple => true, :options => ['only', 'option'])
