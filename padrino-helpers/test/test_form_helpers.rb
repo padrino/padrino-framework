@@ -361,7 +361,7 @@ class TestFormHelpers < Test::Unit::TestCase
       actual_html = select_tag(:favorite_color, :disabled => true, :options => ['only', 'option'])
       assert_has_tag(:select, :disabled => 'disabled') { actual_html }
     end
-    
+
     should "take a range as a collection for options" do
       actual_html = select_tag(:favorite_color, :options => (1..3))
       assert_has_tag(:select) { actual_html }
@@ -369,7 +369,7 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag('select option', :value => '2') { actual_html }
       assert_has_tag('select option', :value => '3') { actual_html }
     end
-    
+
     should "return a select tag with grouped options for an nested array" do
       opts = [
         ["Friends",["Yoda",["Obiwan",2]]],
@@ -384,7 +384,7 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag(:option, :value => "Palpatine", :content => "Palpatine") { actual }
       assert_has_tag(:option, :value => "3", :content => "Darth Vader") { actual }
     end
-    
+
     should "return a select tag with grouped options for a hash" do
       opts = {
         "Friends" => ["Yoda",["Obiwan",2]],
