@@ -268,7 +268,7 @@ module Padrino
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
         blank = options.delete(:include_blank)
-        options[:options].unshift(blank.is_a?(String) ? [blank, ''] : '') if blank
+        options[:options].to_a.unshift(blank.is_a?(String) ? [blank, ''] : '') if blank
         select_options_html = options_for_select(options.delete(:options), options.delete(:selected))
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
         content_tag(:select, select_options_html, options)
