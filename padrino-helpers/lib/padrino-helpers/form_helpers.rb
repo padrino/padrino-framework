@@ -254,7 +254,7 @@ module Padrino
       end
 
       ##
-      # Constructs a check_box from the given options
+      # Constructs a select from the given options
       #
       # ==== Examples
       #
@@ -262,6 +262,11 @@ module Padrino
       #   options = ['option', 'red', 'yellow' ]
       #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
       #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
+      #   
+      #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
+      #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
+      #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
+      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
       #
       def select_tag(name, options={})
         options.reverse_merge!(:name => name)
