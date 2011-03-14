@@ -377,6 +377,27 @@ module Padrino
           content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
         end
       end
+      
+      #
+      # Returns the optgroups with options tags for a select based on the given :grouped_options items
+      #
+      def grouped_options_for_select(collection,selected=nil)
+        if collection.is_a?(Hash)
+          collection.each.map do |key, value|
+            content_tag :optgroup, :label => key do
+              options_for_select(value, selected)
+            end
+          end
+        elsif collection.is_a?(Array)
+          collection.map do |optgroup|
+            content_tag :optgroup, :label => optgroup.first do
+              options_for_select(optgroup.last, selected)
+            end
+          end
+        else
+          raise "options must be a hash or array, not a #{collection.class}"
+        end
+      end
 
       #
       # Returns the optgroups with options tags for a select based on the given :grouped_options items
