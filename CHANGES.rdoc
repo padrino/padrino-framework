@@ -2,6 +2,11 @@
 
 == 0.9.24 (Unreleased)
 
+* Fixes to allow flexible libraries in padrino-cache
+* Adds quickstart caching guide (in progress) [Thanks onethirtyfive]
+* Allow select tag to take a range of options [Thanks activestylus]
+* Allow grouped options in a select_tag [Thanks activestylus]
+
 == 0.9.23
 
 * Allow 406 on (.format) urls via a flag
