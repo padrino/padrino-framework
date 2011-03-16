@@ -376,13 +376,13 @@ class TestFormHelpers < Test::Unit::TestCase
         ["Enemies", ["Palpatine",['Darth Vader',3]]]
       ]
       actual = select_tag( 'name', :grouped_options => opts )
-      assert_has_tag(:select, name:"name") { actual }
-      assert_has_tag(:optgroup, label:"Friends") { actual }
-      assert_has_tag(:option, value:"Yoda", content:"Yoda") { actual }
-      assert_has_tag(:option, value:"2", content:"Obiwan") { actual }
-      assert_has_tag(:optgroup, label:"Enemies") { actual }
-      assert_has_tag(:option, value:"Palpatine", content:"Palpatine") { actual }
-      assert_has_tag(:option, value:"3", content:"Darth Vader") { actual }
+      assert_has_tag(:select, :name => "name") { actual }
+      assert_has_tag(:optgroup, :label => "Friends") { actual }
+      assert_has_tag(:option, :value => "Yoda", :content => "Yoda") { actual }
+      assert_has_tag(:option, :value => "2", :content => "Obiwan") { actual }
+      assert_has_tag(:optgroup, :label => "Enemies") { actual }
+      assert_has_tag(:option, :value => "Palpatine", :content => "Palpatine") { actual }
+      assert_has_tag(:option, :value => "3", :content => "Darth Vader") { actual }
     end
     
     should "return a select tag with grouped options for a hash" do
@@ -391,13 +391,13 @@ class TestFormHelpers < Test::Unit::TestCase
         "Enemies" => ["Palpatine",['Darth Vader',3]]
       }
       actual = select_tag( 'name', :grouped_options => opts )
-      assert_has_tag(:select, name:"name") { actual }
-      assert_has_tag(:optgroup, label:"Friends") { actual }
-      assert_has_tag(:option, value:"Yoda", content:"Yoda") { actual }
-      assert_has_tag(:option, value:"2", content:"Obiwan") { actual }
-      assert_has_tag(:optgroup, label:"Enemies") { actual }
-      assert_has_tag(:option, value:"Palpatine", content:"Palpatine") { actual }
-      assert_has_tag(:option, value:"3", content:"Darth Vader") { actual }
+      assert_has_tag(:select, :name => "name") { actual }
+      assert_has_tag(:optgroup, :label => "Friends") { actual }
+      assert_has_tag(:option, :value => "Yoda", :content => "Yoda") { actual }
+      assert_has_tag(:option, :value => "2", :content => "Obiwan") { actual }
+      assert_has_tag(:optgroup, :label => "Enemies") { actual }
+      assert_has_tag(:option, :value => "Palpatine", :content => "Palpatine") { actual }
+      assert_has_tag(:option, :value => "3", :content => "Darth Vader") { actual }
     end
 
     should "display select tag in ruby with multiple attribute" do
