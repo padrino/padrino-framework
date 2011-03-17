@@ -393,7 +393,7 @@ module Padrino
               options_for_select(optgroup.last, selected)
             end
           end
-        end.unshift(blank_option(prompt))
+        end
       end
       
       def blank_option(prompt)
