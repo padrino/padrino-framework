@@ -262,7 +262,7 @@ module Padrino
       #   options = ['option', 'red', 'yellow' ]
       #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
       #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
-      #   
+      #
       #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
       #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
       #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
@@ -376,7 +376,7 @@ module Padrino
           content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
         end
       end
-      
+
       #
       # Returns the optgroups with options tags for a select based on the given :grouped_options items
       #
@@ -395,7 +395,10 @@ module Padrino
           end
         end
       end
-      
+
+      #
+      # Returns the blank option serving as a prompt if passed
+      #
       def blank_option(prompt)
         if prompt
           case prompt.class.to_s
@@ -403,27 +406,6 @@ module Padrino
           when 'Array'  ; content_tag(:option, prompt.first, :value => prompt.last) ;
           else          ; content_tag(:option, '', :value => '') ;
           end
-        end
-      end
-
-      #
-      # Returns the optgroups with options tags for a select based on the given :grouped_options items
-      #
-      def grouped_options_for_select(collection,selected=nil)
-        if collection.is_a?(Hash)
-          collection.each.map do |key, value|
-            content_tag :optgroup, :label => key do
-              options_for_select(value, selected)
-            end
-          end
-        elsif collection.is_a?(Array)
-          collection.map do |optgroup|
-            content_tag :optgroup, :label => optgroup.first do
-              options_for_select(optgroup.last, selected)
-            end
-          end
-        else
-          raise "options must be a hash or array, not a #{collection.class}"
         end
       end
 
