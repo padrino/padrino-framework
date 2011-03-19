@@ -1,15 +1,12 @@
-begin
-  require 'redis'
-rescue LoadError
-  raise "You must install redis to use the Redis cache store backend"
-end
-
 module Padrino
   module Cache
     module Store
       class Redis
-        def initialize(*args)
-          @backend = ::Redis.new(*args)
+        # Initialize Redis store with client connection.
+        # Padrino::Cache::Store::Redis.new ::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+        #
+        def initialize(client)
+          @backend = client
         end
 
         def get(key)

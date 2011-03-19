@@ -35,6 +35,7 @@ group :development do
   end
   platforms :mri do
     gem "memcached", ">= 0.20.1"
+    gem 'dalli',     ">=1.0.2"
   end
 end
 

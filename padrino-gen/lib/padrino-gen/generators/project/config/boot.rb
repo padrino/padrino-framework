@@ -4,20 +4,20 @@ PADRINO_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..')) unless 
 # Load Bundler
 require 'rubygems'
 require 'bundler'
-# Only have default and environemtn gems
+# Only have default and environment gems
 Bundler.setup(:default, PADRINO_ENV.to_sym)
 # Only require default and environment gems
 Bundler.require(:default, PADRINO_ENV.to_sym)
 puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env}"
 
 ##
-# Add here your before load hooks
+# Add your before load hooks here
 #
 Padrino.before_load do
 end
 
 ##
-# Add here your after load hooks
+# Add your after load hooks here
 #
 Padrino.after_load do
 end

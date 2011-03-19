@@ -26,12 +26,13 @@ end
 HERE_DOC
 
 begin
+  require 'memcached'
   # we're just going to assume memcached is running on the default port
-  Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive')
+  Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
 
   class TestMemcacheStore < Test::Unit::TestCase
     def setup
-      @cache = Padrino::Cache::Store::Memcache.new('127.0.0.1:11211', :exception_retry_limit => 1)
+      @cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
       @cache.flush
     end
 
@@ -41,16 +42,37 @@ begin
 
     eval COMMON_TESTS
   end
-rescue
-  warn "Skipping memcached tests"
+rescue LoadError
+  warn "Skipping memcached with memcached library tests"
 end
 
+begin
+  require 'dalli'
+  # we're just going to assume memcached is running on the default port
+  Padrino::Cache::Store::Memcache.new ::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive')
+
+  class TestMemcacheWithDalliStore < Test::Unit::TestCase
+    def setup
+      @cache = Padrino::Cache::Store::Memcache.new ::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1)
+      @cache.flush
+    end
+
+    def teardown
+      @cache.flush
+    end
+
+    eval COMMON_TESTS
+  end
+rescue LoadError
+  warn "Skipping memcached with dalli library tests"
+end
 
 begin
-  Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive')
+  require 'redis'
+  Padrino::Cache::Store::Redis.new ::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive')
   class TestRedisStore < Test::Unit::TestCase
     def setup
-      @cache = Padrino::Cache::Store::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+      @cache = Padrino::Cache::Store::Redis.new ::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
       @cache.flush
     end
 

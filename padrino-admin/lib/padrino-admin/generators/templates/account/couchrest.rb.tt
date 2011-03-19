@@ -27,7 +27,7 @@ class Account < CouchRest::ExtendedDocument
   validates_format_of       :role,     :with => /[A-Za-z]/
 
   # Callbacks
-  before_save :encrypt_password
+  before_save :encrypt_password, :if => :password_required
 
   ##
   # This method is for authentication purpose
@@ -56,7 +56,7 @@ class Account < CouchRest::ExtendedDocument
     end
 
     def password_required
-      crypted_password.blank? || !password.blank?
+      crypted_password.blank? || password.present?
     end
 
     def email_is_unique

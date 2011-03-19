@@ -170,8 +170,8 @@ module Padrino
 
           # Resolve view path and options
           options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
-          view_path = options.delete(:views) || settings.views || settings.views || "./views"
-          target_extension = File.extname(template_path)[1..-1] || "none" # retrieves explicit template extension
+          view_path = options.delete(:views) || settings.views || "./views"
+          target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
           template_path = template_path.chomp(".#{target_extension}")
 
           # Generate potential template candidates
@@ -181,20 +181,20 @@ module Padrino
             [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
           end
 
-          # Check if we have a valid content type
-          valid_content_type = [:html, :plain].include?(content_type)
+          # Check if we have a simple content type
+          simple_content_type = [:html, :plain].include?(content_type)
 
           # Resolve final template to render
           located_template =
             templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
-            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && valid_content_type } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
             templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
             templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
-            templates.find { |file, e| file.to_s == "#{template_path}" && valid_content_type } ||
-            templates.any? && !options[:strict_format] && templates.first # If not strict, fall back to the first located template
+            templates.find { |file, e| file.to_s == "#{template_path}" && simple_content_type } ||
+            (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template
 
+          raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-          raise TemplateNotFound, "Template path '#{template_path}' could not be located in '#{view_path}'!" if !located_template && options[:raise_exceptions]
           located_template
         end
 

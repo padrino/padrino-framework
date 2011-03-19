@@ -254,7 +254,7 @@ module Padrino
       end
 
       ##
-      # Constructs a check_box from the given options
+      # Constructs a select from the given options
       #
       # ==== Examples
       #
@@ -263,13 +263,26 @@ module Padrino
       #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
       #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
       #
+      #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
+      #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
+      #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
+      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #
+      #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
+      #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
+      #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
+      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #
       def select_tag(name, options={})
         options.reverse_merge!(:name => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
-        blank = options.delete(:include_blank)
-        options[:options].unshift(blank.is_a?(String) ? [blank, ''] : '') if blank
-        select_options_html = options_for_select(options.delete(:options), options.delete(:selected))
+        prompt = options.delete(:include_blank)
+        select_options_html = if options[:options]
+          options_for_select(options.delete(:options), options.delete(:selected))
+        elsif options[:grouped_options]
+          grouped_options_for_select(options.delete(:grouped_options), options.delete(:selected), prompt)
+        end.unshift(blank_option(prompt))
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
         content_tag(:select, select_options_html, options)
       end
@@ -361,6 +374,38 @@ module Padrino
         option_items.collect do |caption, value|
           value ||= caption
           content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
+        end
+      end
+
+      #
+      # Returns the optgroups with options tags for a select based on the given :grouped_options items
+      #
+      def grouped_options_for_select(collection,selected=nil,prompt=false)
+        if collection.is_a?(Hash)
+          collection.map do |key, value|
+            content_tag :optgroup, :label => key do
+              options_for_select(value, selected)
+            end
+          end
+        elsif collection.is_a?(Array)
+          collection.map do |optgroup|
+            content_tag :optgroup, :label => optgroup.first do
+              options_for_select(optgroup.last, selected)
+            end
+          end
+        end
+      end
+
+      #
+      # Returns the blank option serving as a prompt if passed
+      #
+      def blank_option(prompt)
+        if prompt
+          case prompt.class.to_s
+          when 'String' ; content_tag(:option, prompt, :value => '') ;
+          when 'Array'  ; content_tag(:option, prompt.first, :value => prompt.last) ;
+          else          ; content_tag(:option, '', :value => '') ;
+          end
         end
       end
 

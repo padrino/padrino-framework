@@ -353,13 +353,57 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_has_tag(:select, :name => 'favorite_color') { actual_html }
       assert_has_tag('select option:first-child', :content => '') { actual_html }
       assert_has_tag('select option', :content => 'green', :value => 'green') { actual_html }
-      assert_has_tag('select option', :content => 'blue', :value => 'blue') { actual_html }
+      assert_has_tag('select option', :content => 'blue',  :value => 'blue')  { actual_html }
       assert_has_tag('select option', :content => 'black', :value => 'black') { actual_html }
     end
 
     should "display select tag in ruby with extended attributes" do
       actual_html = select_tag(:favorite_color, :disabled => true, :options => ['only', 'option'])
       assert_has_tag(:select, :disabled => 'disabled') { actual_html }
+    end
+
+    should "take a range as a collection for options" do
+      actual_html = select_tag(:favorite_color, :options => (1..3))
+      assert_has_tag(:select) { actual_html }
+      assert_has_tag('select option', :value => '1') { actual_html }
+      assert_has_tag('select option', :value => '2') { actual_html }
+      assert_has_tag('select option', :value => '3') { actual_html }
+    end
+
+    should "include blank for grouped options" do
+      opts = { "Red"  => ["Rose","Fire"], "Blue" => ["Sky","Sea"] }
+      actual_html = select_tag( 'color', :grouped_options => opts, :include_blank => true )
+      assert_has_tag('select option:first-child', :value => "", :content => "") { actual_html }
+    end
+
+    should "return a select tag with grouped options for an nested array" do
+      opts = [
+        ["Friends",["Yoda",["Obiwan",2]]],
+        ["Enemies", ["Palpatine",['Darth Vader',3]]]
+      ]
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name => "name") { actual_html }
+      assert_has_tag(:optgroup, :label => "Friends") { actual_html }
+      assert_has_tag(:option,   :value => "Yoda", :content => "Yoda") { actual_html }
+      assert_has_tag(:option,   :value => "2",  :content => "Obiwan") { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies") { actual_html }
+      assert_has_tag(:option,   :value => "Palpatine", :content => "Palpatine") { actual_html }
+      assert_has_tag(:option,   :value => "3", :content => "Darth Vader") { actual_html }
+    end
+
+    should "return a select tag with grouped options for a hash" do
+      opts = {
+        "Friends" => ["Yoda",["Obiwan",2]],
+        "Enemies" => ["Palpatine",['Darth Vader',3]]
+      }
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name  => "name")    { actual_html }
+      assert_has_tag(:optgroup, :label => "Friends") { actual_html }
+      assert_has_tag(:option,   :value => "Yoda", :content => "Yoda")   { actual_html }
+      assert_has_tag(:option,   :value => "2",    :content => "Obiwan") { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies") { actual_html }
+      assert_has_tag(:option,   :value => "Palpatine", :content => "Palpatine") { actual_html }
+      assert_has_tag(:option,   :value => "3", :content => "Darth Vader") { actual_html }
     end
 
     should "display select tag in ruby with multiple attribute" do

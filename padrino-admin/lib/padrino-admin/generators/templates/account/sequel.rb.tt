@@ -19,7 +19,7 @@ class Account < ::Sequel::Model
 
   # Callbacks
   def before_save
-    generate_password
+    encrypt_password
   end
 
   ##
@@ -42,11 +42,11 @@ class Account < ::Sequel::Model
   end
 
   private
-    def generate_password
-      self.crypted_password = ::BCrypt::Password.create(password)
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
     end
 
     def password_required
-      crypted_password.blank? || !password.blank?
+      crypted_password.blank? || password.present?
     end
 end

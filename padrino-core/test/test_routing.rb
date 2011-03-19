@@ -20,13 +20,13 @@ class TestRouting < Test::Unit::TestCase
   end
 
   should 'fail with unrecognized route exception when not found' do
-    unrecognized_app = mock_app do
+    mock_app do
       get(:index){ "okey" }
     end
-    assert_nothing_raised { get unrecognized_app.url_for(:index) }
+    assert_nothing_raised { get @app.url_for(:index) }
     assert_equal "okey", body
     assert_raises(Padrino::Routing::UnrecognizedException) {
-      get unrecognized_app.url_for(:fake)
+      get @app.url_for(:fake)
     }
   end
 
@@ -170,13 +170,73 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 404, status
   end
 
-  should "not allow Accept-Headers it does not provide" do
+  should 'use padrino url method' do
+    mock_app do
+    end
+
+    assert_equal @app.method(:url).owner, Padrino::Routing::ClassMethods
+  end
+
+  should 'work correctly with sinatra redirects' do
+    mock_app do
+      get(:index)  { redirect url(:index) }
+      get(:google) { redirect "http://google.com" }
+      get("/foo")  { redirect "/bar" }
+      get("/bar")  { "Bar" }
+    end
+
+    get "/"
+    assert_equal "http://example.org/", headers['Location']
+    get "/google"
+    assert_equal "http://google.com", headers['Location']
+    get "/foo"
+    assert_equal "http://example.org/bar", headers['Location']
+  end
+
+  should "return 406 on Accept-Headers it does not provide" do
     mock_app do
       get(:a, :provides => [:html, :js]){ content_type }
     end
 
     get "/a", {}, {"HTTP_ACCEPT" => "application/yaml"}
+    assert_equal 406, status
+  end
+
+  should "return 406 on file extensions it does not provide and flag is set" do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, :provides => [:html, :js]){ content_type }
+    end
+
+    get "/a.xml", {}, {}
+    assert_equal 406, status
+  end
+
+  should "return 404 on file extensions it does not provide and flag is not set" do
+    mock_app do
+      get(:a, :provides => [:html, :js]){ content_type }
+    end
+
+    get "/a.xml", {}, {}
     assert_equal 404, status
+  end
+
+  should "not set content_type to :html if Accept */* and html not in provides" do
+    mock_app do
+      get("/foo", :provides => [:json, :xml]) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
+    assert_equal 'json', body
+  end
+
+  should "return the first content type in provides if accept header is empty" do
+    mock_app do
+      get(:a, :provides => [:js]){ content_type.to_s }
+    end
+
+    get "/a", {}, {}
+    assert_equal "js", body
   end
 
   should "not default to HTML if HTML is not provided and no type is given" do
@@ -185,7 +245,7 @@ class TestRouting < Test::Unit::TestCase
     end
 
     get "/a", {}, {}
-    assert_equal 404, status
+    assert_equal "application/javascript;charset=utf-8", content_type
   end
 
   should "not match routes if url_format and http_accept is provided but not included" do
@@ -345,14 +405,16 @@ class TestRouting < Test::Unit::TestCase
       get(:d, :provides => [:html, :js]){ "html,js"}
     end
     get "/a"
-    assert_equal 404, status
+    assert_equal 200, status
+    assert_equal "js", body
     get "/a.js"
     assert_equal "js", body
     get "/b"
     assert_equal "any", body
     assert_raise(RuntimeError) { get "/b.foo" }
     get "/c"
-    assert_equal 404, status
+    assert_equal 200, status
+    assert_equal "js,json", body
     get "/c.js"
     assert_equal "js,json", body
     get "/c.json"
@@ -733,8 +795,8 @@ class TestRouting < Test::Unit::TestCase
     assert ok?
     assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
 
-    get '/foo', {}, { :accept => 'text/html' }
-    assert not_found?
+    get '/foo', {}, { "HTTP_ACCEPT" => 'text/html' }
+    assert_equal 406, status
   end
 
   should "works allow global provides" do
@@ -748,7 +810,7 @@ class TestRouting < Test::Unit::TestCase
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Foo in xml', body
     get '/foo'
-    assert not_found?
+    assert_equal 'Foo in xml', body
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Bar in html', body
@@ -1235,5 +1297,14 @@ class TestRouting < Test::Unit::TestCase
     get '/'
     assert_equal 500, status
     assert_equal 'Foo!', body
+  end
+
+  should 'have MethodOverride middleware' do
+    mock_app do
+      put('/') { 'okay' }
+    end
+    post '/', {'_method'=>'PUT'}, {}
+    assert_equal 200, status
+    assert_equal 'okay', body
   end
 end

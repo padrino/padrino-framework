@@ -246,9 +246,8 @@ module Padrino
       # ==== Examples
       #
       #   url(:show, :id => 1)
+      #   url(:show, :name => 'test', :id => 24)
       #   url(:show, 1)
-      #   url(:show, :name => :test)
-      #   url("/show/:id/:name", :id => 1, :name => foo)
       #
       def url(*args)
         params = args.extract_options!  # parameters is hash at end
@@ -500,16 +499,47 @@ module Padrino
         end
 
         ##
-        # Allow paths for the given request head or request format
+        # Allows routing by MIME-types specified in the URL or ACCEPT header.
+        #
+        # By default, if a non-provided mime-type is specified in a URL, the
+        # route will not match an thus return a 404.
+        #
+        # Setting the :treat_format_as_accept option to true allows treating
+        # missing mime types specified in the URL as if they were specified
+        # in the ACCEPT header and thus return 406.
+        #
+        # If no type is specified, the first in the provides-list will be
+        # returned.
+        #
+        # ==== Examples
+        #   get "/a", :provides => [:html, :js]
+        #      # => GET /a      => :html
+        #      # => GET /a.js   => :js
+        #      # => GET /a.xml  => 404
+        #
+        #   get "/b", :provides => [:html]
+        #      # => GET /b; ACCEPT: html => html
+        #      # => GET /b; ACCEPT: js   => 406
+        #
+        #   enable :treat_format_as_accept
+        #   get "/c", :provides => [:html, :js]
+        #      # => GET /c.xml => 406
         #
         def provides(*types)
           @_use_format = true
           condition do
             mime_types        = types.map { |t| mime_type(t) }
-            accepts           = request.accept.map { |a| a.split(";")[0].strip }
-            matching_types    = (accepts & mime_types)
             request.path_info =~ /\.([^\.\/]+)$/
             url_format        = $1.to_sym if $1
+            accepts           = request.accept.map { |a| a.split(";")[0].strip }
+
+            # per rfc2616-sec14:
+            # Assume */* if no ACCEPT header is given.
+            if accepts.empty? || accepts.any? { |a| a == "*/*" }
+              matching_types  = mime_types.slice(0,1)
+            else
+              matching_types  = (accepts & mime_types)
+            end
 
             if params[:format]
               accept_format = params[:format]
@@ -521,8 +551,20 @@ module Padrino
             matched_format = types.include?(:any)            ||
                              types.include?(accept_format)   ||
                              types.include?(url_format)      ||
-                             accepts.any? { |a| a == "*/*" } ||
                              ((!url_format) && request.accept.empty? && types.include?(:html))
+
+            # per rfc2616-sec14:
+            # answer with 406 if accept is given but types to not match any
+            # provided type
+            if !url_format && !accepts.empty? && !matched_format
+              halt 406
+            end
+
+            if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
+              if url_format && !matched_format
+                halt 406
+              end
+            end
 
             if matched_format
               @_content_type = url_format || accept_format || :html
@@ -542,9 +584,14 @@ module Padrino
       #
       #   url(:show, :id => 1)
       #   url(:show, :name => :test)
-      #   url("/show/:id/:name", :id => 1, :name => foo)
+      #   url(:show, 1)
+      #   url("/foo")
       #
       def url(*args)
+        # Delegate to Sinatra 1.2 for simple url("/foo")
+        # http://www.sinatrarb.com/intro#Generating%20URLs
+        return super if args.first.is_a?(String) && !args[1].is_a?(Hash)
+        # Delegate to Padrino named route url generation
         self.class.url(*args)
       end
       alias :url_for :url

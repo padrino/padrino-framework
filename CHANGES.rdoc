@@ -1,6 +1,33 @@
 = CHANGES
 
-== 0.9.21 (Unreleased)
+== 0.9.24 (Unreleased)
+
+* Fixes to allow flexible libraries in padrino-cache
+* Adds quickstart caching guide (in progress) [Thanks onethirtyfive]
+* Allow select tag to take a range of options [Thanks activestylus]
+* Allow grouped options in a select_tag [Thanks activestylus]
+* Use MongoMapper official gem
+
+== 0.9.23
+
+* Allow 406 on (.format) urls via a flag
+* Adds method_override flag to Padrino by default
+* Routing compatibility with the Sinatra 1.2 url method
+* Padrino now requires to ~> sinatra 1.2.0
+
+== 0.9.22
+
+* Fix no more password encryption when password is blank
+* Fix mongoid dependency
+* Fix admin mongomapper template to encrypt password
+* Allow disabling of Padrino::Logger via :padrino_logging
+* Use Sinatra::Base instead of Sinatra::Application
+* Added Japanese Translations [Thanks to udzura]
+* set status to 406 on non-provided ACCEPTS
+* returns first provided mime-type on ACCEPT = */*
+* assume */* if no ACCEPT header is given
+
+== 0.9.21
 
 * Support of regex captures in routes
 * Fixed routing issues with :index

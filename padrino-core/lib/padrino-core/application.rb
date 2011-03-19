@@ -6,7 +6,7 @@ module Padrino
   # Subclasses of this become independent Padrino applications (stemming from Sinatra::Application)
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   #
-  class Application < Sinatra::Application
+  class Application < Sinatra::Base
     register Padrino::Routing   # Support for advanced routing, controllers, url_for
     register Padrino::Rendering # Support for enhanced rendering with template detection
 
@@ -131,6 +131,8 @@ module Padrino
           set :raise_errors, true if development?
           set :reload, true if development?
           set :logging, false
+          set :padrino_logging, true
+          set :method_override, true
           set :sessions, false
           set :public, Proc.new { Padrino.root('public', self.uri_root) }
           # Padrino specific
@@ -196,7 +198,7 @@ module Padrino
         # Requires the Padrino middleware
         #
         def register_initializers
-          use Padrino::Logger::Rack    if Padrino.logger && Padrino.logger.level == 0
+          use Padrino::Logger::Rack    if Padrino.logger && (Padrino.logger.level == 0 && padrino_logging?)
           use Padrino::Reloader::Rack  if reload?
           use Rack::Flash              if flash? && sessions?
         end

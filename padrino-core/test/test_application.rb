@@ -20,6 +20,7 @@ class TestApplication < Test::Unit::TestCase
       assert_equal Padrino.root("views"), PadrinoTestApp.views
       assert PadrinoTestApp.raise_errors
       assert !PadrinoTestApp.logging
+      assert PadrinoTestApp.padrino_logging
       assert !PadrinoTestApp.sessions
     end
 
@@ -45,7 +46,7 @@ class TestApplication < Test::Unit::TestCase
       get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal 'Foo in xml', body
       get '/foo'
-      assert not_found?
+      assert_equal 'Foo in xml', body
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal "Foo in html", body

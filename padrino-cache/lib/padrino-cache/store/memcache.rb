@@ -1,15 +1,12 @@
-begin
-  require 'memcached'
-rescue LoadError
-  raise "You must install memecached to use the Memecache cache store backend"
-end
-
 module Padrino
   module Cache
     module Store
       class Memcache
-        def initialize(*args)
-          @backend = Memcached.new(*args)
+        # Initialize Memcache store with client connection.
+        # Padrino::Cache::Store::Memcache.new ::Memcached.new('127.0.0.1:11211')
+        #
+        def initialize(client)
+          @backend = client
         rescue
           raise
         end

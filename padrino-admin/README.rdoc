@@ -67,4 +67,4 @@ For a more complete look at using the Admin panel functionality and access featu
 
 == Copyright
 
-Copyright (c) 2010 Padrino. See LICENSE for details.
+Copyright (c) 2011 Padrino. See LICENSE for details.
