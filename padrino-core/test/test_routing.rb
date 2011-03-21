@@ -755,7 +755,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "lang is en", body
   end
 
-  should_eventually "transitions to the next matching route on pass" do
+  should "transitions to the next matching route on pass" do
     mock_app do
       get '/:foo' do
         pass

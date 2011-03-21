@@ -83,7 +83,7 @@ module Padrino
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
             # If the file is related to their app (i.e. a controller/mailer/helper)
-            if app = Padrino.mounted_apps.find { |a| file =~ /^#{File.dirname(a.app_file)}/ }
+            Padrino.mounted_apps.find_all { |a| file =~ /^#{File.dirname(a.app_file)}/ }.each do |app|
               # We need to reload their own app
               app.app_obj.reload!
               # App reloading will also perform safe_load of itself so we can go next

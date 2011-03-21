@@ -39,26 +39,28 @@ class TestComplexReloader < Test::Unit::TestCase
       new_phrase = "The magick number is: #{rand(100)}!"
       buffer     = File.read(Complex1Demo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
-      File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
-      sleep 1.2 # We need at least a cooldown of 1 sec.
-      get "/complex_2_demo"
-      assert_equal new_phrase, body
+      begin
+        File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
+        sleep 1.2 # We need at least a cooldown of 1 sec.
+        get "/complex_2_demo"
+        assert_equal new_phrase, body
 
-      # Re-Check that we didn't forget any route
-      get "/complex_1_demo"
-      assert_equal "Given random #{LibDemo.give_me_a_random}", body
+        # Re-Check that we didn't forget any route
+        get "/complex_1_demo"
+        assert_equal "Given random #{LibDemo.give_me_a_random}", body
 
-      get "/complex_2_demo"
-      assert_equal 200, status
+        get "/complex_2_demo"
+        assert_equal 200, status
 
-      get "/complex_1_demo/old"
-      assert_equal 200, status
+        get "/complex_1_demo/old"
+        assert_equal 200, status
 
-      get "/complex_2_demo/old"
-      assert_equal 200, status
-
-      # Now we need to prevent to commit a new changed file so we revert it
-      File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
+        get "/complex_2_demo/old"
+        assert_equal 200, status
+      ensure
+        # Now we need to prevent to commit a new changed file so we revert it
+        File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }
+      end
     end
   end
 end

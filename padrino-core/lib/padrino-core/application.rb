@@ -63,7 +63,7 @@ module Padrino
       #   MyApp.reset_routes!
       #
       def reset_routes!
-        router.reset!
+        reset_router!
         default_routes!
       end
 

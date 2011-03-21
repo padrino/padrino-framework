@@ -56,19 +56,10 @@ module Padrino
 
     module ::Sinatra #:nodoc:
       class Request #:nodoc:
-        attr_accessor :match
+        attr_accessor :route
 
         def controller
           route && route.controller
-        end
-
-        def route
-          if match.nil?
-            path = Rack::Utils.unescape(path_info)
-            path.empty? ? "/" : path
-          else
-            match.path.route
-          end
         end
       end # Request
     end # Sinatra
@@ -240,6 +231,10 @@ module Padrino
       end
       alias :urls :router
 
+      def reset_router!
+        @router = HttpRouter.new
+      end
+
       ##
       # Instance method for url generation like:
       #
@@ -386,6 +381,39 @@ module Padrino
             route.after_filters  = @filters[:after]  || []
           end
 
+          route.arbitrary_with_continue do |req, params|
+            base = self
+            processed = false
+            router.runner.instance_eval do
+              request.route = route
+              @_response_buffer = nil
+              if path.is_a?(Regexp)
+                params_list = req.extra_env['router.regex_match'].to_a
+                params_list.shift
+                @block_params = params_list
+                @params.update({:captures => params_list}.merge(@params || {}))
+              else
+                @block_params = req.params
+                @params.update(params.merge(@params || {}))
+              end
+              pass_block = catch(:pass) do
+                # If present set current controller layout
+                parent_layout = base.instance_variable_get(:@layout)
+                base.instance_variable_set(:@layout, route.use_layout) if route.use_layout
+                # Provide access to the current controller to the request
+                # Now we can eval route, but because we have "throw halt" we need to be
+                # (en)sure to reset old layout and run controller after filters.
+                begin
+                  request.env['padrino.buffer'] = @_response_buffer = catch(:halt) { route_eval(&block) }
+                  processed = true
+                ensure
+                  base.instance_variable_set(:@layout, parent_layout) if route.use_layout
+                  (request.env['padrino.after_filters'] ||= []).concat(route.after_filters) if route.after_filters
+                end
+              end
+              req.continue[processed]
+            end
+          end
           route.to(block)
           route
         end
@@ -556,15 +584,9 @@ module Padrino
             # per rfc2616-sec14:
             # answer with 406 if accept is given but types to not match any
             # provided type
-            if !url_format && !accepts.empty? && !matched_format
-              halt 406
-            end
-
-            if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
-              if url_format && !matched_format
-                halt 406
-              end
-            end
+            halt 406 if
+              (!url_format && !accepts.empty? && !matched_format) ||
+              (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
 
             if matched_format
               @_content_type = url_format || accept_format || :html
@@ -645,31 +667,7 @@ module Padrino
           base.router.runner = self
           if base.router and match = base.router.recognize(@request.env)
             if match.respond_to?(:path)
-              request.match = match
-              if request.match.path.route.regex?
-                params_list = match.request.extra_env['router.regex_match'].to_a
-                params_list.shift
-                @block_params = params_list
-                @params.update({:captures => params_list}.merge(@params || {}))
-              else
-                @block_params = request.match.param_values
-                @params.update(request.match.params.merge(@params || {}))
-              end
-              pass_block = catch(:pass) do
-                # If present set current controller layout
-                parent_layout = base.instance_variable_get(:@layout)
-                base.instance_variable_set(:@layout, match.path.route.use_layout) if match.path.route.use_layout
-                # Provide access to the current controller to the request
-                # Now we can eval route, but because we have "throw halt" we need to be
-                # (en)sure to reset old layout and run controller after filters.
-                begin
-                  @_response_buffer = catch(:halt) { route_eval(&match.path.route.dest) }
-                  throw :halt, @_response_buffer
-                ensure
-                  base.instance_variable_set(:@layout, parent_layout) if match.path.route.use_layout
-                  match.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if match.path.route.after_filters
-                end
-              end
+              throw :halt, request.env['padrino.buffer']
             elsif match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
@@ -687,6 +685,8 @@ module Padrino
           route_eval(&pass_block) if pass_block
 
           route_missing
+        ensure
+          request.env['padrino.after_filters'].each { |aft| instance_eval(&aft) } if request.env['padrino.after_filters']
         end
     end # InstanceMethods
   end # Routing
