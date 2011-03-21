@@ -382,33 +382,37 @@ module Padrino
           end
 
           route.arbitrary_with_continue do |req, params|
-            base = self
-            processed = false
-            router.runner.instance_eval do
-              request.route = route
-              @_response_buffer = nil
-              if path.is_a?(Regexp)
-                params_list = req.extra_env['router.regex_match'].to_a
-                params_list.shift
-                @block_params = params_list
-                @params.update({:captures => params_list}.merge(@params || {}))
-              else
-                @block_params = req.params
-                @params.update(params.merge(@params || {}))
-              end
-              pass_block = catch(:pass) do
-                # If present set current controller layout
-                parent_layout = base.instance_variable_get(:@layout)
-                base.instance_variable_set(:@layout, route.use_layout) if route.use_layout
-                # Provide access to the current controller to the request
-                # Now we can eval route, but because we have "throw halt" we need to be
-                # (en)sure to reset old layout and run controller after filters.
-                begin
-                  @_response_buffer = catch(:halt) { route_eval(&block) }
-                  processed = true
-                ensure
-                  base.instance_variable_set(:@layout, parent_layout) if route.use_layout
-                  (@_pending_after_filters ||= []).concat(route.after_filters) if route.after_filters
+            if req.testing_405?
+              req.continue[true]
+            else
+              base = self
+              processed = false
+              router.runner.instance_eval do
+                request.route = route
+                @_response_buffer = nil
+                if path.is_a?(Regexp)
+                  params_list = req.extra_env['router.regex_match'].to_a
+                  params_list.shift
+                  @block_params = params_list
+                  @params.update({:captures => params_list}.merge(@params || {}))
+                else
+                  @block_params = req.params
+                  @params.update(params.merge(@params || {}))
+                end
+                pass_block = catch(:pass) do
+                  # If present set current controller layout
+                  parent_layout = base.instance_variable_get(:@layout)
+                  base.instance_variable_set(:@layout, route.use_layout) if route.use_layout
+                  # Provide access to the current controller to the request
+                  # Now we can eval route, but because we have "throw halt" we need to be
+                  # (en)sure to reset old layout and run controller after filters.
+                  begin
+                    @_response_buffer = catch(:halt) { route_eval(&block) }
+                    processed = true
+                  ensure
+                    base.instance_variable_set(:@layout, parent_layout) if route.use_layout
+                    (@_pending_after_filters ||= []).concat(route.after_filters) if route.after_filters
+                  end
                 end
               end
               req.continue[processed]
