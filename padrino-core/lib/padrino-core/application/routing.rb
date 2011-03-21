@@ -404,11 +404,11 @@ module Padrino
                 # Now we can eval route, but because we have "throw halt" we need to be
                 # (en)sure to reset old layout and run controller after filters.
                 begin
-                  request.env['padrino.buffer'] = @_response_buffer = catch(:halt) { route_eval(&block) }
+                  @_response_buffer = catch(:halt) { route_eval(&block) }
                   processed = true
                 ensure
                   base.instance_variable_set(:@layout, parent_layout) if route.use_layout
-                  (request.env['padrino.after_filters'] ||= []).concat(route.after_filters) if route.after_filters
+                  (@_pending_after_filters ||= []).concat(route.after_filters) if route.after_filters
                 end
               end
               req.continue[processed]
@@ -667,7 +667,7 @@ module Padrino
           base.router.runner = self
           if base.router and match = base.router.recognize(@request.env)
             if match.respond_to?(:path)
-              throw :halt, request.env['padrino.buffer']
+              throw :halt, @_response_buffer
             elsif match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
@@ -686,7 +686,7 @@ module Padrino
 
           route_missing
         ensure
-          request.env['padrino.after_filters'].each { |aft| instance_eval(&aft) } if request.env['padrino.after_filters']
+          @_pending_after_filters.each { |aft| instance_eval(&aft) } if @_pending_after_filters
         end
     end # InstanceMethods
   end # Routing
