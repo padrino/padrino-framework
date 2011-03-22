@@ -1,9 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
+class Foo
+  def self.bar; "bar"; end
+end
+
 COMMON_TESTS = <<-HERE_DOC
 should 'set and get a value' do
-  @cache.set('val', 'test')
-  assert_equal 'test', @cache.get('val')
+  @cache.set('val', Foo)
+  assert_equal 'bar', @cache.get('val').bar
 end
 
 should "return nil trying to get a value that doesn't exist" do

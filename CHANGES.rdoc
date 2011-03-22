@@ -9,7 +9,9 @@
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
 * Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
-* Padrino Cache Doc [Thanks to Onethirtyfive]
+* [padrino-cache] Updated Doc [Thanks to Onethirtyfive]
+* Updated http_router to 0.6.4
+* [padrino-cache] Ability to store/execute code in file store
 
 == 0.9.23
 

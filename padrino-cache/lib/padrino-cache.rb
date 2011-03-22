@@ -21,7 +21,9 @@ module Padrino
       #   Padrino::Cache::FragmentHelpers
       #   Padrino::Cache::PageHelpers
       #
-      # for Padrino::Application
+      # for Padrino::Application and set
+      #
+      #   set :cache_store, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
       #
       def registered(app)
         app.helpers Padrino::Cache::Helpers::CacheStore
