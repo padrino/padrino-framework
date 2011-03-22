@@ -1,13 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class Foo
-  def self.bar; "bar"; end
-end
-
 COMMON_TESTS = <<-HERE_DOC
 should 'set and get a value' do
-  Padrino.cache.set('val', Foo)
-  assert_equal 'bar', Padrino.cache.get('val').bar
+  Padrino.cache.set('val', "foo")
+  assert_equal 'foo', Padrino.cache.get('val')
 end
 
 should "return nil trying to get a value that doesn't exist" do
