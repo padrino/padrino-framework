@@ -1,9 +1,16 @@
 module Padrino
   module Cache
     module Store
+      ##
+      # Memcache Cache Store
+      #
       class Memcache
+        ##
         # Initialize Memcache store with client connection.
-        # Padrino::Cache::Store::Memcache.new ::Memcached.new('127.0.0.1:11211')
+        #
+        # ==== Examples
+        #   Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211'))
+        #   Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
         #
         def initialize(client)
           @backend = client

@@ -21,7 +21,7 @@ group :development do
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",  ">=1.2.8"
-  gem "webrat", ">= 0.5.1"
+  gem "webrat", "= 0.5.1"
   gem "haml", ">= 2.2.22"
   gem "phocus"
   gem "shoulda", ">= 2.10.3"

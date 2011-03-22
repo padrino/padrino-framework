@@ -1,9 +1,15 @@
 module Padrino
   module Cache
     module Store
+      ##
+      # Redis Cache Store
+      #
       class Redis
+        ##
         # Initialize Redis store with client connection.
-        # Padrino::Cache::Store::Redis.new ::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
+        #
+        # ==== Examples
+        #   Padrino::Cache::Store::Redis.new ::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0)
         #
         def initialize(client)
           @backend = client

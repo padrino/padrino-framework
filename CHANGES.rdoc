@@ -8,6 +8,8 @@
 * Allow grouped options in a select_tag [Thanks activestylus]
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
+* Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
+* Padrino Cache Doc [Thanks to Onethirtyfive]
 
 == 0.9.23
 

@@ -1,9 +1,15 @@
 module Padrino
   module Cache
     module Store
+      ##
+      # File based Cache Store
+      #
       class File
+        ##
         # Initialize File store with File root
-        # Padrino::Cache::Store::File.new "path/to"
+        #
+        # ==== Examples
+        #   Padrino::Cache::Store::File.new "path/to"
         #
         def initialize(root)
           @root = root
@@ -47,17 +53,17 @@ module Padrino
         end
 
         private
-        def path_for_key(key)
-          ::File.join(@root, Rack::Utils.escape(key.to_s))
-        end
-
-        def init
-          unless @init
-            FileUtils.rm_rf(@root)
-            FileUtils.mkdir_p(@root)
-            @init = true
+          def path_for_key(key)
+            ::File.join(@root, Rack::Utils.escape(key.to_s))
           end
-        end
+
+          def init
+            unless @init
+              FileUtils.rm_rf(@root)
+              FileUtils.mkdir_p(@root)
+              @init = true
+            end
+          end
       end # File
     end # Store
   end # Cache
