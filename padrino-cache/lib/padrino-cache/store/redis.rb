@@ -30,6 +30,7 @@ module Padrino
 
         ##
         # Set the value for a given key and optionally with an expire time
+        # Default expiry is 86400.
         #
         # ==== Examples
         #   MyApp.cache.set('records', records)
@@ -38,6 +39,7 @@ module Padrino
         def set(key, value, opts = nil)
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
+            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
             @backend.setex(key, expires_in, value)
           else
             @backend.set(key, value)
