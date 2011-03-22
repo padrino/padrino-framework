@@ -3,15 +3,15 @@
 == 0.9.24 (Unreleased)
 
 * Fixes to allow flexible libraries in padrino-cache
-* Adds quickstart caching guide (in progress) [Thanks onethirtyfive]
 * Allow select tag to take a range of options [Thanks activestylus]
 * Allow grouped options in a select_tag [Thanks activestylus]
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
 * Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
-* [padrino-cache] Updated Doc [Thanks to Onethirtyfive]
 * Updated http_router to 0.6.4
+* [padrino-cache] Updated Doc [Thanks to Onethirtyfive]
 * [padrino-cache] Ability to store/execute code in file store
+* [padrino-cache] Added a global Padrino.cache option
 
 == 0.9.23
 
