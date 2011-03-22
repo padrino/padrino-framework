@@ -2,7 +2,7 @@ module Padrino
   module Cache
     module Helpers
       ##
-      # Page caching is very easy to integrate into your application. To turn it on, simply provide the
+      # Page caching is easy to integrate into your application. To turn it on, simply provide the
       # <tt>:cache => true</tt> option on either a controller or one of its routes.
       # By default, cached content is persisted with a "file store"--that is, in a
       # subdirectory of your application root.

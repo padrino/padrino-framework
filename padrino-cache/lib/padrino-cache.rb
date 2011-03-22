@@ -48,8 +48,8 @@ module Padrino
       # Register these helpers:
       #
       #   Padrino::Cache::Helpers::CacheStore
-      #   Padrino::Cache::FragmentHelpers
-      #   Padrino::Cache::PageHelpers
+      #   Padrino::Cache::Helpers::Fragment
+      #   Padrino::Cache::Helpers::Page
       #
       # for Padrino::Application.
       #
@@ -57,14 +57,14 @@ module Padrino
       #
       #   set :cache, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
       #
-      # Remember that for each app you can change this value:
+      # However, you can also change the file store easiily in your app.rb:
       #
       #   set :cache, Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
       #   set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
       #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
       #   set :cache, Padrino::Cache::Store::Memory.new(50)
       #
-      # Every where from your app you can manage your cache:
+      # You can manage your cache from anywhere in your app:
       #
       #   MyApp.cache.set('val', 'test')
       #   MyApp.cache.get('val') # => 'test'

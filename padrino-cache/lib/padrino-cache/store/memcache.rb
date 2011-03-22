@@ -36,6 +36,7 @@ module Padrino
 
         ##
         # Set the value for a given key and optionally with an expire time
+        # Default expiry time is 86400.
         #
         # ==== Examples
         #   MyApp.cache.set('records', records)
