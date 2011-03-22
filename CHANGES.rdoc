@@ -7,6 +7,7 @@
 * Allow select tag to take a range of options [Thanks activestylus]
 * Allow grouped options in a select_tag [Thanks activestylus]
 * Use MongoMapper official gem
+* Fixes ERBHandler type detection
 
 == 0.9.23
 
