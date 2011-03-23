@@ -1,8 +1,18 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
+class Foo
+  def bar; "bar"; end
+end
+
+
 COMMON_TESTS = <<-HERE_DOC
-should 'set and get a value' do
-  Padrino.cache.set('val', "foo")
+should 'set and get an object' do
+  Padrino.cache.set('val', Foo.new)
+  assert_equal "bar", Padrino.cache.get('val').bar
+end
+
+should 'set and get a raw value' do
+  Padrino.cache.set('val', 'foo')
   assert_equal 'foo', Padrino.cache.get('val')
 end
 

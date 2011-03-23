@@ -31,8 +31,7 @@ module Padrino
             expires_in, body = contents.split("\n", 2)
             expires_in = expires_in.to_i
             if expires_in == -1 or Time.new.to_i < expires_in
-              code = Marshal.load(body)
-              code.respond_to?(:call) ? code.call : code
+              Marshal.load(body) if body
             else
               delete(key)
               nil
@@ -58,7 +57,8 @@ module Padrino
           else
             expires_in = -1
           end
-          ::File.open(path_for_key(key), 'w') { |f| f << expires_in.to_s << "\n"; Marshal.dump(value, f) } if value
+          value = Marshal.dump(value) if value
+          ::File.open(path_for_key(key), 'w') { |f| f << expires_in.to_s << "\n" << value } if value
         end
 
         ##
