@@ -26,7 +26,7 @@ module Padrino
         #
         def get(key)
           code = @backend.get(key)
-          Marshal.load(code) if code
+          Marshal.load(code) if code.present?
         end
 
         ##
@@ -41,7 +41,7 @@ module Padrino
           value = Marshal.dump(value) if value
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
-            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
+            expires_in = expires_in if expires_in < EXPIRES_EDGE
             @backend.setex(key, expires_in, value)
           else
             @backend.set(key, value)

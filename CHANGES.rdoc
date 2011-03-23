@@ -13,6 +13,7 @@
 * [padrino-cache] Ability to store/execute code in file store
 * [padrino-cache] Added a global Padrino.cache option
 * [padrino-cache] Ability to store/execute code in redis store
+* [padrino-cache] Fix expire_in on redis store
 
 == 0.9.23
 
