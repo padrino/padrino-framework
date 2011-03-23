@@ -22,15 +22,19 @@ module Padrino
           @before_filters ||= []
           @before_filters << filter
           arbitrary { |req, params|
-            old_params = router.runner.params
-            result = catch(:pass) {
-              router.runner.params ||= {}
-              router.runner.params.merge!(params)
-              router.runner.instance_eval(&filter)
+            if req.testing_405?
               true
-            } == true
-            router.runner.params = old_params
-            result
+            else
+              old_params = router.runner.params
+              result = catch(:pass) {
+                router.runner.params ||= {}
+                router.runner.params.merge!(params)
+                router.runner.instance_eval(&filter)
+                true
+              } == true
+              router.runner.params = old_params
+              result
+            end
           }
         end
 
