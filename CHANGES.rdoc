@@ -14,6 +14,7 @@
 * Ability to store/execute code in redis store in Padrino Cache
 * Added a global Padrino.cache option
 * Fix expire_in on redis store in Padrino Cache
+* Added Ajax Helpers
 
 == 0.9.23
 
