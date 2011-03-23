@@ -11,6 +11,11 @@ end
 class RenderDemo < Padrino::Application
   register Padrino::Helpers
 
+  configure do
+    set :logging, false
+    set :padrino_logging, false
+  end
+
   # partial with object
   get '/partial/object' do
     partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
