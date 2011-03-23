@@ -9,11 +9,11 @@
 * Fixes ERBHandler type detection
 * Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
 * Updated http_router to 0.6.4
-* [padrino-cache] Updated Doc [Thanks to Onethirtyfive]
-* [padrino-cache] Ability to store/execute code in file store
-* [padrino-cache] Added a global Padrino.cache option
-* [padrino-cache] Ability to store/execute code in redis store
-* [padrino-cache] Fix expire_in on redis store
+* Updated Padrino Cache Doc [Thanks to Onethirtyfive]
+* Ability to store/execute code in file store in Padrino Cache
+* Ability to store/execute code in redis store in Padrino Cache
+* Added a global Padrino.cache option
+* Fix expire_in on redis store in Padrino Cache
 
 == 0.9.23
 
