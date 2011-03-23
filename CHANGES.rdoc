@@ -15,6 +15,7 @@
 * Added a global Padrino.cache option
 * Fix expire_in on redis store in Padrino Cache
 * Added Ajax Helpers
+* Use https://github.com/padrino/padrino-static for download js and ujs adapters
 
 == 0.9.23
 
