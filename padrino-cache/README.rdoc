@@ -1,6 +1,233 @@
 = Painless Page and Fragment Caching (padrino-cache)
 
-Not documented yet.
+== Overview
+
+This component enables caching of an application's response contents on
+both page- and fragment-levels. Output cached in this manner is
+persisted, until it expires or is actively expired, in a configurable store
+of your choosing. Several common caching stores are supported out of the box.
+
+== Caching Quickstart
+
+Padrino-cache can reduce the processing load on your site very effectively
+with minimal configuration.
+
+By default, the component caches pages in a file store at <tt>tmp/cache</tt>
+within your project root. Entries in this store correspond directly
+to the request issued to your server. In other words, responses are
+cached based on request URL, with one cache entry per URL.
+
+This behavior is referred to as "page-level caching." If this strategy meets
+your needs, you can enable it very easily:
+
+  # Basic, page-level caching
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/foo', :cache => true do
+      expires_in 30 # expire cached version at least every 30 seconds
+      'Hello world'
+    end
+  end
+
+You can also cache on a controller-wide basis:
+
+  # Controller-wide caching example
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/' do
+      'Hello world'
+    end
+
+    # Requests to routes within '/admin'
+    controller '/admin', :cache => true do
+      expires_in 60
+
+      get '/foo' do
+        'Url is /admin/foo'
+      end
+
+      get '/bar' do
+        'Url is /admin/bar'
+      end
+    end
+  end
+
+If you specify <tt>:cache => true</tt> but do not invoke <tt>expires_in</tt>,
+the response will be cached indefinitely. Most of the time, you will want to
+specify the expiry of a cache entry by <tt>expires_in</tt>. Even a relatively
+low value--1 or 2 seconds--can greatly increase application efficiency, especially
+when enabled on a very active part of your domain.
+
+== Helpers
+
+When an application registers padrino-cache, it gains access to several helper
+methods. These methods are used according to your caching strategy, so they are
+explained here likewise--by functionality.
+
+As with all code optimization, you may want to start simply (at "page level"),
+and continue if necessary into sub-page (or "fragment level" ) caching. There
+is no one way to approach caching, but it's always good to avoid complexity
+until you need it. Start at the page level and see if it works for you.
+
+The padrino-cache helpers are made available to your application thusly:
+
+  # Enable caching
+  class CachedApp < Padrino::Application
+    register Padrino::Cache  # includes helpers
+    enable :caching          # turns on caching mechanism
+
+    # ... controllers/routes ...
+  end
+
+=== Page Caching
+
+As described above in the "Caching Quickstart" section, page caching is very
+easy to integrate into your application. To turn it on, simply provide the
+<tt>:cache => true</tt> option on either a controller or one of its routes.
+By default, cached content is persisted with a "file store"--that is, in a
+subdirectory of your application root.
+
+==== <tt>expires_in( seconds )</tt>
+
+This helper is used within a controller or route to indicate how often content
+should persist in the cache.
+
+After <tt>seconds</tt> seconds have passed, content previously cached will
+be discarded and re-rendered. Code associated with that route will <em>not</em>
+be executed; rather, its previous output will be sent to the client with a 
+200 OK status code.
+
+  # Setting content expiry time
+  class CachedApp < Padrino::Application
+    register Padrino::Cache  # includes helpers
+    enable :caching          # turns on caching mechanism
+
+    controller '/blog', :cache => true do
+      expires_in 15
+      
+      get '/entries' do
+        'just broke up eating twinkies lol'
+      end
+    end
+  end
+
+Note that the "latest" method call to <tt>expires_in</tt> determines its value: if
+called within a route, as opposed to a controller definition, the route's
+value will be assumed.
+
+=== Fragment Caching
+
+Whereas page-level caching, described in the first section of this document, works by
+grabbing the entire output of a route, fragment caching gives the developer fine-grained
+control of what gets cached. This type of caching occurs at whatever level you choose.
+
+Possible uses for fragment caching might include:
+
+* a 'feed' of some items on a page
+* output fetched (by proxy) from an API on a third-party site
+* parts of your page which are largely static/do not need re-rendering every request
+* any output which is expensive to render
+
+==== <tt>cache( key, opts, &block )</tt>
+
+This helper is used anywhere in your application you would like to associate a fragment
+to be cached. It can be used in within a route:
+
+  # Caching a fragment
+  class MyTweets < Padrino::Application
+    register Padrino::Cache  # includes helpers
+    enable :caching          # turns on caching mechanism
+
+    controller '/tweets' do
+      get :feed, :map => '/:username' do
+        username = params[:username]
+        
+        @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
+          @tweets = Tweet.all( :username => username )
+          render 'partials/feedcontent'
+        end
+        
+        # Below outputs @feed somewhere in its markup
+        render 'feeds/show'
+      end
+    end
+  end
+
+This example adds a key to the cache of format <tt>feed_for_#{username}</tt> which
+contains the contents of that user's feed. Any subsequent action within the next 3 seconds
+will fetch the pre-rendered version of <tt>feed_for_#{username}</tt> from the cache
+instead of re-rendering it. The rest of the page code will, however, be re-executed.
+
+Note that any other action will reference the same content if it uses the same key:
+
+  # Multiple routes sharing the same cached fragment
+  class MyTweets < Padrino::Application
+    register Padrino::Cache  # includes helpers
+    enable :caching          # turns on caching mechanism
+
+    controller :tweets do
+      get :feed, :map => '/:username' do
+        username = params[:username]
+        
+        @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
+          @tweets = Tweet.all( :username => username )
+          render 'partials/feedcontent'
+        end
+        
+        # Below outputs @feed somewhere in its markup
+        render 'feeds/show'
+      end
+      
+      get :mobile_feed, :map => '/:username.iphone' do
+        username = params[:username]
+        
+        @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
+          @tweets = Tweet.all( :username => username )
+          render 'partials/feedcontent'
+        end
+        
+        render 'feeds/show.iphone'
+      end
+    end
+  end
+
+The <tt>opts</tt> argument is actually passed to the underlying store. All stores
+included with Padrino support the <tt>:expires_in</tt> option out of the box.
+
+Finally, to DRY up things a bit, we might do:
+
+  # Multiple routes sharing the same cached fragment
+  class MyTweets < Padrino::Application
+    register Padrino::Cache  # includes helpers
+    enable :caching          # turns on caching mechanism
+
+    controller :tweets do
+      # This works because all routes in this controller specify :username
+      before do
+        @feed = cache( "feed_for_#{params[:username]}", :expires_in => 3 ) do
+          @tweets = Tweet.all( :username => params[:username] )
+          render 'partials/feedcontent'
+        end
+      end
+      
+      get :feed, :map => '/:username' do
+        render 'feeds/show'
+      end
+      
+      get :mobile_feed, :map => '/:username.iphone' do
+        render 'feeds/show.iphone'
+      end
+    end
+  end
+
+Of course, this example assumes the markup generated by rendering
+<tt>partials/feedcontent</tt> would be suitable for both feed formats. This may or
+may not be the case in your application, but the principle applies: fragments
+are shared between all code which accesses the cache using the same key.
 
 == Copyright
 

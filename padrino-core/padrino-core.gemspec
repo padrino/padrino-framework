@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = "lib"
   s.add_dependency("sinatra", "~> 1.2.0")
-  s.add_dependency("http_router", "~> 0.5.4")
+  s.add_dependency("http_router", "~> 0.6.4")
   s.add_dependency("thor", ">=0.14.3")
   s.add_dependency("activesupport", ">= 3.0.0")
   s.add_dependency("tzinfo")

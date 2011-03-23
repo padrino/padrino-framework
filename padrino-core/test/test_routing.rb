@@ -304,7 +304,7 @@ class TestRouting < Test::Unit::TestCase
   should "should inject the route into the request" do
     mock_app do
       controller :posts do
-        get(:index) { request.route.named.to_s }
+        get(:index) { request.route_obj.named.to_s }
       end
     end
     get "/posts"
@@ -1110,7 +1110,6 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "This is the get index.json", body
     get "/.js"
     assert_equal 404, status
-    assert_match "Sinatra doesn't know this ditty", body
     post "/.json"
     assert_equal "This is the post index.json", body
     post "/.js"

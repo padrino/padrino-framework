@@ -119,7 +119,7 @@ desc "Generate documentation for the Padrino framework"
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
-  rdoc.title    = "Padrino Framework Documentation"
+  rdoc.title    = "Padrino Framework Documentation - v. #{Padrino.version}"
   rdoc.main = 'padrino-core/README.rdoc'
   rdoc.rdoc_files.include('padrino-core/lib/{*.rb,padrino-core}/*.rb')
   rdoc.rdoc_files.include('padrino-core/lib/padrino-core/application/**/*.rb')
@@ -134,9 +134,11 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('padrino-helpers/README.rdoc')
   rdoc.rdoc_files.include('padrino-mailer/lib/**/*.rb')
   rdoc.rdoc_files.include('padrino-mailer/README.rdoc')
+  rdoc.rdoc_files.include('padrino-cache/lib/**/*.rb')
+  rdoc.rdoc_files.include('padrino-cache/README.rdoc')
 end
 
-desc "Publish doc on padrino.github.com"
+desc "Publish doc on padrinorb.com/api"
 task :pdoc => :rdoc do
   puts "Publishing doc on padrinorb.com ..."
   Rake::SshDirPublisher.new("root@srv2.lipsiasoft.biz", "/mnt/www/apps/padrino/public/api", "doc").upload

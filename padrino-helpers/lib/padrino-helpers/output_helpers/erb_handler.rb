@@ -18,7 +18,7 @@ module Padrino
         #  @handler.is_type? => true
         #
         def is_type?
-          self.output_buffer.present?
+          !self.output_buffer.nil?
         end
 
         # Captures the html from a block of template code for this handler

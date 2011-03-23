@@ -1,6 +1,14 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
+Sinatra::Request.class_eval(<<-HEREDOC, __FILE__, __LINE__)
+  attr_accessor :route_obj
+
+  def controller
+    route_obj && route_obj.controller
+  end
+HEREDOC
+
 module Padrino
   ##
   # Padrino provides advanced routing definition support to make routes and url generation much easier.
@@ -21,16 +29,20 @@ module Padrino
         def add_before_filter(filter)
           @before_filters ||= []
           @before_filters << filter
-          arbitrary { |req, params, dest|
-            old_params = router.runner.params
-            result = catch(:pass) {
-              router.runner.params ||= {}
-              router.runner.params.merge!(params)
-              router.runner.instance_eval(&filter)
+          arbitrary { |req, params|
+            if req.testing_405?
               true
-            } == true
-            router.runner.params = old_params
-            result
+            else
+              old_params = router.runner.params
+              result = catch(:pass) {
+                router.runner.params ||= {}
+                router.runner.params.merge!(params)
+                router.runner.instance_eval(&filter)
+                true
+              } == true
+              router.runner.params = old_params
+              result
+            end
           }
         end
 
@@ -48,30 +60,11 @@ module Padrino
         end
 
         def custom_conditions=(custom_conditions)
-          custom_conditions.each { |blk| arbitrary { |req, params, dest| router.runner.instance_eval(&blk) != false } } if custom_conditions
+          custom_conditions.each { |blk| arbitrary { |req, params| router.runner.instance_eval(&blk) != false } } if custom_conditions
           @custom_conditions = custom_conditions
         end
       end
     end
-
-    module ::Sinatra #:nodoc:
-      class Request #:nodoc:
-        attr_accessor :match
-
-        def controller
-          route && route.controller
-        end
-
-        def route
-          if match.nil?
-            path = Rack::Utils.unescape(path_info)
-            path.empty? ? "/" : path
-          else
-            match.path.route
-          end
-        end
-      end # Request
-    end # Sinatra
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -240,6 +233,10 @@ module Padrino
       end
       alias :urls :router
 
+      def reset_router!
+        @router = HttpRouter.new
+      end
+
       ##
       # Instance method for url generation like:
       #
@@ -356,8 +353,11 @@ module Padrino
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
-          route.condition(:user_agent => options.delete(:agent)) if options.key?(:agent)
-          route.default_values = options.delete(:default_values)
+          route.user_agent(options.delete(:agent)) if options.key?(:agent)
+          if options.key?(:default_values)
+            defaults = options.delete(:default_values)
+            route.default(defaults) if defaults
+          end
           options.delete_if do |option, args|
             if route.send(:significant_variable_names).include?(option)
               route.matching(option => Array(args).first)
@@ -383,6 +383,43 @@ module Padrino
             route.after_filters  = @filters[:after]  || []
           end
 
+          route.arbitrary_with_continue do |req, params|
+            if req.testing_405?
+              req.continue[true]
+            else
+              base = self
+              processed = false
+              router.runner.instance_eval do
+                request.route_obj = route
+                @_response_buffer = nil
+                if path.is_a?(Regexp)
+                  params_list = req.extra_env['router.regex_match'].to_a
+                  params_list.shift
+                  @block_params = params_list
+                  @params.update({:captures => params_list}.merge(@params || {}))
+                else
+                  @block_params = req.params
+                  @params.update(params.merge(@params || {}))
+                end
+                pass_block = catch(:pass) do
+                  # If present set current controller layout
+                  parent_layout = base.instance_variable_get(:@layout)
+                  base.instance_variable_set(:@layout, route.use_layout) if route.use_layout
+                  # Provide access to the current controller to the request
+                  # Now we can eval route, but because we have "throw halt" we need to be
+                  # (en)sure to reset old layout and run controller after filters.
+                  begin
+                    @_response_buffer = catch(:halt) { route_eval(&block) }
+                    processed = true
+                  ensure
+                    base.instance_variable_set(:@layout, parent_layout) if route.use_layout
+                    (@_pending_after_filters ||= []).concat(route.after_filters) if route.after_filters
+                  end
+                end
+              end
+              req.continue[processed]
+            end
+          end
           route.to(block)
           route
         end
@@ -451,6 +488,7 @@ module Padrino
             path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
+            path.gsub!(%r{/\?$}, '(/)')                 # Remove index path
             path.gsub!(%r{/?index/?}, '/')                 # Remove index path
             path.gsub!(%r{//$}, '/')                       # Remove index path
             path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
@@ -552,15 +590,9 @@ module Padrino
             # per rfc2616-sec14:
             # answer with 406 if accept is given but types to not match any
             # provided type
-            if !url_format && !accepts.empty? && !matched_format
-              halt 406
-            end
-
-            if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
-              if url_format && !matched_format
-                halt 406
-              end
-            end
+            halt 406 if
+              (!url_format && !accepts.empty? && !matched_format) ||
+              (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
 
             if matched_format
               @_content_type = url_format || accept_format || :html
@@ -639,36 +671,10 @@ module Padrino
         #
         def route!(base=self.class, pass_block=nil)
           base.router.runner = self
-          if base.router and match = base.router.recognize(@request)
-            if match.first.respond_to?(:path)
-              match.each do |matched_path|
-                request.match = matched_path
-                if request.match.path.route.regex?
-                  params_list = @request.env['rack.request.query_hash']['router.regex_match'].to_a
-                  params_list.shift
-                  @block_params = params_list
-                  @params.update({:captures => params_list}.merge(@params || {}))
-                else
-                  @block_params = matched_path.param_values
-                  @params.update(matched_path.params.merge(@params || {}))
-                end
-                pass_block = catch(:pass) do
-                  # If present set current controller layout
-                  parent_layout = base.instance_variable_get(:@layout)
-                  base.instance_variable_set(:@layout, matched_path.path.route.use_layout) if matched_path.path.route.use_layout
-                  # Provide access to the current controller to the request
-                  # Now we can eval route, but because we have "throw halt" we need to be
-                  # (en)sure to reset old layout and run controller after filters.
-                  begin
-                    @_response_buffer = catch(:halt) { route_eval(&matched_path.path.route.dest) }
-                    throw :halt, @_response_buffer
-                  ensure
-                    base.instance_variable_set(:@layout, parent_layout) if matched_path.path.route.use_layout
-                    matched_path.path.route.after_filters.each { |aft| throw :pass if instance_eval(&aft) == false } if matched_path.path.route.after_filters
-                  end
-                end
-              end
-            elsif match
+          if base.router and match = base.router.recognize(@request.env)
+            if match.respond_to?(:path)
+              throw :halt, @_response_buffer
+            elsif match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
                 status match[0]
@@ -685,6 +691,8 @@ module Padrino
           route_eval(&pass_block) if pass_block
 
           route_missing
+        ensure
+          @_pending_after_filters.each { |aft| instance_eval(&aft) } if @_pending_after_filters
         end
     end # InstanceMethods
   end # Routing

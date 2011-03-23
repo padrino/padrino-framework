@@ -71,6 +71,7 @@ class TestSimpleReloader < Test::Unit::TestCase
 
     should 'correctly reset SimpleDemo fixture' do
       @app = SimpleDemo
+      @app.reload!
       get "/rand"
       assert ok?
       last_body = body
