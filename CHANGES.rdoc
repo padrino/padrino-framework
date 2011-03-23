@@ -12,6 +12,7 @@
 * [padrino-cache] Updated Doc [Thanks to Onethirtyfive]
 * [padrino-cache] Ability to store/execute code in file store
 * [padrino-cache] Added a global Padrino.cache option
+* [padrino-cache] Ability to store/execute code in redis store
 
 == 0.9.23
 
