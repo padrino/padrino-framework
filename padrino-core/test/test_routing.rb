@@ -304,7 +304,7 @@ class TestRouting < Test::Unit::TestCase
   should "should inject the route into the request" do
     mock_app do
       controller :posts do
-        get(:index) { request.route.named.to_s }
+        get(:index) { request.route_obj.named.to_s }
       end
     end
     get "/posts"

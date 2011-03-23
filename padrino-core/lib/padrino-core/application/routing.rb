@@ -1,6 +1,14 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
+Sinatra::Request.class_eval(<<-HEREDOC, __FILE__, __LINE__)
+  attr_accessor :route_obj
+
+  def controller
+    route_obj && route_obj.controller
+  end
+HEREDOC
+
 module Padrino
   ##
   # Padrino provides advanced routing definition support to make routes and url generation much easier.
@@ -57,16 +65,6 @@ module Padrino
         end
       end
     end
-
-    module ::Sinatra #:nodoc:
-      class Request #:nodoc:
-        attr_accessor :route
-
-        def controller
-          route && route.controller
-        end
-      end # Request
-    end # Sinatra
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -392,7 +390,7 @@ module Padrino
               base = self
               processed = false
               router.runner.instance_eval do
-                request.route = route
+                request.route_obj = route
                 @_response_buffer = nil
                 if path.is_a?(Regexp)
                   params_list = req.extra_env['router.regex_match'].to_a
