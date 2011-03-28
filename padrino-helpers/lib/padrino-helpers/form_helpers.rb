@@ -282,7 +282,8 @@ module Padrino
           options_for_select(options.delete(:options), options.delete(:selected))
         elsif options[:grouped_options]
           grouped_options_for_select(options.delete(:grouped_options), options.delete(:selected), prompt)
-        end.unshift(blank_option(prompt))
+        end
+        select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
         content_tag(:select, select_options_html, options)
       end
@@ -402,9 +403,9 @@ module Padrino
       def blank_option(prompt)
         if prompt
           case prompt.class.to_s
-          when 'String' ; content_tag(:option, prompt, :value => '') ;
-          when 'Array'  ; content_tag(:option, prompt.first, :value => prompt.last) ;
-          else          ; content_tag(:option, '', :value => '') ;
+          when 'String' then content_tag(:option, prompt, :value => '')
+          when 'Array'  then content_tag(:option, prompt.first, :value => prompt.last)
+          else               content_tag(:option, '', :value => '')
           end
         end
       end
