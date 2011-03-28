@@ -237,6 +237,25 @@ module Padrino
         @router = HttpRouter.new
       end
 
+      def value_to_param(value)
+        case value
+        when Array
+          value.map{|v| value_to_param(v)}.compact
+        when Hash
+          hash = {}
+          value.each do |k, v|
+            v = value_to_param(v)
+            hash[k] = v unless v.nil?
+          end
+          hash
+        when nil
+          nil
+        else
+          value.respond_to?(:to_param) ? value.to_param : value
+        end
+      end
+      private :value_to_param
+
       ##
       # Instance method for url generation like:
       #
@@ -251,9 +270,8 @@ module Padrino
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names.join("_").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
-          params.delete_if { |k,v| v.nil? }
-          params[:format] = params[:format].to_s if params.has_key?(:format)
-          params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
+          params[:format] = params[:format].to_s unless params[:format].nil?
+          params = value_to_param(params)
         end
         url = if params_array.empty?
           router.url(name, params)
