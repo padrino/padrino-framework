@@ -52,7 +52,7 @@ if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice
 
     def ordered_collect(&block)
       keys = self.stringify_keys.keys.sort
-      keys.collect { |key| block.call(key, self[key.to_sym]) }
+      keys.map { |key| block.call(key, self[key.to_sym]) }
     end
   end
 end

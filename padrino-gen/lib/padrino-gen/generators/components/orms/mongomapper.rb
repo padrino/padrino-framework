@@ -28,8 +28,8 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].collect { |value| value.split(":") }
-  column_declarations = field_tuples.collect { |field, kind| "key :#{field}, #{kind.camelize}" }.join("\n  ")
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  column_declarations = field_tuples.map { |field, kind| "key :#{field}, #{kind.camelize}" }.join("\n  ")
   model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)

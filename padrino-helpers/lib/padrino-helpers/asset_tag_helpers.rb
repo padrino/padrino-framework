@@ -167,7 +167,7 @@ module Padrino
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
-        sources.collect { |source|
+        sources.map { |source|
           tag(:link, options.reverse_merge(:href => asset_path(:css, source)))
         }.join("\n")
       end
@@ -184,7 +184,7 @@ module Padrino
       def javascript_include_tag(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:type => 'text/javascript', :content => "")
-        sources.collect { |source|
+        sources.map { |source|
           tag(:script, options.reverse_merge(:src => asset_path(:js, source)))
         }.join("\n")
       end

@@ -9,8 +9,8 @@ class TestComplexReloader < Test::Unit::TestCase
       Padrino.mounted_apps.clear
       Padrino.mount("complex_1_demo").to("/complex_1_demo")
       Padrino.mount("complex_2_demo").to("/complex_2_demo")
-      assert_equal ["/complex_1_demo", "/complex_2_demo"], Padrino.mounted_apps.collect(&:uri_root)
-      assert_equal ["complex_1_demo", "complex_2_demo"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["/complex_1_demo", "/complex_2_demo"], Padrino.mounted_apps.map(&:uri_root)
+      assert_equal ["complex_1_demo", "complex_2_demo"], Padrino.mounted_apps.map(&:name)
       assert Complex1Demo.reload?
       assert Complex2Demo.reload?
       assert_match %r{fixtures/apps/complex.rb}, Complex1Demo.app_file

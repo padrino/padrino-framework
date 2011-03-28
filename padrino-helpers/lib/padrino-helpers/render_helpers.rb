@@ -20,7 +20,7 @@ module Padrino
         if collection = options.delete(:collection)
           options.delete(:object)
           counter = 0
-          collection.collect { |member|
+          collection.map { |member|
             counter += 1
             options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
             render(template_path, nil, options.dup)

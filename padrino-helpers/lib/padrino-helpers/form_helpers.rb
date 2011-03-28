@@ -105,7 +105,7 @@ module Padrino
       #
       def error_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
-        objects = objects.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
+        objects = objects.map {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
         count   = objects.inject(0) {|sum, object| sum + object.errors.size }
 
         unless count.zero?
@@ -364,7 +364,7 @@ module Padrino
       # fields is an array containing the fields to display from each item in the collection
       #
       def options_from_collection(collection, fields)
-        collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
+        collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
       end
 
       #
@@ -372,7 +372,7 @@ module Padrino
       #
       def options_for_select(option_items, selected_value=nil)
         return '' if option_items.blank?
-        option_items.collect do |caption, value|
+        option_items.map do |caption, value|
           value ||= caption
           content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
         end

@@ -220,11 +220,11 @@ class TestAdminApplication < Test::Unit::TestCase
       end
 
       get "/modules" do
-        project_modules.collect { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
+        project_modules.map { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
       end
 
       get "/modules-prefixed" do
-        project_modules.collect { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
+        project_modules.map { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
       end
     end
 

@@ -315,7 +315,7 @@ if defined?(ActiveRecord)
     if defined?(I18n)
       desc "Generates .yml files for I18n translations"
       task :translate => :environment do
-        models = Dir["#{Padrino.root}/app/models/**/*.rb"].collect { |m| File.basename(m, ".rb") }
+        models = Dir["#{Padrino.root}/app/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
         models.each do |m|
           # Get the model class
@@ -329,7 +329,7 @@ if defined?(ActiveRecord)
           # Create models for it and en locales
           langs.each do |lang|
             filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
-            columns    = klass.columns.collect(&:name)
+            columns    = klass.columns.map(&:name)
             # If the lang file already exist we need to check it
             if File.exist?(filename)
               locale = File.open(filename).read
@@ -344,7 +344,7 @@ if defined?(ActiveRecord)
                            "    #{m}:" + "\n" +
                            "      name: #{klass.human_name}" + "\n" +
                            "      attributes:" + "\n" +
-                           columns.collect { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
+                           columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
               print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
             end
             File.open(filename, "w") { |f| f.puts locale }

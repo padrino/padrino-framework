@@ -12,9 +12,9 @@ module Padrino
           else
             return if migration_exist?(filename)
             model_name = name.to_s.pluralize
-            field_tuples = fields.collect { |value| value.split(":") }
-            field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
-            column_declarations = field_tuples.collect(&options[:column_format]).join("\n      ")
+            field_tuples = fields.map { |value| value.split(":") }
+            field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
+            column_declarations = field_tuples.map(&options[:column_format]).join("\n      ")
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
             contents = contents.gsub(/!NAME!/, model_name.camelize).gsub(/!TABLE!/, model_name.underscore)
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
@@ -38,10 +38,10 @@ module Padrino
             change_format = options[:change_format]
             migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
-            tuples = direction ? columns.collect { |value| value.split(":") } : []
-            tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
-            add_columns    = tuples.collect(&options[:add]).join("\n    ")
-            remove_columns = tuples.collect(&options[:remove]).join("\n    ")
+            tuples = direction ? columns.map { |value| value.split(":") } : []
+            tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
+            add_columns    = tuples.map(&options[:add]).join("\n    ")
+            remove_columns = tuples.map(&options[:remove]).join("\n    ")
             forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?
             back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
@@ -108,8 +108,8 @@ module Padrino
         # For Controller action generation
         # Takes in fields for routes in the form of get:index post:test delete:yada and such
         def controller_actions(fields)
-          field_tuples = fields.collect { |value| value.split(":") }
-          action_declarations = field_tuples.collect do |request, name|
+          field_tuples = fields.map { |value| value.split(":") }
+          action_declarations = field_tuples.map do |request, name|
             "#{request} :#{name} do\n  end\n"
           end
           action_declarations.join("\n  ")

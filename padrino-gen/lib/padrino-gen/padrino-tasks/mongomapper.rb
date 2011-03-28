@@ -2,7 +2,7 @@ if (defined?(MongoMapper) && defined?(I18n))
   namespace :mm do
     desc "Generates .yml files for I18n translations"
     task :translate => :environment do
-      models = Dir["#{Padrino.root}/app/models/**/*.rb"].collect { |m| File.basename(m, ".rb") }
+      models = Dir["#{Padrino.root}/app/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
       models.each do |m|
         # Get the model class
@@ -16,7 +16,7 @@ if (defined?(MongoMapper) && defined?(I18n))
         # Create models for it and en locales
         langs.each do |lang|
           filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
-          columns    = klass.keys.values.collect(&:name).reject { |name| name =~ /id/i }
+          columns    = klass.keys.values.map(&:name).reject { |name| name =~ /id/i }
           # If the lang file already exist we need to check it
           if File.exist?(filename)
             locale = File.open(filename).read
@@ -31,7 +31,7 @@ if (defined?(MongoMapper) && defined?(I18n))
                          "    #{m}:" + "\n" +
                          "      name: #{klass.human_name}" + "\n" +
                          "      attributes:" + "\n" +
-                         columns.collect { |c| "        #{c}: #{c.humanize}" }.join("\n")
+                         columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
             print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
           File.open(filename, "w") { |f| f.puts locale }

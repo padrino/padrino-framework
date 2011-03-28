@@ -106,8 +106,8 @@ class TestRouter < Test::Unit::TestCase
   should "works with padrino core applications" do
     Padrino.mounted_apps.clear
     Padrino.mount("simple_demo").host("padrino.org")
-    assert_equal ["simple_demo"], Padrino.mounted_apps.collect(&:name)
-    assert_equal ["padrino.org"], Padrino.mounted_apps.collect(&:app_host)
+    assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
+    assert_equal ["padrino.org"], Padrino.mounted_apps.map(&:app_host)
 
     res = Rack::MockRequest.new(Padrino.application).get("/")
     assert res.not_found?
