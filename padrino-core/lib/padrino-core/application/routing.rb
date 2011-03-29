@@ -569,7 +569,8 @@ module Padrino
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
-            if accepts.empty? || accepts.any? { |a| a == "*/*" }
+            accepts.delete "*/*"
+            if accepts.empty?
               matching_types  = mime_types.slice(0,1)
             else
               matching_types  = (accepts & mime_types)
