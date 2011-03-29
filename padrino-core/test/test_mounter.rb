@@ -36,7 +36,7 @@ class TestMounter < Test::Unit::TestCase
       class ::AnApp < Padrino::Application; end
       Padrino.mount("an_app").to("/")
       assert_equal AnApp, Padrino.mounted_apps.first.app_obj
-      assert_equal ["an_app"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["an_app"], Padrino.mounted_apps.map(&:name)
     end
     
     should 'correctly mount an app in a namespace' do
@@ -45,7 +45,7 @@ class TestMounter < Test::Unit::TestCase
       end
       Padrino.mount("some_namespace/an_app").to("/")
       assert_equal SomeNamespace::AnApp, Padrino.mounted_apps.first.app_obj
-      assert_equal ["some_namespace/an_app"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["some_namespace/an_app"], Padrino.mounted_apps.map(&:name)
     end
 
     should 'mount a primary app to root uri' do
@@ -91,7 +91,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal OneApp, Padrino.mounted_apps[0].app_obj
       assert_equal TwoApp, Padrino.mounted_apps[1].app_obj
       assert_equal 2, Padrino.mounted_apps.size, "should not mount duplicate apps"
-      assert_equal ["one_app", "two_app"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["one_app", "two_app"], Padrino.mounted_apps.map(&:name)
     end
 
     should 'change mounted_root' do

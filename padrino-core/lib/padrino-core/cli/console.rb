@@ -10,7 +10,7 @@ def applications
     puts " * %-10s mapped to      %s" % [app.name, app.uri_root]
   end
   puts
-  Padrino.mounted_apps.collect { |app| "#{app.name} => #{app.uri_root}" }
+  Padrino.mounted_apps.map { |app| "#{app.name} => #{app.uri_root}" }
 end
 
 # Load apps

@@ -105,7 +105,7 @@ module Padrino
       #
       def error_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
-        objects = objects.collect {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
+        objects = objects.map {|object_name| object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name }.compact
         count   = objects.inject(0) {|sum, object| sum + object.errors.size }
 
         unless count.zero?
@@ -282,7 +282,8 @@ module Padrino
           options_for_select(options.delete(:options), options.delete(:selected))
         elsif options[:grouped_options]
           grouped_options_for_select(options.delete(:grouped_options), options.delete(:selected), prompt)
-        end.unshift(blank_option(prompt))
+        end
+        select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
         content_tag(:select, select_options_html, options)
       end
@@ -363,7 +364,7 @@ module Padrino
       # fields is an array containing the fields to display from each item in the collection
       #
       def options_from_collection(collection, fields)
-        collection.collect { |item| [ item.send(fields.first), item.send(fields.last) ] }
+        collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
       end
 
       #
@@ -371,7 +372,7 @@ module Padrino
       #
       def options_for_select(option_items, selected_value=nil)
         return '' if option_items.blank?
-        option_items.collect do |caption, value|
+        option_items.map do |caption, value|
           value ||= caption
           content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
         end
@@ -402,9 +403,9 @@ module Padrino
       def blank_option(prompt)
         if prompt
           case prompt.class.to_s
-          when 'String' ; content_tag(:option, prompt, :value => '') ;
-          when 'Array'  ; content_tag(:option, prompt.first, :value => prompt.last) ;
-          else          ; content_tag(:option, '', :value => '') ;
+          when 'String' then content_tag(:option, prompt, :value => '')
+          when 'Array'  then content_tag(:option, prompt.first, :value => prompt.last)
+          else               content_tag(:option, '', :value => '')
           end
         end
       end

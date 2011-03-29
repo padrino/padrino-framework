@@ -47,7 +47,7 @@ class TestSimpleReloader < Test::Unit::TestCase
     should 'correctly instantiate SimpleDemo fixture' do
       Padrino.mounted_apps.clear
       Padrino.mount("simple_demo").to("/")
-      assert_equal ["simple_demo"], Padrino.mounted_apps.collect(&:name)
+      assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
       assert SimpleDemo.reload?
       assert_match %r{fixtures/apps/simple.rb}, SimpleDemo.app_file
     end

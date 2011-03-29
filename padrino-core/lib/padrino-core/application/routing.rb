@@ -460,7 +460,7 @@ module Padrino
             end
 
             # Build our controller
-            controller = Array(@_controller).collect { |c| c.to_s }
+            controller = Array(@_controller).map { |c| c.to_s }
 
             absolute_map = map && map[0] == ?/
 
@@ -507,7 +507,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_with_params(path, with_params)
-          File.join(path, Array(with_params).collect(&:inspect).join("/"))
+          File.join(path, Array(with_params).map(&:inspect).join("/"))
         end
 
         ##
@@ -515,7 +515,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.flatten.compact.uniq.collect do |param|
+          parent_prefix = parent_params.flatten.compact.uniq.map do |param|
             map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
             part = "#{map}/:#{param}_id/"
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?

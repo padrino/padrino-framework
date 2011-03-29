@@ -222,7 +222,7 @@ module Padrino
         # Returns the path to the views directory from root by returning the first that is found
         #
         def find_view_path
-          @view_paths = ["views"].collect { |path| File.join(self.root, path) }
+          @view_paths = ["views"].map { |path| File.join(self.root, path) }
           @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
     end # self

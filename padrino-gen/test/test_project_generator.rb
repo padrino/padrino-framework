@@ -348,6 +348,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
       assert_match(/Applying.*?jquery.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -355,6 +356,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
       assert_match(/Applying.*?mootools.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -363,6 +365,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match(/Applying.*?prototype.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/protopak.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/lowpro.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/prototype-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -370,6 +373,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=rightjs') }
       assert_match(/Applying.*?rightjs.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/right.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/right-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -377,6 +381,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=extcore') }
       assert_match(/Applying.*?extcore.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -384,6 +389,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=dojo') }
       assert_match(/Applying.*?dojo.*?script/, buffer)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
   end
