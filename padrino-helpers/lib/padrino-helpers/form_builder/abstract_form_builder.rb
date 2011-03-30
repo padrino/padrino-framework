@@ -202,7 +202,7 @@ module Padrino
            # Returns the object's models name
           #   => user_assignment
           def object_model_name(explicit_object=object)
-            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('/', '_')
+            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('_', ' ')
           end
 
           # Returns the class type for the given object
