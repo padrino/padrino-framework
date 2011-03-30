@@ -21,6 +21,7 @@
 * Added in our logs app name space for urls and layouts
 * Preserve spaces for text_area using admin/haml
 * Prevent using missing rendering engines on admin allowing user to use a different way
+* Fixed AbstractFormBuilder class scope name [Thanks to Funny-falcon]
 
 == 0.9.23
 
