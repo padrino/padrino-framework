@@ -19,6 +19,7 @@
 * Fix ajax request detection for dataType: 'application/javascript'
 * Removed lib from excluded list of our reloader
 * Added in our logs app name space for urls and layouts
+* Preserve spaces for text_area using admin/haml
 
 == 0.9.23
 
