@@ -17,6 +17,7 @@
 * Added session_secret task generator and as default in our app templates
 * Correctly work with nested parameters sent to url [Thanks to Funny-falcon]
 * Fix ajax request detection for dataType: 'application/javascript'
+* Removed lib from excluded list of our reloader
 
 == 0.9.23
 

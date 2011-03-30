@@ -34,10 +34,10 @@ module Padrino
 
     ##
     # Specified folders can be excluded from the code reload detection process.
-    # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, lib, db and public
+    # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
     #
     def self.exclude
-      @_exclude ||= %w(test spec tmp features config lib public db).map { |path| Padrino.root(path) }
+      @_exclude ||= %w(test spec tmp features config public db).map { |path| Padrino.root(path) }
     end
 
     ##
