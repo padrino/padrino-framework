@@ -22,25 +22,30 @@ module Padrino
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
+      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
 
       # Copies over the Padrino base admin application
       def create_admin
         self.destination_root = options[:root]
         if in_app_root?
-
           unless supported_orm.include?(orm)
-            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!"
+            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!", :yellow
             raise SystemExit
           end
 
           unless self.class.themes.include?(options[:theme])
-            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}"
+            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
             raise SystemExit
           end
 
-          self.behavior = :revoke if options[:destroy]
+          tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
+          unless supported_ext.include?(tmp_ext.to_sym)
+            say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb", :yellow
+            raise SystemExit
+          end
+          store_component_choice(:admin_renderer, tmp_ext)
 
-          ext = fetch_component_choice(:renderer)
+          self.behavior = :revoke if options[:destroy]
 
           empty_directory destination_root("admin")
           directory "templates/app",       destination_root("admin")

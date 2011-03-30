@@ -7,7 +7,7 @@
 * Allow grouped options in a select_tag [Thanks activestylus]
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
-* Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
+* Fixes Routes with globs that when something is after the glob i.e. get :show, :map => '/pictures/*path.html'
 * Updated http_router to 0.6.7
 * Completed Padrino Cache Doc [Thanks to Onethirtyfive]
 * Added a global Padrino.cache option
@@ -20,6 +20,7 @@
 * Removed lib from excluded list of our reloader
 * Added in our logs app name space for urls and layouts
 * Preserve spaces for text_area using admin/haml
+* Prevent using missing rendering engines on admin allowing user to use a different way
 
 == 0.9.23
 
@@ -36,9 +37,9 @@
 * Allow disabling of Padrino::Logger via :padrino_logging
 * Use Sinatra::Base instead of Sinatra::Application
 * Added Japanese Translations [Thanks to udzura]
-* set status to 406 on non-provided ACCEPTS
-* returns first provided mime-type on ACCEPT = */*
-* assume */* if no ACCEPT header is given
+* Set status to 406 on non-provided ACCEPTS
+* Returns first provided mime-type on ACCEPT = */*
+* Assume */* if no ACCEPT header is given
 
 == 0.9.21
 

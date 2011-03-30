@@ -44,6 +44,15 @@ module Padrino
         retrieve_component_config(destination_root('.components'))[component]
       end
 
+      # Set the component choice and store it in the .component file of the application
+      # store_component_choice(:renderer, :haml)
+      def store_component_choice(key, value)
+        path        = destination_root('.components')
+        config      = retrieve_component_config(path)
+        config[key] = value
+        create_file(path, :force => true) { config.to_yaml }
+      end
+
       # Loads the component config back into a hash
       # i.e retrieve_component_config(...) => { :mock => 'rr', :test => 'riot', ... }
       def retrieve_component_config(target)
@@ -213,7 +222,7 @@ module Padrino
           raise ::NameError, "Project name #{name} cannot start with numbers"
         elsif name =~ /^\W/
           raise ::NameError, "Project name #{name} cannot start with non-word character"
-        end 
+        end
       end
 
       module ClassMethods
