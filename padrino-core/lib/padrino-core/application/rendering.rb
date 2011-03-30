@@ -117,16 +117,19 @@ module Padrino
           # Sinatra 1.0 requires an outvar for erb and erubis templates
           options[:outvar] ||= '@_out_buf' if [:erb, :erubis] & [engine]
 
+          # Setup uri_root
+          uri_root = settings.uri_root.sub(/\/$/,"")
+
           # Resolve layouts similar to in Rails
           if (options[:layout].nil? || options[:layout] == true) && !settings.templates.has_key?(:layout)
             layout_path, layout_engine = *resolved_layout
             options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
             options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
             options[:layout_engine] = layout_engine || engine if options[:layout]
-            logger.debug "Resolving layout #{options[:layout]}" if defined?(logger) && options[:layout].present?
+            logger.debug "Resolving layout #{uri_root}/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout])
-            logger.debug "Resolving layout #{options[:layout]}" if defined?(logger)
+            logger.debug "Resolving layout #{uri_root}/views#{options[:layout]}" if defined?(logger)
           end
 
           # Pass arguments to Sinatra render method

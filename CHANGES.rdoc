@@ -18,6 +18,7 @@
 * Correctly work with nested parameters sent to url [Thanks to Funny-falcon]
 * Fix ajax request detection for dataType: 'application/javascript'
 * Removed lib from excluded list of our reloader
+* Added in our logs app name space for urls and layouts
 
 == 0.9.23
 
