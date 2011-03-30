@@ -23,7 +23,6 @@ module Padrino
         # ==== Examples
         #   # Caching a fragment
         #   class MyTweets < Padrino::Application
-        #     register Padrino::Cache  # includes helpers
         #     enable :caching          # turns on caching mechanism
         #
         #     controller '/tweets' do

@@ -16,6 +16,7 @@
 * Fix expire_in on redis store in Padrino Cache
 * Added Ajax Helpers
 * Use https://github.com/padrino/padrino-static for download js and ujs adapters
+* Added session_secret task generator and as default in our app templates
 
 == 0.9.23
 

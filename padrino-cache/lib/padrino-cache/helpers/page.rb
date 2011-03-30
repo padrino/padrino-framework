@@ -10,7 +10,6 @@ module Padrino
       # ==== Examples
       #   # Setting content expiry time
       #   class CachedApp < Padrino::Application
-      #     register Padrino::Cache  # includes helpers
       #     enable :caching          # turns on caching mechanism
       #
       #     controller '/blog', :cache => true do

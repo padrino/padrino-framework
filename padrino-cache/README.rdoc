@@ -22,7 +22,6 @@ your needs, you can enable it very easily:
 
   # Basic, page-level caching
   class SimpleApp < Padrino::Application
-    register Padrino::Cache
     enable :caching
 
     get '/foo', :cache => true do

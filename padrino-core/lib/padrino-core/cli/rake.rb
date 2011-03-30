@@ -28,6 +28,11 @@ task :environment do
   end
 end
 
+desc "Generate a secret key"
+task :secret do
+  shell.say '%x' % rand(2**255)
+end
+
 # lists all routes of a given app
 def list_app_routes(app, args)
   app_routes = app.named_routes
