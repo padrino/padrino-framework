@@ -355,7 +355,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for mootools" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
       assert_match(/Applying.*?mootools.*?script/, buffer)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
@@ -380,7 +380,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for ext-core" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=extcore') }
       assert_match(/Applying.*?extcore.*?script/, buffer)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
