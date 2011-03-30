@@ -294,9 +294,7 @@ module Padrino
                 memo[k] = v unless v.nil?
                 memo
               end
-              value
-            when nil
-              nil
+            when nil then nil
             else value.respond_to?(:to_param) ? value.to_param : value
           end
         end
