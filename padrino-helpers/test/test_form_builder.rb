@@ -38,7 +38,7 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display correct form html for namespaced object" do
       actual_html = form_for(Outer::UserAccount.new, '/register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.text_field :username }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
-      assert_has_tag('form input', :type => 'text', :name => 'outer-user_account[username]') { actual_html }
+      assert_has_tag('form input', :type => 'text', :name => 'outer_user_account[username]') { actual_html }
     end
 
     should "display correct form html with remote option" do
