@@ -15,6 +15,8 @@
 * Added Ajax Helpers
 * Use https://github.com/padrino/padrino-static for download js and ujs adapters
 * Added session_secret task generator and as default in our app templates
+* Correctly work with nested parameters sent to url [Thanks to Funny-falcon]
+* Fix ajax request detection for dataType: 'application/javascript'
 
 == 0.9.23
 

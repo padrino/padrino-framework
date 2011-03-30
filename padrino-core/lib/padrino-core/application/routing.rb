@@ -237,25 +237,6 @@ module Padrino
         @router = HttpRouter.new
       end
 
-      def value_to_param(value)
-        case value
-        when Array
-          value.map{|v| value_to_param(v)}.compact
-        when Hash
-          hash = {}
-          value.each do |k, v|
-            v = value_to_param(v)
-            hash[k] = v unless v.nil?
-          end
-          hash
-        when nil
-          nil
-        else
-          value.respond_to?(:to_param) ? value.to_param : value
-        end
-      end
-      private :value_to_param
-
       ##
       # Instance method for url generation like:
       #
@@ -302,6 +283,23 @@ module Padrino
       def head(path, *args, &bk);   route 'HEAD',   path, *args, &bk end
 
       private
+        # Parse params from the url method
+        def value_to_param(value)
+          case value
+            when Array
+              value.map { |v| value_to_param(v) }.compact
+            when Hash
+              value.inject({}) do |memo, (k,v)|
+                v = value_to_param(v)
+                memo[k] = v unless v.nil?
+                memo
+              end
+              value
+            when nil
+              nil
+            else value.respond_to?(:to_param) ? value.to_param : value
+          end
+        end
 
         # Add prefix slash if its not present and remove trailing slashes.
         def conform_uri(uri_string)
@@ -332,19 +330,18 @@ module Padrino
         #
         def route(verb, path, *args, &block)
           options = case args.size
-          when 2
-            args.last.merge(:map => args.first)
-          when 1
-            map = args.shift if args.first.is_a?(String)
-            if args.first.is_a?(Hash)
-              map ? args.first.merge(:map => map) : args.first
-            else
-              {:map => map || args.first}
-            end
-          when 0
-            {}
-          else
-            raise
+            when 2
+              args.last.merge(:map => args.first)
+            when 1
+              map = args.shift if args.first.is_a?(String)
+              if args.first.is_a?(Hash)
+                map ? args.first.merge(:map => map) : args.first
+              else
+                {:map => map || args.first}
+              end
+            when 0
+              {}
+            else raise
           end
 
           # Do padrino parsing. We dup options so we can build HEAD request correctly

@@ -1324,4 +1324,14 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 200, status
     assert_equal 'okay', body
   end
+
+  should 'parse nested params' do
+    mock_app do
+      get(:index) { params.inspect }
+    end
+    get "/?account[name]=foo&account[surname]=bar"
+    assert_equal "{\"account\"=>{\"name\"=>\"foo\", \"surname\"=>\"bar\"}}", body
+    get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
+    assert_equal "{\"account\"=>{\"name\"=>\"foo\", \"surname\"=>\"bar\"}}", body
+  end
 end
