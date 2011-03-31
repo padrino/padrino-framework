@@ -58,7 +58,7 @@ module Padrino
                 else
                   settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer)
                 end
-                logger.debug "GET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger)
+                logger.debug "SET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger)
               end
             })
           end
