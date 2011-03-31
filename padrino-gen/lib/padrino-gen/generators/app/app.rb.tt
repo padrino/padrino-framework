@@ -2,6 +2,23 @@ class <%= @app_name %> < Padrino::Application
   register Padrino::Mailer
   register Padrino::Helpers
 
+  set :session_secret, "<%= '%x' % rand(2**255) %>"
+
+  ##
+  # Caching support
+  #
+  # register Padrino::Cache
+  # enable :caching
+  #
+  # You can customize caching store engines:
+  #
+  #   set :cache, Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  #   set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
+  #   set :cache, Padrino::Cache::Store::Memory.new(50)
+  #   set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app_name, 'cache') # default choice
+  #
+
   ##
   # Application configuration options
   #
@@ -15,7 +32,6 @@ class <%= @app_name %> < Padrino::Application
   # disable :padrino_logging    # Disables Padrino logging (enabled by default)
   # layout  :my_layout          # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
-  set :session_secret, "<%= '%x' % rand(2**255) %>"
 
   ##
   # You can configure for a specified environment like:
@@ -31,6 +47,10 @@ class <%= @app_name %> < Padrino::Application
   #
   #   error 404 do
   #     render 'errors/404'
+  #   end
+  #
+  #   error 505 do
+  #     render 'errors/505'
   #   end
   #
 end

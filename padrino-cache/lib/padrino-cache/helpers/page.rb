@@ -43,18 +43,22 @@ module Padrino
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {
               if self.class.caching?
-                value = self.class.cache.get(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'])
+                began_at = Time.now
+                value = settings.cache.get(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'])
+                logger.debug "GET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger) && value
                 halt 200, value if value
               end
             })
             route.add_after_filter(Proc.new { |something|
               if self.class.caching?
+                began_at = Time.now
                 if @_last_expires_in
-                  self.class.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer, :expires_in => @_last_expires_in)
+                  settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
-                  self.class.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer)
+                  settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer)
                 end
+                logger.debug "GET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger)
               end
             })
           end

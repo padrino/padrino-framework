@@ -22,6 +22,9 @@
 * Preserve spaces for text_area using admin/haml
 * Prevent using missing rendering engines on admin allowing user to use a different way
 * Fixed AbstractFormBuilder class scope name [Thanks to Funny-falcon]
+* Changed layout of our logger
+* Logs for cache GET and SET
+* Caching instructions in main app template
 
 == 0.9.23
 

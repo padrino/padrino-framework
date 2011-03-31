@@ -48,7 +48,7 @@ class TestPadrinoLogger < Test::Unit::TestCase
       mock_app { get("/"){ "Foo" } }
       get "/"
       assert_equal "Foo", body
-      assert_match /GET \/  - 200/, Padrino.logger.log.string
+      assert_match /GET/, Padrino.logger.log.string
     end
 
   end

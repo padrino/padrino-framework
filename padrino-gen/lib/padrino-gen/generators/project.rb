@@ -49,10 +49,10 @@ module Padrino
           execute_runner(:template, options[:template])
         else # generate project without template
           directory("project/", destination_root)
-          empty_directory destination_root "public/images"
-          empty_directory destination_root "public/javascripts"
-          empty_directory destination_root "public/stylesheets"
-          empty_directory destination_root "tmp"
+          empty_directory destination_root("public/images")
+          empty_directory destination_root("public/javascripts")
+          empty_directory destination_root("public/stylesheets")
+          empty_directory destination_root("tmp")
           app_skeleton('app', options[:tiny])
           store_component_config('.components')
           template "templates/Gemfile.tt", destination_root("Gemfile")

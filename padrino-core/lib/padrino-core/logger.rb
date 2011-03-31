@@ -271,7 +271,7 @@ module Padrino
       # "lilith.local - - GET / HTTP/1.1 500 -"
       #  %{%s - %s %s %s%s %s - %d %s %0.4f}
       #
-      FORMAT = %{%s - %s %s %s%s%s %s - %d %s %0.4f}
+      FORMAT = %{%s - %s %s (%0.4fms) %s%s%s %s - %d %s}
 
       def initialize(app, uri_root)
         @app = app
@@ -294,13 +294,13 @@ module Padrino
             env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
             env["REMOTE_USER"] || "-",
             env["REQUEST_METHOD"],
+            now - began_at,
             @uri_root || "",
             env["PATH_INFO"],
             env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
             env["HTTP_VERSION"],
             status.to_s[0..3],
-            length,
-            now - began_at ]
+            length]
         end
 
         def extract_content_length(headers)
