@@ -42,7 +42,7 @@ module Padrino
         def self.padrino_route_added(route, verb, path, args, options, block) #:nodoc:
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {
-              if self.class.caching?
+              if settings.caching?
                 began_at = Time.now
                 value = settings.cache.get(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'])
                 logger.debug "GET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger) && value
@@ -50,7 +50,7 @@ module Padrino
               end
             })
             route.add_after_filter(Proc.new { |something|
-              if self.class.caching?
+              if settings.caching?
                 began_at = Time.now
                 if @_last_expires_in
                   settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer, :expires_in => @_last_expires_in)
