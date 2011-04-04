@@ -102,7 +102,7 @@ This helper is used within a controller or route to indicate how often cached
 
 After <tt>seconds</tt> seconds have passed, content previously cached will
 be discarded and re-rendered. Code associated with that route will <em>not</em>
-be executed; rather, its previous output will be sent to the client with a 
+be executed; rather, its previous output will be sent to the client with a
 200 OK status code.
 
   # Setting content expiry time
@@ -112,7 +112,7 @@ be executed; rather, its previous output will be sent to the client with a
 
     controller '/blog', :cache => true do
       expires_in 15
-      
+
       get '/entries' do
         'just broke up eating twinkies lol'
       end
@@ -149,12 +149,12 @@ to be cached. It can be used in within a route:
     controller '/tweets' do
       get :feed, :map => '/:username' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         # Below outputs @feed somewhere in its markup
         render 'feeds/show'
       end
@@ -176,32 +176,30 @@ Note that any other action will reference the same content if it uses the same k
     controller :tweets do
       get :feed, :map => '/:username' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         # Below outputs @feed somewhere in its markup
         render 'feeds/show'
       end
-      
+
       get :mobile_feed, :map => '/:username.iphone' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         render 'feeds/show.iphone'
       end
     end
   end
 
-The <tt>opts</tt> argument is actually passed to the underlying store. All stores
->>>>>>> 51a1af1d22bfe47d539ad90e18cb44e99c3f2b64
-included with Padrino support the <tt>:expires_in</tt> option out of the box.
+The <tt>opts</tt> argument is actually passed to the underlying store. All stores included with Padrino support the <tt>:expires_in</tt> option out of the box.
 
 Finally, to DRY up things a bit, we might do:
 
@@ -218,11 +216,11 @@ Finally, to DRY up things a bit, we might do:
           render 'partials/feedcontent'
         end
       end
-      
+
       get :feed, :map => '/:username' do
         render 'feeds/show'
       end
-      
+
       get :mobile_feed, :map => '/:username.iphone' do
         render 'feeds/show.iphone'
       end
@@ -287,25 +285,25 @@ do our user a favor and instantly re-render the feed.
   class MyTweets < Padrino::Application
     register Padrino::Cache # includes helpers
     enable :caching         # turns on caching
-    enable :session         # we'll use this to store last time visited 
-    
+    enable :session         # we'll use this to store last time visited
+
     COMPANY_FOUNDING = Time.utc( 2010, "April" )
-    
+
     controller :tweets do
       get :feed, :map => '/:username' do
         last_visit = session[:last_visit] || params[:since] || COMPANY_FOUNDING
 
         username = params[:username]
         @tweets = Tweet.since( last_visit, :username => username ).limit( 100 )
-        
+
         expire( "feed since #{last_visit}" ) if @tweets.any? { |t| t.deleted_since?( last_visit ) }
-        
+
         session[:last_visit] = Time.now
         @feed = cache( "feed since #{last_visit}", :expires_in => 60 ) do
           @tweets = @tweets.find_all { |t| !t.deleted? }
           render 'partials/feedcontent'
         end
-        
+
         render 'feeds/show'
       end
     end
