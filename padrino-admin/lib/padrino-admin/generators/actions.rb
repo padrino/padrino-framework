@@ -28,7 +28,7 @@ module Padrino
         # Tell us for now wich rendering engine we support
         #
         def supported_ext
-          [:haml, :erb]
+          [:haml, :erb, :erubis]
         end
 
         ##
