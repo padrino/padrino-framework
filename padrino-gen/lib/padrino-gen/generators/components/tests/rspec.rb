@@ -33,7 +33,7 @@ require 'rspec/core/rake_task'
 
 RSpec::Core::RakeTask.new(:spec) do |t|
   t.pattern = "./spec/**/*_spec.rb"
-  # Put spec opts in a file named .rspec in root
+  t.rspec_opts = %w(-fs --color)
 end
 TEST
 
