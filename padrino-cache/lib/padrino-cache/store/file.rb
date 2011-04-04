@@ -92,7 +92,6 @@ module Padrino
 
           def init
             unless @init
-              FileUtils.rm_rf(@root)
               FileUtils.mkdir_p(@root)
               @init = true
             end
