@@ -346,6 +346,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim','--script=none') }
       assert_match(/Applying.*?slim.*?renderer/,buffer)
       assert_match_in_file(/gem 'slim'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/Slim::Engine\.set_default_options/m, "#{@apptmp}/sample_project/lib/slim_init.rb")
+      assert_match_in_file(/register SlimInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
     end
   end
 
