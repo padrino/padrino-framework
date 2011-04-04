@@ -25,6 +25,9 @@
 * Changed layout of our logger
 * Logs for cache GET and SET
 * Caching instructions in main app template
+* Adds back Erubis support (once latest Tilt is released)
+* Adds back Erubis admin support
+* Fixes slim support (with slim initializer file)
 
 == 0.9.23
 
