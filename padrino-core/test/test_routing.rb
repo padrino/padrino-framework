@@ -1334,4 +1334,29 @@ class TestRouting < Test::Unit::TestCase
     get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
     assert_equal "{\"account\"=>{\"name\"=>\"foo\", \"surname\"=>\"bar\"}}", body
   end
+
+  should 'render sinatra NotFound page' do
+    mock_app { set :environment, :development }
+    get "/"
+    assert_equal 404, status
+    assert_match /Sinatra doesn\'t know this ditty./, body
+  end
+
+  should 'render a custom NotFound page' do
+    mock_app do
+      error(Sinatra::NotFound) { "not found" }
+    end
+    get "/"
+    assert_equal 404, status
+    assert_match /not found/, body
+  end
+
+  should 'render a custom 404 page' do
+    mock_app do
+      error(404) { "not found" }
+    end
+    get "/"
+    assert_equal 404, status
+    assert_match /not found/, body
+  end
 end
