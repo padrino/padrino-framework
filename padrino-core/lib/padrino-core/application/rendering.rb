@@ -114,9 +114,6 @@ module Padrino
           # If an engine is a string then this is a likely a path to be resolved
           data, engine = *resolve_template(engine, options) if data.nil?
 
-          # Sinatra 1.0 requires an outvar for erb and erubis templates
-          options[:outvar] ||= '@_out_buf' if [:erb, :erubis] & [engine]
-
           # Setup root
           root = settings.respond_to?(:root) ? settings.root : ""
 
