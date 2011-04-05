@@ -4,7 +4,6 @@ class Foo
   def bar; "bar"; end
 end
 
-
 COMMON_TESTS = <<-HERE_DOC
 should 'set and get an object' do
   Padrino.cache.set('val', Foo.new)

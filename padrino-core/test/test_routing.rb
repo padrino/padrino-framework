@@ -1330,9 +1330,9 @@ class TestRouting < Test::Unit::TestCase
       get(:index) { params.inspect }
     end
     get "/?account[name]=foo&account[surname]=bar"
-    assert_equal "{\"account\"=>{\"name\"=>\"foo\", \"surname\"=>\"bar\"}}", body
+    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
     get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
-    assert_equal "{\"account\"=>{\"name\"=>\"foo\", \"surname\"=>\"bar\"}}", body
+    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
   end
 
   should 'render sinatra NotFound page' do
