@@ -692,6 +692,7 @@ module Padrino
               route_eval do
                 match[1].each {|k,v| response[k] = v}
                 status match[0]
+                route_missing if match[0] == 404
               end
             end
           end

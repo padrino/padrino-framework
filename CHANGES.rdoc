@@ -28,6 +28,7 @@
 * Adds back Erubis support (once latest Tilt is released)
 * Adds back Erubis admin support
 * Fixes slim support (with slim initializer file)
+* Fixes NotFound Sinatra Errors
 
 == 0.9.23
 
