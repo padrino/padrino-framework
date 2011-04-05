@@ -29,6 +29,7 @@
 * Adds back Erubis admin support
 * Fixes slim support (with slim initializer file)
 * Fixes NotFound Sinatra Errors
+* Require correct rspec/exceptions in cucumber.
 
 == 0.9.23
 
