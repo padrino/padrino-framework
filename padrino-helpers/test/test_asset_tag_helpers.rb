@@ -185,6 +185,7 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('link', :href => "/stylesheets/style.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "/stylesheets/layout.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "http://google.com/style.css") { actual_html }
+      assert_equal actual_html, stylesheet_link_tag(['style', 'layout.css', 'http://google.com/style.css'])
     end
     should "not use a timestamp if stamp setting is false" do
       self.class.expects(:asset_stamp).returns(false)
@@ -232,6 +233,7 @@ class TestAssetTagHelpers < Test::Unit::TestCase
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}") { actual_html }
       assert_has_tag('script', :src => "/javascripts/base.js?#{time.to_i}") { actual_html }
       assert_has_tag('script', :src => "http://google.com/lib.js") { actual_html }
+      assert_equal actual_html, javascript_include_tag(['application', 'base.js', 'http://google.com/lib.js'])
     end
     should "not use a timestamp if stamp setting is false" do
       self.class.expects(:asset_stamp).returns(false)
