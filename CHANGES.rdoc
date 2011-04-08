@@ -31,6 +31,7 @@
 * Fixes slim support (with slim initializer file)
 * Fixes NotFound Sinatra Errors
 * Require correct rspec/exceptions in cucumber.
+* Stylesheet_link_tag and javascript_include_tag should allow array inputs for sources (instead of argument array)
 
 == 0.9.23
 
