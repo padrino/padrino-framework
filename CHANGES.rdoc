@@ -32,6 +32,9 @@
 * Fixes NotFound Sinatra Errors
 * Require correct rspec/exceptions in cucumber.
 * Stylesheet_link_tag and javascript_include_tag should allow array inputs for sources (instead of argument array)
+* More space for edit/delete actions in the Admin Section
+* Added a nice confirm dialog to prevent mistakes in the Admin Section
+* Added the correct DELETE method to the logout in the Admin Section
 
 == 0.9.23
 
