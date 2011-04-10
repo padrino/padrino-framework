@@ -30,6 +30,7 @@ module Padrino
     attr_reader   :buffer
     attr_reader   :log
     attr_reader   :init_args
+    attr_accessor :log_static
 
     ##
     # Ruby (standard) logger levels:
@@ -63,6 +64,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # :log_static:: Whether or not to show log messages for static files. Defaults to: false
     #
     # ==== Examples
     #
@@ -146,6 +148,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # :log_static:: Whether or not to show log messages for static files. Defaults to: false
     #
     def initialize(options={})
       @buffer            = []
@@ -156,6 +159,7 @@ module Padrino
       @mutex             = @@mutex[@log] ||= Mutex.new
       @format_datetime   = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
       @format_message    = options[:format_message]  || "%s - [%s] \"%s\""
+      @log_static        = options.has_key?(:log_static) ? options[:log_static] : false
     end
 
     ##
@@ -289,6 +293,8 @@ module Padrino
         def log(env, status, header, began_at)
           now = Time.now
           length = extract_content_length(header)
+
+          return if env['sinatra.static_file'] and !logger.log_static
 
           logger.debug FORMAT % [
             env["REQUEST_METHOD"],
