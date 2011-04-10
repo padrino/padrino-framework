@@ -35,6 +35,9 @@
 * More space for edit/delete actions in the Admin Section
 * Added a nice confirm dialog to prevent mistakes in the Admin Section
 * Added the correct DELETE method to the logout in the Admin Section
+* Added setting log_static setting to Padrino.logger [Thanks to railsjedi]
+* Added stylesheet_link_tag and javascript_include_tag to allow array input for sources [Thanks to railsjedi]
+* Added ruby-debug19 to Gemfile [Thanks to railsjedi]
 
 == 0.9.23
 
