@@ -43,7 +43,7 @@ module Padrino
       set_load_paths(*load_paths) # We set the padrino load paths
       Padrino.logger # Initialize our logger
       before_load.each { |bl| bl.call } # Run before hooks
-      dependency_paths.each { |path| require_dependency(path) }
+      dependency_paths.each { |path| require_dependencies(path) }
       Reloader::Stat.run! # We need to fill our Stat::CACHE
       after_load.each { |al| al.call } # Run after hooks
       Thread.current[:padrino_loaded] = true
@@ -126,7 +126,6 @@ module Padrino
         break if files.empty?
       end
     end
-    alias :require_dependency :require_dependencies
 
     ##
     # Returns default list of path globs to load as dependencies
