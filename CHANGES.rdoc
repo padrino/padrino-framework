@@ -38,6 +38,7 @@
 * Added setting log_static setting to Padrino.logger [Thanks to railsjedi]
 * Added stylesheet_link_tag and javascript_include_tag to allow array input for sources [Thanks to railsjedi]
 * Added ruby-debug19 to Gemfile [Thanks to railsjedi]
+* Allow simple_format to use a custom tag instead the only p tag.
 
 == 0.9.23
 
