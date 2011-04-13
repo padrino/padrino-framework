@@ -40,6 +40,7 @@
 * Added ruby-debug19 to Gemfile [Thanks to railsjedi]
 * Allow simple_format to use a custom tag instead the only p tag
 * Fix collision with AS load_dependency
+* Fix File Store when cache dir is deleted after init
 
 == 0.9.23
 
