@@ -14,7 +14,6 @@ module Padrino
       #
       #     controller '/blog', :cache => true do
       #       expires_in 15
-      #       cache_key :my_name
       #
       #       get '/entries' do
       #         # expires_in 15 => can also be defined inside a single route
@@ -22,7 +21,7 @@ module Padrino
       #       end
       #
       #       get '/post/:id' do
-      #         # cache_key :my_name => can also be defined inside a single route
+      #         cache_key :my_name
       #         @post = Post.find(params[:id])
       #       end
       #     end

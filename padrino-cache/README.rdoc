@@ -60,23 +60,7 @@ You can also cache on a controller-wide basis:
     end
   end
 
-You can also provide a custom <tt>cache_key</tt> in a controller:
-
-  # Controller-wide caching example
-  class SimpleApp < Padrino::Application
-    register Padrino::Cache
-    enable :caching
-
-    controller '/admin', :cache => true do
-      cache_key :my_name
-
-      get '/post/:id' do
-        @post = Post.find(params[:id])
-      end
-    end
-  end
-
-Or if you prefer in a any route:
+You can also provide a custom <tt>cache_key</tt> in any route:
 
   class SimpleApp < Padrino::Application
     register Padrino::Cache
