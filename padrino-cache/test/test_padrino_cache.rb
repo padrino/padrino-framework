@@ -55,15 +55,17 @@ class TestPadrinoCache < Test::Unit::TestCase
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => proc{|req| "cached"}){ 'test' }
-      get('/bar', :cache => proc{|req| "cached"}){ halt 500 }
+      get('/foo', :cache => true){ cache_key :foo; 'foo' }
+      get('/bar', :cache => true){ cache_key :bar; 'bar' }
     end
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test', body
+    assert_equal 'foo', body
+    assert_equal 'foo', @app.cache.get(:foo)
     get "/bar"
     assert_equal 200, status
-    assert_equal 'test', body
+    assert_equal 'bar', body
+    assert_equal 'bar', @app.cache.get(:bar)
   end
 
   should 'delete based on urls' do

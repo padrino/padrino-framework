@@ -16,7 +16,14 @@ module Padrino
       #       expires_in 15
       #
       #       get '/entries' do
+      #         # expires_in 15 => can also be defined inside a single route
       #         'just broke up eating twinkies lol'
+      #       end
+      #
+      #       # you can manually expire cache with CachedApp.cache.delete(:my_post)
+      #       get '/post/:id' do
+      #         @post = Post.find(params[:id])
+      #         cache_key :my_post
       #       end
       #     end
       #   end
@@ -39,12 +46,17 @@ module Padrino
           @_last_expires_in = time
         end
 
+        def cache_key(name)
+          @_cache_key = name
+        end
+
         def self.padrino_route_added(route, verb, path, args, options, block) #:nodoc:
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {
               if settings.caching?
                 began_at = Time.now
-                value = settings.cache.get(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'])
+                value = settings.cache.get(@_cache_key || env['PATH_INFO'])
+                @_cache_key = nil
                 logger.debug "GET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger) && value
                 halt 200, value if value
               end
@@ -53,11 +65,12 @@ module Padrino
               if settings.caching?
                 began_at = Time.now
                 if @_last_expires_in
-                  settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer, :expires_in => @_last_expires_in)
+                  settings.cache.set(@_cache_key || env['PATH_INFO'], @_response_buffer, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
-                  settings.cache.set(route.cache.respond_to?(:call) ? route.cache.call(request) : env['PATH_INFO'], @_response_buffer)
+                  settings.cache.set(@_cache_key || env['PATH_INFO'], @_response_buffer)
                 end
+                @_cache_key = nil
                 logger.debug "SET Cache (%0.4fms) %s" % [Time.now-began_at, env['PATH_INFO']] if defined?(logger)
               end
             })

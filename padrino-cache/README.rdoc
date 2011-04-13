@@ -60,6 +60,22 @@ You can also cache on a controller-wide basis:
     end
   end
 
+You can also provide a custom <tt>cache_key</tt>:
+
+  # Controller-wide caching example
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/post/:id' do
+      @post = Post.find(params[:id])
+      cache_key :my_post
+    end
+  end
+
+In this way you can manually expire cache with CachedApp.cache.delete(:my_post)
+for example from the Post model after an update.
+
 If you specify <tt>:cache => true</tt> but do not invoke <tt>expires_in</tt>,
 the response will be cached indefinitely. Most of the time, you will want to
 specify the expiry of a cache entry by <tt>expires_in</tt>. Even a relatively

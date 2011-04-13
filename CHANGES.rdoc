@@ -43,6 +43,7 @@
 * Fix File Store when cache dir is deleted after init
 * Added empty rows and cols to text_area tag to be w3c
 * Update Sinatra to 1.2.3 and HttpRouter to 0.6.9
+* Added cache_key inside route for a simple/fast expiring caching
 
 == 0.9.23
 
