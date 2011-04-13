@@ -22,7 +22,8 @@ class <%= @app_name %> < Padrino::Application
   ##
   # Application configuration options
   #
-  # set :raise_errors, true     # Show exceptions (default for development)
+  # set :raise_errors, true     # raise exceptions (will stop application) (default for development)
+  # set :show_exceptions, true  # show a stack trace in browser ( default is true )
   # set :public, "foo/bar"      # Location for static assets (default root/public)
   # set :reload, false          # Reload application files (default in development)
   # set :default_builder, "foo" # Set a custom form builder (default 'StandardFormBuilder')
