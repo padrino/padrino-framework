@@ -237,7 +237,7 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :rows => "", :cols => "")
         content_tag(:textarea, options.delete(:value).to_s, options)
       end
 

@@ -41,6 +41,7 @@
 * Allow simple_format to use a custom tag instead the only p tag
 * Fix collision with AS load_dependency
 * Fix File Store when cache dir is deleted after init
+* Added empty rows and cols to text_area tag to be w3c
 
 == 0.9.23
 
