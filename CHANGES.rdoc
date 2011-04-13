@@ -42,6 +42,7 @@
 * Fix collision with AS load_dependency
 * Fix File Store when cache dir is deleted after init
 * Added empty rows and cols to text_area tag to be w3c
+* Update Sinatra to 1.2.3 and HttpRouter to 0.6.9
 
 == 0.9.23
 
