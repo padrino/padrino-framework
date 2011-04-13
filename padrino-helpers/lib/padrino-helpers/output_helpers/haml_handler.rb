@@ -50,5 +50,5 @@ module Padrino
 
       OutputHelpers.register(HamlHandler)
     end # OutputHelpers
-  end
-end
+  end # Helpers
+end # Padrino

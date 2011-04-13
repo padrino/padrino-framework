@@ -91,6 +91,5 @@ module Padrino
         end
       end # AbstractHandler
     end # OutputHelpers
-
-  end
-end
+  end # Helpers
+end # Padrino

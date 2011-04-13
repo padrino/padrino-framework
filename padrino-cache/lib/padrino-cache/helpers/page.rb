@@ -14,19 +14,21 @@ module Padrino
       #
       #     controller '/blog', :cache => true do
       #       expires_in 15
+      #       cache_key :my_name
       #
       #       get '/entries' do
       #         # expires_in 15 => can also be defined inside a single route
       #         'just broke up eating twinkies lol'
       #       end
       #
-      #       # you can manually expire cache with CachedApp.cache.delete(:my_post)
       #       get '/post/:id' do
+      #         # cache_key :my_name => can also be defined inside a single route
       #         @post = Post.find(params[:id])
-      #         cache_key :my_post
       #       end
       #     end
       #   end
+      #
+      # You can manually expire cache with CachedApp.cache.delete(:my_name)
       #
       # Note that the "latest" method call to <tt>expires_in</tt> determines its value: if
       # called within a route, as opposed to a controller definition, the route's
@@ -46,6 +48,9 @@ module Padrino
           @_last_expires_in = time
         end
 
+        ##
+        # This helper is used within a route or route to indicate the name in the cache.
+        #
         def cache_key(name)
           @_cache_key = name
         end

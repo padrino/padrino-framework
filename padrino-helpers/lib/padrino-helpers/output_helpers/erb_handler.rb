@@ -76,5 +76,5 @@ module Padrino
       end # ErbHandler
       OutputHelpers.register(ErbHandler)
     end # OutputHelpers
-  end
-end
+  end # Helpers
+end # Padrino

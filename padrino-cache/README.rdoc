@@ -60,20 +60,35 @@ You can also cache on a controller-wide basis:
     end
   end
 
-You can also provide a custom <tt>cache_key</tt>:
+You can also provide a custom <tt>cache_key</tt> in a controller:
 
   # Controller-wide caching example
   class SimpleApp < Padrino::Application
     register Padrino::Cache
     enable :caching
 
-    get '/post/:id' do
-      @post = Post.find(params[:id])
-      cache_key :my_post
+    controller '/admin', :cache => true do
+      cache_key :my_name
+
+      get '/post/:id' do
+        @post = Post.find(params[:id])
+      end
     end
   end
 
-In this way you can manually expire cache with CachedApp.cache.delete(:my_post)
+Or if you prefer in a any route:
+
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/post/:id', :cache => true do
+      @post = Post.find(params[:id])
+      cache_key :my_name
+    end
+  end
+
+In this way you can manually expire cache with CachedApp.cache.delete(:my_name)
 for example from the Post model after an update.
 
 If you specify <tt>:cache => true</tt> but do not invoke <tt>expires_in</tt>,
