@@ -51,12 +51,12 @@ module Padrino
       # git :commit, "hello world"
       def git(action, arguments=nil)
         FileUtils.cd(destination_root) do
-          require 'git' unless defined?(::Git)
+          require 'grit' unless defined?(::Grit)
           if action.to_s == 'init'
-            ::Git.init(arguments || destination_root)
+            ::Grit::Repo.init(arguments || destination_root)
             say "Git repo has been initialized", :green
           else
-            @_git ||= ::Git.open(destination_root)
+            @_git ||= ::Grit::Repo.new(destination_root)
             @_git.method(action).call(arguments)
           end
         end
