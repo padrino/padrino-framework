@@ -159,7 +159,6 @@ module Padrino
         FileSet.glob(path) { |file| load(file) }
       end
     end
-    alias :load_dependency :load_dependencies
 
     ##
     # Concat to $LOAD_PATH the given paths
