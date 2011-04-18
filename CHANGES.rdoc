@@ -45,6 +45,7 @@
 * Update Sinatra to 1.2.3 and HttpRouter to 0.6.9
 * Added cache_key inside route for a simple/fast expiring caching
 * Updated plugin git command to use Grit instead
+* Removed ./bundle/environment stuff
 
 == 0.9.23
 
