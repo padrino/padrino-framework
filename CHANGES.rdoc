@@ -46,6 +46,7 @@
 * Added cache_key inside route for a simple/fast expiring caching
 * Updated plugin git command to use Grit instead
 * Removed ./bundle/environment stuff
+* Rubinius compat [Thx to Rakaur]
 
 == 0.9.23
 

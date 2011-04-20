@@ -109,7 +109,6 @@ module Padrino
         files.each do |file|
           begin
             Reloader::Stat.safe_load(file)
-            files.delete(file)
           rescue LoadError => e
             errors << e
             failed << file
@@ -122,8 +121,8 @@ module Padrino
         end
 
         # Stop processing if nothing loads or if everything has loaded
-        raise errors.last if files.size == size_at_start && files.present?
-        break if files.empty?
+        raise errors.last if failed.size == size_at_start
+        break if failed.empty?
       end
     end
 
