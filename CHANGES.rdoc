@@ -47,6 +47,7 @@
 * Updated plugin git command to use Grit instead
 * Removed ./bundle/environment stuff
 * Rubinius compat [Thx to Rakaur]
+* Fixed setting custom views path
 
 == 0.9.23
 
