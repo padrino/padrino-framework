@@ -8,7 +8,7 @@
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
 * Fixes Routes with globs that when something is after the glob i.e. get :show, :map => '/pictures/*path.html'
-* Updated http_router to ~> 0.6.7
+* Updated http_router to ~> 0.7.0
 * Completed Padrino Cache Doc [Thanks to Onethirtyfive]
 * Added a global Padrino.cache option
 * Padrino-Cache now is able to store ruby objects
