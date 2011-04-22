@@ -58,7 +58,6 @@ module Padrino
         #  @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
-          puts eval('defined? __in_erb_template', block.binding)
           is_type? || (block && eval('defined? __in_erb_template', block.binding))
         end
 
