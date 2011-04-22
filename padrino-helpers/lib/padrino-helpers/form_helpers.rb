@@ -47,7 +47,7 @@ module Padrino
         options["accept-charset"] ||= "UTF-8"
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += capture_html(&block)
-        concat_content content_tag('form', inner_form_html, options)
+        concat_content content_tag(:form, inner_form_html, options)
       end
 
       ##
@@ -77,7 +77,7 @@ module Padrino
         legend_text = args[0].is_a?(String) ? args.first : nil
         legend_html = legend_text.blank? ? '' : content_tag(:legend, legend_text)
         field_set_content = legend_html + capture_html(&block)
-        concat_content content_tag('fieldset', field_set_content, options)
+        concat_content content_tag(:fieldset, field_set_content, options)
       end
 
       ##
@@ -401,12 +401,11 @@ module Padrino
       # Returns the blank option serving as a prompt if passed
       #
       def blank_option(prompt)
-        if prompt
-          case prompt.class.to_s
-          when 'String' then content_tag(:option, prompt, :value => '')
-          when 'Array'  then content_tag(:option, prompt.first, :value => prompt.last)
-          else               content_tag(:option, '', :value => '')
-          end
+        return unless prompt
+        case prompt
+          when String then content_tag(:option, prompt,       :value => '')
+          when Array  then content_tag(:option, prompt.first, :value => prompt.last)
+          else             content_tag(:option, '',           :value => '')
         end
       end
 
