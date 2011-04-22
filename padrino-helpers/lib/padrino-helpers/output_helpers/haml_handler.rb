@@ -47,7 +47,6 @@ module Padrino
           nil
         end
       end # HamlHandler
-
       OutputHelpers.register(HamlHandler)
     end # OutputHelpers
   end # Helpers
