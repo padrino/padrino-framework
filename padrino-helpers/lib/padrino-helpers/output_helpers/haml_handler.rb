@@ -1,6 +1,5 @@
 module Padrino
   module Helpers
-
     module OutputHelpers
       class HamlHandler < AbstractHandler
         ##

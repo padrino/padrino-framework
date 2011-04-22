@@ -1,6 +1,5 @@
 module Padrino
   module Helpers
-
     module OutputHelpers
       @template_handlers = []
 

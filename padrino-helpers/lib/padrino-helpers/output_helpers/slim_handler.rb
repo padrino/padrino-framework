@@ -1,7 +1,10 @@
+# Make slim works with sinatra/padrino
+Slim::Engine.set_default_options :buffer => '@_out_buf' if defined?(Slim)
+
 module Padrino
   module Helpers
     module OutputHelpers
-      class ErbHandler < AbstractHandler
+      class SlimHandler < AbstractHandler
         attr_reader :output_buffer
 
         def initialize(template)
@@ -55,6 +58,7 @@ module Padrino
         #  @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
+          puts eval('defined? __in_erb_template', block.binding)
           is_type? || (block && eval('defined? __in_erb_template', block.binding))
         end
 
@@ -63,7 +67,7 @@ module Padrino
             template.instance_variable_set(:@_out_buf, val)
           end
         end # ErbHandler
-        OutputHelpers.register(ErbHandler)
+        OutputHelpers.register(SlimHandler)
     end # OutputHelpers
   end # Helpers
 end # Padrino
