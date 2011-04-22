@@ -44,7 +44,7 @@ module Padrino
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
-          self.output_buffer << text if self.is_type? && text
+          self.output_buffer << text if is_type? && text
           nil
         end
 
@@ -56,7 +56,7 @@ module Padrino
         #  @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
-          self.is_type? || (block && eval('defined? __in_erb_template', block.binding))
+          is_type? || (block && eval('defined? __in_erb_template', block.binding))
         end
 
         protected
