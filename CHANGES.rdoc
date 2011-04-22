@@ -26,8 +26,6 @@
 * Changed layout of our logger
 * Logs for cache GET and SET
 * Caching instructions in main app template
-* Adds back Erubis support (once latest Tilt is released)
-* Adds back Erubis admin support
 * Fixes slim support (with slim initializer file)
 * Fixes NotFound Sinatra Errors
 * Require correct rspec/exceptions in cucumber.
@@ -48,6 +46,11 @@
 * Removed ./bundle/environment stuff
 * Rubinius compat [Thx to Rakaur]
 * Fixed setting custom views path
+* Removed deprecated dom helpers
+* Completed support for Erubis
+* Adds back Erubis admin support
+* Completed support for Slim
+* Adds Slim admin support
 
 == 0.9.23
 
@@ -169,8 +172,6 @@
 * Support Sinatra before blocks correctly
 * Added support for shallowing in controllers
 * Remove padrino-admin dependency on padrino-gen [Thanks to selman]
-* Completed support for Erubis
-* Completed support for Slim
 
 == 0.9.15
 
