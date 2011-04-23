@@ -353,7 +353,11 @@ module Padrino
           unbound_method = instance_method("#{verb} #{path}")
           block =
             if block.arity != 0
-              proc { unbound_method.bind(self).call(*@block_params) }
+              block_arity = block.arity
+              proc {
+                @block_params = @block_params.slice(0, block_arity) if block_arity > 0
+                unbound_method.bind(self).call(*@block_params)
+              }
             else
               proc { unbound_method.bind(self).call }
             end
