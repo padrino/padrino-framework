@@ -29,6 +29,13 @@ module Padrino
     #   Padrino.cache = Padrino::Cache::Store::Memory.new(50)
     #   Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
     #
+    # You can manage your cache from anywhere in your app:
+    #
+    #   Padrino.cache.set('val', 'test')
+    #   Padrino.cache.get('val') # => 'test'
+    #   Padrino.cache.delete('val')
+    #   Padrino.cache.flush
+    #
     def cache=(value)
       @_cache = value
     end
@@ -63,6 +70,7 @@ module Padrino
       #   set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
       #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
       #   set :cache, Padrino::Cache::Store::Memory.new(50)
+      #   set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
       #
       # You can manage your cache from anywhere in your app:
       #
@@ -75,7 +83,7 @@ module Padrino
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page
-        app.set :cache, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
+        app.set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app.app_name.to_s ,'cache'))
         app.disable :caching
       end
       alias :included :registered

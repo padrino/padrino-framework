@@ -24,8 +24,25 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
 
     should "support defining a class for the paragraphs" do
-      actual_text = simple_format("Look ma! A class!", :class => 'description')
-      assert_equal "<p class=\"description\">Look ma! A class!</p>", actual_text
+      actual_text = simple_format("Look me! A class!", :class => 'description')
+      assert_equal "<p class=\"description\">Look me! A class!</p>", actual_text
+    end
+
+    context 'wrapped in a custom tag' do
+      should "format simple text into html format" do
+        actual_text = simple_format("Here is some basic text...\n...with a line break.", :tag => :div)
+        assert_equal "<div>Here is some basic text...\n<br />...with a line break.</div>", actual_text
+      end
+
+      should "format more text into html format" do
+        actual_text = simple_format("We want to put a paragraph...\n\n...right there.", :tag => :div)
+        assert_equal "<div>We want to put a paragraph...</div>\n\n<div>...right there.</div>", actual_text
+      end
+
+      should "support defining a class for the paragraphs" do
+        actual_text = simple_format("Look me! A class!", :class => 'description', :tag => :div)
+        assert_equal "<div class=\"description\">Look me! A class!</div>", actual_text
+      end
     end
   end
 

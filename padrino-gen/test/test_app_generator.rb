@@ -30,6 +30,7 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_match_in_file 'Padrino.mount("Demo").to("/demo")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Demo < Padrino::Application', "#{@apptmp}/sample_project/demo/app.rb"
+      assert_match_in_file 'set :session_secret, "', "#{@apptmp}/sample_project/demo/app.rb"
     end
 
     should "generate tiny app skeleton" do

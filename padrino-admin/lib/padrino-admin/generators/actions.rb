@@ -6,15 +6,29 @@ module Padrino
         # Tell us which orm we are using
         #
         def orm
-          fetch_component_choice(:orm).to_sym rescue :datamapper
+          fetch_component_choice(:orm).to_sym rescue :activerecord
         end
         alias :adapter :orm
+
+        ##
+        # Tell us which rendering engine you are using
+        #
+        def ext
+          fetch_component_choice(:admin_renderer).to_sym rescue :haml
+        end
 
         ##
         # Tell us for now wich orm we support
         #
         def supported_orm
           [:datamapper, :activerecord, :mongomapper, :mongoid, :couchrest, :sequel]
+        end
+
+        ##
+        # Tell us for now wich rendering engine we support
+        #
+        def supported_ext
+          [:haml, :erb, :erubis]
         end
 
         ##

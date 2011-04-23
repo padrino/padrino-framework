@@ -1,6 +1,5 @@
 module Padrino
   module Helpers
-
     module OutputHelpers
       @template_handlers = []
 
@@ -91,6 +90,5 @@ module Padrino
         end
       end # AbstractHandler
     end # OutputHelpers
-
-  end
-end
+  end # Helpers
+end # Padrino

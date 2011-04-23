@@ -33,6 +33,9 @@ group :development do
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
+  platforms :mri_19 do
+    gem "ruby-debug19"
+  end
   platforms :mri do
     gem "memcached", ">= 0.20.1"
     gem 'dalli',     ">=1.0.2"

@@ -28,7 +28,8 @@ MONGO
 
 def setup_orm
   require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'mongoid', :version => '2.0.0.beta.20'
+  require_dependencies 'mongoid', :version => '2.0.0'
+  require_dependencies 'SystemTimer', :require => 'system_timer'
   create_file("config/database.rb", MONGOID.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
 end
@@ -46,7 +47,6 @@ class !NAME!
 
   # You can create a composite key in mongoid to replace the default id using the key macro:
   # key :field <, :another_field, :one_more ....>
-
 end
 MODEL
 

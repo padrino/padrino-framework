@@ -84,7 +84,6 @@ module Padrino
       #
       def setup_application!
         return if @_configured
-        self.calculate_paths
         self.register_initializers
         self.require_load_paths
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
@@ -134,7 +133,9 @@ module Padrino
           set :padrino_logging, true
           set :method_override, true
           set :sessions, false
-          set :public, Proc.new { Padrino.root('public', self.uri_root) }
+          set :public, Proc.new { Padrino.root('public', uri_root) }
+          set :views, Proc.new { File.join(root,   "views") }
+          set :images_path, Proc.new { File.join(public, "images") }
           # Padrino specific
           set :uri_root, "/"
           set :reload, Proc.new { development? }
@@ -185,22 +186,12 @@ module Padrino
         end
 
         ##
-        # Calculates any required paths after app_file and root have been properly configured
-        # Executes as part of the setup_application! method
-        #
-        def calculate_paths
-          raise ApplicationSetupError.new("Please define 'app_file' option for #{self.name} app!") unless self.app_file
-          set :views, find_view_path if find_view_path
-          set :images_path, File.join(self.public, "/images") unless self.respond_to?(:images_path)
-        end
-
-        ##
         # Requires the Padrino middleware
         #
         def register_initializers
-          use Padrino::Logger::Rack    if Padrino.logger && (Padrino.logger.level == 0 && padrino_logging?)
-          use Padrino::Reloader::Rack  if reload?
-          use Rack::Flash              if flash? && sessions?
+          use Padrino::Logger::Rack, uri_root if Padrino.logger && (Padrino.logger.level == 0 && padrino_logging?)
+          use Padrino::Reloader::Rack         if reload?
+          use Rack::Flash                     if flash? && sessions?
         end
 
         ##
@@ -216,14 +207,6 @@ module Padrino
         #
         def require_load_paths
           load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
-        end
-
-        ##
-        # Returns the path to the views directory from root by returning the first that is found
-        #
-        def find_view_path
-          @view_paths = ["views"].map { |path| File.join(self.root, path) }
-          @view_paths.find { |path| Dir[File.join(path, '/**/*')].any? }
         end
     end # self
 

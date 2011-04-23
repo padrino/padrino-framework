@@ -28,21 +28,23 @@ module Padrino
 
       ##
       # Returns text transformed into HTML using simple formatting rules. Two or more consecutive newlines(\n\n) are considered
-      # as a paragraph and wrapped in <p> tags. One newline (\n) is considered as a linebreak and a <br /> tag is appended.
+      # as a paragraph and wrapped in <p> or your own tags. One newline (\n) is considered as a linebreak and a <br /> tag is appended.
       # This method does not remove the newlines from the text.
       #
       # ==== Examples
       #
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
+      #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
       #
-      def simple_format(text, html_options={})
-        start_tag = tag('p', html_options.merge(:open => true))
+      def simple_format(text, options={})
+        t = options.delete(:tag) || :p
+        start_tag = tag(t, options.merge(:open => true))
         text = text.to_s.dup
         text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
-        text.gsub!(/\n\n+/, "</p>\n\n#{start_tag}")  # 2+ newline  -> paragraph
+        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}")  # 2+ newline  -> paragraph
         text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
         text.insert 0, start_tag
-        text << "</p>"
+        text << "</#{t}>"
       end
 
       ##

@@ -7,15 +7,50 @@
 * Allow grouped options in a select_tag [Thanks activestylus]
 * Use MongoMapper official gem
 * Fixes ERBHandler type detection
-* Routes with globs does not work if something is after the glob i.e. get :show, :map => '/pictures/*path.html'
-* Updated http_router to 0.6.4
-* Updated Padrino Cache Doc [Thanks to Onethirtyfive]
-* Ability to store/execute code in file store in Padrino Cache
-* Ability to store/execute code in redis store in Padrino Cache
+* Fixes Routes with globs that when something is after the glob i.e. get :show, :map => '/pictures/*path.html'
+* Updated http_router to ~> 0.7.0
+* Completed Padrino Cache Doc [Thanks to Onethirtyfive]
 * Added a global Padrino.cache option
+* Padrino-Cache now is able to store ruby objects
 * Fix expire_in on redis store in Padrino Cache
 * Added Ajax Helpers
-* Use https://github.com/padrino/padrino-static for download js and ujs adapters
+* Use https://github.com/padrino/padrino-static for download js and ujs adapters (if no internet connection use a local copy)
+* Added session_secret task generator and as default in our app templates
+* Correctly work with nested parameters sent to url [Thanks to Funny-falcon]
+* Fix ajax request detection for dataType: 'application/javascript'
+* Removed lib from excluded list of our reloader
+* Added in our logs app name space for urls and layouts
+* Preserve spaces for text_area using admin/haml
+* Prevent using missing rendering engines on admin allowing user to use a different way
+* Fixed AbstractFormBuilder class scope name [Thanks to Funny-falcon]
+* Changed layout of our logger
+* Logs for cache GET and SET
+* Caching instructions in main app template
+* Fixes slim support (with slim initializer file)
+* Fixes NotFound Sinatra Errors
+* Require correct rspec/exceptions in cucumber.
+* Stylesheet_link_tag and javascript_include_tag should allow array inputs for sources (instead of argument array)
+* More space for edit/delete actions in the Admin Section
+* Added a nice confirm dialog to prevent mistakes in the Admin Section
+* Added the correct DELETE method to the logout in the Admin Section
+* Added setting log_static setting to Padrino.logger [Thanks to railsjedi]
+* Added stylesheet_link_tag and javascript_include_tag to allow array input for sources [Thanks to railsjedi]
+* Added ruby-debug19 to Gemfile [Thanks to railsjedi]
+* Allow simple_format to use a custom tag instead the only p tag
+* Fix collision with AS load_dependency
+* Fix File Store when cache dir is deleted after init
+* Added empty rows and cols to text_area tag to be w3c
+* Update Sinatra to 1.2.3 and HttpRouter to 0.6.9
+* Added cache_key inside route for a simple/fast expiring caching
+* Updated plugin git command to use Grit instead
+* Removed ./bundle/environment stuff
+* Rubinius compat [Thx to Rakaur]
+* Fixed setting custom views path
+* Removed deprecated dom helpers
+* Completed support for Erubis
+* Adds back Erubis admin support
+* Completed support for Slim
+* Adds Slim admin support
 
 == 0.9.23
 
@@ -32,9 +67,9 @@
 * Allow disabling of Padrino::Logger via :padrino_logging
 * Use Sinatra::Base instead of Sinatra::Application
 * Added Japanese Translations [Thanks to udzura]
-* set status to 406 on non-provided ACCEPTS
-* returns first provided mime-type on ACCEPT = */*
-* assume */* if no ACCEPT header is given
+* Set status to 406 on non-provided ACCEPTS
+* Returns first provided mime-type on ACCEPT = */*
+* Assume */* if no ACCEPT header is given
 
 == 0.9.21
 

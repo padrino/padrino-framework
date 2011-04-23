@@ -30,6 +30,7 @@ module Padrino
     attr_reader   :buffer
     attr_reader   :log
     attr_reader   :init_args
+    attr_accessor :log_static
 
     ##
     # Ruby (standard) logger levels:
@@ -63,6 +64,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # :log_static:: Whether or not to show log messages for static files. Defaults to: false
     #
     # ==== Examples
     #
@@ -146,6 +148,7 @@ module Padrino
     #   added. Defaults to true.
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
+    # :log_static:: Whether or not to show log messages for static files. Defaults to: false
     #
     def initialize(options={})
       @buffer            = []
@@ -156,6 +159,7 @@ module Padrino
       @mutex             = @@mutex[@log] ||= Mutex.new
       @format_datetime   = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
       @format_message    = options[:format_message]  || "%s - [%s] \"%s\""
+      @log_static        = options.has_key?(:log_static) ? options[:log_static] : false
     end
 
     ##
@@ -271,10 +275,11 @@ module Padrino
       # "lilith.local - - GET / HTTP/1.1 500 -"
       #  %{%s - %s %s %s%s %s - %d %s %0.4f}
       #
-      FORMAT = %{%s - %s %s %s%s %s - %d %s %0.4f}
+      FORMAT = %{%s (%0.4fms) %s - %s %s%s%s %s - %d %s}
 
-      def initialize(app)
+      def initialize(app, uri_root)
         @app = app
+        @uri_root = uri_root.sub(/\/$/,"")
       end
 
       def call(env)
@@ -289,16 +294,19 @@ module Padrino
           now = Time.now
           length = extract_content_length(header)
 
+          return if env['sinatra.static_file'] and !logger.log_static
+
           logger.debug FORMAT % [
+            env["REQUEST_METHOD"],
+            now - began_at,
             env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
             env["REMOTE_USER"] || "-",
-            env["REQUEST_METHOD"],
+            @uri_root || "",
             env["PATH_INFO"],
             env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
             env["HTTP_VERSION"],
             status.to_s[0..3],
-            length,
-            now - began_at ]
+            length]
         end
 
         def extract_content_length(headers)

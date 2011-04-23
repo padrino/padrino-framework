@@ -1,5 +1,10 @@
 def setup_script
-  get('https://github.com/padrino/padrino-static/raw/master/js/right.js', destination_root("/public/javascripts/right.js"))
-  get('https://github.com/padrino/padrino-static/raw/master/ujs/right-ujs.js', destination_root("/public/javascripts/right-ujs.js"))
+  begin
+    get('https://github.com/padrino/padrino-static/raw/master/js/right.js',  destination_root("/public/javascripts/right.js"))
+    get('https://github.com/padrino/padrino-static/raw/master/ujs/right.js', destination_root("/public/javascripts/right-ujs.js"))
+  rescue
+    copy_file('templates/static/js/right.js',  destination_root("/public/javascripts/right.js"))
+    copy_file('templates/static/ujs/right.js', destination_root("/public/javascripts/right-ujs.js"))
+  end
   create_file(destination_root('/public/javascripts/application.js'), "// Put your application scripts here")
 end

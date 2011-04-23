@@ -1,4 +1,4 @@
-SCSS_INIT = (<<-SCSS).gsub(/^ {6}/, '')
+SCSS_INIT = (<<-SCSS).gsub(/^/, '    ')
 # Enables support for SCSS template reloading in rack applications.
 # See http://nex-3.com/posts/88-sass-supports-rack for more details.
 # Store SCSS files (by default) within 'app/stylesheets'
@@ -11,6 +11,6 @@ SCSS
 
 def setup_stylesheet
   require_dependencies 'haml'
-  initializer :scss, SCSS_INIT
+  initializer :scss, SCSS_INIT.chomp
   empty_directory destination_root('/app/stylesheets')
 end

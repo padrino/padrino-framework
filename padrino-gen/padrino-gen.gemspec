@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("bundler", ">= 1.0.2")
-  s.add_dependency("git")
+  s.add_dependency("grit")
 end

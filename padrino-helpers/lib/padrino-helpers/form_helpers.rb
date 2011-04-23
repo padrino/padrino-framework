@@ -47,7 +47,7 @@ module Padrino
         options["accept-charset"] ||= "UTF-8"
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += capture_html(&block)
-        concat_content content_tag('form', inner_form_html, options)
+        concat_content content_tag(:form, inner_form_html, options)
       end
 
       ##
@@ -77,7 +77,7 @@ module Padrino
         legend_text = args[0].is_a?(String) ? args.first : nil
         legend_html = legend_text.blank? ? '' : content_tag(:legend, legend_text)
         field_set_content = legend_html + capture_html(&block)
-        concat_content content_tag('fieldset', field_set_content, options)
+        concat_content content_tag(:fieldset, field_set_content, options)
       end
 
       ##
@@ -125,13 +125,13 @@ module Padrino
             header_message = if options.include?(:header_message)
               options[:header_message]
             else
-              object_name = options[:object_name].to_s.underscore.gsub('_', ' ')
+              object_name = options[:object_name].to_s.underscore.gsub(/\//, ' ')
               object_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
               locale.t :header, :count => count, :model => object_name
             end
             message = options.include?(:message) ? options[:message] : locale.t(:body)
             error_messages = objects.map { |object|
-              object_name = options[:object_name].to_s.underscore.gsub('_', ' ')
+              object_name = options[:object_name].to_s.underscore.gsub(/\//, ' ')
               object.errors.map { |f, msg|
                 field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
                 content_tag(:li, "%s %s" % [field, msg])
@@ -237,7 +237,7 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :rows => "", :cols => "")
         content_tag(:textarea, options.delete(:value).to_s, options)
       end
 
@@ -401,12 +401,11 @@ module Padrino
       # Returns the blank option serving as a prompt if passed
       #
       def blank_option(prompt)
-        if prompt
-          case prompt.class.to_s
-          when 'String' then content_tag(:option, prompt, :value => '')
-          when 'Array'  then content_tag(:option, prompt.first, :value => prompt.last)
-          else               content_tag(:option, '', :value => '')
-          end
+        return unless prompt
+        case prompt
+          when String then content_tag(:option, prompt,       :value => '')
+          when Array  then content_tag(:option, prompt.first, :value => prompt.last)
+          else             content_tag(:option, '',           :value => '')
         end
       end
 

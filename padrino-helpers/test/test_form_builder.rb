@@ -38,7 +38,7 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display correct form html for namespaced object" do
       actual_html = form_for(Outer::UserAccount.new, '/register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.text_field :username }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
-      assert_has_tag('form input', :type => 'text', :name => 'outer-user_account[username]') { actual_html }
+      assert_has_tag('form input', :type => 'text', :name => 'outer_user_account[username]') { actual_html }
     end
 
     should "display correct form html with remote option" do
@@ -356,12 +356,12 @@ class TestFormBuilder < Test::Unit::TestCase
   context 'for #text_area method' do
     should "display correct text_area html" do
       actual_html = standard_builder.text_area(:about, :class => 'large')
-      assert_has_tag('textarea.large', :id => 'user_about', :name => 'user[about]') { actual_html }
+      assert_has_tag('textarea.large', :id => 'user_about', :name => 'user[about]', :rows => '', :cols => '') { actual_html }
     end
 
     should "display correct text_area html and content" do
-      actual_html = standard_builder.text_area(:about, :value => "Demo")
-      assert_has_tag('textarea', :id => 'user_about', :content => 'Demo') { actual_html }
+      actual_html = standard_builder.text_area(:about, :value => "Demo", :rows => '5', :cols => '6')
+      assert_has_tag('textarea', :id => 'user_about', :content => 'Demo', :rows => '5', :cols => '6') { actual_html }
     end
 
     should "display correct text_area in haml" do

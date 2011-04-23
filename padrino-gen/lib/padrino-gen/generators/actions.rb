@@ -44,6 +44,15 @@ module Padrino
         retrieve_component_config(destination_root('.components'))[component]
       end
 
+      # Set the component choice and store it in the .component file of the application
+      # store_component_choice(:renderer, :haml)
+      def store_component_choice(key, value)
+        path        = destination_root('.components')
+        config      = retrieve_component_config(path)
+        config[key] = value
+        create_file(path, :force => true) { config.to_yaml }
+      end
+
       # Loads the component config back into a hash
       # i.e retrieve_component_config(...) => { :mock => 'rr', :test => 'riot', ... }
       def retrieve_component_config(target)
@@ -109,7 +118,6 @@ module Padrino
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
       end
-      alias :require_dependency :require_dependencies
 
       # Inserts a required gem into the Gemfile to add the bundler dependency
       # insert_into_gemfile(name)
@@ -213,7 +221,7 @@ module Padrino
           raise ::NameError, "Project name #{name} cannot start with numbers"
         elsif name =~ /^\W/
           raise ::NameError, "Project name #{name} cannot start with non-word character"
-        end 
+        end
       end
 
       module ClassMethods

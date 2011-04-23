@@ -23,7 +23,6 @@ module Padrino
         # ==== Examples
         #   # Caching a fragment
         #   class MyTweets < Padrino::Application
-        #     register Padrino::Cache  # includes helpers
         #     enable :caching          # turns on caching mechanism
         #
         #     controller '/tweets' do
@@ -42,12 +41,15 @@ module Padrino
         #   end
         #
         def cache(key, opts = nil, &block)
-          if self.class.caching?
-            if value = self.class.cache.get(key.to_s)
+          if settings.caching?
+            began_at = Time.now
+            if value = settings.cache.get(key.to_s)
+              logger.debug "GET Fragment (%0.4fms) %s" % [Time.now-began_at, key.to_s] if defined?(logger)
               concat_content(value)
             else
               value = capture_html(&block)
-              self.class.cache.set(key.to_s, value, opts)
+              settings.cache.set(key.to_s, value, opts)
+              logger.debug "SET Fragment (%0.4fms) %s" % [Time.now-began_at, key.to_s] if defined?(logger)
               concat_content(value)
             end
           end

@@ -1,6 +1,5 @@
 module Padrino
   module Helpers
-
     module OutputHelpers
       class HamlHandler < AbstractHandler
         ##
@@ -47,8 +46,7 @@ module Padrino
           nil
         end
       end # HamlHandler
-
       OutputHelpers.register(HamlHandler)
     end # OutputHelpers
-  end
-end
+  end # Helpers
+end # Padrino

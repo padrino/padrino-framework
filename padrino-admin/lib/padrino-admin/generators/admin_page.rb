@@ -32,8 +32,6 @@ module Padrino
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
             self.behavior = :revoke if options[:destroy]
-            ext = fetch_component_choice(:renderer)
-
             empty_directory destination_root("/admin/views/#{@orm.name_plural}")
 
             template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")

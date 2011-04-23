@@ -230,6 +230,15 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'json', body
   end
 
+  should "set correct content_type for Accept not equal to */* even if */* also provided" do
+    mock_app do
+      get("/foo", :provides => [:html, :js, :xml]) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    assert_equal 'js', body
+  end
+
   should "return the first content type in provides if accept header is empty" do
     mock_app do
       get(:a, :provides => [:js]){ content_type.to_s }
@@ -841,6 +850,14 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'html', body
   end
 
+  should "set content_type to :js if Accept includes both application/javascript and */*;q=0.5" do
+    mock_app do
+      get("/foo", :provides => [:html, :js]) { content_type.to_s }
+    end
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    assert_equal 'js', body
+  end
+
   should 'allows custom route-conditions to be set via route options and halt' do
     protector = Module.new do
       def protect(*args)
@@ -1306,5 +1323,40 @@ class TestRouting < Test::Unit::TestCase
     post '/', {'_method'=>'PUT'}, {}
     assert_equal 200, status
     assert_equal 'okay', body
+  end
+
+  should 'parse nested params' do
+    mock_app do
+      get(:index) { params.inspect }
+    end
+    get "/?account[name]=foo&account[surname]=bar"
+    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
+    get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
+    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
+  end
+
+  should 'render sinatra NotFound page' do
+    mock_app { set :environment, :development }
+    get "/"
+    assert_equal 404, status
+    assert_match /Sinatra doesn\'t know this ditty./, body
+  end
+
+  should 'render a custom NotFound page' do
+    mock_app do
+      error(Sinatra::NotFound) { "not found" }
+    end
+    get "/"
+    assert_equal 404, status
+    assert_match /not found/, body
+  end
+
+  should 'render a custom 404 page' do
+    mock_app do
+      error(404) { "not found" }
+    end
+    get "/"
+    assert_equal 404, status
+    assert_match /not found/, body
   end
 end

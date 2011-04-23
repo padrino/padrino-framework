@@ -251,9 +251,8 @@ module Padrino
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names.join("_").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
-          params.delete_if { |k,v| v.nil? }
-          params[:format] = params[:format].to_s if params.has_key?(:format)
-          params.each { |k,v| params[k] = v.to_param if v.respond_to?(:to_param) }
+          params[:format] = params[:format].to_s unless params[:format].nil?
+          params = value_to_param(params)
         end
         url = if params_array.empty?
           router.url(name, params)
@@ -284,6 +283,21 @@ module Padrino
       def head(path, *args, &bk);   route 'HEAD',   path, *args, &bk end
 
       private
+        # Parse params from the url method
+        def value_to_param(value)
+          case value
+            when Array
+              value.map { |v| value_to_param(v) }.compact
+            when Hash
+              value.inject({}) do |memo, (k,v)|
+                v = value_to_param(v)
+                memo[k] = v unless v.nil?
+                memo
+              end
+            when nil then nil
+            else value.respond_to?(:to_param) ? value.to_param : value
+          end
+        end
 
         # Add prefix slash if its not present and remove trailing slashes.
         def conform_uri(uri_string)
@@ -314,19 +328,18 @@ module Padrino
         #
         def route(verb, path, *args, &block)
           options = case args.size
-          when 2
-            args.last.merge(:map => args.first)
-          when 1
-            map = args.shift if args.first.is_a?(String)
-            if args.first.is_a?(Hash)
-              map ? args.first.merge(:map => map) : args.first
-            else
-              {:map => map || args.first}
-            end
-          when 0
-            {}
-          else
-            raise
+            when 2
+              args.last.merge(:map => args.first)
+            when 1
+              map = args.shift if args.first.is_a?(String)
+              if args.first.is_a?(Hash)
+                map ? args.first.merge(:map => map) : args.first
+              else
+                {:map => map || args.first}
+              end
+            when 0
+              {}
+            else raise
           end
 
           # Do padrino parsing. We dup options so we can build HEAD request correctly
@@ -569,7 +582,8 @@ module Padrino
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
-            if accepts.empty? || accepts.any? { |a| a == "*/*" }
+            accepts.delete "*/*"
+            if accepts.empty?
               matching_types  = mime_types.slice(0,1)
             else
               matching_types  = (accepts & mime_types)
@@ -678,6 +692,7 @@ module Padrino
               route_eval do
                 match[1].each {|k,v| response[k] = v}
                 status match[0]
+                route_missing if match[0] == 404
               end
             end
           end

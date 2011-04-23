@@ -56,7 +56,7 @@ body{font-size:12px;font-family:sans-serif;}
 .table{width:100%;border-collapse:collapse;margin-bottom:15px;}
 .table th{padding:10px;font-weight:bold;text-align:left;}
 /*.table th.first{width:30px;}*/
-/*.table th.last{width:200px;}*/
+.table th.last{width:80px;}
 .table .checkbox{margin-left:10px;}
 .table td{padding:10px;}
 .table td.last{text-align:right;}
@@ -77,7 +77,8 @@ input.check_box{margin:0;padding:0;}
 .form a{color:red;font-size:14px;}
 .form input.text_field,.form input.password_field,.form textarea.text_area{width:100%;border-width:1px;border-style:solid;}
 .button_to{display:inline;}
-.button_to input{background:none;border:none;display:inline;font-size:12px;color:#A72D2E;cursor:pointer;}
+.button_to input{background:none;border:none;display:inline;font-size:12px;color:#A72D2E;cursor:pointer;font-family: helvetica, arial, sans-serif;}
+#user-navigation .button_to input{color:#FFFFFF;}
 /* lists */
 ul.list{margin:0;padding:0;list-style-type:none;}
 ul.list li{clear:left;padding-bottom:5px;}

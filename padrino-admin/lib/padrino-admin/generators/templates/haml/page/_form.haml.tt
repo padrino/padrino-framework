@@ -2,7 +2,7 @@
 .group
   =f.label :<%= column[:name] %>
   =f.error_message_on :<%= column[:name] %>
-  =f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
+  <% if column[:field_type] == :text_area %>~<% else %>=<% end %>f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
   %span.description Ex: a simple text
 
 <%- end -%>

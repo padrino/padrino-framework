@@ -53,8 +53,27 @@ You can also cache on a controller-wide basis:
       get '/bar' do
         'Url is /admin/bar'
       end
+
+      post '/baz' do # We cache only GET and HEAD request
+        'This will not be cached'
+      end
     end
   end
+
+You can also provide a custom <tt>cache_key</tt> in any route:
+
+  class SimpleApp < Padrino::Application
+    register Padrino::Cache
+    enable :caching
+
+    get '/post/:id', :cache => true do
+      @post = Post.find(params[:id])
+      cache_key :my_name
+    end
+  end
+
+In this way you can manually expire cache with CachedApp.cache.delete(:my_name)
+for example from the Post model after an update.
 
 If you specify <tt>:cache => true</tt> but do not invoke <tt>expires_in</tt>,
 the response will be cached indefinitely. Most of the time, you will want to
@@ -78,7 +97,7 @@ The padrino-cache helpers are made available to your application thusly:
   # Enable caching
   class CachedApp < Padrino::Application
     register Padrino::Cache  # includes helpers
-    enable :caching          # turns on caching mechanism
+    enable :caching          # turns on caching
 
     # ... controllers/routes ...
   end
@@ -93,22 +112,22 @@ subdirectory of your application root.
 
 ==== <tt>expires_in( seconds )</tt>
 
-This helper is used within a controller or route to indicate how often content
-should persist in the cache.
+This helper is used within a controller or route to indicate how often cached
+<em>page-level</em> content should persist in the cache.
 
 After <tt>seconds</tt> seconds have passed, content previously cached will
 be discarded and re-rendered. Code associated with that route will <em>not</em>
-be executed; rather, its previous output will be sent to the client with a 
+be executed; rather, its previous output will be sent to the client with a
 200 OK status code.
 
   # Setting content expiry time
   class CachedApp < Padrino::Application
     register Padrino::Cache  # includes helpers
-    enable :caching          # turns on caching mechanism
+    enable :caching          # turns on caching
 
     controller '/blog', :cache => true do
       expires_in 15
-      
+
       get '/entries' do
         'just broke up eating twinkies lol'
       end
@@ -140,17 +159,17 @@ to be cached. It can be used in within a route:
   # Caching a fragment
   class MyTweets < Padrino::Application
     register Padrino::Cache  # includes helpers
-    enable :caching          # turns on caching mechanism
+    enable :caching          # turns on caching
 
     controller '/tweets' do
       get :feed, :map => '/:username' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         # Below outputs @feed somewhere in its markup
         render 'feeds/show'
       end
@@ -167,43 +186,42 @@ Note that any other action will reference the same content if it uses the same k
   # Multiple routes sharing the same cached fragment
   class MyTweets < Padrino::Application
     register Padrino::Cache  # includes helpers
-    enable :caching          # turns on caching mechanism
+    enable :caching          # turns on caching
 
     controller :tweets do
       get :feed, :map => '/:username' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         # Below outputs @feed somewhere in its markup
         render 'feeds/show'
       end
-      
+
       get :mobile_feed, :map => '/:username.iphone' do
         username = params[:username]
-        
+
         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
           @tweets = Tweet.all( :username => username )
           render 'partials/feedcontent'
         end
-        
+
         render 'feeds/show.iphone'
       end
     end
   end
 
-The <tt>opts</tt> argument is actually passed to the underlying store. All stores
-included with Padrino support the <tt>:expires_in</tt> option out of the box.
+The <tt>opts</tt> argument is actually passed to the underlying store. All stores included with Padrino support the <tt>:expires_in</tt> option out of the box.
 
 Finally, to DRY up things a bit, we might do:
 
   # Multiple routes sharing the same cached fragment
   class MyTweets < Padrino::Application
     register Padrino::Cache  # includes helpers
-    enable :caching          # turns on caching mechanism
+    enable :caching          # turns on caching
 
     controller :tweets do
       # This works because all routes in this controller specify :username
@@ -213,11 +231,11 @@ Finally, to DRY up things a bit, we might do:
           render 'partials/feedcontent'
         end
       end
-      
+
       get :feed, :map => '/:username' do
         render 'feeds/show'
       end
-      
+
       get :mobile_feed, :map => '/:username.iphone' do
         render 'feeds/show.iphone'
       end
@@ -228,6 +246,91 @@ Of course, this example assumes the markup generated by rendering
 <tt>partials/feedcontent</tt> would be suitable for both feed formats. This may or
 may not be the case in your application, but the principle applies: fragments
 are shared between all code which accesses the cache using the same key.
+
+== Caching Store
+
+You can set a global caching option or a per app caching options.
+
+=== Global Caching Options
+
+  Padrino.cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  Padrino.cache = Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
+  Padrino.cache = Padrino::Cache::Store::Memory.new(50)
+  Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
+
+You can manage your cache from anywhere in your app:
+
+  Padrino.cache.set('val', 'test')
+  Padrino.cache.get('val') # => 'test'
+  Padrino.cache.delete('val')
+  Padrino.cache.flush
+
+==== Application Caching Options
+
+  set :cache, Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
+  set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
+  set :cache, Padrino::Cache::Store::Memory.new(50)
+  set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app_name, 'cache') # default choice
+
+You can manage your cache from anywhere in your app:
+
+  MyApp.cache.set('val', 'test')
+  MyApp.cache.get('val') # => 'test'
+  MyApp.cache.delete('val')
+  MyApp.cache.flush
+
+== Expiring Cached Content
+
+In certain circumstances, cached content becomes stale. The  <tt>expire</tt>
+helper removes content associated with a key or keys, which your app is then
+free to re-generate.
+
+=== <tt>expire( *key )</tt>
+
+==== Fragment-level expiration
+
+Using the example above of a tweet server, let's suppose our users have a
+tendency to post things they quickly regret. When we query our database
+for new tweets, let's check to see if any have been deleted. If so, we'll
+do our user a favor and instantly re-render the feed.
+
+  # Expiring fragment-level cached content
+  class MyTweets < Padrino::Application
+    register Padrino::Cache # includes helpers
+    enable :caching         # turns on caching
+    enable :session         # we'll use this to store last time visited
+
+    COMPANY_FOUNDING = Time.utc( 2010, "April" )
+
+    controller :tweets do
+      get :feed, :map => '/:username' do
+        last_visit = session[:last_visit] || params[:since] || COMPANY_FOUNDING
+
+        username = params[:username]
+        @tweets = Tweet.since( last_visit, :username => username ).limit( 100 )
+
+        expire( "feed since #{last_visit}" ) if @tweets.any? { |t| t.deleted_since?( last_visit ) }
+
+        session[:last_visit] = Time.now
+        @feed = cache( "feed since #{last_visit}", :expires_in => 60 ) do
+          @tweets = @tweets.find_all { |t| !t.deleted? }
+          render 'partials/feedcontent'
+        end
+
+        render 'feeds/show'
+      end
+    end
+  end
+
+Normally, this example will only re-cache feed content every 60 seconds,
+but it will do so immediately if any tweets have been deleted.
+
+==== Page-level expiration
+
+Page-level expiration works exactly like the example above--by using
+<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>.
 
 == Copyright
 

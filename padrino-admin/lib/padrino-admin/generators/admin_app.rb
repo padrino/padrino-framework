@@ -21,31 +21,36 @@ module Padrino
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :name, :desc => "The app name", :aliases => '-a', :default => "Padrino Admin", :type => :string
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
+      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml, erubis)", :type => :string
 
       # Copies over the Padrino base admin application
       def create_admin
         self.destination_root = options[:root]
         if in_app_root?
-
           unless supported_orm.include?(orm)
-            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!"
+            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!", :yellow
             raise SystemExit
           end
 
           unless self.class.themes.include?(options[:theme])
-            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}"
+            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
             raise SystemExit
           end
 
+          tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
+          unless supported_ext.include?(tmp_ext.to_sym)
+            say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb or -e erubis", :yellow
+            raise SystemExit
+          end
+          store_component_choice(:admin_renderer, tmp_ext)
+
           self.behavior = :revoke if options[:destroy]
 
-          ext = fetch_component_choice(:renderer)
-
           empty_directory destination_root("admin")
-          directory "templates/app",     destination_root("admin")
-          directory "templates/assets",  destination_root("public", "admin")
+          directory "templates/app",       destination_root("admin")
+          directory "templates/assets",    destination_root("public", "admin")
+          template  "templates/app.rb.tt", destination_root("admin/app.rb")
 
           account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
@@ -56,9 +61,6 @@ module Padrino
           account_params << "-d" if options[:destroy]
 
           Padrino::Generators::Model.start(account_params)
-          # Can't add this through model generator as it does not have /admin loaded yet
-          # so run it and remove it and copy admin version over to admin path.
-          remove_file destination_root('app','models','account.rb')
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
           column_fields = [
@@ -74,12 +76,12 @@ module Padrino
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt",                     destination_root("admin", "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root("app", "models", "account.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
           else
-            template "templates/account/seeds.rb.tt",                    destination_root("db/seeds.rb")
+            template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
           end
 
           empty_directory destination_root("admin/controllers")

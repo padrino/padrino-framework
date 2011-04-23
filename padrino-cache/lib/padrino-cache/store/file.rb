@@ -91,11 +91,7 @@ module Padrino
           end
 
           def init
-            unless @init
-              FileUtils.rm_rf(@root)
-              FileUtils.mkdir_p(@root)
-              @init = true
-            end
+            FileUtils.mkdir_p(@root) unless ::File.exist?(@root)
           end
       end # File
     end # Store

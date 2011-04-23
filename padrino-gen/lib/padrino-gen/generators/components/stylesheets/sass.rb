@@ -1,4 +1,4 @@
-SASS_INIT = (<<-SASS).gsub(/^ {6}/, '')
+SASS_INIT = (<<-SASS).gsub(/^/, '    ')
 # Enables support for SASS template reloading in rack applications.
 # See http://nex-3.com/posts/88-sass-supports-rack for more details.
 # Store SASS files (by default) within 'app/stylesheets'
@@ -10,6 +10,6 @@ SASS
 
 def setup_stylesheet
   require_dependencies 'haml'
-  initializer :sass, SASS_INIT
+  initializer :sass, SASS_INIT.chomp
   empty_directory destination_root('/app/stylesheets')
 end

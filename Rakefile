@@ -88,6 +88,8 @@ task :fresh => [:uninstall, :install, :clean]
 
 desc "Pushes repository to GitHub"
 task :push do
+  puts "Updating submodules"
+  sh "git submodule foreach git pull"
   puts "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"

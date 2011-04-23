@@ -330,6 +330,12 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    should "properly generate for erubis" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erubis','--script=none') }
+      assert_match(/Applying.*?erubis.*?renderer/,buffer)
+      assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
     should "properly generate for liquid" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=liquid','--script=none') }
       assert_match(/Applying.*?liquid.*?renderer/,buffer)
@@ -340,6 +346,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim','--script=none') }
       assert_match(/Applying.*?slim.*?renderer/,buffer)
       assert_match_in_file(/gem 'slim'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/Slim::Engine\.set_default_options/m, "#{@apptmp}/sample_project/lib/slim_init.rb")
+      assert_match_in_file(/register SlimInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
     end
   end
 
@@ -355,7 +363,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for mootools" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
       assert_match(/Applying.*?mootools.*?script/, buffer)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
@@ -380,7 +388,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for ext-core" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=extcore') }
       assert_match(/Applying.*?extcore.*?script/, buffer)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-core.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end

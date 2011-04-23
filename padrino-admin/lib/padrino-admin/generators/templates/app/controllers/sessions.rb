@@ -18,7 +18,7 @@ Admin.controllers :sessions do
     end
   end
 
-  get :destroy do
+  delete :destroy do
     set_current_account(nil)
     redirect url(:sessions, :new)
   end

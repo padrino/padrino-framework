@@ -9,14 +9,16 @@ module Padrino
       #   capture_html(&block) => "...html..."
       #
       def capture_html(*args, &block)
-        handler = self.find_proper_handler
+        handler = find_proper_handler
+        captured_html = ""
         if handler && handler.is_type? && handler.block_is_type?(block)
           captured_html = handler.capture_from_template(*args, &block)
+        else # invoking the block directly if there was no template
+          captured_html = block_given? && block.call(*args) if captured_html.blank?
         end
-        # invoking the block directly if there was no template
-        captured_html = block_given? && block.call(*args) if captured_html.blank?
         captured_html
       end
+      alias :capture :capture_html
 
       ##
       # Outputs the given text to the templates buffer directly
@@ -26,13 +28,14 @@ module Padrino
       #   concat_content("This will be output to the template buffer")
       #
       def concat_content(text="")
-        handler = self.find_proper_handler
+        handler = find_proper_handler
         if handler && handler.is_type?
           handler.concat_to_template(text)
         else # theres no template to concat, return the text directly
           text
         end
       end
+      alias :concat :concat_content
 
       ##
       # Returns true if the block is from a supported template type; false otherwise.
@@ -43,7 +46,7 @@ module Padrino
       #   block_is_template?(block)
       #
       def block_is_template?(block)
-        handler = self.find_proper_handler
+        handler = find_proper_handler
         block && handler && handler.block_is_type?(block)
       end
 
@@ -75,9 +78,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        blocks.map { |content|
-          capture_html(*args, &content)
-        }.join
+        blocks.map { |content| capture_html(*args, &content) }.join
       end
 
       protected
@@ -102,6 +103,15 @@ module Padrino
         #
         def find_proper_handler
           OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.is_type? }
+        end
+
+      private
+        ##
+        # Fix for tilt 1.2 and Erubis
+        #
+        def render(engine, data=nil, options={}, locals={}, &block)
+          options[:bufname] ||= '@_out_buf'
+          super(engine, data, options, locals, &block)
         end
     end # OutputHelpers
   end # Helpers
