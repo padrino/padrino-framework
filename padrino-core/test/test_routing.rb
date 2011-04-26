@@ -238,6 +238,14 @@ class TestRouting < Test::Unit::TestCase
     assert_equal '5', body
   end
 
+  should "allow .'s in param values" do
+    mock_app do
+      get('/id/:email', :provides => [:json]) { |email, format| [email, format] * '/' }
+    end
+    get '/id/foo@bar.com.json'
+    assert_equal 'foo@bar.com/json', body
+  end
+
   should "set correct content_type for Accept not equal to */* even if */* also provided" do
     mock_app do
       get("/foo", :provides => [:html, :js, :xml]) { content_type.to_s }

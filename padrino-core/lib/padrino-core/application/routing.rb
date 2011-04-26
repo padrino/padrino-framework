@@ -9,7 +9,7 @@ class Sinatra::Request
   end
 end
 
-class ::HttpRouter #:nodoc:
+class HttpRouter #:nodoc:
   attr_accessor :runner
   class Route #:nodoc:
     attr_reader :before_filters, :after_filters
@@ -383,7 +383,13 @@ module Padrino
           end
 
           # Add Sinatra conditions
-          options.each { |option, args| send(option, *args) }
+          options.each { |option, args|
+            if route.respond_to?(option)
+              route.send(option, *args)
+            else
+              send(option, *args)
+            end
+          }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
 
@@ -474,6 +480,8 @@ module Padrino
 
             if @_use_format or format_params = options[:provides]
               process_path_for_provides(path, format_params)
+              options[:matching] ||= {}
+              options[:matching][:format] = /[^\.]+/
             end
 
             # Build our controller
