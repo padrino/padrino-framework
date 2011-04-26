@@ -29,6 +29,7 @@ group :development do
   gem "redis", ">= 2.0.0"
   gem "uuid", ">= 2.3.1"
   gem "bcrypt-ruby", :require => "bcrypt"
+  gem "phocus"
   platforms :mri_18 do
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
