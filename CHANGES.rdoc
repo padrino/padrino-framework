@@ -49,6 +49,7 @@
 * Removed deprecated dom helpers
 * Completed support for Slim
 * Adds Slim admin support
+* Do not enforce rack sessions for Rack:Flash
 
 == 0.9.23
 
