@@ -1,5 +1,7 @@
 require 'sinatra/base'
 require 'haml'
+require 'erubis'
+require 'slim'
 
 class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
@@ -28,14 +30,14 @@ class MarkupDemo < Sinatra::Base
       concat_content "<p>#{content_html}</p>"
     end
 
+    def determine_block_is_template(name, &block)
+      concat_content "<p class='is_template'>The #{name} block passed in is a template</p>" if block_is_template?(block)
+    end
+
     def ruby_not_template_block
       determine_block_is_template('ruby') do
         content_tag(:span, "This not a template block")
       end
-    end
-
-    def determine_block_is_template(name, &block)
-      concat_content "<p class='is_template'>The #{name} block passed in is a template</p>" if block_is_template?(block)
     end
   end
 end

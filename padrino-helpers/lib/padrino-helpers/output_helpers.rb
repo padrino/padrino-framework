@@ -104,15 +104,6 @@ module Padrino
         def find_proper_handler
           OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.is_type? }
         end
-
-      private
-        ##
-        # Fix for tilt 1.2 and Erubis
-        #
-        def render(engine, data=nil, options={}, locals={}, &block)
-          options[:bufname] ||= '@_out_buf'
-          super(engine, data, options, locals, &block)
-        end
     end # OutputHelpers
   end # Helpers
 end # Padrino

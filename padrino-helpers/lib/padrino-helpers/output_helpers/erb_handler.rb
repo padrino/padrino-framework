@@ -27,12 +27,10 @@ module Padrino
         #  @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          self.output_buffer, buffer_was = "", self.output_buffer
-          eval '_buf, @_buf_was = "", _buf if defined?(_buf)', block.binding
+          self.output_buffer, _buf_was = "", self.output_buffer
           block.call(*args)
         ensure
-          eval '_buf = @_buf_was if defined?(_buf)', block.binding
-          self.output_buffer = buffer_was
+          self.output_buffer = _buf_was
         end
 
         ##
@@ -55,7 +53,7 @@ module Padrino
         #  @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
-          is_type? || (block && eval('defined? __in_erb_template', block.binding))
+          is_type? || (block && eval('defined?(__in_erb_template)', block.binding))
         end
 
         protected

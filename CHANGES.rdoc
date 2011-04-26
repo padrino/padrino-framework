@@ -47,8 +47,6 @@
 * Rubinius compat [Thx to Rakaur]
 * Fixed setting custom views path
 * Removed deprecated dom helpers
-* Completed support for Erubis
-* Adds back Erubis admin support
 * Completed support for Slim
 * Adds Slim admin support
 

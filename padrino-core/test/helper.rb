@@ -7,7 +7,6 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
-require 'phocus'
 
 module Kernel
   # Silences the output by redirecting to stringIO

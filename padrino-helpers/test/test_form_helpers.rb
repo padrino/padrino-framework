@@ -65,6 +65,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
     end
+
+    should "display correct forms in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form', :action => '/simple'
+      assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+    end
   end
 
   context 'for #field_set_tag method' do
@@ -84,6 +90,14 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display correct field_sets in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.simple-form fieldset', :count => 1
+      assert_have_no_selector 'form.simple-form fieldset legend'
+      assert_have_selector 'form.advanced-form fieldset', :count => 1, :class => 'advanced-field-set'
+      assert_have_selector 'form.advanced-form fieldset legend', :content => "Advanced"
+    end
+
+    should "display correct field_sets in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.simple-form fieldset', :count => 1
       assert_have_no_selector 'form.simple-form fieldset legend'
       assert_have_selector 'form.advanced-form fieldset', :count => 1, :class => 'advanced-field-set'
@@ -118,6 +132,20 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display correct error messages list in haml" do
       visit '/haml/form_tag'
+      assert_have_no_selector 'form.simple-form .field-errors'
+      assert_have_selector 'form.advanced-form .field-errors'
+      assert_have_selector 'form.advanced-form .field-errors h2', :content => "There are problems with saving user!"
+      assert_have_selector 'form.advanced-form .field-errors p',  :content => "There were problems with the following fields:"
+      assert_have_selector 'form.advanced-form .field-errors ul'
+      assert_have_selector 'form.advanced-form .field-errors ul li', :count => 4
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Email must be a email"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Fake must be valid"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Second must be present"
+      assert_have_selector 'form.advanced-form .field-errors ul li', :content => "Third must be a number"
+    end
+
+    should "display correct error messages list in slim" do
+      visit '/slim/form_tag'
       assert_have_no_selector 'form.simple-form .field-errors'
       assert_have_selector 'form.advanced-form .field-errors'
       assert_have_selector 'form.advanced-form .field-errors h2', :content => "There are problems with saving user!"
@@ -187,8 +215,27 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form label', :content => "Password", :for => 'password'
       assert_have_selector 'form.simple-form label', :content => "Gender", :for => 'gender'
     end
+
     should "display label tag in haml for advanced form" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.advanced-form label', :count => 6
+      assert_have_selector 'form.advanced-form label.first', :content => "Nickname", :for => 'username'
+      assert_have_selector 'form.advanced-form label.first', :content => "Password", :for => 'password'
+      assert_have_selector 'form.advanced-form label.about', :content => "About Me", :for => 'about'
+      assert_have_selector 'form.advanced-form label.photo', :content => "Photo"   , :for => 'photo'
+      assert_have_selector 'form.advanced-form label.gender', :content => "Gender"   , :for => 'gender'
+    end
+
+    should "display label tag in slim for simple form" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form label', :count => 4
+      assert_have_selector 'form.simple-form label', :content => "Username", :for => 'username'
+      assert_have_selector 'form.simple-form label', :content => "Password", :for => 'password'
+      assert_have_selector 'form.simple-form label', :content => "Gender", :for => 'gender'
+    end
+
+    should "display label tag in slim for advanced form" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.advanced-form label', :count => 6
       assert_have_selector 'form.advanced-form label.first', :content => "Nickname", :for => 'username'
       assert_have_selector 'form.advanced-form label.first', :content => "Password", :for => 'password'
@@ -215,6 +262,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form input[type=hidden]', :count => 1, :name => 'session_id', :value => "__secret__"
       assert_have_selector 'form.advanced-form input[type=hidden]', :count => 1, :name => 'session_id', :value => "__secret__"
     end
+
+    should "display hidden field in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form input[type=hidden]', :count => 1, :name => 'session_id', :value => "__secret__"
+      assert_have_selector 'form.advanced-form input[type=hidden]', :count => 1, :name => 'session_id', :value => "__secret__"
+    end
   end
 
   context 'for #text_field_tag method' do
@@ -231,6 +284,12 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display text field in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.simple-form input[type=text]', :count => 1, :name => 'username'
+      assert_have_selector 'form.advanced-form fieldset input[type=text]', :count => 1, :name => 'username', :id => 'the_username'
+    end
+
+    should "display text field in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.simple-form input[type=text]', :count => 1, :name => 'username'
       assert_have_selector 'form.advanced-form fieldset input[type=text]', :count => 1, :name => 'username', :id => 'the_username'
     end
@@ -256,6 +315,11 @@ class TestFormHelpers < Test::Unit::TestCase
       visit '/haml/form_tag'
       assert_have_selector 'form.advanced-form textarea', :count => 1, :name => 'about', :class => 'large'
     end
+
+    should "display text area in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.advanced-form textarea', :count => 1, :name => 'about', :class => 'large'
+    end
   end
 
   context 'for #password_field_tag method' do
@@ -275,6 +339,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form input[type=password]', :count => 1, :name => 'password'
       assert_have_selector 'form.advanced-form input[type=password]', :count => 1, :name => 'password'
     end
+
+    should "display password field in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form input[type=password]', :count => 1, :name => 'password'
+      assert_have_selector 'form.advanced-form input[type=password]', :count => 1, :name => 'password'
+    end
   end
 
   context 'for #file_field_tag method' do
@@ -290,6 +360,11 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display file field in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.advanced-form input[type=file]', :count => 1, :name => 'photo', :class => 'upload'
+    end
+
+    should "display file field in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.advanced-form input[type=file]', :count => 1, :name => 'photo', :class => 'upload'
     end
   end
@@ -317,6 +392,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form input[type=checkbox]', :count => 1
       assert_have_selector 'form.advanced-form input[type=checkbox]', :value => "1", :checked => 'checked'
     end
+
+    should "display check_box tag in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form input[type=checkbox]', :count => 1
+      assert_have_selector 'form.advanced-form input[type=checkbox]', :value => "1", :checked => 'checked'
+    end
   end
 
   context "for #radio_button_tag method" do
@@ -340,6 +421,14 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display radio_button tag in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.simple-form input[type=radio]', :count => 1, :value => 'male'
+      assert_have_selector 'form.simple-form input[type=radio]', :count => 1, :value => 'female'
+      assert_have_selector 'form.advanced-form input[type=radio]', :value => "male", :checked => 'checked'
+      assert_have_selector 'form.advanced-form input[type=radio]', :value => "female"
+    end
+
+    should "display radio_button tag in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.simple-form input[type=radio]', :count => 1, :value => 'male'
       assert_have_selector 'form.simple-form input[type=radio]', :count => 1, :value => 'female'
       assert_have_selector 'form.advanced-form input[type=radio]', :value => "male", :checked => 'checked'
@@ -462,6 +551,18 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
     end
+
+    should "display select tag in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form select', :count => 1, :name => 'color'
+      assert_have_selector('select option', :content => 'green',  :value => 'green')
+      assert_have_selector('select option', :content => 'orange', :value => 'orange')
+      assert_have_selector('select option', :content => 'purple', :value => 'purple')
+      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('select option', :content => 'green',  :value => '1')
+      assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
+      assert_have_selector('select option', :content => 'purple', :value => '3')
+    end
   end
 
   context 'for #submit_tag method' do
@@ -481,6 +582,12 @@ class TestFormHelpers < Test::Unit::TestCase
       assert_have_selector 'form.simple-form input[type=submit]', :count => 1, :value => "Submit"
       assert_have_selector 'form.advanced-form input[type=submit]', :count => 1, :value => "Login"
     end
+
+    should "display submit tag in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'form.simple-form input[type=submit]', :count => 1, :value => "Submit"
+      assert_have_selector 'form.advanced-form input[type=submit]', :count => 1, :value => "Login"
+    end
   end
 
   context 'for #button_tag method' do
@@ -496,6 +603,11 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display submit tag in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.advanced-form input[type=button]', :count => 1, :value => "Cancel"
+    end
+
+    should "display submit tag in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.advanced-form input[type=button]', :count => 1, :value => "Cancel"
     end
   end
@@ -522,6 +634,11 @@ class TestFormHelpers < Test::Unit::TestCase
 
     should "display image submit tag in haml" do
       visit '/haml/form_tag'
+      assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
+    end
+
+    should "display image submit tag in slim" do
+      visit '/slim/form_tag'
       assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
     end
   end

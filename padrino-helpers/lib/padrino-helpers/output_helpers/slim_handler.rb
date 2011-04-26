@@ -1,5 +1,5 @@
 # Make slim works with sinatra/padrino
-Slim::Engine.set_default_options :buffer => '@_out_buf' if defined?(Slim)
+Slim::Engine.set_default_options(:buffer => '@_out_buf') if defined?(Slim)
 
 module Padrino
   module Helpers
@@ -31,10 +31,8 @@ module Padrino
         #
         def capture_from_template(*args, &block)
           self.output_buffer, buffer_was = "", self.output_buffer
-          eval '_buf, @_buf_was = "", _buf if defined?(_buf)', block.binding
           block.call(*args)
         ensure
-          eval '_buf = @_buf_was if defined?(_buf)', block.binding
           self.output_buffer = buffer_was
         end
 

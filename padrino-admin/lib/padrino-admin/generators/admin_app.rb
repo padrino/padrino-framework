@@ -22,7 +22,7 @@ module Padrino
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
-      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml, erubis)", :type => :string
+      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
 
       # Copies over the Padrino base admin application
       def create_admin
@@ -40,7 +40,7 @@ module Padrino
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
-            say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb or -e erubis", :yellow
+            say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb or -e slim", :yellow
             raise SystemExit
           end
           store_component_choice(:admin_renderer, tmp_ext)
