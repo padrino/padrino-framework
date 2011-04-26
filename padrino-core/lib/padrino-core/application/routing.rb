@@ -1,13 +1,59 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-Sinatra::Request.class_eval(<<-HEREDOC, __FILE__, __LINE__)
+class Sinatra::Request
   attr_accessor :route_obj
 
   def controller
     route_obj && route_obj.controller
   end
-HEREDOC
+end
+
+class ::HttpRouter #:nodoc:
+  attr_accessor :runner
+  class Route #:nodoc:
+    attr_reader :before_filters, :after_filters
+    attr_accessor :custom_conditions, :use_layout, :controller, :cache
+
+    def add_before_filter(filter)
+      @before_filters ||= []
+      @before_filters << filter
+      arbitrary { |req, params|
+        if req.testing_405?
+          true
+        else
+          old_params = router.runner.params
+          result = catch(:pass) {
+            router.runner.params ||= {}
+            router.runner.params.merge!(params)
+            router.runner.instance_eval(&filter)
+            true
+          } == true
+          router.runner.params = old_params
+          result
+        end
+      }
+    end
+
+    def add_after_filter(filter)
+      @after_filters ||= []
+      @after_filters << filter
+    end
+
+    def before_filters=(filters)
+      filters.each { |filter| add_before_filter(filter) } if filters
+    end
+
+    def after_filters=(filters)
+      filters.each { |filter| add_after_filter(filter) } if filters
+    end
+
+    def custom_conditions=(custom_conditions)
+      custom_conditions.each { |blk| arbitrary { |req, params| router.runner.instance_eval(&blk) != false } } if custom_conditions
+      @custom_conditions = custom_conditions
+    end
+  end
+end
 
 module Padrino
   ##
@@ -19,52 +65,6 @@ module Padrino
   #
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html }
-
-    class ::HttpRouter #:nodoc:
-      attr_accessor :runner
-      class Route #:nodoc:
-        attr_reader :before_filters, :after_filters
-        attr_accessor :custom_conditions, :use_layout, :controller, :cache
-
-        def add_before_filter(filter)
-          @before_filters ||= []
-          @before_filters << filter
-          arbitrary { |req, params|
-            if req.testing_405?
-              true
-            else
-              old_params = router.runner.params
-              result = catch(:pass) {
-                router.runner.params ||= {}
-                router.runner.params.merge!(params)
-                router.runner.instance_eval(&filter)
-                true
-              } == true
-              router.runner.params = old_params
-              result
-            end
-          }
-        end
-
-        def add_after_filter(filter)
-          @after_filters ||= []
-          @after_filters << filter
-        end
-
-        def before_filters=(filters)
-          filters.each { |filter| add_before_filter(filter) } if filters
-        end
-
-        def after_filters=(filters)
-          filters.each { |filter| add_after_filter(filter) } if filters
-        end
-
-        def custom_conditions=(custom_conditions)
-          custom_conditions.each { |blk| arbitrary { |req, params| router.runner.instance_eval(&blk) != false } } if custom_conditions
-          @custom_conditions = custom_conditions
-        end
-      end
-    end
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -353,7 +353,11 @@ module Padrino
           unbound_method = instance_method("#{verb} #{path}")
           block =
             if block.arity != 0
-              proc { unbound_method.bind(self).call(*@block_params) }
+              block_arity = block.arity
+              proc {
+                @block_params = @block_params.slice(0, block_arity) if block_arity > 0
+                unbound_method.bind(self).call(*@block_params)
+              }
             else
               proc { unbound_method.bind(self).call }
             end

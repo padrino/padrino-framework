@@ -106,7 +106,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal ["POST"], app.routes[2].as_options[:conditions][:request_method]
   end
 
-  should 'generate basic urls'do
+  should 'generate basic urls' do
     mock_app do
       get(:foo){ "/foo" }
       get(:foo, :with => :id){ |id| "/foo/#{id}" }
@@ -228,6 +228,14 @@ class TestRouting < Test::Unit::TestCase
 
     get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
     assert_equal 'json', body
+  end
+
+  should "send the appropriate number of params" do
+    mock_app do
+      get('/id/:user_id', :provides => [:json]) { |user_id| user_id}
+    end
+    get '/id/5.json'
+    assert_equal '5', body
   end
 
   should "set correct content_type for Accept not equal to */* even if */* also provided" do
