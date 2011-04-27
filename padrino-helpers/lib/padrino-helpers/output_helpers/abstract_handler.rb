@@ -1,8 +1,6 @@
 module Padrino
   module Helpers
     module OutputHelpers
-      @template_handlers = []
-
       ##
       # Returns the list of all available template handlers
       #
@@ -11,7 +9,7 @@ module Padrino
       #   OutputHelpers.handlers => [<OutputHelpers::HamlHandler>, <OutputHelpers::ErbHandler>]
       #
       def self.handlers
-        @template_handlers
+        @_template_handlers ||= []
       end
 
       ##
@@ -43,6 +41,17 @@ module Padrino
           caller.find { |c| c =~ /\/views\// }[/\.([\w]*?)\:/, 1] rescue nil
           # "/some/path/app/views/posts/foo.html.erb:3:in `evaluate_source'"
           # => "erb"
+        end
+
+        ##
+        # Returns an array of engines used for the template
+        #
+        # ==== Examples
+        #
+        #   @handler.engines => [:erb, :erubis]
+        #
+        def engines
+          # Implemented in subclass
         end
 
         ##

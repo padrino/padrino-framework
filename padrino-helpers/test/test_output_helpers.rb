@@ -84,4 +84,33 @@ class TestOutputHelpers < Test::Unit::TestCase
       # assert_have_no_selector 'p', :content => "The ruby block passed in is a template", :class => 'is_template'
     end
   end
+
+  context 'for #current_engine method' do
+    should 'detect correctly current engine for erb' do
+      visit '/erb/current_engine'
+      assert_have_selector 'p.start', :content => "erb"
+      assert_have_selector 'p.haml',  :content => "haml"
+      assert_have_selector 'p.erb',   :content => "erb"
+      assert_have_selector 'p.slim',  :content => "slim"
+      assert_have_selector 'p.end',   :content => "erb"
+    end
+
+    should 'detect correctly current engine for haml' do
+      visit '/haml/current_engine'
+      assert_have_selector 'p.start', :content => "haml"
+      assert_have_selector 'p.haml',  :content => "haml"
+      assert_have_selector 'p.erb',   :content => "erb"
+      assert_have_selector 'p.slim',  :content => "slim"
+      assert_have_selector 'p.end',   :content => "haml"
+    end
+
+    should 'detect correctly current engine for slim' do
+      visit '/slim/current_engine'
+      assert_have_selector 'p.start', :content => "slim"
+      assert_have_selector 'p.haml',  :content => "haml"
+      assert_have_selector 'p.erb',   :content => "erb"
+      assert_have_selector 'p.slim',  :content => "slim"
+      assert_have_selector 'p.end',   :content => "slim"
+    end
+  end
 end

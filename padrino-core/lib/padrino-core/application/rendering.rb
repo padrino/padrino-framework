@@ -88,6 +88,8 @@ module Padrino
     end
 
     module InstanceMethods
+      attr_reader :current_engine
+
       def content_type(type=nil, params={}) #:nodoc:
         type.nil? ? @_content_type : super(type, params)
       end
@@ -129,8 +131,17 @@ module Padrino
             logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger)
           end
 
+          # Set the current engine
+          @current_engine, engine_was = engine, @current_engine
+
           # Pass arguments to Sinatra render method
-          super(engine, data, options.dup, locals, &block)
+          output = super(engine, data, options.dup, locals, &block)
+
+          # Set the old engine
+          @current_engine = engine_was
+
+          # Return the output
+          output
         end
 
         ##

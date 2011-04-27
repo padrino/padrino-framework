@@ -5,18 +5,7 @@ require 'mocha'
 require 'rack/test'
 require 'webrat'
 require 'padrino-helpers'
-
-# We need some extension for do our tests
-begin
-  # As 2.3.x
-  require 'active_support/core_ext/date'
-  require 'active_support/core_ext/time'
-  require 'active_support/core_ext/numeric'
-  require 'active_support/duration'
-rescue LoadError
-  # As 3.x
-  require 'active_support/time'
-end
+require 'active_support/time'
 
 class Test::Unit::TestCase
   include Padrino::Helpers::OutputHelpers

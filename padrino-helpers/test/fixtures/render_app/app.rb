@@ -16,6 +16,11 @@ class RenderDemo < Padrino::Application
     set :padrino_logging, false
   end
 
+  # get current engines from partials
+  get '/current_engine' do
+    render :current_engine
+  end
+
   # partial with object
   get '/partial/object' do
     partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }

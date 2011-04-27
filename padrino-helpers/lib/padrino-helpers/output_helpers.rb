@@ -1,6 +1,25 @@
 module Padrino
   module Helpers
     module OutputHelpers
+
+      def self.included(base) #:nodoc:
+        base.send(:include, SinatraCurrentEngine) unless base.method_defined?(:current_engine)
+      end
+
+      ##
+      # Module used to detect in vanilla sinatra apps the current engine
+      #
+      module SinatraCurrentEngine
+        attr_reader :current_engine
+
+        def render(engine, *) #:nodoc:
+          @current_engine, engine_was = engine, @current_engine
+          output = super
+          @current_engine = engine_was
+          output
+        end
+      end
+
       ##
       # Captures the html from a block of template code for any available handler
       #
@@ -13,7 +32,8 @@ module Padrino
         captured_html = ""
         if handler && handler.is_type? && handler.block_is_type?(block)
           captured_html = handler.capture_from_template(*args, &block)
-        end # invoking the block directly if there was no template
+        end
+        # invoking the block directly if there was no template
         captured_html = block_given? && block.call(*args) if captured_html.blank?
         captured_html
       end
@@ -101,7 +121,7 @@ module Padrino
         #   find_proper_handler => <OutputHelpers::HamlHandler>
         #
         def find_proper_handler
-          OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.is_type? }
+          OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.engines.include?(current_engine) && h.is_type? }
         end
     end # OutputHelpers
   end # Helpers

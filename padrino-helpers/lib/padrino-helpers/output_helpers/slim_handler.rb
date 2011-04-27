@@ -59,6 +59,17 @@ module Padrino
           is_type? || (block && eval('defined? __in_erb_template', block.binding))
         end
 
+        ##
+        # Returns an array of engines used for the template
+        #
+        # ==== Examples
+        #
+        #   @handler.engines => [:erb, :erubis]
+        #
+        def engines
+          @_engines ||= [:slim]
+        end
+
         protected
           def output_buffer=(val)
             template.instance_variable_set(:@_out_buf, val)

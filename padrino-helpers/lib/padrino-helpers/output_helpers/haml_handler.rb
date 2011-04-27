@@ -45,6 +45,17 @@ module Padrino
           template.haml_concat(text)
           nil
         end
+
+        ##
+        # Returns an array of engines used for the template
+        #
+        # ==== Examples
+        #
+        #   @handler.engines => [:erb, :erubis]
+        #
+        def engines
+          @_engines ||= [:haml]
+        end
       end # HamlHandler
       OutputHelpers.register(HamlHandler)
     end # OutputHelpers
