@@ -12,7 +12,7 @@ gem 'thin' # or mongrel
 
 <%- if options.dev? -%>
 # Padrino
-%w(core gen helpers mailer admin).each do |gem|
+%w(core gen helpers cache mailer admin).each do |gem|
   gem 'padrino-' + gem, :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + gem
 end
 <%- else -%>

@@ -103,7 +103,6 @@ module Padrino
         end
         say(text)
       end
-
     end # Project
   end # Generators
 end # Padrino
