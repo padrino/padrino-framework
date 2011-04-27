@@ -29,8 +29,12 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "generate a valid name" do
       silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/project.com")
-      assert_match_in_file(/class ProjectCom < Padrino::Application/,"#{@apptmp}/project.com/app/app.rb")
-      assert_match_in_file(/Padrino.mount\("ProjectCom"\).to\('\/'\)/,"#{@apptmp}/project.com/config/apps.rb")
+      assert_match_in_file(/class ProjectCom < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
+      assert_match_in_file(/Padrino.mount\("ProjectCom"\).to\('\/'\)/, "#{@apptmp}/project.com/config/apps.rb")
+      silence_logger { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
+      assert_file_exists("#{@apptmp}/project.com/wsdci2011")
+      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/wsdci2011/app.rb")
+      assert_match_in_file(/Padrino.mount\("WsDci2011"\).to\("\/wsdci2011"\)/, "#{@apptmp}/project.com/config/apps.rb")
     end
 
     should "raise an Error when given invalid constant names" do
@@ -517,6 +521,5 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
-
   end
 end

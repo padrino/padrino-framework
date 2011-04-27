@@ -120,16 +120,15 @@ class Test::Unit::TestCase
 
   # expects_git :commit, "hello world"
   def expects_git(command,options={})
-    #options.reverse_merge!(:root => '/tmp')
     FileUtils.mkdir_p(options[:root])
-      if command.to_s == 'init'
-        args = options[:arguments] || options[:root]
-        ::Grit::Repo.expects(:init).with(args).returns(true)
-      else
-        base = ::Grit::Git.new(options[:root])
-        ::Grit::Repo.stubs(:new).with(options[:root]).returns(base)
-        ::Grit::Git.any_instance.expects(command.to_sym).with(options[:arguments]).returns(true)
-      end
+    if command.to_s == 'init'
+      args = options[:arguments] || options[:root]
+      ::Grit::Repo.expects(:init).with(args).returns(true)
+    else
+      base = ::Grit::Git.new(options[:root])
+      ::Grit::Repo.stubs(:new).with(options[:root]).returns(base)
+      ::Grit::Git.any_instance.expects(command.to_sym).with(options[:arguments]).returns(true)
+    end
   end
 
 end

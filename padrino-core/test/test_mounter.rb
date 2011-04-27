@@ -172,14 +172,5 @@ class TestMounter < Test::Unit::TestCase
       assert res.ok?
       assert_equal File.read(__FILE__), res.body
     end
-
-    should "work with different app names" do
-      %w(App-Name App-Name-1 App-Name-@ ws-dci-2011).each do |name|
-        name = name.gsub(/\W/, "_").underscore.camelize # this method is used by our padrino-gen project
-        eval "class ::#{name} < Padrino::Application; end"
-        Padrino.mount(name).to("/foo")
-        assert_equal name, Padrino.mounted_apps.last.app_class
-      end
-    end
   end
 end

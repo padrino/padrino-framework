@@ -15,8 +15,8 @@ module Padrino
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host
 
     def initialize(name, options={})
-      @name      = name.to_s.underscore
-      @app_class = options[:app_class] || @name.camelize#.gsub(/\W/, "_").underscore.camelize
+      @name      = name.to_s
+      @app_class = options[:app_class] || @name.camelize
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
@@ -115,45 +115,44 @@ module Padrino
     end
 
     protected
-
-    ##
-    # Locates and requires the file to load the app constant
-    #
-    def locate_app_object
-      @_app_object ||= begin
-        ensure_app_file!
-        Padrino.require_dependencies(app_file)
-        app_constant
+      ##
+      # Locates and requires the file to load the app constant
+      #
+      def locate_app_object
+        @_app_object ||= begin
+          ensure_app_file!
+          Padrino.require_dependencies(app_file)
+          app_constant
+        end
       end
-    end
 
-    ##
-    # Returns the determined location of the mounted application main file
-    #
-    def locate_app_file
-      candidates  = []
-      candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
-      candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-      candidates << Padrino.mounted_root(name, "app.rb")
-      candidates << Padrino.root("app", "app.rb")
-      candidates.find { |candidate| File.exist?(candidate) }
-    end
+      ##
+      # Returns the determined location of the mounted application main file
+      #
+      def locate_app_file
+        candidates  = []
+        candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
+        candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
+        candidates << Padrino.mounted_root(name, "app.rb")
+        candidates << Padrino.root("app", "app.rb")
+        candidates.find { |candidate| File.exist?(candidate) }
+      end
 
-    ###
-    # Raises an exception unless app_file is located properly
-    #
-    def ensure_app_file!
-      message = "Unable to locate source file for app '#{name}', try with :app_file => '/path/app.rb'"
-      raise MounterException, message unless @app_file
-    end
+      ###
+      # Raises an exception unless app_file is located properly
+      #
+      def ensure_app_file!
+        message = "Unable to locate source file for app '#{app_class}', try with :app_file => '/path/app.rb'"
+        raise MounterException, message unless @app_file
+      end
 
-    ###
-    # Raises an exception unless app_obj is defined properly
-    #
-    def ensure_app_object!
-      message = "Unable to locate app for '#{name}', try with :app_class => 'MyAppClass'"
-      raise MounterException, message unless @app_obj
-    end
+      ###
+      # Raises an exception unless app_obj is defined properly
+      #
+      def ensure_app_object!
+        message = "Unable to locate app for '#{app_class}', try with :app_class => 'MyAppClass'"
+        raise MounterException, message unless @app_obj
+      end
   end
 
   class << self
