@@ -2,12 +2,12 @@
 %html{:lang => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
   %head
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
-    %title <%= options[:name] %>
+    %title Padrino Admin
     =stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style"
   %body
     #container
       #header
-        %h1=link_to "<%= options[:name] %>", url(:base_index)
+        %h1=link_to "Padrino Admin", url(:base_index)
         #user-navigation
           %ul.wat-cf
             %li=link_to pat(:profile), url(:accounts, :edit, :id => current_account.id)

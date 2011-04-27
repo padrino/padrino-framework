@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title><%= options[:name] %></title>
+  <title>Padrino Admin</title>
   <%%= stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style" %>
 </head>
 <body>
   <div id="container">
     <div id="box">
-      <h1><%= options[:name] %></h1>
+      <h1>Padrino Admin</h1>
       <div class="block" id="block-login">
         <h2>Login Box</h2>
         <div class="content login">

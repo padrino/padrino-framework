@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title><%= options[:name] %></title>
+  <title>Padrino Admin</title>
   <%%= stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style" %>
 </head>
 <body>
   <div id="container">
     <div id="header">
-      <h1><%%= link_to "<%= options[:name] %>", url(:base_index) %></h1>
+      <h1><%%= link_to "Padrino Admin", url(:base_index) %></h1>
       <div id="user-navigation">
         <ul class="wat-cf">
           <li><%%= link_to pat(:profile), url(:accounts, :edit, :id => current_account.id) %></li>

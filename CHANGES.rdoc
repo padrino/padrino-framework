@@ -55,6 +55,7 @@
 * Use sass gem because now is separated from haml
 * Allow combining different templates (ex: render a partial built with haml from a slim/erubis view)
 * Use sessions for uri_root
+* Fix padrino admin page title
 
 == 0.9.23
 

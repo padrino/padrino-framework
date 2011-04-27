@@ -75,6 +75,25 @@ class TestAdminPageGenerator < Test::Unit::TestCase
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.erb"
     end
 
+    should 'correctly generate a new padrino admin application with slim renderer' do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=slim') }
+      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
+      silence_logger { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
+      assert_file_exists "#{@apptmp}/sample_project/admin/controllers/people.rb"
+      assert_file_exists "#{@apptmp}/sample_project/admin/views/people/_form.slim"
+      assert_file_exists "#{@apptmp}/sample_project/admin/views/people/edit.slim"
+      assert_file_exists "#{@apptmp}/sample_project/admin/views/people/index.slim"
+      assert_file_exists "#{@apptmp}/sample_project/admin/views/people/new.slim"
+      %w(name age email).each do |field|
+        assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.slim"
+        assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.slim"
+      end
+      assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
+      assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.slim"
+    end
+
     should 'correctly generate a new padrino admin application with multiple models' do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
