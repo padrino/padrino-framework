@@ -8,7 +8,6 @@ Gem::Specification.new do |s|
   s.summary = "Generators for easily creating and building padrino applications"
   s.homepage = "http://www.padrinorb.com"
   s.description = "Generators for easily creating and building padrino applications from the console"
-  s.default_executable = "padrino-gen"
   s.executables = ["padrino-gen"]
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
