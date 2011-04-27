@@ -25,6 +25,7 @@ module Padrino
 
       desc "stop", "Stops the Padrino application"
       def stop
+        prepare :stop
         require File.expand_path(File.dirname(__FILE__) + "/adapter")
         Padrino::Cli::Adapter.stop
       end
