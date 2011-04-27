@@ -4,6 +4,8 @@ base_path = File.expand_path(File.dirname(__FILE__), __FILE__)
 
 source :rubygems
 
+# gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
+
 group :other do
   gem "builder", ">= 2.1.2"
 end
@@ -41,6 +43,9 @@ group :development do
   platforms :mri do
     gem "memcached", ">= 0.20.1"
     gem 'dalli',     ">=1.0.2"
+  end
+  platforms :jruby do
+    gem "jruby-openssl"
   end
 end
 
