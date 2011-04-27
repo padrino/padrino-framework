@@ -215,6 +215,7 @@ module Padrino
       flush if @auto_flush
       message
     end
+    alias :write :<<
 
     ##
     # Generate the logging methods for Padrino.logger for each log level.

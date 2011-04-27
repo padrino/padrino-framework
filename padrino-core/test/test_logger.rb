@@ -44,6 +44,16 @@ class TestPadrinoLogger < Test::Unit::TestCase
       assert_match(/Yep this can be logged/, @log.string)
     end
 
+    should 'respond to #write for Rack::CommonLogger' do
+      setup_logger(:log_level => :error)
+      @logger.error "Error message"
+      assert_match /Error message/, @log.string
+      @logger << "logged anyways"
+      assert_match /logged anyways/, @log.string
+      @logger.write "log via alias"
+      assert_match /log via alias/, @log.string
+    end
+
     should 'log an application' do
       mock_app { get("/"){ "Foo" } }
       get "/"
