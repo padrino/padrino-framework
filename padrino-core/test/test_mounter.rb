@@ -3,7 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class TestMounter < Test::Unit::TestCase
 
   def setup
+    $VERBOSE, @_verbose_was = nil, $VERBOSE
     Padrino.mounted_apps.clear
+  end
+
+  def teardown
+    $VERBOSE = @_verbose_was
   end
 
   context 'for mounter functionality' do
@@ -38,7 +43,7 @@ class TestMounter < Test::Unit::TestCase
       assert_equal AnApp, Padrino.mounted_apps.first.app_obj
       assert_equal ["an_app"], Padrino.mounted_apps.map(&:name)
     end
-    
+
     should 'correctly mount an app in a namespace' do
       module ::SomeNamespace
         class AnApp < Padrino::Application; end
@@ -166,6 +171,15 @@ class TestMounter < Test::Unit::TestCase
       res = Rack::MockRequest.new(Padrino.application).get("/public/test_mounter.rb")
       assert res.ok?
       assert_equal File.read(__FILE__), res.body
+    end
+
+    should "work with different app names" do
+      %w(App-Name App-Name-1 App-Name-@ ws-dci-2011).each do |name|
+        name = name.gsub(/\W/, "_").underscore.camelizeb # this method is used by our padrino-gen project
+        eval "class ::#{name} < Padrino::Application; end"
+        Padrino.mount(name).to("/foo")
+        assert_equal name, Padrino.mounted_apps.last.app_class
+      end
     end
   end
 end
