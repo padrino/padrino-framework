@@ -322,18 +322,13 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for erb" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--script=none') }
       assert_match(/Applying.*?erb.*?renderer/, buffer)
+      assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     should "properly generate for haml" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none') }
       assert_match(/Applying.*?haml.*?renderer/, buffer)
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
-    end
-
-    should "properly generate for erubis" do
-      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erubis','--script=none') }
-      assert_match(/Applying.*?erubis.*?renderer/,buffer)
-      assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     should "properly generate for liquid" do

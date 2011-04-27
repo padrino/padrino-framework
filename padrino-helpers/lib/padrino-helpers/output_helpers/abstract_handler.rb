@@ -37,12 +37,12 @@ module Padrino
         #
         # ==== Examples
         #
-        #  @handler.template_extension => "erubis"
+        #  @handler.template_extension => "erb"
         #
         def template_extension
           caller.find { |c| c =~ /\/views\// }[/\.([\w]*?)\:/, 1] rescue nil
-          # "/some/path/app/views/posts/foo.html.erubis:3:in `evaluate_source'"
-          # => "erubis"
+          # "/some/path/app/views/posts/foo.html.erb:3:in `evaluate_source'"
+          # => "erb"
         end
 
         ##
