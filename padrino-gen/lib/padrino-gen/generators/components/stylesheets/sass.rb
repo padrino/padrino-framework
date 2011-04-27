@@ -9,7 +9,7 @@ app.use Sass::Plugin::Rack
 SASS
 
 def setup_stylesheet
-  require_dependencies 'haml'
+  require_dependencies 'sass'
   initializer :sass, SASS_INIT.chomp
   empty_directory destination_root('/app/stylesheets')
 end

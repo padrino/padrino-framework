@@ -487,7 +487,7 @@ class TestProjectGenerator < Test::Unit::TestCase
   context "the generator for stylesheet component" do
     should "properly generate for sass" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=sass') }
-      assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/sass_init.rb")
       assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")

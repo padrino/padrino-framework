@@ -52,6 +52,7 @@
 * Now erubis is the standard for the erb templates like in tilt/sinatra
 * Fix stop daemonized padrino from non standard path
 * Fix app path when generating sub-applications
+* Use sass gem because now is separated from haml
 
 == 0.9.23
 
