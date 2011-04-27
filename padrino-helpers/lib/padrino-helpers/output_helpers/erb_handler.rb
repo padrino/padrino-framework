@@ -30,7 +30,7 @@ module Padrino
           self.output_buffer, _buf_was = "", self.output_buffer
           block.call(*args)
           ret = eval("@_out_buf", block.binding)
-          self.output_buffer = _buf_was # unless ret.blank?
+          self.output_buffer = _buf_was
           ret
         end
 
