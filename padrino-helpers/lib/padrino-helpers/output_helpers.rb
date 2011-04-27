@@ -13,9 +13,8 @@ module Padrino
         captured_html = ""
         if handler && handler.is_type? && handler.block_is_type?(block)
           captured_html = handler.capture_from_template(*args, &block)
-        else # invoking the block directly if there was no template
-          captured_html = block_given? && block.call(*args) if captured_html.blank?
-        end
+        end # invoking the block directly if there was no template
+        captured_html = block_given? && block.call(*args) if captured_html.blank?
         captured_html
       end
       alias :capture :capture_html

@@ -29,8 +29,9 @@ module Padrino
         def capture_from_template(*args, &block)
           self.output_buffer, _buf_was = "", self.output_buffer
           block.call(*args)
-        ensure
-          self.output_buffer = _buf_was
+          ret = eval("@_out_buf", block.binding)
+          self.output_buffer = _buf_was # unless ret.blank?
+          ret
         end
 
         ##

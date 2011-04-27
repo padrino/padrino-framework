@@ -50,6 +50,7 @@
 * Completed support for Slim
 * Adds Slim admin support
 * Do not enforce rack sessions for Rack:Flash
+* Now erubis is the standard for the erb templates like in tilt/sinatra
 
 == 0.9.23
 
