@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.24 (Unreleased)
+== 0.9.25
 
 * Fixes to allow flexible libraries in padrino-cache
 * Allow select tag to take a range of options [Thanks activestylus]
@@ -56,6 +56,10 @@
 * Allow combining different templates (ex: render a partial built with haml from a slim/erubis view)
 * Use sessions for uri_root
 * Fix padrino admin page title
+
+== 0.9.24
+
+* Delayed
 
 == 0.9.23
 
