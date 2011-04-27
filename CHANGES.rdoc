@@ -54,6 +54,7 @@
 * Fix app path when generating sub-applications
 * Use sass gem because now is separated from haml
 * Allow combining different templates (ex: render a partial built with haml from a slim/erubis view)
+* Use sessions for uri_root
 
 == 0.9.23
 

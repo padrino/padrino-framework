@@ -208,6 +208,12 @@ module Padrino
         def require_load_paths
           load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
         end
+
+      private
+        def setup_sessions(builder)
+          return unless sessions
+          builder.use Rack::Session::Cookie, :secret => session_secret, :path => uri_root
+        end
     end # self
 
     private
