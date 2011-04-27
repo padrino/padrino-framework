@@ -109,7 +109,7 @@ module Padrino
         #   content_blocks[:name] => ['...', '...']
         #
         def content_blocks
-          @content_blocks ||= Hash.new {|h,k| h[k] = [] }
+          @content_blocks ||= Hash.new { |h,k| h[k] = [] }
         end
 
         ##

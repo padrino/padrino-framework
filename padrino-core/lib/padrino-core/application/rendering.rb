@@ -131,17 +131,15 @@ module Padrino
             logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger)
           end
 
-          # Set the current engine
+          # Cleanup the template
           @current_engine, engine_was = engine, @current_engine
+          @_out_buf,  _buf_was = "", @_out_buf
 
           # Pass arguments to Sinatra render method
-          output = super(engine, data, options.dup, locals, &block)
-
-          # Set the old engine
+          super(engine, data, options.dup, locals, &block)
+        ensure
           @current_engine = engine_was
-
-          # Return the output
-          output
+          @_out_buf = _buf_was
         end
 
         ##
