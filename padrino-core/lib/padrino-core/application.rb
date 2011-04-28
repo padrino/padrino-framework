@@ -133,6 +133,7 @@ module Padrino
           set :padrino_logging, true
           set :method_override, true
           set :sessions, false
+          set :session_path, '/'
           set :public, Proc.new { Padrino.root('public', uri_root) }
           set :views, Proc.new { File.join(root,   "views") }
           set :images_path, Proc.new { File.join(public, "images") }
