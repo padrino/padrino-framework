@@ -210,9 +210,14 @@ module Padrino
         end
 
       private
+
         def setup_sessions(builder)
-          return unless sessions
-          builder.use Rack::Session::Cookie, :secret => session_secret, :path => uri_root
+          return unless sessions?
+          options = {}
+          options[:secret] = session_secret if session_secret?
+          options[:path]   = session_path   if session_path?
+          options.merge! sessions.to_hash if sessions.respond_to? :to_hash
+          builder.use Rack::Session::Cookie, options
         end
     end # self
 
