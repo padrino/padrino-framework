@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
   s.extra_rdoc_files = Dir["*.rdoc"]
-  s.files = %w(.document .gitignore LICENSE README.rdoc Rakefile padrino-core.gemspec) + Dir.glob("{bin,lib,test}/**/*")
+  s.files = `git ls-files`.split("\n")
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_path = "lib"
   s.add_dependency("tilt", "~> 1.3.0")
