@@ -56,6 +56,16 @@ class TestAdminPageGenerator < Test::Unit::TestCase
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.haml"
     end
 
+    should "store and apply session_secret" do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/session_secret:.+/, "#{@apptmp}/sample_project/.components")
+      session_secret = YAML.load_file("#{@apptmp}/sample_project/.components")[:session_secret]
+      assert_not_equal "", session_secret
+      assert_match_in_file(/#{session_secret}/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/#{session_secret}/, "#{@apptmp}/sample_project/admin/app.rb")
+    end
+
     should 'correctly generate a new padrino admin application with erb renderer' do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=erb') }
       silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }

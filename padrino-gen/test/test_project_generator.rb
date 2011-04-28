@@ -48,7 +48,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match(/cd \/tmp\/project/, buffer)
     end
 
-
     should "allow specifying alternate application name" do
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') } }
       assert_file_exists("#{@apptmp}/sample_project")
@@ -89,6 +88,14 @@ class TestProjectGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'warepedia', "--root=#{@apptmp}", '--script=none') }
       assert_match_in_file(/class Warepedia < Padrino::Application/m, "#{@apptmp}/warepedia/app/app.rb")
       assert_match_in_file(/Padrino.mount\("Warepedia"\).to\('\/'\)/m, "#{@apptmp}/warepedia/config/apps.rb")
+    end
+
+    should "store and apply session_secret" do
+      silence_logger { generate(:project,'sample_project', '--tiny',"--root=#{@apptmp}") }
+      assert_match_in_file(/session_secret:.+/, "#{@apptmp}/sample_project/.components")
+      session_secret = YAML.load_file("#{@apptmp}/sample_project/.components")[:session_secret]
+      assert_not_equal "", session_secret
+      assert_match_in_file(/#{session_secret}/, "#{@apptmp}/sample_project/app/app.rb")
     end
 
     should "create components file containing options chosen with defaults" do

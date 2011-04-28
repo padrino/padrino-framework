@@ -43,7 +43,9 @@ module Padrino
             say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb or -e slim", :yellow
             raise SystemExit
           end
+
           store_component_choice(:admin_renderer, tmp_ext)
+          @session_secret = fetch_component_choice(:session_secret)
 
           self.behavior = :revoke if options[:destroy]
 

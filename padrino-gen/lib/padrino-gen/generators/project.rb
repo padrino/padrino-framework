@@ -53,8 +53,9 @@ module Padrino
           empty_directory destination_root("public/javascripts")
           empty_directory destination_root("public/stylesheets")
           empty_directory destination_root("tmp")
-          app_skeleton('app', options[:tiny])
           store_component_config('.components')
+          @session_secret = '%x' % rand(2**255)
+          app_skeleton('app', options[:tiny])
           template "templates/Gemfile.tt", destination_root("Gemfile")
         end
       end
@@ -68,6 +69,7 @@ module Padrino
           execute_component_setup(comp, choice)
         end
         store_component_config('.components')
+        store_component_choice(:session_secret, @session_secret)
       end
 
       # Bundle all required components using bundler and Gemfile

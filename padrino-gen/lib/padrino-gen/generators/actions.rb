@@ -51,6 +51,7 @@ module Padrino
         config      = retrieve_component_config(path)
         config[key] = value
         create_file(path, :force => true) { config.to_yaml }
+        value
       end
 
       # Loads the component config back into a hash

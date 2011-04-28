@@ -2,7 +2,7 @@ class <%= @app_name %> < Padrino::Application
   register Padrino::Mailer
   register Padrino::Helpers
 
-  set :session_secret, "<%= '%x' % rand(2**255) %>"
+  set :session_secret, "<%= @session_secret %>"
   set :sessions, true
 
   ##
