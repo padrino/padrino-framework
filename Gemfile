@@ -6,10 +6,6 @@ source :rubygems
 
 # gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
 
-group :other do
-  gem "builder", ">= 2.1.2"
-end
-
 group :db do
   gem "dm-core", ">= 1.0"
   gem "dm-migrations", ">= 1.0"
@@ -28,10 +24,10 @@ group :development do
   gem "erubis", ">= 2.7.0"
   gem "slim", ">= 0.9.2"
   gem "shoulda", ">= 2.10.3"
-  gem "redis", ">= 2.0.0"
   gem "uuid", ">= 2.3.1"
   gem "bcrypt-ruby", :require => "bcrypt"
   gem "phocus"
+  gem "builder", ">= 2.1.2"
   platforms :mri_18 do
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
@@ -40,13 +36,15 @@ group :development do
   platforms :mri_19 do
     gem "ruby-debug19"
   end
-  platforms :mri do
-    gem "memcached", ">= 0.20.1"
-    gem 'dalli',     ">=1.0.2"
-  end
   platforms :jruby do
     gem "jruby-openssl"
   end
+end
+
+group :cache do
+  gem "redis",     ">= 2.0.0"
+  gem "memcached", ">= 0.20.1"
+  gem 'dalli',     ">=1.0.2"
 end
 
 gem "padrino",         :path => "/#{base_path}/padrino"
