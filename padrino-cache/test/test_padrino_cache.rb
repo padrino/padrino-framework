@@ -1,6 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestPadrinoCache < Test::Unit::TestCase
+
+  def teardown
+    tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")
+    system("rm -rf #{tmp}")
+  end
+
   should 'cache a fragment' do
     called = false
     mock_app do
