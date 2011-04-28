@@ -8,17 +8,14 @@ COUCHDB = CouchRest.database!(COUCHDB_NAME)
 COUCHREST
 
 def setup_orm
-  require_dependencies 'couchrest'
-  require_dependencies 'couchrest_extended_document'
+  require_dependencies 'couchrest_model'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
 end
 
 CR_MODEL = (<<-MODEL) unless defined?(CR_MODEL)
-class !NAME! < CouchRest::ExtendedDocument
-  include CouchRest::Validation
-
+class !NAME! < CouchRest::Model::Base
   use_database COUCHDB
 
   unique_id :id
