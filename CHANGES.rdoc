@@ -1,5 +1,12 @@
 = CHANGES
 
+== 0.9.26 (Not relased yet)
+
+* Padrino::Logger compatible with Rack::CommonLogger
+* Added session_path and ability to use custom Rack::Session::Cookie options
+* Fixed dependency loader
+* Fixed mounting sub-apps
+
 == 0.9.25
 
 * Fixes to allow flexible libraries in padrino-cache

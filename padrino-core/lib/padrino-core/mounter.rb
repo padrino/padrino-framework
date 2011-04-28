@@ -133,7 +133,7 @@ module Padrino
         candidates  = []
         candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
         candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-        candidates << Padrino.mounted_root(name, "app.rb")
+        candidates << Padrino.mounted_root(name.downcase, "app.rb")
         candidates << Padrino.root("app", "app.rb")
         candidates.find { |candidate| File.exist?(candidate) }
       end

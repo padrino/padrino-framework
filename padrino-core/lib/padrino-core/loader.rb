@@ -98,17 +98,20 @@ module Padrino
       # Extract all files to load
       files = paths.map { |path| Dir[path] }.flatten.uniq.sort
 
-      while files.present?
-        # We need a size to make sure things are loading
-        size_at_start = files.size
+      # We need a size to make sure things are loading
+      size_at_start = files.size
 
+      while files.present?
         # List of errors and failed files
         errors, failed = [], []
 
-        # Now we try to require our dependencies
-        files.each do |file|
+        # Now we try to require our dependencies, we dup files
+        # so we don't perform delete on the original array during
+        # iteration, this prevent problems with rubinus
+        files.dup.each do |file|
           begin
             Reloader::Stat.safe_load(file)
+            files.delete(file)
           rescue LoadError => e
             errors << e
             failed << file
@@ -121,8 +124,8 @@ module Padrino
         end
 
         # Stop processing if nothing loads or if everything has loaded
-        raise errors.last if failed.size == size_at_start
-        break if failed.empty?
+        raise errors.last if files.size == size_at_start && files.present?
+        break if files.empty?
       end
     end
 
