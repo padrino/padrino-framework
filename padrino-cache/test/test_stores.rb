@@ -96,7 +96,7 @@ begin
 
     eval COMMON_TESTS
   end
-rescue
+rescue LoadError
   warn "Skipping redis tests"
 end
 

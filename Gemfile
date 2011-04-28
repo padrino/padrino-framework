@@ -43,8 +43,13 @@ end
 
 group :cache do
   gem "redis",     ">= 2.0.0"
-  gem "memcached", ">= 0.20.1"
-  gem 'dalli',     ">=1.0.2"
+  platforms :mri do
+    gem "memcached", ">= 0.20.1"
+    gem 'dalli',     ">=1.0.2"
+  end
+  platform :jruby do
+    gem "jruby-memcache-client"
+  end
 end
 
 gem "padrino",         :path => "/#{base_path}/padrino"
