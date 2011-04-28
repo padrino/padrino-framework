@@ -3,7 +3,7 @@ if defined?(Mongoid)
 
     desc 'Drops all the collections for the database for the current Padrino.env'
     task :drop => :environment do
-      Mongoid.master.mapions.select {|c| c.name !~ /system/ }.each(&:drop)
+      Mongoid.master.collections.select {|c| c.name !~ /system/ }.each(&:drop)
     end
 
     # Helper to retrieve a list of models.
@@ -48,7 +48,7 @@ if defined?(Mongoid)
     end
 
     def collection_names
-      @collection_names ||= get_mongoid_models.map{ |d| d.mapion.name }.uniq
+      @collection_names ||= get_mongoid_models.map{ |d| d.collection.name }.uniq
     end
 
     desc "Convert string objectids in mongo database to ObjectID type"
@@ -57,7 +57,7 @@ if defined?(Mongoid)
         puts "Converting #{collection_name} to use ObjectIDs"
 
         # get old collection
-        collection = Mongoid.master.mapion(collection_name)
+        collection = Mongoid.master.collection(collection_name)
 
         # get new collection (a clean one)
         collection.db["#{collection_name}_new"].drop
@@ -76,7 +76,7 @@ if defined?(Mongoid)
 
       # no errors. great! now rename _new to collection_name
       collection_names.each do |collection_name|
-        collection = Mongoid.master.mapion(collection_name)
+        collection = Mongoid.master.collection(collection_name)
         new_collection = collection.db["#{collection_name}_new"]
 
         # swap collection to _old
@@ -107,7 +107,7 @@ if defined?(Mongoid)
     desc "Clean up old collections backed up by objectid_convert"
     task :cleanup_old_collections => :environment do
       collection_names.each do |collection_name|
-        collection = Mongoid.master.mapion(collection_name)
+        collection = Mongoid.master.collection(collection_name)
         collection.db["#{collection.name}_old"].drop
       end
     end
