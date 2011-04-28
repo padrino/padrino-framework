@@ -1,8 +1,6 @@
 = CHANGES
 
-== 0.9.24 (Unreleased)
-
-== 0.9.23
+== 0.9.23/24
 
 * Allow 406 on (.format) urls via a flag
 * Adds method_override flag to Padrino by default

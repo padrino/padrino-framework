@@ -90,8 +90,8 @@ desc "Pushes repository to GitHub"
 task :push do
   puts "Pushing to github..."
   sh "git tag #{Padrino.version}"
-  sh "git push origin master"
-  sh "git push origin #{Padrino.version}"
+  # sh "git push origin master"
+  # sh "git push origin #{Padrino.version}"
 end
 
 desc "Release all padrino gems"
