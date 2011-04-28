@@ -49,9 +49,9 @@ class !NAME! < Mongomatic::Base
   # end
 
   # def create_indexes
-  #   self.mapion.create_index('name', :unique => true)
-  #   self.mapion.create_index('email', :unique => true)
-  #   self.mapion.create_index('age')
+  #   self.collection.create_index('name', :unique => true)
+  #   self.collection.create_index('email', :unique => true)
+  #   self.collection.create_index('age')
   # end
   def validate
     expectations do
