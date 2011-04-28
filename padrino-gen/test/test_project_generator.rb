@@ -417,6 +417,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/Bacon::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Rake::TestTask.new\('test:app'/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => \['test:app'\]/,"#{@apptmp}/sample_project/test/test.rake")
     end
 
     should "properly generate for riot" do
@@ -432,6 +434,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Riot::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/SampleProject\.tap/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Rake::TestTask.new\('test:app'/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => \['test:app'\]/,"#{@apptmp}/sample_project/test/test.rake")
     end
 
     should "properly generate for rspec" do
@@ -444,6 +448,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/RSpec::Core::RakeTask.new\('spec:app'/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/task 'spec' => \['spec:app'\]/,"#{@apptmp}/sample_project/spec/spec.rake")
     end
 
     should "properly generate for shoulda" do
@@ -456,6 +462,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Rake::TestTask.new\('test:app'/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => \['test:app'\]/,"#{@apptmp}/sample_project/test/test.rake")
     end
 
     should "properly generate for testspec" do
@@ -468,6 +476,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Rake::TestTask.new\('test:app'/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => \['test:app'\]/,"#{@apptmp}/sample_project/test/test.rake")
     end
 
     should "properly generate for cucumber" do
@@ -485,6 +495,8 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Capybara.app = /, "#{@apptmp}/sample_project/features/support/env.rb")
       assert_match_in_file(/World\(Cucumber::Web::URLs\)/, "#{@apptmp}/sample_project/features/support/url.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/RSpec::Core::RakeTask.new\('spec:app'/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/task 'spec' => \['spec:app'\]/,"#{@apptmp}/sample_project/spec/spec.rake")
       assert_file_exists("#{@apptmp}/sample_project/features/support/env.rb")
       assert_file_exists("#{@apptmp}/sample_project/features/add.feature")
       assert_file_exists("#{@apptmp}/sample_project/features/step_definitions/add_steps.rb")

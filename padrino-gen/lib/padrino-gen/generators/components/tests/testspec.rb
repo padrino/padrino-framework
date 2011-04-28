@@ -28,7 +28,9 @@ TEST
 TESTSPEC_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTSPEC_RAKE)
 require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |test|
+task 'test' => ['test:app']
+
+Rake::TestTask.new('test:app') do |test|
   test.pattern = 'test/**/*_test.rb'
   test.verbose = true
 end

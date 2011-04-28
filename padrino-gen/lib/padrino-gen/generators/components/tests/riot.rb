@@ -52,7 +52,9 @@ TEST
 RIOT_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_RAKE)
 require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |test|
+task 'test' => ['test:app']
+
+Rake::TestTask.new('test:app') do |test|
   test.pattern = 'test/**/*_test.rb'
   test.verbose = true
 end

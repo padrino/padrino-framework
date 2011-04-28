@@ -31,7 +31,9 @@ TEST
 RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
 require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec) do |t|
+task 'spec' => ['spec:app']
+
+RSpec::Core::RakeTask.new('spec:app') do |t|
   t.pattern = "./spec/**/*_spec.rb"
   t.rspec_opts = %w(-fs --color)
 end
