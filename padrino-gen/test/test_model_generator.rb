@@ -64,7 +64,7 @@ class TestModelGenerator < Test::Unit::TestCase
       response_duplicate = silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
       assert_match "identical\e[0m  app/models/user.rb", response_duplicate
-      assert_match "identical\e[0m  test/models/user_test.rb", response_duplicate
+      assert_match "identical\e[0m  test/app/models/user_test.rb", response_duplicate
     end
 
     should "generate migration file versions properly" do
@@ -90,7 +90,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
     end
 
     should "generate migration file with no fields" do
@@ -151,7 +151,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
     end
 
     should "generate model file with fields" do
@@ -203,7 +203,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
     end
 
     should "generate migration file with given properties" do
@@ -307,47 +307,52 @@ class TestModelGenerator < Test::Unit::TestCase
     # BACON
     should "generate test file for bacon" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      silence_logger { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # RIOT
     should "generate test file for riot" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=riot', '-d=activerecord') }
-      silence_logger { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model" do/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/context "SomeUser Model" do/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # RSPEC
     should "generate test file for rspec" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
-      silence_logger { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
-      assert_match_in_file(/let\(:some_user\) \{ SomeUser.new \}/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
-      assert_match_in_file(/some_user\.should_not be_nil/m, "#{@apptmp}/sample_project/spec/models/some_user_spec.rb")
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/spec/subby/models/some_user_spec.rb")
+      assert_match_in_file(/let\(:some_user\) \{ SomeUser.new \}/m, "#{@apptmp}/sample_project/spec/subby/models/some_user_spec.rb")
+      assert_match_in_file(/some_user\.should_not be_nil/m, "#{@apptmp}/sample_project/spec/subby/models/some_user_spec.rb")
     end
 
     # SHOULDA
     should "generate test file for shoulda" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda', '-d=activerecord') }
-      silence_logger { generate(:model, 'SomePerson', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'SomePerson', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
+      assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
+      assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
+      assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
     end
 
     # TESTSPEC
     should "generate test file for testspec" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testspec', '-d=activerecord') }
-      silence_logger { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/context "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
   end
 
@@ -358,7 +363,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/app/models/user.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/test/models/user_test.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/test/app/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
     end
 
@@ -366,7 +371,17 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
-      assert_no_file_exists("#{@apptmp}/sample_project/spec/models/user_spec.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/spec/app/models/user_spec.rb")
+    end
+
+    should "destroy the model test file in a sub app" do
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'User', "-a=/subby","-r=#{@apptmp}/sample_project") }
+      silence_logger { generate(:model, 'User', "-a=/subby","-r=#{@apptmp}/sample_project", '-d') }
+      assert_no_file_exists("#{@apptmp}/sample_project/subby/models/user.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/test/subby/models/user_test.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
     end
 
     should "destroy the right model migration" do

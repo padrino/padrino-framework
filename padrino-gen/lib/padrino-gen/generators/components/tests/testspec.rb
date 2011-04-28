@@ -55,10 +55,12 @@ end
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
   testspec_contents = TESTSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-  create_file destination_root("test/controllers/#{name.to_s.underscore}_controller_test.rb"), testspec_contents, :skip => true
+  controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
+  create_file destination_root(controller_test_path), testspec_contents, :skip => true
 end
 
 def generate_model_test(name)
   tests_contents = TESTSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  create_file destination_root("test/models/#{name.to_s.underscore}_test.rb"), tests_contents, :skip => true
+  model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
+  create_file destination_root(model_test_path), tests_contents, :skip => true
 end
