@@ -1,5 +1,4 @@
-class Account < CouchRest::ExtendedDocument
-  include CouchRest::Validation
+class Account < CouchRest::Model::Base
   use_database COUCHDB
 
   attr_accessor :password, :password_confirmation
@@ -22,9 +21,9 @@ class Account < CouchRest::ExtendedDocument
   validates_length_of       :password, :within => 4..40, :if => :password_required
   validates_confirmation_of :password,                   :if => :password_required
   validates_length_of       :email,    :within => 3..100
-  validates_with_method     :email,    :method => :email_is_unique
   validates_format_of       :email,    :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
   validates_format_of       :role,     :with => /[A-Za-z]/
+  validate                  :unique_email_validator
 
   # Callbacks
   before_save :encrypt_password, :if => :password_required
@@ -33,17 +32,8 @@ class Account < CouchRest::ExtendedDocument
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
-    email_array = self.by_email :key => email
-    account = email_array[0]
-    account && account.has_password?(password) ? account : nil
-  end
-
-  ##
-  # This method is used to retrieve the first record by id without raise errors if not found.
-  #
-  def self.find_by_id(id)
-    id_array = self.by_id :key => id
-    id_array[0]
+    account = find_by_email(email)
+    account if account && account.has_password?(password)
   end
 
   def has_password?(password)
@@ -59,14 +49,15 @@ class Account < CouchRest::ExtendedDocument
       crypted_password.blank? || password.present?
     end
 
-    def email_is_unique
-      account = Account.by_email(:key => self.email, :limit => 1)
-      return true if account.empty? # didn't find email in the database
-      account = account[0]
-      if self.has_key?("_id")
-        # there is an id, make sure updates are being applied to same account
-        return true if self["_id"] == account["_id"]
-      end
-      [false, "Email has already been taken"]
+    def unique_email_validator
+      account = Account.find_by_email(email)
+      
+      # didn't find email in the database
+      return if account.nil?
+      
+      # account with same email in database is this account
+      return if has_key?('_id') && self['_id'] == account['_id']
+      
+      errors.add(:email, "is not unique")
     end
 end
