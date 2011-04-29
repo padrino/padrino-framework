@@ -36,7 +36,7 @@ end
 TEST
 
 RIOT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 context "!NAME!Controller" do
   context "description here" do
@@ -65,7 +65,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 context "!NAME! Model" do
   context 'can be created' do

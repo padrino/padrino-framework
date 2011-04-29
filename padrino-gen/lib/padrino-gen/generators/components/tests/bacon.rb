@@ -15,7 +15,7 @@ end
 TEST
 
 BACON_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(BACON_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 describe "!NAME!Controller" do
   it 'returns text at root' do
@@ -41,7 +41,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 BACON_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 describe "!NAME! Model" do
   it 'can be created' do

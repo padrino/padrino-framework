@@ -15,7 +15,7 @@ end
 TEST
 
 TESTSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTSPEC_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 context "!NAME!Controller" do
   setup { get('/') }
@@ -41,7 +41,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 TESTSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTSPEC_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 context "!NAME! Model" do
   specify 'can be created' do
