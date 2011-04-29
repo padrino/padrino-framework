@@ -13,6 +13,7 @@
 * Fixed dependency loader
 * Fixed mounting sub-apps
 * Fixed shared sessions
+* Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
 
 == 0.9.25
 
