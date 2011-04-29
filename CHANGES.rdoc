@@ -4,7 +4,7 @@
 
 * Use sass gem, because now is separated from haml
 * Escape regex in our reloader
-* Updated couchrest adapter
+* Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
 
 == 0.9.26
 
@@ -13,7 +13,6 @@
 * Fixed dependency loader
 * Fixed mounting sub-apps
 * Fixed shared sessions
-* Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
 
 == 0.9.25
 

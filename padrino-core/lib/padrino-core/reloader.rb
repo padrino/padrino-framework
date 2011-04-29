@@ -214,7 +214,7 @@ module Padrino
           files  = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten.uniq
 
           files.map { |file|
-            next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{base}/ }
+            next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{Regexp.escape(base)}/ }
 
             found, stat = figure_path(file, paths)
             next unless found && stat && mtime = stat.mtime
