@@ -37,6 +37,7 @@ test_tasks.each do |folder|
   end
 end
 
+desc "Run application test suite"
 task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
