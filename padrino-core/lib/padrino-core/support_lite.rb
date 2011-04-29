@@ -3,11 +3,12 @@
 #
 # Why use ActiveSupport and not our own library or extlib?
 #
-# 1) Rewriting custom method extensions needed (i.e string inflectors) is not a good use of time.
+# 1) Rewriting custom method extensions required (i.e string inflectors) is not a good use of time.
 # 2) Loading custom method extensions or separate gems would conflict with AS when AR or MM has been loaded.
 # 3) Datamapper 1.0 supports ActiveSupport 3.0 and no longer requires extlib.
 #
 
+# ActiveSupport Required Extensions
 require 'active_support/core_ext/string/conversions' unless String.method_defined?(:to_date)
 require 'active_support/core_ext/kernel'             unless Kernel.method_defined?(:silence_warnings)
 require 'active_support/core_ext/module'             unless Module.method_defined?(:alias_method_chain)
@@ -23,6 +24,7 @@ require 'active_support/inflector'                   unless String.method_define
 require 'active_support/core_ext/float/rounding'     unless Float.method_defined?(:round)
 require 'active_support/option_merger'               unless defined?(ActiveSupport::OptionMerger)
 
+# Loads symbol to proc extensions
 begin
   require 'active_support/core_ext/symbol'
 rescue LoadError
@@ -58,7 +60,7 @@ if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice
 end
 
 ##
-# Used to know if this file was required
+# Used to know if this file has already been required
 #
 module SupportLite; end unless defined?(SupportLite)
 
@@ -106,7 +108,12 @@ class FileSet
   end
 end unless defined?(FileSet)
 
+# YAML Engine Parsing Fix
+# https://github.com/padrino/padrino-framework/issues/424
+# require 'yaml' unless defined?(YAML)
+# YAML::ENGINE.yamler = "syck"
+
 ##
-# Loads our locales configuration files
+# Loads our locale configuration files
 #
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)

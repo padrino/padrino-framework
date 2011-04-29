@@ -6,6 +6,7 @@
 * Escape regex in our reloader
 * Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
 * Fixes issues with offline generation of js (from padrino-static)
+* Fixes YAML parsing bug by using syck
 
 == 0.9.26
 
