@@ -110,8 +110,8 @@ end unless defined?(FileSet)
 
 # YAML Engine Parsing Fix
 # https://github.com/padrino/padrino-framework/issues/424
-# require 'yaml' unless defined?(YAML)
-# YAML::ENGINE.yamler = "syck"
+require 'yaml' unless defined?(YAML)
+YAML::ENGINE.yamler = "syck"
 
 ##
 # Loads our locale configuration files
