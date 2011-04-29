@@ -32,9 +32,8 @@ class Account < CouchRest::Model::Base
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
-    email_array = self.by_email :key => email
-    account = email_array[0]
-    account && account.has_password?(password) ? account : nil
+    account = find_by_email(email)
+    account if account && account.has_password?(password)
   end
 
   def has_password?(password)
