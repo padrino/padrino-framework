@@ -52,12 +52,16 @@ TEST
 RIOT_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_RAKE)
 require 'rake/testtask'
 
-task 'test' => ['test:app']
+test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
 
-Rake::TestTask.new('test:app') do |test|
-  test.pattern = 'test/**/*_test.rb'
-  test.verbose = true
+test_tasks.each do |folder|
+  Rake::TestTask.new("test:\#{folder}") do |test|
+    test.pattern = "test/\#{folder}/**/*_test.rb"
+    test.verbose = true
+  end
 end
+
+task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)
