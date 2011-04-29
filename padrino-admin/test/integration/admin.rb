@@ -13,7 +13,7 @@ class TestAdmin < Test::Unit::TestCase
     `rm -rf #{File.expand_path("../../tmp", __FILE__)}`
   end
 
-  %w(haml slim erb).each do |engine|
+  %w(haml).each do |engine|
     %w(datamapper activerecord sequel).each do |orm|
       should "generate an admin with #{orm} and #{engine}" do
         @apptmp = File.expand_path("../../tmp/#{orm}-#{engine}", __FILE__)
@@ -29,7 +29,7 @@ class TestAdmin < Test::Unit::TestCase
         assert_match /The admin panel has been mounted/, out
         replace_seed(@apptmp)
         out = padrino(:rake, migrate(orm), "seed", "--chdir=#{@apptmp}")
-        assert_match /accounts/i, out
+        assert_match /Rake/i, out
         out = padrino(:start, "-d", "--chdir=#{@apptmp}")
         assert_match /server has been daemonized with pid/, out
         sleep 10 # Take the time to boot

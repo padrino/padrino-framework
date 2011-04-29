@@ -10,8 +10,8 @@ DM = (<<-DM) unless defined?(DM)
 # DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "development.db"))
 #
 
-
 DataMapper.logger = logger
+DataMapper::Property::String.length(255)
 
 case Padrino.env
   when :development then DataMapper.setup(:default, !DB_DEVELOPMENT!)

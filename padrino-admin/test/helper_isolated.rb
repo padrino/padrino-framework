@@ -3,7 +3,6 @@ require 'test/unit'
 require 'webrat'
 require 'mechanize'
 require 'nokogiri'
-require 'uuid'
 require 'rack'
 require 'shoulda'
 require 'ruby-debug'
@@ -41,7 +40,7 @@ class Test::Unit::TestCase
   end
 
   def replace_seed(path)
-    File.open("#{path}/db/seeds.rb", "w") { |f| f.puts "a = Account.new(:email => 'info@padrino.com', :password => 'sample', :password_confirmation => 'sample', :role => 'admin'); a.save!" }
+    File.open("#{path}/db/seeds.rb", "w") { |f| f.puts "Account.create(:email => 'info@padrino.com', :password => 'sample', :password_confirmation => 'sample', :role => 'admin')" }
   end
 
   def migrate(orm)
