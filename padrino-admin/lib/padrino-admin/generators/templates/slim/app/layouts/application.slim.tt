@@ -12,7 +12,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
         #user-navigation
           ul.wat-cf
             li==link_to pat(:profile), url(:accounts, :edit, :id => current_account.id)
-            li==link_to pat(:logout), url(:sessions, :destroy), :method => :delete
+            li==button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to
         #main-navigation
           ul.wat-cf
             -project_modules.each do |project_module|
