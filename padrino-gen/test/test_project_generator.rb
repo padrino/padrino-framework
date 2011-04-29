@@ -302,7 +302,7 @@ class TestProjectGenerator < Test::Unit::TestCase
     should "properly generate for couchrest" do
       buffer = silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=couchrest', '--script=none') }
       assert_match(/Applying.*?couchrest.*?orm/, buffer)
-      assert_match_in_file(/gem 'couchrest'/, "#{@apptmp}/project.com/Gemfile")
+      assert_match_in_file(/gem 'couchrest_model'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/CouchRest.database!/, "#{@apptmp}/project.com/config/database.rb")
       assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
       assert_dir_exists("#{@apptmp}/project.com/app/models")
