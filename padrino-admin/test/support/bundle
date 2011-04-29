@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler'
+require 'bundler/cli'
+
+Bundler::CLI.start

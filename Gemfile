@@ -15,6 +15,7 @@ group :db do
 end
 
 group :development do
+  gem "mechanize", ">=1.0.0"
   gem "rake",  ">= 0.8.7"
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"
@@ -32,6 +33,7 @@ group :development do
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
+    gem "ruby-debug"
   end
   platforms :mri_19 do
     gem "ruby-debug19"

@@ -4,7 +4,7 @@ class TestPadrinoCache < Test::Unit::TestCase
 
   def teardown
     tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")
-    system("rm -rf #{tmp}")
+    `rm -rf #{tmp}`
   end
 
   should 'cache a fragment' do
