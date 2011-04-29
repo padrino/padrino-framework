@@ -5,6 +5,7 @@
 * Use sass gem, because now is separated from haml
 * Escape regex in our reloader
 * Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
+* Fixes issues with offline generation of js (from padrino-static)
 
 == 0.9.26
 
