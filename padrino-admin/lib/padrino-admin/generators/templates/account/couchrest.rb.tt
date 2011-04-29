@@ -37,14 +37,6 @@ class Account < CouchRest::Model::Base
     account && account.has_password?(password) ? account : nil
   end
 
-  ##
-  # This method is used to retrieve the first record by id without raise errors if not found.
-  #
-  def self.find_by_id(id)
-    id_array = self.by_id :key => id
-    id_array[0]
-  end
-
   def has_password?(password)
     ::BCrypt::Password.new(crypted_password) == password
   end
