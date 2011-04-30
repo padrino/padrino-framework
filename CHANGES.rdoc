@@ -7,6 +7,8 @@
 * Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
 * Fixes issues with offline generation of js (from padrino-static)
 * Fixes YAML parsing bug by using syck
+* Use sinatra 1.2.5
+* Make logger sinatra 1.3 compat
 
 == 0.9.26
 
