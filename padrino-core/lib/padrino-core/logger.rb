@@ -284,6 +284,7 @@ module Padrino
       end
 
       def call(env)
+        env['rack.logger'] = Padrino.logger
         began_at = Time.now
         status, header, body = @app.call(env)
         log(env, status, header, began_at)
