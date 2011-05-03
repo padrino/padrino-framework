@@ -34,6 +34,13 @@ class Class
   include Test::Unit::Assertions
 end
 
+class Hash
+  # More simple to test
+  def to_r
+    self.values.sort.join(", ")
+  end
+end
+
 class Test::Unit::TestCase
   include Rack::Test::Methods
 
