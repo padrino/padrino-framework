@@ -211,7 +211,7 @@ class TestProjectGenerator < Test::Unit::TestCase
         buffer = silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
         assert_match(/Applying.*?activerecord.*?orm/, buffer)
         assert_match_in_file(/gem 'activerecord', :require => "active_record"/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/gem 'sqlite3'"/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/ActiveRecord::Base.establish_connection/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
         assert_dir_exists("#{@apptmp}/project.com/app/models")
