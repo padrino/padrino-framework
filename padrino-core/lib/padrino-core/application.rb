@@ -29,7 +29,11 @@ module Padrino
       #
       def new(*args, &bk)
         setup_application!
+        logging, logging_was = false, logging
+        show_exceptions, show_exceptions_was = false, show_exceptions
         super(*args, &bk)
+      ensure
+        logging, show_exceptions = logging_was, show_exceptions_was
       end
 
       ##
@@ -127,19 +131,15 @@ module Padrino
           # Overwriting Sinatra defaults
           set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
           set :environment, Padrino.env
-          set :raise_errors, true if development?
-          set :reload, true if development?
-          set :logging, false
-          set :padrino_logging, true
+          set :reload, Proc.new { development? }
+          set :logging, Proc.new { development? }
           set :method_override, true
           set :sessions, false
-          set :session_path, '/'
           set :public, Proc.new { Padrino.root('public', uri_root) }
           set :views, Proc.new { File.join(root,   "views") }
           set :images_path, Proc.new { File.join(public, "images") }
           # Padrino specific
           set :uri_root, "/"
-          set :reload, Proc.new { development? }
           set :app_name, self.to_s.underscore.to_sym
           set :default_builder, 'StandardFormBuilder'
           set :flash, defined?(Rack::Flash)
@@ -190,7 +190,8 @@ module Padrino
         # Requires the Padrino middleware
         #
         def register_initializers
-          use Padrino::Logger::Rack, uri_root if Padrino.logger && (Padrino.logger.level == 0 && padrino_logging?)
+          use Padrino::ShowExceptions         if show_exceptions?
+          use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
           use Padrino::Reloader::Rack         if reload?
           use Rack::Flash                     if flash?
         end
@@ -209,26 +210,6 @@ module Padrino
         def require_load_paths
           load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
         end
-
-      private
-
-        def setup_sessions(builder)
-          return unless sessions?
-          options = {}
-          options[:secret] = session_secret if session_secret?
-          options[:path]   = session_path   if session_path?
-          options.merge!(sessions.to_hash)  if sessions.respond_to?(:to_hash)
-          builder.use Rack::Session::Cookie, options
-        end
     end # self
-
-    private
-      def clean_backtrace(trace)
-        return trace unless settings.clean_trace?
-        trace.reject { |line|
-          line =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/ ||
-            (defined?(Gem) && line.include?(Gem.dir))
-        }.map! { |line| line.gsub(/^\.\//, '') }
-      end
   end # Application
 end # Padrino

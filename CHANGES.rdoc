@@ -10,6 +10,10 @@
 * Use sinatra 1.2.5
 * Make logger sinatra 1.3 compat
 * Use new sqlite3 gem in generated projects
+* Removed padrino_logging and use instead simple logging to avoid conflicts
+* By default use logging only on development
+* Uses raise_errors, dump_errors, show_exceptions as Sinatra::Base do
+* Refactored Padrino::Application
 
 == 0.9.26
 
