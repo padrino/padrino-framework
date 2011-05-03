@@ -61,7 +61,7 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      @global_configuration ||= block
+      @_global_configuration ||= block
     end
 
     ##
