@@ -233,7 +233,7 @@ class TestProjectGenerator < Test::Unit::TestCase
 
       should "properly generate sqlite3" do
         buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=sqlite3') }
-        assert_match_in_file(/gem 'sqlite3', :require => "sqlite3"/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development.db/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter => 'sqlite3'}, "#{@apptmp}/sample_project/config/database.rb")
       end
