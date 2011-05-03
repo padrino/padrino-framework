@@ -4,6 +4,13 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 class TestFormBuilder < Test::Unit::TestCase
   include Padrino::Helpers::FormHelpers
 
+  # Dummy form builder for testing
+  module Padrino::Helpers::FormBuilder
+    class FakeFormBuilder < AbstractFormBuilder
+      def foo_field; @template.content_tag(:span, "bar"); end
+    end
+  end
+
   def app
     MarkupDemo.tap { |app| app.set :environment, :test }
   end
@@ -39,6 +46,16 @@ class TestFormBuilder < Test::Unit::TestCase
       actual_html = form_for(Outer::UserAccount.new, '/register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.text_field :username }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('form input', :type => 'text', :name => 'outer_user_account[username]') { actual_html }
+    end
+
+    should "display form specifying default builder setting" do
+      self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder')).once
+      actual_html = ""
+      assert_nothing_raised do
+        actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
+      end
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
+      assert_has_tag('span', :content => "bar") { actual_html }
     end
 
     should "display correct form html with remote option" do
