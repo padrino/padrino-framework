@@ -177,7 +177,7 @@ class TestProjectGenerator < Test::Unit::TestCase
         buffer = silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=sequel', '--script=none') }
         assert_match(/Applying.*?sequel.*?orm/, buffer)
         assert_match_in_file(/gem 'sequel'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/gem 'sqlite3-ruby'/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/Sequel.connect/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(%r{sqlite://}, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(%r{project_com}, "#{@apptmp}/project.com/config/database.rb")
@@ -193,7 +193,7 @@ class TestProjectGenerator < Test::Unit::TestCase
 
       should "properly generate sqlite3" do
         buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=sqlite') }
-        assert_match_in_file(/gem 'sqlite3-ruby'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(%r{sqlite://}, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
       end
@@ -211,7 +211,7 @@ class TestProjectGenerator < Test::Unit::TestCase
         buffer = silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
         assert_match(/Applying.*?activerecord.*?orm/, buffer)
         assert_match_in_file(/gem 'activerecord', :require => "active_record"/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'sqlite3', :require => "sqlite3"/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/ActiveRecord::Base.establish_connection/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
         assert_dir_exists("#{@apptmp}/project.com/app/models")
@@ -233,7 +233,7 @@ class TestProjectGenerator < Test::Unit::TestCase
 
       should "properly generate sqlite3" do
         buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=sqlite3') }
-        assert_match_in_file(/gem 'sqlite3-ruby', :require => "sqlite3"/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'sqlite3', :require => "sqlite3"/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development.db/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter => 'sqlite3'}, "#{@apptmp}/sample_project/config/database.rb")
       end

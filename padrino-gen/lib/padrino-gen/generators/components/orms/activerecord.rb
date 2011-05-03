@@ -108,7 +108,7 @@ def setup_orm
     ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_development.db\")")
     ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_production.db\")")
     ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_test.db\")")
-    require_dependencies 'sqlite3-ruby', :require => 'sqlite3'
+    require_dependencies 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record'
   create_file("config/database.rb", ar)

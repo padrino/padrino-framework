@@ -27,7 +27,7 @@ def setup_orm
     sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_development.db\")")
     sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_production.db\")")
     sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_test.db\")")
-    'sqlite3-ruby'
+    'sqlite3'
   end
   create_file("config/database.rb", sequel)
   empty_directory('app/models')
