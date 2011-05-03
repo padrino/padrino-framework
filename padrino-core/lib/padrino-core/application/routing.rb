@@ -1,7 +1,7 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-class Sinatra::Request
+class Sinatra::Request #:nodoc:
   attr_accessor :route_obj
 
   def controller
