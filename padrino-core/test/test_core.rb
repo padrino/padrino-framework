@@ -16,7 +16,9 @@ class TestCore < Test::Unit::TestCase
       assert_respond_to Padrino, :reload!
       assert_respond_to Padrino, :version
       assert_respond_to Padrino, :bundle
+      assert_respond_to Padrino, :configure_apps
     end
+
 
     should 'validate global helpers' do
       assert_equal :test, Padrino.env

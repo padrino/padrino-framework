@@ -2,6 +2,13 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class PadrinoTestApp < Padrino::Application; end
 
+class PadrinoGlobalApp < Padrino::Application
+  Padrino.configure_apps do
+    set :foo, true
+    enable :sessions
+  end
+end
+
 class TestApplication < Test::Unit::TestCase
   def setup
     Padrino.mounted_apps.clear
@@ -34,6 +41,11 @@ class TestApplication < Test::Unit::TestCase
       assert PadrinoTestApp.instance_variable_get(:@_configured)
       assert !PadrinoTestApp.reload?
       assert !PadrinoTestApp.flash
+    end
+
+    should 'add global configuration' do
+      assert PadrinoGlobalApp.foo
+      assert PadrinoGlobalApp.sessions
     end
 
     # compare to: test_routing: allow global provides

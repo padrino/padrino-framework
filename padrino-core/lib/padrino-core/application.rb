@@ -146,6 +146,8 @@ module Padrino
           set :authentication, false
           # Padrino locale
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
+          # Load the Global Configurations
+          Padrino.configure_apps.call if Padrino.configure_apps
         end
 
         ##
