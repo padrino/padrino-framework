@@ -1,13 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class PadrinoTestApp < Padrino::Application; end
-
-class PadrinoGlobalApp < Padrino::Application
-  Padrino.configure_apps do
-    set :foo, true
-    enable :sessions
-  end
-end
+class PadrinoTestApp2 < Padrino::Application; end
 
 class TestApplication < Test::Unit::TestCase
   def setup
@@ -31,6 +25,7 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.dump_errors
       assert !PadrinoTestApp.show_exceptions
       assert PadrinoTestApp.raise_errors
+      assert !Padrino.configure_apps
     end
 
     should 'check padrino specific options' do
@@ -43,10 +38,14 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.flash
     end
 
-    should 'add global configuration' do
-      assert PadrinoGlobalApp.foo
-      assert PadrinoGlobalApp.sessions
+    should 'set gloal project settings' do
+      Padrino.configure_apps { enable :sessions }
+      PadrinoTestApp.send(:default_configuration!)
+      PadrinoTestApp2.send(:default_configuration!)
+      assert PadrinoTestApp.sessions
+      assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
+
 
     # compare to: test_routing: allow global provides
     should "set content_type to :html if none can be determined" do
