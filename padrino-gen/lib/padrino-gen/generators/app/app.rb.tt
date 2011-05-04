@@ -2,7 +2,7 @@ class <%= @app_name %> < Padrino::Application
   register Padrino::Mailer
   register Padrino::Helpers
 
-  set :sessions, true
+  enable :sessions
 
   ##
   # Caching support

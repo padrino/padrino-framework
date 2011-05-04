@@ -47,6 +47,20 @@ class TestApplication < Test::Unit::TestCase
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
 
+    should "have shared sessions accessible in project" do
+      Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
+      Padrino.mount("PadrinoTestApp").to("/write")
+      Padrino.mount("PadrinoTestApp2").to("/read")
+      PadrinoTestApp.tap { |app| app.send(:default_configuration!)
+        app.get("/") { session[:foo] = "shared" } }
+      PadrinoTestApp2.tap { |app| app.send(:default_configuration!)
+        app.get("/") { session[:foo] } }
+      browser = Rack::Test::Session.new(Rack::MockSession.new(Padrino.application))
+      browser.get '/write'
+      browser.get '/read'
+      assert_equal 'shared', browser.last_response.body
+    end
+
     # compare to: test_routing: allow global provides
     should "set content_type to :html if none can be determined" do
       mock_app do

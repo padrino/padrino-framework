@@ -61,7 +61,15 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      @_global_configuration ||= block
+      @_global_configuration = block if block_given?
+    end
+
+    ###
+    # Returns project-wide configuration settings
+    # defined in 'configure_apps' block
+    #
+    def apps_configuration
+      @_global_configuration
     end
 
     ##
