@@ -277,11 +277,6 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
-      def put(path, *args, &bk);    route 'PUT',    path, *args, &bk end
-      def post(path, *args, &bk);   route 'POST',   path, *args, &bk end
-      def delete(path, *args, &bk); route 'DELETE', path, *args, &bk end
-      def head(path, *args, &bk);   route 'HEAD',   path, *args, &bk end
-
       private
         # Parse params from the url method
         def value_to_param(value)
