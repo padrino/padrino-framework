@@ -1375,4 +1375,58 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 404, status
     assert_match /not found/, body
   end
+
+  should_eventually 'recognize paths' do
+    mock_app do
+      controller :foo do
+        get :bar, :map => "/my/:id/custom-route" do
+          recognize_path(request.path_info)
+        end
+      end
+
+      get :simple, :map => "/simple/:id" do
+        recognize_path(request.path_info)
+      end
+
+      get :with_format, :with => :id, :provides => :js do
+        recognize_path(request.path_info)
+      end
+    end
+    get "/my/interesting/custom-route"
+    assert_equal '[:foo_bar, { :id => "interesting" }]', body
+    assert_equal [:foo_bar, { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:foo_bar, { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    get "/simple/1"
+    assert_equal '[:simple, { :id => "1" }]', body
+    assert_equal [:simple, { :id => "bar" }, @app.recognize_path(@app.url(:simple, :id => "bar"))]
+    assert_equal [:simple, { :id => "true" }, @app.recognize_path(@app.url(:simple, :id => true))]
+    assert_equal [:simple, { :id => "9" }, @app.recognize_path(@app.url(:simple, :id => 9))]
+    get "/with_format/1.js"
+    assert_equal '[:with_format, { :id => "1", :format => "js" }]', body
+    assert_equal [:with_format, { :id => "bar", :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))]
+    assert_equal [:with_format, { :id => "true", :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))]
+    assert_equal [:with_format, { :id => 9, :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))]
+  end
+
+  should_eventually 'have current_path' do
+    mock_app do
+      controller :foo do
+        get :bar, :map => "/paginate/:page" do
+          current_path
+        end
+      end
+    end
+    get @app.url(:foo, :bar, :page => 10)
+    assert_equal "/paginate/10", body
+  end
+
+  should_eventually 'change params in current_path' do
+    mock_app do
+      get :index, :map => "/paginate/:page" do
+        current_path(:page => 66)
+      end
+    end
+    get @app.url(:index, :page => 10)
+    assert_equal "/paginate/66", body
+  end
 end

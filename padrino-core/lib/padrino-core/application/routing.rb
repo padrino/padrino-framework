@@ -508,7 +508,7 @@ module Padrino
             path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
-            path.gsub!(%r{/\?$}, '(/)')                 # Remove index path
+            path.gsub!(%r{/\?$}, '(/)')                    # Remove index path
             path.gsub!(%r{/?index/?}, '/')                 # Remove index path
             path.gsub!(%r{//$}, '/')                       # Remove index path
             path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
