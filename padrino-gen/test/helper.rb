@@ -84,7 +84,7 @@ class Test::Unit::TestCase
     project_root = options[:root]
     project_name = options[:name]
     settings = options.slice!(:name, :root)
-    components = settings.map { |component, value| "--#{component}=#{value}" }
+    components = settings.sort.map { |component, value| "--#{component}=#{value}" }
     params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end

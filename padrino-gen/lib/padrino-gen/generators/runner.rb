@@ -7,7 +7,7 @@ module Padrino
       # Generates project scaffold based on a given template file
       # project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
       def project(options={})
-        components = options.map { |component, value| "--#{component}=#{value}" }
+        components = options.sort.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift("project"))
