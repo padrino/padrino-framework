@@ -92,10 +92,7 @@ class TestProjectGenerator < Test::Unit::TestCase
 
     should "store and apply session_secret" do
       silence_logger { generate(:project,'sample_project', '--tiny',"--root=#{@apptmp}") }
-      assert_match_in_file(/session_secret:.+/, "#{@apptmp}/sample_project/.components")
-      session_secret = YAML.load_file("#{@apptmp}/sample_project/.components")[:session_secret]
-      assert_not_equal "", session_secret
-      assert_match_in_file(/#{session_secret}/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     should "create components file containing options chosen with defaults" do

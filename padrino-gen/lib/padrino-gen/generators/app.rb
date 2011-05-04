@@ -31,7 +31,6 @@ module Padrino
         @app_name = name.gsub(/\W/, "_").underscore.camelize
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          @session_secret = fetch_component_choice(:session_secret)
           app_skeleton(@app_name.downcase, options[:tiny])
           empty_directory destination_root("public/#{@app_name.downcase}")
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{@app_name.downcase}\")"

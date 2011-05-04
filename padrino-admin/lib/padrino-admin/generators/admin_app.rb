@@ -45,7 +45,6 @@ module Padrino
           end
 
           store_component_choice(:admin_renderer, tmp_ext)
-          @session_secret = fetch_component_choice(:session_secret)
 
           self.behavior = :revoke if options[:destroy]
 

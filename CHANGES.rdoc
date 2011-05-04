@@ -14,6 +14,8 @@
 * By default use logging only on development
 * Uses raise_errors, dump_errors, show_exceptions as Sinatra::Base do
 * Refactored Padrino::Application
+* Added a global configuration in config/apps.rb used by each Padrino Applicaitons
+* Moved session_secret in global configuration project
 
 == 0.9.26
 
