@@ -39,13 +39,13 @@ class TestApplication < Test::Unit::TestCase
     end
 
     should 'set global project settings' do
-      Padrino.configure_apps { enable :sessions }
+      Padrino.configure_apps { enable :sessions; set :foo, "bar" }
       PadrinoTestApp.send(:default_configuration!)
       PadrinoTestApp2.send(:default_configuration!)
-      assert PadrinoTestApp.sessions
+      assert PadrinoTestApp.sessions, "should have sessions enabled"
+      assert_equal "bar", PadrinoTestApp.settings.foo, "should have foo assigned"
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
-
 
     # compare to: test_routing: allow global provides
     should "set content_type to :html if none can be determined" do
@@ -63,6 +63,7 @@ class TestApplication < Test::Unit::TestCase
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal "Foo in html", body
-    end
-  end
+    end # content_type to :html
+  end # application functionality
+
 end
