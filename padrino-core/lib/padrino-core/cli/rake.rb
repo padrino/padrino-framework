@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../tasks')
 require 'rake'
+require 'securerandom' unless defined?(SecureRandom)
 Rake.application.instance_variable_set(:@rakefile, __FILE__)
 
 module PadrinoTasks
@@ -30,7 +31,7 @@ end
 
 desc "Generate a secret key"
 task :secret do
-  shell.say '%x' % rand(2**255)
+  shell.say '%x' % SecureRandom.random_number(2**255)
 end
 
 # lists all routes of a given app

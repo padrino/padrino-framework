@@ -27,7 +27,7 @@ Set the global project settings for your apps. These settings are inherited by y
 #
 Padrino.configure_apps do
   # set :sessions, true
-  set :session_secret, '<%= '%x' % rand(2**255) %>'
+  set :session_secret, '<%= '%x' % SecureRandom.random_number(2**255) %>'
 end
 
 # Mounts the core application for this project

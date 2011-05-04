@@ -1,4 +1,5 @@
 require 'padrino-core/version'
+require 'securerandom' unless defined?(SecureRandom)
 
 module Padrino
   module Generators

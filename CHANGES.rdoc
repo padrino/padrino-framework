@@ -16,6 +16,7 @@
 * Refactored Padrino::Application
 * Added a global configuration in config/apps.rb used by each Padrino Applicaitons
 * Moved session_secret in global configuration project
+* Use SecureRandom to generate session secret
 
 == 0.9.26
 

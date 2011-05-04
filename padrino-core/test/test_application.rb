@@ -38,7 +38,7 @@ class TestApplication < Test::Unit::TestCase
       assert !PadrinoTestApp.flash
     end
 
-    should 'set gloal project settings' do
+    should 'set global project settings' do
       Padrino.configure_apps { enable :sessions }
       PadrinoTestApp.send(:default_configuration!)
       PadrinoTestApp2.send(:default_configuration!)
