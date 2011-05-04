@@ -31,7 +31,7 @@ end
 
 desc "Generate a secret key"
 task :secret do
-  shell.say '%x' % SecureRandom.random_number(2**255)
+  shell.say SecureRandom.hex(32)
 end
 
 # lists all routes of a given app

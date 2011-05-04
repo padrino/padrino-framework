@@ -22,12 +22,12 @@
 #
 
 ##
-Set the global project settings for your apps. These settings are inherited by your subapps. You can
-# override these settings in each of your sub apps.
+# Setup global project settings for your apps. These settings are inherited by every subapp. You can
+# override these settings in the subapps as needed.
 #
 Padrino.configure_apps do
-  # set :sessions, true
-  set :session_secret, '<%= '%x' % SecureRandom.random_number(2**255) %>'
+  # enable :sessions
+  set :session_secret, '<%= SecureRandom.hex(32) %>'
 end
 
 # Mounts the core application for this project
