@@ -51,9 +51,18 @@ class TestRenderHelpers < Test::Unit::TestCase
     should 'detect correctly current engine for a padrino application' do
       visit '/current_engine'
       assert_have_selector 'p.start', :content => "haml"
-      assert_have_selector 'p.haml',  :content => "haml"
-      assert_have_selector 'p.erb',   :content => "erb"
-      assert_have_selector 'p.slim',  :content => "slim"
+      assert_have_selector 'p.haml span',  :content => "haml"
+      assert_have_selector 'p.erb span',   :content => "erb"
+      assert_have_selector 'p.slim span',  :content => "slim"
+      assert_have_selector 'p.end',   :content => "haml"
+    end
+
+    should "detect correctly current engine for explicit engine on partials" do
+      visit '/explicit_engine'
+      assert_have_selector 'p.start', :content => "haml"
+      assert_have_selector 'p.haml span',  :content => "haml"
+      assert_have_selector 'p.erb span',   :content => "erb"
+      assert_have_selector 'p.slim span',  :content => "slim"
       assert_have_selector 'p.end',   :content => "haml"
     end
   end

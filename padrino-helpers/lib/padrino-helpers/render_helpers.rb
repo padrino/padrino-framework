@@ -16,8 +16,8 @@ module Padrino
         path = template.to_s.split(File::SEPARATOR)
         object_name = path[-1].to_sym
         path[-1] = "_#{path[-1]}"
-        template_path = File.join(path)
         explicit_engine = options.delete(:engine)
+        template_path = File.join(path).to_sym
         raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
         if collection = options.delete(:collection)
           options.delete(:object)

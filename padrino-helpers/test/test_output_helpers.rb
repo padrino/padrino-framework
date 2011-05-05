@@ -113,4 +113,21 @@ class TestOutputHelpers < Test::Unit::TestCase
       assert_have_selector 'p.end',   :content => "slim"
     end
   end
+
+  context 'for #partial method in simple sinatra application' do
+    should 'properly output in erb' do
+      visit '/erb/simple_partial'
+      assert_have_selector 'p.erb',  :content => "erb"
+    end
+
+    should 'properly output in haml' do
+      visit '/haml/simple_partial'
+      assert_have_selector 'p.haml',  :content => "haml"
+    end
+
+    should 'properly output in slim' do
+      visit '/slim/simple_partial'
+      assert_have_selector 'p.slim',  :content => "slim"
+    end
+  end
 end
