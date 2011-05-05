@@ -233,8 +233,19 @@ module Padrino
       end
       alias :urls :router
 
+      def recognition_router
+        @recognition_router ||= HttpRouter.new
+      end
+
       def reset_router!
-        @router = HttpRouter.new
+        router.reset!
+        recognition_router.reset!
+      end
+
+      def recognize_path(path)
+        if response = @recognition_router.recognize(Rack::MockRequest.env_for(path))
+          [response.path.route.named, response.params]
+        end
       end
 
       ##
@@ -376,6 +387,8 @@ module Padrino
               true
             end
           end
+
+          recognition_router.add(path).name(name).to(name)
 
           # Add Sinatra conditions
           options.each { |option, args|
@@ -644,6 +657,10 @@ module Padrino
         self.class.url(*args)
       end
       alias :url_for :url
+
+      def recognize_path(path)
+        self.class.recognize_path(path)
+      end
 
       ##
       # This is mostly just a helper so request.path_info isn't changed when

@@ -1376,36 +1376,36 @@ class TestRouting < Test::Unit::TestCase
     assert_match /not found/, body
   end
 
-  should_eventually 'recognize paths' do
+  should 'recognize paths' do
     mock_app do
       controller :foo do
         get :bar, :map => "/my/:id/custom-route" do
-          recognize_path(request.path_info)
+          recognize_path(request.path_info).inspect
         end
       end
 
       get :simple, :map => "/simple/:id" do
-        recognize_path(request.path_info)
+        recognize_path(request.path_info).inspect
       end
 
       get :with_format, :with => :id, :provides => :js do
-        recognize_path(request.path_info)
+        recognize_path(request.path_info).inspect
       end
     end
     get "/my/interesting/custom-route"
-    assert_equal '[:foo_bar, { :id => "interesting" }]', body
+    assert_equal "[:foo_bar, {:id=>\"interesting\"}]", body
     assert_equal [:foo_bar, { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
     assert_equal [:foo_bar, { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
     get "/simple/1"
-    assert_equal '[:simple, { :id => "1" }]', body
-    assert_equal [:simple, { :id => "bar" }, @app.recognize_path(@app.url(:simple, :id => "bar"))]
-    assert_equal [:simple, { :id => "true" }, @app.recognize_path(@app.url(:simple, :id => true))]
-    assert_equal [:simple, { :id => "9" }, @app.recognize_path(@app.url(:simple, :id => 9))]
+    assert_equal '[:simple, {:id=>"1"}]', body
+    assert_equal [:simple, { :id => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
+    assert_equal [:simple, { :id => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
+    assert_equal [:simple, { :id => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
     get "/with_format/1.js"
-    assert_equal '[:with_format, { :id => "1", :format => "js" }]', body
-    assert_equal [:with_format, { :id => "bar", :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))]
-    assert_equal [:with_format, { :id => "true", :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))]
-    assert_equal [:with_format, { :id => 9, :format => "js" }, @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))]
+    assert_equal '[:with_format, {:format=>"js", :id=>"1"}]', body
+    assert_equal [:with_format, { :id => "bar", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
+    assert_equal [:with_format, { :id => "true", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
+    assert_equal [:with_format, { :id => "9", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
   should_eventually 'have current_path' do
