@@ -440,6 +440,7 @@ module Padrino
                   # Now we can eval route, but because we have "throw halt" we need to be
                   # (en)sure to reset old layout and run controller after filters.
                   begin
+                    @route = route
                     @_response_buffer = catch(:halt) { route_eval(&block) }
                     processed = true
                   ensure
@@ -660,6 +661,15 @@ module Padrino
 
       def recognize_path(path)
         self.class.recognize_path(path)
+      end
+
+      def current_path(*path_params)
+        if path_params.last.is_a?(Hash)
+          path_params[-1] = params.merge(path_params[-1])
+        else
+          path_params << params
+        end
+        @route.url(*path_params)
       end
 
       ##

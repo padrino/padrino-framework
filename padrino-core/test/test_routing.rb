@@ -1408,7 +1408,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal [:with_format, { :id => "9", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
-  should_eventually 'have current_path' do
+  should 'have current_path' do
     mock_app do
       controller :foo do
         get :bar, :map => "/paginate/:page" do
@@ -1420,7 +1420,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/paginate/10", body
   end
 
-  should_eventually 'change params in current_path' do
+  should 'change params in current_path' do
     mock_app do
       get :index, :map => "/paginate/:page" do
         current_path(:page => 66)
