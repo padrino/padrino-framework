@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.9.27 (Not released yet)
+== 0.9.28 (Not Yet Released)
+
+== 0.9.27
 
 * Use sass gem, because now is separated from haml
 * Escape regex in our reloader
