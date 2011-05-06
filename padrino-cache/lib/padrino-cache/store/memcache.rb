@@ -45,7 +45,7 @@ module Padrino
         def set(key, value, opts = nil)
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
-            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
+            expires_in = (@backend.class.name == "MemCache" ? expires_in : Time.new.to_i + expires_in) if expires_in < EXPIRES_EDGE
             @backend.set(key, value, expires_in)
           else
             @backend.set(key, value)
@@ -72,7 +72,7 @@ module Padrino
         #   MyApp.cache.get('records') # => nil
         #
         def flush
-          @backend.flush
+          @backend.respond_to?(:flush_all) ? @backend.flush_all : @backend.flush
         end
       end # Memcached
     end # Store

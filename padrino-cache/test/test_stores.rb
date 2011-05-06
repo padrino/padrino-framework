@@ -61,6 +61,27 @@ rescue LoadError
 end
 
 begin
+  require 'memcache'
+  # we're just going to assume memcached is running on the default port
+  Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
+
+  class TestMemcacheStore < Test::Unit::TestCase
+    def setup
+      Padrino.cache = Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1))
+      Padrino.cache.flush
+    end
+
+    def teardown
+      Padrino.cache.flush
+    end
+
+    eval COMMON_TESTS
+  end
+rescue LoadError
+  warn "Skipping memcache with memcached library tests"
+end
+
+begin
   require 'dalli'
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive'))

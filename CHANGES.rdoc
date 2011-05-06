@@ -18,6 +18,9 @@
 * Moved session_secret in global configuration project
 * Use SecureRandom to generate session secret
 * Support 'partial' in Sinatra with explicit engine
+* Added recognize_path method ex: recognize_path(request.referrer) => [:controller_action, { :id => 1 }]
+* Added current_path method ex: current_path(:merge => :param) => "/current/1234/merge/param"
+* Support for jruby-memcache-client/memcache-client
 
 == 0.9.26
 
