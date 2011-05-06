@@ -21,6 +21,7 @@
 * Added recognize_path method ex: recognize_path(request.referrer) => [:controller_action, { :id => 1 }]
 * Added current_path method ex: current_path(:merge => :param) => "/current/1234/merge/param"
 * Support for jruby-memcache-client/memcache-client
+* Added MongoMapper task for drop database
 
 == 0.9.26
 
