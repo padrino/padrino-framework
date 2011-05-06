@@ -68,7 +68,7 @@ module Padrino
     #
     # ==== Examples
     #
-    #   Padrino::Logger::Config[:development] = { :log_level => :debug, :to_file }
+    #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
     #   # or you can use your stream
