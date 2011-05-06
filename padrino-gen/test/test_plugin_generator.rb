@@ -34,6 +34,7 @@ class TestPluginGenerator < Test::Unit::TestCase
       expects_generated :controller, "posts get:index get:new post:new -r=#{@apptmp}/sample_project"
       expects_generated :migration, "AddEmailToUser email:string -r=#{@apptmp}/sample_project"
       expects_generated :fake, "foo bar -r=#{@apptmp}/sample_project"
+      expects_generated :plugin, "carrierwave -r=#{@apptmp}/sample_project"
       expects_dependencies 'nokogiri'
       expects_initializer :test, "# Example", :root => "#{@apptmp}/sample_project"
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"

@@ -4,6 +4,7 @@ generate :model, "post title:string body:text"
 generate :controller, "posts get:index get:new post:new"
 generate :migration, "AddEmailToUser email:string"
 generate :fake, "foo bar"
+generate :plugin, "carrierwave"
 
 require_dependencies 'nokogiri'
 
