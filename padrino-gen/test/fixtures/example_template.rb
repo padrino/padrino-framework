@@ -1,4 +1,4 @@
-project :test => :shoulda, :orm => :activerecord, :dev => true
+project :test => :shoulda, :orm => :activerecord, :template => 'mongochist', :dev => true
 
 generate :model, "post title:string body:text"
 generate :controller, "posts get:index get:new post:new"
