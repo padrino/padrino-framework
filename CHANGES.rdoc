@@ -2,6 +2,8 @@
 
 == 0.9.28 (Not Yet Released)
 
+* Fixed couchrest Account Model
+
 == 0.9.27
 
 * Use sass gem, because now is separated from haml

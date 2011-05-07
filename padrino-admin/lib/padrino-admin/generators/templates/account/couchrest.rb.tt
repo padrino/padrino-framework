@@ -11,8 +11,6 @@ class Account < CouchRest::Model::Base
   property :role
 
   view_by :email
-  view_by :id,
-    :map => "function(doc) {\n if ((doc['couchrest-type'] == 'Account') && doc['_id']) {\n emit(doc['_id'], null);\n }\n}\n"
 
   # Validations
   validates_presence_of     :email, :role
@@ -40,6 +38,13 @@ class Account < CouchRest::Model::Base
     ::BCrypt::Password.new(crypted_password) == password
   end
 
+  ##
+  # This method is used by AuthenticationHelper
+  #
+  def self.find_by_id(id)
+    get(id)
+  end
+
   private
     def encrypt_password
       self.crypted_password = ::BCrypt::Password.create(password)
@@ -51,13 +56,13 @@ class Account < CouchRest::Model::Base
 
     def unique_email_validator
       account = Account.find_by_email(email)
-      
+
       # didn't find email in the database
       return if account.nil?
-      
+
       # account with same email in database is this account
       return if has_key?('_id') && self['_id'] == account['_id']
-      
+
       errors.add(:email, "is not unique")
     end
 end
