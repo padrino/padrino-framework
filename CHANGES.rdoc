@@ -3,6 +3,9 @@
 == 0.9.28 (Not Yet Released)
 
 * Fixed couchrest Account Model
+* Generate SystemTimer for Mongoid only if Ruby 1.8 [Thanks to RoryO]
+* Generate SystemTimer for Mongomapper only if Ruby 1.8
+* Add `padrino s` as alias for `padrino start`
 
 == 0.9.27
 
