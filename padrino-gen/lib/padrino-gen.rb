@@ -1,3 +1,4 @@
+require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
 require 'padrino-core/command'
 
