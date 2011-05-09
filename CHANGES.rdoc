@@ -8,6 +8,7 @@
 * Add `padrino s` as alias for `padrino start`
 * Fixed Gemfile for couchrest
 * Updated Gemfile for mongoid
+* Fix a possible loop in require_dependencies
 
 == 0.9.27
 

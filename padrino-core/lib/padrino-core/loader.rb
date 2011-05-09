@@ -98,12 +98,12 @@ module Padrino
       # Extract all files to load
       files = paths.map { |path| Dir[path] }.flatten.uniq.sort
 
-      # We need a size to make sure things are loading
-      size_at_start = files.size
-
       while files.present?
         # List of errors and failed files
         errors, failed = [], []
+
+        # We need a size to make sure things are loading
+        size_at_start = files.size
 
         # Now we try to require our dependencies, we dup files
         # so we don't perform delete on the original array during
