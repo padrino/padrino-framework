@@ -6,6 +6,8 @@
 * Generate SystemTimer for Mongoid only if Ruby 1.8 [Thanks to RoryO]
 * Generate SystemTimer for Mongomapper only if Ruby 1.8
 * Add `padrino s` as alias for `padrino start`
+* Fixed Gemfile for couchrest
+* Updated Gemfile for mongoid
 
 == 0.9.27
 
@@ -29,8 +31,6 @@
 * Added current_path method ex: current_path(:merge => :param) => "/current/1234/merge/param"
 * Support for jruby-memcache-client/memcache-client
 * Added MongoMapper task for drop database
-* Fixed Gemfile for couchrest
-* Updated Gemfile for mongoid
 
 == 0.9.26
 
