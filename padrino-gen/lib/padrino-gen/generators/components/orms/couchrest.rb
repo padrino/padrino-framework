@@ -11,7 +11,7 @@ def setup_orm
   require_dependencies 'couchrest_model'
   require_dependencies 'json_pure'
   require_dependencies 'erubis',     :version => '~> 2.6.6'
-  require_dependencise 'mime-types', :version => '>= 1.16'
+  require_dependencies 'mime-types', :version => '>= 1.16'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
 end
