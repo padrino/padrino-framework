@@ -9,6 +9,7 @@
 * Fixed Gemfile for couchrest
 * Updated Gemfile for mongoid
 * Fix a possible loop in require_dependencies
+* Added padrino rake gen useful to create a Rakefile to handle for example with heroku
 
 == 0.9.27
 
