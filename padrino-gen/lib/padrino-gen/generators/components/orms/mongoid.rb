@@ -28,7 +28,7 @@ MONGO
 
 def setup_orm
   require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'mongoid', :version => '2.0.0'
+  require_dependencies 'mongoid'
   require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/
   create_file("config/database.rb", MONGOID.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
