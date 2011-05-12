@@ -127,10 +127,10 @@ class TestRendering < Test::Unit::TestCase
       Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge(@save)
     end
 
-    should 'use correct layout with each controller' do
+    should_eventually 'use correct layout with each controller' do
       create_layout :foo, "foo layout at <%= yield %>"
       create_layout :bar, "bar layout at <%= yield %>"
-      create_layout :application, "default layout at <%= yield %>"
+      create_layout :application, "#{@layout.inspect} default layout at <%= yield %>"
       mock_app do
         get("/"){ render :erb, "application" }
         controller :foo do
