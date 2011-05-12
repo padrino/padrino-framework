@@ -1,8 +1,7 @@
 = CHANGES
 
 == 0.9.29 (Not Yet Released)
-
-
+* Cleanup SupportLite
 
 == 0.9.28
 
