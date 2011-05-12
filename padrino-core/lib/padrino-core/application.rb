@@ -107,20 +107,8 @@ module Padrino
       #
       def run!(options={})
         return unless Padrino.load!
-        set options
-        handler      = detect_rack_handler
-        handler_name = handler.name.gsub(/.*::/, '')
-        puts "=> #{self.name}/#{Padrino.version} has taken the stage #{Padrino.env} on #{port}" unless handler_name =~/cgi/i
-        handler.run self, :Host => bind, :Port => port do |server|
-          trap(:INT) do
-            ## Use thins' hard #stop! if available, otherwise just #stop
-            server.respond_to?(:stop!) ? server.stop! : server.stop
-            puts "<= #{self.name} has ended his set (crowd applauds)" unless handler_name =~/cgi/i
-          end
-          set :running, true
-        end
-      rescue Errno::EADDRINUSE => e
-        puts "<= Someone is already performing on port #{port}!"
+        Padrino.mount(self.to_s).to("/")
+        Padrino.run!
       end
 
       protected
