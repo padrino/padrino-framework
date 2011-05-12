@@ -11,7 +11,7 @@ module Padrino
   #
   def self.run!(options={})
     Padrino.load!
-    Server.build(options)
+    Server.start(Padrino.application, options)
   end
 
   ##
@@ -23,44 +23,40 @@ module Padrino
 
     Handlers = %w[thin mongrel webrick] unless const_defined?(:Handlers)
 
-    private
-      def self.build(options={})
-        host    = options[:host] || "localhost"
-        port    = options[:port] || 3000
-        adapter = options[:adapter]
+    def self.start(app, options={})
+      host    = options[:host] || "localhost"
+      port    = options[:port] || 3000
+      adapter = options[:adapter]
 
-        handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
+      handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
 
-        begin
-          handler = Rack::Handler.get(handler_name.downcase)
-        rescue
-          raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
-          exit
-        end
-
-        puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} on #{port}"
-
-        handler.run Padrino.application, :Host => host, :Port => port do |server|
-          trap(:INT) do
-            # Use thins' hard #stop! if available, otherwise just #stop
-            server.respond_to?(:stop!) ? server.stop! : server.stop
-            puts "<= Padrino has ended his set (crowd applauds)"
-          end
-        end
-      rescue RuntimeError => e
-        if e.message =~ /no acceptor/
-          if port < 1024 && RUBY_PLATFORM !~ /mswin|win|mingw/ && Process.uid != 0
-            puts "=> Only root may open a priviledged port #{port}!"
-          else
-            puts "=> Someone is already performing on port #{port}!"
-          end
-        else
-          raise e
-        end
-      rescue Errno::EADDRINUSE
-        puts "=> Someone is already performing on port #{port}!"
+      begin
+        handler = Rack::Handler.get(handler_name.downcase)
+      rescue
+        raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
+        exit
       end
 
+      puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} on #{port} with #{handler_name}"
+
+      handler.run(app, :Host => host, :Port => port) do |server|
+        server.silent = true if server.respond_to?(:silent)
+      end
+    rescue RuntimeError => e
+      if e.message =~ /no acceptor/
+        if port < 1024 && RUBY_PLATFORM !~ /mswin|win|mingw/ && Process.uid != 0
+          puts "=> Only root may open a priviledged port #{port}!"
+        else
+          puts "=> Someone is already performing on port #{port}!"
+        end
+      else
+        raise e
+      end
+    rescue Errno::EADDRINUSE
+      puts "=> Someone is already performing on port #{port}!"
+    end
+
+    private
       def self.detect_handler
         Handlers.each do |server_name|
           begin
