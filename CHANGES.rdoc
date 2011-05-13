@@ -5,7 +5,7 @@
 * Cleanup SupportLite
 * Cleanup Reloader
 * Cleanup Padrino::Application
-* Updated Gemfile
+* Cleanup Gemfile generation
 
 == 0.9.28
 
