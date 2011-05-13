@@ -101,7 +101,7 @@ module Padrino
     # otherwise return nil
     #
     def bundle
-      return :locked   if File.exist?(root('.bundle/environment.rb'))
+      return :locked   if File.exist?(root('Gemfile.lock'))
       return :unlocked if File.exist?(root("Gemfile"))
     end
 
