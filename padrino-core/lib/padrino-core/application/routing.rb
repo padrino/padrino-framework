@@ -694,8 +694,7 @@ module Padrino
               # If present set current controller layout
               @route = match.path.route
               @block_params = @block_params.slice(0, match.path.route.dest.arity) if match.path.route.dest.arity > 0
-              route_eval(&match.path.route.dest)
-              match.acceptance_response = @_response_buffer
+              match.acceptance_response = catch(:halt) { route_eval(&match.path.route.dest) } || ''
             ensure
               @layout = parent_layout
               (@_pending_after_filters ||= []).concat(match.path.route.after_filters) if match.path.route.after_filters
@@ -703,7 +702,7 @@ module Padrino
             end
           }
             if match.respond_to?(:path)
-              throw :halt, @_response_buffer
+              throw :halt, @_response_buffer = match.acceptance_response
             elsif match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
