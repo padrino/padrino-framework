@@ -1,14 +1,11 @@
 # Defines our constants
 PADRINO_ENV  = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
 PADRINO_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..')) unless defined?(PADRINO_ROOT)
-# Load Bundler
-require 'rubygems'
+
+require 'rubygems' unless defined?(Gem)
 require 'bundler'
-# Only have default and environment gems
-Bundler.setup(:default, PADRINO_ENV.to_sym)
-# Only require default and environment gems
-Bundler.require(:default, PADRINO_ENV.to_sym)
-puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env}"
+Bundler.setup(:default, PADRINO_ENV)
+Bundler.require(:default, PADRINO_ENV)
 
 ##
 # Add your before load hooks here

@@ -5,6 +5,7 @@
 * Cleanup SupportLite
 * Cleanup Reloader
 * Cleanup Padrino::Application
+* Updated Gemfile
 
 == 0.9.28
 
