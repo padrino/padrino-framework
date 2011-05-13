@@ -1,3 +1,5 @@
+$:.unshift '/Users/joshbuddy/Development/http_router/lib'
+
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
@@ -18,21 +20,6 @@ class HttpRouter #:nodoc:
     def add_before_filter(filter)
       @before_filters ||= []
       @before_filters << filter
-      arbitrary { |req, params|
-        if req.testing_405?
-          true
-        else
-          old_params = router.runner.params
-          result = catch(:pass) {
-            router.runner.params ||= {}
-            router.runner.params.merge!(params)
-            router.runner.instance_eval(&filter)
-            true
-          } == true
-          router.runner.params = old_params
-          result
-        end
-      }
     end
 
     def add_after_filter(filter)
@@ -357,6 +344,7 @@ module Padrino
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
           unbound_method = instance_method("#{verb} #{path}")
+
           block =
             if block.arity != 0
               block_arity = block.arity
@@ -367,6 +355,7 @@ module Padrino
             else
               proc { unbound_method.bind(self).call }
             end
+
           invoke_hook(:route_added, verb, path, block)
 
           # HTTPRouter route construction
@@ -414,44 +403,6 @@ module Padrino
             route.after_filters  = @filters[:after]  || []
           end
 
-          route.arbitrary_with_continue do |req, params|
-            if req.testing_405?
-              req.continue[true]
-            else
-              base = self
-              processed = false
-              router.runner.instance_eval do
-                request.route_obj = route
-                @_response_buffer = nil
-                if path.is_a?(Regexp)
-                  params_list = req.extra_env['router.regex_match'].to_a
-                  params_list.shift
-                  @block_params = params_list
-                  @params.update({:captures => params_list}.merge(@params || {}))
-                else
-                  @block_params = req.params
-                  @params.update(params.merge(@params || {}))
-                end
-                pass_block = catch(:pass) do
-                  # If present set current controller layout
-                  parent_layout = base.instance_variable_get(:@layout)
-                  base.instance_variable_set(:@layout, route.use_layout) if route.use_layout
-                  # Provide access to the current controller to the request
-                  # Now we can eval route, but because we have "throw halt" we need to be
-                  # (en)sure to reset old layout and run controller after filters.
-                  begin
-                    @route = route
-                    @_response_buffer = catch(:halt) { route_eval(&block) }
-                    processed = true
-                  ensure
-                    base.instance_variable_set(:@layout, parent_layout) if route.use_layout
-                    (@_pending_after_filters ||= []).concat(route.after_filters) if route.after_filters
-                  end
-                end
-              end
-              req.continue[processed]
-            end
-          end
           route.to(block)
           route
         end
@@ -719,9 +670,39 @@ module Padrino
         #
         def route!(base=self.class, pass_block=nil)
           base.router.runner = self
-          if base.router and match = base.router.recognize(@request.env)
+          if base.router and match = base.router.recognize(@request.env) { |match|
+            request.route_obj = match.path.route
+            @_response_buffer = nil
+            if match.path.route.is_a?(HttpRouter::RegexRoute)
+              params_list = match.request.extra_env['router.regex_match'].to_a
+              params_list.shift
+              @block_params = params_list
+              @params.update({:captures => params_list}.merge(@params || {}))
+            else
+              @block_params = match.param_values
+              @params.update(match.params.merge(@params || {}))
+            end
+            parent_layout = @layout
+            @params ||= {}
+            @layout = match.path.route.use_layout if match.path.route.use_layout
+            # Provide access to the current controller to the request
+            # Now we can eval route, but because we have "throw halt" we need to be
+            # (en)sure to reset old layout and run controller after filters.
+            begin
+              old_params = @params
+              match.path.route.before_filters.each { |filter| instance_eval(&filter) } if match.path.route.before_filters
+              # If present set current controller layout
+              @route = match.path.route
+              @block_params = @block_params.slice(0, match.path.route.dest.arity) if match.path.route.dest.arity > 0
+              match.acceptance_response = catch(:halt) { route_eval(&match.path.route.dest) } || ''
+            ensure
+              @layout = parent_layout
+              (@_pending_after_filters ||= []).concat(match.path.route.after_filters) if match.path.route.after_filters
+              @params = old_params
+            end
+          }
             if match.respond_to?(:path)
-              throw :halt, @_response_buffer
+              throw :halt, @_response_buffer = match.acceptance_response
             elsif match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}

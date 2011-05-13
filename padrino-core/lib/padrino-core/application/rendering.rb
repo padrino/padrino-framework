@@ -122,6 +122,9 @@ module Padrino
           # Setup root
           root = settings.respond_to?(:root) ? settings.root : ""
 
+          # Use @layout if it exists
+          options[:layout] = @layout if options[:layout].nil?
+
           # Resolve layouts similar to in Rails
           if (options[:layout].nil? || options[:layout] == true) && !settings.templates.has_key?(:layout)
             layout_path, layout_engine = *resolved_layout
@@ -130,7 +133,7 @@ module Padrino
             options[:layout_engine] = layout_engine || engine if options[:layout]
             logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
-            options[:layout] = settings.fetch_layout_path(options[:layout])
+            options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
             logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger)
           end
 
