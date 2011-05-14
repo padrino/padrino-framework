@@ -4,7 +4,7 @@ class TestMounter < Test::Unit::TestCase
 
   def setup
     $VERBOSE, @_verbose_was = nil, $VERBOSE
-    Padrino.mounted_apps.clear
+    Padrino.clear!
   end
 
   def teardown

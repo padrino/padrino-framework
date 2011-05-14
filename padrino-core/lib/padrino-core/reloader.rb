@@ -42,10 +42,10 @@ module Padrino
 
     ##
     # Specified constants can be excluded from the code unloading process.
-    # Default excluded constants are: Padrino, Sinatra
+    # Default excluded constants are: Padrino, Sinatra and HttpRouter
     #
     def self.exclude_constants
-      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base)
+      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base HttpRouter)
     end
 
     ##
@@ -65,7 +65,6 @@ module Padrino
     #
     module Stat
       class << self
-        CACHE                = {}
         MTIMES               = {}
         FILES_LOADED         = {}
         LOADED_CLASSES       = {}
@@ -82,18 +81,24 @@ module Padrino
             logger.debug "Detected a new file #{file}" if new_file
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
-            # If the file is related to their app (i.e. a controller/mailer/helper)
-            Padrino.mounted_apps.find_all { |a| file =~ /^#{Regexp.escape(File.dirname(a.app_file))}/ }.each do |app|
-              # We need to reload their own app
-              app.app_obj.reload!
-              # App reloading will also perform safe_load of itself so we can go next
-              if File.identical?(app.app_file, file)
-                MTIMES[file] = mtime # This prevent a loop
-                next
-              end
-            end
+            # Reload also apps
+            Padrino.mounted_apps.each { |app| app.app_obj.reload! if app.app_obj.respond_to?(:reload!) }
             # Now we can reload our file
-            safe_load(file, mtime)
+            safe_load(file)
+          end
+        end
+
+        ##
+        # Remove files and classes loaded with stat
+        #
+        def clear!
+          MTIMES.clear
+          LOADED_CLASSES.each do |file, klasses|
+            klasses.each { |klass| remove_constant(klass) }
+          end
+          FILES_LOADED.each do |file, dependencies|
+            $LOADED_FEATURES.delete(file)
+            dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
           end
         end
 
@@ -112,12 +117,11 @@ module Padrino
         alias :run! :changed?
 
         ##
-        # A safe Kernel::load which issues the necessary hooks depending on results
+        # A safe Kernel::require which issues the necessary hooks depending on results
         #
-        def safe_load(file, mtime=nil)
-          reload = mtime && mtime > MTIMES[file]
-
-          logger.debug "Reloading #{file}" if reload
+        def safe_load(file, force=false)
+          reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
+          return if !force && !reload && MTIMES[file]
 
           # Removes all classes declared in the specified file
           if klasses = LOADED_CLASSES.delete(file)
@@ -160,7 +164,7 @@ module Padrino
           if FILES_LOADED[file]
             FILES_LOADED[file].each do |fl|
               next if fl == file
-              # Swich off for a while warnings expecially "already initialized constant" stuff
+              # Swich off for a while warnings expecially for "already initialized constant" stuff
               begin
                 verbosity = $-v
                 $-v = nil
@@ -174,10 +178,10 @@ module Padrino
           # And finally reload the specified file
           begin
             require(file)
+            logger.debug "#{reload ? 'Rel' : 'L'}oaded #{file}#{' with force' if force}"
+            MTIMES[file] = File.mtime(file)
           rescue SyntaxError => ex
             logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
-          ensure
-            MTIMES[file] = mtime if mtime
           end
 
           # Store the file details after successful loading
@@ -194,62 +198,28 @@ module Padrino
           return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) } &&
                    !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) }
 
-          parts = const.to_s.split("::")
-          base = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
+          parts  = const.to_s.split("::")
+          base   = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
           object = parts[-1].to_s
           begin
             base.send(:remove_const, object)
-          rescue NameError
-          end
+          rescue NameError; end
 
           nil
         end
 
         ##
-        # Searches Ruby files in your +Padrino.root+ and monitors them for any changes.
+        # Searches Ruby files in your +Padrino.load_paths+ , Padrino::Application.load_paths
+        # and monitors them for any changes.
         #
         def rotation
-          paths  = Dir[Padrino.root("*")].unshift(Padrino.root).
-                                          reject { |path| Padrino::Reloader.exclude.include?(path) || !File.directory?(path) }
-          files  = paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten.uniq
-
-          files.map { |file|
+          files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
+          files  = files | Padrino.mounted_apps.map { |app| app.app_file }
+          files.uniq.map { |file|
+            file = File.expand_path(file)
             next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{Regexp.escape(base)}/ }
-
-            found, stat = figure_path(file, paths)
-            next unless found && stat && mtime = stat.mtime
-
-            CACHE[file] = found
-
-            yield(found, mtime)
+            yield(file, File.mtime(file))
           }.compact
-        end
-
-        ##
-        # Takes a relative or absolute +file+ name and a couple possible +paths+ that
-        # the +file+ might reside in. Returns the full path and File::Stat for that path.
-        #
-        def figure_path(file, paths)
-          found = CACHE[file]
-          found = file if !found and Pathname.new(file).absolute?
-          found, stat = safe_stat(found)
-          return found, stat if found
-
-          paths.find do |possible_path|
-            path = ::File.join(possible_path, file)
-            found, stat = safe_stat(path)
-            return ::File.expand_path(found), stat if found
-          end
-
-          return false, false
-        end
-
-        def safe_stat(file)
-          return unless file
-          stat = ::File.stat(file)
-          return file, stat if stat.file?
-        rescue Errno::ENOENT, Errno::ENOTDIR
-          CACHE.delete(file) and false
         end
       end # self
     end # Stat

@@ -5,7 +5,7 @@ class PadrinoTestApp2 < Padrino::Application; end
 
 class TestApplication < Test::Unit::TestCase
   def setup
-    Padrino.mounted_apps.clear
+    Padrino.clear!
   end
 
   def teardown

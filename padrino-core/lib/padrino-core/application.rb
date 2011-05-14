@@ -15,9 +15,10 @@ module Padrino
       def inherited(subclass) #:nodoc:
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         subclass.default_configuration!
-        Padrino.set_load_paths File.join(subclass.root, "/models")
         Padrino.require_dependencies File.join(subclass.root, "/models.rb")
         Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
+        Padrino.require_dependencies File.join(subclass.root, "/lib.rb")
+        Padrino.require_dependencies File.join(subclass.root, "/lib/**/*.rb")
         super(subclass) # Loading the subclass inherited method
       end
 
@@ -49,11 +50,9 @@ module Padrino
       def reload!
         reset! # Reset sinatra app
         reset_routes! # Remove all existing user-defined application routes
-        Padrino.require_dependencies(File.join(self.root, "/models.rb")) # Reload models class
-        Padrino.require_dependencies(File.join(self.root, "/models/**/*.rb")) # Reload all models
-        Padrino.require_dependencies(self.app_file) # Reload the app file
+        Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
         register_initializers # Reload our middlewares
-        require_load_paths # Reload dependencies
+        require_dependencies # Reload dependencies
         default_filters! # Reload filters
         default_errors!  # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
@@ -89,7 +88,7 @@ module Padrino
       def setup_application!
         return if @_configured
         self.register_initializers
-        self.require_load_paths
+        self.require_dependencies
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
         self.default_filters!
         self.default_routes!
@@ -187,18 +186,32 @@ module Padrino
         end
 
         ##
-        # Returns the load_paths for the application (relative to the application root)
+        # Returns the used $LOAD_PATHS from this application
         #
         def load_paths
-          @load_paths ||= ["urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
-                           "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"]
+          @_load_paths ||= %w(models lib mailers controllers helpers).map { |path| File.join(self.root, path) }
+        end
+
+        ##
+        # Returns default list of path globs to load as dependencies
+        # Appends custom dependency patterns to the be loaded for your Application
+        #
+        # ==== Examples
+        #    MyApp.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
+        #
+        def dependency_paths
+          @dependency_paths ||= [
+            "urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
+            "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"
+          ]
         end
 
         ##
         # Requires all files within the application load paths
         #
-        def require_load_paths
-          load_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path)) }
+        def require_dependencies
+          Padrino.set_load_paths(*load_paths)
+          dependency_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path), :force => true) }
         end
     end # self
   end # Application

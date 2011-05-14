@@ -86,17 +86,6 @@ module Padrino
     end
 
     ##
-    # Returns the used $LOAD_PATHS from padrino
-    #
-    def load_paths
-      %w(
-        lib
-        models
-        shared
-      ).map { |dir| root(dir) }
-    end
-
-    ##
     # Return bundle status :+:locked+ if .bundle/environment.rb exist :+:unlocked if Gemfile exist
     # otherwise return nil
     #

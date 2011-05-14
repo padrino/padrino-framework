@@ -6,6 +6,13 @@
 * Cleanup Reloader
 * Cleanup Padrino::Application
 * Cleanup Gemfile generation
+* Cleanup Reloader
+* Improved Reloader
+* Decoupled Reloader, Loader, Application
+* Fixed Reloader in some extreme scenarios
+* Make methods of Padrino::Application that act as Padrino Core
+* Fixed error logging
+* Added Padrino.clear, useful to clean a Padrino Enviroment
 
 == 0.9.28
 

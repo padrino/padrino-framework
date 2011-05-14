@@ -6,7 +6,7 @@ class TestComplexReloader < Test::Unit::TestCase
   context 'for complex reload functionality' do
 
     should 'correctly instantiate Complex(1-2)Demo fixture' do
-      Padrino.mounted_apps.clear
+      Padrino.clear!
       Padrino.mount("complex_1_demo").to("/complex_1_demo")
       Padrino.mount("complex_2_demo").to("/complex_2_demo")
       assert_equal ["/complex_1_demo", "/complex_2_demo"], Padrino.mounted_apps.map(&:uri_root)

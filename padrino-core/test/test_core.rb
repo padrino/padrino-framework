@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class TestCore < Test::Unit::TestCase
-  def teardown
-    Padrino.clear_middleware!
+  def setup
+    Padrino.clear!
   end
 
   context 'for core functionality' do
@@ -31,6 +31,9 @@ class TestCore < Test::Unit::TestCase
       Padrino.set_encoding
       if RUBY_VERSION <'1.9'
         assert_equal 'UTF8', $KCODE
+      else
+        assert_equal Encoding.default_external, Encoding::UTF_8
+        assert_equal Encoding.default_internal, Encoding::UTF_8
       end
     end
 
@@ -39,8 +42,16 @@ class TestCore < Test::Unit::TestCase
     end
 
     should 'raise application error if I instantiate a new padrino application without mounted apps' do
-      Padrino.mounted_apps.clear
       assert_raise(Padrino::ApplicationLoadError) { Padrino.application.new }
+    end
+
+    should "check before/after padrino load hooks" do
+      Padrino.before_load { @_foo  = 1 }
+      Padrino.after_load  { @_foo += 1 }
+      Padrino.load!
+      assert_equal 1, Padrino.before_load.size
+      assert_equal 1, Padrino.after_load.size
+      assert_equal 2, @_foo
     end
 
     should "add middlewares in front if specified" do
@@ -56,7 +67,10 @@ class TestCore < Test::Unit::TestCase
         end
       }
 
+      class Foo < Padrino::Application; end
+
       Padrino.use(test)
+      Padrino.mount(Foo).to("/")
 
       res = Rack::MockRequest.new(Padrino.application).get("/")
       assert_equal "yes", res["Middleware-Called"]
