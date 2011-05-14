@@ -51,7 +51,7 @@ module Padrino
   # to the url throughout the application.
   #
   module Routing
-    CONTENT_TYPE_ALIASES = { :htm => :html }
+    CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
