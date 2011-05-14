@@ -17,12 +17,12 @@ module Padrino
     #
     IGNORE_FILE_PATTERN = [
       /~$/ # This is for Gedit
-    ]
+    ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
     # Default rendering options used in the #render-method
     #
-    DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true }
+    DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
     ##
     # Main class that register this extension
