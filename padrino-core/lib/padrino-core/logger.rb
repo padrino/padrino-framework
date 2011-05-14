@@ -16,6 +16,13 @@ module Padrino
   end
 
   ##
+  # Set the padrino logger
+  #
+  def self.logger=(value)
+    Thread.current[:padrino_logger] = value
+  end
+
+  ##
   # Extensions to the built in Ruby logger.
   #
   # ==== Examples

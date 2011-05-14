@@ -7,7 +7,6 @@ require 'rubygems' unless defined?(Gem)
 require 'bundler'
 Bundler.setup(:default, PADRINO_ENV)
 Bundler.require(:default, PADRINO_ENV)
-puts "=> Located #{Padrino.bundle} Gemfile for #{Padrino.env}"
 
 ##
 # Add your before load hooks here
