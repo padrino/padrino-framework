@@ -37,9 +37,9 @@ module Padrino
     # Returns the resulting rack builder mapping each 'mounted' application
     #
     def application
-      raise ApplicationLoadError, "At least one app must be mounted!" unless self.mounted_apps && self.mounted_apps.any?
+      raise ApplicationLoadError, "At least one app must be mounted!" unless Padrino.mounted_apps && Padrino.mounted_apps.any?
       router = Padrino::Router.new
-      self.mounted_apps.each { |app| app.map_onto(router) }
+      Padrino.mounted_apps.each { |app| app.map_onto(router) }
 
       unless middleware.empty?
         builder = Rack::Builder.new

@@ -42,10 +42,9 @@ module Padrino
 
     ##
     # Specified constants can be excluded from the code unloading process.
-    # Default excluded constants are: Padrino, Sinatra and HttpRouter
     #
     def self.exclude_constants
-      @_exclude_constants ||= %w(Padrino::Application Sinatra::Application Sinatra::Base HttpRouter)
+      @_exclude_constants ||= []
     end
 
     ##
@@ -95,10 +94,11 @@ module Padrino
           MTIMES.clear
           LOADED_CLASSES.each do |file, klasses|
             klasses.each { |klass| remove_constant(klass) }
+            LOADED_CLASSES.delete(file)
           end
           FILES_LOADED.each do |file, dependencies|
-            $LOADED_FEATURES.delete(file)
             dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
+            $LOADED_FEATURES.delete(file)
           end
         end
 
@@ -115,6 +115,14 @@ module Padrino
           changed
         end
         alias :run! :changed?
+
+        ##
+        # We lock dependencies sets to prevent reloading of protected constants
+        #
+        def lock!
+          klasses = ObjectSpace.classes.map { |klass| klass.to_s.split("::")[0] }.uniq
+          Padrino::Reloader.exclude_constants.concat(klasses)
+        end
 
         ##
         # A safe Kernel::require which issues the necessary hooks depending on results
@@ -185,8 +193,8 @@ module Padrino
           end
 
           # Store the file details after successful loading
-          LOADED_CLASSES[file] = ObjectSpace.classes - klasses
-          FILES_LOADED[file]   = $LOADED_FEATURES - files_loaded
+          LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses)
+          FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded)
 
           nil
         end
@@ -195,8 +203,8 @@ module Padrino
         # Removes the specified class and constant.
         #
         def remove_constant(const)
-          return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) } &&
-                   !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/ || const.superclass.to_s =~ /^#{base}/) }
+          return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/) } &&
+                   !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/) }
 
           parts  = const.to_s.split("::")
           base   = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))

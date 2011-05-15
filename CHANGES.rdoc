@@ -13,6 +13,7 @@
 * Make methods of Padrino::Application that act as Padrino Core
 * Fixed error logging
 * Added Padrino.clear, useful to clean a Padrino Enviroment
+* Improved granularity of our reloader locking and prevent reloading of unnecessary deps
 
 == 0.9.28
 
