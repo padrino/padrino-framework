@@ -14,6 +14,7 @@
 * Fixed error logging
 * Added Padrino.clear, useful to clean a Padrino Enviroment
 * Improved granularity of our reloader locking and prevent reloading of unnecessary deps
+* Use Sequel::Model.db= instead of DB= because is more simple change on the fly connections
 
 == 0.9.28
 

@@ -50,7 +50,7 @@ module Padrino
       Padrino.set_encoding
       Padrino.set_load_paths(*load_paths) # We set the padrino load paths
       Padrino.logger # Initialize our logger
-      Padrino.require_dependencies("#{root}/config/database.rb") # Be sure to don't remove constants from dbs.
+      Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader::Stat.lock! # Now we can remove constant from here to down
       Padrino.before_load.each(&:call) # Run before hooks
       Padrino.dependency_paths.each { |path| Padrino.require_dependencies(path) }
@@ -137,7 +137,7 @@ module Padrino
         # iteration, this prevent problems with rubinus
         files.dup.each do |file|
           begin
-            Reloader::Stat.safe_load(file, options[:force])
+            Reloader::Stat.safe_load(file, options)
             files.delete(file)
           rescue LoadError => e
             errors << e

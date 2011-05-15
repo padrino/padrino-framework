@@ -127,58 +127,61 @@ module Padrino
         ##
         # A safe Kernel::require which issues the necessary hooks depending on results
         #
-        def safe_load(file, force=false)
+        def safe_load(file, options={})
+          force, nodeps = options.delete(:force), options.delete(:nodeps)
+
           reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
           return if !force && !reload && MTIMES[file]
 
-          # Removes all classes declared in the specified file
-          if klasses = LOADED_CLASSES.delete(file)
-            klasses.each { |klass| remove_constant(klass) }
-          end
-
-          # Keeps track of which constants were loaded and the files
-          # that have been added so that the constants can be removed
-          # and the files can be removed from $LOADED_FEAUTRES
-          if FILES_LOADED[file]
-            FILES_LOADED[file].each do |fl|
-              next if fl == file
-              $LOADED_FEATURES.delete(fl)
+          unless nodeps
+            # Removes all classes declared in the specified file
+            if klasses = LOADED_CLASSES.delete(file)
+              klasses.each { |klass| remove_constant(klass) }
             end
-          end
 
-          # Now reload the file ignoring any syntax errors
-          $LOADED_FEATURES.delete(file)
+            # Keeps track of which constants were loaded and the files
+            # that have been added so that the constants can be removed
+            # and the files can be removed from $LOADED_FEAUTRES
+            if FILES_LOADED[file]
+              FILES_LOADED[file].each do |fl|
+                next if fl == file
+                $LOADED_FEATURES.delete(fl)
+              end
+            end
 
-          # Duplicate objects and loaded features in the file
-          klasses = ObjectSpace.classes.dup
-          files_loaded = $LOADED_FEATURES.dup
+            # Now reload the file ignoring any syntax errors
+            $LOADED_FEATURES.delete(file)
 
-          # Start to re-require old dependencies
-          #
-          # Why we need to reload the dependencies i.e. of a model?
-          #
-          # In some circumstances (i.e. with MongoMapper) reloading a model require:
-          #
-          # 1) Clean objectspace
-          # 2) Reload model dependencies
-          #
-          # We need to clean objectspace because for example we don't need to apply two times validations keys etc...
-          #
-          # We need to reload MongoMapper dependencies for re-initialize them.
-          #
-          # In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass
-          # is not really necessary... but how to distinguish when it is (necessary) since it is not?
-          #
-          if FILES_LOADED[file]
-            FILES_LOADED[file].each do |fl|
-              next if fl == file
-              # Swich off for a while warnings expecially for "already initialized constant" stuff
-              begin
-                verbosity = $-v
-                $-v = nil
-                require(fl)
-              ensure
-                $-v = verbosity
+            # Duplicate objects and loaded features in the file
+            klasses = ObjectSpace.classes.dup
+            files_loaded = $LOADED_FEATURES.dup
+
+            # Start to re-require old dependencies
+            #
+            # Why we need to reload the dependencies i.e. of a model?
+            #
+            # In some circumstances (i.e. with MongoMapper) reloading a model require:
+            #
+            # 1) Clean objectspace
+            # 2) Reload model dependencies
+            #
+            # We need to clean objectspace because for example we don't need to apply two times validations keys etc...
+            #
+            # We need to reload MongoMapper dependencies for re-initialize them.
+            #
+            # In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass
+            # is not really necessary... but how to distinguish when it is (necessary) since it is not?
+            #
+            if FILES_LOADED[file]
+              FILES_LOADED[file].each do |fl|
+                next if fl == file
+                # Swich off for a while warnings expecially for "already initialized constant" stuff
+                begin
+                  verbosity, $-v = nil, $-v
+                  require(fl)
+                ensure
+                  $-v = verbosity
+                end
               end
             end
           end
@@ -192,9 +195,11 @@ module Padrino
             logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
           end
 
-          # Store the file details after successful loading
-          LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses)
-          FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded)
+          unless nodeps
+            # Store the file details after successful loading
+            LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses)
+            FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded)
+          end
 
           nil
         end
