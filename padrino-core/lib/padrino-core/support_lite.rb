@@ -27,9 +27,9 @@ module ObjectSpace
     # Returns all the classes in the object space.
     def classes
       klasses = ObjectSpace.each_object(Class).map
-      klasses.reject! { |klass| klass.to_s.blank? } # Remove some wrong constants
+      klasses = klasses.reject { |klass| klass.to_s.blank? } # Remove some wrong constants
       # If you use remove_const they will not be removed from the ObjectSpace. That's odd
-      klasses.reject! do |klass|
+      klasses = klasses.reject { |klass|
         begin
           parts  = klass.to_s.split("::")
           base   = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
@@ -38,7 +38,7 @@ module ObjectSpace
         rescue NameError
           true
         end
-      end
+      }
       klasses
     end
   end
