@@ -123,7 +123,6 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/use_database COUCHDB/m, "#{@apptmp}/sample_project/app/models/user.rb")
       assert_match_in_file(/# property <name>[\s\n]+?end/m, "#{@apptmp}/sample_project/app/models/user.rb")
     end
 
@@ -131,7 +130,6 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       silence_logger { generate(:model, 'person', "name:string", "age", "email:string", "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class Person < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/use_database COUCHDB/m, "#{@apptmp}/sample_project/app/models/person.rb")
       assert_match_in_file(/property :name/m, "#{@apptmp}/sample_project/app/models/person.rb")
       assert_match_in_file(/property :age/m, "#{@apptmp}/sample_project/app/models/person.rb")
       assert_match_in_file(/property :email/m, "#{@apptmp}/sample_project/app/models/person.rb")
