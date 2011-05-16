@@ -137,7 +137,7 @@ module Padrino
         # iteration, this prevent problems with rubinus
         files.dup.each do |file|
           begin
-            Reloader::Stat.safe_load(file, options)
+            Reloader::Stat.safe_load(file, options.dup)
             files.delete(file)
           rescue LoadError => e
             errors << e
