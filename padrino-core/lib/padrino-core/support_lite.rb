@@ -52,7 +52,7 @@ class Object
     list.each do |x|
       # This is required because const_get tries to look for constants in the
       # ancestor chain, but we only want constants that are HERE
-      obj = obj.const_defined?(x) ? obj.const_get(x) : obj.const_missing(x)
+      obj = obj.const_defined?(x) ? obj.eval(x) : obj.const_missing(x)
     end
     obj
   end
