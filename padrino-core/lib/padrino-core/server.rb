@@ -18,53 +18,15 @@ module Padrino
   # This module build a Padrino server
   #
   module Server
-
-    class LoadError < RuntimeError; end
-
-    Handlers = %w[thin mongrel webrick] unless const_defined?(:Handlers)
-
     def self.start(app, options={})
-      host    = options[:host] || "localhost"
+      host    = options[:host] || "0.0.0.0"
       port    = options[:port] || 3000
-      adapter = options[:adapter]
-
-      handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
-
-      begin
-        handler = Rack::Handler.get(handler_name.downcase)
-      rescue
-        raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
-        exit
-      end
-
-      puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} on #{port} with #{handler_name}"
-
-      handler.run(app, :Host => host, :Port => port) do |server|
-        server.silent = true if server.respond_to?(:silent)
-      end
-    rescue RuntimeError => e
-      if e.message =~ /no acceptor/
-        if port.to_i < 1024 && RUBY_PLATFORM !~ /mswin|win|mingw/ && Process.uid != 0
-          puts "=> Only root may open a priviledged port #{port}!"
-        else
-          puts "=> Someone is already performing on port #{port}!"
-        end
-      else
-        raise e
-      end
+      puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at #{host}:#{port}"
+      server = ::Thin::Server.new(app, host, port)
+      server.silent = true
+      server.start
     rescue Errno::EADDRINUSE
       puts "=> Someone is already performing on port #{port}!"
     end
-
-    private
-      def self.detect_handler
-        Handlers.each do |server_name|
-          begin
-            return Rack::Handler.get(server_name.downcase)
-          rescue Exception
-          end
-        end
-        raise LoadError, "Server handler (#{servers.join(',')}) not found."
-      end
   end # Server
 end # Padrino
