@@ -1,6 +1,4 @@
 class Account < CouchRest::Model::Base
-  use_database COUCHDB
-
   attr_accessor :password, :password_confirmation
 
   # Properties
