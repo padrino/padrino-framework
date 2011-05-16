@@ -32,7 +32,7 @@ module ObjectSpace
       klasses = klasses.reject { |klass|
         begin
           parts  = klass.to_s.split("::")
-          base   = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
+          base   = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
           object = parts[-1].to_s
           !base.const_defined?(object)
         rescue NameError
