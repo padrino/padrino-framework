@@ -75,6 +75,22 @@ module Padrino
           (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
         end
       end
+      
+      ##
+      # Truncates words of a given text after a given :length if number of words in text is more than :length (defaults to 30).
+      # The last words will be replaced with the :omission (defaults to "…") for a total number of words not exceeding :length.
+      #
+      # ==== Examples
+      #
+      #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
+      #
+      def truncate_words(text, options={})
+        options.reverse_merge!(:length => 30, :omission => "...")
+        if text
+          words = text.split()
+          words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
+        end
+      end
 
       ##
       # Wraps the text into lines no longer than line_width width.
