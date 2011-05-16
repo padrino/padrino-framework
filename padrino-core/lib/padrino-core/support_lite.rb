@@ -20,7 +20,7 @@ require 'active_support/core_ext/object/with_options'       unless Object.method
 ##
 # Used to know if this file has already been required
 #
-module SupportLite; end unless defined?(SupportLite)
+module SupportLite; end
 
 module ObjectSpace
   class << self
@@ -42,21 +42,7 @@ module ObjectSpace
       klasses
     end
   end
-end unless ObjectSpace.respond_to?(:classes)
-
-class Object
-  def full_const_get(name)
-    list = name.split("::")
-    list.shift if list.first.blank?
-    obj = self
-    list.each do |x|
-      # This is required because const_get tries to look for constants in the
-      # ancestor chain, but we only want constants that are HERE
-      obj = obj.const_defined?(x) ? obj.eval(x) : obj.const_missing(x)
-    end
-    obj
-  end
-end unless Object.method_defined?(:full_const_get)
+end
 
 ##
 # FileSet helper method for iterating and interacting with files inside a directory
@@ -77,7 +63,7 @@ class FileSet
   def self.glob_require(glob_pattern, file_path=nil)
     self.glob(glob_pattern, file_path) { |f| require f }
   end
-end unless defined?(FileSet)
+end
 
 ##
 # YAML Engine Parsing Fix

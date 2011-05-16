@@ -110,6 +110,28 @@ module Padrino
         Padrino.run!
       end
 
+      ##
+      # Returns the used $LOAD_PATHS from this application
+      #
+      def load_paths
+        @_load_paths ||= %w(models lib mailers controllers helpers).map { |path| File.join(self.root, path) }
+      end
+
+      ##
+      # Returns default list of path globs to load as dependencies
+      # Appends custom dependency patterns to the be loaded for your Application
+      #
+      # ==== Examples
+      #   MyApp.dependencies << "#{Padrino.root}/uploaders/**/*.rb"
+      #   MyApp.dependencies << Padrino.root('other_app', 'controllers.rb')
+      #
+      def dependencies
+        @_dependencies ||= [
+          "urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
+          "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"
+        ].map { |file| File.join(self.root, file) }
+      end
+
       protected
         ##
         # Defines default settings for Padrino application
@@ -186,32 +208,11 @@ module Padrino
         end
 
         ##
-        # Returns the used $LOAD_PATHS from this application
-        #
-        def load_paths
-          @_load_paths ||= %w(models lib mailers controllers helpers).map { |path| File.join(self.root, path) }
-        end
-
-        ##
-        # Returns default list of path globs to load as dependencies
-        # Appends custom dependency patterns to the be loaded for your Application
-        #
-        # ==== Examples
-        #    MyApp.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
-        #
-        def dependency_paths
-          @dependency_paths ||= [
-            "urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
-            "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"
-          ]
-        end
-
-        ##
         # Requires all files within the application load paths
         #
         def require_dependencies
           Padrino.set_load_paths(*load_paths)
-          dependency_paths.each { |path| Padrino.require_dependencies(File.join(self.root, path), :force => true) }
+          dependencies.each { |file| Padrino.require_dependencies(file, :force => true) }
         end
     end # self
   end # Application

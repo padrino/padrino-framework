@@ -208,11 +208,11 @@ module Padrino
         # Removes the specified class and constant.
         #
         def remove_constant(const)
-          return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ /^#{base}/) } &&
-                   !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ /^#{base}/) }
+          return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ %r{^#{base}}) } &&
+                   !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ %r{^#{base}}) }
 
           parts  = const.to_s.split("::")
-          base   = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
+          base   = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
           object = parts[-1].to_s
           begin
             base.send(:remove_const, object)
@@ -228,9 +228,10 @@ module Padrino
         def rotation
           files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
           files  = files | Padrino.mounted_apps.map { |app| app.app_file }
+          files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies  }.flatten
           files.uniq.map { |file|
             file = File.expand_path(file)
-            next if Padrino::Reloader.exclude.any? { |base| file =~ /^#{Regexp.escape(base)}/ }
+            next if Padrino::Reloader.exclude.any? { |base| file =~ %r{^#{base}} } || !File.exist?(file)
             yield(file, File.mtime(file))
           }.compact
         end
