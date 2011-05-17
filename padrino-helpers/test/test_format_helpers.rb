@@ -109,6 +109,21 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
   end
 
+  context 'for #truncate_words method' do
+    should "support default truncation" do
+      actual_text = truncate_words("Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.")
+      assert_equal "Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...", actual_text
+    end
+    should "support specifying length" do
+      actual_text = truncate_words("Once upon a time in a world far far away", :length => 8)
+      assert_equal "Once upon a time in a world far...", actual_text
+    end
+    should "support specifying omission text" do
+      actual_text = truncate_words("And they found that many people were sleeping better.", :length => 4, :omission => "(clipped)")
+      assert_equal "And they found that(clipped)", actual_text
+    end
+  end
+
   context 'for #h and #h! method' do
     should "escape the simple html" do
       assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h('<h1>hello</h1>')
