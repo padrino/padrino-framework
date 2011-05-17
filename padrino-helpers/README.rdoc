@@ -196,12 +196,13 @@ passing javascript information from a js template to a javascript function.
 There is also an alias for escape_html called <tt>h</tt> for even easier usage within templates.
 
 Format helpers also includes a number of useful text manipulation functions such as <tt>simple_format</tt>,
-<tt>pluralize</tt>, <tt>word_wrap</tt>, and <tt>truncate</tt>.
+<tt>pluralize</tt>, <tt>word_wrap</tt>, <tt>truncate</tt> and <tt>truncate_words</tt>.
 
   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
   pluralize(2, 'person') => '2 people'
   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+  truncate_words("Once upon a time in a world far far away", :length => 4) => "Once upon a time..."
 
 These helpers can be invoked from any route or view within your application.
 
