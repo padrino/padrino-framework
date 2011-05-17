@@ -130,7 +130,7 @@ module Padrino
         @_dependencies ||= [
           "urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
           "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"
-        ].map { |file| File.join(self.root, file) }
+        ].map { |file| Dir[File.join(self.root, file)] }.flatten
       end
 
       protected

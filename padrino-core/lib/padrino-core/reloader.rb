@@ -80,10 +80,12 @@ module Padrino
             logger.devel "Detected a new file #{file}" if new_file
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
-            # Reload also apps
-            Padrino.mounted_apps.each { |app| app.app_obj.reload! if app.app_obj.respond_to?(:reload!) }
             # Now we can reload our file
-            safe_load(file)
+            safe_load(file, :force => new_file)
+            # Reload also apps
+            Padrino.mounted_apps.each do |app|
+              app.app_obj.reload! if app.app_obj.dependencies.include?(file)
+            end
           end
         end
 
@@ -129,64 +131,49 @@ module Padrino
         # A safe Kernel::require which issues the necessary hooks depending on results
         #
         def safe_load(file, options={})
-          force, nodeps = options.delete(:force), options.delete(:nodeps)
+          force = options.delete(:force)
 
           reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
           return if !force && !reload && MTIMES[file]
 
-          logger.devel "#{reload ? 'Re' : 'L'}oading #{file}#{' with force' if force}"
+          # Removes all classes declared in the specified file
+          klasses = LOADED_CLASSES.delete(file)
 
-          unless nodeps
-            # Removes all classes declared in the specified file
-            if klasses = LOADED_CLASSES.delete(file)
-              klasses.each { |klass| remove_constant(klass) }
+          if klasses && !is_app?(file)
+            klasses.each { |klass| remove_constant(klass) }
+          end
+
+          # Keeps track of which constants were loaded and the files
+          # that have been added so that the constants can be removed
+          # and the files can be removed from $LOADED_FEAUTRES
+          if FILES_LOADED[file]
+            FILES_LOADED[file].each do |fl|
+              next if fl == file
+              $LOADED_FEATURES.delete(fl)
             end
+          end
 
-            # Keeps track of which constants were loaded and the files
-            # that have been added so that the constants can be removed
-            # and the files can be removed from $LOADED_FEAUTRES
-            if FILES_LOADED[file]
-              FILES_LOADED[file].each do |fl|
-                next if fl == file
-                $LOADED_FEATURES.delete(fl)
+          # Duplicate objects and loaded features in the file
+          klasses = ObjectSpace.classes.dup
+          files_loaded = $LOADED_FEATURES.dup
+
+          # Load also their deps.
+          if FILES_LOADED[file]
+            begin
+              verbosity, $-v = nil, $-v
+              FILES_LOADED[file].each do |dep|
+                logger.devel "Dependency #{dep} for #{file}"
               end
-            end
-
-            # Duplicate objects and loaded features in the file
-            klasses = ObjectSpace.classes.dup
-            files_loaded = $LOADED_FEATURES.dup
-
-            # Start to re-require old dependencies
-            #
-            # Why we need to reload the dependencies i.e. of a model?
-            #
-            # In some circumstances (i.e. with MongoMapper) reloading a model require:
-            #
-            # 1) Clean objectspace
-            # 2) Reload model dependencies
-            #
-            # We need to clean objectspace because for example we don't need to apply two times validations keys etc...
-            #
-            # We need to reload MongoMapper dependencies for re-initialize them.
-            #
-            # In other cases i.e. in a controller (specially with dependencies that uses autoload) reload stuff like sass
-            # is not really necessary... but how to distinguish when it is (necessary) since it is not?
-            #
-            if FILES_LOADED[file]
-              begin
-                verbosity, $-v = nil, $-v
-                FILES_LOADED[file].each do |dep|
-                  logger.devel "Requiring dependency #{dep} for #{file}"
-                end
-                Padrino.require_dependencies(FILES_LOADED[file], :force => true)
-              ensure
-                $-v = verbosity
-              end
+              Padrino.require_dependencies(FILES_LOADED[file], :force => true)
+            ensure
+              $-v = verbosity
             end
           end
 
           # And finally reload the specified file
           begin
+            logger.devel "Loading #{file}#{' with force' if force}" if !reload
+            logger.debug "Reloading #{file}" if reload
             $LOADED_FEATURES.delete(file)
             require(file)
             MTIMES[file] = File.mtime(file)
@@ -194,11 +181,9 @@ module Padrino
             logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
           end
 
-          unless nodeps
-            # Store the file details after successful loading
-            LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses)
-            FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded).reject { |dep| dep == file || !in_root?(dep) }
-          end
+          # Store the file details after successful loading
+          LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses).uniq
+          # FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded).reject { |dep| dep == file || !in_root?(dep) }.uniq
 
           nil
         end
@@ -212,6 +197,10 @@ module Padrino
             next unless File.expand_path(path) =~ %r{^#{Padrino.root}}
             File.exist?(Padrino.root(path, file))
           end
+        end
+
+        def is_app?(file)
+          Padrino.mounted_apps.find { |app| File.identical?(file, app.app_file) }
         end
 
         ##
