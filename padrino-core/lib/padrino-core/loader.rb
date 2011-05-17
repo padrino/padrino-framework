@@ -123,7 +123,7 @@ module Padrino
       options = paths.extract_options!
 
       # Extract all files to load
-      files = paths.map { |path| Dir[path] }.flatten.uniq.sort
+      files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
 
       while files.present?
         # List of errors and failed files

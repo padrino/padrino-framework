@@ -49,11 +49,12 @@ module Padrino
     # :debug:: low-level information for developers
     #
     Levels = {
-      :fatal => 7,
-      :error => 6,
-      :warn  => 4,
-      :info  => 3,
-      :debug => 0
+      :fatal =>  7,
+      :error =>  6,
+      :warn  =>  4,
+      :info  =>  3,
+      :debug =>  0,
+      :devel => -1,
     } unless const_defined?(:Levels)
 
     @@mutex = {}
@@ -89,7 +90,7 @@ module Padrino
     #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout },
+      :development => { :log_level => :devel, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     }
 
@@ -120,7 +121,8 @@ module Padrino
       :error => [RED],
       :warn  => [YELLOW],
       :info  => [GREEN],
-      :debug => [CYAN]
+      :debug => [CYAN],
+      :devel => [MAGENTA]
     } unless defined?(ColoredLevels)
 
     ##

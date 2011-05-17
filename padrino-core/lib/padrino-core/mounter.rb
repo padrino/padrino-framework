@@ -22,6 +22,7 @@ module Padrino
       ensure_app_file! || ensure_app_object!
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @uri_root  = "/"
+      Padrino::Reloader.exclude_constants << @app_class
     end
 
     ##

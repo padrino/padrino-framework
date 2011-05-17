@@ -26,7 +26,7 @@ module ObjectSpace
   class << self
     # Returns all the classes in the object space.
     def classes
-      klasses = ObjectSpace.each_object(Class).map
+      klasses = ObjectSpace.each_object(Class).map | ObjectSpace.each_object(Module).map
       klasses = klasses.reject { |klass| klass.to_s.blank? } # Remove some wrong constants
       # If you use remove_const they will not be removed from the ObjectSpace. That's odd
       klasses = klasses.reject { |klass|

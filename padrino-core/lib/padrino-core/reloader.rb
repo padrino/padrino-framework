@@ -63,11 +63,11 @@ module Padrino
     # only when explicitly invoked.
     #
     module Stat
-      class << self
-        MTIMES               = {}
-        FILES_LOADED         = {}
-        LOADED_CLASSES       = {}
+      MTIMES               = {}
+      FILES_LOADED         = {}
+      LOADED_CLASSES       = {}
 
+      class << self
         ##
         # Reload all files with changes detected.
         #
@@ -77,7 +77,7 @@ module Padrino
             # Retrive the last modified time
             new_file = MTIMES[file].nil?
             previous_mtime = MTIMES[file] ||= mtime
-            logger.debug "Detected a new file #{file}" if new_file
+            logger.devel "Detected a new file #{file}" if new_file
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
             # Reload also apps
@@ -121,6 +121,7 @@ module Padrino
         #
         def lock!
           klasses = ObjectSpace.classes.map { |klass| klass.to_s.split("::")[0] }.uniq
+          klasses = klasses | Padrino.mounted_apps.map { |app| app.app_class }
           Padrino::Reloader.exclude_constants.concat(klasses)
         end
 
@@ -132,6 +133,8 @@ module Padrino
 
           reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
           return if !force && !reload && MTIMES[file]
+
+          logger.devel "#{reload ? 'Re' : 'L'}oading #{file}#{' with force' if force}"
 
           unless nodeps
             # Removes all classes declared in the specified file
@@ -148,9 +151,6 @@ module Padrino
                 $LOADED_FEATURES.delete(fl)
               end
             end
-
-            # Now reload the file ignoring any syntax errors
-            $LOADED_FEATURES.delete(file)
 
             # Duplicate objects and loaded features in the file
             klasses = ObjectSpace.classes.dup
@@ -173,23 +173,22 @@ module Padrino
             # is not really necessary... but how to distinguish when it is (necessary) since it is not?
             #
             if FILES_LOADED[file]
-              FILES_LOADED[file].each do |fl|
-                next if fl == file
-                # Swich off for a while warnings expecially for "already initialized constant" stuff
-                begin
-                  verbosity, $-v = nil, $-v
-                  require(fl)
-                ensure
-                  $-v = verbosity
+              begin
+                verbosity, $-v = nil, $-v
+                FILES_LOADED[file].each do |dep|
+                  logger.devel "Requiring dependency #{dep} for #{file}"
                 end
+                Padrino.require_dependencies(FILES_LOADED[file], :force => true)
+              ensure
+                $-v = verbosity
               end
             end
           end
 
           # And finally reload the specified file
           begin
+            $LOADED_FEATURES.delete(file)
             require(file)
-            logger.debug "#{reload ? 'Rel' : 'L'}oaded #{file}#{' with force' if force}"
             MTIMES[file] = File.mtime(file)
           rescue SyntaxError => ex
             logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
@@ -198,10 +197,21 @@ module Padrino
           unless nodeps
             # Store the file details after successful loading
             LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses)
-            FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded)
+            FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded).reject { |dep| dep == file || !in_root?(dep) }
           end
 
           nil
+        end
+
+        ##
+        # Returns true if the file is defined in our padrino root
+        #
+        def in_root?(file)
+          return true if file =~ %r{^#{Padrino.root}}
+          $:.find do |path|
+            next unless File.expand_path(path) =~ %r{^#{Padrino.root}}
+            File.exist?(Padrino.root(path, file))
+          end
         end
 
         ##
@@ -210,11 +220,11 @@ module Padrino
         def remove_constant(const)
           return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ %r{^#{base}}) } &&
                    !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ %r{^#{base}}) }
-
-          parts  = const.to_s.split("::")
-          base   = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
-          object = parts[-1].to_s
           begin
+            parts  = const.to_s.split("::")
+            base   = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
+            object = parts[-1].to_s
+            logger.devel "Remove constant: #{const}"
             base.send(:remove_const, object)
           rescue NameError; end
 

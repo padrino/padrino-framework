@@ -12,14 +12,15 @@ module Padrino
 
     class << self
 
-      def inherited(subclass) #:nodoc:
+      def inherited(base) #:nodoc:
+        logger.devel "Setup #{base}"
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
-        subclass.default_configuration!
-        Padrino.require_dependencies File.join(subclass.root, "/models.rb")
-        Padrino.require_dependencies File.join(subclass.root, "/models/**/*.rb")
-        Padrino.require_dependencies File.join(subclass.root, "/lib.rb")
-        Padrino.require_dependencies File.join(subclass.root, "/lib/**/*.rb")
-        super(subclass) # Loading the subclass inherited method
+        base.default_configuration!
+        Padrino.require_dependencies File.join(base.root, "/models.rb")
+        Padrino.require_dependencies File.join(base.root, "/models/**/*.rb")
+        Padrino.require_dependencies File.join(base.root, "/lib.rb")
+        Padrino.require_dependencies File.join(base.root, "/lib/**/*.rb")
+        super(base) # Loading the subclass inherited method
       end
 
       ##
@@ -51,8 +52,8 @@ module Padrino
         reset! # Reset sinatra app
         reset_routes! # Remove all existing user-defined application routes
         Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
-        register_initializers # Reload our middlewares
         require_dependencies # Reload dependencies
+        register_initializers # Reload our middlewares
         default_filters! # Reload filters
         default_errors!  # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
@@ -212,7 +213,7 @@ module Padrino
         #
         def require_dependencies
           Padrino.set_load_paths(*load_paths)
-          dependencies.each { |file| Padrino.require_dependencies(file, :force => true) }
+          Padrino.require_dependencies(dependencies, :force => true)
         end
     end # self
   end # Application
