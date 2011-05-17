@@ -19,7 +19,8 @@
 * Added compatibility with CouchRest::Model 1.1+
 * Cleanup support lite and improved compatiblity with jruby
 * Expose Padrino::Application.load_paths
-* Added a new method to load custom app dependencies.
+* Added a new method to load custom app dependencies
+* Added a new format helper 'truncate_words' [Thanks cearls!]
 
 == 0.9.28
 
