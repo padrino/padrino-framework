@@ -52,9 +52,9 @@ module Padrino
       Padrino.logger # Initialize our logger
       Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
-      Padrino.before_load.each { |p| p.call } # Run before hooks
+      Padrino.before_load.each(&:call) # Run before hooks
       Padrino.dependency_paths.each { |path| Padrino.require_dependencies(path) }
-      Padrino.after_load.each  { |p| p.call } # Run after hooks
+      Padrino.after_load.each(&:call) # Run after hooks
       Padrino::Reloader.run!
       Thread.current[:padrino_loaded] = true
     end
@@ -78,9 +78,9 @@ module Padrino
     # Method for reloading required applications and their files
     #
     def reload!
-      Padrino.before_load.each { |p| p.call } # Run before hooks
+      Padrino.before_load.each(&:call) # Run before hooks
       Padrino::Reloader.reload! # detects the modified files
-      Padrino.after_load.each  { |p| p.call } # Run after hooks
+      Padrino.after_load.each(&:call) # Run after hooks
     end
 
     ##

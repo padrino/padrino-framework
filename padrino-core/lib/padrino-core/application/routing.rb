@@ -492,7 +492,7 @@ module Padrino
         # Used for calculating path in route method
         #
         def process_path_for_with_params(path, with_params)
-          File.join(path, Array(with_params).map { |p| p.inspect }.join("/"))
+          File.join(path, Array(with_params).map(&:inspect).join("/"))
         end
 
         ##
