@@ -81,8 +81,8 @@ module Padrino
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
             # Now we can reload our file
-            if app = get_app(file)
-              app.app_obj.reload!
+            if apps = get_apps(file)
+              apps.each { |app| app.app_obj.reload! }
             else
               safe_load(file, :force => new_file)
               # Reload also apps
@@ -178,9 +178,9 @@ module Padrino
         ##
         # Return the mounted_app providing the app location
         #
-        def get_app(file)
+        def get_apps(file)
           file = figure_path(file)
-          Padrino.mounted_apps.find { |app| File.identical?(file, app.app_file) }
+          Padrino.mounted_apps.find_all { |app| File.identical?(file, app.app_file) }
         end
 
         ##

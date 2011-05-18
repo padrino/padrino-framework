@@ -17,7 +17,7 @@ class TestComplexReloader < Test::Unit::TestCase
       assert_match %r{fixtures/apps/complex.rb}, Complex2Demo.app_file
     end
 
-    should_eventually 'correctly reload Complex(1-2)Demo fixture' do
+    should 'correctly reload Complex(1-2)Demo fixture' do
       assert_match %r{fixtures/apps/complex.rb}, Complex1Demo.app_file
       @app = Padrino.application
 
