@@ -56,7 +56,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       @app = SimpleDemo
       get "/"
       assert ok?
-      new_phrase = "The magick number is: #{rand(100)}!"
+      new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
       File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }

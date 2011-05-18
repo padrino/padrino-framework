@@ -81,10 +81,14 @@ module Padrino
             # We skip to next file if it is not new and not modified
             next unless new_file || mtime > previous_mtime
             # Now we can reload our file
-            safe_load(file, :force => new_file)
-            # Reload also apps
-            Padrino.mounted_apps.each do |app|
-              app.app_obj.reload! if app.app_obj.dependencies.include?(file)
+            if app = get_app(file)
+              app.app_obj.reload!
+            else
+              safe_load(file, :force => new_file)
+              # Reload also apps
+              Padrino.mounted_apps.each do |app|
+                app.app_obj.reload! if app.app_obj.dependencies.include?(file)
+              end
             end
           end
         end
@@ -131,44 +135,18 @@ module Padrino
         # A safe Kernel::require which issues the necessary hooks depending on results
         #
         def safe_load(file, options={})
-          force = options.delete(:force)
+          force, file = options[:force], figure_path(file)
 
           reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
           return if !force && !reload && MTIMES[file]
 
           # Removes all classes declared in the specified file
-          klasses = LOADED_CLASSES.delete(file)
-
-          if klasses && !is_app?(file)
+          if klasses = LOADED_CLASSES.delete(file)
             klasses.each { |klass| remove_constant(klass) }
-          end
-
-          # Keeps track of which constants were loaded and the files
-          # that have been added so that the constants can be removed
-          # and the files can be removed from $LOADED_FEAUTRES
-          if FILES_LOADED[file]
-            FILES_LOADED[file].each do |fl|
-              next if fl == file
-              $LOADED_FEATURES.delete(fl)
-            end
           end
 
           # Duplicate objects and loaded features in the file
           klasses = ObjectSpace.classes.dup
-          files_loaded = $LOADED_FEATURES.dup
-
-          # Load also their deps.
-          if FILES_LOADED[file]
-            begin
-              verbosity, $-v = nil, $-v
-              FILES_LOADED[file].each do |dep|
-                logger.devel "Dependency #{dep} for #{file}"
-              end
-              Padrino.require_dependencies(FILES_LOADED[file], :force => true)
-            ensure
-              $-v = verbosity
-            end
-          end
 
           # And finally reload the specified file
           begin
@@ -183,23 +161,25 @@ module Padrino
 
           # Store the file details after successful loading
           LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses).uniq
-          # FILES_LOADED[file]   ||= ($LOADED_FEATURES - files_loaded).reject { |dep| dep == file || !in_root?(dep) }.uniq
-
-          nil
         end
 
         ##
         # Returns true if the file is defined in our padrino root
         #
-        def in_root?(file)
-          return true if file =~ %r{^#{Padrino.root}}
-          $:.find do |path|
-            next unless File.expand_path(path) =~ %r{^#{Padrino.root}}
-            File.exist?(Padrino.root(path, file))
+        def figure_path(file)
+          return file if Pathname.new(file).absolute?
+          $:.each do |path|
+            found = File.join(path, file)
+            return File.expand_path(found) if File.exist?(found)
           end
+          file
         end
 
-        def is_app?(file)
+        ##
+        # Return the mounted_app providing the app location
+        #
+        def get_app(file)
+          file = figure_path(file)
           Padrino.mounted_apps.find { |app| File.identical?(file, app.app_file) }
         end
 
@@ -216,8 +196,6 @@ module Padrino
             logger.devel "Remove constant: #{const}"
             base.send(:remove_const, object)
           rescue NameError; end
-
-          nil
         end
 
         ##

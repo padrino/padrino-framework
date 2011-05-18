@@ -36,7 +36,7 @@ class TestComplexReloader < Test::Unit::TestCase
       get "/complex_2_demo/old"
       assert_equal 200, status
 
-      new_phrase = "The magick number is: #{rand(100)}!"
+      new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(Complex1Demo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
       begin
