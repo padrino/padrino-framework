@@ -525,7 +525,7 @@ if defined?(ActiveRecord)
 
       def auto_add_index(method, *args, &block)
         table_name = args.shift.to_s
-        fields     = Array(args.shift).map(&:to_s)
+        fields     = Array(args.shift).map { |a| a.to_s }
         options    = args.shift
 
         index_name = options[:name].to_s if options
