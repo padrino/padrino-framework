@@ -12,9 +12,9 @@ module Padrino
     # Please note that this will not reload files in the background, and does so
     # only when explicitly invoked.
     #
-    MTIMES               = {}
-    FILES_LOADED         = {}
-    LOADED_CLASSES       = {}
+    MTIMES          = {}
+    FILES_LOADED    = {}
+    LOADED_CLASSES  = {}
 
     class << self
       ##
@@ -52,7 +52,8 @@ module Padrino
           # We skip to next file if it is not new and not modified
           next unless new_file || mtime > previous_mtime
           # Now we can reload our file
-          if apps = get_apps(file)
+          apps = get_apps(file)
+          if apps.present?
             apps.each { |app| app.app_obj.reload! }
           else
             safe_load(file, :force => new_file)
