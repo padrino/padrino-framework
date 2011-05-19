@@ -110,13 +110,17 @@ module Padrino
           # If engine is a hash then render data converted to json
           return engine.to_json if engine.is_a?(Hash)
 
-          # If engine is nil, ignore engine parameter
-          engine, data = data, options if engine.nil? && data
+          # If engine is nil, ignore engine parameter and shift up all arguments
+          # render nil, "index", { :layout => true }, { :localvar => "foo" }
+          engine, data, options = data, options, locals if engine.nil? && data
 
-          # Data can actually be a hash of options in certain render cases
-          options.merge!(data) && data = nil if data.is_a?(Hash)
+          # Data is a hash of options when no engine isn't explicit
+          # render "index", { :layout => true }, { :localvar => "foo" }
+          # Data is options, and options is locals in this case
+          data, options, locals = nil, data, options if data.is_a?(Hash)
 
-          # If an engine is a string then this is a likely a path to be resolved
+          # If data is unassigned then this is a likely a template to be resolved
+          # This means that no engine was explicitly defined
           data, engine = *resolve_template(engine, options) if data.nil?
 
           # Setup root

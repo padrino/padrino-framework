@@ -204,6 +204,36 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "3", body
     end
 
+    should "support passing locals into render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
+    should "support passing locals into sinatra render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render :erb, :index, { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
+    should "support passing locals into special nil engine render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render nil, :index, { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
     should 'be compatible with sinatra views' do
       with_view :index, "<%= 1+2 %>" do
         mock_app do
