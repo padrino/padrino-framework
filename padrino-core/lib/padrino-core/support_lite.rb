@@ -26,9 +26,9 @@ module ObjectSpace
   class << self
     # Returns all the classes in the object space.
     def classes
-      klasses = ObjectSpace.each_object(Class).map.to_a | ObjectSpace.each_object(Module).map.to_a
-      klasses.reject! { |klass| !Class.class_eval { klass } rescue true  }
-      klasses
+      ObjectSpace.each_object(Module).map.select do |klass|
+        Class.class_eval { klass } rescue false
+      end
     end
   end
 end
