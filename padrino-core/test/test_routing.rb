@@ -230,6 +230,15 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'json', body
   end
 
+  should "set content_type to :json if Accept contains */*" do
+    mock_app do
+      get("/foo", :provides => [:json]) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+    assert_equal 'json', body
+  end
+
   should "send the appropriate number of params" do
     mock_app do
       get('/id/:user_id', :provides => [:json]) { |user_id| user_id}
