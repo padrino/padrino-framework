@@ -50,6 +50,7 @@ module Padrino
       #
       def reload!
         logger.devel "Reloading #{self}"
+        @_dependencies = nil # Reset dependencies
         reset! # Reset sinatra app
         reset_routes! # Remove all existing user-defined application routes
         Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
