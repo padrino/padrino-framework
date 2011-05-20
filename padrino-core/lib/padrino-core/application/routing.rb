@@ -554,7 +554,7 @@ module Padrino
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
-            accepts.delete "*/*"
+            catch_all = (accepts.delete "*/*" || accepts.empty?)
             if accepts.empty?
               matching_types  = mime_types.slice(0,1)
             else
@@ -565,6 +565,9 @@ module Padrino
               accept_format = params[:format]
             elsif !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+              accept_format = CONTENT_TYPE_ALIASES[type] || type
+            elsif catch_all
+              type = types.first
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
 
