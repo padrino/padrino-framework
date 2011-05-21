@@ -11,7 +11,7 @@ if defined?(Sequel)
       end
 
       desc "Perform migration up/down to VERSION"
-      task :to, :version, :needs => :environment do |t, args|
+      task :to, [:version] => :environment do |t, args|
         version = (args[:version] || ENV['VERSION']).to_s.strip
         ::Sequel.extension :migration
         raise "No VERSION was provided" if version.empty?

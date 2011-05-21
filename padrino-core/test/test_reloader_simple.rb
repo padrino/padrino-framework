@@ -52,7 +52,7 @@ class TestSimpleReloader < Test::Unit::TestCase
       assert_match %r{fixtures/apps/simple.rb}, SimpleDemo.app_file
     end
 
-    should_eventually 'correctly reload SimpleDemo fixture' do
+    should 'correctly reload SimpleDemo fixture' do
       @app = SimpleDemo
       get "/"
       assert ok?

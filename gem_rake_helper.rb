@@ -1,5 +1,6 @@
-require 'rubygems/specification' unless defined?(Gem::Specification)
-require 'rake' unless defined?(Rake)
+require 'rubygems/specification'
+require 'rake'
+require 'rubygems/package_task'
 
 # Runs the sh command with sudo if the rake command is run with sudo
 def sudo_sh(command)
@@ -58,16 +59,10 @@ Rake::TestTask.new(:test) do |test|
 end
 
 # rake package
-begin
-  require 'rake/gempackagetask'
-rescue LoadError
-  task(:gem) { $stderr.puts '`gem install rake` to package gems' }
-else
-  Rake::GemPackageTask.new(gemspec) do |pkg|
-    pkg.gem_spec = gemspec
-  end
-  task :gem => :gemspec
+Gem::PackageTask.new(gemspec) do |pkg|
+  pkg.gem_spec = gemspec
 end
-
+task :gem => :gemspec
 task :package => :gemspec
+
 task :default => :test

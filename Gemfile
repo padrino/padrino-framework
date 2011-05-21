@@ -4,8 +4,6 @@ base_path = File.expand_path(File.dirname(__FILE__), __FILE__)
 
 source :rubygems
 
-# gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
-
 group :db do
   gem "dm-core", ">= 1.0"
   gem "dm-migrations", ">= 1.0"
@@ -15,6 +13,10 @@ group :db do
 end
 
 group :development do
+  if ENV['SINATRA_EDGE']
+    puts "=> Using sinatra edge"
+    gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
+  end
   gem "rake",  ">= 0.8.7"
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"

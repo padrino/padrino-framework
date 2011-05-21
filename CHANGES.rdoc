@@ -22,6 +22,7 @@
 * Added a new method to load custom app dependencies
 * Added a new format helper 'truncate_words' [Thanks cearls!]
 * Fixes support for local vars passing in render
+* Rake 0.9 compat
 
 == 0.9.28
 

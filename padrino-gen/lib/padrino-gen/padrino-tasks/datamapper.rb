@@ -23,14 +23,14 @@ if defined?(DataMapper)
       end
 
       desc "Migrate up using migrations"
-      task :up, :version, :needs => :load do |t, args|
+      task :up, [:version] => :load do |t, args|
         version = args[:version] || ENV['VERSION']
         migrate_up!(version)
         puts "<= dm:migrate:up #{version} executed"
       end
 
       desc "Migrate down using migrations"
-      task :down, :version, :needs => :load do |t, args|
+      task :down, [:version] => :load do |t, args|
         version = args[:version] || ENV['VERSION']
         migrate_down!(version)
         puts "<= dm:migrate:down #{version} executed"

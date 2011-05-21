@@ -5,7 +5,6 @@ module Padrino
 
     class Base < Thor
       include Thor::Actions
-      include Thor::RakeCompat
 
       class_option :chdir, :type => :string, :aliases => "-c", :desc => "Change to dir before starting"
       class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development, :desc => "Padrino Environment"
@@ -49,8 +48,8 @@ module Padrino
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
         ENV['PADRINO_LOG_LEVEL'] ||= "test"
         require File.expand_path(File.dirname(__FILE__) + '/rake')
-        silence(:stdout) { require File.expand_path('config/boot.rb') }
-        PadrinoTasks.init
+         require File.expand_path('config/boot.rb') # }
+        PadrinoTasks.init(true)
       end
 
       desc "console", "Boots up the Padrino application irb console"

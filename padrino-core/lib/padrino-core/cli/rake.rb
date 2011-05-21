@@ -1,14 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../tasks')
 require 'rake'
+require 'thor'
 require 'securerandom' unless defined?(SecureRandom)
-Rake.application.instance_variable_set(:@rakefile, __FILE__)
 
 module PadrinoTasks
-  def self.init
-    Padrino::Tasks.files.flatten.uniq.each { |ext| load(ext) rescue puts "<= Failed load #{ext}" } unless @_init
-    Rake.application.init
-    Rake.application.top_level
-    @_init = true
+  def self.init(init=false)
+    Padrino::Tasks.files.flatten.uniq.each { |rakefile| Rake.application.add_import(rakefile) rescue puts "<= Failed load #{ext}" }
+    if init
+      Rake.application.init
+      Rake.application.instance_variable_set(:@rakefile, __FILE__)
+      Rake.load_rakefile(__FILE__)
+      Rake.application.load_imports
+      Rake.application.top_level
+    else
+      Rake.application.load_imports
+    end
   end
 end
 
@@ -51,7 +57,7 @@ def list_app_routes(app, args)
 end
 
 desc "Displays a listing of the named routes within a project, optionally only those matched by [query]"
-task :routes, :query, :needs => :environment do |t, args|
+task :routes, [:query] => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
     list_app_routes(app, args)
   end
@@ -59,7 +65,8 @@ end
 
 desc "Displays a listing of the named routes a given app [app]"
 namespace :routes do
-  task :app, :app, :needs => :environment do |t, args|
+  task :app, [:app] => :environment do |t, args|
+    puts args.inspect
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
   end
@@ -69,10 +76,8 @@ desc "Generate the Rakefile"
 task :gen do
   File.open(Padrino.root("Rakefile"), "w") do |file|
     file.puts <<-RUBY.gsub(/^ {6}/, '')
-      require File.dirname(__FILE__) + '/config/boot.rb'
-      require 'thor'
+      require File.expand_path('../config/boot.rb', __FILE__)
       require 'padrino-core/cli/rake'
-
       PadrinoTasks.init
     RUBY
   end

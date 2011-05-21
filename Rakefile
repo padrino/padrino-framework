@@ -1,21 +1,14 @@
 # rake bump[X.X.X] && rake publish
-
 require 'rake/clean'
-require 'rake/rdoctask'
-require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
 require 'fileutils'
+require 'rdoc/task'
+
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 begin
   require 'sdoc'
 rescue LoadError
   puts "You need to install sdoc: gem install sdoc to correctly generate our api docs."
-end
-
-begin
-  require 'memcached'
-rescue LoadError
-  puts "The memcached gem only works on certain VM versions. It's safe to ignore this"
 end
 
 include FileUtils

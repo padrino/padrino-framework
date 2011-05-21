@@ -3,5 +3,4 @@ if defined?(Gem)
 else
   require 'rubygems'
 end
-require 'bundler'
-Bundler.setup
+require 'bundler/setup'
