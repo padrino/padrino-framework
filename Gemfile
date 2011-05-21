@@ -18,6 +18,7 @@ group :development do
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
   gem "rake",  ">= 0.8.7"
+  gem "rdoc"
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",  ">=1.2.8"
