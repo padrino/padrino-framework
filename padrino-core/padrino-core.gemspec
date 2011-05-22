@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
   s.add_dependency("http_router", "~> 0.7.8")
   s.add_dependency("thor", ">=0.14.3")
   s.add_dependency("activesupport", ">= 3.0.0")
-  s.add_dependency("tzinfo")
+  s.add_dependency("thin", "~> 1.2.11")
 end
