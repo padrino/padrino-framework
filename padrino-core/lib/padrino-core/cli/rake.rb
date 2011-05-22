@@ -9,7 +9,6 @@ module PadrinoTasks
     if init
       Rake.application.init
       Rake.application.instance_variable_set(:@rakefile, __FILE__)
-      load(__FILE__)
       Rake.application.load_imports
       Rake.application.top_level
     else
@@ -25,7 +24,7 @@ end
 # Load rake tasks from common rake task definition locations
 Dir["lib/tasks/**/*.rake"].
   concat(Dir["tasks/**/*.rake"]).
-  concat(Dir["{test,spec}/*.rake"]).each  { |ext| load(ext) }
+  concat(Dir["{test,spec}/*.rake"]).each  { |rake| load(rake) }
 
 # Loads the Padrino applications mounted within the project
 # setting up the required environment for Padrino
@@ -66,7 +65,6 @@ end
 desc "Displays a listing of the named routes a given app [app]"
 namespace :routes do
   task :app, [:app] => :environment do |t, args|
-    puts args.inspect
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
   end
