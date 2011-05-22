@@ -90,7 +90,7 @@ module Padrino
     #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :devel, :stream => :stdout },
+      :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     }
 
