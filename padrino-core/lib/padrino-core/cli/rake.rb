@@ -9,6 +9,7 @@ module PadrinoTasks
     if init
       Rake.application.init
       Rake.application.instance_variable_set(:@rakefile, __FILE__)
+      load(__FILE__)
       Rake.application.load_imports
       Rake.application.top_level
     else
