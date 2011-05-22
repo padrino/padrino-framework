@@ -1,4 +1,6 @@
-# -*- encoding: utf-8 -*-
+#!/usr/bin/env gem build
+# encoding: utf-8
+
 require File.expand_path("../lib/padrino-core/version.rb", __FILE__)
 
 Gem::Specification.new do |s|
