@@ -12,7 +12,7 @@ module Padrino
 
       desc "start", "Starts the Padrino application"
       method_option :adapter,     :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
-      method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "localhost", :desc => "Bind to HOST address"
+      method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT"
       method_option :daemonize,   :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background"
       def start
