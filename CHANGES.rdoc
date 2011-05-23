@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.9.29 (Not Yet Released)
+== 0.9.30 (Not Yet Released)
+
+== 0.9.29
 
 * Cleanup SupportLite
 * Cleanup Reloader
