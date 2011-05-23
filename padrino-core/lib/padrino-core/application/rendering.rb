@@ -73,7 +73,7 @@ module Padrino
       end
 
       ##
-      # Retunrs the cached layout path.
+      # Returns the cached layout path.
       #
       def fetch_layout_path(given_layout=nil)
         layout_name = given_layout || @layout || :application
