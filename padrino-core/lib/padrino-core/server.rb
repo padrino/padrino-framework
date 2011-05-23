@@ -1,4 +1,3 @@
-require 'thin'
 module Padrino
   ##
   # Run the Padrino apps as a self-hosted server using:
@@ -22,11 +21,20 @@ module Padrino
       host    = options[:host] || "0.0.0.0"
       port    = options[:port] || 3000
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at #{host}:#{port}"
-      server = ::Thin::Server.new(app, host, port)
-      server.silent = true
-      server.start
+      handler_name = defined?(::Thin::Server) ? :thin : :webrick
+      handler = Rack::Handler.get(handler_name.to_s)
+      handler.run(app, :Host => host, :Port => port) do |server|
+        [:INT, :TERM].each { |sig| trap(sig) { quit!(server, handler_name) } }
+        server.silent = true if server.respond_to?(:silent)
+      end
     rescue Errno::EADDRINUSE
       puts "=> Someone is already performing on port #{port}!"
+    end
+
+    def self.quit!(server, handler_name)
+      # Use thins' hard #stop! if available, otherwise just #stop
+      server.respond_to?(:stop!) ? server.stop! : server.stop
+      puts "\n== Shutting down #{handler_name} server..." unless handler_name =~/cgi/i
     end
   end # Server
 end # Padrino
