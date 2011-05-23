@@ -11,10 +11,12 @@ module Padrino
       class_option :help, :type => :boolean, :desc => "Show help usage"
 
       desc "start", "Starts the Padrino application"
-      method_option :adapter,     :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
+      method_option :server,      :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT"
       method_option :daemonize,   :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background"
+      method_option :pid,         :type => :string,  :aliases => "-p", :desc => "File to store pid"
+      method_option :debug,       :type => :boolean,                   :desc => "Set debugging flags"
       def start
         prepare :start
         require File.expand_path("../adapter", __FILE__)
@@ -22,14 +24,12 @@ module Padrino
         Padrino::Cli::Adapter.start(options)
       end
 
-      desc "s", "Starts the Padrino application"
-      alias :s :start
-
       desc "stop", "Stops the Padrino application"
+      method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
       def stop
         prepare :stop
         require File.expand_path("../adapter", __FILE__)
-        Padrino::Cli::Adapter.stop
+        Padrino::Cli::Adapter.stop(options)
       end
 
       desc "rake", "Execute rake tasks"

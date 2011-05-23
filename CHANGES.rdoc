@@ -24,6 +24,7 @@
 * Fixes support for local vars passing in render
 * Rake 0.9 and 0.8.7 compat
 * Use Rack::Flash as Rails do
+* Fix a deprecation with model_name.human
 
 == 0.9.28
 
