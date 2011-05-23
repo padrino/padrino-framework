@@ -15,6 +15,11 @@ Gem::Specification.new do |s|
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
 
+  # TODO remove after a couple versions
+  # [\e[32m#{version}\e[0m]
+  s.post_install_message = "\e[32m  When upgrading, please 'register Padrino::Rendering' for each application"
+  s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
+
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
