@@ -24,6 +24,7 @@
 * Fixes support for local vars passing in render
 * Rake 0.9 and 0.8.7 compat
 * Use Rack::Flash as Rails do
+* Adds eventmachine 1.0 beta for windows in Gemfile
 
 == 0.9.28
 
