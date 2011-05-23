@@ -25,7 +25,6 @@
 * Rake 0.9 and 0.8.7 compat
 * Use Rack::Flash as Rails do
 * Fix a deprecation with model_name.human
-* Adds eventmachine 1.0 beta for windows in Gemfile
 
 == 0.9.28
 

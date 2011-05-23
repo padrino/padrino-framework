@@ -132,8 +132,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none') }
       assert_match_in_file(/gem 'padrino'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'rack-flash'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'thin'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'eventmachine'/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
 
