@@ -21,3 +21,5 @@ end
 # Padrino
 gem 'padrino', "<%= Padrino.version %>"
 <%- end -%>
+# Padrino EDGE
+# gem 'padrino', :git => "git://github.com/padrino/padrino-framework.git"
