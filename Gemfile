@@ -17,6 +17,7 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
+  gem "rack",  "~> 1.3.0"
   gem "rake",  ">= 0.8.7"
   gem "rdoc"
   gem "mocha", ">= 0.9.8"
@@ -48,7 +49,7 @@ group :cache do
   gem "redis",     ">= 2.0.0"
   platforms :mri do
     gem "memcached", ">= 0.20.1"
-    gem 'dalli',     ">=1.0.2"
+    gem 'dalli',     ">= 1.0.2"
   end
   platform :jruby do
     gem "jruby-memcache-client"
