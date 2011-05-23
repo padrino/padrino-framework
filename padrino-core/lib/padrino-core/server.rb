@@ -40,7 +40,7 @@ module Padrino
 
     def start
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
-      trap(:INT) { exit }
+      [:INT, :TERM].each { |sig| trap(sig) { exit } }
       super
     ensure
       puts "<= Padrino has ended his set (crowd applauds)" unless options[:daemonize]
