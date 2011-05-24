@@ -19,7 +19,16 @@ gem 'rack-flash'
 end
 <%- else -%>
 # Padrino
-gem 'padrino', "<%= Padrino.version %>"
+gem 'padrino', '<%= Padrino.version %>'
 <%- end -%>
 # Padrino EDGE
-# gem 'padrino', :git => "git://github.com/padrino/padrino-framework.git"
+# gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
+#
+# Individual GEMS
+# gem 'padrino-core', '<%= Padrino.version %>'
+# gem 'padrino-admin', '<%= Padrino.version %>'
+# gem 'padrino-cache', '<%= Padrino.version %>'
+# gem 'padrino-core', '<%= Padrino.version %>'
+# gem 'padrino-gen', '<%= Padrino.version %>'
+# gem 'padrino-helpers', '<%= Padrino.version %>'
+# gem 'padrino-mailer', '<%= Padrino.version %>'
