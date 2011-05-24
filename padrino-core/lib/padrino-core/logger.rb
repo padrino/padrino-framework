@@ -140,7 +140,7 @@ module Padrino
         when :stderr then $stderr
         else config[:stream] # return itself, probabilly is a custom stream.
       end
-      Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
+      Padrino::Logger.new(config.merge(:stream => stream))
     end
 
     ##
