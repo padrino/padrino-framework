@@ -49,7 +49,7 @@ module Padrino
       @_called_from = first_caller
       Padrino.set_encoding
       Padrino.set_load_paths(*load_paths) # We set the padrino load paths
-      Padrino.logger # Initialize our logger
+      Padrino::Logger.setup! # Initialize our logger
       Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
       Padrino.before_load.each(&:call) # Run before hooks

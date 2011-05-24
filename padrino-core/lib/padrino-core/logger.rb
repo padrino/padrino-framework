@@ -12,7 +12,8 @@ module Padrino
   #   logger.warn "bar"
   #
   def self.logger
-    Thread.current[:padrino_logger] ||= Padrino::Logger.setup!
+    Padrino::Logger.setup! if Thread.current[:padrino_logger].nil?
+    Thread.current[:padrino_logger]
   end
 
   ##
@@ -140,7 +141,7 @@ module Padrino
         when :stderr then $stderr
         else config[:stream] # return itself, probabilly is a custom stream.
       end
-      Padrino::Logger.new(config.merge(:stream => stream))
+      Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
     end
 
     ##
