@@ -23,6 +23,8 @@ module Padrino
         require File.expand_path('config/boot.rb')
         Padrino::Cli::Adapter.start(options)
       end
+      desc "s", "Starts the Padrino application"
+      alias :s, :start
 
       desc "stop", "Stops the Padrino application"
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
