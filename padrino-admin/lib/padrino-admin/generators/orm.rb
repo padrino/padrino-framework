@@ -34,12 +34,31 @@ module Padrino
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
-            when :datamapper   then @klass.properties.map { |p| Column.new(p.name, p.primitive || p.type) }
+            when :datamapper   then @klass.properties.map { |p| dm_column(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
             when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
+          end
+        end
+        
+        def dm_column(p)
+          case p
+          when DataMapper::Property::Text
+            Column.new(p.name, :text)
+          when DataMapper::Property::Boolean
+            Column.new(p.name, :boolean)
+          when DataMapper::Property::Integer
+            Column.new(p.name, :integer)
+          when DataMapper::Property::Decimal
+            Column.new(p.name, :decimal)
+          when DataMapper::Property::Float
+            Column.new(p.name, :float)
+          when DataMapper::Property::String
+            Column.new(p.name, :string)
+          else #if all fails, lets assume its stringish
+            Column.new(p.name, :string)
           end
         end
 
