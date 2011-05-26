@@ -15,7 +15,7 @@ module Padrino
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT"
       method_option :daemonize,   :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background"
-      method_option :pid,         :type => :string,  :aliases => "-p", :desc => "File to store pid"
+      method_option :pid,         :type => :string,  :aliases => "-i", :desc => "File to store pid"
       method_option :debug,       :type => :boolean,                   :desc => "Set debugging flags"
       def start
         prepare :start
@@ -23,8 +23,11 @@ module Padrino
         require File.expand_path('config/boot.rb')
         Padrino::Cli::Adapter.start(options)
       end
+
       desc "s", "Starts the Padrino application"
-      alias :s :start
+      def s
+        invoke :start
+      end
 
       desc "stop", "Stops the Padrino application"
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
