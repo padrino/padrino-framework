@@ -2,6 +2,8 @@
 
 == 0.9.30 (Not Yet Released)
 
+* fix `padrino s` shortcut to accept options
+
 == 0.9.29
 
 * Cleanup SupportLite
