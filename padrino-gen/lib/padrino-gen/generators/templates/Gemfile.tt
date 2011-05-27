@@ -4,7 +4,7 @@ source :rubygems
 # gem 'thin' or mongrel
 
 # Project requirements
-gem 'rake', '!= 0.9.0'
+gem 'rake'
 gem 'rack-flash'
 
 # Component requirements
