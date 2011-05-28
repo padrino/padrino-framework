@@ -6,7 +6,7 @@ module Padrino
   # ==== Examples
   #
   #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
-  #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "localhost", port: "3000", adapter: "mongrel"
+  #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "0.0.0.0", port: "3000", adapter: "mongrel"
   #
   def self.run!(options={})
     Padrino.load!
@@ -23,8 +23,8 @@ module Padrino
     def self.start(app, opts={})
       options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
       options.symbolize_keys!
-      options[:Host] = options.delete(:host)
-      options[:Port] = options.delete(:port)
+      options[:Host] = options.delete(:host) || '0.0.0.0'
+      options[:Port] = options.delete(:port) || 3000
       options[:AccessLog] = []
       if options[:daemonize]
         options[:pid] = options[:pid].blank? ? File.expand_path('tmp/pids/server.pid') : opts[:pid]

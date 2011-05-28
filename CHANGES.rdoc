@@ -2,7 +2,9 @@
 
 == 0.9.30 (Not Yet Released)
 
-* fix `padrino s` shortcut to accept options
+* Fix `padrino s` shortcut to accept options
+* Fix Padrino::Application#run! (now correctly accepts options)
+* Fix Padrino::Server (now has correct defaults options)
 
 == 0.9.29
 
