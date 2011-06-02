@@ -43,7 +43,9 @@ class HttpRouter #:nodoc:
         # If present set current controller layout
         @route = path.route
         @block_params = @block_params.slice(0, path.route.dest.arity) if path.route.dest.arity > 0
-        route_eval(&path.route.dest)
+        halt_response = catch(:halt) { route_eval(&path.route.dest) }
+        @_response_bufer = halt_response.is_a?(Array) ? halt_response.first : halt_response
+        halt @_response_bufer
       ensure
         @layout = parent_layout
         (@_pending_after_filters ||= []).concat(path.route.after_filters) if path.route.after_filters
