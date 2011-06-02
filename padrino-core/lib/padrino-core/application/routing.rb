@@ -37,6 +37,7 @@ class HttpRouter #:nodoc:
       # Provide access to the current controller to the request
       # Now we can eval route, but because we have "throw halt" we need to be
       # (en)sure to reset old layout and run controller after filters.
+      successful = false
       begin
         old_params = @params
         path.route.before_filters.each { |filter| instance_eval(&filter) } if path.route.before_filters
@@ -44,11 +45,12 @@ class HttpRouter #:nodoc:
         @route = path.route
         @block_params = @block_params.slice(0, path.route.dest.arity) if path.route.dest.arity > 0
         halt_response = catch(:halt) { route_eval(&path.route.dest) }
-        @_response_bufer = halt_response.is_a?(Array) ? halt_response.first : halt_response
-        halt @_response_bufer
+        @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+        successful = true
+        halt @_response_buffer
       ensure
+        (@_pending_after_filters ||= []).concat(path.route.after_filters) if path.route.after_filters && successful
         @layout = parent_layout
-        (@_pending_after_filters ||= []).concat(path.route.after_filters) if path.route.after_filters
         @params = old_params
       end
     end
