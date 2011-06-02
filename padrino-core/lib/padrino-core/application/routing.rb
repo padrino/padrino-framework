@@ -15,6 +15,9 @@ class Sinatra::Request #:nodoc:
 end
 
 class HttpRouter #:nodoc:
+  def rewrite_partial_path_info(env, request); end
+  def rewrite_path_info(env, request); end
+
   def process_destination_path(path, env)
     env['padrino.instance'].instance_eval do
       request.route_obj = path.route
