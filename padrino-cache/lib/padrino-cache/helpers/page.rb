@@ -65,7 +65,7 @@ module Padrino
                 halt 200, value if value
               end
             })
-            route.add_after_filter(Proc.new { |something|
+            route.add_after_filter(Proc.new { |_|
               if settings.caching?
                 began_at = Time.now
                 if @_last_expires_in
