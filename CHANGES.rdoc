@@ -5,6 +5,7 @@
 * Fix `padrino s` shortcut to accept options
 * Fix Padrino::Application#run! (now correctly accepts options)
 * Fix Padrino::Server (now has correct defaults options)
+* Fix Padrino::Reloader with strange constants or paths #565
 
 == 0.9.29
 
