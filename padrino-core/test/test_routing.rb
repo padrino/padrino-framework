@@ -155,13 +155,13 @@ class TestRouting < Test::Unit::TestCase
     get "/b.js"
     assert_equal "/b.js", body
     get "/b.ru"
-    assert_equal 404, status
+    assert_equal 405, status
     get "/c.js"
     assert_equal "/c.json", body
     get "/c.json"
     assert_equal "/c.json", body
     get "/c.ru"
-    assert_equal 404, status
+    assert_equal 405, status
     get "/d"
     assert_equal "/d.js?foo=bar", body
     get "/d.js"
@@ -218,7 +218,7 @@ class TestRouting < Test::Unit::TestCase
     end
 
     get "/a.xml", {}, {}
-    assert_equal 404, status
+    assert_equal 405, status
   end
 
   should "not set content_type to :html if Accept */* and html not in provides" do
@@ -288,7 +288,7 @@ class TestRouting < Test::Unit::TestCase
     end
 
     get "/a.xml", {}, {"HTTP_ACCEPT" => "text/html"}
-    assert_equal 404, status
+    assert_equal 405, status
   end
 
   should "generate routes for format simple" do
@@ -1151,11 +1151,11 @@ class TestRouting < Test::Unit::TestCase
     get "/.json"
     assert_equal "This is the get index.json", body
     get "/.js"
-    assert_equal 404, status
+    assert_equal 405, status
     post "/.json"
     assert_equal "This is the post index.json", body
     post "/.js"
-    assert_equal 404, status
+    assert_equal 405, status
   end
 
   should "allow controller level mapping" do

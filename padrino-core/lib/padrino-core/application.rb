@@ -182,8 +182,10 @@ module Padrino
         #
         def default_filters!
           before do
-            @_content_type = :html
-            response['Content-Type'] = 'text/html;charset=utf-8'
+            unless @_content_type
+              @_content_type = :html
+              response['Content-Type'] = 'text/html;charset=utf-8'
+            end
           end
         end
 

@@ -32,17 +32,19 @@ class HttpRouter #:nodoc:
       else
         env['router.request'].params
       end
-      parent_layout = @layout
-      @layout = path.route.use_layout if path.route.use_layout
       # Provide access to the current controller to the request
       # Now we can eval route, but because we have "throw halt" we need to be
       # (en)sure to reset old layout and run controller after filters.
+      old_params = @params
+      parent_layout = @layout
       successful = false
       begin
-        old_params = @params
-        path.route.before_filters.each { |filter| instance_eval(&filter) } if path.route.before_filters
+        filter! :before
+        (path.route.before_filters - self.class.filters[:before]).each { |filter| instance_eval(&filter)} if path.route.before_filters
         # If present set current controller layout
+        @layout = path.route.use_layout if path.route.use_layout
         @route = path.route
+        @route.custom_conditions.each { |blk| pass if instance_eval(&blk) == false } if @route.custom_conditions
         @block_params = @block_params.slice(0, path.route.dest.arity) if path.route.dest.arity > 0
         halt_response = catch(:halt) { route_eval(&path.route.dest) }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
@@ -79,13 +81,38 @@ class HttpRouter #:nodoc:
     end
 
     def custom_conditions=(custom_conditions)
-      custom_conditions.each { |blk| arbitrary { |req, params| req.rack_request.env["padrino.instance"].instance_eval(&blk) != false } } if custom_conditions
       @custom_conditions = custom_conditions
     end
   end
 end
 
 module Padrino
+  class Filter
+    attr_reader :block
+
+    def initialize(mode, options, args, &block)
+      @mode, @options, @args, @block = mode, options, args, block
+    end
+
+    def apply?(request)
+      return true if @args.empty? && @options.empty?
+      detect = @args.any? do |arg|
+        case arg
+        when Symbol then request.route_obj.named == arg
+        else             arg === request.path_info
+        end
+      end or @options.any? { |name, val| val === request.send(:name) }
+      detect ^ !@mode
+    end
+
+    def to_proc
+      filter = self
+      proc {
+        instance_eval(&filter.block) if filter.apply?(request)
+      }
+    end
+  end
+
   ##
   # Padrino provides advanced routing definition support to make routes and url generation much easier.
   # This routing system supports named route aliases and easy access to url paths.
@@ -204,8 +231,8 @@ module Padrino
           @_defaults,   original_defaults   = options, @_defaults
 
           # Application defaults
-          @filters,     original_filters = { :before => [], :after => [] }, @filters
-          @layout,      original_layout         = nil, @layout
+          @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
+          @layout,      original_layout     = nil, @layout
 
           instance_eval(&block)
 
@@ -222,6 +249,22 @@ module Padrino
         end
       end
       alias :controllers :controller
+
+      def before(*args, &block)
+        @filters[:before] << (args.empty? ? block : construct_filter(*args, &block))
+      end
+
+      def after(*args, &block)
+        @filters[:after] << (args.empty? ? block : construct_filter(*args, &block))
+      end
+
+      def construct_filter(*args, &block)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        except = options.key?(:except) && Array(options.delete(:except))
+        raise("You cannot use except with other options specified") if except && (!args.empty? || !options.empty?)
+        options = except.last.is_a?(Hash) ? except.pop : {} if except
+        Filter.new(!except, options, Array(except || args), &block)
+      end
 
       ##
       # Provides many parents with shallowing.
@@ -436,16 +479,14 @@ module Padrino
           invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
           # Add Application defaults
+          route.before_filters = @filters[:before]
+          route.after_filters  = @filters[:after]
           if @_controller
-            route.before_filters = @filters[:before]
-            route.after_filters  = @filters[:after]
             route.use_layout     = @layout
             route.controller     = Array(@_controller).first.to_s
-          else
-            route.before_filters = @filters[:before] || []
-            route.after_filters  = @filters[:after]  || []
+            @filters[:before].clear
+            @filters[:after].clear
           end
-
           route.to(block)
           route
         end
@@ -598,11 +639,7 @@ module Padrino
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
             catch_all = (accepts.delete "*/*" || accepts.empty?)
-            if accepts.empty?
-              matching_types  = mime_types.slice(0,1)
-            else
-              matching_types  = (accepts & mime_types)
-            end
+            matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
 
             if params[:format]
               accept_format = params[:format]
@@ -711,9 +748,17 @@ module Padrino
       end
 
       private
-        ##
-        # Compatibility with http_router
-        #
+        def dispatch!
+          static! if settings.static? && (request.get? || request.head?)
+          route!
+        rescue Sinatra::NotFound => boom
+          handle_not_found!(boom)
+        rescue ::Exception => boom
+          handle_exception!(boom)
+        ensure
+          @_pending_after_filters.each { |filter| instance_eval(&filter)} if @_pending_after_filters
+        end
+
         def route!(base=self.class, pass_block=nil)
           @request.env['padrino.instance'] = self
           if base.router and match = base.router.call(@request.env)
@@ -724,6 +769,8 @@ module Padrino
                 route_missing if match[0] == 404
               end
             end
+          else
+            filter! :before
           end
 
           # Run routes defined in superclass.
@@ -736,7 +783,6 @@ module Padrino
 
           route_missing
         ensure
-          @_pending_after_filters.each { |aft| instance_eval(&aft) } if @_pending_after_filters
         end
     end # InstanceMethods
   end # Routing

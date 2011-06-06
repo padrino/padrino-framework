@@ -18,7 +18,7 @@ SimpleDemo.controllers do
   end
 
   get "/rand" do
-    rand(99).to_s
+    rand(2 ** 256).to_s
   end
 end
 
