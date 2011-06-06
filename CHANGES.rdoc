@@ -2,7 +2,11 @@
 
 == 0.9.30 (Not Yet Released)
 
-* fix `padrino s` shortcut to accept options
+* Fix `padrino s` shortcut to accept options
+* Fix Padrino::Application#run! (now correctly accepts options)
+* Fix Padrino::Server (now has correct defaults options)
+* Fix Padrino::Reloader with strange constants or paths #565
+* Fix Padrino::Reloader reloading also $LOADED_FEATURES deps
 
 == 0.9.29
 

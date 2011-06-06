@@ -13,7 +13,7 @@ module Padrino
     # only when explicitly invoked.
     #
     MTIMES          = {}
-    FILES_LOADED    = {}
+    LOADED_FILES    = {}
     LOADED_CLASSES  = {}
 
     class << self
@@ -52,7 +52,7 @@ module Padrino
           # We skip to next file if it is not new and not modified
           next unless new_file || mtime > previous_mtime
           # Now we can reload our file
-          apps = get_apps(file)
+          apps = mounted_apps_of(file)
           if apps.present?
             apps.each { |app| app.app_obj.reload! }
           else
@@ -74,7 +74,7 @@ module Padrino
           klasses.each { |klass| remove_constant(klass) }
           LOADED_CLASSES.delete(file)
         end
-        FILES_LOADED.each do |file, dependencies|
+        LOADED_FILES.each do |file, dependencies|
           dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
           $LOADED_FEATURES.delete(file)
         end
@@ -109,6 +109,7 @@ module Padrino
       def safe_load(file, options={})
         force, file = options[:force], figure_path(file)
 
+        # Check if file was changed or if force a reload
         reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
         return if !force && !reload && MTIMES[file]
 
@@ -117,22 +118,40 @@ module Padrino
           klasses.each { |klass| remove_constant(klass) }
         end
 
-        # Duplicate objects and loaded features in the file
+        # Remove all loaded fatures with our file
+        if features = LOADED_FILES[file]
+          features.each { |feature| $LOADED_FEATURES.delete(feature) }
+        end
+
+        # Duplicate objects and loaded features before load file
         klasses = ObjectSpace.classes.dup
+        files   = $LOADED_FEATURES.dup
+
+        # Now we can reload dependencies of our file
+        if features = LOADED_FILES.delete(file)
+          features.each { |feature| safe_load(feature, :force => true) }
+        end
 
         # And finally reload the specified file
         begin
-          logger.devel "Loading #{file}#{' with force' if force}" if !reload
-          logger.debug "Reloading #{file}" if reload
+          logger.devel "Loading #{file}"   if !reload
+          logger.debug "Reloading #{file}" if  reload
           $LOADED_FEATURES.delete(file)
+          verbosity_was, $-v = $-v, nil
           require(file)
           MTIMES[file] = File.mtime(file)
-        rescue SyntaxError => ex
-          logger.error "Cannot require #{file} because of syntax error: #{ex.message}"
+        rescue SyntaxError => e
+          logger.error "Cannot require #{file} because of syntax error: #{e.message}"
+        ensure
+          $-v = verbosity_was
         end
 
         # Store the file details after successful loading
-        LOADED_CLASSES[file] ||= (ObjectSpace.classes - klasses).uniq
+        LOADED_CLASSES[file] = (ObjectSpace.classes - klasses).uniq
+        LOADED_FILES[file]   = ($LOADED_FEATURES - files - [file]).uniq
+
+        # Track only features in our Padrino.root
+        LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
       end
 
       ##
@@ -151,24 +170,34 @@ module Padrino
       # Removes the specified class and constant.
       #
       def remove_constant(const)
-        return if Padrino::Reloader.exclude_constants.any? { |base| (const.to_s =~ %r{^#{base}}) } &&
-                 !Padrino::Reloader.include_constants.any? { |base| (const.to_s =~ %r{^#{base}}) }
+        return if exclude_constants.compact.uniq.any? { |c| (const.to_s =~ %r{^#{Regexp.escape(c)}}) } &&
+                 !include_constants.compact.uniq.any? { |c| (const.to_s =~ %r{^#{Regexp.escape(c)}}) }
         begin
           parts  = const.to_s.split("::")
           base   = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
           object = parts[-1].to_s
-          logger.devel "Remove constant: #{const}"
           base.send(:remove_const, object)
+          logger.devel "Removed constant: #{const}"
         rescue NameError; end
       end
 
       private
         ##
-        # Return the mounted_app providing the app location
+        # Return the mounted_apps providing the app location
+        # Can be an array because in one app.rb we can define multiple Padrino::Appplications
         #
-        def get_apps(file)
+        def mounted_apps_of(file)
           file = figure_path(file)
           Padrino.mounted_apps.find_all { |app| File.identical?(file, app.app_file) }
+        end
+
+        ##
+        # Returns true if file is in our Padrino.root
+        #
+        def in_root?(file)
+          # This is better but slow:
+          #   Pathname.new(Padrino.root).find { |f| File.identical?(Padrino.root(f), figure_path(file)) }
+          figure_path(file) =~ %r{^#{Regexp.escape(Padrino.root)}}
         end
 
         ##
@@ -178,10 +207,10 @@ module Padrino
         def rotation
           files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
           files  = files | Padrino.mounted_apps.map { |app| app.app_file }
-          files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies  }.flatten
+          files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
           files.uniq.map { |file|
             file = File.expand_path(file)
-            next if Padrino::Reloader.exclude.any? { |base| file =~ %r{^#{base}} } || !File.exist?(file)
+            next if Padrino::Reloader.exclude.any? { |base| file =~ %r{^#{Regexp.escape(base)}} } || !File.exist?(file)
             yield(file, File.mtime(file))
           }.compact
         end
@@ -193,23 +222,17 @@ module Padrino
     # during which no further action will be taken.
     #
     class Rack
-      def initialize(app, cooldown = 1)
+      def initialize(app, cooldown=1)
         @app = app
         @cooldown = cooldown
         @last = (Time.now - cooldown)
       end
 
       def call(env)
-        if @cooldown and Time.now > @last + @cooldown
-          if Thread.list.size > 1
-            Thread.exclusive { Padrino.reload! }
-          else
-            Padrino.reload!
-          end
-
+        if @cooldown && Time.now > @last + @cooldown
+          Thread.list.size > 1 ? Thread.exclusive { Padrino.reload! } : Padrino.reload!
           @last = Time.now
         end
-
         @app.call(env)
       end
     end
