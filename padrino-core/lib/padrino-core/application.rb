@@ -112,7 +112,7 @@ module Padrino
       def run!(options={})
         return unless Padrino.load!
         Padrino.mount(self.to_s).to("/")
-        Padrino.run!
+        Padrino.run!(options)
       end
 
       ##
