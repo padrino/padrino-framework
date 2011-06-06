@@ -9,8 +9,8 @@ require 'rack'
 require 'shoulda'
 require 'phocus'
 
-# Rubinius at the moment dont handle hashes in the properly order so to prevent
-# this issue for now we remove wrong values from mimetypes.
+# Rubies < 1.9 don't handle hashes in the properly order so to prevent
+# this issue for now we remove extra values from mimetypes.
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
 module Kernel
