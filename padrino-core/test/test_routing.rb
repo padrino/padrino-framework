@@ -1352,12 +1352,12 @@ class TestRouting < Test::Unit::TestCase
 
   should 'parse nested params' do
     mock_app do
-      get(:index) { params.inspect }
+      get(:index) { "%s %s" % [params[:account][:name], params[:account][:surname]] }
     end
     get "/?account[name]=foo&account[surname]=bar"
-    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
+    assert_equal 'foo bar', body
     get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
-    assert_equal '{"account"=>{"name"=>"foo", "surname"=>"bar"}}', body
+    assert_equal 'foo bar', body
   end
 
   should 'render sinatra NotFound page' do
