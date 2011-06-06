@@ -31,6 +31,7 @@ module Padrino
         #  @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
+          eval("_hamlout ||= @haml_buffer", block.binding) # this is for rbx
           template.capture_haml(*args, &block)
         end
 
