@@ -1,7 +1,4 @@
 RIOT_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_SETUP)
-PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-
 # Specify your app using the #app helper inside a context.
 # Takes either an app class or a block argument.
 # app { Padrino.application }

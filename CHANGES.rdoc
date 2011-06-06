@@ -7,6 +7,7 @@
 * Fix Padrino::Server (now has correct defaults options)
 * Fix Padrino::Reloader with strange constants or paths #565
 * Fix Padrino::Reloader reloading also $LOADED_FEATURES deps
+* Fix Double loading of boot.rb in rake tasks. #560
 
 == 0.9.29
 
