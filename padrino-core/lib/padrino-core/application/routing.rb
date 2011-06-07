@@ -366,6 +366,10 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
+      def current_controller
+        @_controller && @_controller.last
+      end
+
       private
         # Parse params from the url method
         def value_to_param(value)
@@ -494,10 +498,6 @@ module Padrino
           end
           route.to(block)
           route
-        end
-
-        def current_controller
-          @_controller && @_controller.last
         end
 
         ##
