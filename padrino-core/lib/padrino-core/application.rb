@@ -18,10 +18,13 @@ module Padrino
         logger.devel "Setup #{base}"
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         base.default_configuration!
-        Padrino.require_dependencies File.join(base.root, "/models.rb")
-        Padrino.require_dependencies File.join(base.root, "/models/**/*.rb")
-        Padrino.require_dependencies File.join(base.root, "/lib.rb")
-        Padrino.require_dependencies File.join(base.root, "/lib/**/*.rb")
+        base.prerequisites.concat([
+          File.join(base.root, "/models.rb"),
+          File.join(base.root, "/models/**/*.rb"),
+          File.join(base.root, "/lib.rb"),
+          File.join(base.root, "/lib/**/*.rb")
+        ]).uniq!
+        Padrino.require_dependencies(base.prerequisites)
         super(base) # Loading the subclass inherited method
       end
 
@@ -135,6 +138,23 @@ module Padrino
           "urls.rb", "config/urls.rb", "mailers/*.rb", "mailers.rb",
           "controllers/**/*.rb", "controllers.rb", "helpers/**/*.rb", "helpers.rb"
         ].map { |file| Dir[File.join(self.root, file)] }.flatten
+      end
+
+      ##
+      # An array of file to load before your app.rb, basically are files wich our app depends on.
+      #
+      # By default we look for files:
+      #
+      #   yourapp/models.rb
+      #   yourapp/models/**/*.rb
+      #   yourapp/lib.rb
+      #   yourapp/lib/**/*.rb
+      #
+      # ==== Examples
+      #   MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
+      #
+      def prerequisites
+        @_prerequisites ||= []
       end
 
       protected

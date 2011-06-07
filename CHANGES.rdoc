@@ -10,6 +10,8 @@
 * Fix Double loading of boot.rb in rake tasks. #560
 * Fix an issue with haml rendering on rubinius
 * Fix an issue with ordered hash on rubinius in our core tests
+* Fix issue #556 now we resolve correctly prerequisites of your app
+* Enhancement for #556 now is possible to add custom prerequisites to our app
 
 == 0.9.29
 
