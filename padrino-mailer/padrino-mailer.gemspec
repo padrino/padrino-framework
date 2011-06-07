@@ -23,6 +23,6 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("mail", ">= 2.2.0")
+  s.add_dependency("mail", "~> 2.3.0")
   s.add_dependency("tlsmail") if RUBY_VERSION == "1.8.6"
 end
