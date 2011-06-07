@@ -132,26 +132,34 @@ module Padrino
           features.each { |feature| safe_load(feature, :force => true) }
         end
 
-        # And finally reload the specified file
+        # And finally load the specified file
         begin
           logger.devel "Loading #{file}"   if !reload
           logger.debug "Reloading #{file}" if  reload
           $LOADED_FEATURES.delete(file)
           verbosity_was, $-v = $-v, nil
-          require(file)
+          loaded = require(file)
           MTIMES[file] = File.mtime(file)
         rescue SyntaxError => e
           logger.error "Cannot require #{file} because of syntax error: #{e.message}"
         ensure
           $-v = verbosity_was
+
+          new_constants = (ObjectSpace.classes - klasses).uniq
+
+          if loaded
+            # Store the file details
+            LOADED_CLASSES[file] = new_constants
+            LOADED_FILES[file]   = ($LOADED_FEATURES - files - [file]).uniq
+
+            # Track only features in our Padrino.root
+            LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+          else
+            logger.devel "Failed to load #{file}; removing partially defined constants"
+            new_constants.each { |klass| remove_constant(klass) }
+          end
+
         end
-
-        # Store the file details after successful loading
-        LOADED_CLASSES[file] = (ObjectSpace.classes - klasses).uniq
-        LOADED_FILES[file]   = ($LOADED_FEATURES - files - [file]).uniq
-
-        # Track only features in our Padrino.root
-        LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
       end
 
       ##

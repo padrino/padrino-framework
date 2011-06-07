@@ -28,5 +28,17 @@ class TestDependencies < Test::Unit::TestCase
       assert_equal ["B", "C"], A_result
       assert_equal "C", B_result
     end
+
+    should 'remove partially loaded constants' do
+      silence_warnings do
+        Padrino.require_dependencies(
+          Padrino.root("fixtures/dependencies/circular/e.rb"),
+          Padrino.root("fixtures/dependencies/circular/f.rb"),
+          Padrino.root("fixtures/dependencies/circular/g.rb")
+        )
+      end
+
+      assert_equal ["name"], F.fields
+    end
   end
 end
