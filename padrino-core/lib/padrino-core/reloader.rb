@@ -138,20 +138,19 @@ module Padrino
           logger.debug "Reloading #{file}" if  reload
           $LOADED_FEATURES.delete(file)
           verbosity_was, $-v = $-v, nil
-          loaded = require(file)
+          loaded = false
+          require(file)
+          loaded = true
           MTIMES[file] = File.mtime(file)
         rescue SyntaxError => e
           logger.error "Cannot require #{file} because of syntax error: #{e.message}"
         ensure
           $-v = verbosity_was
-
           new_constants = (ObjectSpace.classes - klasses).uniq
-
           if loaded
             # Store the file details
             LOADED_CLASSES[file] = new_constants
             LOADED_FILES[file]   = ($LOADED_FEATURES - files - [file]).uniq
-
             # Track only features in our Padrino.root
             LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
           else
