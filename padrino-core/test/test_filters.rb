@@ -126,39 +126,89 @@ class TestFilters < Test::Unit::TestCase
     end
     get '/'
     assert_equal 'before', body
-    #get '/main'
-    #assert_equal '', body
+    get '/main'
+    assert_equal '', body
   end
 
-#  should "be able to filter based on a symbol" do
-#    mock_app do
-#      before(:index) { @test = 'before'}
-#      get :index do
-#        @test
-#      end
-#      get :main do
-#        @test
-#      end
-#    end
-#    get '/'
-#    assert_equal 'before', body
-#    get '/main'
-#    assert_equal '', body
-#  end
+  should "be able to filter based on a symbol" do
+    mock_app do
+      before(:index) { @test = 'before'}
+      get :index do
+        @test
+      end
+      get :main do
+        @test
+      end
+    end
+    get '/'
+    assert_equal 'before', body
+    get '/main'
+    assert_equal '', body
+  end
 
-  #should "be able to filter based on a symbol" do
-  #  mock_app do
-  #    before(:index) { @test = 'before'}
-  #    get :index do
-  #      @test
-  #    end
-  #    get :main do
-  #      @test
-  #    end
-  #  end
-  #  get '/'
-  #  assert_equal 'before', body
-  #  get '/main'
-  #  assert_equal '', body
-  #end
+  should "be able to filter based on a symbol or path" do
+    mock_app do
+      before(:index, '/main') { @test = 'before'}
+      get :index do
+        @test
+      end
+      get :main do
+        @test
+      end
+    end
+    get '/'
+    assert_equal 'before', body
+    get '/main'
+    assert_equal 'before', body
+  end
+
+  should "be able to filter based on a symbol or regexp" do
+    mock_app do
+      before(:index, /main/) { @test = 'before'}
+      get :index do
+        @test
+      end
+      get :main do
+        @test
+      end
+      get :profile do
+        @test
+      end
+    end
+    get '/'
+    assert_equal 'before', body
+    get '/main'
+    assert_equal 'before', body
+    get '/profile'
+    assert_equal '', body
+  end
+
+  should "be able to filter excluding based on a symbol" do
+    mock_app do
+      before(:except => :index) { @test = 'before'}
+      get :index do
+        @test
+      end
+      get :main do
+        @test
+      end
+    end
+    get '/'
+    assert_equal '', body
+    get '/main'
+    assert_equal 'before', body
+  end
+
+  should "be able to filter based on a request param" do
+    mock_app do
+      before(:agent => /IE/) { @test = 'before'}
+      get :index do
+        @test
+      end
+    end
+    get '/'
+    assert_equal '', body
+    get "/", {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    assert_equal 'before', body
+  end
 end

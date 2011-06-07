@@ -101,7 +101,12 @@ module Padrino
         when Symbol then request.route_obj.named == arg
         else             arg === request.path_info
         end
-      end or @options.any? { |name, val| val === request.send(:name) }
+      end || @options.any? { |name, val|
+        case name
+        when :agent then val === request.user_agent
+        else             val === request.send(name)
+        end
+      }
       detect ^ !@mode
     end
 
