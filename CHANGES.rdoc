@@ -13,7 +13,7 @@
 * Fix issue #556 now we resolve correctly prerequisites of your app
 * Enhancement for #556 now is possible to add custom prerequisites to our app
 * Change move Padrino.current_controller in public apis
-* Enhancement, now Padrino::Reloader works without ActiveSupport::Dependency or with it disabled #567 [Thanks Brake ernerdschaefer]
+* Enhancement, now Padrino::Reloader works without ActiveSupport::Dependency or with it disabled #567 [Thanks Bernerdschaefer]
 
 == 0.9.29
 
