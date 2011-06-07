@@ -9,11 +9,12 @@
 * Fix Padrino::Reloader reloading also $LOADED_FEATURES deps
 * Fix Double loading of boot.rb in rake tasks. #560
 * Fix an issue with haml rendering on rubinius
-* Fix an issue with ordered hash on rubinius in our core tests
+* Fix our tests to meets ruby < 1.9 needs
 * Fix issue #556 now we resolve correctly prerequisites of your app
 * Enhancement for #556 now is possible to add custom prerequisites to our app
 * Change move Padrino.current_controller in public apis
 * Enhancement, now Padrino::Reloader works without ActiveSupport::Dependency or with it disabled #567 [Thanks Bernerdschaefer]
+* Cleanup padrino-core dependencies now we have less less ActiveSupport dependencies, we are very very thin finally!
 
 == 0.9.29
 

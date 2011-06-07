@@ -1,6 +1,7 @@
 require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
 require 'padrino-core/command'
+require 'active_support/ordered_hash'
 
 module Padrino
   ##
