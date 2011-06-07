@@ -22,9 +22,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-
   # TODO remove after a couple versions
-  s.post_install_message = "\e[32m  When upgrading, please 'enable :sessions' for each application"
+  s.post_install_message = "\e[32mPadrino: when upgrading, please 'enable :sessions' for each application"
   s.post_install_message << " as shown here:\e[0m http://bit.ly/kODKMx"
 
   s.add_dependency("tilt", "~> 1.3.0")
