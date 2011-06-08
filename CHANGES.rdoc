@@ -16,6 +16,8 @@
 * Enhancement, now Padrino::Reloader works without ActiveSupport::Dependency or with it disabled #567 [Thanks Bernerdschaefer]
 * Cleanup padrino-core dependencies now we have less less ActiveSupport dependencies, we are very very thin finally!
 * Fix bundler gem dependency mismatch #553
+* Fix command issue with padrino g or padrino gen on rubinius #531
+* Fix issue #562, now is no more necessary "bundle exec anything"
 
 == 0.9.29
 

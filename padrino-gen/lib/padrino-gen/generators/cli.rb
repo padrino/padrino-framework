@@ -29,6 +29,9 @@ module Padrino
         rescue Exception => e
           puts "=> Problem loading #{boot}"
           puts ["=> #{e.message}", *e.backtrace].join("\n  ")
+        ensure
+          ENV.delete('BUNDLE_GEMFILE')
+          ENV.delete('PADRINO_LOG_LEVEL')
         end
       end
 

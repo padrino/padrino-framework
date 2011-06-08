@@ -85,10 +85,16 @@ module Padrino
           puts "<= You need padrino-gen! Run: gem install padrino-gen"
         end
       end
+
       desc "g", "Executes the Padrino generator with given options."
-      alias :g :generate
+      def g(*args)
+        invoke(:generate, *args)
+      end
+
       desc "gen", "Executes the Padrino generator with given options."
-      alias :gen :generate
+      def gen(*args)
+        invoke(:generate, *args)
+      end
 
       desc "version", "Show current Padrino Version"
       map "-v" => :version, "--version" => :version
