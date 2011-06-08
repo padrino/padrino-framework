@@ -88,12 +88,12 @@ module Padrino
 
       desc "g", "Executes the Padrino generator with given options."
       def g(*args)
-        invoke(:generate, *args)
+        invoke(:generate, args)
       end
 
       desc "gen", "Executes the Padrino generator with given options."
       def gen(*args)
-        invoke(:generate, *args)
+        invoke(:generate, args)
       end
 
       desc "version", "Show current Padrino Version"
