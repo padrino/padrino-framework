@@ -146,7 +146,7 @@ class TestFilters < Test::Unit::TestCase
     assert_equal '', body
   end
 
-  should_eventually "be able to filter based on a symbol for a controller" do
+  should "be able to filter based on a symbol for a controller" do
     mock_app do
       controller :foo do
         before(:test) { @test = 'foo'}

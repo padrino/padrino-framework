@@ -92,13 +92,14 @@ module Padrino
 
     def initialize(mode, options, args, &block)
       @mode, @options, @args, @block = mode, options, args, block
+      @scoped_controller = options.delete(:current_controller) if options.key?(:current_controller)
     end
 
     def apply?(request)
       return true if @args.empty? && @options.empty?
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj.named == arg
+        when Symbol then request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym
         else             arg === request.path_info
         end
       end || @options.any? { |name, val|
@@ -265,6 +266,7 @@ module Padrino
 
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
+        options[:current_controller] = @_controller if @_controller
         except = options.key?(:except) && Array(options.delete(:except))
         raise("You cannot use except with other options specified") if except && (!args.empty? || !options.empty?)
         options = except.last.is_a?(Hash) ? except.pop : {} if except
