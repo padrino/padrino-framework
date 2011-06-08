@@ -1,4 +1,7 @@
 TESTSPEC_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTSPEC_SETUP)
+PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+
 class Test::Unit::TestCase
   include Rack::Test::Methods
 
