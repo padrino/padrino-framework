@@ -90,9 +90,8 @@ module Padrino
   class Filter
     attr_reader :block
 
-    def initialize(mode, options, args, &block)
-      @mode, @options, @args, @block = mode, options, args, block
-      @scoped_controller = options.delete(:current_controller) if options.key?(:current_controller)
+    def initialize(mode, scoped_controller, options, args, &block)
+      @mode, @scoped_controller, @options, @args, @block = mode, scoped_controller, options, args, block
     end
 
     def apply?(request)
@@ -266,11 +265,10 @@ module Padrino
 
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        options[:current_controller] = @_controller if @_controller
         except = options.key?(:except) && Array(options.delete(:except))
         raise("You cannot use except with other options specified") if except && (!args.empty? || !options.empty?)
         options = except.last.is_a?(Hash) ? except.pop : {} if except
-        Filter.new(!except, options, Array(except || args), &block)
+        Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
 
       ##
