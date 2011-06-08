@@ -51,7 +51,6 @@ desc "Generate the Rakefile"
 task :gen do
   File.open(Padrino.root("Rakefile"), "w") do |file|
     file.puts <<-RUBY.gsub(/^ {6}/, '')
-      require File.expand_path('../config/boot.rb', __FILE__)
       require 'padrino-core/cli/rake'
       PadrinoTasks.init
     RUBY
