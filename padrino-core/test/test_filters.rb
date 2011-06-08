@@ -29,7 +29,7 @@ class TestFilters < Test::Unit::TestCase
     get '/foo', {}, { "HTTP_ACCEPT" => 'text/html' }
     assert_equal 406, status
   end
-  
+
   should "allow passing & halting in before filters" do
     mock_app do
       controller do
@@ -144,6 +144,27 @@ class TestFilters < Test::Unit::TestCase
     assert_equal 'before', body
     get '/main'
     assert_equal '', body
+  end
+
+  should_eventually "be able to filter based on a symbol for a controller" do
+    mock_app do
+      controller :foo do
+        before(:test) { @test = 'foo'}
+        get :test do
+          @test.to_s + " response"
+        end
+      end
+      controller :bar do
+        before(:test) { @test = 'bar'}
+        get :test do
+          @test.to_s + " response"
+        end
+      end
+    end
+    get '/foo/test'
+    assert_equal 'foo response', body
+    get '/bar/test'
+    assert_equal 'bar response', body
   end
 
   should "be able to filter based on a symbol or path" do
