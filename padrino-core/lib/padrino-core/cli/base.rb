@@ -87,7 +87,7 @@ module Padrino
       end
 
       desc "g", "Executes the Padrino generator with given options."
-      def g
+      def g(*args)
         invoke(:generate, *args)
       end
 
