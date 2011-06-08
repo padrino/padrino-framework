@@ -8,9 +8,6 @@ module Padrino
   #
   class Application < Sinatra::Base
     register Padrino::Routing   # Support for advanced routing, controllers, url_for
-    unless defined?(SKIP_PADRINO_RENDERING) && SKIP_PADRINO_RENDERING
-      register Padrino::Rendering # Support for enhanced rendering with template detection
-    end
 
     class << self
 

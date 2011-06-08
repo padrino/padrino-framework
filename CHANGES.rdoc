@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.9.30 (Not Yet Released)
+== 0.10.0 (Not Yet Released)
 
 * Fix `padrino s` shortcut to accept options
 * Fix Padrino::Application#run! (now correctly accepts options)
@@ -18,6 +18,8 @@
 * Fix bundler gem dependency mismatch #553
 * Fix command issue with padrino g or padrino gen on rubinius #531
 * Fix issue #562, now is no more necessary "bundle exec anything"
+* Remove Padrino::Rendering from autoloading (manually must be loaded)
+* New Enhancement to controller filters
 
 == 0.9.29
 

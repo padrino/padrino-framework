@@ -1,4 +1,5 @@
 class <%= @app_name %> < Padrino::Application
+  register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
 
