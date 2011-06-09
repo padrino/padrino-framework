@@ -19,6 +19,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
+      class_option :app, :aliases => "-a", :desc => "The model destination path", :default => '/admin', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
@@ -56,7 +57,7 @@ module Padrino
 
           account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
-            "-a=admin",
+            "-a=#{options[:app]}",
             "-r=#{options[:root]}"
           ]
 
@@ -79,7 +80,7 @@ module Padrino
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt", destination_root("admin", "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "account.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
