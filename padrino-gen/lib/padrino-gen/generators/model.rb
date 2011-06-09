@@ -20,7 +20,7 @@ module Padrino
       argument :name, :desc => "The name of your padrino model"
       argument :fields, :desc => "The fields for the model", :type => :array, :default => []
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
-      class_option :app, :desc => "The application destination path", :aliases => '-a', :default => "/app", :type => :string
+      class_option :app, :desc => "The application destination path", :aliases => '-a', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
 

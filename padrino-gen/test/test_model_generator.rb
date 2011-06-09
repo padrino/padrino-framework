@@ -14,13 +14,13 @@ class TestModelGenerator < Test::Unit::TestCase
     should "fail outside app root" do
       output = silence_logger { generate(:model, 'user', "-r=#{@apptmp}") }
       assert_match(/not at the root/, output)
-      assert_no_file_exists('/tmp/app/models/user.rb')
+      assert_no_file_exists('/tmp/models/user.rb')
     end
 
     should "generate filename properly" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       silence_logger { generate(:model, 'DemoItem', "name:string", "age", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_file_exists("#{@apptmp}/sample_project/app/models/demo_item.rb")
+      assert_file_exists("#{@apptmp}/sample_project/models/demo_item.rb")
     end
 
     should "fail if field name is not acceptable" do
@@ -32,7 +32,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match(/re@l\$ly:string/, output)
       assert_no_match(/email_two:string/, output)
       assert_no_match(/apply/, output)
-      assert_no_file_exists("#{@apptmp}/sample_project/app/models/demo_item.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/demo_item.rb")
     end
 
     should "fail if we don't use an adapter" do
@@ -43,7 +43,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "not fail if we don't have test component" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=none', '-d=activerecord') }
       response_success = silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/test")
     end
 
@@ -62,9 +62,9 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       response_success = silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       response_duplicate = silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match "identical\e[0m  app/models/user.rb", response_duplicate
-      assert_match "identical\e[0m  test/app/models/user_test.rb", response_duplicate
+      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match "identical\e[0m  models/user.rb", response_duplicate
+      assert_match "identical\e[0m  test/models/user_test.rb", response_duplicate
     end
 
     should "generate migration file versions properly" do
@@ -83,14 +83,14 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     should "generate model file with camelized name" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
+      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
     end
 
     should "generate migration file with no fields" do
@@ -122,17 +122,17 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       silence_logger { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/# property <name>[\s\n]+?end/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/# property <name>[\s\n]+?end/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       silence_logger { generate(:model, 'person', "name:string", "age", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/property :name/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/property :age/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/property :email/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/property :name/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/property :age/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/property :email/m, "#{@apptmp}/sample_project/models/person.rb")
     end
   end
 
@@ -148,17 +148,17 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with camelized name" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class ChunkyBacon\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
+      assert_match_in_file(/class ChunkyBacon\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
     end
 
     should "generate model file with fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/property :name, String/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/property :age, Integer/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/property :created_at, DateTime/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/property :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/property :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/property :created_at, DateTime/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     should "properly generate version numbers" do
@@ -166,11 +166,11 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'person', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'account', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/migration 1, :create_users do/m, "#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
-      assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/person.rb")
       assert_match_in_file(/migration 2, :create_people do/m, "#{@apptmp}/sample_project/db/migrate/002_create_people.rb")
-      assert_match_in_file(/class Account\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/account.rb")
+      assert_match_in_file(/class Account\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/account.rb")
       assert_match_in_file(/migration 3, :create_accounts do/m, "#{@apptmp}/sample_project/db/migrate/003_create_accounts.rb")
     end
 
@@ -178,7 +178,7 @@ class TestModelGenerator < Test::Unit::TestCase
       current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
       silence_logger { generate(:model, 'person', "name:string", "created_at:date_time", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/person.rb")
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/migration 1, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table :people do/m, migration_file_path)
@@ -194,14 +194,14 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with given properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created:datetime", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < Sequel::Model/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     should "generate model file with camelized name" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       silence_logger { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class ChunkyBacon < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/app/models/chunky_bacon_test.rb")
+      assert_match_in_file(/class ChunkyBacon < Sequel::Model/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
     end
 
     should "generate migration file with given properties" do
@@ -209,7 +209,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
       silence_logger { generate(:model, 'person', "name:string", "age:integer", "created:datetime", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
-      assert_match_in_file(/class Person < Sequel::Model/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person < Sequel::Model/m, "#{@apptmp}/sample_project/models/person.rb")
       assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
       assert_match_in_file(/String :name/m,   migration_file_path)
@@ -224,19 +224,19 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomapper') }
       silence_logger { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/# key <name>, <type>/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/timestamps![\n\s]+end/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# key <name>, <type>/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/timestamps![\n\s]+end/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomapper') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/key :name, String/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/key :age, Integer/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/key :email, String/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/timestamps!/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/key :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/key :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/key :email, String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/timestamps!/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -244,17 +244,17 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       silence_logger { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/# field <name>, :type => <type>, :default => <value>/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# field <name>, :type => <type>, :default => <value>/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/field :name, :type => String/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/field :age, :type => Integer/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/field :email, :type => String/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, :type => Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :email, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -263,20 +263,20 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ohm') }
       silence_logger { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person < Ohm::Model/, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/include Ohm::Timestamping/, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/include Ohm::Typecast/, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/# attribute :name/m, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/# reference :venue, Venue/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person < Ohm::Model/, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/include Ohm::Timestamping/, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/include Ohm::Typecast/, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# attribute :name/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# reference :venue, Venue/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ohm') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < Ohm::Model/, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/attribute :name, String/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/attribute :age, Integer/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/attribute :email, String/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < Ohm::Model/, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/attribute :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/attribute :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/attribute :email, String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -285,19 +285,19 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate model file with no properties" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomatic') }
       silence_logger { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person < Mongomatic::Base/, "#{@apptmp}/sample_project/app/models/person.rb")
-      assert_match_in_file(/include Mongomatic::Expectations::Helper/m, "#{@apptmp}/sample_project/app/models/person.rb")
+      assert_match_in_file(/class Person < Mongomatic::Base/, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/include Mongomatic::Expectations::Helper/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     should "generate model file with given fields" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomatic') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < Mongomatic::Base/, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/include Mongomatic::Expectations::Helper/, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/be_present self\['name'\]/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/be_present self\['age'\]/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/be_present self\['email'\]/m, "#{@apptmp}/sample_project/app/models/user.rb")
-      assert_match_in_file(/be_a_number self\['age'\]/m, "#{@apptmp}/sample_project/app/models/user.rb")
+      assert_match_in_file(/class User < Mongomatic::Base/, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/include Mongomatic::Expectations::Helper/, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/be_present self\['name'\]/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/be_present self\['age'\]/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/be_present self\['email'\]/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/be_a_number self\['age'\]/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -360,8 +360,8 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
-      assert_no_file_exists("#{@apptmp}/sample_project/app/models/user.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/test/app/models/user_test.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/test/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
     end
 
@@ -369,7 +369,7 @@ class TestModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
-      assert_no_file_exists("#{@apptmp}/sample_project/spec/app/models/user_spec.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/spec/models/user_spec.rb")
     end
 
     should "destroy the model test file in a sub app" do
