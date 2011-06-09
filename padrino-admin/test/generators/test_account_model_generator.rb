@@ -16,7 +16,7 @@ class TestAccountModelGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=couchrest') }
       silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       
-      @model = "#{@apptmp}/sample_project/app/models/account.rb"
+      @model = "#{@apptmp}/sample_project/admin/models/account.rb"
     end
     
     should 'be a couchrest model instance' do

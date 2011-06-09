@@ -52,9 +52,11 @@ module Padrino
           directory "templates/app",       destination_root("admin")
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
 
           account_params = [
             "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+            "-a=admin",
             "-r=#{options[:root]}"
           ]
 
@@ -77,7 +79,7 @@ module Padrino
           admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt", destination_root("app", "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root("admin", "models", "account.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
@@ -98,7 +100,6 @@ module Padrino
 
           add_project_module :accounts
           require_dependencies('bcrypt-ruby', :require => 'bcrypt')
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
           gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
           return if self.behavior == :revoke
