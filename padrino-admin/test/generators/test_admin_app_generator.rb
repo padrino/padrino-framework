@@ -52,8 +52,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.haml")
       assert_file_exists("#{@apptmp}/sample_project/public/admin")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
-      assert_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/admin/models/account.rb")
+      assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
@@ -85,8 +84,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.erb")
       assert_file_exists("#{@apptmp}/sample_project/public/admin")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
-      assert_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/admin/models/account.rb")
+      assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
@@ -118,8 +116,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.slim")
       assert_file_exists("#{@apptmp}/sample_project/public/admin")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
-      assert_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/admin/models/account.rb")
+      assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
@@ -152,7 +149,7 @@ class TestAdminAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/public/admin")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
       assert_file_exists("#{@apptmp}/sample_project/admin/models/account.rb")
-      assert_no_file_exists("#{@apptmp}/sample_project/app/models/account.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
