@@ -233,7 +233,7 @@ class TestFilters < Test::Unit::TestCase
     assert_equal 'before', body
   end
 
-  should "be able to filter based on a symbol or path in a controller" do
+  should "be able to filter based on a symbol or path in multiple controller" do
     mock_app do
       controllers :foo do
         before(:index, '/foo/main') { @test = 'before' }
@@ -244,10 +244,23 @@ class TestFilters < Test::Unit::TestCase
           @test
         end
       end
+      controllers :bar do
+        before(:index, '/bar/main') { @test = 'also before' }
+        get :index do
+          @test
+        end
+        get :main do
+          @test
+        end
+      end
     end
     get '/foo'
     assert_equal 'before', body
+    get '/bar'
+    assert_equal 'also before', body
     get '/foo/main'
     assert_equal 'before', body
+    get '/bar/main'
+    assert_equal 'also before', body
   end
 end
