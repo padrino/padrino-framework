@@ -256,11 +256,11 @@ module Padrino
       alias :controllers :controller
 
       def before(*args, &block)
-        @filters[:before] << (args.empty? ? block : construct_filter(*args, &block))
+        add_filter :before, &(args.empty? ? block : construct_filter(*args, &block))
       end
 
       def after(*args, &block)
-        @filters[:after] << (args.empty? ? block : construct_filter(*args, &block))
+        add_filter :after, &(args.empty? ? block : construct_filter(*args, &block))
       end
 
       def construct_filter(*args, &block)
@@ -493,8 +493,6 @@ module Padrino
           if @_controller
             route.use_layout     = @layout
             route.controller     = Array(@_controller).first.to_s
-            @filters[:before].clear
-            @filters[:after].clear
           end
           route.to(block)
           route

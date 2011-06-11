@@ -232,4 +232,22 @@ class TestFilters < Test::Unit::TestCase
     get "/", {}, {'HTTP_USER_AGENT' => 'This is IE'}
     assert_equal 'before', body
   end
+
+  should "be able to filter based on a symbol or path in a controller" do
+    mock_app do
+      controllers :foo do
+        before(:index, '/foo/main') { @test = 'before' }
+        get :index do
+          @test
+        end
+        get :main do
+          @test
+        end
+      end
+    end
+    get '/foo'
+    assert_equal 'before', body
+    get '/foo/main'
+    assert_equal 'before', body
+  end
 end
