@@ -352,7 +352,7 @@ module Padrino
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
         url
-      rescue HttpRouter::UngeneratableRouteException
+      rescue HttpRouter::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise Padrino::Routing::UnrecognizedException.new(route_error)
       end
