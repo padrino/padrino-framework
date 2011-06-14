@@ -1276,6 +1276,46 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo", body
   end
 
+  should "pass controller conditions to each route" do
+    counter = 0
+
+    mock_app do
+      self.class.send(:define_method, :increment!) do |*args|
+        condition { counter += 1 }
+      end
+
+      controller :posts, :conditions => {:increment! => true} do
+        get("/foo") { "foo" }
+        get("/bar") { "bar" }
+      end
+
+    end
+
+    get "/posts/foo"
+    get "/posts/bar"
+    assert_equal 2, counter
+  end
+
+  should "allow controller conditions to be overridden" do
+    counter = 0
+
+    mock_app do
+      self.class.send(:define_method, :increment!) do |increment|
+        condition { counter += 1 } if increment
+      end
+
+      controller :posts, :conditions => {:increment! => true} do
+        get("/foo") { "foo" }
+        get("/bar", :increment! => false) { "bar" }
+      end
+
+    end
+
+    get "/posts/foo"
+    get "/posts/bar"
+    assert_equal 1, counter
+  end
+
   should "parse params with class level provides" do
     mock_app do
       controllers :posts, :provides => [:html, :js] do
