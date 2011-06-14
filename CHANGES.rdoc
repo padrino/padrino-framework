@@ -21,7 +21,9 @@
 * Remove Padrino::Rendering from autoloading (manually must be loaded)
 * New Enhancement to controller filters
 * Add option to specify model generation of Account from padrino-admin
-* Generates models by default into `/models`.
+* Generates models by default into `/models`
+* Controllers accept :conditions option [Thanks to Bernerdschaefer]
+* Added Hungarian translation [Thanks to Kormány Zsolt]
 
 == 0.9.29
 
