@@ -207,6 +207,30 @@ module Padrino
       #     end
       #   end
       #
+      # You can specify conditions to run for all routes:
+      #
+      #   controller :conditions => {:protect => true} do
+      #     def self.protect(protected)
+      #       condition do
+      #         halt 403, "No secrets for you!" unless params[:key] == "s3cr3t"
+      #       end if protected
+      #     end
+      #
+      #     # This route will only return "secret stuff" if the user goes to
+      #     # `/private?key=s3cr3t`.
+      #     get("/private") { "secret stuff" }
+      #
+      #     # And this one, too!
+      #     get("/also-private") { "secret stuff" }
+      #
+      #     # But you can override the conditions for each route as needed.
+      #     # This route will be publicly accessible without providing the
+      #     # secret key.
+      #     get :index, :protect => false do
+      #       "Welcome!"
+      #     end
+      #   end
+      #
       # You can supply default values:
       #
       #   controller :lang => :de do
@@ -233,6 +257,7 @@ module Padrino
           @_use_format, original_use_format = options.delete(:use_format), @_use_format
           @_cache,      original_cache      = options.delete(:cache), @_cache
           @_map,        original_map        = options.delete(:map), @_map
+          @_conditions, original_conditions = options.delete(:conditions), @_conditions
           @_defaults,   original_defaults   = options, @_defaults
 
           # Application defaults
@@ -248,7 +273,7 @@ module Padrino
           # Controller defaults
           @_controller, @_parents, @_cache = original_controller, original_parent, original_cache
           @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
-          @_use_format = original_use_format
+          @_conditions, @_use_format = original_conditions, original_use_format
         else
           include(*args) if extensions.any?
         end
@@ -431,6 +456,7 @@ module Padrino
           route_options[:provides] = @_provides if @_provides
           path, *route_options[:with] = path if path.is_a?(Array)
           path, name, options = *parse_route(path, route_options, verb)
+          options.reverse_merge!(@_conditions) if @_conditions
 
           # Sinatra defaults
           define_method "#{verb} #{path}", &block
