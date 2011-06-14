@@ -1,0 +1,16 @@
+hu:
+  padrino:
+    admin:
+      save: ment
+      cancel: elvet
+      list: lista
+      edit: szerkeszt
+      new: új
+      show: mutat
+      delete: töröl
+      confirm: Biztos vagy benne?
+      created_at: készült
+      all: mind
+      profile: adatlap
+      settings: beállítások
+      logout: kilépés
