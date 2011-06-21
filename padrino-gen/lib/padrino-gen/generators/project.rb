@@ -31,7 +31,7 @@ module Padrino
       class_option :template,     :desc => "Generate project from template",                        :aliases => '-p', :default => nil,      :type => :string
 
       # Definitions for the available customizable components
-      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic], :default => :none
+      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
       component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot], :default => :none
       component_option :mock,       "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
