@@ -671,7 +671,7 @@ module Padrino
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
 
             if params[:format]
-              accept_format = params[:format]
+              accept_format = params[:format].to_sym
             elsif !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
@@ -693,7 +693,7 @@ module Padrino
               (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
 
             if matched_format
-              @_content_type = url_format || accept_format || :html
+              @_content_type = accept_format || url_format || :html
               content_type(@_content_type, :charset => 'utf-8')
             end
 
