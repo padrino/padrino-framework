@@ -322,6 +322,15 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, "#{@apptmp}/sample_project/config/database.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/models")
     end
+
+    should "properly generate for ripple" do
+      buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ripple', '--script=none') }
+      assert_match(/Applying.*?ripple.*?orm/, buffer)
+      assert_match_in_file(/gem 'ripple'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/Ripple.load_configuration/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/http_port: 8098/, "#{@apptmp}/sample_project/config/riak.yml")
+      assert_dir_exists("#{@apptmp}/sample_project/app/models")
+    end
   end
 
 
