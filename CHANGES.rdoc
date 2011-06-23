@@ -24,6 +24,8 @@
 * Generates models by default into `/models`
 * Controllers accept :conditions option [Thanks to Bernerdschaefer]
 * Added Hungarian translation [Thanks to Kormány Zsolt]
+* Added Riak support through Ripple
+* Updated couchrest_model dependency to ~>1.1.0.rc1
 
 == 0.9.29
 
