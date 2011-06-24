@@ -348,16 +348,18 @@ class TestRouting < Test::Unit::TestCase
   should "preserve the format if you set it manually" do
     mock_app do
       before do
-        params[:format] = :json
+        params[:format] = "json"
       end
 
       get "test", :provides => [:html, :json] do
-        params[:format].inspect
+        content_type.inspect
       end
     end
     get "/test"
     assert_equal ":json", body
     get "/test.html"
+    assert_equal ":json", body
+    get "/test.php"
     assert_equal ":json", body
   end
 
