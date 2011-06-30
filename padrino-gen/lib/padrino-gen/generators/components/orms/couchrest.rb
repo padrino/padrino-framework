@@ -8,8 +8,7 @@ end
 CouchRest::Model::Base.configure do |conf|
   conf.model_type_key = 'type' # compatibility with CouchModel 1.1
   conf.database = CouchRest.database!(db_name)
-  # Only with CouchModel 1.1
-  # conf.environment = Padrino.env
+  conf.environment = Padrino.env
   # conf.connection = {
   #   :protocol => 'http',
   #   :host     => 'localhost',
@@ -24,7 +23,7 @@ end
 COUCHREST
 
 def setup_orm
-  require_dependencies 'couchrest_model', :version => '~>1.1.0.rc1'
+  require_dependencies 'couchrest_model', :version => '~>1.1.0'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
   empty_directory('app/models')
