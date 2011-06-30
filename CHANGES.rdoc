@@ -25,8 +25,9 @@
 * Controllers accept :conditions option [Thanks to Bernerdschaefer]
 * Added Hungarian translation [Thanks to Kormány Zsolt]
 * Added Riak support through Ripple
-* Updated couchrest_model dependency to ~>1.1.0.rc1
-* Fixed issue #571, don't handle Gemfile if we are outside a Padrino project
+* Updated couchrest_model dependency to ~>1.1.0
+* Fix issue #571, don't handle Gemfile if we are outside a Padrino project
+* Fix issue #569, prevent a little problem with DM and string length
 
 == 0.9.29
 
