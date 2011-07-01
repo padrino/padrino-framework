@@ -54,7 +54,7 @@ class TestModelGenerator < Test::Unit::TestCase
       assert_match_in_file(/class Post\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/property :body, String/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/migration 1, :create_posts do/m, "#{@apptmp}/sample_project/db/migrate/001_create_posts.rb")
-      assert_match_in_file(/gem 'data_mapper'/m,"#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'dm-core'/m,"#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/DataMapper.finalize/m,"#{@apptmp}/sample_project/config/boot.rb")
     end
 
@@ -142,7 +142,7 @@ class TestModelGenerator < Test::Unit::TestCase
     should "generate gemfile gem" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
       silence_logger { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/gem 'data_mapper'/m,"#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'dm-core'/m,"#{@apptmp}/sample_project/Gemfile")
     end
 
     should "generate model file with camelized name" do

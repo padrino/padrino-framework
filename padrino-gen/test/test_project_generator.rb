@@ -246,7 +246,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       should "properly generate default" do
         buffer = silence_logger { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=datamapper', '--script=none') }
         assert_match(/Applying.*?datamapper.*?orm/, buffer)
-        assert_match_in_file(/gem 'data_mapper'/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'dm-core'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/DataMapper.setup/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
