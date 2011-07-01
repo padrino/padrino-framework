@@ -33,7 +33,7 @@ class TestCore < Test::Unit::TestCase
         assert_equal 'UTF8', $KCODE
       else
         assert_equal Encoding.default_external, Encoding::UTF_8
-        assert_equal Encoding.default_internal, Encoding::UTF_8
+        assert_equal Encoding.default_internal, nil # Encoding::UTF_8
       end
     end
 

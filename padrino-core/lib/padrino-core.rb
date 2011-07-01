@@ -80,7 +80,7 @@ module Padrino
         $KCODE='u'
       else
         Encoding.default_external = Encoding::UTF_8
-        Encoding.default_internal = Encoding::UTF_8
+        Encoding.default_internal = nil # Encoding::UTF_8
       end
       nil
     end

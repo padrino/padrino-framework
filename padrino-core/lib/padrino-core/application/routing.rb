@@ -463,19 +463,15 @@ module Padrino
           options.reverse_merge!(@_conditions) if @_conditions
 
           # Sinatra defaults
-          define_method "#{verb} #{path}", &block
+          method_name = "#{verb} #{path}"
+          define_method(method_name, &block)
           unbound_method = instance_method("#{verb} #{path}")
+          remove_method(method_name)
 
-          block =
-            if block.arity != 0
-              block_arity = block.arity
-              proc {
-                @block_params = @block_params.slice(0, block_arity) if block_arity > 0
-                unbound_method.bind(self).call(*@block_params)
-              }
-            else
+          block_arity = block.arity
+          block = block_arity != 0 ?
+              proc { @block_params = @block_params[0, block_arity]; unbound_method.bind(self).call(*@block_params) } :
               proc { unbound_method.bind(self).call }
-            end
 
           invoke_hook(:route_added, verb, path, block)
 
@@ -501,13 +497,7 @@ module Padrino
           recognition_router.add(path).name(name).to(name)
 
           # Add Sinatra conditions
-          options.each { |option, args|
-            if route.respond_to?(option)
-              route.send(option, *args)
-            else
-              send(option, *args)
-            end
-          }
+          options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
 
@@ -517,8 +507,8 @@ module Padrino
           route.before_filters = @filters[:before]
           route.after_filters  = @filters[:after]
           if @_controller
-            route.use_layout     = @layout
-            route.controller     = Array(@_controller).first.to_s
+            route.use_layout = @layout
+            route.controller = Array(@_controller).first.to_s
           end
           route.to(block)
           route
