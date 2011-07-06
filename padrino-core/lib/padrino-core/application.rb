@@ -239,5 +239,20 @@ module Padrino
           Padrino.require_dependencies(dependencies, :force => true)
         end
     end # self
+
+    # TODO Remove deprecated render inclusion in a few versions
+    # Detects if a user is incorrectly using 'render' and warns them about the fix
+    # In 0.10.0, Padrino::Rendering now has to be explicitly included in the application
+    def render(*args)
+      if !defined?(DEFAULT_RENDERING_OPTIONS) && args.size == 1 && !@_render_included
+        logger.warn "[Deprecation] Please 'register Padrino::Rendering' for each application as shown here:
+          https://gist.github.com/1d36a35794dbbd664ea4 for 'render' to function as expected"
+        self.class.instance_eval { register Padrino::Rendering }
+        @_render_included = true
+        render(*args)
+      else # pass through, rendering is valid
+        super(*args)
+      end
+    end # render method
   end # Application
 end # Padrino
