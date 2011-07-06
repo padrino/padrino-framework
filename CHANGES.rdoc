@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.0 (Not Yet Released)
+== 0.10.1 (Not Yet Released)
+
+== 0.10.0
 
 * Fix `padrino s` shortcut to accept options
 * Fix Padrino::Application#run! (now correctly accepts options)
