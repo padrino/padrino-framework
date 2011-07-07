@@ -634,10 +634,22 @@ class TestRouting < Test::Unit::TestCase
   should 'reset routes' do
     mock_app do
       get("/"){ "foo" }
-      router.reset!
+      reset_router!
     end
     get "/"
     assert_equal 404, status
+  end
+
+  should 'respect priorities' do
+    route_order = []
+    mock_app do
+      get(:index, :priority => :normal) { route_order << :normal; pass }
+      get(:index, :priority => :low)  { route_order << :low; "hello" }
+      get(:index, :priority => :high)  { route_order << :high; pass }
+    end
+    get '/'
+    assert_equal [:high, :normal, :low], route_order
+    assert_equal "hello", body
   end
 
   should 'apply maps' do

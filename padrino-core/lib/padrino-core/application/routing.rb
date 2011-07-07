@@ -127,6 +127,7 @@ module Padrino
   #
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2}
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -336,7 +337,22 @@ module Padrino
       end
       alias :urls :router
 
+      def compiled_router
+        if deferred_routes.empty?
+          router
+        else
+          deferred_routes.each { |_, routes| routes.each { |(route, dest)| route.to(dest) } }
+          @deferred_routes = nil
+          router
+        end
+      end
+
+      def deferred_routes
+        @deferred_routes ||= Hash[ROUTE_PRIORITY.values.sort.map{|p| [p, []]}]
+      end
+
       def reset_router!
+        @deferred_routes = nil
         router.reset!
       end
 
@@ -364,9 +380,9 @@ module Padrino
           params = value_to_param(params)
         end
         url = if params_array.empty?
-          router.url(name, params)
+          compiled_router.url(name, params)
         else
-          router.url(name, *(params_array << params))
+          compiled_router.url(name, *(params_array << params))
         end
         url[0,0] = conform_uri(uri_root) if defined?(uri_root)
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
@@ -474,6 +490,8 @@ module Padrino
           route = router.add(path)
 
           route.name(name) if name
+          priority_name = options.delete(:priority) || :normal
+          priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
@@ -503,7 +521,8 @@ module Padrino
             route.use_layout = @layout
             route.controller = Array(@_controller).first.to_s
           end
-          route.to(block)
+
+          deferred_routes[priority] << [route, block]
           route
         end
 
@@ -773,7 +792,7 @@ module Padrino
 
         def route!(base=self.class, pass_block=nil)
           @request.env['padrino.instance'] = self
-          if base.router and match = base.router.call(@request.env)
+          if base.compiled_router and match = base.router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
