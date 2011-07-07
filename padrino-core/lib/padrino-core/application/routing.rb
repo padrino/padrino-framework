@@ -336,17 +336,12 @@ module Padrino
       end
       alias :urls :router
 
-      def recognition_router
-        @recognition_router ||= HttpRouter.new
-      end
-
       def reset_router!
         router.reset!
-        recognition_router.reset!
       end
 
       def recognize_path(path)
-        if response = @recognition_router.recognize(Rack::MockRequest.env_for(path))
+        if response = @router.recognize(Rack::MockRequest.env_for(path))
           [response.path.route.named, response.params]
         end
       end
@@ -493,8 +488,6 @@ module Padrino
               true
             end
           end
-
-          recognition_router.add(path).name(name).to(name)
 
           # Add Sinatra conditions
           options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
