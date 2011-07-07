@@ -31,6 +31,7 @@
 * Fix issue #571, don't handle Gemfile if we are outside a Padrino project
 * Fix issue #569, prevent a little problem with DM and string length
 * Require only individual gems of DataMapper to use a thin environment and prevent to load old gems like json 1.4
+* Support for priority route ordering in controllers
 
 == 0.9.29
 

@@ -449,6 +449,7 @@ module Padrino
         #   get :list, :provides => :any                  # => "/list(.:format)"
         #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
         #   get :list, :provides => [:html, :js, :json]   # => "/list(.{!format,js|json})"
+        #   get :list, :priority => :low                  # Defers route to be last
         #
         def route(verb, path, *args, &block)
           options = case args.size
