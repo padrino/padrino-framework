@@ -244,7 +244,8 @@ module Padrino
     # Detects if a user is incorrectly using 'render' and warns them about the fix
     # In 0.10.0, Padrino::Rendering now has to be explicitly included in the application
     def render(*args)
-      if !defined?(DEFAULT_RENDERING_OPTIONS) && args.size == 1 && !@_render_included
+      if !defined?(DEFAULT_RENDERING_OPTIONS) && !@_render_included &&
+          (args.size == 1 || (args.size == 2 && args[0].is_a?(String) && args[1].is_a?(Hash)))
         logger.warn "[Deprecation] Please 'register Padrino::Rendering' for each application as shown here:
           https://gist.github.com/1d36a35794dbbd664ea4 for 'render' to function as expected"
         self.class.instance_eval { register Padrino::Rendering }
