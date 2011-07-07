@@ -652,6 +652,18 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "hello", body
   end
 
+  should 'allow optionals' do
+    mock_app do
+      get(:show, :map => "/stories/:type(/:category)") do
+        "#{params[:type]}/#{params[:category]}"
+      end
+    end
+    get "/stories/foo"
+    assert_equal "foo/", body
+    get "/stories/foo/bar"
+    assert_equal "foo/bar", body
+  end
+
   should 'apply maps' do
     mock_app do
       controllers :admin do
