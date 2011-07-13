@@ -4,7 +4,7 @@ Padrino is the godfather of Sinatra.
 
 === Follow us
 
-{WebSite}[http://padrinorb.com}
+{WebSite}[http://padrinorb.com]
 {@padrinorb}[http://twitter.com/padrinorb]
 
 == Preface
