@@ -1,10 +1,7 @@
 = Padrino
 
-Padrino is the godfather of Sinatra.
-
-=== Follow us
-
-{WebSite}[http://padrinorb.com]
+Padrino is the godfather of Sinatra. Follow us on
+{www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]
 
 == Preface
