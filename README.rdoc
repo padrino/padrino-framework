@@ -2,6 +2,11 @@
 
 Padrino is the godfather of Sinatra.
 
+=== Follow us
+
+{WebSite}[http://padrinorb.com}
+{@padrinorb}[http://twitter.com/padrinorb]
+
 == Preface
 
 Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.sinatrarb.com].
