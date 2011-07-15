@@ -66,7 +66,7 @@ module Padrino
     # :log_level:: Once of [:fatal, :error, :warn, :info, :debug]
     # :stream:: Once of [:to_file, :null, :stdout, :stderr] our your custom stream
     # :log_level::
-    #   The log level from, e.g. :fatal or :info. Defaults to :debug in the
+    #   The log level from, e.g. :fatal or :info. Defaults to :warn in the
     #   production environment and :debug otherwise.
     # :auto_flush::
     #   Whether the log should automatically flush after new messages are
