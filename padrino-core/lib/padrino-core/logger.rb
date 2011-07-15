@@ -94,6 +94,7 @@ module Padrino
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     }
+    Config.merge!(PADRINO_LOGGERS) if defined?(PADRINO_LOGGERS)
 
     # Embed in a String to clear all previous ANSI sequences.
     CLEAR      = "\e[0m"
