@@ -89,6 +89,11 @@ module Padrino
     #   :development => { :log_level => :debug, :stream => :stdout }
     #   :test        => { :log_level => :fatal, :stream => :null }
     #
+    # In some cases, configuring the loggers before loading the framework is necessary.
+    # You can do so by setting PADRINO_LOGGERS:
+    #
+    #   PADRINO_LOGGERS = { :staging => { :log_level => :debug, :stream => :to_file }}
+    #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
