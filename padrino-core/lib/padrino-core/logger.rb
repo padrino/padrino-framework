@@ -138,6 +138,12 @@ module Padrino
     def self.setup!
       config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
       config = Config[config_level]
+
+      unless config
+        warn("No logging configuration for :#{config_level} found, falling back to :production")
+        config = Config[:production]
+      end
+
       stream = case config[:stream]
         when :to_file
           FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
