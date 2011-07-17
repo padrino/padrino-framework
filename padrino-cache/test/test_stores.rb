@@ -121,6 +121,25 @@ rescue LoadError
   warn "Skipping redis tests"
 end
 
+begin
+  require 'mongo'
+  Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+  class TestMongoStore < Test::Unit::TestCase
+    def setup
+      Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+      Padrino.cache.flush
+    end
+
+    def teardown
+      Padrino.cache.flush
+    end
+
+    eval COMMON_TESTS
+  end
+rescue LoadError
+  warn "Skipping Mongo tests"
+end
+
 class TestFileStore < Test::Unit::TestCase
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
