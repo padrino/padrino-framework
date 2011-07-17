@@ -17,7 +17,10 @@ module Padrino
           if opts && opts[:username]
             client.authenticate(opts[:username], opts[:password], true)
           end
-          @backend = client.collection( (opts && opts[:collection])? opts[:collection] : 'cache' )
+          @backend = get_collection(client,
+                                    (opts && opts[:collection])? opts[:collection]:'cache',
+                                    (opts && opts[:size])? opts[:size]:0
+                                   )
         end
 
         ##
@@ -76,7 +79,17 @@ module Padrino
         #   MyApp.cache.get('records') # => nil
         #
         def flush
-          @backend.drop
+          @backend.remove
+        end
+
+        private
+        def get_collection(db, name, size=0)
+          if db.collection_names.include? name
+            db[name]
+          else
+            opts = (size > 0)? {:capped => true, :size => size*1024**2} : {}
+            db.collection(name, opts)
+          end
         end
       end # Mongo
     end # Store

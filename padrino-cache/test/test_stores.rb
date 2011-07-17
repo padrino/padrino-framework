@@ -126,7 +126,7 @@ begin
   Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
   class TestMongoStore < Test::Unit::TestCase
     def setup
-      Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+      Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'), {:size => 10, :collection => 'cache'})
       Padrino.cache.flush
     end
 
