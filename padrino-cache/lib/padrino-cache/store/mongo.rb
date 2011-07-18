@@ -9,9 +9,9 @@ module Padrino
         # Initialize Mongo store with client connection and optional username and password.
         #
         # ==== Examples
-        #   Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 256, :collection => 'cache')
+        #   Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #   # or from your app
-        #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 256, :collection => 'cache')
+        #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #
         def initialize(client, opts=nil)
           if opts && opts[:username]
@@ -19,7 +19,8 @@ module Padrino
           end
           @backend = get_collection(client,
                                     (opts && opts[:collection])? opts[:collection]:'cache',
-                                    (opts && opts[:size])? opts[:size]:0
+                                    (opts && opts[:size])? opts[:size]:0,
+                                    (opts && opts[:max])? opts[:max]:0,
                                    )
         end
 
@@ -83,12 +84,12 @@ module Padrino
         end
 
         private
-        def get_collection(db, name, size=0)
+        def get_collection(db, name, size=0, max=0)
           if db.collection_names.include? name
             db[name]
           else
-            opts = (size > 0)? {:capped => true, :size => size*1024**2} : {}
-            db.collection(name, opts)
+            opts = (size > 0 && max > 0)? {:capped => true, :size => size*1024**2, :max => max} : {}
+            db.create_collection(name, opts)
           end
         end
       end # Mongo
