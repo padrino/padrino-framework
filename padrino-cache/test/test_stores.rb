@@ -10,7 +10,7 @@ should 'set and get an object' do
   assert_equal "bar", Padrino.cache.get('val').bar
 end
 
-should 'set ang get a nil value' do
+should 'set and get a nil value' do
   Padrino.cache.set('val', nil)
   assert_equal nil, Padrino.cache.get('val')
 end

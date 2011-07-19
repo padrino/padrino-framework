@@ -13,15 +13,19 @@ module Padrino
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #
-        def initialize(client, opts=nil)
-          if opts && opts[:username]
-            client.authenticate(opts[:username], opts[:password], true)
+        def initialize(client, opts={})
+          @client = client
+          @options = {
+            :capped => true,
+            :collection => 'cache',
+            :size => 64,
+            :max => 100
+          }.merge(opts)
+
+          if @options[:username] && @options[:password]
+            @client.authenticate(@options[:username], @options[:password], true)
           end
-          @backend = get_collection(client,
-                                    (opts && opts[:collection])? opts[:collection]:'cache',
-                                    (opts && opts[:size])? opts[:size]:0,
-                                    (opts && opts[:max])? opts[:max]:0,
-                                   )
+          @backend = get_collection
         end
 
         ##
@@ -68,7 +72,12 @@ module Padrino
         #   MyApp.cache.delete('records')
         #
         def delete(key)
-          @backend.remove({:_id => key})
+          if not @options[:capped]
+            @backend.remove({:_id => key})
+          else
+            # Mongo will overwrite it with a simple object {_id: new ObjectId()}
+            @backend.update({:_id => key},{},{:upsert => true})
+          end
         end
 
         ##
@@ -80,16 +89,18 @@ module Padrino
         #   MyApp.cache.get('records') # => nil
         #
         def flush
-          @backend.remove
+          @backend.drop
+          @backend = get_collection
         end
 
         private
-        def get_collection(db, name, size=0, max=0)
-          if db.collection_names.include? name
-            db[name]
+        def get_collection
+          if @client.collection_names.include?(@options[:collection]) or !@options[:capped]
+            @client.collection @options[:collection]
           else
-            opts = (size > 0 && max > 0)? {:capped => true, :size => size*1024**2, :max => max} : {}
-            db.create_collection(name, opts)
+            @client.create_collection(@options[:collection], { :capped => @options[:capped],
+                                                               :size => @options[:size]*1024**2,
+                                                               :max => @options[:max] })
           end
         end
       end # Mongo
