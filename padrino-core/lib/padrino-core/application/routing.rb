@@ -127,6 +127,7 @@ module Padrino
   #
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2}
 
     class UnrecognizedException < RuntimeError #:nodoc:
     end
@@ -336,17 +337,27 @@ module Padrino
       end
       alias :urls :router
 
-      def recognition_router
-        @recognition_router ||= HttpRouter.new
+      def compiled_router
+        if deferred_routes.empty?
+          router
+        else
+          deferred_routes.each { |_, routes| routes.each { |(route, dest)| route.to(dest) } }
+          @deferred_routes = nil
+          router
+        end
+      end
+
+      def deferred_routes
+        @deferred_routes ||= Hash[ROUTE_PRIORITY.values.sort.map{|p| [p, []]}]
       end
 
       def reset_router!
+        @deferred_routes = nil
         router.reset!
-        recognition_router.reset!
       end
 
       def recognize_path(path)
-        if response = @recognition_router.recognize(Rack::MockRequest.env_for(path))
+        if response = @router.recognize(Rack::MockRequest.env_for(path))
           [response.path.route.named, response.params]
         end
       end
@@ -369,9 +380,9 @@ module Padrino
           params = value_to_param(params)
         end
         url = if params_array.empty?
-          router.url(name, params)
+          compiled_router.url(name, params)
         else
-          router.url(name, *(params_array << params))
+          compiled_router.url(name, *(params_array << params))
         end
         url[0,0] = conform_uri(uri_root) if defined?(uri_root)
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
@@ -438,6 +449,7 @@ module Padrino
         #   get :list, :provides => :any                  # => "/list(.:format)"
         #   get :list, :provides => [:js, :json]          # => "/list.{!format,js|json}"
         #   get :list, :provides => [:html, :js, :json]   # => "/list(.{!format,js|json})"
+        #   get :list, :priority => :low                  # Defers route to be last
         #
         def route(verb, path, *args, &block)
           options = case args.size
@@ -463,19 +475,15 @@ module Padrino
           options.reverse_merge!(@_conditions) if @_conditions
 
           # Sinatra defaults
-          define_method "#{verb} #{path}", &block
+          method_name = "#{verb} #{path}"
+          define_method(method_name, &block)
           unbound_method = instance_method("#{verb} #{path}")
+          remove_method(method_name)
 
-          block =
-            if block.arity != 0
-              block_arity = block.arity
-              proc {
-                @block_params = @block_params.slice(0, block_arity) if block_arity > 0
-                unbound_method.bind(self).call(*@block_params)
-              }
-            else
+          block_arity = block.arity
+          block = block_arity != 0 ?
+              proc { @block_params = @block_params[0, block_arity]; unbound_method.bind(self).call(*@block_params) } :
               proc { unbound_method.bind(self).call }
-            end
 
           invoke_hook(:route_added, verb, path, block)
 
@@ -483,6 +491,8 @@ module Padrino
           route = router.add(path)
 
           route.name(name) if name
+          priority_name = options.delete(:priority) || :normal
+          priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
@@ -498,16 +508,8 @@ module Padrino
             end
           end
 
-          recognition_router.add(path).name(name).to(name)
-
           # Add Sinatra conditions
-          options.each { |option, args|
-            if route.respond_to?(option)
-              route.send(option, *args)
-            else
-              send(option, *args)
-            end
-          }
+          options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
           conditions, @conditions = @conditions, []
           route.custom_conditions = conditions
 
@@ -517,10 +519,11 @@ module Padrino
           route.before_filters = @filters[:before]
           route.after_filters  = @filters[:after]
           if @_controller
-            route.use_layout     = @layout
-            route.controller     = Array(@_controller).first.to_s
+            route.use_layout = @layout
+            route.controller = Array(@_controller).first.to_s
           end
-          route.to(block)
+
+          deferred_routes[priority] << [route, block]
           route
         end
 
@@ -790,7 +793,7 @@ module Padrino
 
         def route!(base=self.class, pass_block=nil)
           @request.env['padrino.instance'] = self
-          if base.router and match = base.router.call(@request.env)
+          if base.compiled_router and match = base.router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}

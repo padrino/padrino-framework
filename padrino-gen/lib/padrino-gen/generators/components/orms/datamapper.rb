@@ -23,7 +23,14 @@ DM
 def setup_orm
   dm = DM
   db = @app_name.underscore
-  require_dependencies 'data_mapper'
+  %w(
+    dm-core
+    dm-aggregates
+    dm-constraints
+    dm-migrations
+    dm-timestamps
+    dm-validations
+  ).each { |dep| require_dependencies dep }
   require_dependencies case options[:adapter]
     when 'mysql'
       dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{db}_development\"")
@@ -93,7 +100,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, #{kind.classify}" },
+       :column_format => Proc.new { |field, kind| "column :#{field}, #{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 

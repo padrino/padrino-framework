@@ -17,6 +17,7 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
+  gem "nokogiri", "1.4.4"
   gem "rack",  "~> 1.3.0"
   gem "rake",  ">= 0.8.7"
   gem "rdoc"
@@ -37,9 +38,9 @@ group :development do
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
-  platforms :mri_19 do
-    gem "ruby-debug19"
-  end
+  # platforms :mri_19 do
+  #   gem "ruby-debug19"
+  # end
   platforms :jruby do
     gem "jruby-openssl"
   end

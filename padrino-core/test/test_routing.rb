@@ -101,9 +101,9 @@ class TestRouting < Test::Unit::TestCase
       post("/main"){ "hello" }
     end
     assert_equal 3, app.routes.size, "should generate GET, HEAD and PUT"
-    assert_equal ["GET"],  app.routes[0].as_options[:conditions][:request_method]
-    assert_equal ["HEAD"], app.routes[1].as_options[:conditions][:request_method]
-    assert_equal ["POST"], app.routes[2].as_options[:conditions][:request_method]
+    assert_equal ["GET"],  app.routes[0].conditions[:request_method]
+    assert_equal ["HEAD"], app.routes[1].conditions[:request_method]
+    assert_equal ["POST"], app.routes[2].conditions[:request_method]
   end
 
   should 'generate basic urls' do
@@ -636,10 +636,34 @@ class TestRouting < Test::Unit::TestCase
   should 'reset routes' do
     mock_app do
       get("/"){ "foo" }
-      router.reset!
+      reset_router!
     end
     get "/"
     assert_equal 404, status
+  end
+
+  should 'respect priorities' do
+    route_order = []
+    mock_app do
+      get(:index, :priority => :normal) { route_order << :normal; pass }
+      get(:index, :priority => :low)  { route_order << :low; "hello" }
+      get(:index, :priority => :high)  { route_order << :high; pass }
+    end
+    get '/'
+    assert_equal [:high, :normal, :low], route_order
+    assert_equal "hello", body
+  end
+
+  should 'allow optionals' do
+    mock_app do
+      get(:show, :map => "/stories/:type(/:category)") do
+        "#{params[:type]}/#{params[:category]}"
+      end
+    end
+    get "/stories/foo"
+    assert_equal "foo/", body
+    get "/stories/foo/bar"
+    assert_equal "foo/bar", body
   end
 
   should 'apply maps' do

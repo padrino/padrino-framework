@@ -85,7 +85,7 @@ module Padrino
     def named_routes
       app_obj.routes.map { |route|
         name_array     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
-        request_method = route.as_options[:conditions][:request_method][0]
+        request_method = route.conditions[:request_method][0]
         full_path = File.join(uri_root, route.original_path)
         next if route.named.blank? || request_method == 'HEAD'
         OpenStruct.new(:verb => request_method, :identifier => route.named, :name => name_array, :path => full_path)

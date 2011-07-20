@@ -40,7 +40,7 @@ Admin.controllers :<%= @orm.name_plural %> do
     if <%= @orm.destroy %>
       flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
     else
-      flash[:error] = 'Impossible destroy <%= @orm.klass_name %>!'
+      flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end

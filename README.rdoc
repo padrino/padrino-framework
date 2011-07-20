@@ -1,6 +1,8 @@
 = Padrino
 
-Padrino is the godfather of Sinatra.
+Padrino is the godfather of Sinatra. Follow us on
+{www.padrinorb.com}[http://padrinorb.com] and on twitter
+{@padrinorb}[http://twitter.com/padrinorb]
 
 == Preface
 
@@ -41,7 +43,7 @@ or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padr
 
 To install the padrino framework, simply grab the latest version from gemcutter:
 
-  $ sudo gem install padrino
+  $ gem install padrino
 
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.

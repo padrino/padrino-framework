@@ -50,7 +50,7 @@ if defined?(DataMapper)
       puts "=> Creating database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("createdb", "-E", charset, "-U", user, database)
+          system("createdb", "-E", charset, "-h", host, "-U", user, database)
           puts "<= dm:create executed"
         when 'mysql'
           query = [
@@ -74,7 +74,7 @@ if defined?(DataMapper)
       puts "=> Dropping database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("dropdb", "-U", user, database)
+          system("dropdb", "-h", host, "-U", user, database)
           puts "<= dm:drop executed"
         when 'mysql'
           query = [
