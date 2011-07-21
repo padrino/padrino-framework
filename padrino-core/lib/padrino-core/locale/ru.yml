@@ -11,7 +11,7 @@ ru:
     day_names: [Воскресенье, Понедельник, Вторник, Среда, Четверг, Пятница, Суббота]
     abbr_day_names: [Вс, Пн, Вт, Ср, Чт, Пт, Сб]
     month_names: [~, Январь, Февраль, Март, Апрель, Май, Июнь, Июль, Август, Сентябрь, Октябрь, Ноябрь, Декабрь]
-    abbr_month_names: [~, Янв, Феб, Мар, Апр, Май, Июн, Июл, Авг, Сен, Окт, Нов, Дек]
+    abbr_month_names: [~, Янв, Феб, Мар, Апр, Май, Июн, Июл, Авг, Сен, Окт, Ноя, Дек]
     order: [ :year, :month, :day ]
 
   time:
@@ -20,11 +20,12 @@ ru:
       short: "%d %b %H:%M"
       long: "%e %B, %Y %H:%M"
     am: "д.п."
-    pm: "п.п"
+    pm: "п.п."
 
 # Used in array.to_sentence.
   support:
     array:
       words_connector: ", "
       two_words_connector: " и "
-      last_word_connector: ", и "
+      last_word_connector: " и "
+
