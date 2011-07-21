@@ -8,9 +8,9 @@ fr:
       format:
         unit: '€'
         format: '%n%u'
-        separator:
-        delimiter:
-        precision:
+        separator: "."
+        delimiter: ""
+        precision: 2
     percentage:
       format:
         delimiter: ""
@@ -77,3 +77,4 @@ fr:
           one:    "1 erreur a empêché ce %{model} d'être sauvé"
           other:  "%{count} erreurs ont empêché ce %{model} d'être sauvé"
         body: "Il y avait des problèmes avec les champs suivants:"
+
