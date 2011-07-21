@@ -100,4 +100,5 @@ zh_cn:
         header:
           one:   "有1 个错误发生使得「%{model}」无法被储存。 "
           other: "有%{count} 个错误发生使得「%{model}」无法被储存。 "
-        body: "以下栏位发生问题：
+        body: "以下栏位发生问题："
+
