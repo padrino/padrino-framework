@@ -618,7 +618,7 @@ module Padrino
         def process_path_for_parent_params(path, parent_params)
           parent_prefix = parent_params.flatten.compact.uniq.map do |param|
             map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
-            part = "#{map}/:#{param}_id/"
+            part = "#{map}/:#{param.to_s.singularize}_id/"
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?
             part
           end
