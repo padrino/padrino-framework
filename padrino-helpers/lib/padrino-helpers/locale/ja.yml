@@ -68,7 +68,7 @@ ja:
         one:   "1 秒"
         other: "%{count} 秒"
       less_than_x_minutes:
-        one:   "1分以内"
+        one:   "1 分以内"
         other: "%{count} 分以内"
       x_minutes:
         one:   "1 分"

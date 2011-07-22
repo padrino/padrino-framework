@@ -76,6 +76,10 @@ it:
       over_x_years:
         one:  "oltre un anno"
         other: "oltre %{count} anni"
+      almost_x_years:
+        one:   "circa 1 anno"
+        other: "circa %{count} anni"
+
   models:
     errors:
       template:
