@@ -98,7 +98,7 @@ module Padrino
       return true if @args.empty? && @options.empty?
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym
+        when Symbol then request.route_obj && (request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym)
         else             arg === request.path_info
         end
       end || @options.any? { |name, val|
@@ -784,8 +784,10 @@ module Padrino
           static! if settings.static? && (request.get? || request.head?)
           route!
         rescue Sinatra::NotFound => boom
+          filter! :before
           handle_not_found!(boom)
         rescue ::Exception => boom
+          filter! :before
           handle_exception!(boom)
         ensure
           @_pending_after_filters.each { |filter| instance_eval(&filter)} if @_pending_after_filters

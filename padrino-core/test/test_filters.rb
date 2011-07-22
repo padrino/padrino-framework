@@ -263,4 +263,15 @@ class TestFilters < Test::Unit::TestCase
     get '/bar/main'
     assert_equal 'also before', body
   end
+
+  should "call before filters even if there was no match" do
+    test = nil
+    mock_app do
+      before(:index, '/foo') { test = 'before' }
+      get :index do
+      end
+    end
+    get '/foo'
+    assert_equal 'before', test
+  end
 end
