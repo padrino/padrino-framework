@@ -95,7 +95,6 @@ module Padrino
     end
 
     def apply?(request)
-      return true if @args.empty? && @options.empty?
       detect = @args.any? do |arg|
         case arg
         when Symbol then request.route_obj && (request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym)
@@ -111,10 +110,12 @@ module Padrino
     end
 
     def to_proc
-      filter = self
-      proc {
-        instance_eval(&filter.block) if filter.apply?(request)
-      }
+      if @args.empty? && @options.empty?
+        block
+      else
+        filter = self
+        proc { instance_eval(&filter.block) if filter.apply?(request) }
+      end
     end
   end
 
@@ -794,8 +795,8 @@ module Padrino
         end
 
         def route!(base=self.class, pass_block=nil)
-          @request.env['padrino.instance'] = self
-          if base.compiled_router and match = base.router.call(@request.env)
+          @request.runner = self
+          if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
