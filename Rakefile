@@ -2,11 +2,11 @@
 require 'rubygems' unless defined?(Gem)
 require 'rake/clean'
 require 'rake/contrib/sshpublisher'
-require 'fileutils'
-require 'rake/dsl_definition'
+require 'fileutils' unless defined?(FileUtils)
+# require 'rake/dsl_definition'
 require 'rdoc/task'
 
-include Rake::DSL
+# include Rake::DSL
 
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 begin
