@@ -2,6 +2,10 @@
 
 == 0.10.1 (Not Yet Released)
 
+* Fix env['padrino.instance'] where create a loop and is too long to show in Padrino::ShowExceptions.
+* Compat with Slim 1.0, Compat with Ruby 1.9.3. FIX #596
+
+
 == 0.10.0
 
 * Fix `padrino s` shortcut to accept options

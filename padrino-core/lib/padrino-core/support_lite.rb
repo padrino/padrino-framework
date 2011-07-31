@@ -32,6 +32,18 @@ class String
     ActiveSupport::Inflector.pluralize(self)
   end
 
+  # Returns the singular form of the word in the string.
+  #
+  #   "posts".singularize            # => "post"
+  #   "octopi".singularize           # => "octopus"
+  #   "sheep".singularize            # => "sheep"
+  #   "words".singularize            # => "word"
+  #   "the blue mailmen".singularize # => "the blue mailman"
+  #   "CamelOctopi".singularize      # => "CamelOctopus"
+  def singularize
+    ActiveSupport::Inflector.singularize(self)
+  end
+
   # +constantize+ tries to find a declared constant with the name specified
   # in the string. It raises a NameError when the name is not in CamelCase
   # or is not initialized.

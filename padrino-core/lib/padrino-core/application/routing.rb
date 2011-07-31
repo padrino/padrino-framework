@@ -95,10 +95,9 @@ module Padrino
     end
 
     def apply?(request)
-      return true if @args.empty? && @options.empty?
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym
+        when Symbol then request.route_obj && (request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym)
         else             arg === request.path_info
         end
       end || @options.any? { |name, val|
@@ -111,10 +110,12 @@ module Padrino
     end
 
     def to_proc
-      filter = self
-      proc {
-        instance_eval(&filter.block) if filter.apply?(request)
-      }
+      if @args.empty? && @options.empty?
+        block
+      else
+        filter = self
+        proc { instance_eval(&filter.block) if filter.apply?(request) }
+      end
     end
   end
 
@@ -618,7 +619,7 @@ module Padrino
         def process_path_for_parent_params(path, parent_params)
           parent_prefix = parent_params.flatten.compact.uniq.map do |param|
             map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
-            part = "#{map}/:#{param}_id/"
+            part = "#{map}/:#{param.to_s.singularize}_id/"
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?
             part
           end
@@ -784,16 +785,18 @@ module Padrino
           static! if settings.static? && (request.get? || request.head?)
           route!
         rescue Sinatra::NotFound => boom
+          filter! :before
           handle_not_found!(boom)
         rescue ::Exception => boom
+          filter! :before
           handle_exception!(boom)
         ensure
           @_pending_after_filters.each { |filter| instance_eval(&filter)} if @_pending_after_filters
         end
 
         def route!(base=self.class, pass_block=nil)
-          @request.env['padrino.instance'] = self
-          if base.compiled_router and match = base.router.call(@request.env)
+          @request.runner = self
+          if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
                 match[1].each {|k,v| response[k] = v}
