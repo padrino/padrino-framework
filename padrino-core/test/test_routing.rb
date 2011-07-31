@@ -363,7 +363,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal ":json", body
   end
 
-  should "correctly accept . in route" do
+  should "correctly accept '.' in the route" do
     mock_app do
       get "test.php", :provides => [:html, :json] do
         content_type.inspect
@@ -373,9 +373,23 @@ class TestRouting < Test::Unit::TestCase
     assert_equal ":html", body
     get "/test.php.json"
     assert_equal ":json", body
-    get "/test.php?format=json"
-    assert_equal ":json", body
+  end
 
+  should "correctly accept priority of format" do
+    mock_app do
+      get "test.php", :provides => [:html, :json, :xml] do
+        content_type.inspect
+      end
+    end
+
+    get "/test.php"
+    assert_equal ":html", body
+    get "/test.php", {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal ":xml", body
+    get "/test.php?format=json", { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal ":json", body
+    get "/test.php.json?format=html", { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal ":json", body
   end
 
   should "generate routes for format with controller" do
