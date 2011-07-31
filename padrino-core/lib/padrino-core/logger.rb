@@ -89,11 +89,17 @@ module Padrino
     #   :development => { :log_level => :debug, :stream => :stdout }
     #   :test        => { :log_level => :fatal, :stream => :null }
     #
+    # In some cases, configuring the loggers before loading the framework is necessary.
+    # You can do so by setting PADRINO_LOGGERS:
+    #
+    #   PADRINO_LOGGERS = { :staging => { :log_level => :debug, :stream => :to_file }}
+    #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     }
+    Config.merge!(PADRINO_LOGGERS) if defined?(PADRINO_LOGGERS)
 
     # Embed in a String to clear all previous ANSI sequences.
     CLEAR      = "\e[0m"
@@ -132,6 +138,12 @@ module Padrino
     def self.setup!
       config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
       config = Config[config_level]
+
+      unless config
+        warn("No logging configuration for :#{config_level} found, falling back to :production")
+        config = Config[:production]
+      end
+
       stream = case config[:stream]
         when :to_file
           FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
