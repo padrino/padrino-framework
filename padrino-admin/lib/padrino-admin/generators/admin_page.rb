@@ -40,7 +40,7 @@ module Padrino
             template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
             template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
 
-            add_project_module(@orm.name_plural) unless options[:destroy]
+            options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"

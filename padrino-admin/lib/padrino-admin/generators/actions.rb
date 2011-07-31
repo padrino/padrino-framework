@@ -38,6 +38,17 @@ module Padrino
           permission = "    role.project_module :#{controller}, \"/#{controller}\"\n"
           inject_into_file destination_root("/admin/app.rb"),  permission, :after => "access_control.roles_for :admin do |role|\n"
         end
+
+        ##
+        # Remove from access_control permissions
+        #
+        def remove_project_module(controller)
+          path = destination_root("/admin/app.rb")
+          say_status :replace, "admin/app.rb", :red
+          content = File.binread(path)
+          content.gsub!(/^\s+role\.project_module :#{controller}, "\/#{controller}"\n/, '')
+          File.open(path, 'wb') { |f| f.write content }
+        end
       end # Actions
     end # Admin
   end # Generators
