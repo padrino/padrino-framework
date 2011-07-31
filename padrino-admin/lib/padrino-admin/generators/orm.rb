@@ -9,8 +9,8 @@ module Padrino
           name            = name.to_s
           @klass_name     = name.camelize
           @klass          = @klass_name.constantize rescue nil
-          @name_plural    = name.underscore.pluralize
-          @name_singular  = name.underscore
+          @name_singular  = name.underscore.gsub(/^.*\//, '') # convert submodules i.e. FooBar::Jank.all # => jank
+          @name_plural    = @name_singular.pluralize
           @orm            = orm.to_sym
           @columns        = columns
           @column_fields  = column_fields
@@ -18,7 +18,7 @@ module Padrino
         end
 
         def field_type(type)
-          type = :string if type.nil? #Couchrest-Hack to avoid the next line to fail
+          type = :string if type.nil? # couchrest-Hack to avoid the next line to fail
           type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
           case type
             when :integer, :float, :decimal   then :text_field
@@ -42,7 +42,7 @@ module Padrino
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
-        
+
         def dm_column(p)
           case p
           when DataMapper::Property::Text
