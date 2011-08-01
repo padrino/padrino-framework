@@ -666,7 +666,7 @@ module Padrino
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             request.path_info =~ /\.([^\.\/]+)$/
-            url_format        = $1.to_sym if $1
+            url_format        = params[:format].to_sym if params[:format]
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
 
             # per rfc2616-sec14:
@@ -674,9 +674,7 @@ module Padrino
             catch_all = (accepts.delete "*/*" || accepts.empty?)
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
 
-            if params[:format]
-              accept_format = params[:format]
-            elsif !url_format && matching_types.first
+            if !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             elsif catch_all
