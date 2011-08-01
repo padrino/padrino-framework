@@ -1,5 +1,6 @@
-# Defines our PADRINO_LOG_LEVEL
+# Defines our PADRINO_LOGGER constants
 PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
+PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 
 module Padrino
 
@@ -90,16 +91,16 @@ module Padrino
     #   :test        => { :log_level => :fatal, :stream => :null }
     #
     # In some cases, configuring the loggers before loading the framework is necessary.
-    # You can do so by setting PADRINO_LOGGERS:
+    # You can do so by setting PADRINO_LOGGER:
     #
-    #   PADRINO_LOGGERS = { :staging => { :log_level => :debug, :stream => :to_file }}
+    #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
     #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
       :development => { :log_level => :debug, :stream => :stdout },
       :test        => { :log_level => :debug, :stream => :null }
     }
-    Config.merge!(PADRINO_LOGGERS) if defined?(PADRINO_LOGGERS)
+    Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
     # Embed in a String to clear all previous ANSI sequences.
     CLEAR      = "\e[0m"
