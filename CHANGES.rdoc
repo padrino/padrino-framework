@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.1 (Not Yet Released)
+== 0.10.2 (Not Yet Released)
+
+== 0.10.1
 
 * Added a Mongo store for padrino-cache [Thanks to aliem]
 * Adds restful support for parent controller declaration
@@ -16,6 +18,7 @@
 * Fix an error message [Thanks mariozig]
 * Fix doc bug in logger [Thanks Xylakant]
 * Adds host parameter to DM Postgresql Adapter [Thanks to Aigeruth]
+* Cleanup models folder in apps that is no longer used by default
 
 == 0.10.0
 
