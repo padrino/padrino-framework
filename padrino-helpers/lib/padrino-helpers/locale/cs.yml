@@ -17,8 +17,8 @@ cs:
         format: "%n %u"
         unit: "Kč"
         # These three are to override number.format and are optional
-        # separator: ","
-        # delimiter: " "
+        separator: ","
+        delimiter: " "
         precision: 2
 
     # Used in number_to_percentage()

@@ -12,10 +12,9 @@ class TestLocales < Test::Unit::TestCase
       base = base_original[name]['number']['currency']['format']
       assert !base['format'].nil?
       assert !base['unit'].nil?
-      # FIXME: NOT ALL TRANSLATION HAVE THESE VALUES, SHOULD NORMAL?
-      # assert !base['separator'].nil?
-      # assert !base['delimiter'].nil?
-      # assert !base['precision'].nil?
+      assert !base['separator'].nil?
+      assert !base['delimiter'].nil?
+      assert !base['precision'].nil?
     end
   end
 end
