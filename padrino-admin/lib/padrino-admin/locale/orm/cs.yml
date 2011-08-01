@@ -1,4 +1,4 @@
-cz:
+cs:
   activemodel: &activemodel
     errors:
       messages:
@@ -23,4 +23,4 @@ cz:
         even: "musí být sudé číslo"
         record_invalid: "Následující pole obsahují chybně vyplněné údaje: %{errors}"
         content_type: "nepodporovaný formát souboru"
-  activerecord: *activemodel
+  #activerecord: *activemodel

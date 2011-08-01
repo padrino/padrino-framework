@@ -1,4 +1,4 @@
-cz:
+cs:
   date:
     formats:
       # Use the strftime parameters for formats.
@@ -7,6 +7,7 @@ cz:
       default: "%d. %m. %Y"
       short: "%d %b"
       long: "%d. %B %Y"
+      only_day: "%e"
 
     day_names: [Neděle, Pondělí, Úterý, Středa, Čtvrtek, Pátek, Sobota]
     abbr_day_names: [Ne, Po, Út, St, Čt, Pá, So]

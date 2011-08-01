@@ -7,6 +7,7 @@ nl:
       default: "%d-%m-%Y"
       short: "%d %b"
       long: "%d %B %Y"
+      only_day: "%e"
 
     day_names: [zondag, maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag]
     abbr_day_names: [zo, ma, di, wo, do, vr, za]

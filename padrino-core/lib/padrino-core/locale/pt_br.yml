@@ -1,4 +1,4 @@
-it:
+pt_br:
   date:
     formats:
       # Use the strftime parameters for formats.

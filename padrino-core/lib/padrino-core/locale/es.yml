@@ -7,6 +7,7 @@ es:
       default: "%d-%m-%Y"
       short: "%b %d"
       long: "%B %d, %Y"
+      only_day: "%e"
 
     day_names: [Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
     abbr_day_names: [Dom, Lun, Mar, Mie, Jue, Vie, Sab]

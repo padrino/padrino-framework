@@ -7,6 +7,7 @@ hu:
       default: "%Y-%m-%d"
       short: "%b. %d."
       long: "%Y. %B %d."
+      only_day: "%e"
 
     day_names: [vasárnap, hétfő, kedd, szerda, csütörtök, péntek, szombat]
     abbr_day_names: [vas, hét, kedd, sze, csüt, pén, szo]
