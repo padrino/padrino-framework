@@ -7,7 +7,6 @@ module Padrino
     def call(env)
       @app.call(env)
     rescue Exception => e
-      env['padrino.instance'] = 'Not showed, data too long'
       errors, env["rack.errors"] = env["rack.errors"], @@eats_errors
 
       if respond_to?(:prefers_plain_text?) and prefers_plain_text?(env)

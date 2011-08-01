@@ -2,12 +2,7 @@ require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 class Sinatra::Request #:nodoc:
-  attr_accessor :route_obj, :runner
-
-  def runner=(runner)
-    @runner = runner
-    env['padrino.instance'] = runner
-  end
+  attr_accessor :route_obj
 
   def controller
     route_obj && route_obj.controller
@@ -19,7 +14,7 @@ class HttpRouter #:nodoc:
   def rewrite_path_info(env, request); end
 
   def process_destination_path(path, env)
-    env['padrino.instance'].instance_eval do
+    Thread.current['padrino.instance'].instance_eval do
       request.route_obj = path.route
       @_response_buffer = nil
       @params ||= {}
@@ -793,7 +788,7 @@ module Padrino
         end
 
         def route!(base=self.class, pass_block=nil)
-          @request.runner = self
+          Thread.current['padrino.instance'] = self
           if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
