@@ -28,7 +28,6 @@ def setup_orm
   require_dependencies 'ohm', :require => 'ohm'
   require_dependencies 'ohm-contrib', :require => 'ohm/contrib'
   create_file("config/database.rb", ohm)
-  empty_directory('app/models')
 end
 
 OHM_MODEL = (<<-MODEL) unless defined?(OHM_MODEL)

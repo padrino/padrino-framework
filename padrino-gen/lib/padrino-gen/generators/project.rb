@@ -80,29 +80,14 @@ module Padrino
 
       # Finish message
       def finish_message
-        if options[:bundle]
-          text = (<<-TEXT).gsub(/ {10}/,'')
-
-          =================================================================
-          #{name} is ready for development! Next, follow these steps:
-          =================================================================
-          1) cd #{options[:root]}/#{name}
-          =================================================================
-
-          TEXT
-        else
-          text = (<<-TEXT).gsub(/ {10}/,'')
-
-          =================================================================
-          #{name} is ready for development! Next, follow these steps:
-          =================================================================
-          1) cd #{options[:root]}/#{name}
-          2) bundle install
-          =================================================================
-
-          TEXT
-        end
-        say(text)
+        say
+        say "="*65, :green
+        say "#{name} is ready for development!", :green
+        say "="*65, :green
+        say "$ cd #{options[:root]}/#{name}", :bold
+        say "$ bundle install", :bold unless options[:bundle]
+        say "="*65, :green
+        say
       end
     end # Project
   end # Generators

@@ -9,7 +9,7 @@ if defined?(Mongoid)
     # Helper to retrieve a list of models.
     def get_mongoid_models
       documents = []
-      Dir.glob('app/models/*.rb').sort.each do |file|
+      Dir['{app,}/models/*.rb'].sort.each do |file|
         model_path = file[0..-4].split('/')[2..-1]
 
         begin

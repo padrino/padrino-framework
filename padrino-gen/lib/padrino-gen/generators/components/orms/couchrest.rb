@@ -26,7 +26,6 @@ def setup_orm
   require_dependencies 'couchrest_model', :version => '~>1.1.0'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 CR_MODEL = (<<-MODEL) unless defined?(CR_MODEL)

@@ -42,7 +42,6 @@ class TestAppGenerator < Test::Unit::TestCase
       assert_file_exists("#{@apptmp}/sample_project/demo/helpers.rb")
       assert_file_exists("#{@apptmp}/sample_project/demo/controllers.rb")
       assert_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/demo/views/mailers")
       assert_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_match_in_file(/:notifier/,"#{@apptmp}/sample_project/demo/mailers.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/helpers")
@@ -62,8 +61,6 @@ class TestAppGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       silence_logger { generate(:app, 'demo_app', "--root=#{@apptmp}/sample_project") }
       silence_logger { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project", '-a=demoapp') }
-      assert_match_in_file(/DemoApp.mailer :demo/m, "#{@apptmp}/sample_project/demoapp/mailers/demo.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/demoapp/views/mailers/demo")
     end
 
     # only destroys what it generated.

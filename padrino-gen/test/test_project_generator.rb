@@ -67,8 +67,7 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_dir_exists("#{@apptmp}/sample_project/public/images")
       assert_dir_exists("#{@apptmp}/sample_project/public/javascripts")
       assert_dir_exists("#{@apptmp}/sample_project/public/stylesheets")
-      assert_dir_exists("#{@apptmp}/sample_project/app/views/mailers")
-      assert_dir_exists("#{@apptmp}/sample_project/app/views/layouts")
+      # assert_dir_exists("#{@apptmp}/sample_project/app/views/layouts")
       assert_match_in_file(/:notifier/,"#{@apptmp}/sample_project/app/mailers.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/controllers")
@@ -76,7 +75,7 @@ class TestProjectGenerator < Test::Unit::TestCase
 
     should "not create models folder if no orm is chosen" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '--orm=none') }
-      assert_no_dir_exists("#{@apptmp}/sample_project/app/models")
+      assert_no_dir_exists("#{@apptmp}/sample_project/models")
     end
 
     should "not create tests folder if no test framework is chosen" do
@@ -177,7 +176,6 @@ class TestProjectGenerator < Test::Unit::TestCase
         assert_match_in_file(/Sequel.connect/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(%r{sqlite://}, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(%r{project_com}, "#{@apptmp}/project.com/config/database.rb")
-        assert_dir_exists("#{@apptmp}/project.com/app/models")
       end
 
       should "properly generate mysql" do
@@ -210,7 +208,6 @@ class TestProjectGenerator < Test::Unit::TestCase
         assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/ActiveRecord::Base.establish_connection/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-        assert_dir_exists("#{@apptmp}/project.com/app/models")
       end
 
       should "properly generate mysql" do
@@ -250,7 +247,6 @@ class TestProjectGenerator < Test::Unit::TestCase
         assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/DataMapper.setup/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-        assert_dir_exists("#{@apptmp}/project.com/app/models")
       end
 
       should "properly generate for mysql" do
@@ -281,7 +277,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/MongoMapper.database/, "#{@apptmp}/project.com/config/database.rb")
       assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-      assert_dir_exists("#{@apptmp}/project.com/app/models")
     end
 
     should "properly generate for mongoid" do
@@ -291,7 +286,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/Mongoid.database/, "#{@apptmp}/project.com/config/database.rb")
       assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-      assert_dir_exists("#{@apptmp}/project.com/app/models")
     end
 
 
@@ -301,7 +295,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'couchrest_model'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/CouchRest.database!/, "#{@apptmp}/project.com/config/database.rb")
       assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-      assert_dir_exists("#{@apptmp}/project.com/app/models")
     end
 
     should "properly generate for ohm" do
@@ -311,7 +304,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'ohm-contrib', :require => "ohm\/contrib"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/models")
     end
 
     should "properly generate for mongomatic" do
@@ -320,7 +312,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'mongomatic'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, "#{@apptmp}/sample_project/config/database.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/models")
     end
 
     should "properly generate for ripple" do
@@ -329,7 +320,6 @@ class TestProjectGenerator < Test::Unit::TestCase
       assert_match_in_file(/gem 'ripple'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ripple.load_configuration/, "#{@apptmp}/sample_project/config/database.rb")
       assert_match_in_file(/http_port: 8098/, "#{@apptmp}/sample_project/config/riak.yml")
-      assert_dir_exists("#{@apptmp}/sample_project/app/models")
     end
   end
 

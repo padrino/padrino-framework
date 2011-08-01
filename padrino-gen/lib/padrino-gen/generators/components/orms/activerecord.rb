@@ -112,7 +112,6 @@ def setup_orm
   end
   require_dependencies 'activerecord', :require => 'active_record'
   create_file("config/database.rb", ar)
-  empty_directory('app/models')
 end
 
 AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)

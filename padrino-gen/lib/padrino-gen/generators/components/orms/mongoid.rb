@@ -31,7 +31,6 @@ def setup_orm
   require_dependencies 'mongoid'
   require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/
   create_file("config/database.rb", MONGOID.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)

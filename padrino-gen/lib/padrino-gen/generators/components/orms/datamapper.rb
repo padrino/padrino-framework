@@ -50,7 +50,6 @@ def setup_orm
   end
 
   create_file("config/database.rb", dm)
-  empty_directory('app/models')
   insert_hook("DataMapper.finalize", :after_load)
 end
 

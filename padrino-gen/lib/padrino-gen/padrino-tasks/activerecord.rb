@@ -315,7 +315,7 @@ if defined?(ActiveRecord)
     if defined?(I18n)
       desc "Generates .yml files for I18n translations"
       task :translate => :environment do
-        models = Dir["#{Padrino.root}/app/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+        models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
         models.each do |m|
           # Get the model class

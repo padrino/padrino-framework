@@ -12,7 +12,6 @@ def setup_orm
   require_dependencies 'bson_ext', :require => 'mongo'
   require_dependencies 'mongomatic'
   create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 MONGOMATIC_MODEL = (<<-MODEL) unless defined?(MONGOMATIC_MODEL)

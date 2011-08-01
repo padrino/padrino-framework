@@ -30,7 +30,6 @@ def setup_orm
     'sqlite3'
   end
   create_file("config/database.rb", sequel)
-  empty_directory('app/models')
   empty_directory('db/migrate')
 end
 
