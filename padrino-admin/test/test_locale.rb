@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestAdminApplication < Test::Unit::TestCase
+class TestFilters < Test::Unit::TestCase 
   Dir[File.expand_path("../../lib/padrino-admin/locale/admin/*.yml", __FILE__)].each do |file|
     name = File.basename(file, '.yml')
     should "have a vaild #{name} locale for admin" do
