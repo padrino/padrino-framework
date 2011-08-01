@@ -10,7 +10,7 @@ should 'set and get an object' do
   assert_equal "bar", Padrino.cache.get('val').bar
 end
 
-should 'set ang get a nil value' do
+should 'set and get a nil value' do
   Padrino.cache.set('val', nil)
   assert_equal nil, Padrino.cache.get('val')
 end
@@ -119,6 +119,25 @@ begin
   end
 rescue LoadError
   warn "Skipping redis tests"
+end
+
+begin
+  require 'mongo'
+  Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+  class TestMongoStore < Test::Unit::TestCase
+    def setup
+      Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'), {:size => 10, :collection => 'cache'})
+      Padrino.cache.flush
+    end
+
+    def teardown
+      Padrino.cache.flush
+    end
+
+    eval COMMON_TESTS
+  end
+rescue LoadError
+  warn "Skipping Mongo tests"
 end
 
 class TestFileStore < Test::Unit::TestCase
