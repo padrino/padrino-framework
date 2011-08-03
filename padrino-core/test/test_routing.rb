@@ -1445,6 +1445,29 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'okay', body
   end
 
+  should 'return value from params' do
+    mock_app do
+      get("/foo/:bar"){ raise "'bar' should be a string" unless params[:bar].kind_of? String}
+    end
+    assert_nothing_raised do
+      get "/foo/50"
+    end
+  end
+
+  should 'have MethodOverride middleware with more options' do
+    mock_app do
+      put('/', :with => :id, :provides => [:json]) { params[:id] }
+    end
+    post '/hi', {'_method'=>'PUT'}
+    assert_equal 200, status
+    assert_equal 'hi', body
+    post '/hi.json', {'_method'=>'PUT'}
+    assert_equal 200, status
+    assert_equal 'hi', body
+    post '/hi.json'
+    assert_equal 405, status
+  end
+
   should 'parse nested params' do
     mock_app do
       get(:index) { "%s %s" % [params[:account][:name], params[:account][:surname]] }
