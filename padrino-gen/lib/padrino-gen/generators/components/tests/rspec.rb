@@ -1,5 +1,5 @@
-RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
-PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+RSPEC_SETUP ||= (<<-TEST).gsub(/^ {12}/, '')
+PADRINO_ENV ||= 'test'
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 RSpec.configure do |conf|
@@ -14,7 +14,7 @@ def app
 end
 TEST
 
-RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
+RSPEC_CONTROLLER_TEST ||= (<<-TEST).gsub(/^ {12}/, '')
 require 'spec_helper'
 
 describe "!NAME!Controller" do
@@ -28,7 +28,7 @@ describe "!NAME!Controller" do
 end
 TEST
 
-RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
+RSPEC_RAKE ||= (<<-TEST).gsub(/^ {12}/, '')
 require 'rspec/core/rake_task'
 
 spec_tasks = Dir['spec/*/'].map { |d| File.basename(d) }
@@ -44,7 +44,7 @@ desc "Run complete application spec suite"
 task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
 TEST
 
-RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
+RSPEC_MODEL_TEST ||= (<<-TEST).gsub(/^ {12}/, '')
 require 'spec_helper'
 
 describe "!NAME! Model" do
