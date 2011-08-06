@@ -2,6 +2,8 @@
 
 == 0.10.2 (Not Yet Released)
 
+* Added support for TravisCI with build configurations
+
 == 0.10.1
 
 * Added a Mongo store for padrino-cache [Thanks to aliem]
