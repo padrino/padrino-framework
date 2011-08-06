@@ -1,0 +1,15 @@
+# http://about.travis-ci.org/docs/user/build-configuration/
+rvm:
+  - 1.8.7
+  - 1.9.2
+  - rbx
+  - ree
+  - jruby
+notifications:
+  irc: "irc.freenode.org#padrino"
+  recipients:
+    - nesquena@gmail.com
+    - mr.arthur.chiu@gmail.com
+    - joshbuddy@gmail.com
+    - d.dagostino@lipsiasoft.com
+    - florian.gilcher@asquera.de
