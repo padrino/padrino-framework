@@ -1482,7 +1482,7 @@ class TestRouting < Test::Unit::TestCase
     mock_app { set :environment, :development }
     get "/"
     assert_equal 404, status
-    assert_match /Sinatra doesn&rsquo;t know this ditty./, body
+    assert_match %r{(Sinatra doesn&rsquo;t know this ditty.|<h1>Not Found</h1>)}, body
   end
 
   should 'render a custom NotFound page' do
