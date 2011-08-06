@@ -78,7 +78,7 @@ begin
     eval COMMON_TESTS
   end
 rescue LoadError
-  warn "Skipping memcached with dalli library tests"
+  warn "Skipping memcache with dalli library tests"
 end
 
 begin
