@@ -25,9 +25,9 @@ should 'set and get a raw value' do
 end
 
 should "set a value that expires" do
-  Padrino.cache.set(@test_key, 'test', :expires_in => 1)
+  Padrino.cache.set(@test_key, 'test', :expires_in => 2)
   assert_equal 'test', Padrino.cache.get(@test_key)
-  sleep 2
+  sleep 3
   assert_equal nil, Padrino.cache.get(@test_key)
 end
 
