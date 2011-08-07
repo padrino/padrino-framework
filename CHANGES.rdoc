@@ -3,6 +3,7 @@
 == 0.10.2 (Not Yet Released)
 
 * Added support for TravisCI with build configurations
+* Fixes issue with reloader and libxml2 [Thanks farcaller]
 
 == 0.10.1
 
