@@ -902,7 +902,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 406, status
   end
 
-  should "works allow global provides" do
+  should "does not allow global provides" do
     mock_app do
       provides :xml
 
@@ -917,6 +917,39 @@ class TestRouting < Test::Unit::TestCase
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
     assert_equal 'Bar in html', body
+  end
+
+  should "does not allow global provides in controller" do
+    mock_app do
+      controller :base do
+        provides :xml
+
+        get(:foo, "/foo"){ "Foo in #{content_type}" }
+        get(:bar, "/bar"){ "Bar in #{content_type}" }
+      end
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal 'Foo in xml', body
+    get '/foo'
+    assert_equal 'Foo in xml', body
+
+    get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
+    assert_equal 'Bar in html', body
+  end
+
+  should_eventually "map non named routes in controllers" do
+    mock_app do
+      controller :base do
+        get("/foo") { "ok" }
+        get("/bar") { "ok" }
+      end
+    end
+
+    get "/foo"
+    assert ok?
+    get "/bar"
+    assert ok?
   end
 
   should "set content_type to :html for both empty Accept as well as Accept text/html" do
