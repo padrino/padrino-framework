@@ -626,6 +626,20 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo_bar_index", body
   end
 
+  should_eventually "support a reindex action and remove index inside controller" do
+    mock_app do
+      controller :posts do
+        get(:index){ "index" }
+        get(:reindex){ "reindex" }
+      end
+    end
+    get "/posts"
+    assert_equal "index", body
+    get "/posts/reindex"
+    assert_equal "/posts/reindex", @app.url(:posts, :reindex)
+    assert_equal "reindex", body
+  end
+
   should 'use uri_root' do
     mock_app do
       get(:foo){ "foo" }
