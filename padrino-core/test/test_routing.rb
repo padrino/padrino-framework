@@ -1533,6 +1533,18 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "/paginate/10", body
   end
 
+  should 'accept :map and :parent' do
+    mock_app do
+      controller :posts do
+        get :show, :parent => :users, :map => "posts/:id" do
+          "#{params[:user_id]}-#{params[:id]}"
+        end
+      end
+    end
+    get '/users/123/posts/321'
+    assert_equal "123-321", body
+  end
+
   should 'change params in current_path' do
     mock_app do
       get :index, :map => "/paginate/:page" do
