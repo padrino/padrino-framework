@@ -626,7 +626,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "foo_bar_index", body
   end
 
-  should_eventually "support a reindex action and remove index inside controller" do
+  should "support a reindex action and remove index inside controller" do
     mock_app do
       controller :posts do
         get(:index){ "index" }
@@ -938,7 +938,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'Bar in html', body
   end
 
-  should_eventually "map non named routes in controllers" do
+  should "map non named routes in controllers" do
     mock_app do
       controller :base do
         get("/foo") { "ok" }
@@ -946,9 +946,9 @@ class TestRouting < Test::Unit::TestCase
       end
     end
 
-    get "/foo"
+    get "/base/foo"
     assert ok?
-    get "/bar"
+    get "/base/bar"
     assert ok?
   end
 
