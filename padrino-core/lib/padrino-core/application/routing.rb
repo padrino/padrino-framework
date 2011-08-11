@@ -537,9 +537,8 @@ module Padrino
           map = options.delete(:map)
 
           if path.kind_of?(Symbol) # path i.e :index or :show
-            name = path                       # The route name
-            path = map ? map.dup : path.to_s  # The route path
-            path = '/' if path == 'index'
+            name = path                                                # The route name
+            path = map ? map.dup : (path == :index ? '/' : path.to_s)  # The route path
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
