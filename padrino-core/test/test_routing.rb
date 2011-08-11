@@ -37,7 +37,7 @@ class TestRouting < Test::Unit::TestCase
       get %r{/([0-9]+)/} do |num|
        "Your lucky number: #{num} #{params[:captures].first}"
       end
-      get /\/|\/page\/([0-9]+)/ do |num|
+      get /\/page\/([0-9]+)|\// do |num|
         "My lucky number: #{num} #{params[:captures].first}"
       end
     end
