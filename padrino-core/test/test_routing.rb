@@ -432,7 +432,7 @@ class TestRouting < Test::Unit::TestCase
     get "/"
     assert_equal "index", body
     assert_equal "/", @app.url(:index)
-    get "/accounts"
+    get "/accounts/index"
     assert_equal "accounts", body
   end
 
