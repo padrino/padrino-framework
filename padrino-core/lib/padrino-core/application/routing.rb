@@ -537,8 +537,8 @@ module Padrino
           map = options.delete(:map)
 
           if path.kind_of?(Symbol) # path i.e :index or :show
-            name = path                       # The route name
-            path = map ? map.dup : path.to_s  # The route path
+            name = path                                                # The route name
+            path = map ? map.dup : (path == :index ? '/' : path.to_s)  # The route path
           end
 
           if path.kind_of?(String) # path i.e "/index" or "/show"
@@ -586,11 +586,11 @@ module Padrino
 
             # Small reformats
             path.gsub!(%r{/\?$}, '(/)')                    # Remove index path
-            path.gsub!(%r{/?index/?}, '/')                 # Remove index path
             path.gsub!(%r{//$}, '/')                       # Remove index path
             path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
             path.sub!(%r{/(\))?$}, '\\1') if path != "/"   # Remove latest trailing delimiter
             path.gsub!(/\/(\(\.|$)/, '\\1')                # Remove trailing slashes
+            path.squeeze!('/')
           end
 
           # Merge in option defaults
