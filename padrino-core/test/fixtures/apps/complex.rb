@@ -14,7 +14,11 @@ end
 class Complex2Demo < Padrino::Application
   set :reload, true
   get("/old"){ "Old Sinatra Way" }
-  get("/var/:var"){ params.inspect } # variables are fun
+
+  controllers :var do
+    get(:destroy){ params.inspect }
+  end
+
   get("/"){ "The magick number is: 12!" } # Change only the number!!!
 end
 
