@@ -13,11 +13,11 @@ def setup_orm
   db = @app_name.underscore
   require_dependencies 'sequel'
   require_dependencies case options[:adapter]
-  when 'mysql'
-    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
-    sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
-    sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{db}_test\"")
-    'mysql'
+  when 'mysql', 'mysql2'
+    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"#{options[:adapter]}://localhost/#{db}_development\"")
+    sequel.gsub!(/!DB_PRODUCTION!/, "\"#{options[:adapter]}://localhost/#{db}_production\"")
+    sequel.gsub!(/!DB_TEST!/,"\"#{options[:adapter]}://localhost/#{db}_test\"")
+    options[:adapter]
   when 'postgres'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"postgres://localhost/#{db}_production\"")
