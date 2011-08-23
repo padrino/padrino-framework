@@ -182,7 +182,7 @@ module Padrino
         #
         def resolve_template(template_path, options={})
           # Fetch cached template for rendering options
-          template_path = "/#{template_path}" unless template_path.to_s[0] == ?/
+          template_path = template_path.to_s[0] == ?/ ? template_path.to_s : "/#{template_path}"
           rendering_options = [template_path, content_type, locale]
           cached_template = settings.fetch_template_file(rendering_options)
           return cached_template if cached_template
