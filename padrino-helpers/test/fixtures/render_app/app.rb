@@ -42,4 +42,9 @@ class RenderDemo < Padrino::Application
   get '/partial/locals' do
     partial 'template/user', :locals => { :user => RenderUser.new('John'), :extra => "bar" }
   end
+
+  # partial starting with forward slash
+  get '/partial/foward_slash' do
+    partial '/template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
+  end
 end
