@@ -2,7 +2,7 @@ module Padrino
   module Helpers
     module OutputHelpers
 
-      def self.included(base) ## @private
+      def self.included(base) # @private
         base.send(:include, SinatraCurrentEngine) unless base.method_defined?(:current_engine)
       end
 
@@ -12,7 +12,7 @@ module Padrino
       module SinatraCurrentEngine
         attr_reader :current_engine
 
-        def render(engine, *) ## @private
+        def render(engine, *) # @private
           @current_engine, engine_was = engine, @current_engine
           output = super
           @current_engine = engine_was

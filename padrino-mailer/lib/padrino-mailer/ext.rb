@@ -1,5 +1,5 @@
-module Mail ## @private
-  class Message ## @private
+module Mail # @private
+  class Message # @private
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
     attr_reader :template_cache

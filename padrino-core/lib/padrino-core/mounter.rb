@@ -9,7 +9,7 @@ module Padrino
   #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   #
   class Mounter
-    class MounterException < RuntimeError ## @private
+    class MounterException < RuntimeError # @private
     end
 
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host

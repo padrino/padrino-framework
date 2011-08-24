@@ -1,7 +1,7 @@
 module Padrino
   module Helpers
-    module FormBuilder ## @private
-      class AbstractFormBuilder ## @private
+    module FormBuilder # @private
+      class AbstractFormBuilder # @private
         attr_accessor :template, :object
 
         def initialize(template, object, options={})

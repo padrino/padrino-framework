@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/abstract_form_builder') unle
 
 module Padrino
   module Helpers
-    module FormBuilder ## @private
-      class StandardFormBuilder < AbstractFormBuilder ## @private
+    module FormBuilder # @private
+      class StandardFormBuilder < AbstractFormBuilder # @private
 
         ##
         # StandardFormBuilder

@@ -1,5 +1,5 @@
 module Padrino
-  class ApplicationSetupError < RuntimeError ## @private
+  class ApplicationSetupError < RuntimeError # @private
   end
 
   ##
@@ -11,7 +11,7 @@ module Padrino
 
     class << self
 
-      def inherited(base) ## @private
+      def inherited(base) # @private
         logger.devel "Setup #{base}"
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         base.default_configuration!

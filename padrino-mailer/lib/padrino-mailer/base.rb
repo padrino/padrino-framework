@@ -27,7 +27,7 @@ module Padrino
     class Base
       attr_accessor :delivery_settings, :app, :mailer_name, :messages
 
-      def initialize(app, name, &block) ## @private
+      def initialize(app, name, &block) # @private
         @mailer_name = name
         @messages    = {}
         @defaults    = {}
