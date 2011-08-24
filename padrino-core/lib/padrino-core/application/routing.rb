@@ -123,7 +123,7 @@ module Padrino
   #
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
-    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2}
+    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
     class UnrecognizedException < RuntimeError ## @private
     end
