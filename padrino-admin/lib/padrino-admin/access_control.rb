@@ -1,6 +1,6 @@
 module Padrino
   module Admin
-    class AccessControlError < StandardError #:nodoc:
+    class AccessControlError < StandardError ## @private
     end
     ##
     # This module give to a padrino application an access control functionality
@@ -22,7 +22,7 @@ module Padrino
       end
 
       class Base
-        def initialize #:nodoc:
+        def initialize ## @private
           @roles, @authorizations, @project_modules = [], [], []
         end
 
@@ -80,7 +80,7 @@ module Padrino
       class Authorization
         attr_reader :allowed, :denied, :project_modules, :roles
 
-        def initialize(*roles, &block) #:nodoc:
+        def initialize(*roles, &block) ## @private
           @roles           = roles
           @allowed         = []
           @denied          = []
@@ -117,7 +117,7 @@ module Padrino
       class ProjectModule
         attr_reader :name
 
-        def initialize(name, path) #:nodoc:
+        def initialize(name, path) ## @private
           @name, @path = name, path
         end
 

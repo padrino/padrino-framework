@@ -7,7 +7,6 @@ require 'test/unit'
 require 'rack/test'
 require 'rack'
 require 'shoulda'
-require 'phocus'
 
 # Rubies < 1.9 don't handle hashes in the properly order so to prevent
 # this issue for now we remove extra values from mimetypes.

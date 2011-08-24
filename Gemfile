@@ -1,7 +1,5 @@
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
-base_path = File.expand_path(File.dirname(__FILE__), __FILE__)
-
 source :rubygems
 
 group :db do
@@ -18,9 +16,9 @@ group :development do
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
   gem "nokogiri", "1.4.4"
-  gem "rack",  "~> 1.3.0"
-  gem "rake",  ">= 0.8.7"
-  gem "rdoc"
+  gem "rack", "~> 1.3.0"
+  gem "rake", ">= 0.8.7"
+  gem "yard", ">= 0.7.2"
   gem "mocha", ">= 0.9.8"
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",  ">=1.2.8"
@@ -31,7 +29,6 @@ group :development do
   gem "shoulda", ">= 2.10.3"
   gem "uuid", ">= 2.3.1"
   gem "bcrypt-ruby", :require => "bcrypt"
-  gem "phocus"
   gem "builder", ">= 2.1.2"
   platforms :mri_18 do
     gem "rcov", "~> 0.9.8"
@@ -63,10 +60,14 @@ group :cache do
   end
 end
 
-gem "padrino",         :path => "/#{base_path}/padrino"
-gem "padrino-admin",   :path => "/#{base_path}/padrino-admin"
-gem "padrino-cache",   :path => "/#{base_path}/padrino-cache"
-gem "padrino-core",    :path => "/#{base_path}/padrino-core"
-gem "padrino-gen",     :path => "/#{base_path}/padrino-gen"
-gem "padrino-helpers", :path => "/#{base_path}/padrino-helpers"
-gem "padrino-mailer",  :path => "/#{base_path}/padrino-mailer"
+%w[
+   padrino
+   padrino-admin
+   padrino-cache
+   padrino-core
+   padrino-gen
+   padrino-helpers
+   padrino-mailer
+].each do |dep|
+  gem dep, :path => File.join(File.expand_path(File.dirname(__FILE__)), dep)
+end

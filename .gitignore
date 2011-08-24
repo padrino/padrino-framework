@@ -1,4 +1,5 @@
 .bundle
 Gemfile.lock
 .rvmrc
+.yardoc
 *.rbc

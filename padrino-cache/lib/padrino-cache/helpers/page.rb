@@ -54,7 +54,7 @@ module Padrino
           @_cache_key = name
         end
 
-        def self.padrino_route_added(route, verb, path, args, options, block) #:nodoc:
+        def self.padrino_route_added(route, verb, path, args, options, block) ## @private
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {
               if settings.caching?

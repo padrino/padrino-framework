@@ -1,7 +1,7 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-class Sinatra::Request #:nodoc:
+class Sinatra::Request ## @private
   attr_accessor :route_obj
 
   def controller
@@ -9,7 +9,7 @@ class Sinatra::Request #:nodoc:
   end
 end
 
-class HttpRouter #:nodoc:
+class HttpRouter ## @private
   def rewrite_partial_path_info(env, request); end
   def rewrite_path_info(env, request); end
 
@@ -53,7 +53,7 @@ class HttpRouter #:nodoc:
     end
   end
 
-  class Route #:nodoc:
+  class Route ## @private
     attr_reader :before_filters, :after_filters
     attr_accessor :custom_conditions, :use_layout, :controller, :cache
 
@@ -125,7 +125,7 @@ module Padrino
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
     ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2}
 
-    class UnrecognizedException < RuntimeError #:nodoc:
+    class UnrecognizedException < RuntimeError ## @private
     end
 
     ##
