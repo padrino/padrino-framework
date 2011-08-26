@@ -47,6 +47,13 @@ class TestRenderHelpers < Test::Unit::TestCase
     end
   end
 
+  context 'for #partial method taking a path starting with forward slash' do
+    setup { visit '/partial/foward_slash' }
+    should "render partial without throwing an error" do
+      assert_have_selector "h1", :content => "User name is John"
+    end
+  end
+
   context 'for #current_engine method' do
     should 'detect correctly current engine for a padrino application' do
       visit '/current_engine'
