@@ -57,17 +57,16 @@ module Padrino
         PadrinoTasks.init(true)
       end
 
-      desc "console", "Boots up the Padrino application irb console"
+      desc "console", "Boots up the Padrino application pry console"
       def console
         prepare :console
         require File.expand_path("../../version", __FILE__)
         ARGV.clear
         puts "=> Loading #{options.environment} console (Padrino v.#{Padrino.version})"
-        require 'irb'
-        require "irb/completion"
+        require 'pry'
         require File.expand_path('config/boot.rb')
         require File.expand_path('../console', __FILE__)
-        IRB.start
+        Pry.start
       end
 
       desc "generate", "Executes the Padrino generator with given options."

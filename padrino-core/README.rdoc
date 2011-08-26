@@ -265,7 +265,7 @@ check out the {Padrino Development Guide}[http://www.padrinorb.com/guides/develo
 === Terminal Commands
 
 Padrino also comes equipped with multiple useful terminal commands which can be activated to perform
-common tasks such as starting / stopping the application, executing the unit tests or activating an irb session.
+common tasks such as starting / stopping the application, executing the unit tests or activating an pry session.
 
 The following commands are available:
 
@@ -277,7 +277,7 @@ The following commands are available:
   # Stops a daemonized app server
   $ padrino stop
 
-  # Bootup the Padrino console (irb)
+  # Bootup the Padrino console (pry)
   $ padrino console
 
   # Run/List tasks
