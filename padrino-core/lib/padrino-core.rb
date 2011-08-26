@@ -9,7 +9,7 @@ PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
-  class ApplicationLoadError < RuntimeError #:nodoc:
+  class ApplicationLoadError < RuntimeError # @private
   end
 
   class << self

@@ -347,7 +347,7 @@ module Padrino
   end # Logger
 end # Padrino
 
-module Kernel #:nodoc:
+module Kernel # @private
   ##
   # Define a logger available every where in our app
   #

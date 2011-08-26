@@ -6,7 +6,7 @@ module Padrino
   # enhanced layout functionality, locale enabled rendering, among other features.
   #
   module Rendering
-    class TemplateNotFound < RuntimeError #:nodoc:
+    class TemplateNotFound < RuntimeError # @private
     end
 
     ##
@@ -90,7 +90,7 @@ module Padrino
     module InstanceMethods
       attr_reader :current_engine
 
-      def content_type(type=nil, params={}) #:nodoc:
+      def content_type(type=nil, params={}) # @private
         type.nil? ? @_content_type : super(type, params)
       end
 
@@ -121,7 +121,7 @@ module Padrino
 
           # If data is unassigned then this is a likely a template to be resolved
           # This means that no engine was explicitly defined
-          data, engine = *resolve_template(engine, options) if data.nil?
+          data, engine = *resolve_template(engine, options.dup) if data.nil?
 
           # Setup root
           root = settings.respond_to?(:root) ? settings.root : ""

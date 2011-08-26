@@ -1,7 +1,7 @@
 module Padrino
   module Mailer
     module Helpers
-      def self.included(base) #:nodoc:
+      def self.included(base) # @private
         base.extend(ClassMethods)
       end
 
@@ -35,7 +35,7 @@ module Padrino
       end
 
       module ClassMethods
-        def inherited(subclass) #:nodoc:
+        def inherited(subclass) # @private
           @_registered_mailers ||= {}
           super(subclass)
         end

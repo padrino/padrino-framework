@@ -147,7 +147,7 @@ end
 
 module Webrat
   module Logging
-    def logger # :nodoc:
+    def logger # # @private
       @logger = nil
     end
   end

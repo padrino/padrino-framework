@@ -90,7 +90,7 @@ module Padrino
       end
       alias :included :registered
 
-      def padrino_route_added(route, verb, path, args, options, block) #:nodoc
+      def padrino_route_added(route, verb, path, args, options, block) # @private
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)
       end
     end

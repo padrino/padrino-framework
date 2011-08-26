@@ -12,6 +12,7 @@ module Padrino
       #   partial 'photo/item', :engine => :erb
       #
       def partial(template, options={})
+        logger.debug "PARTIAL:  #{template} called" if defined?(logger)
         options.reverse_merge!(:locals => {}, :layout => false)
         path = template.to_s.split(File::SEPARATOR)
         object_name = path[-1].to_sym
