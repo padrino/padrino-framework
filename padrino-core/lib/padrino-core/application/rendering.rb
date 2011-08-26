@@ -121,7 +121,7 @@ module Padrino
 
           # If data is unassigned then this is a likely a template to be resolved
           # This means that no engine was explicitly defined
-          data, engine = *resolve_template(engine, options) if data.nil?
+          data, engine = *resolve_template(engine, options.dup) if data.nil?
 
           # Setup root
           root = settings.respond_to?(:root) ? settings.root : ""
