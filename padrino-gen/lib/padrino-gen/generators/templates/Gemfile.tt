@@ -11,6 +11,11 @@ gem 'rack-flash'
 
 # Test requirements
 
+# Pry
+group :development do
+  gem 'pry'
+  gem 'gist'
+end
 
 <%- if options.dev? -%>
 # Padrino
