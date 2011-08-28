@@ -5,6 +5,8 @@
 * Added support for TravisCI with build configurations
 * Fixes issue with reloader and libxml2 [Thanks farcaller]
 * Fixes cache tests so they don't fail on CI
+* Fix require path in shoulda model test generation [Thanks to futurechimp]
+* Fix require path in model tests to generate correctly if specifing app
 
 == 0.10.1
 
