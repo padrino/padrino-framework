@@ -47,7 +47,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
 
 class !NAME!Test < Test::Unit::TestCase
   context "!NAME! Model" do
