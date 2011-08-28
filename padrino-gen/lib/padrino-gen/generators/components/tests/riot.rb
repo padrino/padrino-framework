@@ -66,7 +66,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 context "!NAME! Model" do
   context 'can be created' do
@@ -95,6 +95,8 @@ end
 
 def generate_model_test(name)
   riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize)
+  path = options[:app] == '.' ? '/..' : '/../..'
+  riot_contents.gsub!(/!PATH!/,path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), riot_contents, :skip => true
 end

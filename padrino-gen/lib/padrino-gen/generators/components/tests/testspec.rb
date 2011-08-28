@@ -42,7 +42,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 TESTSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTSPEC_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 context "!NAME! Model" do
   specify 'can be created' do
@@ -68,6 +68,8 @@ end
 
 def generate_model_test(name)
   tests_contents = TESTSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+  path = options[:app] == '.' ? '/..' : '/../..'
+  tests_contents.gsub!(/!PATH!/,path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), tests_contents, :skip => true
 end
