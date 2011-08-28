@@ -59,6 +59,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
@@ -66,6 +67,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=riot') }
       silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
@@ -73,6 +75,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testspec') }
       silence_logger { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       silence_logger { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
@@ -89,6 +92,7 @@ class TestControllerGenerator < Test::Unit::TestCase
       silence_logger { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
       expected_pattern = /class DemoItemsControllerTest < Test::Unit::TestCase/m
       assert_match_in_file(expected_pattern, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
       assert_file_exists("#{@apptmp}/sample_project/test/subby/controllers/demo_items_controller_test.rb")
     end
 
