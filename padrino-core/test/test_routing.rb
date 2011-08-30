@@ -1573,7 +1573,7 @@ class TestRouting < Test::Unit::TestCase
     assert_match /not found/, body
   end
 
-  should_eventually 'recognize paths' do
+  should 'recognize paths' do
     mock_app do
       controller :foo do
         get(:bar, :map => "/my/:id/custom-route") { }

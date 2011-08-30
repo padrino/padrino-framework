@@ -353,9 +353,8 @@ module Padrino
       end
 
       def recognize_path(path)
-        if response = @router.recognize(Rack::MockRequest.env_for(path))
-          [response.path.route.named, response.params]
-        end
+        responses = @router.recognize(Rack::MockRequest.env_for(path))
+        [responses[0].path.route.named, responses[0].params]
       end
 
       ##
