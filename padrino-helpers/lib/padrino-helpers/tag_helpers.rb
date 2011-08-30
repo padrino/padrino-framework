@@ -40,9 +40,10 @@ module Padrino
       #
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
+        # TODO: add escape_html here.
         content = content.join("\n") if content.respond_to?(:join)
         identity_tag_attributes.each { |attr| options[attr] = attr.to_s if options[attr]  }
-        html_attrs = options.map { |a, v| v.nil? || v == false ? nil : "#{a}=\"#{v}\"" }.compact.join(" ")
+        html_attrs = options.map { |a, v| v.nil? || v == false ? nil : "#{a}=\"#{Rack::Utils.escape_html(v)}\"" }.compact.join(" ")
         base_tag = (html_attrs.present? ? "<#{name} #{html_attrs}" : "<#{name}")
         base_tag << (open_tag ? ">" : (content ? ">#{content}</#{name}>" : " />"))
       end

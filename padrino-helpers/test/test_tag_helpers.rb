@@ -34,6 +34,11 @@ class TestTagHelpers < Test::Unit::TestCase
       actual_html = tag(:p, :class => 'demo', :open => true)
       assert_equal "<p class=\"demo\">", actual_html
     end
+
+    should "escape html" do
+      actual_html = tag(:br, :class => 'Example "bar"')
+      assert_equal "<br class=\"Example &quot;bar&quot;\" />", actual_html
+    end
   end
 
   context 'for #content_tag method' do
