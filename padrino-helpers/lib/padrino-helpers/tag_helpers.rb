@@ -2,6 +2,15 @@ module Padrino
   module Helpers
     module TagHelpers
       ##
+      # Tag values escaped to html entities
+      #
+      ESCAPE_VALUES = {
+        "<" => "&lt;",
+        ">" => "&gt;",
+        '"' => "&quot;"
+      }
+
+      ##
       # Creates an html input field with given type and options
       #
       # ==== Examples
@@ -40,10 +49,9 @@ module Padrino
       #
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
-        # TODO: add escape_html here.
         content = content.join("\n") if content.respond_to?(:join)
         identity_tag_attributes.each { |attr| options[attr] = attr.to_s if options[attr]  }
-        html_attrs = options.map { |a, v| v.nil? || v == false ? nil : "#{a}=\"#{Rack::Utils.escape_html(v)}\"" }.compact.join(" ")
+        html_attrs = options.map { |a, v| v.nil? || v == false ? nil : "#{a}=\"#{escape_value(v)}\"" }.compact.join(" ")
         base_tag = (html_attrs.present? ? "<#{name} #{html_attrs}" : "<#{name}")
         base_tag << (open_tag ? ">" : (content ? ">#{content}</#{name}>" : " />"))
       end
@@ -54,6 +62,13 @@ module Padrino
         #
         def identity_tag_attributes
           [:checked, :disabled, :selected, :multiple]
+        end
+
+        ##
+        # Escape tag values to their HTML/XML entities.
+        #
+        def escape_value(string)
+          string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)){|c| ESCAPE_VALUES[c] }
         end
     end # TagHelpers
   end # Helpers
