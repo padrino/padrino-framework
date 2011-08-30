@@ -660,7 +660,6 @@ module Padrino
           @_use_format = true
           condition do
             mime_types        = types.map { |t| mime_type(t) }
-            request.path_info =~ /\.([^\.\/]+)$/
             url_format        = params[:format].to_sym if params[:format]
             accepts           = request.accept.map { |a| a.split(";")[0].strip }
 
