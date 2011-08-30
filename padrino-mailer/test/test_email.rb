@@ -68,7 +68,7 @@ class TestEmail < Test::Unit::TestCase
       assert_equal ['padrino@me.com'],    email.from
       assert_equal ['padrino@you.com'],   email.to
       assert_equal 'Hello there Padrino', email.subject
-      assert_equal 'This is a body of text from a template', email.body.to_s
+      assert_equal 'This is a body of text from a template', email.body.to_s.chomp
     end
 
     should 'send emails with scoped mailer defaults' do
@@ -93,7 +93,7 @@ class TestEmail < Test::Unit::TestCase
       assert_equal ['padrino@from.com'],    email.from, "should have used default value"
       assert_equal ['padrino@different.com'],   email.to, "should have overwritten default value"
       assert_equal 'Hello there again Padrino', email.subject
-      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s
+      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
 
     should 'send emails with app mailer defaults' do
@@ -117,7 +117,7 @@ class TestEmail < Test::Unit::TestCase
       assert_equal ['padrino@from.com'],    email.from, "should have used default value"
       assert_equal ['padrino@different.com'],   email.to, "should have overwritten default value"
       assert_equal 'This is a test', email.subject
-      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s
+      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
 
     should 'send emails without layout' do
@@ -142,7 +142,7 @@ class TestEmail < Test::Unit::TestCase
       assert_equal ['padrino@me.com'],    email.from
       assert_equal ['padrino@you.com'],   email.to
       assert_equal 'Hello there Padrino', email.subject
-      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s
+      assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
       assert_match /TestMailer/, email.delivery_method.to_s
     end
 

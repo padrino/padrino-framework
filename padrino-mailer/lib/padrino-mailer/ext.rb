@@ -228,7 +228,7 @@ module Mail # @private
           part do |p|
             p.content_type(format)
             p.send(:render, engine, data, options, locals, &block)
-            add_multipart_alternate_header unless html_part.blank?
+            add_multipart_alternate_header if html_part.present? || provides.include?(:html)
           end
         end
         # Setup the body if we don't have provides
