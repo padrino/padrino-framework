@@ -769,7 +769,11 @@ module Padrino
       #   end
       #
       def content_type(type=nil, params={})
-        type.nil? ? @_content_type : super(type, params)
+        unless type.nil?
+          super(type, params)
+          @_content_type = type
+        end
+        @_content_type
       end
 
       private

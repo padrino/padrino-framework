@@ -91,7 +91,11 @@ module Padrino
       attr_reader :current_engine
 
       def content_type(type=nil, params={}) # @private
-        type.nil? ? @_content_type : super(type, params)
+        unless type.nil?
+          super(type, params)
+          @_content_type = type
+        end
+        @_content_type
       end
 
       private
@@ -108,7 +112,7 @@ module Padrino
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          return engine.to_json if engine.is_a?(Hash)
+          content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash)
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }

@@ -244,6 +244,24 @@ class TestRouting < Test::Unit::TestCase
     assert_equal 'json', body
   end
 
+  should "set content_type to :json if render => :json" do
+    mock_app do
+      get("/foo"){ render :foo => :bar }
+    end
+
+    get '/foo'
+    assert_equal 'application/json;charset=utf-8', content_type
+  end
+
+  should 'set and get content_type' do
+    mock_app do
+      get("/foo"){ content_type(:json); content_type.to_s }
+    end
+    get "/foo"
+    assert_equal 'application/json', content_type
+    assert_equal 'json', body
+  end
+
   should "send the appropriate number of params" do
     mock_app do
       get('/id/:user_id', :provides => [:json]) { |user_id| user_id}
