@@ -248,14 +248,14 @@ module Padrino
           options = args.extract_options!
 
           # Controller defaults
-          @_controller, original_controller = args, @_controller
-          @_parents,    original_parent     = options.delete(:parent), @_parents
-          @_provides,   original_provides   = options.delete(:provides), @_provides
+          @_controller, original_controller = args,                        @_controller
+          @_parents,    original_parent     = options.delete(:parent),     @_parents
+          @_provides,   original_provides   = options.delete(:provides),   @_provides
           @_use_format, original_use_format = options.delete(:use_format), @_use_format
-          @_cache,      original_cache      = options.delete(:cache), @_cache
-          @_map,        original_map        = options.delete(:map), @_map
+          @_cache,      original_cache      = options.delete(:cache),      @_cache
+          @_map,        original_map        = options.delete(:map),        @_map
           @_conditions, original_conditions = options.delete(:conditions), @_conditions
-          @_defaults,   original_defaults   = options, @_defaults
+          @_defaults,   original_defaults   = options,                     @_defaults
 
           # Application defaults
           @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
@@ -268,9 +268,9 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults
-          @_controller, @_parents, @_cache = original_controller, original_parent, original_cache
-          @_defaults, @_provides, @_map  = original_defaults, original_provides, original_map
-          @_conditions, @_use_format = original_conditions, original_use_format
+          @_controller, @_parents,  @_cache = original_controller, original_parent,   original_cache
+          @_defaults,   @_provides, @_map   = original_defaults,   original_provides, original_map
+          @_conditions, @_use_format        = original_conditions, original_use_format
         else
           include(*args) if extensions.any?
         end
