@@ -7,7 +7,7 @@ rvm:
   - ruby-head
   - ree
   - rbx-2.0
-#  - jruby
+  - jruby
 notifications:
   irc: "irc.freenode.org#padrino"
   recipients:

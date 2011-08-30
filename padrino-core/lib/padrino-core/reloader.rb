@@ -98,7 +98,10 @@ module Padrino
       # We lock dependencies sets to prevent reloading of protected constants
       #
       def lock!
-        klasses = ObjectSpace.classes.map { |klass| klass.name.to_s.split("::")[0] }.uniq
+        # rescue next is a workaround on jruby error:
+        # JavaUtilities.java:54:in `get_proxy_or_package_under_package'
+        # javasupport/java.rb:51:in `method_missing'
+        klasses = ObjectSpace.classes.map { |klass| klass.name.to_s.split("::")[0] rescue next }.uniq
         klasses = klasses | Padrino.mounted_apps.map { |app| app.app_class }
         Padrino::Reloader.exclude_constants.concat(klasses)
       end
