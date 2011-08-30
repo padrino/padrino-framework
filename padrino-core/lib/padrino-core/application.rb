@@ -54,11 +54,12 @@ module Padrino
         logger.devel "Reloading #{self}"
         @_dependencies = nil # Reset dependencies
         reset! # Reset sinatra app
-        reset_routes! # Remove all existing user-defined application routes
+        reset_router! # Reset all routes
         Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
-        require_dependencies # Reload dependencies
         register_initializers # Reload our middlewares
+        require_dependencies # Reload dependencies
         default_filters! # Reload filters
+        default_routes!  # Reload default routes
         default_errors!  # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
       end
