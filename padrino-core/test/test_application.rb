@@ -78,6 +78,30 @@ class TestApplication < Test::Unit::TestCase
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal "Foo in html", body
     end # content_type to :html
-  end # application functionality
 
+    context "errors" do
+      should "haven't mapped errors on development" do
+        mock_app { get('/'){ 'HI' } }
+        get "/"
+        assert @app.errors.empty?
+      end
+
+      should "have mapped errors on production" do
+        mock_app { set :environment, :production; get('/'){ 'HI' } }
+        get "/"
+        assert_equal 1, @app.errors.size
+      end
+
+      should "overide errors" do
+        mock_app do
+          set :environment, :production
+          get('/'){ raise }
+          error(::Exception){ 'custom error' }
+        end
+        get "/"
+        assert_equal 1, @app.errors.size
+        assert_equal 'custom error', body
+      end
+    end
+  end # application functionality
 end

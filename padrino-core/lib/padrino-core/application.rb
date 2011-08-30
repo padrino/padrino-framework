@@ -217,7 +217,7 @@ module Padrino
               response.status = 500
               content_type 'text/html'
               '<h1>Internal Server Error</h1>'
-            end
+            end unless errors.has_key?(::Exception)
           end
         end
 
