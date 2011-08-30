@@ -56,9 +56,10 @@ group :cache do
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
   end
-  platform :jruby do
-    gem "jruby-memcache-client"
-  end
+  # It seems not compat with memcached.
+  # platform :jruby do
+  #   gem "jruby-memcache-client"
+  # end
 end
 
 %w[
