@@ -1,3 +1,4 @@
+# rake bump[X.X.X] && rake publish
 require 'rubygems'  unless defined?(Gem)
 require 'fileutils' unless defined?(FileUtils)
 require 'rake'
@@ -26,7 +27,7 @@ end
 desc "Run 'install' for all projects"
 task :install do
   GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { sh_rake(name) }
+    Dir.chdir(dir) { sh_rake(:install) }
   end
 end
 
@@ -60,6 +61,11 @@ task :bump, [:version] do |t, args|
   Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
 end
 
+desc "Commits all staged files"
+task :commit, [:message] do |t, args|
+  sh %Q{git commit -a -m "#{args.message}"}
+end
+
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]
 
@@ -87,7 +93,7 @@ task :test do
   # Omit the padrino metagem since no tests there
   GEM_PATHS[0..-2].each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"#, :verbose => true
+    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"
   end
 end
 
