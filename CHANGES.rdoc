@@ -4,12 +4,12 @@
 
 * NEW support for TravisCI with build configurations
 * NEW support of mysql2 when using sequel as adapter (@rafaelss)
-* NEW #636 print which views are called in log when in development mode (@minikomi)
+* NEW #636[] print which views are called in log when in development mode (@minikomi)
 * NEW support of ActiveRecord 3.1 and ActiveSupport 3.1
 * FIX #624 potential issue with libxml-ruby (@farcaller)
 * FIX #618 allow to map routes using "index" reserved word
 * FIX #633 RACK_ENV now is respected also using bundled server
-* FIX rendering error for partials when they start with a forward slash @philly-mac
+* FIX rendering error for partials when they start with a forward slash (@philly-mac)
 * FIX all our sources files now are vim friendly
 * FIX preserve the original options when resolving a template (@Xylakant)
 * FIX bad path in shoulda test generator (@futurechimp)
