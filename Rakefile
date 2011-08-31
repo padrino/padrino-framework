@@ -38,12 +38,9 @@ end
 
 desc "Clean pkg and other stuff"
 task :clean do
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir) do
-      %w[tmp pkg coverage].each { |dir| FileUtils.rm_rf dir }
-    end
+  GEM_PATHS.each do |g|
+    %w[tmp pkg coverage].each { |dir| sh 'rm -rf %s' % File.join(g, dir) }
   end
-  Dir["**/*.gem"].each { |gem| FileUtils.rm_rf gem }
 end
 
 desc "Clean pkg and other stuff"
@@ -119,5 +116,5 @@ desc "Publish doc on padrinorb.com/api"
 task :pdoc => :doc do
   say "Publishing doc on padrinorb.com ..."
   sh "scp -r doc/* root@srv2.lipsiasoft.biz:/mnt/www/apps/padrino/public/api/"
-  FileUtils.rm_rf "doc"
+  sh "rm -rf doc"
 end

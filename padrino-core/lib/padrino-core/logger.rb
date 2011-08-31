@@ -104,23 +104,14 @@ module Padrino
 
     # Embed in a String to clear all previous ANSI sequences.
     CLEAR      = "\e[0m"
-    # The start of an ANSI bold sequence.
     BOLD       = "\e[1m"
-    # Set the terminal's foreground ANSI color to black.
     BLACK      = "\e[30m"
-    # Set the terminal's foreground ANSI color to red.
     RED        = "\e[31m"
-    # Set the terminal's foreground ANSI color to green.
     GREEN      = "\e[32m"
-    # Set the terminal's foreground ANSI color to yellow.
     YELLOW     = "\e[33m"
-    # Set the terminal's foreground ANSI color to blue.
     BLUE       = "\e[34m"
-    # Set the terminal's foreground ANSI color to magenta.
     MAGENTA    = "\e[35m"
-    # Set the terminal's foreground ANSI color to cyan.
     CYAN       = "\e[36m"
-    # Set the terminal's foreground ANSI color to white.
     WHITE      = "\e[37m"
 
     # Colors for levels
@@ -245,7 +236,6 @@ module Padrino
     #
     Levels.each_pair do |name, number|
       class_eval <<-LEVELMETHODS, __FILE__, __LINE__
-
       # Appends a message to the log if the log level is at least as high as
       # the log level of the logger.
       #
