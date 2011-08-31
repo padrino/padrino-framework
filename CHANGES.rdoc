@@ -23,13 +23,6 @@
 * [FIX #631] reloading futzing with the query parameters [Thanks @chromaticbum]
 * [FIX] recognize_path now is compatible with http_router >0.10
 
-
-
-* Fixes issue with reloader and libxml2 [Thanks farcaller]
-* Fixes cache tests so they don't fail on CI
-* Fix require path in shoulda model test generation [Thanks to futurechimp]
-* Fix require path in model tests to generate correctly if specifing app
-
 == 0.10.1
 
 * Added a Mongo store for padrino-cache [Thanks to aliem]
