@@ -6,6 +6,7 @@
 * NEW support of mysql2 when using sequel as adapter (@rafaelss)
 * NEW #636 print which views are called in log when in development mode (@minikomi)
 * NEW support of ActiveRecord 3.1 and ActiveSupport 3.1
+* NEW yard doc available {here}[http://www.padrinorb.com/api/index.html]
 * FIX #624 potential issue with libxml-ruby (@farcaller)
 * FIX #618 allow to map routes using "index" reserved word
 * FIX #633 RACK_ENV now is respected also using bundled server
