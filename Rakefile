@@ -24,6 +24,11 @@ def sh_rake(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
 
+def say(text, color=:magenta)
+  n = { :bold => 1, :red => 31, :green => 32, :yellow => 33, :blue => 34, :magenta => 35 }.fetch(color, 0)
+  puts "\e[%dm%s\e[0m" % [n, text]
+end
+
 desc "Run 'install' for all projects"
 task :install do
   GEM_PATHS.each do |dir|
@@ -48,7 +53,7 @@ end
 
 desc "Displays the current version"
 task :version do
-  puts "Current version: #{Padrino.version}"
+  say "Current version: #{Padrino.version}"
 end
 
 desc "Bumps the version number based on given version"
@@ -56,14 +61,9 @@ task :bump, [:version] do |t, args|
   raise "Please specify version=x.x.x !" unless args.version
   version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
   version_text = File.read(version_path).sub(/VERSION = '[\d\.]+'/, "VERSION = '#{args.version}'")
-  puts "Updating Padrino to version #{args.version}"
-  File.open(version_path, 'w') { |f| f.puts version_text }
-  Rake::Task['commit'].invoke("Bumped version to #{args.version.to_s}")
-end
-
-desc "Commits all staged files"
-task :commit, [:message] do |t, args|
-  sh %Q{git commit -a -m "#{args.message}"}
+  say "Updating Padrino to version #{args.version}"
+  File.open(version_path, 'w') { |f| f.write version_text }
+  sh 'git commit -a -m "Bumped version to %s"' % args.version
 end
 
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
@@ -71,9 +71,9 @@ task :fresh => [:uninstall, :install, :clean]
 
 desc "Pushes repository to GitHub"
 task :push do
-  puts "Updating submodules"
+  say "Updating submodules"
   sh "git submodule foreach git pull"
-  puts "Pushing to github..."
+  say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
   sh "git push origin #{Padrino.version}"
@@ -81,7 +81,7 @@ end
 
 desc "Release all padrino gems"
 task :publish => :push do
-  puts "Pushing to rubygems..."
+  say "Pushing to rubygems..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { sh_rake("release") }
   end
@@ -117,7 +117,7 @@ end
 
 desc "Publish doc on padrinorb.com/api"
 task :pdoc => :doc do
-  puts "Publishing doc on padrinorb.com ..."
+  say "Publishing doc on padrinorb.com ..."
   sh "scp -r doc/* root@srv2.lipsiasoft.biz:/mnt/www/apps/padrino/public/api/"
   FileUtils.rm_rf "doc"
 end
