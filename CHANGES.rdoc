@@ -2,7 +2,29 @@
 
 == 0.10.2 (Not Yet Released)
 
-* Added support for TravisCI with build configurations
+* [NEW] support for TravisCI with build configurations
+* [NEW] support of mysql2 when using sequel as adapter [Thanks @rafaelss]
+* [NEW #636] print which views are called in log when in development mode [Thanks @minikomi]
+* [NEW] support of ActiveRecord 3.1 and ActiveSupport 3.1
+* [FIX #624] potential issue with libxml-ruby [Thanks @farcaller]
+* [FIX #618] allow to map routes using "index" reserved word
+* [FIX #633] RACK_ENV now is respected also using bundled server
+* [FIX] rendering error for partials when they start with a forward slash [Thanks @philly-mac]
+* [FIX] all our sources files now are vim friendly
+* [FIX] preserve the original options when resolving a template [Thanks @Xylakant]
+* [FIX] bad path in shoulda test generator [Thanks @futurechimp]
+* [FIX] require path in model tests to generate correctly if specifing app
+* [FIX #647] allow to override view errors
+* [FIX #646] compat with ActiveRecord >3.0.10
+* [FIX #381] escape "<> from tag helpers values
+* [FIX #639] prevent XSS from admin login [Thanks @eikes]
+* [FIX #620] render :json => obj now set content_type to 'application/json;charset=utf-8'
+* [FIX #575] when using html parts now mailer content type is 'multipart/alternative'
+* [FIX #631] reloading futzing with the query parameters [Thanks @chromaticbum]
+* [FIX] recognize_path now is compatible with http_router >0.10
+
+
+
 * Fixes issue with reloader and libxml2 [Thanks farcaller]
 * Fixes cache tests so they don't fail on CI
 * Fix require path in shoulda model test generation [Thanks to futurechimp]

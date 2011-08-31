@@ -50,13 +50,13 @@ group :cache do
   platforms :mri do
     gem "bson_ext",  ">= 1.3.1"
     gem 'dalli',     ">= 1.0.2"
-    # TODO enable and fix in travis-ci
+    # TODO: enable and fix in travis-ci
     # gem "memcached", ">= 0.20.1"
   end
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
   end
-  # It seems not compat with memcached.
+  # TODO: It seems not compat with memcached.
   # platform :jruby do
   #   gem "jruby-memcache-client"
   # end

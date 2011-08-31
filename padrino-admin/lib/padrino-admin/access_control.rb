@@ -1,3 +1,5 @@
+require 'active_support/core_ext/class/attribute_accessors'
+
 module Padrino
   module Admin
     class AccessControlError < StandardError # @private

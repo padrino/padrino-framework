@@ -14,7 +14,7 @@ end
 
 SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 42974248119442954296506819487826858073299355489875571462368508735684637509971!' # Change only the number!!!
+    'The magick number is: 724274705032786548110472817755585178605481536388041566742570203174924198689!' # Change only the number!!!
   end
 
   get "/rand" do
