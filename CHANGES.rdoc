@@ -2,11 +2,25 @@
 
 == 0.10.2 (Not Yet Released)
 
+* Major fix to route reloading problem [Thanks chromaticbum!]
+* Fixes issue with routes that contain the word 'index'
 * Added support for TravisCI with build configurations
 * Fixes issue with reloader and libxml2 [Thanks farcaller]
+* Adds support for mysql2 when using sequel as adapter [Thanks rafaelss]
 * Fixes cache tests so they don't fail on CI
 * Fix require path in shoulda model test generation [Thanks to futurechimp]
-* Fix require path in model tests to generate correctly if specifing app
+* Fix require path in model tests to generate correctly if specifying app
+* Default content type for mailer has been corrected
+* Rendering a hash i.e render :json => obj is now properly set as json
+* Protect admin login from XSS attacks
+* Escape certain html entities when writing html tags
+* Fixes error block handling for ::Exception
+* Fix model test_config require when not using default top level
+* Outputs the partials that are rendered in development mode [Thanks minikomi]
+* Preserve the original options when resolving a template [Thanks Xylakant]
+* Moved from rdoc documentation to yard
+* Fix issue with not respecting RACK_ENV in cli
+* Fixes issue when rendering partials with a forward slash [Thanks to philly-mac]
 
 == 0.10.1
 
