@@ -1,0 +1,16 @@
+lv:
+  padrino:
+    admin:
+      save: Saglabāt
+      cancel: Atcelt
+      list: Saraksts
+      edit: Labot
+      new: Jauns
+      show: Parādīt
+      delete: Dzēst
+      confirm: Vai esat pārliecināts?
+      created_at: Izveidots
+      all: Viss
+      profile: Profils
+      settings: Uzstādījumi
+      logout: Iziet
