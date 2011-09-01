@@ -16,7 +16,7 @@ app.use Rack::Less,
 LESS
 
 def setup_stylesheet
-  require_dependencies 'less', 'rack-less'
+  require_dependencies 'rack-less'
   initializer :less, LESS_INIT
   empty_directory destination_root('/app/stylesheets')
 end

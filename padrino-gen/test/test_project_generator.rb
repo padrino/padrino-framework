@@ -510,7 +510,6 @@ class TestProjectGenerator < Test::Unit::TestCase
 
     should "properly generate for less" do
       buffer = silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=less') }
-      assert_match_in_file(/gem 'less'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'rack-less'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/lib/less_init.rb")
       assert_match_in_file(/register LessInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
