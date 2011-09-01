@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.2 (Not Yet Released)
+== 0.10.3 (Not Yet Released)
+
+== 0.10.2
 
 * NEW support for TravisCI with build configurations
 * NEW support of mysql2 when using sequel as adapter (@rafaelss)
@@ -22,7 +24,7 @@
 * FIX #620 render :json => obj now set content_type to 'application/json;charset=utf-8'
 * FIX #575 when using html parts now mailer content type is 'multipart/alternative'
 * FIX #631 reloading futzing with the query parameters (Hollin Wilkins & Dave Willett @ TrueCar in San Francisco)
-* FIX recognize_path now is compatible with http_router >0.10
+* FIX recognize_path now is compatible with http_router > 0.10
 
 == 0.10.1
 
