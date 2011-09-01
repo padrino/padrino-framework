@@ -12,7 +12,7 @@ module Padrino
       #
       #   email do
       #     to      @user.email
-      #     from    "awesomeness@example.com",
+      #     from    "awesomeness@example.com"
       #     subject "Welcome to Awesomeness!"
       #     locals  :a => a, :b => b
       #     render  'path/to/my/template'
@@ -96,7 +96,7 @@ module Padrino
         #
         #   MyApp.email do
         #     to @user.email
-        #     from "awesomeness@example.com",
+        #     from "awesomeness@example.com"
         #     subject "Welcome to Awesomeness!"
         #     body 'path/to/my/template', :locals => { :a => a, :b => b }
         #   end
