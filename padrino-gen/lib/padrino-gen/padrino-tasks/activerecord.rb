@@ -476,6 +476,12 @@ if defined?(ActiveRecord)
           hash
         end
 
+        # Remove fields from db no longer in schema
+        (fields_in_db.keys - fields_in_schema.keys & fields_in_db.keys).each do |field|
+          column = fields_in_db[field]
+          remove_column table_name, column.name
+        end
+
         # Add fields to db new to schema
         (fields_in_schema.keys - fields_in_db.keys).each do |field|
           column  = fields_in_schema[field]
@@ -483,12 +489,6 @@ if defined?(ActiveRecord)
           options[:default] = column.default if !column.default.nil?
           options[:null]    = column.null    if !column.null.nil?
           add_column table_name, column.name, column.type.to_sym, options
-        end
-
-        # Remove fields from db no longer in schema
-        (fields_in_db.keys - fields_in_schema.keys & fields_in_db.keys).each do |field|
-          column = fields_in_db[field]
-          remove_column table_name, column.name
         end
 
         (fields_in_schema.keys & fields_in_db.keys).each do |field|
