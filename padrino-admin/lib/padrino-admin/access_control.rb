@@ -59,6 +59,39 @@ module Padrino
         ##
         # Return true if the given account is allowed to see the given path.
         #
+        # @example Hiding a disallowed link from a user
+        #
+        #     # File: config/apps.rb
+        #     # [...]
+        #     Padrino.mount('Admin').to('/admin')
+        #     
+        #     # File: admin/app.rb
+        #     class Admin < Padrino::Application
+        #       # [...]
+        #       register Padrino::Admin::AccessControl
+        #       # [...]
+        #     
+        #       # Goals:
+        #       # * Admins can manage widgets and accounts
+        #       # * Workers can only manage widgets
+        #     
+        #       access_control.roles_for :admin do |role|
+        #         role.project_module :accounts, '/accounts'
+        #         role.project_module :widgets, '/widgets'
+        #       end
+        #     
+        #       access_control.roles_for :worker do |role|
+        #         role.project_module :widgets, '/widgets'
+        #       end
+        #     end
+        #     
+        #     # File: admin/views/layouts/application.html.erb
+        #     # NOTE The un-mounted path is used ('/accounts' instead of '/admin/accounts')
+        #     <% if access_control.allowed?(current_account, '/accounts') %>
+        #       # Admins see the "Profile" link, but Workers do not
+        #       <%= link_to 'Profile', url(:accounts, :edit, :id => current_account.id) %>
+        #     <% end %>
+        #
         def allowed?(account=nil, path=nil)
           path = "/" if path.blank?
           role = account.role.to_sym rescue nil
