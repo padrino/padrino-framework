@@ -1,6 +1,6 @@
 module Padrino
-  ##
-  # This module extend Sinatra::ShowExceptions adding Padrino as "Framework"
+  #
+  # This module extend Sinatra::ShowExceptions adding Padrino as "Framework".
   #
   class ShowExceptions < Sinatra::ShowExceptions
     private

@@ -1,4 +1,4 @@
-##
+#
 # Manages current Padrino version for use in gem generation.
 #
 # We put this in a separate file so you can get padrino version
@@ -6,8 +6,12 @@
 #
 module Padrino
   VERSION = '0.10.2' unless defined?(Padrino::VERSION)
-  ##
-  # Return the current Padrino version
+
+  #
+  # The current Padrino version.
+  #
+  # @return [String]
+  #   The version number.
   #
   def self.version
     VERSION
