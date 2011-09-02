@@ -1,7 +1,7 @@
 require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
-class Sinatra::Request # @private
+class Sinatra::Request
   attr_accessor :route_obj
 
   def controller
@@ -9,7 +9,7 @@ class Sinatra::Request # @private
   end
 end
 
-class HttpRouter # @private
+class HttpRouter
   def rewrite_partial_path_info(env, request); end
   def rewrite_path_info(env, request); end
 
@@ -114,21 +114,22 @@ module Padrino
     end
   end
 
-  ##
-  # Padrino provides advanced routing definition support to make routes and url generation much easier.
-  # This routing system supports named route aliases and easy access to url paths.
-  # The benefits of this is that instead of having to hard-code route urls into every area of your application,
-  # now we can just define the urls in a single spot and then attach an alias which can be used to refer
-  # to the url throughout the application.
+  #
+  # Padrino provides advanced routing definition support to make routes and
+  # url generation much easier. This routing system supports named route
+  # aliases and easy access to url paths. The benefits of this is that instead
+  # of having to hard-code route urls into every area of your application, now
+  # we can just define the urls in a single spot and then attach an alias
+  # which can be used to refer to the url throughout the application.
   #
   module Routing
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
     ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
-    class UnrecognizedException < RuntimeError # @private
+    class UnrecognizedException < RuntimeError
     end
 
-    ##
+    #
     # Keeps information about parent scope.
     #
     class Parent < String
@@ -146,8 +147,8 @@ module Padrino
       end
     end
 
-    ##
-    # Main class that register this extension
+    #
+    # Main class that register this extension.
     #
     class << self
       def registered(app)
@@ -158,41 +159,40 @@ module Padrino
     end
 
     module ClassMethods
-      ##
-      # Method for organize in a better way our routes like:
       #
+      # Method for organize in a better way our routes.
+      #
+      # @param [Array] args
+      #   Controller arguments.
+      #
+      # @yield []
+      #   The given block will be used to define the routes within the
+      #   Controller.
+      #
+      # @example
       #   controller :admin do
       #     get :index do; ...; end
       #     get :show, :with => :id  do; ...; end
       #   end
-      #
-      # Now you can call your actions with:
-      #
+      #   
       #   url(:admin_index) # => "/admin"
       #   url(:admin_show, :id => 1) # "/admin/show/1"
       #
-      # You can instead using named routes follow the sinatra way like:
-      #
+      # @example Using named routes follow the sinatra way:
       #   controller "/admin" do
       #     get "/index" do; ...; end
       #     get "/show/:id" do; ...; end
       #   end
       #
-      # and you can call directly these urls:
-      #
-      #   # => "/admin"
-      #   # => "/admin/show/1"
-      #
-      # You can supply provides to all controller routes:
-      #
+      # @example Supply +:provides+ to all controller routes:
       #   controller :provides => [:html, :xml, :json] do
       #     get :index do; "respond to html, xml and json"; end
       #     post :index do; "respond to html, xml and json"; end
       #     get :foo do; "respond to html, xml and json"; end
       #   end
       #
-      # You can specify parent resources in padrino with the :parent option on the controller:
-      #
+      # @example Specify parent resources in padrino with the +:parent+
+      # option on the controller:
       #   controllers :product, :parent => :user do
       #     get :index do
       #       # url is generated as "/user/#{params[:user_id]}/product"
@@ -204,22 +204,21 @@ module Padrino
       #     end
       #   end
       #
-      # You can specify conditions to run for all routes:
-      #
+      # @example Specify conditions to run for all routes:
       #   controller :conditions => {:protect => true} do
       #     def self.protect(protected)
       #       condition do
       #         halt 403, "No secrets for you!" unless params[:key] == "s3cr3t"
       #       end if protected
       #     end
-      #
+      #     
       #     # This route will only return "secret stuff" if the user goes to
       #     # `/private?key=s3cr3t`.
       #     get("/private") { "secret stuff" }
-      #
+      #     
       #     # And this one, too!
       #     get("/also-private") { "secret stuff" }
-      #
+      #     
       #     # But you can override the conditions for each route as needed.
       #     # This route will be publicly accessible without providing the
       #     # secret key.
@@ -228,8 +227,7 @@ module Padrino
       #     end
       #   end
       #
-      # You can supply default values:
-      #
+      # @example Supply default values:
       #   controller :lang => :de do
       #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
       #   end
@@ -277,10 +275,16 @@ module Padrino
       end
       alias :controllers :controller
 
+      #
+      # @see add_filter
+      #
       def before(*args, &block)
         add_filter :before, &(args.empty? ? block : construct_filter(*args, &block))
       end
 
+      #
+      # @see add_filter
+      #
       def after(*args, &block)
         add_filter :after, &(args.empty? ? block : construct_filter(*args, &block))
       end
@@ -293,11 +297,16 @@ module Padrino
         Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
 
-      ##
+      #
       # Provides many parents with shallowing.
       #
-      # ==== Examples
+      # @param [Symbol] name
+      #   The parent name.
       #
+      # @param [Hash] options
+      #   Additional options.
+      #
+      # @example examples
       #   controllers :product do
       #     parent :shop, :optional => true, :map => "/my/stand"
       #     parent :category, :optional => true
@@ -319,13 +328,14 @@ module Padrino
         @_parents << Parent.new(name, options)
       end
 
-      ##
-      # Using HTTPRouter, for features and configurations see: http://github.com/joshbuddy/http_router
       #
-      # ==== Examples
+      # Using {HttpRouter}, for features and configurations.
       #
+      # @example
       #   router.add('/greedy/:greed')
       #   router.recognize('/simple')
+      #
+      # @see http://github.com/joshbuddy/http_router
       #
       def router
         @router ||= HttpRouter.new
@@ -357,11 +367,10 @@ module Padrino
         [responses[0].path.route.named, responses[0].params]
       end
 
-      ##
-      # Instance method for url generation like:
       #
-      # ==== Examples
+      # Instance method for url generation.
       #
+      # @example
       #   url(:show, :id => 1)
       #   url(:show, :name => 'test', :id => 24)
       #   url(:show, 1)
@@ -423,11 +432,10 @@ module Padrino
           uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
         end
 
-        ##
-        # Rewrite default because now routes can be:
         #
-        # ==== Examples
+        # Rewrite default routes.
         #
+        # @example
         #   get :index                                    # => "/"
         #   get :index, "/"                               # => "/"
         #   get :index, :map => "/"                       # => "/"
@@ -522,11 +530,11 @@ module Padrino
           route
         end
 
-        ##
-        # Returns the final parsed route details (modified to reflect all Padrino options)
-        # given the raw route. Raw route passed in could be a named alias or a string and
-        # is parsed to reflect provides formats, controllers, parents, 'with' parameters,
-        # and other options.
+        #
+        # Returns the final parsed route details (modified to reflect all
+        # Padrino options) given the raw route. Raw route passed in could be
+        # a named alias or a string and is parsed to reflect provides formats,
+        # controllers, parents, 'with' parameters, and other options.
         #
         def parse_route(path, options, verb)
           # We need save our originals path/options so we can perform correctly cache.
@@ -598,17 +606,17 @@ module Padrino
           [path, name, options]
         end
 
-        ##
+        #
         # Processes the existing path and appends the 'with' parameters onto the route
-        # Used for calculating path in route method
+        # Used for calculating path in route method.
         #
         def process_path_for_with_params(path, with_params)
           File.join(path, Array(with_params).map(&:inspect).join("/"))
         end
 
-        ##
+        #
         # Processes the existing path and prepends the 'parent' parameters onto the route
-        # Used for calculating path in route method
+        # Used for calculating path in route method.
         #
         def process_path_for_parent_params(path, parent_params)
           parent_prefix = parent_params.flatten.compact.uniq.map do |param|
@@ -620,15 +628,15 @@ module Padrino
           [parent_prefix, path].flatten.join("")
         end
 
-        ##
+        #
         # Processes the existing path and appends the 'format' suffix onto the route
-        # Used for calculating path in route method
+        # Used for calculating path in route method.
         #
         def process_path_for_provides(path, format_params)
           path << "(.:format)" unless path[-10, 10] == '(.:format)'
         end
 
-        ##
+        #
         # Allows routing by MIME-types specified in the URL or ACCEPT header.
         #
         # By default, if a non-provided mime-type is specified in a URL, the
@@ -641,19 +649,19 @@ module Padrino
         # If no type is specified, the first in the provides-list will be
         # returned.
         #
-        # ==== Examples
+        # @example
         #   get "/a", :provides => [:html, :js]
-        #      # => GET /a      => :html
-        #      # => GET /a.js   => :js
-        #      # => GET /a.xml  => 404
-        #
+        #   # => GET /a      => :html
+        #   # => GET /a.js   => :js
+        #   # => GET /a.xml  => 404
+        #   
         #   get "/b", :provides => [:html]
-        #      # => GET /b; ACCEPT: html => html
-        #      # => GET /b; ACCEPT: js   => 406
-        #
+        #   # => GET /b; ACCEPT: html => html
+        #   # => GET /b; ACCEPT: js   => 406
+        #   
         #   enable :treat_format_as_accept
         #   get "/c", :provides => [:html, :js]
-        #      # => GET /c.xml => 406
+        #   # => GET /c.xml => 406
         #
         def provides(*types)
           @_use_format = true
@@ -698,11 +706,10 @@ module Padrino
     end
 
     module InstanceMethods
-      ##
-      # Instance method for url generation like:
       #
-      # ==== Examples
+      # Instance method for url generation.
       #
+      # @example
       #   url(:show, :id => 1)
       #   url(:show, :name => :test)
       #   url(:show, 1)
@@ -730,9 +737,9 @@ module Padrino
         @route.url(*path_params)
       end
 
-      ##
+      #
       # This is mostly just a helper so request.path_info isn't changed when
-      # serving files from the public directory
+      # serving files from the public directory.
       #
       def static_file?(path_info)
         return if (public_dir = settings.public).nil?
@@ -744,7 +751,7 @@ module Padrino
         return path
       end
 
-      ##
+      #
       # Method for deliver static files.
       #
       def static!
@@ -754,11 +761,15 @@ module Padrino
         end
       end
 
-      ##
-      # Return the request format, this is useful when we need to respond to a given content_type like:
       #
-      # ==== Examples
+      # Return the request format, this is useful when we need to respond to
+      # a given Content-Type.
       #
+      # @param [Symbol, nil] type
+      #
+      # @param [Hash] params
+      #
+      # @example
       #   get :index, :provides => :any do
       #     case content_type
       #       when :js    then ...

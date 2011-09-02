@@ -13,11 +13,16 @@ module Padrino
   end
 
   class << self
-    ##
+    #
     # Helper method for file references.
     #
-    # ==== Examples
+    # @param [Array<String>] args
+    #   The directories to join to {PADRINO_ROOT}.
     #
+    # @return [String]
+    #   The absolute path.
+    #
+    # @example
     #   # Referencing a file in config called settings.yml
     #   Padrino.root("config", "settings.yml")
     #   # returns PADRINO_ROOT + "/config/setting.yml"
@@ -26,15 +31,24 @@ module Padrino
       File.expand_path(File.join(PADRINO_ROOT, *args))
     end
 
-    ##
-    # Helper method that return PADRINO_ENV
+    #
+    # Helper method that return {PADRINO_ENV}.
+    #
+    # @return [Symbol]
+    #   The Padrino Environment.
     #
     def env
       @_env ||= PADRINO_ENV.to_s.downcase.to_sym
     end
 
-    ##
-    # Returns the resulting rack builder mapping each 'mounted' application
+    #
+    # The resulting rack builder mapping each 'mounted' application.
+    #
+    # @return [Padrino::Router]
+    #   The router for the application.
+    #
+    # @raise [ApplicationLoadError]
+    #   No applications were mounted.
     #
     def application
       raise ApplicationLoadError, "At least one app must be mounted!" unless Padrino.mounted_apps && Padrino.mounted_apps.any?
@@ -51,10 +65,14 @@ module Padrino
       end
     end
 
-    ##
+    #
     # Configure Global Project Settings for mounted apps. These can be overloaded
     # in each individual app's own personal configuration. This can be used like:
     #
+    # @yield []
+    #   The given block will be called to configure each application.
+    #
+    # @example
     #   Padrino.configure_apps do
     #     enable  :sessions
     #     disable :raise_errors
@@ -64,15 +82,15 @@ module Padrino
       @_global_configuration = block if block_given?
     end
 
-    ###
-    # Returns project-wide configuration settings
-    # defined in 'configure_apps' block
+    #
+    # Returns project-wide configuration settings defined in
+    # {configure_apps} block.
     #
     def apps_configuration
       @_global_configuration
     end
 
-    ##
+    #
     # Default encoding to UTF8.
     #
     def set_encoding
@@ -85,32 +103,48 @@ module Padrino
       nil
     end
 
-    ##
-    # Return bundle status :+:locked+ if .bundle/environment.rb exist :+:unlocked if Gemfile exist
+    #
+    # Determines whether the dependencies are locked by Bundler.
     # otherwise return nil
+    #
+    # @return [:locked, :unlocked, nil]
+    #   Returns +:locked+ if the +Gemfile.lock+ file exists, or +:unlocked+
+    #   if only the +Gemfile+ exists.
     #
     def bundle
       return :locked   if File.exist?(root('Gemfile.lock'))
       return :unlocked if File.exist?(root("Gemfile"))
     end
 
-    ##
+    #
     # A Rack::Builder object that allows to add middlewares in front of all
-    # Padrino applications
+    # Padrino applications.
+    #
+    # @return [Array<Array<Class, Array, Proc>>]
+    #   The middleware classes.
     #
     def middleware
       @middleware ||= []
     end
 
-    ##
-    # Clears all previously configured middlewares
+    #
+    # Clears all previously configured middlewares.
     #
     def clear_middleware!
       @middleware = []
     end
 
-    ##
+    #
     # Convenience method for adding a Middleware to the whole padrino app.
+    #
+    # @param [Class] m
+    #   The middleware class.
+    #
+    # @param [Array] args
+    #   The arguments for the middleware.
+    #
+    # @yield []
+    #   The given block will be passed to the initialized middleware.
     #
     def use(m, *args, &block)
       middleware << [m, args, block]

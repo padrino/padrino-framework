@@ -1,15 +1,19 @@
 module Padrino
   class << self
 
-    ##
-    # Hooks to be called before a load/reload
     #
-    # ==== Examples
+    # Hooks to be called before a load/reload.
     #
+    # @yield []
+    #   The given block will be called before Padrino was loaded/reloaded.
+    #
+    # @return [Array<Proc>]
+    #   The load/reload before hooks.
+    #
+    # @example
     #   before_load do
     #     pre_initialize_something
     #   end
-    #
     #
     def before_load(&block)
       @_before_load ||= []
@@ -17,15 +21,19 @@ module Padrino
       @_before_load
     end
 
-    ##
-    # Hooks to be called after a load/reload
     #
-    # ==== Examples
+    # Hooks to be called after a load/reload.
     #
+    # @yield []
+    #   The given block will be called after Padrino was loaded/reloaded.
+    #
+    # @return [Array<Proc>]
+    #   The load/reload hooks.
+    #
+    # @example
     #   after_load do
     #     DataMapper.finalize
     #   end
-    #
     #
     def after_load(&block)
       @_after_load ||= []
@@ -33,16 +41,20 @@ module Padrino
       @_after_load
     end
 
-    ##
-    # Returns the used $LOAD_PATHS from padrino
+    #
+    # The used +$LOAD_PATHS+ from Padrino.
+    #
+    # @return [Array<String>]
+    #   The load paths used by Padrino.
     #
     def load_paths
       @_load_paths_was = %w(lib models shared).map { |path| Padrino.root(path) }
       @_load_paths ||= @_load_paths_was
     end
 
-    ##
-    # Requires necessary dependencies as well as application files from root lib and models
+    #
+    # Requires necessary dependencies as well as application files from root
+    # lib and models.
     #
     def load!
       return false if loaded?
@@ -59,8 +71,8 @@ module Padrino
       Thread.current[:padrino_loaded] = true
     end
 
-    ##
-    # Clear the padrino env
+    #
+    # Clear the padrino env.
     #
     def clear!
       Padrino.clear_middleware!
@@ -74,8 +86,8 @@ module Padrino
       Thread.current[:padrino_loaded] = nil
     end
 
-    ##
-    # Method for reloading required applications and their files
+    #
+    # Method for reloading required applications and their files.
     #
     def reload!
       Padrino.before_load.each(&:call) # Run before hooks
@@ -83,40 +95,46 @@ module Padrino
       Padrino.after_load.each(&:call) # Run after hooks
     end
 
-    ##
-    # This adds the ablity to instantiate Padrino.load! after Padrino::Application definition.
+    #
+    # This adds the ablity to instantiate {Padrino.load!} after
+    # {Padrino::Application} definition.
     #
     def called_from
       @_called_from || first_caller
     end
 
-    ##
-    # Return true if Padrino was loaded with Padrino.load!
+    #
+    # Determines whether Padrino was loaded with {Padrino.load!}.
+    #
+    # @return [Boolean]
+    #   Specifies whether Padrino was loaded.
     #
     def loaded?
       Thread.current[:padrino_loaded]
     end
 
-    ##
+    #
     # Attempts to require all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     # Another good thing that this method are dependency check, for example:
     #
-    #   models
-    #    \-- a.rb => require something of b.rb
-    #    \-- b.rb
+    #   # models
+    #   #  \-- a.rb => require something of b.rb
+    #   #  \-- b.rb
     #
     # In the example above if we do:
     #
     #   Dir["/models/*.rb"].each { |r| require r }
     #
-    # we get an error, because we try to require first a.rb that need +something+ of b.rb.
+    # we get an error, because we try to require first +a.rb+ that need
+    # _something_ of +b.rb+.
     #
-    # With +require_dependencies+ we don't have this problem.
+    # With {#require_dependencies} we don't have this problem.
     #
-    # ==== Examples
+    # @param [Array<String>] paths
+    #   The paths to require.
     #
-    #   # For require all our app libs we need to do:
+    # @example For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
     def require_dependencies(*paths)
@@ -156,12 +174,15 @@ module Padrino
       end
     end
 
-    ##
-    # Returns default list of path globs to load as dependencies
-    # Appends custom dependency patterns to the be loaded for Padrino
     #
-    # ==== Examples
-    #    Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
+    # Returns default list of path globs to load as dependencies
+    # Appends custom dependency patterns to the be loaded for Padrino.
+    #
+    # @return [Array<String>]
+    #   The dependencey paths.
+    #
+    # @example
+    #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
       @_dependency_paths_was = [
@@ -171,8 +192,11 @@ module Padrino
       @_dependency_paths ||= @_dependency_paths_was
     end
 
-    ##
-    # Concat to $LOAD_PATH the given paths
+    #
+    # Concat to +$LOAD_PATH+ the given paths.
+    #
+    # @param [Array<String>] paths
+    #   The paths to concat.
     #
     def set_load_paths(*paths)
       $:.concat(paths); load_paths.concat(paths)
