@@ -73,7 +73,7 @@ module Padrino
           # Determine resolved template path
           template_file = template_file.to_s
           template_path = case
-            when template_file =~ %r{^http://} && template_file !~ /gist/
+            when template_file =~ %r{^https?://} && template_file !~ /gist/
               template_file
             when template_file =~ /gist/ && template_file !~ /raw/
               raw_link, _ = *open(template_file).read.scan(/<a\s+href\s?\=\"(.*?)\"\>raw/)

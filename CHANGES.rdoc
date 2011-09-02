@@ -2,6 +2,8 @@
 
 == 0.10.3 (Not Yet Released)
 
+* Fixes issue with generator runner for https templates (@xavierRiley)
+
 == 0.10.2
 
 * NEW support for TravisCI with build configurations
