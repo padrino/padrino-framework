@@ -4,6 +4,7 @@ require 'i18n'
 describe "Rendering" do
   def setup
     Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
   end
 
   def teardown
@@ -100,13 +101,15 @@ describe "Rendering" do
     end
 
     should 'by default use html file when no other is given' do
-      create_view :foo, "html file", :format => :html
+      create_layout :baz, "html file", :format => :html
 
       mock_app do
-        get('/content_type_test', :provides => [:html, :xml]) { render :foo }
+        get('/content_type_test', :provides => [:html, :xml]) { render :baz }
       end
 
       get "/content_type_test"
+      assert_equal "html file", body
+      get "/content_type_test.html"
       assert_equal "html file", body
       get "/content_type_test.xml"
       assert_equal "html file", body
@@ -128,7 +131,7 @@ describe "Rendering" do
         get "/default_rendering_test.xml"
       end
 
-      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge(@save)
+      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge!(@save)
     end
 
     should 'use correct layout with each controller' do

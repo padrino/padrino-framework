@@ -2,12 +2,11 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
 require File.expand_path('../../../load_paths', __FILE__)
+require File.expand_path('../mini_shoulda', __FILE__)
 require 'padrino-core'
 require 'json'
-require 'minitest/spec'
 require 'rack/test'
 require 'rack'
-require 'minitest/autorun'
 
 # Rubies < 1.9 don't handle hashes in the properly order so to prevent
 # this issue for now we remove extra values from mimetypes.
@@ -38,22 +37,6 @@ class Class
 end
 
 class MiniTest::Spec
-  class << self
-    alias :setup :before unless defined?(Rails)
-    alias :teardown :after unless defined?(Rails)
-    alias :should :it
-    alias :context :describe
-  end
-  alias :assert_no_match  :refute_match
-  alias :assert_not_nil   :refute_nil
-  alias :assert_not_equal :refute_equal
-  def assert_nothing_raised(&block)
-    block.call
-  end
-  def self.should_eventually(desc)
-    it("should eventually #{desc}") { skip("Should eventually #{desc}") }
-  end
-
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block

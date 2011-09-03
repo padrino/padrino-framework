@@ -2,8 +2,7 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 require File.expand_path('../../../load_paths', __FILE__)
-require 'minitest/spec'
-require 'minitest/autorun'
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'mocha'
 require 'rack/test'
 require 'padrino-core'
@@ -11,22 +10,6 @@ require 'padrino-helpers'
 require 'padrino-mailer'
 
 class MiniTest::Spec
-  class << self
-    alias :setup :before unless defined?(Rails)
-    alias :teardown :after unless defined?(Rails)
-    alias :should :it
-    alias :context :describe
-  end
-  alias :assert_no_match  :refute_match
-  alias :assert_not_nil   :refute_nil
-  alias :assert_not_equal :refute_equal
-  def assert_nothing_raised(&block)
-    block.call
-  end
-  def self.should_eventually(desc)
-    it("should eventually #{desc}") { skip("Should eventually #{desc}") }
-  end
-
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block

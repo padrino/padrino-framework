@@ -1,6 +1,5 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'minitest/spec'
-require 'minitest/autorun'
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'mocha'
 require 'rack/test'
 require 'webrat'
@@ -8,22 +7,6 @@ require 'padrino-helpers'
 require 'active_support/time'
 
 class MiniTest::Spec
-  class << self
-    alias :setup :before unless defined?(Rails)
-    alias :teardown :after unless defined?(Rails)
-    alias :should :it
-    alias :context :describe
-  end
-  alias :assert_no_match  :refute_match
-  alias :assert_not_nil   :refute_nil
-  alias :assert_not_equal :refute_equal
-  def assert_nothing_raised(&block)
-    block.call
-  end
-  def self.should_eventually(desc)
-    it("should eventually #{desc}") { skip("Should eventually #{desc}") }
-  end
-
   include Padrino::Helpers::OutputHelpers
   include Padrino::Helpers::TagHelpers
   include Padrino::Helpers::AssetTagHelpers

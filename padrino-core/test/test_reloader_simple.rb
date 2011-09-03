@@ -60,7 +60,7 @@ describe "SimpleReloader" do
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
       File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
-      sleep 1.2 # We need at least a cooldown of 1 sec.
+      sleep 2 # We need at least a cooldown of 1 sec.
       get "/"
       assert_equal new_phrase, body
 
