@@ -31,7 +31,7 @@ group :development do
   gem "bcrypt-ruby", :require => "bcrypt"
   gem "builder", ">= 2.1.2"
   platforms :mri_18 do
-    gem "minitest"
+    gem "minitest", "1.6.0" # same version of 1.9.2
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
@@ -40,8 +40,11 @@ group :development do
   #   gem "ruby-debug19"
   # end
   platforms :jruby do
-    gem "minitest"
+    gem "minitest", "1.6.0"
     gem "jruby-openssl"
+  end
+  platforms :rbx do
+    gem "minitest", "1.6.0"
   end
 end
 
