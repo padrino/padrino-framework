@@ -1,9 +1,9 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
+require 'minitest/spec'
+require 'minitest/autorun'
 require 'rack/test'
 require 'rack'
 require 'uuid'
-require 'shoulda'
 require 'mocha'
 require 'webrat'
 require 'grit'
@@ -14,7 +14,23 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 Padrino::Generators.load_components!
 
-class Test::Unit::TestCase
+class MiniTest::Spec
+  class << self
+    alias :setup :before unless defined?(Rails)
+    alias :teardown :after unless defined?(Rails)
+    alias :should :it
+    alias :context :describe
+  end
+  alias :assert_no_match  :refute_match
+  alias :assert_not_nil   :refute_nil
+  alias :assert_not_equal :refute_equal
+  def assert_nothing_raised(&block)
+    block.call
+  end
+  def self.should_eventually(desc)
+    it("should eventually #{desc}") { skip("Should eventually #{desc}") }
+  end
+
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
