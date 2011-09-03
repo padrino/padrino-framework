@@ -42,9 +42,6 @@ group :development do
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
-  # platforms :mri_19 do
-  #   gem "ruby-debug19"
-  # end
   platforms :jruby do
     gem "minitest", minitest_version
     gem "jruby-openssl"
@@ -66,10 +63,6 @@ group :cache do
   end
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
-  end
-  # TODO: It seems not compat with memcached.
-  platform :jruby do
-    gem "jruby-memcache-client" unless ENV['TRAVIS']
   end
 end
 
