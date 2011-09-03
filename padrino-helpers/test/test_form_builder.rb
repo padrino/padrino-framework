@@ -705,7 +705,6 @@ describe "FormBuilder" do
     end
 
     should "display fields for collection object" do
-      assert_equal nil, mock_model("Address", :name => "Walter", :new_record? => false, :id => 50)
       addresses = @addresses + [mock_model("Address", :name => "Walter", :new_record? => false, :id => 50)]
       actual_html = standard_builder.fields_for(:addresses, addresses) do |child_form|
         child_form.label(:name) +
