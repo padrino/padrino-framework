@@ -40,6 +40,7 @@ group :development do
   #   gem "ruby-debug19"
   # end
   platforms :jruby do
+    gem "minitest"
     gem "jruby-openssl"
   end
 end
