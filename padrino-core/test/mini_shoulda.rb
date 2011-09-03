@@ -1,6 +1,5 @@
 require 'minitest/spec'
 require 'minitest/autorun'
-require 'minitest/pride'
 
 class MiniTest::Spec
   class << self
