@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
+class PadrinoPristine < Padrino::Application; end
 class PadrinoTestApp < Padrino::Application; end
 class PadrinoTestApp2 < Padrino::Application; end
 
@@ -15,27 +16,27 @@ describe "Application" do
   context 'for application functionality' do
 
     should 'check default options' do
-      assert File.identical?(__FILE__, PadrinoTestApp.app_file)
-      assert_equal :padrino_test_app, PadrinoTestApp.app_name
-      assert_equal :test, PadrinoTestApp.environment
-      assert_equal Padrino.root("views"), PadrinoTestApp.views
-      assert PadrinoTestApp.raise_errors
-      assert !PadrinoTestApp.logging
-      assert !PadrinoTestApp.sessions
-      assert !PadrinoTestApp.dump_errors
-      assert !PadrinoTestApp.show_exceptions
-      assert PadrinoTestApp.raise_errors
+      assert File.identical?(__FILE__, PadrinoPristine.app_file)
+      assert_equal :padrino_pristine, PadrinoPristine.app_name
+      assert_equal :test, PadrinoPristine.environment
+      assert_equal Padrino.root("views"), PadrinoPristine.views
+      assert PadrinoPristine.raise_errors
+      assert !PadrinoPristine.logging
+      assert !PadrinoPristine.sessions
+      assert !PadrinoPristine.dump_errors
+      assert !PadrinoPristine.show_exceptions
+      assert PadrinoPristine.raise_errors
       assert !Padrino.configure_apps
     end
 
     should 'check padrino specific options' do
-      assert !PadrinoTestApp.instance_variable_get(:@_configured)
-      PadrinoTestApp.send(:setup_application!)
-      assert_equal :padrino_test_app, PadrinoTestApp.app_name
-      assert_equal 'StandardFormBuilder', PadrinoTestApp.default_builder
-      assert PadrinoTestApp.instance_variable_get(:@_configured)
-      assert !PadrinoTestApp.reload?
-      assert !PadrinoTestApp.flash
+      assert !PadrinoPristine.instance_variable_get(:@_configured)
+      PadrinoPristine.send(:setup_application!)
+      assert_equal :padrino_pristine, PadrinoPristine.app_name
+      assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
+      assert PadrinoPristine.instance_variable_get(:@_configured)
+      assert !PadrinoPristine.reload?
+      assert !PadrinoPristine.flash
     end
 
     should 'set global project settings' do
