@@ -18,7 +18,7 @@ module Kernel
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)
     file += ".rb" if file !~ /.rb$/
-    silence_stdout { load File.join(File.dirname(__FILE__), "fixtures", file) }
+    capture_io { load File.join(File.dirname(__FILE__), "fixtures", file) }
   end
 end
 
