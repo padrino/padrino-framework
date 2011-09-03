@@ -5,35 +5,42 @@ module Padrino
     # Methods are provided for phone numbers, currency, percentage,
     # precision, positional notation, and file size.
     #
-    # Verbatim copy of Rails Number Helpers
+    # Adapted from Rails Number Helpers.
     #
     module NumberHelpers
       ##
       # Formats a +number+ into a currency string (e.g., $13.65). You can customize the format
       # in the +options+ hash.
       #
-      # ==== Options
-      #
-      # :precision:: Sets the level of precision (defaults to 2).
-      # :unit::      Sets the denomination of the currency (defaults to "$").
-      # :separator:: Sets the separator between the units (defaults to ".").
-      # :delimiter:: Sets the thousands delimiter (defaults to ",").
-      # :format::    Sets the format of the output string (defaults to "%u%n"). The field types are:
-      #
+      # @param [Float] number
+      #   Currency value to format.
+      # @param [Hash] options
+      #   Options for currency conversion.
+      # @option options [Fixnum] :precision (2)
+      #   Sets the level of precision.
+      # @option options [String] :unit ("$")
+      #   Sets the denomination of the currency.
+      # @option options [String] :separator (".")
+      #   Sets the separator between the units.
+      # @option options [String] :delimiter (",")
+      #   Sets the thousands delimiter.
+      # @option options [String] :format ("%u%n")
+      #   Sets the format of the output string. The field types are:
       #     %u  The currency unit
       #     %n  The number
       #
-      # ==== Examples
+      # @return [String] The formatted representation of the currency
       #
+      # @example
       #   number_to_currency(1234567890.50)                    # => $1,234,567,890.50
       #   number_to_currency(1234567890.506)                   # => $1,234,567,890.51
       #   number_to_currency(1234567890.506, :precision => 3)  # => $1,234,567,890.506
-      #
       #   number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "")
       #   # => &pound;1234567890,50
       #   number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "", :format => "%n %u")
       #   # => 1234567890,50 &pound;
       #
+      # @api public
       def number_to_currency(number, options = {})
         options.symbolize_keys!
 
@@ -63,19 +70,26 @@ module Padrino
       # Formats a +number+ as a percentage string (e.g., 65%). You can customize the
       # format in the +options+ hash.
       #
-      # ==== Options
+      # @param [Fixnum, Float] number
+      #   Percentage value to format.
+      # @param [Hash] options
+      #   Options for percentage conversion.
+      # @option options [Fixnum] :precision (3)
+      #   Sets the level of precision.
+      # @option options [String] :separator (".")
+      #   Sets the separator between the units.
+      # @option options [String] :delimiter ("")
+      #   Sets the thousands delimiter
       #
-      # :precision:: Sets the level of precision (defaults to 3).
-      # :separator:: Sets the separator between the units (defaults to ".").
-      # :delimiter:: Sets the thousands delimiter (defaults to "").
+      # @return [String] The formatted representation of the percentage
       #
-      # ==== Examples
-      #
+      # @example
       #   number_to_percentage(100)                                        # => 100.000%
       #   number_to_percentage(100, :precision => 0)                       # => 100%
       #   number_to_percentage(1000, :delimiter => '.', :separator => ',') # => 1.000,000%
       #   number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
       #
+      # @api public
       def number_to_percentage(number, options = {})
         options.symbolize_keys!
 
@@ -101,13 +115,19 @@ module Padrino
       # Formats a +number+ with grouped thousands using +delimiter+ (e.g., 12,324). You can
       # customize the format in the +options+ hash.
       #
-      # ==== Options
+      # @overload number_with_delimiter(number, options={})
+      #   @param [Fixnum, Float] number
+      #     Number value to format.
+      #   @param [Hash] options
+      #     Options for formatter.
+      #   @option options [String] :delimiter (", ")
+      #     Sets the thousands delimiter
+      #   @option options [String] :separator (".")
+      #     Sets the separator between the units.
       #
-      # :delimiter:: Sets the thousands delimiter (defaults to ",").
-      # :separator:: Sets the separator between the units (defaults to ".").
+      # @return [String] The formatted representation of the number
       #
-      # ==== Examples
-      #
+      # @example
       #   number_with_delimiter(12345678)                        # => 12,345,678
       #   number_with_delimiter(12345678.05)                     # => 12,345,678.05
       #   number_with_delimiter(12345678, :delimiter => ".")     # => 12.345.678
@@ -115,13 +135,7 @@ module Padrino
       #   number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
       #   # => 98 765 432,98
       #
-      # You can still use <tt>number_with_delimiter</tt> with the old API that accepts the
-      # +delimiter+ as its optional second and the +separator+ as its
-      # optional third parameter:
-      #
-      #   number_with_delimiter(12345678, " ")                     # => 12 345.678
-      #   number_with_delimiter(12345678.05, ".", ",")             # => 12.345.678,05
-      #
+      # @api public
       def number_with_delimiter(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -144,14 +158,21 @@ module Padrino
       # Formats a +number+ with the specified level of <tt>:precision</tt> (e.g., 112.32 has a precision of 2).
       # You can customize the format in the +options+ hash.
       #
-      # ==== Options
+      # @overload number_with_precision(number, options={})
+      #   @param [Fixnum, Float] number
+      #     Number value to format.
+      #   @param [Hash] options
+      #     Options for formatter.
+      #   @option options [Fixnum] :precision (3)
+      #     Sets the level of precision.
+      #   @option options [String] :separator (".")
+      #     Sets the separator between the units.
+      #   @option options [String] :delimiter ("")
+      #     Sets the thousands delimiter
       #
-      # :precision:: Sets the level of precision (defaults to 3).
-      # :separator:: Sets the separator between the units (defaults to ".").
-      # :delimiter:: Sets the thousands delimiter (defaults to "").
+      # @return [String] The formatted representation of the number
       #
-      # ==== Examples
-      #
+      # @example
       #   number_with_precision(111.2345)                    # => 111.235
       #   number_with_precision(111.2345, :precision => 2)   # => 111.23
       #   number_with_precision(13, :precision => 5)         # => 13.00000
@@ -159,11 +180,7 @@ module Padrino
       #   number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
       #   # => 1.111,23
       #
-      # You can still use <tt>number_with_precision</tt> with the old API that accepts the
-      # +precision+ as its optional second parameter:
-      #
-      #   number_with_precision(number_with_precision(111.2345, 2)   # => 111.23
-      #
+      # @api public
       def number_with_precision(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -196,14 +213,22 @@ module Padrino
       # +size+ cannot be converted into a number. You can customize the
       # format in the +options+ hash.
       #
-      # ==== Options
       #
-      # :precision:: Sets the level of precision (defaults to 1).
-      # :separator:: Sets the separator between the units (defaults to ".").
-      # :delimiter:: Sets the thousands delimiter (defaults to "").
+      # @overload number_to_human_size(number, options={})
+      #   @param [Fixnum] number
+      #     Number value to format.
+      #   @param [Hash] options
+      #     Options for formatter.
+      #   @option options [Fixnum] :precision (1)
+      #     Sets the level of precision.
+      #   @option options [String] :separator (".")
+      #     Sets the separator between the units.
+      #   @option options [String] :delimiter ("")
+      #     Sets the thousands delimiter
       #
-      # ==== Examples
+      # @return [String] The formatted representation of bytes
       #
+      # @example
       #   number_to_human_size(123)                                          # => 123 Bytes
       #   number_to_human_size(1234)                                         # => 1.2 KB
       #   number_to_human_size(12345)                                        # => 12.1 KB
@@ -214,18 +239,7 @@ module Padrino
       #   number_to_human_size(483989, :precision => 0)                      # => 473 KB
       #   number_to_human_size(1234567, :precision => 2, :separator => ',')  # => 1,18 MB
       #
-      # Zeros after the decimal point are always stripped out, regardless of the
-      # specified precision:
-      #
-      #   helper.number_to_human_size(1234567890123, :precision => 5)        # => "1.12283 TB"
-      #   helper.number_to_human_size(524288000, :precision=>5)              # => "500 MB"
-      #
-      # You can still use <tt>number_to_human_size</tt> with the old API that accepts the
-      # +precision+ as its optional second parameter:
-      #
-      #   number_to_human_size(1234567, 2)    # => 1.18 MB
-      #   number_to_human_size(483989, 0)     # => 473 KB
-      #
+      # @api public
       def number_to_human_size(number, *args)
         return nil if number.nil?
 

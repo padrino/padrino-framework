@@ -15,9 +15,8 @@ module Padrino
         ##
         # Returns true if the current template type is same as this handlers; false otherwise.
         #
-        # ==== Examples
-        #
-        #  @handler.is_type? => true
+        # @example
+        #   @handler.is_type? => true
         #
         def is_type?
           !self.output_buffer.nil?
@@ -25,9 +24,8 @@ module Padrino
 
         # Captures the html from a block of template code for this handler
         #
-        # ==== Examples
-        #
-        #  @handler.capture_from_template(&block) => "...html..."
+        # @example
+        #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
           self.output_buffer, _buf_was = "", self.output_buffer
@@ -40,8 +38,7 @@ module Padrino
         ##
         # Outputs the given text to the templates buffer directly
         #
-        # ==== Examples
-        #
+        # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
@@ -52,9 +49,8 @@ module Padrino
         ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
-        # ==== Examples
-        #
-        #  @handler.block_is_type?(block) => true
+        # @example
+        #   @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
           is_type? || (block && eval('defined? __in_erb_template', block.binding))
@@ -63,8 +59,7 @@ module Padrino
         ##
         # Returns an array of engines used for the template
         #
-        # ==== Examples
-        #
+        # @example
         #   @handler.engines => [:erb, :erubis]
         #
         def engines
@@ -75,7 +70,8 @@ module Padrino
           def output_buffer=(val)
             template.instance_variable_set(:@_out_buf, val)
           end
-        end # ErbHandler
+        end # SlimHandler
+
         OutputHelpers.register(SlimHandler)
     end # OutputHelpers
   end # Helpers

@@ -5,9 +5,8 @@ module Padrino
         ##
         # Returns true if the current template type is same as this handlers; false otherwise.
         #
-        # ==== Examples
-        #
-        #  @handler.is_type? => true
+        # @example
+        #   @handler.is_type? => true
         #
         def is_type?
           template.respond_to?(:is_haml?) && template.is_haml?
@@ -16,9 +15,8 @@ module Padrino
         ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
-        # ==== Examples
-        #
-        #  @handler.block_is_type?(block) => true
+        # @example
+        #   @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
           template.block_is_haml?(block)
@@ -26,9 +24,8 @@ module Padrino
 
         # Captures the html from a block of template code for this handler
         #
-        # ==== Examples
-        #
-        #  @handler.capture_from_template(&block) => "...html..."
+        # @example
+        #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
           eval("_hamlout ||= @haml_buffer", block.binding) # this is for rbx
@@ -38,8 +35,7 @@ module Padrino
         ##
         # Outputs the given text to the templates buffer directly
         #
-        # ==== Examples
-        #
+        # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
@@ -50,14 +46,14 @@ module Padrino
         ##
         # Returns an array of engines used for the template
         #
-        # ==== Examples
-        #
-        #   @handler.engines => [:erb, :erubis]
+        # @example
+        #   @handler.engines => [:haml]
         #
         def engines
           @_engines ||= [:haml]
         end
       end # HamlHandler
+
       OutputHelpers.register(HamlHandler)
     end # OutputHelpers
   end # Helpers

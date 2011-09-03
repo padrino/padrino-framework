@@ -129,7 +129,7 @@ module Padrino
     # we get an error, because we try to require first +a.rb+ that need
     # _something_ of +b.rb+.
     #
-    # With {#require_dependencies} we don't have this problem.
+    # With this method we don't have this problem.
     #
     # @param [Array<String>] paths
     #   The paths to require.

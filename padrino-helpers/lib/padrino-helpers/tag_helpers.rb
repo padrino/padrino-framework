@@ -11,26 +11,24 @@ module Padrino
       }
 
       ##
-      # Creates an html input field with given type and options
-      #
-      # ==== Examples
-      #
-      #   input_tag :text, :class => "test"
-      #
-      def input_tag(type, options = {})
-        options.reverse_merge!(:type => type)
-        tag(:input, options)
-      end
-
-      ##
       # Creates an html tag with given name, content and options
       #
-      # ==== Examples
+      # @overload content_tag(name, content, options)
+      #   @param [Symbol]  name     The html type of tag.
+      #   @param [String]  content  The contents in the tag.
+      #   @param [Hash]    options  The html options to include in this tag.
+      # @overload content_tag(name, options, &block)
+      #   @param [Symbol]  name     The html type of tag.
+      #   @param [Hash]    options  The html options to include in this tag.
+      #   @param [Proc]    block    The block returning html content
       #
+      # @return [String] The html generated for the tag.
+      #
+      # @example
       #   content_tag(:p, "hello", :class => 'light')
-      #   content_tag(:p, :class => 'dark') do ... end
-      #   content_tag(name, content=nil, options={}, &block)
+      #   content_tag(:p, :class => 'dark') { ... }
       #
+      # @api public
       def content_tag(*args, &block)
         name = args.first
         options = args.extract_options!
@@ -40,13 +38,40 @@ module Padrino
       end
 
       ##
+      # Creates an html input field with given type and options
+      #
+      # @param [Symbol] type
+      #   The html type of tag to create.
+      # @param [Hash] options
+      #   The html options to include in this tag.
+      #
+      # @return [String] The html for the input tag.
+      #
+      # @example
+      #   input_tag :text, :class => "test"
+      #   input_tag :password, :size => "20"
+      #
+      # @api semipublic
+      def input_tag(type, options = {})
+        options.reverse_merge!(:type => type)
+        tag(:input, options)
+      end
+
+      ##
       # Creates an html tag with the given name and options
       #
-      # ==== Examples
+      # @param [Symbol] type
+      #   The html type of tag to create.
+      # @param [Hash] options
+      #   The html options to include in this tag.
       #
+      # @return [String] The html for the input tag.
+      #
+      # @example
       #   tag(:br, :style => 'clear:both')
       #   tag(:p, :content => "hello", :class => 'large')
       #
+      # @api public
       def tag(name, options={})
         content, open_tag = options.delete(:content), options.delete(:open)
         content = content.join("\n") if content.respond_to?(:join)

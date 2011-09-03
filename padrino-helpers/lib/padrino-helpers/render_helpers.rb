@@ -2,15 +2,32 @@ module Padrino
   module Helpers
     module RenderHelpers
       ##
-      # Partials implementation which includes collections support
+      # Render a partials with collections support
       #
-      # ==== Examples
+      # @param [String] template
+      #   Relative path to partial template.
+      # @param [Hash] options
+      #   Options hash for rendering options.
+      # @option options [Object] :object
+      #   Object rendered in partial.
+      # @option options [Array<Object>] :collection
+      #   Partial is rendered for each object in this collection.
+      # @option options [Hash] :locals ({})
+      #   Local variables accessible in the partial.
+      # @option options [Symbol] :engine
+      #   Explicit rendering engine to use for this partial
       #
+      # @return [String] The html generated from this partial.
+      #
+      # @example
       #   partial 'photo/item', :object => @photo
       #   partial 'photo/item', :collection => @photos
       #   partial 'photo/item', :locals => { :foo => :bar }
       #   partial 'photo/item', :engine => :erb
       #
+      # @note If using this from Sinatra, pass explicit +:engine+ option
+      #
+      # @api public
       def partial(template, options={})
         logger.debug "PARTIAL:  #{template} called" if defined?(logger)
         options.reverse_merge!(:locals => {}, :layout => false)
