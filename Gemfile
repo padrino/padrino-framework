@@ -36,7 +36,6 @@ group :development do
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
-  gem "purdytest"
   # platforms :mri_19 do
   #   gem "ruby-debug19"
   # end
