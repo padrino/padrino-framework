@@ -1,6 +1,6 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
-require 'shoulda'
+require 'minitest/spec'
+require 'minitest/autorun'
 
-class Test::Unit::TestCase
+class MiniTest::Spec
 end

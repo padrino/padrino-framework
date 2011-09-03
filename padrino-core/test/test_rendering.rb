@@ -124,7 +124,7 @@ describe "Rendering" do
 
       get "/default_rendering_test"
       assert_equal "html file", body
-      assert_raise Padrino::Rendering::TemplateNotFound do
+      assert_raises Padrino::Rendering::TemplateNotFound do
         get "/default_rendering_test.xml"
       end
 

@@ -7,7 +7,7 @@ require 'padrino-cache'
 require 'fileutils'
 require 'uuid'
 
-class Test::Unit::TestCase
+class MiniTest::Spec
 
   def executable_on_path(binary)
     @matches = []
