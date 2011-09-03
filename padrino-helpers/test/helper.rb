@@ -14,6 +14,8 @@ class MiniTest::Spec
     alias :should :it
     alias :context :describe
   end
+  alias :assert_not_nil   :refute_nil
+  alias :assert_not_equal :refute_equal
 
   def self.should_eventually(desc)
     it("should eventually #{desc}") { skip("Should eventually #{desc}") }
