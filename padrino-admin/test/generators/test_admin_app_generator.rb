@@ -19,11 +19,11 @@ describe "AdminAppGenerator" do
       assert_no_file_exists('/tmp/admin')
     end
 
-    should 'fail if we don\'t specify an orm' do
+    should_eventually 'fail if we don\'t specify an orm' do
       assert_raises(SystemExit) { capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
-    should 'fail if we don\'t specify a valid theme' do
+    should_eventually 'fail if we don\'t specify a valid theme' do
       assert_raises(SystemExit) { capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project", '--theme=foo') } }
     end
 
