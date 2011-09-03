@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/simple')
 
-class TestSimpleReloader < Test::Unit::TestCase
+describe "SimpleReloader" do
 
   context 'for simple reset functionality' do
 

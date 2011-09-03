@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestMounter < Test::Unit::TestCase
+describe "Mounter" do
 
   def setup
     $VERBOSE, @_verbose_was = nil, $VERBOSE

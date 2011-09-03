@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestCore < Test::Unit::TestCase
+describe "Core" do
   def setup
     Padrino.clear!
   end

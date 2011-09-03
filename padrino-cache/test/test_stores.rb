@@ -44,7 +44,7 @@ begin
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
 
-  class TestMemcacheStore < Test::Unit::TestCase
+  describe "MemcacheStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1))
       Padrino.cache.flush
@@ -65,7 +65,7 @@ begin
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive'))
 
-  class TestMemcacheWithDalliStore < Test::Unit::TestCase
+  describe "MemcacheWithDalliStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
       Padrino.cache.flush
@@ -85,7 +85,7 @@ end
 begin
   require 'redis'
   Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive'))
-  class TestRedisStore < Test::Unit::TestCase
+  describe "RedisStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
       Padrino.cache.flush
@@ -105,7 +105,7 @@ end
 begin
   require 'mongo'
   Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
-  class TestMongoStore < Test::Unit::TestCase
+  describe "MongoStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'), {:size => 10, :collection => 'cache'})
       Padrino.cache.flush
@@ -122,7 +122,7 @@ rescue LoadError
   warn "Skipping Mongo tests"
 end
 
-class TestFileStore < Test::Unit::TestCase
+describe "FileStore" do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
     FileUtils.mkdir_p(@apptmp)
@@ -137,7 +137,7 @@ class TestFileStore < Test::Unit::TestCase
   eval COMMON_TESTS
 end
 
-class TestInMemoryStore < Test::Unit::TestCase
+describe "InMemoryStore" do
   def setup
     Padrino.cache = Padrino::Cache::Store::Memory.new(50)
     @test_key = "val_#{Time.now.to_i}"

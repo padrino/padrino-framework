@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class FooError < RuntimeError; end
 
 
-class TestRouting < Test::Unit::TestCase
+describe "Routing" do
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }

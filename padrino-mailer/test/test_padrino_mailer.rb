@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/padrino_app/app')
 
-class TestPadrinoMailer < Test::Unit::TestCase
+describe "PadrinoMailer" do
 
   context 'for mail delivery in sample sinatra application' do
     setup { @app = SinatraApp }

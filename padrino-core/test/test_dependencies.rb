@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestDependencies < Test::Unit::TestCase
+describe "Dependencies" do
   context 'when we require a dependency that have another dependency' do
 
     should 'raise an error without reloading it twice' do

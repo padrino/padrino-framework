@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPadrino < Test::Unit::TestCase
+describe "Padrino" do
   should "be a metagem that requires subgems" do
     assert_nil defined?(Padrino::Mailer)
     assert_nil defined?(Padrino::Helpers)

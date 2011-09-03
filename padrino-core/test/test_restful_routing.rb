@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestRouting < Test::Unit::TestCase
+describe "Routing" do
   should 'perform restul routing' do
     mock_app do
       controller :parent => :parents do

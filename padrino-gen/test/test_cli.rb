@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'padrino-gen/generators/cli'
 
-class TestCli < Test::Unit::TestCase
+describe "Cli" do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
     `mkdir -p #{@apptmp}`

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestMessage < Test::Unit::TestCase
+describe "Message" do
 
   context 'the message' do
     should "accept headers and body" do
@@ -18,7 +18,7 @@ class TestMessage < Test::Unit::TestCase
     end
 
     should "raise an error if template was not found" do
-      assert_raise Padrino::Rendering::TemplateNotFound do
+      assert_raises Padrino::Rendering::TemplateNotFound do
         Mail::Message.new do
           from    'padrino@me.com'
           to      'padrino@you.com'

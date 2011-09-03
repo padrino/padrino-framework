@@ -12,7 +12,7 @@ class Page
   end
 end
 
-class TestAdminPageGenerator < Test::Unit::TestCase
+describe "AdminPageGenerator" do
 
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"

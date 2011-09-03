@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 class PadrinoTestApp < Padrino::Application; end
 class PadrinoTestApp2 < Padrino::Application; end
 
-class TestApplication < Test::Unit::TestCase
+describe "Application" do
   def setup
     Padrino.clear!
   end

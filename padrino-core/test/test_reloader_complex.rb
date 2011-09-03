@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/complex')
 
-class TestComplexReloader < Test::Unit::TestCase
+describe "ComplexReloader" do
 
   context 'for complex reload functionality' do
 

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestEmail < Test::Unit::TestCase
+describe "Email" do
 
   context 'the mailer in a app' do
 
@@ -147,7 +147,7 @@ class TestEmail < Test::Unit::TestCase
     end
 
     should 'raise an error if there are two messages with the same name' do
-      assert_raise RuntimeError do
+      assert_raises RuntimeError do
         mock_app do
           register Padrino::Mailer
           mailer :foo do

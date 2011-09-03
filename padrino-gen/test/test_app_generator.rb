@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestAppGenerator < Test::Unit::TestCase
+describe "AppGenerator" do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
     `mkdir -p #{@apptmp}`
