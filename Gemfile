@@ -3,7 +3,7 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 source :rubygems
 
 ##
-# Moka don't play nice on latest minitest, so, for compatiblity
+# Mocha doesn't play nice on latest minitest, so, for compatiblity
 # reasons we use the same version included in the most stable ruby, 1.9.2
 #
 minitest_version = "1.6.0"
