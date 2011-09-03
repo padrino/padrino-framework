@@ -19,7 +19,7 @@ class TestMigrationGenerator < Test::Unit::TestCase
 
     should "fail if we don't use an adapter" do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
-      assert_raise(SystemExit) { silence_logger { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") } }
+      assert_raises(SystemExit) { silence_logger { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") } }
     end
 
     should "generate migration inside app root" do

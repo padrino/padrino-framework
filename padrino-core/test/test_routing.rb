@@ -499,7 +499,7 @@ class TestRouting < Test::Unit::TestCase
     assert_equal "js", body
     get "/b"
     assert_equal "any", body
-    assert_raise(RuntimeError) { get "/b.foo" }
+    assert_raises(RuntimeError) { get "/b.foo" }
     get "/c"
     assert_equal 200, status
     assert_equal "js,json", body

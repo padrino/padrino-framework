@@ -34,7 +34,7 @@ class TestAdminPageGenerator < Test::Unit::TestCase
     should 'fail without argument and model' do
       silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
       silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      assert_raise(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
+      assert_raises(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
     end
 
     should 'correctly generate a new padrino admin application default renderer' do

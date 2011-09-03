@@ -74,12 +74,12 @@ class TestMounter < Test::Unit::TestCase
     end
 
     should "raise error when app has no located file" do
-      assert_raise(Padrino::Mounter::MounterException) { Padrino.mount("tester_app").to('/test') }
+      assert_raises(Padrino::Mounter::MounterException) { Padrino.mount("tester_app").to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
 
     should "raise error when app has no located object" do
-      assert_raise(Padrino::Mounter::MounterException) { Padrino.mount("tester_app", :app_file => "/path/to/file.rb").to('/test') }
+      assert_raises(Padrino::Mounter::MounterException) { Padrino.mount("tester_app", :app_file => "/path/to/file.rb").to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
 

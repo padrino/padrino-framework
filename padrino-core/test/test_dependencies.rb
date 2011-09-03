@@ -5,7 +5,7 @@ class TestDependencies < Test::Unit::TestCase
 
     should 'raise an error without reloading it twice' do
       silence_warnings do
-        assert_raise(RuntimeError) do
+        assert_raises(RuntimeError) do
           Padrino.require_dependencies(
             Padrino.root("fixtures/dependencies/a.rb"),
             Padrino.root("fixtures/dependencies/b.rb"),

@@ -21,12 +21,12 @@ class TestAdminAppGenerator < Test::Unit::TestCase
 
     should 'fail if we don\'t specify an orm' do
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") } }
-      assert_raise(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
+      assert_raises(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
     should 'fail if we don\'t specify a valid theme' do
       assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') } }
-      assert_raise(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project", '--theme=foo') } }
+      assert_raises(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project", '--theme=foo') } }
     end
 
     should 'correctly generate a new padrino admin application with default renderer' do

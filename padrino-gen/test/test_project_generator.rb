@@ -38,8 +38,8 @@ class TestProjectGenerator < Test::Unit::TestCase
     end
 
     should "raise an Error when given invalid constant names" do
-      assert_raise(::NameError) { silence_logger { generate(:project, "123asdf", "--root=#{@apptmp}") } }
-      assert_raise(::NameError) { silence_logger { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
+      assert_raises(::NameError) { silence_logger { generate(:project, "123asdf", "--root=#{@apptmp}") } }
+      assert_raises(::NameError) { silence_logger { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
     end
 
     should "display the right path" do
