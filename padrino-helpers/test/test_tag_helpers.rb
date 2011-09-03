@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
-class TestTagHelpers < Test::Unit::TestCase
+describe "TagHelpers" do
   def app
     MarkupDemo.tap { |app| app.set :environment, :test }
   end

@@ -1,13 +1,24 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
-require 'shoulda'
+require 'minitest/spec'
+require 'minitest/autorun'
 require 'mocha'
 require 'rack/test'
 require 'webrat'
 require 'padrino-helpers'
 require 'active_support/time'
 
-class Test::Unit::TestCase
+class MiniTest::Spec
+  class << self
+    alias :setup :before unless defined?(Rails)
+    alias :teardown :after unless defined?(Rails)
+    alias :should :it
+    alias :context :describe
+  end
+
+  def self.should_eventually(desc)
+    it("should eventually #{desc}") { skip("Should eventually #{desc}") }
+  end
+
   include Padrino::Helpers::OutputHelpers
   include Padrino::Helpers::TagHelpers
   include Padrino::Helpers::AssetTagHelpers

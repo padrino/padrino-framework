@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
-class TestFormHelpers < Test::Unit::TestCase
+describe "FormHelpers" do
   include Padrino::Helpers::FormHelpers
 
   def app

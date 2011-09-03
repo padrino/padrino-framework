@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
-class TestFormBuilder < Test::Unit::TestCase
+describe "FormBuilder" do
   include Padrino::Helpers::FormHelpers
 
   # Dummy form builder for testing
@@ -51,9 +51,7 @@ class TestFormBuilder < Test::Unit::TestCase
     should "display form specifying default builder setting" do
       self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder')).once
       actual_html = ""
-      assert_nothing_raised do
-        actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
-      end
+      actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('span', :content => "bar") { actual_html }
     end
@@ -88,7 +86,7 @@ class TestFormBuilder < Test::Unit::TestCase
 
     should "support changing form builder type" do
       form_html = proc { form_for(@user, '/register', :"accept-charset" => "UTF-8", :builder => "AbstractFormBuilder") { |f| f.text_field_block(:name) } }
-      assert_raise(NoMethodError) { form_html.call }
+      assert_raises(NoMethodError) { form_html.call }
     end
 
     should "support using default standard builder" do

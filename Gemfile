@@ -27,11 +27,11 @@ group :development do
   gem "haml", ">= 2.2.22"
   gem "erubis", ">= 2.7.0"
   gem "slim", ">= 0.9.2"
-  gem "shoulda", ">= 2.10.3"
   gem "uuid", ">= 2.3.1"
   gem "bcrypt-ruby", :require => "bcrypt"
   gem "builder", ">= 2.1.2"
   platforms :mri_18 do
+    gem "minitest"
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
