@@ -14,8 +14,8 @@ describe "AdminAppGenerator" do
   context 'the admin app generator' do
 
     should 'fail outside app root' do
-      output = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
-      assert_match(/not at the root/, output)
+      out, err = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
+      assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/admin')
     end
 

@@ -2,6 +2,12 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 
 source :rubygems
 
+##
+# Moka don't play nice on latest minitest, so, for compatiblity
+# reasons we use the same version included in the most stable ruby, 1.9.2
+#
+minitest_version = "1.6.0"
+
 group :db do
   gem "dm-core", ">= 1.0"
   gem "dm-migrations", ">= 1.0"
@@ -31,7 +37,7 @@ group :development do
   gem "bcrypt-ruby", :require => "bcrypt"
   gem "builder", ">= 2.1.2"
   platforms :mri_18 do
-    gem "minitest", "1.6.0" # same version of 1.9.2
+    gem "minitest",  minitest_version
     gem "rcov", "~> 0.9.8"
     gem "ruby-prof", ">= 0.9.1"
     gem "system_timer", ">= 1.0"
@@ -40,11 +46,11 @@ group :development do
   #   gem "ruby-debug19"
   # end
   platforms :jruby do
-    gem "minitest", "1.6.0"
+    gem "minitest", minitest_version
     gem "jruby-openssl"
   end
   platforms :rbx do
-    gem "minitest", "1.6.0"
+    gem "minitest", minitest_version
   end
 end
 
