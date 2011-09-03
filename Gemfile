@@ -61,15 +61,15 @@ group :cache do
     gem "bson_ext",  ">= 1.3.1"
     gem 'dalli',     ">= 1.0.2"
     # TODO: enable and fix in travis-ci
-    # gem "memcached", ">= 0.20.1"
+    gem "memcached", ">= 0.20.1" unless ENV['TRAVIS']
   end
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
   end
   # TODO: It seems not compat with memcached.
-  # platform :jruby do
-  #   gem "jruby-memcache-client"
-  # end
+  platform :jruby do
+    gem "jruby-memcache-client" unless ENV['TRAVIS']
+  end
 end
 
 %w[
