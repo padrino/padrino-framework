@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "MounterFunctions" do
+describe "Mounter" do
   class ::TestApp < Padrino::Application; end
 
   def setup

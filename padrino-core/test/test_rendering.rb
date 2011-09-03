@@ -100,7 +100,7 @@ describe "Rendering" do
     end
 
     should 'by default use html file when no other is given' do
-      create_layout :foo, "html file", :format => :html
+      create_view :foo, "html file", :format => :html
 
       mock_app do
         get('/content_type_test', :provides => [:html, :xml]) { render :foo }
