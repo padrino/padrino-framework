@@ -43,16 +43,6 @@ class MiniTest::Spec
     assert matcher.matches?(html), matcher.failure_message
   end
 
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    orig_stdout = $stdout
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = orig_stdout
-    log_buffer.rewind && log_buffer.read
-  end
-
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"
@@ -70,7 +60,7 @@ end
 
 module Webrat
   module Logging
-    def logger # # @private
+    def logger # @private
       @logger = nil
     end
   end

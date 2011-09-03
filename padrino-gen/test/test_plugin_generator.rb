@@ -13,9 +13,9 @@ describe "PluginGenerator" do
   context "the plugin destroy option" do
     should "remove the plugin instance" do
       path = File.expand_path('../fixtures/plugin_template.rb', __FILE__)
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      silence_logger { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:plugin, path, "--root=#{@apptmp}/sample_project", '-d') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/lib/hoptoad_init.rb")
       assert_no_match_in_file(/enable \:raise_errors/,"#{@apptmp}/sample_project/app/app.rb")
       assert_no_match_in_file(/rack\_hoptoad/, "#{@apptmp}/sample_project/Gemfile")
@@ -35,7 +35,7 @@ describe "PluginGenerator" do
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"
       expects_generated :controller, "users get:index -r=#{@apptmp}/sample_project --app=testapp"
       example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
     end
   end
 
@@ -45,7 +45,7 @@ describe "PluginGenerator" do
       template_file = 'http://www.example.com/test.rb'
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(template_file).returns(true).once
-      silence_logger { project_gen.invoke_all }
+      capture_io { project_gen.invoke_all }
     end
 
     should "resolve gist url properly" do
@@ -54,7 +54,7 @@ describe "PluginGenerator" do
       resolved_path = 'https://gist.github.com/raw/357045/4356/blog_template.rb'
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
-      silence_logger { project_gen.invoke_all }
+      capture_io { project_gen.invoke_all }
     end
 
     should "resolve official template" do
@@ -62,14 +62,14 @@ describe "PluginGenerator" do
       resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/templates/sampleblog_template.rb"
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
-      silence_logger { project_gen.invoke_all }
+      capture_io { project_gen.invoke_all }
     end
 
     should "resolve local file" do
       template_file = 'path/to/local/file.rb'
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(File.expand_path(template_file)).returns(true).once
-      silence_logger { project_gen.invoke_all }
+      capture_io { project_gen.invoke_all }
     end
 
     should "resolve official plugin" do
@@ -78,7 +78,7 @@ describe "PluginGenerator" do
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
-      silence_logger { plugin_gen.invoke_all }
+      capture_io { plugin_gen.invoke_all }
     end
   end
 
@@ -89,7 +89,7 @@ describe "PluginGenerator" do
       expects_git :add, :arguments => '.', :root => "#{@apptmp}/sample_git"
       expects_git :commit, :arguments => 'hello', :root => "#{@apptmp}/sample_git"
       git_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'git_template.rb')
-      silence_logger { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '> /dev/null') }
+      capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end
 
@@ -98,7 +98,7 @@ describe "PluginGenerator" do
       expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_rake', :root => "#{@apptmp}"
       expects_rake "custom", :root => "#{@apptmp}/sample_rake"
       rake_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'rake_template.rb')
-      silence_logger { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
+      capture_io { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end
 
@@ -111,7 +111,7 @@ describe "PluginGenerator" do
       expects_rake "ar:migrate", :root => "#{@apptmp}/sample_admin"
       expects_generated :admin_page, "post -r=#{@apptmp}/sample_admin"
       admin_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'admin_template.rb')
-      silence_logger { generate(:project, 'sample_admin', "-p=#{admin_template_path}", "-r=#{@apptmp}", '> /dev/null') }
+      capture_io { generate(:project, 'sample_admin', "-p=#{admin_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end
 end

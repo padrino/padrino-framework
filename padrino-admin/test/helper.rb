@@ -14,17 +14,6 @@ require 'padrino-admin'
 Padrino::Generators.load_components!
 
 module Kernel
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    $stdout = $stderr = log_buffer = StringIO.new
-    block.call
-    $stdout = STDOUT
-    $stderr = STDERR
-    log_buffer.string
-  end
-  alias :silence_stdout :silence_logger
-
   def load_fixture(file)
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)

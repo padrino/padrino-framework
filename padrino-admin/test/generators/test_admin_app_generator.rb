@@ -14,22 +14,22 @@ describe "AdminAppGenerator" do
   context 'the admin app generator' do
 
     should 'fail outside app root' do
-      output = silence_logger { generate(:admin_app, "-r=#{@apptmp}") }
+      output = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/admin')
     end
 
     should 'fail if we don\'t specify an orm' do
-      assert_raises(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
+      assert_raises(SystemExit) { capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
     should 'fail if we don\'t specify a valid theme' do
-      assert_raises(SystemExit) { silence_logger { generate(:admin_app, "-r=#{@apptmp}/sample_project", '--theme=foo') } }
+      assert_raises(SystemExit) { capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project", '--theme=foo') } }
     end
 
     should 'correctly generate a new padrino admin application with default renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/admin")
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
@@ -60,8 +60,8 @@ describe "AdminAppGenerator" do
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/admin")
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
@@ -92,8 +92,8 @@ describe "AdminAppGenerator" do
     end
 
     should 'correctly generate a new padrino admin application with slim renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/admin")
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
@@ -124,8 +124,8 @@ describe "AdminAppGenerator" do
     end
 
     should 'correctly generate a new padrino admin application with model in non-default application path' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
-      silence_logger { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/admin")
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
@@ -157,7 +157,7 @@ describe "AdminAppGenerator" do
     end
 
     should 'not conflict with existing seeds file' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
 
       # Add seeds file
       FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
@@ -165,7 +165,7 @@ describe "AdminAppGenerator" do
         seeds_rb.puts "# Old Seeds Content"
       end
 
-      silence_logger do
+      capture_io do
         $stdout.expects(:print).with { |value| value =~ /Overwrite\s.*?\/db\/seeds.rb/ }.never
         $stdin.stubs(:gets).returns('y')
         generate(:admin_app, "--root=#{@apptmp}/sample_project")
@@ -176,8 +176,8 @@ describe "AdminAppGenerator" do
     end
 
     should "navigate completely inside an app with activerecord" do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord", "-e=haml", "--dev") }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord", "-e=haml", "--dev") }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       skip "Check bundle install and rake"
       bundle(:install, :gemfile => "#{@apptmp}/sample_project/Gemfile", :path => "#{@apptmp}/bundle")
       cli(:rake, '-T', "-c=#{@apptmp}/sample_project")

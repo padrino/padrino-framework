@@ -14,13 +14,13 @@ describe "Cli" do
   context 'the cli' do
 
     should "fail without arguments" do
-      output = silence_logger { generate(:cli) }
-      assert_match "Please specify generator to use", output
+      out, err = capture_io { generate(:cli) }
+      assert_match(/Please specify generator to use/, out)
     end
 
     should "work correctly if we have a project" do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      silence_logger { generate(:cli, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:cli, "--root=#{@apptmp}/sample_project") }
       skip "Make a great asserition"
     end
   end

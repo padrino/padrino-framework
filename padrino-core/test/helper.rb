@@ -12,25 +12,6 @@ require 'rack'
 # this issue for now we remove extra values from mimetypes.
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
-module Kernel
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = STDOUT
-    log_buffer.string
-  end
-  alias :silence_stdout :silence_logger
-
-  def silence_warnings
-    old_verbose, $VERBOSE = $VERBOSE, nil
-    yield
-  ensure
-    $VERBOSE = old_verbose
-  end
-end
-
 class Class
   # Allow assertions in request context
   include MiniTest::Assertions

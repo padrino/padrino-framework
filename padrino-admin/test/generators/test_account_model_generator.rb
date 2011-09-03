@@ -13,8 +13,8 @@ describe "AccountModelGenerator" do
   # COUCHREST
   context 'account model using couchrest' do
     setup do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=couchrest') }
-      silence_logger { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=couchrest') }
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
       
       @model = "#{@apptmp}/sample_project/admin/models/account.rb"
     end

@@ -4,7 +4,7 @@ describe "Dependencies" do
   context 'when we require a dependency that have another dependency' do
 
     should 'raise an error without reloading it twice' do
-      silence_warnings do
+      capture_io do
         assert_raises(RuntimeError) do
           Padrino.require_dependencies(
             Padrino.root("fixtures/dependencies/a.rb"),
@@ -18,7 +18,7 @@ describe "Dependencies" do
     end
 
     should 'resolve dependency problems' do
-      silence_warnings do
+      capture_io do
         Padrino.require_dependencies(
           Padrino.root("fixtures/dependencies/a.rb"),
           Padrino.root("fixtures/dependencies/b.rb"),
@@ -30,7 +30,7 @@ describe "Dependencies" do
     end
 
     should 'remove partially loaded constants' do
-      silence_warnings do
+      capture_io do
         Padrino.require_dependencies(
           Padrino.root("fixtures/dependencies/circular/e.rb"),
           Padrino.root("fixtures/dependencies/circular/f.rb"),

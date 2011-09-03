@@ -26,22 +26,22 @@ describe "AdminPageGenerator" do
   context 'the admin page generator' do
 
     should 'fail outside app root' do
-      output = silence_logger { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
+      output = capture_io { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
       assert_match(/not at the root/, output)
       assert_no_file_exists('/tmp/admin')
     end
 
     should 'fail without argument and model' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_raises(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
     end
 
     should 'correctly generate a new padrino admin application default renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/people.rb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/_form.haml"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/edit.haml"
@@ -57,15 +57,15 @@ describe "AdminPageGenerator" do
     end
 
     should "store and apply session_secret" do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=erb') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/people.rb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/_form.erb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/edit.erb"
@@ -81,10 +81,10 @@ describe "AdminPageGenerator" do
     end
 
     should 'correctly generate a new padrino admin application with slim renderer' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=slim') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=slim') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/people.rb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/_form.slim"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/edit.slim"
@@ -100,11 +100,11 @@ describe "AdminPageGenerator" do
     end
 
     should 'correctly generate a new padrino admin application with multiple models' do
-      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
-      silence_logger { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:model, 'page', "name:string", "body:string", "-root=#{@apptmp}/sample_project") }
-      silence_logger { generate(:admin_page, 'person', 'page', "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'page', "name:string", "body:string", "-root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'person', 'page', "--root=#{@apptmp}/sample_project") }
       # For Person
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/people.rb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/people/_form.haml"
