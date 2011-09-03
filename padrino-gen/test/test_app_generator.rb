@@ -18,8 +18,8 @@ describe "AppGenerator" do
     end
 
     should "create correctly a new padrino application" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") } }
-      assert_nothing_raised { silence_logger { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") } }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      silence_logger { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/demo")
       assert_file_exists("#{@apptmp}/sample_project/demo/app.rb")
@@ -35,8 +35,8 @@ describe "AppGenerator" do
     end
 
     should "generate tiny app skeleton" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") } }
-      assert_nothing_raised { silence_logger { generate(:app, 'demo','--tiny',"--root=#{@apptmp}/sample_project") } }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      silence_logger { generate(:app, 'demo','--tiny',"--root=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/demo")
       assert_file_exists("#{@apptmp}/sample_project/demo/helpers.rb")

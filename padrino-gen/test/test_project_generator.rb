@@ -13,7 +13,7 @@ describe "ProjectGenerator" do
 
   context 'the project generator' do
     should "allow simple generator to run and create base_app with no options" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") } }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/class SampleProject < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/Padrino.mount\("SampleProject"\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
@@ -49,7 +49,7 @@ describe "ProjectGenerator" do
     end
 
     should "allow specifying alternate application name" do
-      assert_nothing_raised { silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') } }
+      silence_logger { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/class BaseApp < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/Padrino.mount\("BaseApp"\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
@@ -58,7 +58,7 @@ describe "ProjectGenerator" do
     end
 
     should "generate tiny skeleton" do
-      assert_nothing_raised { silence_logger { generate(:project,'sample_project', '--tiny',"--root=#{@apptmp}") } }
+      silence_logger { generate(:project,'sample_project', '--tiny',"--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/app")
       assert_file_exists("#{@apptmp}/sample_project/app/controllers.rb")
