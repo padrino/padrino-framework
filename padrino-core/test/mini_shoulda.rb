@@ -1,5 +1,6 @@
 require 'minitest/spec'
 require 'minitest/autorun'
+require 'purdytest'
 
 class MiniTest::Spec
   class << self
