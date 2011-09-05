@@ -26,6 +26,9 @@ module Padrino
       # Show help if no argv given
       require_arguments!
 
+      # Execute mailer generation
+      #
+      # @api private
       def create_mailer
         self.destination_root = options[:root]
         if in_app_root?

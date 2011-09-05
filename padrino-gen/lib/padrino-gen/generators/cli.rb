@@ -15,6 +15,8 @@ module Padrino
 
       # We need to TRY to load boot because some of our app dependencies maybe have
       # custom generators, so is necessary know who are.
+      #
+      # @api private
       def load_boot
         begin
           ENV['PADRINO_LOG_LEVEL'] ||= "test"
@@ -35,6 +37,7 @@ module Padrino
         end
       end
 
+      # @api private
       def setup
         Padrino::Generators.load_components!
 

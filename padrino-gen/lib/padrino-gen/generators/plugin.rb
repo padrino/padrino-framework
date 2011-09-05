@@ -28,6 +28,8 @@ module Padrino
       require_arguments!
 
       # Create the Padrino Plugin
+      #
+      # @api private
       def setup_plugin
         if options[:list] # list method ran here
           plugins = {}

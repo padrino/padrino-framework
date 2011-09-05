@@ -8,6 +8,13 @@ module Padrino
   # This method return the correct location of padrino-gen bin or
   # exec it using Kernel#system with the given args
   #
+  # @param [Array<String>] args
+  #   Splat of arguments to pass to padrino-gen
+  #
+  # @example
+  #   Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
+  #
+  # @api semipublic
   def self.bin_gen(*args)
     @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path("../../bin/padrino-gen", __FILE__)]
     args.empty? ? @_padrino_gen_bin : system(args.unshift(@_padrino_gen_bin).join(" "))
@@ -35,6 +42,7 @@ module Padrino
       ##
       # Here we store our generators paths
       #
+      # @api semipublic
       def load_paths
         @_files ||= []
       end
@@ -42,6 +50,7 @@ module Padrino
       ##
       # Return a ordered list of task with their class
       #
+      # @api semipublic
       def mappings
         @_mappings ||= ActiveSupport::OrderedHash.new
       end
@@ -49,6 +58,17 @@ module Padrino
       ##
       # Gloabl add a new generator class to +padrino-gen+
       #
+      # @param [Symbol] name
+      #   key name for generator mapping
+      # @param [Class] klass
+      #   class of generator
+      #
+      # @return [Hash] generator mappings
+      #
+      # @example
+      #   Padrino::Generators.add_generator(:controller, Controller)
+      #
+      # @api semipublic
       def add_generator(name, klass)
         mappings[name] = klass
       end
@@ -56,6 +76,7 @@ module Padrino
       ##
       # Load Global Actions and Component Actions then all files in +load_path+.
       #
+      # @api private
       def load_components!
         require 'padrino-gen/generators/actions'
         require 'padrino-gen/generators/components/actions'

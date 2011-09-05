@@ -26,6 +26,8 @@ module Padrino
       require_arguments!
 
       # Copies over the Padrino base admin application
+      #
+      # @api private
       def create_app
         self.destination_root = options[:root]
         @app_name = name.gsub(/\W/, "_").underscore.camelize

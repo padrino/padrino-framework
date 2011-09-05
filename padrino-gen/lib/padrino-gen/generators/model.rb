@@ -27,6 +27,9 @@ module Padrino
       # Show help if no argv given
       require_arguments!
 
+      # Execute the model generation
+      #
+      # @api private
       def create_model
         self.destination_root = options[:root]
         if in_app_root?

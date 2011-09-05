@@ -4,8 +4,24 @@ module Padrino
       module Actions
         # For orm database components
         # Generates the model migration file created when generating a new model
-        # options => { :base => "....text...", :up => "..text...",
-        #             :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
+        #
+        # @param [String] filename
+        #   File name of model migration
+        # @param [String] name
+        #   Name of model
+        # @param [Array<String>] columns
+        #   Array of column names and property type
+        # @param [Hash] options
+        #   Additional migration options, e.g { :base => "....text...", :up => "..text...",
+        #                                       :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
+        # @example
+        #
+        # output_model_migration("AddPerson", "person", ["name:string", "age:integer"],
+        #      :base => AR_MIGRATION,
+        #      :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+        #      :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
+        #
+        # @api private
         def output_model_migration(filename, name, columns, options={})
           if behavior == :revoke
             remove_migration(filename)
@@ -27,9 +43,25 @@ module Padrino
 
         # For orm database components
         # Generates a standalone migration file based on the given options and columns
-        # options => { :base "...text...", :change_format => "...text...",
-        #              :add => proc { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
-        #              :remove => proc { |field, kind| "remove_column :#{table_name}, :#{field}" }
+        #
+        # @param [String] filename
+        #   File name of model migration
+        # @param [String] name
+        #   Name of model
+        # @param [Array<String>] columns
+        #   Array of column names and property type
+        # @param [Hash] options
+        #   Additional migration options, e.g { :base "...text...", :change_format => "...text...",
+        #                                       :add => proc { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
+        #                                       :remove => proc { |field, kind| "remove_column :#{table_name}, :#{field}" }
+        # @example
+        #   output_migration_file(migration_name, name, columns,
+        #     :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
+        #     :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+        #     :remove => Proc.new { |field, kind| "t.remove :#{field}" }
+        #   )
+        #
+        # @api private
         def output_migration_file(filename, name, columns, options={})
           if behavior == :revoke
             remove_migration(name)
@@ -56,6 +88,8 @@ module Padrino
 
         # For migration files
         # returns the number of the latest(most current) migration file
+        #
+        # @api private
         def return_last_migration_number
           Dir[destination_root('db/migrate/*.rb')].map { |f|
             File.basename(f).match(/^(\d+)/)[0].to_i
@@ -63,12 +97,24 @@ module Padrino
         end
 
         # Return true if the migration already exist
+        #
+        # @param [String] filename
+        #   File name of the migration file
+        #
+        # @param [Boolean] Boolean if file exists
+        #
+        # @api private
         def migration_exist?(filename)
           Dir[destination_root("db/migrate/*_#{filename.underscore}.rb")].size > 0
         end
 
         # For the removal of migration files
         # removes the migration file based on the migration name
+        #
+        # @param [String] name
+        #   File name of the migration
+        #
+        # @api private
         def remove_migration(name)
           migration_path =  Dir[destination_root('db/migrate/*.rb')].find do |f|
             File.basename(f) =~ /#{name.to_s.underscore}/
@@ -81,8 +127,17 @@ module Padrino
 
         # For testing components
         # Injects the test class text into the test_config file for setting up the test gen
-        # insert_test_suite_setup('...CLASS_NAME...')
-        # => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
+        #
+        # @param [String] suite_text
+        #   Class name for test suite
+        # @param [Hash] options
+        #   Additional options to pass into injection
+        #
+        # @example
+        #   insert_test_suite_setup('...CLASS_NAME...')
+        #   => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
+        #
+        # @api private
         def insert_test_suite_setup(suite_text, options={})
           options.reverse_merge!(:path => "test/test_config.rb")
           create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @app_name))
@@ -90,8 +145,17 @@ module Padrino
 
         # For mocking components
         # Injects the mock library include into the test class in test_config for setting up mock gen
-        # insert_mock_library_include('Mocha::API')
-        # => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
+        #
+        # @param [String] library_name
+        #   name of mocking library
+        # @param [Hash] options
+        #   Additional options to pass into injection
+        #
+        # @example
+        #   insert_mock_library_include('Mocha::API')
+        #   => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
+        #
+        # @api private
         def insert_mocking_include(library_name, options={})
           options.reverse_merge!(:indent => 2, :after => /class.*?\n/, :path => "test/test_config.rb")
           return unless File.exist?(destination_root(options[:path]))
@@ -100,13 +164,25 @@ module Padrino
         end
 
         # Returns space characters of given count
-        # indent_spaces(2)
+        #
+        # @example
+        #   indent_spaces(2)
+        #
+        # @api private
         def indent_spaces(count)
           ' ' * count
         end
 
         # For Controller action generation
         # Takes in fields for routes in the form of get:index post:test delete:yada and such
+        #
+        # @param [Array<String>] fields
+        #   Array of controller actions and route name
+        #
+        # @example
+        #   controller_actions "get:index", "post:test"o
+        #
+        # @api private
         def controller_actions(fields)
           field_tuples = fields.map { |value| value.split(":") }
           action_declarations = field_tuples.map do |request, name|

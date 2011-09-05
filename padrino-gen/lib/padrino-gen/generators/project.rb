@@ -42,6 +42,8 @@ module Padrino
       require_arguments!
 
       # Copies over the Padrino base application App
+      #
+      # @api private
       def setup_project
         valid_constant?(options[:app] || name)
         @app_name = (options[:app] || name).gsub(/\W/, "_").underscore.camelize
@@ -61,6 +63,8 @@ module Padrino
       end
 
       # For each component, retrieve a valid choice and then execute the associated generator
+      #
+      # @api private
       def setup_components
         return if options[:template]
         @_components = options.dup.slice(*self.class.component_types)
@@ -72,6 +76,8 @@ module Padrino
       end
 
       # Bundle all required components using bundler and Gemfile
+      #
+      # @api private
       def bundle_dependencies
         if options[:bundle]
           run_bundler
@@ -79,6 +85,8 @@ module Padrino
       end
 
       # Finish message
+      #
+      # @api private
       def finish_message
         say
         say "="*65, :green
