@@ -39,13 +39,13 @@ module Padrino
       #   The anchor for the link (i.e #something)
       # @option options [Boolean] :if
       #   If true, the link will appear, otherwise not;
-      # @options options [Boolean] :unless
+      # @option options [Boolean] :unless
       #   If false, the link will appear, otherwise not;
-      # @options options [Boolean] :remote
+      # @option options [Boolean] :remote
       #   If true, this link should be handled by a ajax ujs handler.
-      # @options options [String] :confirm
+      # @option options [String] :confirm
       #   Instructs ujs handler to alert confirm message.
-      # @options options [Symbol] :method
+      # @option options [Symbol] :method
       #   Instructs ujs handler to use different http method (i.e :post, :delete).
       #
       # @return [String] Link tag html with specified +options+.
@@ -92,11 +92,11 @@ module Padrino
       #   @param [Hash]    options  The html options.
       #   @param [Proc]    block    The button content.
       #
-      # @options options [Boolean] :multipart
+      # @option options [Boolean] :multipart
       #   If true, this form will support multipart encoding.
-      # @options options [String] :remote
+      # @option options [String] :remote
       #   Instructs ujs handler to handle the submit as ajax.
-      # @options options [Symbol] :method
+      # @option options [Symbol] :method
       #   Instructs ujs handler to use different http method (i.e :post, :delete).
       #
       # @return [String] Form and button html with specified +options+.
