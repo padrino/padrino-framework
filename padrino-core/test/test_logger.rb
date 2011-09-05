@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPadrinoLogger < Test::Unit::TestCase
+describe "PadrinoLogger" do
 
   def setup
     Padrino::Logger::Config[:test][:stream] = :null # The default

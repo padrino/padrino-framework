@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/simple')
 
-class TestRouter < Test::Unit::TestCase
+describe "Router" do
 
   def setup
     Padrino.clear!

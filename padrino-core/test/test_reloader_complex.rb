@@ -1,14 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/complex')
 
-class TestComplexReloader < Test::Unit::TestCase
+describe "ComplexReloader" do
 
   context 'for complex reload functionality' do
-
-    should 'correctly instantiate Complex(1-2)Demo fixture' do
+    setup do
       Padrino.clear!
       Padrino.mount("complex_1_demo").to("/complex_1_demo")
       Padrino.mount("complex_2_demo").to("/complex_2_demo")
+    end
+
+    should 'correctly instantiate Complex(1-2)Demo fixture' do
       assert_equal ["/complex_1_demo", "/complex_2_demo"], Padrino.mounted_apps.map(&:uri_root)
       assert_equal ["complex_1_demo", "complex_2_demo"], Padrino.mounted_apps.map(&:name)
       assert Complex1Demo.reload?

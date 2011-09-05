@@ -1,4 +1,4 @@
-class TestNumberHelpers < Test::Unit::TestCase
+describe "NumberHelpers" do
   include Padrino::Helpers::NumberHelpers
 
   def kilobytes(number)

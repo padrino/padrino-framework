@@ -3,10 +3,10 @@ before_script: "git submodule update --init"
 rvm:
   - 1.8.7
   - 1.9.2
-  - ruby-head
   - ree
   - rbx-2.0
-  - jruby
+  - ruby-head
+
 notifications:
   irc: "irc.freenode.org#padrino"
   recipients:

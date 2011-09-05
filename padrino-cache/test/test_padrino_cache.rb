@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPadrinoCache < Test::Unit::TestCase
+describe "PadrinoCache" do
 
   def teardown
     tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")

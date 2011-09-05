@@ -2,6 +2,7 @@ require 'rubygems' unless defined?(Gem)
 require 'rake'
 require 'rake/testtask'
 require 'bundler/gem_tasks'
+require 'yard'
 
 # Skip the releasing tag
 class Bundler::GemHelper
@@ -19,7 +20,6 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-task :default => :test
-
-require 'yard'
 YARD::Rake::YardocTask.new
+
+task :default => :test

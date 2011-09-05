@@ -1,9 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'i18n'
 
-class TestRendering < Test::Unit::TestCase
+describe "Rendering" do
   def setup
     Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
   end
 
   def teardown
@@ -100,13 +101,15 @@ class TestRendering < Test::Unit::TestCase
     end
 
     should 'by default use html file when no other is given' do
-      create_layout :foo, "html file", :format => :html
+      create_layout :baz, "html file", :format => :html
 
       mock_app do
-        get('/content_type_test', :provides => [:html, :xml]) { render :foo }
+        get('/content_type_test', :provides => [:html, :xml]) { render :baz }
       end
 
       get "/content_type_test"
+      assert_equal "html file", body
+      get "/content_type_test.html"
       assert_equal "html file", body
       get "/content_type_test.xml"
       assert_equal "html file", body
@@ -124,11 +127,11 @@ class TestRendering < Test::Unit::TestCase
 
       get "/default_rendering_test"
       assert_equal "html file", body
-      assert_raise Padrino::Rendering::TemplateNotFound do
+      assert_raises Padrino::Rendering::TemplateNotFound do
         get "/default_rendering_test.xml"
       end
 
-      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge(@save)
+      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge!(@save)
     end
 
     should 'use correct layout with each controller' do
