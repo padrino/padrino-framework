@@ -3,7 +3,6 @@ require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'm
 require 'rack/test'
 require 'rack'
 require 'uuid'
-require 'mocha'
 require 'webrat'
 require 'grit'
 require 'thor/group'

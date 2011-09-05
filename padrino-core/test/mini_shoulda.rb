@@ -1,5 +1,6 @@
 require 'minitest/spec'
 require 'minitest/autorun'
+require 'mocha' # Load mocha after minitest
 
 class MiniTest::Spec
   class << self
