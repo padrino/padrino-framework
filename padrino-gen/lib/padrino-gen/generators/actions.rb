@@ -109,7 +109,8 @@ module Padrino
       # @return [Hash] Loaded YAML file
       #
       # @example
-      #   retrieve_component_config(...) # => { :mock => 'rr', :test => 'riot', ... }
+      #   retrieve_component_config(...)
+      #   # => { :mock => 'rr', :test => 'riot', ... }
       #
       # @api private
       def retrieve_component_config(target)
@@ -144,10 +145,10 @@ module Padrino
       # @param [String] choice
       #   The name of the component module
       #
-      # @return [Boolean] Boolean of whether the choice is valid
+      # @return [Boolean] Boolean of whether the choice is valid.
       #
       # @example
-      #   valid_choice?(:mock, 'rr')
+      #   valid_choice?(:mock, 'rr') => true
       #
       # @api public
       def valid_choice?(component, choice)
@@ -158,7 +159,7 @@ module Padrino
       # Content is a yamlized version of a hash containing component name mapping to chosen value
       #
       # @param [String] destination
-      #   The file path to store the component config
+      #   The file path to store the component config.
       #
       # @example
       #   store_component_config '/foo/bar'
@@ -193,7 +194,7 @@ module Padrino
       # @return [Boolean] Boolean if in app root
       #
       # @example
-      #   in_app_root?
+      #   in_app_root? => true
       #
       # @api public
       def in_app_root?
@@ -208,7 +209,7 @@ module Padrino
       # @return [Array<String>] array of invalid fields
       #
       # @example
-      #   invalid_fields ['foo:bar','hello:world']
+      #   invalid_fields ['foo:bar', 'hello:world']
       #
       # @api semipublic
       def invalid_fields(fields)
@@ -224,7 +225,8 @@ module Padrino
       # @return [String] class name for application
       #
       # @example
-      #   fetch_app_name 'subapp' #=> SubApp
+      #   fetch_app_name 'subapp'
+      #   #=> SubApp
       #
       # @api public
       def fetch_app_name(app='app')
@@ -485,6 +487,7 @@ module Padrino
         #
         # @example
         #   available_choices_for :test
+        #   => [:shoulda, :bacon, :riot]
         #
         # @api semipublic
         def available_choices_for(component)
