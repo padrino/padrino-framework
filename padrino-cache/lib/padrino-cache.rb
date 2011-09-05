@@ -8,7 +8,7 @@ module Padrino
     ##
     # Returns the caching engine
     #
-    # @examples
+    # @example
     #   # with: Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
     #   Padrino.cache.set('val', 'test')
     #   Padrino.cache.get('val') # => 'test'
@@ -26,7 +26,7 @@ module Padrino
     # @param value
     #   Instance of Padrino::Cache::Store
     #
-    # @examples
+    # @example
     #   Padrino.cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
     #   Padrino.cache = Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
     #   Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
@@ -34,12 +34,12 @@ module Padrino
     #   Padrino.cache = Padrino::Cache::Store::Memory.new(50)
     #   Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
     #
-    #   You can manage your cache from anywhere in your app:
+    #   # You can manage your cache from anywhere in your app:
     #
-    #     Padrino.cache.set('val', 'test')
-    #     Padrino.cache.get('val') # => 'test'
-    #     Padrino.cache.delete('val')
-    #     Padrino.cache.flush
+    #   Padrino.cache.set('val', 'test')
+    #   Padrino.cache.get('val') # => 'test'
+    #   Padrino.cache.delete('val')
+    #   Padrino.cache.flush
     #
     # @api public
     def cache=(value)

@@ -117,7 +117,7 @@ module Padrino
       #   execute_runner(:plugin, 'path/to/local/file')
       #   execute_runner(:plugin, 'hoptoad')
       #   execute_runner(:template, 'sampleblog')
-      #   execute_runner(:template, 'http://gist.github.com/357045')
+      #   execute_runner(:template, 'https://gist.github.com/357045')
       #
       # @api private
       def execute_runner(kind, template_file)

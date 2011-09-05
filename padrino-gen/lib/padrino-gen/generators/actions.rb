@@ -379,7 +379,7 @@ module Padrino
         unless File.exist?(destination_root(app))
           say
           say "================================================================="
-          say "Unable find #{app.underscore.camelize}!                          "
+          say "Unable to locate '#{app.underscore.camelize}' application        "
           say "================================================================="
           say
           # raise SystemExit
