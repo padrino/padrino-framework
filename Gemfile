@@ -2,13 +2,12 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 
 source :rubygems
 
-minitest_version = "1.6.0"
 
 group :db do
-  gem "dm-core", ">= 1.0"
-  gem "dm-migrations", ">= 1.0"
-  gem "dm-validations", ">= 1.0"
-  gem "dm-aggregates", ">= 1.0"
+  gem "dm-core",           ">= 1.0"
+  gem "dm-migrations",     ">= 1.0"
+  gem "dm-validations",    ">= 1.0"
+  gem "dm-aggregates",     ">= 1.0"
   gem "dm-sqlite-adapter", ">= 1.0"
 end
 
@@ -17,34 +16,30 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
-  gem "json", "1.5.3"
-  gem "nokogiri", "1.4.4"
-  gem "rack", "~> 1.3.0"
-  gem "rake", ">= 0.8.7"
-  gem "yard", ">= 0.7.2"
-  gem "mocha", ">= 0.9.8"
+  gem "json",      "1.5.3"
+  gem "nokogiri",  "1.4.4"
+  gem "rack",      "~> 1.3.0"
+  gem "rake",      ">= 0.8.7"
+  gem "yard",      ">= 0.7.2"
   gem "rack-test", ">= 0.5.0"
-  gem "fakeweb",  ">=1.2.8"
-  gem "webrat", "= 0.5.1"
-  gem "haml", ">= 2.2.22"
-  gem "erubis", ">= 2.7.0"
-  gem "slim", ">= 0.9.2"
-  gem "uuid", ">= 2.3.1"
+  gem "fakeweb",   ">=1.2.8"
+  gem "webrat",    "= 0.5.1"
+  gem "haml",      ">= 2.2.22"
+  gem "erubis",    ">= 2.7.0"
+  gem "slim",      ">= 0.9.2"
+  gem "uuid",      ">= 2.3.1"
+  gem "builder",   ">= 2.1.2"
   gem "bcrypt-ruby", :require => "bcrypt"
-  gem "builder", ">= 2.1.2"
   platforms :mri_18 do
-    gem "rcov", "~> 0.9.8"
-    gem "ruby-prof", ">= 0.9.1"
+    gem "rcov",         "~> 0.9.8"
+    gem "ruby-prof",    ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
   platforms :jruby do
     gem "jruby-openssl"
   end
-  ##
-  # Mocha doesn't play nice on latest minitest, so, for compatiblity
-  # reasons we use the same version included in the most stable ruby, 1.9.2
-  #
-  gem 'minitest', '1.6.0'
+  gem "mocha",    "~>0.10.0"
+  gem "minitest", "~>2.5.1"
 end
 
 group :cache do
