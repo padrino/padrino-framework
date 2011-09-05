@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestAdminApplication < Test::Unit::TestCase
+describe "AdminApplication" do
 
   def setup
     load_fixture 'data_mapper'

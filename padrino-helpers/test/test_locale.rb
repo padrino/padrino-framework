@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestLocales < Test::Unit::TestCase 
+describe "Locale Helpers" do
   Dir[File.expand_path("../../lib/padrino-helpers/locale/*.yml", __FILE__)].each do |file|
     base_original = YAML.load_file(file)
     name = File.basename(file, '.yml')

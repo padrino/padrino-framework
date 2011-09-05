@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestCore < Test::Unit::TestCase
+describe "Core" do
   def setup
     Padrino.clear!
   end
@@ -42,7 +42,7 @@ class TestCore < Test::Unit::TestCase
     end
 
     should 'raise application error if I instantiate a new padrino application without mounted apps' do
-      assert_raise(Padrino::ApplicationLoadError) { Padrino.application.new }
+      assert_raises(Padrino::ApplicationLoadError) { Padrino.application.new }
     end
 
     should "check before/after padrino load hooks" do

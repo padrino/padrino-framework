@@ -2,42 +2,22 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
 require File.expand_path('../../../load_paths', __FILE__)
+require File.expand_path('../mini_shoulda', __FILE__)
 require 'padrino-core'
 require 'json'
-require 'test/unit'
 require 'rack/test'
 require 'rack'
-require 'shoulda'
 
 # Rubies < 1.9 don't handle hashes in the properly order so to prevent
 # this issue for now we remove extra values from mimetypes.
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
-module Kernel
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = STDOUT
-    log_buffer.string
-  end
-  alias :silence_stdout :silence_logger
-
-  def silence_warnings
-    old_verbose, $VERBOSE = $VERBOSE, nil
-    yield
-  ensure
-    $VERBOSE = old_verbose
-  end
-end
-
 class Class
   # Allow assertions in request context
-  include Test::Unit::Assertions
+  include MiniTest::Assertions
 end
 
-class Test::Unit::TestCase
+class MiniTest::Spec
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block

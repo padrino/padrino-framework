@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/render_app/app')
 
-class TestRenderHelpers < Test::Unit::TestCase
+describe "RenderHelpers" do
   def app
     RenderDemo.tap { |app| app.set :environment, :test }
   end

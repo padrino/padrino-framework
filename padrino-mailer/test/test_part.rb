@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPart < Test::Unit::TestCase
+describe "Part" do
 
   context "the part" do
     should "use correctly parts" do
