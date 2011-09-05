@@ -7,7 +7,7 @@ module Padrino
       # By default, cached content is persisted with a "file store"--that is, in a
       # subdirectory of your application root.
       #
-      # ==== Examples
+      # @example
       #   # Setting content expiry time
       #   class CachedApp < Padrino::Application
       #     enable :caching          # turns on caching mechanism
@@ -43,6 +43,20 @@ module Padrino
         # be executed; rather, its previous output will be sent to the client with a
         # 200 OK status code.
         #
+        # @param [Integer] time
+        #   Time til expiration (seconds)
+        #
+        # @example
+        #   controller '/blog', :cache => true do
+        #     expires_in 15
+        #
+        #     get '/entries' do
+        #       # expires_in 15 => can also be defined inside a single route
+        #       'just broke up eating twinkies lol'
+        #     end
+        #   end
+        #
+        # @api public
         def expires_in(time)
           @_last_expires_in = time
         end
@@ -50,10 +64,24 @@ module Padrino
         ##
         # This helper is used within a route or route to indicate the name in the cache.
         #
+        # @param [Symbol] name
+        #   cache key
+        #
+        # @example
+        #   controller '/blog', :cache => true do
+        #
+        #     get '/post/:id' do
+        #       cache_key :my_name
+        #       @post = Post.find(params[:id])
+        #     end
+        #   end
+        #
+        # @api public
         def cache_key(name)
           @_cache_key = name
         end
 
+        # @api private
         def self.padrino_route_added(route, verb, path, args, options, block) # @private
           if route.cache and %w(GET HEAD).include?(verb)
             route.add_before_filter(Proc.new {

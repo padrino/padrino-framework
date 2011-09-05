@@ -8,11 +8,17 @@ module Padrino
         ##
         # Initialize Mongo store with client connection and optional username and password.
         #
-        # ==== Examples
+        # @param client
+        #   Instance of Mongo connection
+        # @param [Hash] opts
+        #   optiosn to pass into Mongo connection
+        #
+        # @example
         #   Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #
+        # @api public
         def initialize(client, opts={})
           @client = client
           @options = {
@@ -31,7 +37,10 @@ module Padrino
         ##
         # Return the a value for the given key
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        #
+        # @example
         #   # with MyApp.cache.set('records', records)
         #   MyApp.cache.get('records')
         #
@@ -45,10 +54,16 @@ module Padrino
         # Set or update the value for a given key and optionally with an expire time
         # Default expiry is Time.now + 86400s.
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        # @param value
+        #   value of cache key
+        #
+        # @example
         #   MyApp.cache.set('records', records)
         #   MyApp.cache.set('records', records, :expires_in => 30) # => 30 seconds
         #
+        # @api public
         def set(key, value, opts = nil)
           key = key.to_s
           value = BSON::Binary.new(Marshal.dump(value)) if value
@@ -67,10 +82,14 @@ module Padrino
         ##
         # Delete the value for a given key
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        #
+        # @example
         #   # with: MyApp.cache.set('records', records)
         #   MyApp.cache.delete('records')
         #
+        # @api public
         def delete(key)
           if not @options[:capped]
             @backend.remove({:_id => key})
@@ -83,17 +102,20 @@ module Padrino
         ##
         # Reinitialize your cache
         #
-        # ==== Examples
+        # @example
         #   # with: MyApp.cache.set('records', records)
         #   MyApp.cache.flush
         #   MyApp.cache.get('records') # => nil
         #
+        # @api public
         def flush
           @backend.drop
           @backend = get_collection
         end
 
         private
+
+        # @api private
         def get_collection
           if @client.collection_names.include?(@options[:collection]) or !@options[:capped]
             @client.collection @options[:collection]

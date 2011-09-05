@@ -8,11 +8,15 @@ module Padrino
         ##
         # Initialize File store with File root
         #
-        # ==== Examples
+        # @param [String] root
+        #   path to cache file
+        #
+        # @example
         #   Padrino.cache = Padrino::Cache::Store::File.new("path/to")
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::File.new("path/to")
         #
+        # @api public
         def initialize(root)
           @root = root
         end
@@ -20,10 +24,14 @@ module Padrino
         ##
         # Return the a value for the given key
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        #
+        # @example
         #   # with MyApp.cache.set('records', records)
         #   MyApp.cache.get('records')
         #
+        # @api public
         def get(key)
           init
           if ::File.exist?(path_for_key(key))
@@ -45,10 +53,16 @@ module Padrino
         # Set the value for a given key and optionally with an expire time
         # Default expiry time is 86400.
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        # @param value
+        #   value of cache key
+        #
+        # @example
         #   MyApp.cache.set('records', records)
         #   MyApp.cache.set('records', records, :expires_in => 30) # => 30 seconds
         #
+        # @api public
         def set(key, value, opts = nil)
           init
           if opts && opts[:expires_in]
@@ -64,10 +78,16 @@ module Padrino
         ##
         # Delete the value for a given key
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        # @param value
+        #   value of cache key
+        #
+        # @example
         #   # with: MyApp.cache.set('records', records)
         #   MyApp.cache.delete('records')
         #
+        # @api public
         def delete(key)
           init
           Array(key).each { |k| FileUtils.rm_rf(path_for_key(k)) }
@@ -76,23 +96,27 @@ module Padrino
         ##
         # Reinitialize your cache
         #
-        # ==== Examples
+        # @example
         #   # with: MyApp.cache.set('records', records)
         #   MyApp.cache.flush
         #   MyApp.cache.get('records') # => nil
         #
+        # @api public
         def flush
           FileUtils.rm_rf(@root)
         end
 
         private
-          def path_for_key(key)
-            ::File.join(@root, Rack::Utils.escape(key.to_s))
-          end
 
-          def init
-            FileUtils.mkdir_p(@root) unless ::File.exist?(@root)
-          end
+        # @api private
+        def path_for_key(key)
+          ::File.join(@root, Rack::Utils.escape(key.to_s))
+        end
+
+        # @api private
+        def init
+          FileUtils.mkdir_p(@root) unless ::File.exist?(@root)
+        end
       end # File
     end # Store
   end # Cache

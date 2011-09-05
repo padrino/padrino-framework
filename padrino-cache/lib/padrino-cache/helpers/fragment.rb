@@ -20,7 +20,14 @@ module Padrino
         # This helper is used anywhere in your application you would like to associate a fragment
         # to be cached. It can be used in within a route:
         #
-        # ==== Examples
+        # @param [String] key
+        #   cache key
+        # @param [Hash] opts
+        #   cache options, e.g :expires_in
+        # @param [Proc]
+        #   Execution result to store in the cache
+        #
+        # @example
         #   # Caching a fragment
         #   class MyTweets < Padrino::Application
         #     enable :caching          # turns on caching mechanism
@@ -40,6 +47,7 @@ module Padrino
         #     end
         #   end
         #
+        # @api public
         def cache(key, opts = nil, &block)
           if settings.caching?
             began_at = Time.now
