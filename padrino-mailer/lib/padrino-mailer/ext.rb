@@ -25,8 +25,7 @@ module Mail # @private
     ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
     #
-    # ==== Examples
-    #
+    # @example
     #   # This add a email plain part if a template called bar.plain.* is found
     #   # and a html part if a template called bar.html.* is found
     #   email do
@@ -50,8 +49,7 @@ module Mail # @private
     # html_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
-    # ==== Examples
-    #
+    # @example
     #  text_part "Some text"
     #  text_part { render('multipart/basic.text') }
     #
@@ -69,8 +67,7 @@ module Mail # @private
     # text_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
-    # ==== Examples
-    #
+    # @example
     #  html_part "Some <b>Html</b> text"
     #  html_part { render('multipart/basic.html') }
     #
@@ -86,8 +83,7 @@ module Mail # @private
     ##
     # Allows you to add a part in block form to an existing mail message object
     #
-    # ==== Examples
-    #
+    # @example
     #  mail = Mail.new do
     #    part :content_type => "multipart/alternative", :content_disposition => "inline" do |p|
     #      p.part :content_type => "text/plain", :body => "test text\nline #2"

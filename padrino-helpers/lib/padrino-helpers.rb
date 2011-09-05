@@ -32,7 +32,7 @@ module Padrino
       #   Padrino::Helpers::RenderHelpers
       #   Padrino::Helpers::NumberHelpers
       #
-      # @param [Padrino::Application] app
+      # @param [Sinatra::Application] app
       #   The specified padrino application
       #
       # @example Register the helper module

@@ -91,7 +91,7 @@ is invoking the render function passing the <tt>name</tt> attribute to the body 
 
 Once the mailer definition has been completed and the template has been defined, the email can be sent using:
 
-  deliver(:sample, :registration_email, "Bob", "21")
+  deliver(:sample, :registration, "Bob", "21")
 
 And that will then deliver the email according the the configured options. This is all you need to send basic emails.
 

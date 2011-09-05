@@ -6,10 +6,14 @@ module Padrino
       end
 
       ##
-      # Delivers an email with the given mail attributes (to, from, subject, cc, bcc, body, et.al)
+      # Delivers an email with the given mail attributes.
       #
-      # ==== Examples
+      # @param [Hash] mail_attributes
+      #   The attributes for this message (to, from, subject, cc, bcc, body, etc)
+      # @param [Proc] block
+      #   The block mail attributes for this message.
       #
+      # @example
       #   email do
       #     to      @user.email
       #     from    "awesomeness@example.com"
@@ -18,18 +22,28 @@ module Padrino
       #     render  'path/to/my/template'
       #   end
       #
+      # @see ClassMethods#email
+      # @api public
       def email(mail_attributes={}, &block)
         settings.email(mail_attributes, &block)
       end
 
       ##
-      # Delivers a mailer message email with the given attributes
+      # Delivers a mailer message email with the given attributes.
       #
-      # ==== Examples
+      # @param [Symbol] mailer_name
+      #   The name of the mailer.
+      # @param [Symbol] message_name
+      #   The name of the message to deliver.
+      # @param attributes
+      #   The parameters to pass to the mailer.
       #
+      # @example
       #   deliver(:sample, :birthday, "Joey", 21)
       #   deliver(:example, :message, "John")
       #
+      # @see ClassMethods#deliver
+      # @api public
       def deliver(mailer_name, message_name, *attributes)
         settings.deliver(mailer_name, message_name, *attributes)
       end
@@ -42,16 +56,18 @@ module Padrino
 
         ##
         # Returns all registered mailers for this application
-        #
+        # @private
         def registered_mailers
           @_registered_mailers ||= {}
         end
 
         ##
-        # Defines a mailer object allowing the definition of various email messages that can be delivered
+        # Defines a mailer object allowing the definition of various email messages that can be delivered.
         #
-        # ==== Examples
+        # @param [Symbol] name
+        #   The name of the mailer to initialize.
         #
+        # @example
         #   mailer :sample do
         #     email :birthday do |name, age|
         #       subject 'Happy Birthday!'
@@ -62,6 +78,7 @@ module Padrino
         #     end
         #   end
         #
+        # @api public
         def mailer(name, &block)
           mailer                   = Padrino::Mailer::Base.new(self, name, &block)
           mailer.delivery_settings = delivery_settings
@@ -73,11 +90,18 @@ module Padrino
         ##
         # Delivers a mailer message email with the given attributes
         #
-        # ==== Examples
+        # @param [Symbol] mailer_name
+        #   The name of the mailer.
+        # @param [Symbol] message_name
+        #   The name of the message to deliver.
+        # @param attributes
+        #   The parameters to pass to the mailer.
         #
+        # @example
         #   deliver(:sample, :birthday, "Joey", 21)
         #   deliver(:example, :message, "John")
         #
+        # @api public
         def deliver(mailer_name, message_name, *attributes)
           message = registered_mailers[mailer_name].messages[message_name].call(*attributes)
           message.delivery_method(*delivery_settings)
@@ -85,11 +109,14 @@ module Padrino
         end
 
         ##
-        # Delivers an email with the given mail attributes (to, from, subject, cc, bcc, body, et.al) using settings of
-        # the given app.
+        # Delivers an email with the given mail attributes with specified and default settings.
         #
-        # ==== Examples
+        # @param [Hash] mail_attributes
+        #   The attributes for this message (to, from, subject, cc, bcc, body, etc)
+        # @param [Proc] block
+        #   The block mail attributes for this message.
         #
+        # @example
         #   MyApp.email(:to => 'to@ma.il', :from => 'from@ma.il', :subject => 'Welcome!', :body => 'Welcome Here!')
         #
         #   # or if you prefer blocks
@@ -101,6 +128,7 @@ module Padrino
         #     body 'path/to/my/template', :locals => { :a => a, :b => b }
         #   end
         #
+        # @api public
         def email(mail_attributes={}, &block)
           message = Mail::Message.new(self)
           message.delivery_method(*delivery_settings)
@@ -111,7 +139,7 @@ module Padrino
 
         private
           ##
-          # Return the parsed delivery method
+          # Returns the parsed delivery method options
           #
           def delivery_settings
             @_delivery_setting ||= begin

@@ -1,4 +1,4 @@
-# require tilt if available; fall back on bundled version.
+# requires tilt if available; falls back on bundled version.
 begin
   require 'tilt'
 rescue LoadError
@@ -12,19 +12,38 @@ FileSet.glob_require('padrino-mailer/**/*.rb', __FILE__)
 
 module Padrino
   ##
-  # This component uses the 'mail' library to create a powerful but simple mailer system within Padrino (and Sinatra).
-  # There is full support for using plain or html content types as well as for attaching files.
-  # The MailerPlugin has many similarities to ActionMailer but is much lighterweight and (arguably) easier to use.
+  # This component uses the +mail+ library to create a powerful but simple mailer within Padrino (and Sinatra).
+  # There is full support for using plain or html content-types as well as for file attachments.
+  #
+  # Using the mailer in Padrino has two forms. The 'quick' method requires only use
+  # of the +email+ method directly in the controller:
+  #
+  #  # app/controllers/session.rb
+  #  post :create do
+  #    email do
+  #      from "tony@reyes.com"
+  #      to "john@smith.com"
+  #      subject "Welcome!"
+  #      body render('email/registered')
+  #    end
+  #  end
+  #
+  # For a more detailed guide, please read the {Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide.
   #
   module Mailer
-    ##
-    # Register
-    #
-    #   Padrino::Mailer::Helpers
-    #
-    # for Padrino::Application
-    #
     class << self
+      ##
+      # Registers the Padrino::Mailer helpers with the application.
+      #
+      # @param [Sinatra::Application] app The application that needs mailers.
+      #
+      # @example
+      #   require 'padrino-mailer'
+      #   class Demo < Padrino::Application
+      #     register Padrino::Mailer::Helpers
+      #   end
+      #
+      # @api public
       def registered(app)
         app.helpers Padrino::Mailer::Helpers
       end

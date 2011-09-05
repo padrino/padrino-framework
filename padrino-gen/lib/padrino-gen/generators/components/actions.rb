@@ -15,11 +15,10 @@ module Padrino
         #   Additional migration options, e.g { :base => "....text...", :up => "..text...",
         #                                       :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
         # @example
-        #
-        # output_model_migration("AddPerson", "person", ["name:string", "age:integer"],
-        #      :base => AR_MIGRATION,
-        #      :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-        #      :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
+        #   output_model_migration("AddPerson", "person", ["name:string", "age:integer"],
+        #     :base => AR_MIGRATION,
+        #     :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+        #     :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
         #
         # @api private
         def output_model_migration(filename, name, columns, options={})

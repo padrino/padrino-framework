@@ -7,14 +7,18 @@ module Padrino
       # +mime+ should be the content type like "text/plain"
       # +fallback+ may be any symbol
       #
-      # Also see the documentation for MIME_TYPES
+      # Also see the documentation for {MIME_TYPES}.
       #
-      # ==== Examples
+      # @param [String] mime
+      #   The mime alias to fetch (i.e 'text/plain').
+      # @param [Symbol] fallback
+      #   The fallback mime to use if +mime+ doesn't exist.
       #
-      #   => :plain
+      # @example
       #   Padrino::Mailer::Mime.mime_type('text/plain')
-      #   => :html
+      #   # => :plain
       #   Padrino::Mailer::Mime.mime_type('text/html')
+      #   # => :html
       #
       # This is a shortcut for:
       #
@@ -24,9 +28,8 @@ module Padrino
         MIME_TYPES.fetch(mime.to_s.downcase, fallback)
       end
 
-      # List of most common mime-types, selected various sources
-      # according to their usefulness in a emailg scope for Ruby
-      # users.
+      # List of common mime-types, selected from various sources
+      # according to their usefulness for an email scope.
       #
       # You can add your own mime types like:
       #
