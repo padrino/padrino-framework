@@ -12,7 +12,7 @@ module Padrino
           else
             return if migration_exist?(filename)
             model_name = name.to_s.pluralize
-            field_tuples = fields.map { |value| value.split(":") }
+            field_tuples = columns.map { |value| value.split(":") }
             field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
             column_declarations = field_tuples.map(&options[:column_format]).join("\n      ")
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
