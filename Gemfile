@@ -2,7 +2,6 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 
 source :rubygems
 
-
 group :db do
   gem "dm-core",           ">= 1.0"
   gem "dm-migrations",     ">= 1.0"
