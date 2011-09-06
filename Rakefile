@@ -99,17 +99,7 @@ task :default => :test
 
 desc "Generate documentation for the Padrino framework"
 task :doc do
-  yard = YARD::CLI::Yardoc.new
-  yard.parse_arguments *%w[
-    --exclude /support_lite|padrino-tasks|padrino-core\/cli/
-    --hide-void-return
-    --output-dir doc/
-    --readme README.rdoc
-    --no-private
-    --title Padrino Framework
-    padrino-*/lib/**/*.rb
-  ]
-  yard.run
+  YARD::CLI::Yardoc.new.run
 end
 
 desc "Publish doc on padrinorb.com/api"

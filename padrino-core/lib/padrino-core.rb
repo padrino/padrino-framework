@@ -13,7 +13,7 @@ module Padrino
   end
 
   class << self
-    #
+    ##
     # Helper method for file references.
     #
     # @param [Array<String>] args
@@ -31,7 +31,7 @@ module Padrino
       File.expand_path(File.join(PADRINO_ROOT, *args))
     end
 
-    #
+    ##
     # Helper method that return {PADRINO_ENV}.
     #
     # @return [Symbol]
@@ -41,7 +41,7 @@ module Padrino
       @_env ||= PADRINO_ENV.to_s.downcase.to_sym
     end
 
-    #
+    ##
     # The resulting rack builder mapping each 'mounted' application.
     #
     # @return [Padrino::Router]
@@ -65,7 +65,7 @@ module Padrino
       end
     end
 
-    #
+    ##
     # Configure Global Project Settings for mounted apps. These can be overloaded
     # in each individual app's own personal configuration. This can be used like:
     #
@@ -82,7 +82,7 @@ module Padrino
       @_global_configuration = block if block_given?
     end
 
-    #
+    ##
     # Returns project-wide configuration settings defined in
     # {configure_apps} block.
     #
@@ -90,8 +90,16 @@ module Padrino
       @_global_configuration
     end
 
+    ##
+    # Set +Encoding.default_internal+ and +Encoding.default_external+
+    # to +Encoding::UFT_8+.
     #
-    # Default encoding to UTF8.
+    # Please note that in +1.9.2+ with some template engines like +haml+
+    # you should turn off Encoding.default_internal to prevent problems.
+    #
+    # @see https://github.com/rtomayko/tilt/issues/75
+    #
+    # @return [NilClass]
     #
     def set_encoding
       if RUBY_VERSION < '1.9'
@@ -103,7 +111,7 @@ module Padrino
       nil
     end
 
-    #
+    ##
     # Determines whether the dependencies are locked by Bundler.
     # otherwise return nil
     #
@@ -111,12 +119,14 @@ module Padrino
     #   Returns +:locked+ if the +Gemfile.lock+ file exists, or +:unlocked+
     #   if only the +Gemfile+ exists.
     #
+    # @deprecated Will be removed in 1.0.0
+    #
     def bundle
       return :locked   if File.exist?(root('Gemfile.lock'))
       return :unlocked if File.exist?(root("Gemfile"))
     end
 
-    #
+    ##
     # A Rack::Builder object that allows to add middlewares in front of all
     # Padrino applications.
     #
@@ -127,14 +137,17 @@ module Padrino
       @middleware ||= []
     end
 
-    #
+    ##
     # Clears all previously configured middlewares.
+    #
+    # @return [Array]
+    #   An empty array
     #
     def clear_middleware!
       @middleware = []
     end
 
-    #
+    ##
     # Convenience method for adding a Middleware to the whole padrino app.
     #
     # @param [Class] m

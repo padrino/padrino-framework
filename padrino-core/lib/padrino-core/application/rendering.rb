@@ -1,7 +1,7 @@
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
-  #
+  ##
   # Padrino enhances the Sinatra ‘render’ method to have support for
   # automatic template engine detection, enhanced layout functionality,
   # locale enabled rendering, among other features.
@@ -10,7 +10,7 @@ module Padrino
     class TemplateNotFound < RuntimeError
     end
 
-    #
+    ##
     # This is an array of file patterns to ignore. If your editor add a
     # suffix during editing to your files please add it like:
     #
@@ -21,12 +21,12 @@ module Padrino
       /~$/ # This is for Gedit
     ] unless defined?(IGNORE_FILE_PATTERN)
 
-    #
+    ##
     # Default rendering options used in the #render-method.
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
-    #
+    ##
     # Main class that register this extension.
     #
     class << self
@@ -38,7 +38,7 @@ module Padrino
     end
 
     module ClassMethods
-      #
+      ##
       # Use layout like rails does or if a block given then like sinatra.
       # If used without a block, sets the current layout for the route.
       #
@@ -61,7 +61,7 @@ module Padrino
         @layout = name
       end
 
-      #
+      ##
       # Returns the cached template file to render for a given url, content_type and locale.
       #
       # @param [Array<template_path, content_type, locale>] render_options
@@ -70,7 +70,7 @@ module Padrino
         (@_cached_templates ||= {})[render_options]
       end
 
-      #
+      ##
       # Caches the template file for the given rendering options
       #
       # @param [String] template_file
@@ -82,10 +82,10 @@ module Padrino
         (@_cached_templates ||= {})[render_options] = template_file || []
       end
 
-      #
+      ##
       # Returns the cached layout path.
       #
-      # @param [Symbol] given_layout
+      # @param [Symbol, nil] given_layout
       #   The requested layout.
       #
       def fetch_layout_path(given_layout=nil)
@@ -103,12 +103,29 @@ module Padrino
     module InstanceMethods
       attr_reader :current_engine
 
+      ##
+      # Get/Set the content_type
       #
       # @param [String, nil] type
       #   The Content-Type to use.
       #
+      # @param [Symbol, nil] type.
+      #   Look and parse the given symbol to the matched Content-Type.
+      #
       # @param [Hash] params
       #   Additional params to append to the Content-Type.
+      #
+      # @example
+      #   case content_type
+      #     when :js then do_some
+      #     when :css then do_another
+      #   end
+      #
+      #   content_type :js
+      #   # => set the response with 'application/javascript' Content-Type
+      #   content_type 'text/html'
+      #
+      #   # => set directly the Content-Type to 'text/html'
       #
       def content_type(type=nil, params={})
         unless type.nil?
@@ -119,7 +136,7 @@ module Padrino
       end
 
       private
-        #
+        ##
         # Enhancing Sinatra render functionality for:
         #
         # * Using layout similar to rails
@@ -176,7 +193,7 @@ module Padrino
           @_out_buf = _buf_was
         end
 
-        #
+        ##
         # Returns the located layout tuple to be used for the rendered template
         # (if available).
         #
@@ -190,7 +207,7 @@ module Padrino
           located_layout ? located_layout : [nil, nil]
         end
 
-        #
+        ##
         # Returns the template path and engine that match content_type (if present),
         # I18n.locale.
         #
@@ -254,7 +271,7 @@ module Padrino
           located_template
         end
 
-        #
+        ##
         # Return the I18n.locale if I18n is defined.
         #
         def locale

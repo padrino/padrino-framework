@@ -1,0 +1,6 @@
+--exclude /support_lite|padrino-tasks|padrino-core\/cli/
+--output-dir doc/
+--readme README.rdoc
+--no-private
+--title Padrino Framework
+padrino-*/lib/**/*.rb

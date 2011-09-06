@@ -31,6 +31,13 @@ module Padrino
       # take into account overwritten app settings inside subclassed definitions
       # Only performs the setup first time application is initialized.
       #
+      # @param [Array] args
+      #
+      # @yield [Sinatra]
+      #   a Sinatra application
+      #
+      # @return [Sinatra]
+      #
       def new(*args, &bk)
         setup_application!
         logging, logging_was = false, logging
@@ -46,8 +53,9 @@ module Padrino
       # This method is used from our Padrino Reloader during development mode
       # in order to reload the source files.
       #
-      # ==== Examples
+      # @return [TrueClass]
       #
+      # @example
       #   MyApp.reload!
       #
       def reload!
@@ -62,25 +70,27 @@ module Padrino
         default_routes!  # Reload default routes
         default_errors!  # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
+        true
       end
 
       ##
       # Resets application routes to only routes not defined by the user
       #
-      # ==== Examples
+      # @return [TrueClass]
       #
+      # @example
       #   MyApp.reset_routes!
       #
       def reset_routes!
         reset_router!
         default_routes!
+        true
       end
 
       ##
       # Returns the routes of our app.
       #
-      # ==== Examples
-      #
+      # @example
       #   MyApp.routes
       #
       def routes
@@ -90,6 +100,8 @@ module Padrino
       ##
       # Setup the application by registering initializers, load paths and logger
       # Invoked automatically when an application is first instantiated
+      #
+      # @return [TrueClass]
       #
       def setup_application!
         return if @_configured
@@ -104,11 +116,14 @@ module Padrino
           I18n.reload!
         end
         @_configured = true
+        @_configured
       end
 
       ##
       # Run the Padrino app as a self-hosted server using
       # Thin, Mongrel or WEBrick (in that order)
+      #
+      # @see Padrino::Server#start
       #
       def run!(options={})
         return unless Padrino.load!
@@ -117,7 +132,8 @@ module Padrino
       end
 
       ##
-      # Returns the used $LOAD_PATHS from this application
+      # @return [Array]
+      #   directory that need to be added to +$LOAD_PATHS+ from this application
       #
       def load_paths
         @_load_paths ||= %w(models lib mailers controllers helpers).map { |path| File.join(self.root, path) }
@@ -127,7 +143,10 @@ module Padrino
       # Returns default list of path globs to load as dependencies
       # Appends custom dependency patterns to the be loaded for your Application
       #
-      # ==== Examples
+      # @return [Array]
+      #   list of path globs to load as dependencies
+      #
+      # @example
       #   MyApp.dependencies << "#{Padrino.root}/uploaders/**/*.rb"
       #   MyApp.dependencies << Padrino.root('other_app', 'controllers.rb')
       #
@@ -143,12 +162,13 @@ module Padrino
       #
       # By default we look for files:
       #
+      #   # List of default files that we are looking for:
       #   yourapp/models.rb
       #   yourapp/models/**/*.rb
       #   yourapp/lib.rb
       #   yourapp/lib/**/*.rb
       #
-      # ==== Examples
+      # @example Adding a custom perequisite
       #   MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
       #
       def prerequisites
