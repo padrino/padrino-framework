@@ -57,7 +57,7 @@ zh_cn:
           gb: "GB"
           tb: "TB"
 
-  # Used in distance_of_time_in_words(), distance_of_time_in_words_to_now(), time_ago_in_words() 
+  # Used in distance_of_time_in_words(), distance_of_time_in_words_to_now(), time_ago_in_words()
   datetime:
     distance_in_words:
       half_a_minute: "半分钟"

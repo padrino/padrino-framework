@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Filters" do 
+describe "Filters" do
   Dir[File.expand_path("../../lib/padrino-admin/locale/admin/*.yml", __FILE__)].each do |file|
     name = File.basename(file, '.yml')
     should "have a vaild #{name} locale for admin" do

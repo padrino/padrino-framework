@@ -64,27 +64,27 @@ module Padrino
         #     # File: config/apps.rb
         #     # [...]
         #     Padrino.mount('Admin').to('/admin')
-        #     
+        #
         #     # File: admin/app.rb
         #     class Admin < Padrino::Application
         #       # [...]
         #       register Padrino::Admin::AccessControl
         #       # [...]
-        #     
+        #
         #       # Goals:
         #       # * Admins can manage widgets and accounts
         #       # * Workers can only manage widgets
-        #     
+        #
         #       access_control.roles_for :admin do |role|
         #         role.project_module :accounts, '/accounts'
         #         role.project_module :widgets, '/widgets'
         #       end
-        #     
+        #
         #       access_control.roles_for :worker do |role|
         #         role.project_module :widgets, '/widgets'
         #       end
         #     end
-        #     
+        #
         #     # File: admin/views/layouts/application.haml
         #     # NOTE The un-mounted path is used ('/accounts' instead of '/admin/accounts')
         #     - if access_control.allowed?(current_account, '/accounts')

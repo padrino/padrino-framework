@@ -9,7 +9,7 @@ body {
 }
 
 hr {
-  background: #aaa; 
+  background: #aaa;
 }
 
 p {
@@ -118,7 +118,7 @@ input.check_box {
 }
 
 
-#sidebar h3 {  
+#sidebar h3 {
   background: #fff;
   border-bottom:1px solid #ccc;
   border-right:1px solid #ccc;
@@ -384,7 +384,7 @@ ul.list li .left  {
 }
 
 #box .block h2 {
-  background: #576C82;  
+  background: #576C82;
   color: #FFF;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;

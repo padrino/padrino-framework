@@ -174,7 +174,7 @@ module Padrino
       #     get :index do; ...; end
       #     get :show, :with => :id  do; ...; end
       #   end
-      #   
+      #
       #   url(:admin_index) # => "/admin"
       #   url(:admin_show, :id => 1) # "/admin/show/1"
       #
@@ -211,14 +211,14 @@ module Padrino
       #         halt 403, "No secrets for you!" unless params[:key] == "s3cr3t"
       #       end if protected
       #     end
-      #     
+      #
       #     # This route will only return "secret stuff" if the user goes to
       #     # `/private?key=s3cr3t`.
       #     get("/private") { "secret stuff" }
-      #     
+      #
       #     # And this one, too!
       #     get("/also-private") { "secret stuff" }
-      #     
+      #
       #     # But you can override the conditions for each route as needed.
       #     # This route will be publicly accessible without providing the
       #     # secret key.
@@ -654,11 +654,11 @@ module Padrino
         #   # => GET /a      => :html
         #   # => GET /a.js   => :js
         #   # => GET /a.xml  => 404
-        #   
+        #
         #   get "/b", :provides => [:html]
         #   # => GET /b; ACCEPT: html => html
         #   # => GET /b; ACCEPT: js   => 406
-        #   
+        #
         #   enable :treat_format_as_accept
         #   get "/c", :provides => [:html, :js]
         #   # => GET /c.xml => 406

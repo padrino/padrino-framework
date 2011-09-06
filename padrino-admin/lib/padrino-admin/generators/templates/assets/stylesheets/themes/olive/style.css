@@ -34,7 +34,7 @@ body {
 }
 
 hr {
-  background: #f0f0ee; 
+  background: #f0f0ee;
   color: #f0f0ee;
 }
 
@@ -99,7 +99,7 @@ p {
 	color: #fff;
 }
 
-#sidebar h3 {  
+#sidebar h3 {
   background: #5E634E;
   color: #FFF;
   border-bottom: 6px solid #DACF77;
@@ -185,13 +185,13 @@ p {
 	padding:8px 12px;
 }
 
-#footer .block {  
+#footer .block {
   color: #FFF;
   background: #262626;
 }
 
-#footer .block p {      
-  margin: 0;  
+#footer .block p {
+  margin: 0;
   padding: 10px;
 }
 
@@ -297,13 +297,13 @@ ul.list li .item .avatar {
   border-color: #F0F0EE;
   border-width: 1px;
   border-style: solid;
-  padding: 2px; 
+  padding: 2px;
 }
 
 /* box */
 
 #box .block {
-  background: #FFF;  
+  background: #FFF;
 }
 
 #box .block h2 {
@@ -314,7 +314,7 @@ ul.list li .item .avatar {
 
 /* rounded borders */
 
-#main, #main-navigation, #main-navigation li, .secondary-navigation, #main .block, #sidebar .block, #sidebar h3, ul.list li, 
+#main, #main-navigation, #main-navigation li, .secondary-navigation, #main .block, #sidebar .block, #sidebar h3, ul.list li,
 #footer .block, .form input.button, #box .block, #box .block h2 {
   -moz-border-radius-topleft: 4px;
   -webkit-border-top-left-radius: 4px;
