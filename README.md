@@ -1,4 +1,4 @@
-This is our repository that populate pages, blog posts and guides of with http://www.padrinorb.com
+This is our repository that populate pages, blog posts and guides of http://www.padrinorb.com
 
 Feel free to fork it, apply your corrections or made an useful translation.
 
@@ -13,7 +13,7 @@ Feel free to fork it, apply your corrections or made an useful translation.
 [[Page Title]]
 ```
 
-## Code Highlighting
+## Code Highlighting:
 
 ```
 pre[ruby], pre[html], pre[bash], pre[erb]
