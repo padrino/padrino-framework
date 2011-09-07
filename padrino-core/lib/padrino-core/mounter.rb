@@ -3,8 +3,7 @@ module Padrino
   # Represents a particular mounted padrino application
   # Stores the name of the application (app folder name) and url mount path
   #
-  # ==== Examples
-  #
+  # @example
   #   Mounter.new("blog_app", :app_class => "Blog").to("/blog")
   #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   #
@@ -14,6 +13,16 @@ module Padrino
 
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host
 
+    ##
+    # @param [String, Padrino::Application] name
+    #   The app name or the {Padrino::Application} class
+    #
+    # @param [Hash] options
+    # @option options [Symbol] :app_class (Detected from name)
+    # @option options [Symbol] :app_file (Automatically detected)
+    # @option options [Symbol] :app_obj (Detected)
+    # @option options [Symbol] :app_root (Directory of :app_file)
+    #
     def initialize(name, options={})
       @name      = name.to_s
       @app_class = options[:app_class] || @name.camelize
@@ -28,8 +37,10 @@ module Padrino
     ##
     # Registers the mounted application onto Padrino
     #
-    # ==== Examples
+    # @param [String] mount_url
+    #   Path where we mount the app
     #
+    # @example
     #   Mounter.new("blog_app").to("/blog")
     #
     def to(mount_url)
@@ -41,8 +52,10 @@ module Padrino
     ##
     # Registers the mounted application onto Padrino for the given host
     #
-    # ==== Examples
+    # @param [String] mount_host
+    #   Host name
     #
+    # @example
     #   Mounter.new("blog_app").to("/blog").host("blog.padrino.org")
     #   Mounter.new("blog_app").host("blog.padrino.org")
     #   Mounter.new("catch_all").host(/.*\.padrino.org/)
@@ -57,6 +70,11 @@ module Padrino
     # Maps Padrino application onto a Padrino::Router
     # For use in constructing a Rack application
     #
+    # @param [Padrino::Router]
+    #
+    # @return [Padrino::Router]
+    #
+    # @example
     #   @app.map_onto(router)
     #
     def map_onto(router)
@@ -81,6 +99,8 @@ module Padrino
     ###
     # Returns the basic route information for each named route
     #
+    # @return [Array]
+    #   Array of routes
     #
     def named_routes
       app_obj.routes.map { |route|
@@ -95,12 +115,15 @@ module Padrino
     ##
     # Makes two Mounters equal if they have the same name and uri_root
     #
+    # @param [Padrino::Mounter] other
+    #
     def ==(other)
       other.is_a?(Mounter) && self.app_class == other.app_class && self.uri_root == other.uri_root
     end
 
     ##
-    # Returns the class object for the app if defined, nil otherwise
+    # @return [Padrino::Application]
+    #  the class object for the app if defined, nil otherwise
     #
     def app_constant
       klass = Object
@@ -160,14 +183,18 @@ module Padrino
     attr_writer :mounted_root # Set root directory where padrino searches mounted apps
 
     ##
-    # Returns the root to the mounted apps base directory
+    # @param [Array] args
+    #
+    # @return [String]
+    #   the root to the mounted apps base directory
     #
     def mounted_root(*args)
       Padrino.root(@mounted_root ||= "", *args)
     end
 
     ##
-    # Returns the mounted padrino applications (MountedApp objects)
+    # @return [Array]
+    #   the mounted padrino applications (MountedApp objects)
     #
     def mounted_apps
       @mounted_apps ||= []
@@ -176,6 +203,8 @@ module Padrino
     ##
     # Inserts a Mounter object into the mounted applications (avoids duplicates)
     #
+    # @param [Padrino::Mounter] mounter
+    #
     def insert_mounted_app(mounter)
       Padrino.mounted_apps.push(mounter) unless Padrino.mounted_apps.include?(mounter)
     end
@@ -183,6 +212,9 @@ module Padrino
     ##
     # Mounts a new sub-application onto Padrino project
     #
+    # @see Padrino::Mounter#new
+    #
+    # @example
     #   Padrino.mount("blog_app").to("/blog")
     #
     def mount(name, options={})
