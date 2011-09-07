@@ -1,7 +1,6 @@
 module Padrino
   class << self
-
-    #
+    ##
     # Hooks to be called before a load/reload.
     #
     # @yield []
@@ -21,7 +20,7 @@ module Padrino
       @_before_load
     end
 
-    #
+    ##
     # Hooks to be called after a load/reload.
     #
     # @yield []
@@ -41,7 +40,7 @@ module Padrino
       @_after_load
     end
 
-    #
+    ##
     # The used +$LOAD_PATHS+ from Padrino.
     #
     # @return [Array<String>]
@@ -52,9 +51,12 @@ module Padrino
       @_load_paths ||= @_load_paths_was
     end
 
-    #
+    ##
     # Requires necessary dependencies as well as application files from root
     # lib and models.
+    #
+    # @return [Boolean]
+    #   returns true if Padrino is not already bootstraped otherwise else.
     #
     def load!
       return false if loaded?
@@ -71,8 +73,10 @@ module Padrino
       Thread.current[:padrino_loaded] = true
     end
 
-    #
+    ##
     # Clear the padrino env.
+    #
+    # @return [NilClass]
     #
     def clear!
       Padrino.clear_middleware!
@@ -86,7 +90,7 @@ module Padrino
       Thread.current[:padrino_loaded] = nil
     end
 
-    #
+    ##
     # Method for reloading required applications and their files.
     #
     def reload!
@@ -95,7 +99,7 @@ module Padrino
       Padrino.after_load.each(&:call) # Run after hooks
     end
 
-    #
+    ##
     # This adds the ablity to instantiate {Padrino.load!} after
     # {Padrino::Application} definition.
     #
@@ -103,7 +107,7 @@ module Padrino
       @_called_from || first_caller
     end
 
-    #
+    ##
     # Determines whether Padrino was loaded with {Padrino.load!}.
     #
     # @return [Boolean]
@@ -113,7 +117,7 @@ module Padrino
       Thread.current[:padrino_loaded]
     end
 
-    #
+    ##
     # Attempts to require all dependency libs that we need.
     # If you use this method we can perform correctly a Padrino.reload!
     # Another good thing that this method are dependency check, for example:
@@ -174,7 +178,7 @@ module Padrino
       end
     end
 
-    #
+    ##
     # Returns default list of path globs to load as dependencies
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
@@ -192,7 +196,7 @@ module Padrino
       @_dependency_paths ||= @_dependency_paths_was
     end
 
-    #
+    ##
     # Concat to +$LOAD_PATH+ the given paths.
     #
     # @param [Array<String>] paths

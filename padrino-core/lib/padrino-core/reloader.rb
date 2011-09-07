@@ -39,6 +39,7 @@ module Padrino
       def include_constants
         @_include_constants ||= []
       end
+
       ##
       # Reload all files with changes detected.
       #

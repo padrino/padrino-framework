@@ -5,10 +5,9 @@ PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 module Padrino
 
   ##
-  # Returns the padrino logger
+  # @return [Padrino::Logger]
   #
-  # ==== Examples
-  #
+  # @example
   #   logger.debug "foo"
   #   logger.warn "bar"
   #
@@ -20,17 +19,26 @@ module Padrino
   ##
   # Set the padrino logger
   #
+  # @param [Object] value
+  #   an object that respond to <<, write, puts, debug, warn etc..
+  #
+  # @return [Object]
+  #   the given value
+  #
+  # @example using ruby default logger
+  #   require 'logger'
+  #   Padrino.logger = Logger.new(STDOUT)
+  #
+  # @example using ActiveSupport
+  #   require 'active_support/buffered_logger'
+  #   Padrino.logger = Buffered.new(STDOUT)
+  #
   def self.logger=(value)
     Thread.current[:padrino_logger] = value
   end
 
   ##
   # Extensions to the built in Ruby logger.
-  #
-  # ==== Examples
-  #
-  #   logger.debug "foo"
-  #   logger.warn  "bar"
   #
   class Logger
 
@@ -76,8 +84,7 @@ module Padrino
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
     # :log_static:: Whether or not to show log messages for static files. Defaults to: false
     #
-    # ==== Examples
-    #
+    # @example
     #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
@@ -127,6 +134,9 @@ module Padrino
     ##
     # Setup a new logger
     #
+    # @return [Padrino::Logger]
+    #   A {Padrino::Logger} instance
+    #
     def self.setup!
       config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
       config = Config[config_level]
@@ -151,18 +161,26 @@ module Padrino
     ##
     # To initialize the logger you create a new object, proxies to set_log.
     #
-    # ==== Options
+    # @param [Hash] options
     #
-    # :stream:: Either an IO object or a name of a logfile. Defaults to $stdout
-    # :log_level::
-    #   The log level from, e.g. :fatal or :info. Defaults to :debug in the
-    #   production environment and :debug otherwise.
-    # :auto_flush::
+    # @option options [Symbol] :stream ($stdout)
+    #   Either an IO object or a name of a logfile. Defaults to $stdout
+    #
+    # @option options [Symbol] :log_level (:production in the production environment and :debug otherwise)
+    #   The log level from, e.g. :fatal or :info.     
+    #
+    # @option options [Symbol] :auto_flush (true)
     #   Whether the log should automatically flush after new messages are
     #   added. Defaults to true.
-    # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
-    # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
-    # :log_static:: Whether or not to show log messages for static files. Defaults to: false
+    #
+    # @option options [Symbol] :format_datetime ("%d/%b/%Y %H:%M:%S")
+    #   Format of datetime
+    #
+    # @option options [Symbol] :format_message ("%s - - [%s] \"%s\"")
+    #    Format of message
+    #
+    # @option options [Symbol] :log_static (false)
+    #   Whether or not to show log messages for static files.
     #
     def initialize(options={})
       @buffer            = []
@@ -179,6 +197,10 @@ module Padrino
     ##
     # Colorize our level
     #
+    # @param [String, Symbol] level
+    #
+    # @see Padrino::Logger::ColoredLevels
+    #
     def colored_level(level)
       style = ColoredLevels[level.to_s.downcase.to_sym].join("")
       "#{style}#{level.to_s.upcase.rjust(7)}#{CLEAR}"
@@ -186,6 +208,17 @@ module Padrino
 
     ##
     # Set a color for our string. Color can be a symbol/string
+    #
+    # @param [String] string
+    #   String that need to be colored
+    #
+    # @param [String, Symbol] color
+    #   Color to be used
+    #
+    # @param [Boolean] bold
+    #
+    # @return [String]
+    #   The colored version of given string
     #
     def set_color(string, color, bold=false)
       color = self.class.const_get(color.to_s.upcase) if color.is_a?(Symbol)
@@ -206,6 +239,8 @@ module Padrino
     ##
     # Close and remove the current log object.
     #
+    # @return [NilClass]
+    #
     def close
       flush
       @log.close if @log.respond_to?(:close) && !@log.tty?
@@ -216,12 +251,22 @@ module Padrino
     # Appends a message to the log. The methods yield to an optional block and
     # the output of this block will be appended to the message.
     #
+    # @param [String] message
+    #   The message that you want write to your stream
+    #
+    # @param [String] level
+    #   The level one of :debug, :warn etc...
+    #
+    #
     def push(message = nil, level = nil)
       self << @format_message % [colored_level(level), set_color(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
 
     ##
     # Directly append message to the log.
+    #
+    # @param [String] message
+    #   The message
     #
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
@@ -232,7 +277,7 @@ module Padrino
     alias :write :<<
 
     ##
-    # Generate the logging methods for Padrino.logger for each log level.
+    # Generate the logging methods for {Padrino.logger} for each log level.
     #
     Levels.each_pair do |name, number|
       class_eval <<-LEVELMETHODS, __FILE__, __LINE__
@@ -285,18 +330,20 @@ module Padrino
     #
     class Rack
       ##
-      # Common Log Format: http://httpd.apache.org/docs/1.3/logs.html#common
-      # "lilith.local - - GET / HTTP/1.1 500 -"
-      #  %{%s - %s %s %s%s %s - %d %s %0.4f}
+      # @example
+      #   # => "lilith.local - - GET / HTTP/1.1 500 -"
+      #   %{%s - %s %s %s%s %s - %d %s %0.4f}
+      #
+      # @see http://httpd.apache.org/docs/1.3/logs.html#common
       #
       FORMAT = %{%s (%0.4fms) %s - %s %s%s%s %s - %d %s}
 
-      def initialize(app, uri_root)
+      def initialize(app, uri_root) # @private
         @app = app
         @uri_root = uri_root.sub(/\/$/,"")
       end
 
-      def call(env)
+      def call(env) # @private
         env['rack.logger'] = Padrino.logger
         env['rack.errors'] = Padrino.logger.log
         began_at = Time.now
