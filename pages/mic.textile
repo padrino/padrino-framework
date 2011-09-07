@@ -1,0 +1,20 @@
+---
+:author: Foo Bar
+:title: Mic
+:label: Home Mic
+---
+Here is a list of the major functionality Padrino provides on top of Sinatra:
+
+|>. *Agnostic:*     | Full support for many popular testing, templating, mocking, and database libraries.   |
+|>. *Generators:*   | Create Padrino applications, models, controllers i.e: <tt>padrino g project</tt>.     |
+|>. *Mountable:*    | Unlike other ruby frameworks, principally designed for mounting multiple apps.        |
+|>. *Routing:*      | Full url named routes, named params, respond_to support, before/after filter support. |
+|>. *Tag Helpers:*  | View helpers such as: <tt>tag</tt>, <tt>content_tag</tt>, <tt>input_tag</tt>.         |
+|>. *Asset Helpers:*| View helpers such as: <tt>link_to</tt>, <tt>image_tag</tt>.                           |
+|>. *Form Helpers:* | Builder support such as: <tt>form_tag</tt>, <tt>form_for</tt>, <tt>field_set_tag</tt>.|
+|>. *Text Helpers:* | Useful formatting like: <tt>relative_time_ago</tt>, <tt>js_escape_html</tt>.          |
+|>. *Mailer:*       | Fast and simple delivery support for sending emails (akin to ActionMailer).           |
+|>. *Admin:*        | Built-in admin interface (akin to Django) with authentication.                        |
+|>. *Logging:*      | Provide a unified logger that can interact with your ORM or any library.              |
+|>. *Reloading:*    | Automatically reloads server code during development.                                 |
+|>. *Localization:* | Full support for I18n localization.                                                   |
