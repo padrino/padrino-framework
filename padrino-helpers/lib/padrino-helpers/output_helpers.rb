@@ -144,7 +144,7 @@ module Padrino
       # @api public
       def content_for?(key)
         blocks = content_blocks[key.to_sym]
-        (blocks.empty? rescue true) ? false : true
+        !(blocks.nil? || blocks.empty?)
       end
         
       protected
