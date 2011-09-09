@@ -119,12 +119,12 @@ describe "ProjectGenerator" do
     should "output to log components being applied" do
       component_options = ['--orm=datamapper', '--test=riot', '--mock=mocha', '--script=prototype', '--renderer=erb','--stylesheet=less']
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
-      assert_match(/Applying.*?datamapper.*?orm/, out)
-      assert_match(/Applying.*?riot.*?test/, out)
-      assert_match(/Applying.*?mocha.*?mock/, out)
-      assert_match(/Applying.*?prototype.*?script/, out)
-      assert_match(/Applying.*?erb.*?renderer/, out)
-      assert_match(/Applying.*?less.*?stylesheet/, out)
+      assert_match(/applying.*?datamapper.*?orm/, out)
+      assert_match(/applying.*?riot.*?test/, out)
+      assert_match(/applying.*?mocha.*?mock/, out)
+      assert_match(/applying.*?prototype.*?script/, out)
+      assert_match(/applying.*?erb.*?renderer/, out)
+      assert_match(/applying.*?less.*?stylesheet/, out)
     end
 
     should "output gem files for base app" do
@@ -137,28 +137,28 @@ describe "ProjectGenerator" do
   context "a generator for mock component" do
     should "properly generate for rr and riot" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=riot', '--script=none') }
-      assert_match(/Applying.*?rr.*?mock/, out)
+      assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/require 'riot\/rr'/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
     should "properly generater for rr and bacon" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=bacon', '--script=none') }
-      assert_match(/Applying.*?rr.*?mock/, out)
+      assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/RR::Adapters::RRMethods/m, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
     should "properly generate for mocha and rspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}",'--test=rspec', '--mock=mocha', '--script=none') }
-      assert_match(/Applying.*?mocha.*?mock/, out)
+      assert_match(/applying.*?mocha.*?mock/, out)
       assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
 
     should "properly generate for rr and rspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
-      assert_match(/Applying.*?rr.*?mock/, out)
+      assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
@@ -170,7 +170,7 @@ describe "ProjectGenerator" do
       should "properly generate default" do
         @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
         out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=sequel', '--script=none') }
-        assert_match(/Applying.*?sequel.*?orm/, out)
+        assert_match(/applying.*?sequel.*?orm/, out)
         assert_match_in_file(/gem 'sequel'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/Sequel.connect/, "#{@apptmp}/project.com/config/database.rb")
@@ -203,7 +203,7 @@ describe "ProjectGenerator" do
     context "for activerecord" do
       should "properly generate default" do
         out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
-        assert_match(/Applying.*?activerecord.*?orm/, out)
+        assert_match(/applying.*?activerecord.*?orm/, out)
         assert_match_in_file(/gem 'activerecord', :require => "active_record"/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/ActiveRecord::Base.establish_connection/, "#{@apptmp}/project.com/config/database.rb")
@@ -242,7 +242,7 @@ describe "ProjectGenerator" do
     context "for datamapper" do
       should "properly generate default" do
         out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=datamapper', '--script=none') }
-        assert_match(/Applying.*?datamapper.*?orm/, out)
+        assert_match(/applying.*?datamapper.*?orm/, out)
         assert_match_in_file(/gem 'dm-core'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/DataMapper.setup/, "#{@apptmp}/project.com/config/database.rb")
@@ -272,7 +272,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for mongomapper" do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongomapper', '--script=none') }
-      assert_match(/Applying.*?mongomapper.*?orm/, out)
+      assert_match(/applying.*?mongomapper.*?orm/, out)
       assert_match_in_file(/gem 'mongo_mapper'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/MongoMapper.database/, "#{@apptmp}/project.com/config/database.rb")
@@ -281,7 +281,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for mongoid" do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongoid', '--script=none') }
-      assert_match(/Applying.*?mongoid.*?orm/, out)
+      assert_match(/applying.*?mongoid.*?orm/, out)
       assert_match_in_file(/gem 'mongoid'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/Mongoid.database/, "#{@apptmp}/project.com/config/database.rb")
@@ -291,7 +291,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for couchrest" do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=couchrest', '--script=none') }
-      assert_match(/Applying.*?couchrest.*?orm/, out)
+      assert_match(/applying.*?couchrest.*?orm/, out)
       assert_match_in_file(/gem 'couchrest_model'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/CouchRest.database!/, "#{@apptmp}/project.com/config/database.rb")
       assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
@@ -299,7 +299,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for ohm" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ohm', '--script=none') }
-      assert_match(/Applying.*?ohm.*?orm/, out)
+      assert_match(/applying.*?ohm.*?orm/, out)
       assert_match_in_file(/gem 'json'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'ohm-contrib', :require => "ohm\/contrib"/, "#{@apptmp}/sample_project/Gemfile")
@@ -308,7 +308,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for mongomatic" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=mongomatic', '--script=none') }
-      assert_match(/Applying.*?mongomatic.*?orm/, out)
+      assert_match(/applying.*?mongomatic.*?orm/, out)
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'mongomatic'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, "#{@apptmp}/sample_project/config/database.rb")
@@ -316,7 +316,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for ripple" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ripple', '--script=none') }
-      assert_match(/Applying.*?ripple.*?orm/, out)
+      assert_match(/applying.*?ripple.*?orm/, out)
       assert_match_in_file(/gem 'ripple'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ripple.load_configuration/, "#{@apptmp}/sample_project/config/database.rb")
       assert_match_in_file(/http_port: 8098/, "#{@apptmp}/sample_project/config/riak.yml")
@@ -327,25 +327,25 @@ describe "ProjectGenerator" do
   context "the generator for renderer component" do
     should "properly generate for erb" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--script=none') }
-      assert_match(/Applying.*?erb.*?renderer/, out)
+      assert_match(/applying.*?erb.*?renderer/, out)
       assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     should "properly generate for haml" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none') }
-      assert_match(/Applying.*?haml.*?renderer/, out)
+      assert_match(/applying.*?haml.*?renderer/, out)
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     should "properly generate for liquid" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=liquid','--script=none') }
-      assert_match(/Applying.*?liquid.*?renderer/, out)
+      assert_match(/applying.*?liquid.*?renderer/, out)
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     should "properly generate for slim" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim','--script=none') }
-      assert_match(/Applying.*?slim.*?renderer/, out)
+      assert_match(/applying.*?slim.*?renderer/, out)
       assert_match_in_file(/gem 'slim'/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
@@ -353,7 +353,7 @@ describe "ProjectGenerator" do
   context "the generator for script component" do
     should "properly generate for jquery" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
-      assert_match(/Applying.*?jquery.*?script/, out)
+      assert_match(/applying.*?jquery.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
@@ -361,7 +361,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for mootools" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
-      assert_match(/Applying.*?mootools.*?script/, out)
+      assert_match(/applying.*?mootools.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
@@ -369,7 +369,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for prototype" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=prototype') }
-      assert_match(/Applying.*?prototype.*?script/, out)
+      assert_match(/applying.*?prototype.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/protopak.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/lowpro.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/prototype-ujs.js")
@@ -378,7 +378,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for rightjs" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=rightjs') }
-      assert_match(/Applying.*?rightjs.*?script/, out)
+      assert_match(/applying.*?rightjs.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/right.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/right-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
@@ -386,7 +386,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for ext-core" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=extcore') }
-      assert_match(/Applying.*?extcore.*?script/, out)
+      assert_match(/applying.*?extcore.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
@@ -394,7 +394,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for dojo" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=dojo') }
-      assert_match(/Applying.*?dojo.*?script/, out)
+      assert_match(/applying.*?dojo.*?script/, out)
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
@@ -404,7 +404,7 @@ describe "ProjectGenerator" do
   context "the generator for test component" do
     should "properly generate for bacon" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=bacon', '--script=none') }
-      assert_match(/Applying.*?bacon.*?test/, out)
+      assert_match(/applying.*?bacon.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
@@ -418,7 +418,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for riot" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=riot', '--script=none') }
-      assert_match(/Applying.*?riot.*?test/, out)
+      assert_match(/applying.*?riot.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
@@ -435,7 +435,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for rspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--script=none') }
-      assert_match(/Applying.*?rspec.*?test/, out)
+      assert_match(/applying.*?rspec.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
@@ -449,7 +449,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for shoulda" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--script=none') }
-      assert_match(/Applying.*?shoulda.*?test/, out)
+      assert_match(/applying.*?shoulda.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
@@ -463,7 +463,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for testspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testspec', '--script=none') }
-      assert_match(/Applying.*?testspec.*?test/, out)
+      assert_match(/applying.*?testspec.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
@@ -478,7 +478,7 @@ describe "ProjectGenerator" do
 
     should "properly generate for cucumber" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber', '--script=none') }
-      assert_match(/Applying.*?cucumber.*?test/, out)
+      assert_match(/applying.*?cucumber.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
