@@ -20,8 +20,8 @@ module Padrino
       #
       # @api private
       def execute_component_setup(component, choice)
-        return true && say("Skipping generator for #{component} component...", :yellow) if choice.to_s == 'none'
-        say "Applying '#{choice}' (#{component})...", :yellow
+        return true && say_status(:skipping, "#{component} component...") if choice.to_s == 'none'
+        say_status(:appying, "#{choice} (#{component})...")
         apply_component_for(choice, component)
         send("setup_#{component}") if respond_to?("setup_#{component}")
       end
