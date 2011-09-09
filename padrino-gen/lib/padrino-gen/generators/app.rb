@@ -38,15 +38,14 @@ module Padrino
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{@app_name.downcase}\")"
 
           return if self.behavior == :revoke
-          say (<<-TEXT).gsub(/ {10}/,'')
-
-          =================================================================
-          Your #{@app_name} application has been installed.
-          This application has been mounted to /#{@app_name.downcase}
-          You can configure a different path by editing 'config/apps.rb'
-          =================================================================
-
-          TEXT
+          say
+          say "="*65, :green
+          say "Your #{@app_name} application has been installed."
+          say "="*65, :green
+          say "This application has been mounted to /#{@app_name.downcase}"
+          say "You can configure a different path by editing 'config/apps.rb"
+          say "="*65, :green
+          say
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end

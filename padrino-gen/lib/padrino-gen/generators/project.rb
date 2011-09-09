@@ -92,8 +92,8 @@ module Padrino
         say "="*65, :green
         say "#{name} is ready for development!", :green
         say "="*65, :green
-        say "$ cd #{options[:root]}/#{name}", :bold
-        say "$ bundle install", :bold unless options[:bundle]
+        say "$ cd #{options[:root]}/#{name}"
+        say "$ bundle install" unless options[:bundle]
         say "="*65, :green
         say
       end

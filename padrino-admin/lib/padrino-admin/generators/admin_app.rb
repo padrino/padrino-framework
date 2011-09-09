@@ -112,15 +112,13 @@ module Padrino
           instructions << "Visit the admin panel in the browser at '/admin'"
           instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
 
-          say((<<-TEXT).gsub(/ {10}/,''))
-
-          =================================================================
-          The admin panel has been mounted! Next, follow these steps:
-          =================================================================
-          #{instructions.join("\n")}
-          =================================================================
-
-          TEXT
+          say
+          say "="*65, :green
+          say "The admin panel has been mounted! Next, follow these steps:", :green
+          say "="*65, :green
+          say instructions.join("\n")
+          say "="*65, :green
+          say
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
