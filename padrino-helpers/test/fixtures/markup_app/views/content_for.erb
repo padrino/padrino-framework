@@ -9,3 +9,6 @@
 <% end %>
 
 <div class='demo2'><%= yield_content :demo2, "Johnny", "Smith" %></div>
+
+<div class="demo_has_content"><%= content_for?(:demo).to_s %>
+<div class="fake_has_content"><%= content_for?(:fake).to_s %>

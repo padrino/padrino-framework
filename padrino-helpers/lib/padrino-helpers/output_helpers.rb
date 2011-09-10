@@ -107,6 +107,22 @@ module Padrino
       end
 
       ##
+      # Is there a content block for a given key?
+      #
+      # @param [Symbol] key
+      #   Name of content to yield
+      #
+      # @return [TrueClass,FalseClass] Result html for the given +key+
+      #
+      # @example
+      #   content_for? :header => true
+      #
+      # @api public
+      def content_for?(key)
+        content_blocks[key.to_sym].present?
+      end
+
+      ##
       # Render the captured content blocks for a given key.
       # You can also pass values to the content blocks by passing them
       # as arguments after the key.
@@ -129,24 +145,7 @@ module Padrino
         return nil if blocks.empty?
         blocks.map { |content| capture_html(*args, &content) }.join
       end
-      
-      ##
-      # Is there a content block for a given key?
-      #
-      # @param [Symbol] key
-      #   Name of content to yield
-      #
-      # @return [TrueClass,FalseClass] Result html for the given +key+
-      #
-      # @example
-      #   content_for? :header
-      #
-      # @api public
-      def content_for?(key)
-        blocks = content_blocks[key.to_sym]
-        !(blocks.nil? || blocks.empty?)
-      end
-        
+
       protected
         ##
         # Retrieves content_blocks stored by content_for or within yield_content

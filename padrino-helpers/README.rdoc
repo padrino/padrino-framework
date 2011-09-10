@@ -34,7 +34,8 @@ Added to a template, this will capture the includes from the block and allow the
   ...
 
 This will automatically insert the contents of the block (in this case a stylesheet include) into the
-location the content is yielded within the layout.
+location the content is yielded within the layout. You can also check if content exists for a block using
+<tt>content_for?(true)</tt> which returns true if content exists.
 
 The capture_html and the concat_content methods allow content to be manipulated and stored for use in building
 additional helpers accepting blocks or displaying information in a template. One example is the use of

@@ -5,6 +5,7 @@
 * FIX issue with generator runner for https templates (@xavierRiley)
 * NEW #657 improve docs and conform to YARD format (@postmodern)
 * NEW #658 remove shoulda and switch to minitest (plus aliases)
+* NEW #662 create "content_for?" helper (@mlightner)
 
 == 0.10.2
 
