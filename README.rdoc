@@ -1,3 +1,6 @@
+{<img src="http://travis-ci.org/padrino/padrino-framework.png" />}[http://travis-ci.org/padrino/padrino-framework]
+
+
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on
