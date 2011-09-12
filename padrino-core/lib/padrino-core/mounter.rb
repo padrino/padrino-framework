@@ -83,8 +83,8 @@ module Padrino
       app_obj.set :app_name,       app_data.name
       app_obj.set :app_file,       app_data.app_file unless ::File.exist?(app_obj.app_file)
       app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
-      app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exists?(app_obj.public)
-      app_obj.set :static,         File.exist?(app_obj.public) if app_obj.nil?
+      app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exists?(app_obj.public_folder)
+      app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
       app_obj.setup_application! # Initializes the app here with above settings.
       router.map(:to => app_obj, :path => app_data.uri_root, :host => app_data.app_host)
     end

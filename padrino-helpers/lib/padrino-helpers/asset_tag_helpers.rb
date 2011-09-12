@@ -250,7 +250,7 @@ module Padrino
 
       ##
       # Returns an html script tag for each of the sources provided.
-      # You can pass in the filename without extension or a symbol and we search it in your +appname.public+
+      # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/stylesheets for inclusion. You can provide also a full path.
       #
       # @overload stylesheet_link_tag(*sources, options={})
@@ -273,7 +273,7 @@ module Padrino
 
       ##
       # Returns an html script tag for each of the sources provided.
-      # You can pass in the filename without extension or a symbol and we search it in your +appname.public+
+      # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/javascript for inclusion. You can provide also a full path.
       #
       # @overload javascript_include_tag(*sources, options={})
@@ -295,7 +295,7 @@ module Padrino
       end
 
       ##
-      # Returns the path to the image, either relative or absolute. We search it in your +appname.public+
+      # Returns the path to the image, either relative or absolute. We search it in your +appname.public_folder+
       # like app/public/images for inclusion. You can provide also a full path.
       #
       # @param [String] src

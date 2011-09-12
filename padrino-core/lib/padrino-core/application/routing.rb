@@ -820,7 +820,7 @@ module Padrino
       # serving files from the public directory.
       #
       def static_file?(path_info)
-        return if (public_dir = settings.public).nil?
+        return if (public_dir = settings.public_folder).nil?
         public_dir = File.expand_path(public_dir)
 
         path = File.expand_path(public_dir + unescape(path_info))
