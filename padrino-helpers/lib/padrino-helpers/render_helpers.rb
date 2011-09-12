@@ -2,6 +2,35 @@ module Padrino
   module Helpers
     module RenderHelpers
       ##
+      # Tell the client that the response includes an inline file attachment.
+      #
+      # @note Inline attachment means the client wont directly download the
+      #   file, just show it inside the browser
+      # @note Sinatra::Base#send_file already supports inline attachment.
+      #   However, it's not always the case the developer wants to read from
+      #   a source path
+      #
+      # @param [optional String] filename
+      #   Filename to represent
+      #
+      # @example
+      #   inline_attachment "my_script.sh"
+      #   send_file "/path/to/my_script.sh"
+      #
+      # @see Sinatra::Base#attachment
+      #
+      # @api public
+      def inline_attachment(filename = nil)
+        value = "Inline"
+
+        if filename
+          value << "; filename=\"#{File.basename filename}\""
+        end
+
+        response["Content-Disposition"] = value
+      end
+
+      ##
       # Render a partials with collections support
       #
       # @param [String] template
