@@ -12,8 +12,8 @@ require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
 
 ##
-# This is a small version of active_support/core_ext/string/inflections.rb
-# to prevent to load a lot of dependencies including I18n gem
+# This is an adapted version of active_support/core_ext/string/inflections.rb
+# to prevent loading several dependencies including I18n gem.
 #
 # Issue: https://github.com/rails/rails/issues/1526
 #
@@ -51,12 +51,23 @@ class String
   # in the string. It raises a NameError when the name is not in CamelCase
   # or is not initialized.
   #
-  # Examples
   #   "Module".constantize # => Module
   #   "Class".constantize  # => Class
   #
   def constantize
     ActiveSupport::Inflector.constantize(self)
+  end
+
+  ##
+  # The reverse of +camelize+. Makes an underscored, lowercase form from the expression in the string.
+  #
+  # +underscore+ will also change '::' to '/' to convert namespaces to paths.
+  #
+  #   "ActiveRecord".underscore         # => "active_record"
+  #   "ActiveRecord::Errors".underscore # => active_record/errors
+  #
+  def underscore
+    ActiveSupport::Inflector.underscore(self)
   end
 
   ##
@@ -77,18 +88,6 @@ class String
     end
   end
   alias_method :camelcase, :camelize
-
-  ##
-  # The reverse of +camelize+. Makes an underscored, lowercase form from the expression in the string.
-  #
-  # +underscore+ will also change '::' to '/' to convert namespaces to paths.
-  #
-  #   "ActiveRecord".underscore         # => "active_record"
-  #   "ActiveRecord::Errors".underscore # => active_record/errors
-  #
-  def underscore
-    ActiveSupport::Inflector.underscore(self)
-  end
 
   ##
   # Create a class name from a plural table name like Rails does for table names to models.
@@ -160,6 +159,6 @@ YAML::ENGINE.yamler = "syck" if defined?(YAML::ENGINE)
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
 
 ##
-# Used to know if this file has already been required
+# Used to determine if this file has already been required
 #
 module SupportLite; end
