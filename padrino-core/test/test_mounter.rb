@@ -165,7 +165,7 @@ describe "Mounter" do
     should "not clobber the public setting when mounting an app" do
       class ::PublicApp < Padrino::Application
         set :root, "/root"
-        set :public, File.expand_path(File.dirname(__FILE__))
+        set :public_folder, File.expand_path(File.dirname(__FILE__))
       end
 
       Padrino.mount("public_app").to("/public")
