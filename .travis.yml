@@ -6,7 +6,6 @@ rvm:
   - 1.9.3
   - ree
   - rbx-2.0
-  - jruby
   - ruby-head
 
 notifications:
