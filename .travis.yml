@@ -16,3 +16,7 @@ notifications:
     - joshbuddy@gmail.com
     - d.dagostino@lipsiasoft.com
     - florian.gilcher@asquera.de
+
+branches:
+  only:
+    - master
