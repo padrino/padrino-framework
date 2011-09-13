@@ -232,13 +232,13 @@ module Padrino
 
       private
         def setup_default_middleware(builder)
+          setup_sessions builder
           builder.use Padrino::ShowExceptions         if show_exceptions?
           builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
           builder.use Padrino::Reloader::Rack         if reload?
           builder.use Rack::Flash, :sweep => true     if flash?
           builder.use Rack::MethodOverride            if method_override?
           builder.use Rack::Head
-          setup_sessions   builder
           setup_protection builder
           setup_application!
         end
