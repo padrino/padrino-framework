@@ -38,7 +38,7 @@ class HttpRouter
       # Provide access to the current controller to the request
       # Now we can eval route, but because we have "throw halt" we need to be
       # (en)sure to reset old layout and run controller after filters.
-      old_params = @params
+      original_params = @params
       parent_layout = @layout
       successful = false
       begin
@@ -47,16 +47,17 @@ class HttpRouter
         # If present set current controller layout
         @layout = path.route.use_layout if path.route.use_layout
         @route = path.route
-        @route.custom_conditions.each { |blk| pass if blk.bind(self).call == false } if @route.custom_conditions
-        @block_params = @block_params.slice(0, path.route.dest.arity) if path.route.dest.arity > 0
-        halt_response = catch(:halt) { route_eval(&path.route.dest) }
-        @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+        @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
+        @block_params = @block_params[0, path.route.dest.arity] if path.route.dest.arity > 0
+        halt_response = catch(:halt) { route_eval { path.route.dest[self, @block_params] } }
+        response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful = true
-        halt @_response_buffer
+        halt response_buffer
       ensure
-        (@_pending_after_filters ||= []).concat(path.route.after_filters) if path.route.after_filters && successful
+        @_pending_after_filters ||= []
+        @_pending_after_filters.concat(path.route.after_filters) if path.route.after_filters && successful
         @layout = parent_layout
-        @params = old_params
+        @params = original_params
       end
     end
   end
@@ -66,13 +67,11 @@ class HttpRouter
     attr_accessor :custom_conditions, :use_layout, :controller, :cache
 
     def add_before_filter(filter)
-      @before_filters ||= []
-      @before_filters << filter
+      (@before_filters ||= []) << filter
     end
 
     def add_after_filter(filter)
-      @after_filters ||= []
-      @after_filters << filter
+      (@after_filters ||= []) << filter
     end
 
     def before_filters=(filters)
@@ -103,12 +102,12 @@ module Padrino
         when Symbol then request.route_obj && (request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym)
         else             arg === request.path_info
         end
-      end || @options.any? { |name, val|
+      end || @options.any? do |name, val|
         case name
         when :agent then val === request.user_agent
         else             val === request.send(name)
         end
-      }
+      end
       detect ^ !@mode
     end
 
@@ -563,10 +562,9 @@ module Padrino
           unbound_method = instance_method("#{verb} #{path}")
           remove_method(method_name)
 
-          block_arity = block.arity
-          block = block_arity != 0 ?
-              proc { @block_params = @block_params[0, block_arity]; unbound_method.bind(self).call(*@block_params) } :
-              proc { unbound_method.bind(self).call }
+          block = block.arity != 0 ?
+            proc { |a,p| unbound_method.bind(a).call(*p) } :
+            proc { |a,p| unbound_method.bind(a).call }
 
           invoke_hook(:route_added, verb, path, block)
 
@@ -869,10 +867,6 @@ module Padrino
       end
 
       private
-        def route_eval(&block)
-          throw :halt, instance_eval(&block)
-        end
-
         def filter!(type, base=settings)
           base.filters[type].each { |block| instance_eval(&block) }
         end
@@ -880,14 +874,11 @@ module Padrino
         def dispatch!
           static! if settings.static? && (request.get? || request.head?)
           route!
-        #rescue Sinatra::NotFound => boom
-        #  filter! :before
-        #  handle_not_found!(boom)
         rescue ::Exception => boom
           filter! :before
           handle_exception!(boom)
         ensure
-          @_pending_after_filters.each { |filter| instance_eval(&filter)} if @_pending_after_filters
+          @_pending_after_filters.each { |block| instance_eval(&block)} if @_pending_after_filters && !env['sinatra.static_file']
         end
 
         def route!(base=self.class, pass_block=nil)
@@ -911,7 +902,6 @@ module Padrino
           end
 
           route_eval(&pass_block) if pass_block
-
           route_missing
         end
     end # InstanceMethods

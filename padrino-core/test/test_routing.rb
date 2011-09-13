@@ -264,7 +264,7 @@ describe "Routing" do
 
   should "send the appropriate number of params" do
     mock_app do
-      get('/id/:user_id', :provides => [:json]) { |user_id| user_id}
+      get('/id/:user_id', :provides => [:json]) { |user_id, format| user_id}
     end
     get '/id/5.json'
     assert_equal '5', body

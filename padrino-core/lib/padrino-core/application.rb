@@ -9,6 +9,10 @@ module Padrino
   class Application < Sinatra::Base
     register Padrino::Routing   # Support for advanced routing, controllers, url_for
 
+    def logger
+      Padrino.logger
+    end
+
     class << self
 
       def inherited(base) # @private
@@ -155,7 +159,6 @@ module Padrino
         # Defines default settings for Padrino application
         #
         def default_configuration!
-          helpers { def logger; Padrino.logger; end }
           # Overwriting Sinatra defaults
           set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
           set :environment, Padrino.env
