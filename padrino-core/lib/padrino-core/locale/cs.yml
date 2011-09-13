@@ -13,7 +13,10 @@ cs:
     abbr_day_names: [Ne, Po, Út, St, Čt, Pá, So]
     month_names: [~, Leden, Únor, Březen, Duben, Květen, Červen, Červenec, Srpen, Září, Říjen, Listopad, Prosinec]
     abbr_month_names: [~, Led, Úno, Bře, Dub, Kvě, Čvn, Čvc, Srp, Zář, Říj, Lis, Pro]
-    order: [:day, :month, :year]
+    order:
+      - day
+      - month
+      - year
 
   time:
     formats:

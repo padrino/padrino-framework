@@ -13,7 +13,10 @@ ja:
     abbr_day_names: [日, 月, 火, 水, 木, 金, 土]
     month_names: [~, 一月, 二月, 三月, 四月, 五月, 六月, 七月, 八月, 九月, 十月, 十一月, 十二月]
     abbr_month_names: [~, 一月, 二月, 三月, 四月, 五月, 六月, 七月, 八月, 九月, 十月, 十一月, 十二月]
-    order: [ :year, :month, :day ]
+    order: 
+      - year
+      - month
+      - day
 
   time:
     formats:

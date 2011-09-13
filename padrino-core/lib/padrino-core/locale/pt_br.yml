@@ -13,7 +13,10 @@ pt_br:
     abbr_day_names: [Dom, Seg, Ter, Qua, Qui, Sex, Sab]
     month_names: [~, Janeiro, Fevereiro, Março, Abril, Maio, Junho, Julho, Agosto, Setembro, Outubro, Novembro, Dezembro]
     abbr_month_names: [~, Jan, Fev, Mar, Abr, Maio, Jun, Jul, Ago, Set, Out, Nov, Dez]
-    order: [ :day, :month, :year ]
+    order:
+      - day
+      - month
+      - year
 
   time:
     formats:

@@ -151,7 +151,6 @@ end
 # https://github.com/padrino/padrino-framework/issues/424
 #
 require 'yaml' unless defined?(YAML)
-YAML::ENGINE.yamler = "syck" if defined?(YAML::ENGINE)
 
 ##
 # Loads our locale configuration files
