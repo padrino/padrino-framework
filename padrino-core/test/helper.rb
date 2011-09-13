@@ -12,7 +12,7 @@ require 'rack'
 # this issue for now we remove extra values from mimetypes.
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
-class Class
+class Sinatra::Base
   # Allow assertions in request context
   include MiniTest::Assertions
 end

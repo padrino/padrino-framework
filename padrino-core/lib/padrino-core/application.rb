@@ -26,28 +26,6 @@ module Padrino
       end
 
       ##
-      # Hooks into when a new instance of the application is created
-      # This is used because putting the configuration into inherited doesn't
-      # take into account overwritten app settings inside subclassed definitions
-      # Only performs the setup first time application is initialized.
-      #
-      # @param [Array] args
-      #
-      # @yield [Sinatra]
-      #   a Sinatra application
-      #
-      # @return [Sinatra]
-      #
-      def new(*args, &bk)
-        setup_application!
-        logging, logging_was = false, logging
-        show_exceptions, show_exceptions_was = false, show_exceptions
-        super(*args, &bk)
-      ensure
-        logging, show_exceptions = logging_was, show_exceptions_was
-      end
-
-      ##
       # Reloads the application files from all defined load paths
       #
       # This method is used from our Padrino Reloader during development mode
@@ -64,8 +42,6 @@ module Padrino
         reset! # Reset sinatra app
         reset_router! # Reset all routes
         Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
-        register_initializers # Reload our middlewares
-        require_dependencies # Reload dependencies
         default_filters! # Reload filters
         default_routes!  # Reload default routes
         default_errors!  # Reload our errors
@@ -105,7 +81,6 @@ module Padrino
       #
       def setup_application!
         return if @_configured
-        self.register_initializers
         self.require_dependencies
         self.disable :logging # We need do that as default because Sinatra use commonlogger.
         self.default_filters!
@@ -180,6 +155,7 @@ module Padrino
         # Defines default settings for Padrino application
         #
         def default_configuration!
+          helpers { def logger; Padrino.logger; end }
           # Overwriting Sinatra defaults
           set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
           set :environment, Padrino.env
@@ -190,6 +166,7 @@ module Padrino
           set :public_folder, Proc.new { Padrino.root('public', uri_root) }
           set :views, Proc.new { File.join(root,   "views") }
           set :images_path, Proc.new { File.join(public, "images") }
+          set :protection, false
           # Padrino specific
           set :uri_root, "/"
           set :app_name, self.to_s.underscore.to_sym
@@ -243,38 +220,25 @@ module Padrino
         end
 
         ##
-        # Requires the Padrino middleware
-        #
-        def register_initializers
-          use Padrino::ShowExceptions         if show_exceptions?
-          use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
-          use Padrino::Reloader::Rack         if reload?
-          use Rack::Flash, :sweep => true     if flash?
-        end
-
-        ##
         # Requires all files within the application load paths
         #
         def require_dependencies
           Padrino.set_load_paths(*load_paths)
           Padrino.require_dependencies(dependencies, :force => true)
         end
-    end # self
 
-    # TODO Remove deprecated render inclusion in a few versions
-    # Detects if a user is incorrectly using 'render' and warns them about the fix
-    # In 0.10.0, Padrino::Rendering now has to be explicitly included in the application
-    def render(*args)
-      if !defined?(DEFAULT_RENDERING_OPTIONS) && !@_render_included &&
-          (args.size == 1 || (args.size == 2 && args[0].is_a?(String) && args[1].is_a?(Hash)))
-        logger.warn "[Deprecation] Please 'register Padrino::Rendering' for each application as shown here:
-          https://gist.github.com/1d36a35794dbbd664ea4 for 'render' to function as expected"
-        self.class.instance_eval { register Padrino::Rendering }
-        @_render_included = true
-        render(*args)
-      else # pass through, rendering is valid
-        super(*args)
-      end
-    end # render method
+      private
+        def setup_default_middleware(builder)
+          builder.use Padrino::ShowExceptions         if show_exceptions?
+          builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
+          builder.use Padrino::Reloader::Rack         if reload?
+          builder.use Rack::Flash, :sweep => true     if flash?
+          builder.use Rack::MethodOverride            if method_override?
+          builder.use Rack::Head
+          setup_sessions   builder
+          setup_protection builder
+          setup_application!
+        end
+    end # self
   end # Application
 end # Padrino

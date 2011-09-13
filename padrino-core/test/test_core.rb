@@ -54,7 +54,7 @@ describe "Core" do
       assert_equal 2, @_foo
     end
 
-    should "add middlewares in front if specified" do
+    should_eventually "add middlewares in front if specified" do
       test = Class.new {
         def initialize(app)
           @app = app

@@ -1,3 +1,4 @@
+require 'ruby-debug' rescue nil
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'mocha' # Load mocha after minitest
@@ -15,5 +16,4 @@ class MiniTest::Spec
   alias :assert_no_match  :refute_match
   alias :assert_not_nil   :refute_nil
   alias :assert_not_equal :refute_equal
-
 end

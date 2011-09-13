@@ -13,7 +13,7 @@ end
 group :development do
   if ENV['SINATRA_EDGE']
     puts "=> Using sinatra edge"
-    gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
+    gem "sinatra", :path => "/Developer/src/Extras/sinatra"# :git => "git://github.com/sinatra/sinatra.git"
   end
   gem "json",      "1.5.3"
   gem "nokogiri",  "1.4.4"
@@ -30,6 +30,7 @@ group :development do
   gem "builder",   ">= 2.1.2"
   gem "bcrypt-ruby", :require => "bcrypt"
   platforms :mri_18 do
+    gem "ruby-debug"
     gem "rcov",         "~> 0.9.8"
     gem "ruby-prof",    ">= 0.9.1"
     gem "system_timer", ">= 1.0"

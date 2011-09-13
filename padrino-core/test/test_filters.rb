@@ -269,6 +269,7 @@ describe "Filters" do
     mock_app do
       before(:index, '/foo') { test = 'before' }
       get :index do
+        ''
       end
     end
     get '/foo'

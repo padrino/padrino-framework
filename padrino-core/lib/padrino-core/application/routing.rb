@@ -47,7 +47,7 @@ class HttpRouter
         # If present set current controller layout
         @layout = path.route.use_layout if path.route.use_layout
         @route = path.route
-        @route.custom_conditions.each { |blk| pass if instance_eval(&blk) == false } if @route.custom_conditions
+        @route.custom_conditions.each { |blk| pass if blk.bind(self).call == false } if @route.custom_conditions
         @block_params = @block_params.slice(0, path.route.dest.arity) if path.route.dest.arity > 0
         halt_response = catch(:halt) { route_eval(&path.route.dest) }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
@@ -295,6 +295,10 @@ module Padrino
       #
       def after(*args, &block)
         add_filter :after, &(args.empty? ? block : construct_filter(*args, &block))
+      end
+
+      def  add_filter(type, &block)
+        filters[type] << block
       end
 
       ##
@@ -865,12 +869,20 @@ module Padrino
       end
 
       private
+        def route_eval(&block)
+          throw :halt, instance_eval(&block)
+        end
+
+        def filter!(type, base=settings)
+          base.filters[type].each { |block| instance_eval(&block) }
+        end
+
         def dispatch!
           static! if settings.static? && (request.get? || request.head?)
           route!
-        rescue Sinatra::NotFound => boom
-          filter! :before
-          handle_not_found!(boom)
+        #rescue Sinatra::NotFound => boom
+        #  filter! :before
+        #  handle_not_found!(boom)
         rescue ::Exception => boom
           filter! :before
           handle_exception!(boom)

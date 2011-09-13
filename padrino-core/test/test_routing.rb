@@ -258,7 +258,7 @@ describe "Routing" do
       get("/foo"){ content_type(:json); content_type.to_s }
     end
     get "/foo"
-    assert_equal 'application/json', content_type
+    assert_equal 'application/json;charset=utf-8', content_type
     assert_equal 'json', body
   end
 
@@ -872,12 +872,12 @@ describe "Routing" do
       controller :lang => :it do
         get(:index, :map => "/:lang") { "lang is #{params[:lang]}" }
       end
-      assert_equal "/it", url(:index)
       # This is only for be sure that default values
       # work only for the given controller
       get(:foo, :map => "/foo") {}
-      assert_equal "/foo", url(:foo)
     end
+    assert_equal "/it",  @app.url(:index)
+    assert_equal "/foo", @app.url(:foo)
     get "/en"
     assert_equal "lang is en", body
   end
@@ -1511,6 +1511,7 @@ describe "Routing" do
     mock_app do
       put('/') { 'okay' }
     end
+    assert @app.method_override?
     post '/', {'_method'=>'PUT'}, {}
     assert_equal 200, status
     assert_equal 'okay', body
@@ -1526,7 +1527,7 @@ describe "Routing" do
 
   should 'have MethodOverride middleware with more options' do
     mock_app do
-      put('/', :with => :id, :provides => [:json]) { params[:id] }
+      put('/hi', :provides => [:json]) { 'hi' }
     end
     post '/hi', {'_method'=>'PUT'}
     assert_equal 200, status
