@@ -13,7 +13,7 @@ end
 group :development do
   if ENV['SINATRA_EDGE']
     puts "=> Using sinatra edge"
-    gem "sinatra", :path => "/Developer/src/Extras/sinatra"# :git => "git://github.com/sinatra/sinatra.git"
+    gem "sinatra", :git => "git://github.com/sinatra/sinatra.git" # :path => "/Developer/src/Extras/sinatra"
   end
   gem "json",      "1.5.3"
   gem "nokogiri",  "1.4.4"
