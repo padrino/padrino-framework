@@ -46,9 +46,10 @@ module Padrino
         reset! # Reset sinatra app
         reset_router! # Reset all routes
         Padrino.require_dependencies(self.app_file, :force => true) # Reload the app file
-        default_filters! # Reload filters
-        default_routes!  # Reload default routes
-        default_errors!  # Reload our errors
+        require_dependencies # Reload dependencies
+        default_filters!     # Reload filters
+        default_routes!      # Reload default routes
+        default_errors!      # Reload our errors
         I18n.reload! if defined?(I18n) # Reload also our translations
         true
       end
@@ -86,7 +87,6 @@ module Padrino
       def setup_application!
         return if @_configured
         self.require_dependencies
-        self.disable :logging # We need do that as default because Sinatra use commonlogger.
         self.default_filters!
         self.default_routes!
         self.default_errors!
