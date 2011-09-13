@@ -3,7 +3,6 @@ PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
 PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 
 module Padrino
-
   ##
   # @return [Padrino::Logger]
   #
@@ -93,8 +92,8 @@ module Padrino
     #
     # Defaults are:
     #
-    #   :production  => { :log_level => :warn, :stream => :to_file }
-    #   :development => { :log_level => :debug, :stream => :stdout }
+    #   :production  => { :log_level => :warn, :stream =>  :to_file }
+    #   :development => { :log_level => :debug, :stream => :stdout, :format_datime => '' }
     #   :test        => { :log_level => :fatal, :stream => :null }
     #
     # In some cases, configuring the loggers before loading the framework is necessary.
@@ -104,7 +103,7 @@ module Padrino
     #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout },
+      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => ' ' },
       :test        => { :log_level => :debug, :stream => :null }
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
@@ -173,10 +172,10 @@ module Padrino
     #   Whether the log should automatically flush after new messages are
     #   added. Defaults to true.
     #
-    # @option options [Symbol] :format_datetime ("%d/%b/%Y %H:%M:%S")
+    # @option options [Symbol] :format_datetime (" [%d/%b/%Y %H:%M:%S] ")
     #   Format of datetime
     #
-    # @option options [Symbol] :format_message ("%s - - [%s] \"%s\"")
+    # @option options [Symbol] :format_message ("%s -%s%s")
     #    Format of message
     #
     # @option options [Symbol] :log_static (false)
@@ -189,8 +188,8 @@ module Padrino
       @log               = options[:stream]  || $stdout
       @log.sync          = true
       @mutex             = @@mutex[@log] ||= Mutex.new
-      @format_datetime   = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message    = options[:format_message]  || "%s - [%s] \"%s\""
+      @format_datetime   = options[:format_datetime] || " [%d/%b/%Y %H:%M:%S] "
+      @format_message    = options[:format_message]  || "%s -%s%s"
       @log_static        = options.has_key?(:log_static) ? options[:log_static] : false
     end
 
