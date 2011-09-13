@@ -1,7 +1,10 @@
-require 'ruby-debug' rescue nil
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'mocha' # Load mocha after minitest
+
+begin
+  require 'ruby-debug'
+rescue LoadError; end
 
 class MiniTest::Spec
   class << self

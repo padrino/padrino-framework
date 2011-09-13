@@ -39,23 +39,23 @@ class HttpRouter
       # Now we can eval route, but because we have "throw halt" we need to be
       # (en)sure to reset old layout and run controller after filters.
       original_params = @params
-      parent_layout = @layout
-      successful = false
+      parent_layout   = @layout
+      successful      = false
       begin
         filter! :before
         (path.route.before_filters - self.class.filters[:before]).each { |filter| instance_eval(&filter)} if path.route.before_filters
         # If present set current controller layout
         @layout = path.route.use_layout if path.route.use_layout
-        @route = path.route
+        @route  = path.route
         @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
-        @block_params = @block_params[0, path.route.dest.arity] if path.route.dest.arity > 0
-        halt_response = catch(:halt) { route_eval { path.route.dest[self, @block_params] } }
-        response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
-        successful = true
-        halt response_buffer
+        @block_params     = @block_params[0, @route.dest.arity] if @route.dest.arity > 0
+        halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
+        @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+        successful        = true
+        halt @_response_buffer
       ensure
         @_pending_after_filters ||= []
-        @_pending_after_filters.concat(path.route.after_filters) if path.route.after_filters && successful
+        @_pending_after_filters.concat(@route.after_filters) if @route && @route.after_filters && successful
         @layout = parent_layout
         @params = original_params
       end
@@ -558,9 +558,7 @@ module Padrino
 
           # Sinatra defaults
           method_name = "#{verb} #{path}"
-          define_method(method_name, &block)
-          unbound_method = instance_method("#{verb} #{path}")
-          remove_method(method_name)
+          unbound_method = generate_method(method_name, &block)
 
           block = block.arity != 0 ?
             proc { |a,p| unbound_method.bind(a).call(*p) } :
@@ -570,7 +568,6 @@ module Padrino
 
           # HTTPRouter route construction
           route = router.add(path)
-
           route.name(name) if name
           priority_name = options.delete(:priority) || :normal
           priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
@@ -670,17 +667,16 @@ module Padrino
             path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
-            path.gsub!(%r{/\?$}, '(/)')                    # Remove index path
-            path.gsub!(%r{//$}, '/')                       # Remove index path
-            path[0,0] = "/" unless path =~ %r{^\(?/}       # Paths must start with a /
-            path.sub!(%r{/(\))?$}, '\\1') if path != "/"   # Remove latest trailing delimiter
-            path.gsub!(/\/(\(\.|$)/, '\\1')                # Remove trailing slashes
+            path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
+            path.gsub!(%r{//$}, '/')                     # Remove index path
+            path[0,0] = "/" if path !~ %r{^\(?/}         # Paths must start with a /
+            path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
+            path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
             path.squeeze!('/')
           end
 
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
-
           [path, name, options]
         end
 
@@ -824,7 +820,6 @@ module Padrino
       def static_file?(path_info)
         return if (public_dir = settings.public_folder).nil?
         public_dir = File.expand_path(public_dir)
-
         path = File.expand_path(public_dir + unescape(path_info))
         return if path[0, public_dir.length] != public_dir
         return unless File.file?(path)
@@ -878,7 +873,7 @@ module Padrino
           filter! :before
           handle_exception!(boom)
         ensure
-          @_pending_after_filters.each { |block| instance_eval(&block)} if @_pending_after_filters && !env['sinatra.static_file']
+          @_pending_after_filters.each { |block| instance_eval(&block) } if @_pending_after_filters
         end
 
         def route!(base=self.class, pass_block=nil)
