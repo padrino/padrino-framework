@@ -1,3 +1,116 @@
+
+n.n.n / 2011-09-14 
+==================
+
+  * Revert logger.
+  * Improved logging removing datetime only for Developer environment.
+  * Reload correclty dependencies.
+  * Be sure to setup sessions before rack flash.
+  * Others fixes to make padrino compat with Sinatra 1.3
+  * Removed a skipped test.
+  * Refactoring following @rkh rulez.
+  * Merge branch 'sinatra_1_3' of github.com:padrino/padrino-framework into sinatra_1_3
+  * Patches to make core compat with Sinatra 1.3
+  * Moving more accessors public => public_folder
+  * Sinatra 1.3: setting change public => public_folder
+  * Only Travis CI master branch
+  * Move CI status into Padrino section
+  * Moving more accessors public => public_folder
+  * Sinatra 1.3: setting change public => public_folder
+  * Added travis status image.
+  * [travis] no fun with jruby since we cannot use c extensions.
+  * Merge branch 'master' of github.com:padrino/padrino-framework
+  * [travis] Check back JRuby and ruby-head.
+  * [padrino-core] Minor cleanup of support_lite
+  * [padrino-helpers] Adds create "content_for?" helper (Thanks @mlightner) #662
+  * Changed per request.
+  * Added content_for? method to test for content for a given key.
+  * Fix my typos errors. WTF.
+  * Use DM 1.2.rc1 in our test so they pass on 1.9.3.preview
+  * Small Fix.
+  * Minor padrino-gen refactoring.
+  * Time for mounter.
+  * Continue transition from rdoc to yard.
+  * [padrino-core] Continue conversion from rdoc to yard.
+  * Revert cleanup on 505.
+  * Cleanup white spaces.
+  * Change entire mailers codebase to YARD docs #656
+  * Merge pull request #661 from michaelklishin/patch-1
+  * You probably want to use 1.9.3[-preview1] and not ruby-head. ruby-head has been constantly breaking things recently
+  * [padrino-gen] Minor changes to YARD docs
+  * Merge pull request #659 from padrino/minitest
+  * [padrino-helpers] Minor doc fixes
+  * Minor cleanups for mini_shoulda file and test helpers
+  * Cleanup whitespace in Gemfile
+  * [padrino-cache, padrino-gen] Minor doc fixes
+  * [padrino-cache] convert to YARD #656
+  * [padrino-gen] change entire generators codebase to YARD docs! #656
+  * [padrino-gen] use the actual parameter columns instead of fields
+  * Update to use latest mocha and minitest.
+  * Revert "Use 1.9.3 instead of (sometimes unstable) ruby-head"
+  * Use 1.9.3 instead of (sometimes unstable) ruby-head
+  * Use for all rubies same minitest, remove for now JRuby support on travis-ci since now jruby c extension support is disabled.
+  * Cleanup Gemfile, jruby-memcache doesn't play nice.
+  * Merge branch 'minitest' of github.com:padrino/padrino-framework into minitest
+  * Bye bye redis on travis
+  * [padrino-core] Mark annoying reloader test as pending for now
+  * Better Gemfile for Trevis friend.
+  * [padrino-admin] Small cosmetic fix to test names
+  * [padrino-admin] Fixes tests that are failing for generate
+  * Merge branch 'minitest' of github.com:padrino/padrino-framework into minitest
+  * Here we are!
+  * Fixes text in Gemfile
+  * Fix admin specs.
+  * Keep same version of minitest using the v.1.6.0 which is the default in 1.9.2.
+  * Merge branch 'minitest' of github.com:padrino/padrino-framework into minitest
+  * [padrino-admin] Fixes issue with padrino-admin
+  * Maybe JRuby needs minitest (?)
+  * Merge branch 'minitest' of github.com:padrino/padrino-framework into minitest
+  * [padrino-helpers] Remove random failing test
+  * Remove debug.
+  * No pride it looks a bit less than useful
+  * Remove extra dep.
+  * Show our pride!
+  * Adjust padrino-gen with builtin capture_io
+  * Add colors to minitest.
+  * Fix typo.
+  * Due on this: http://goo.gl/2F77I, assert_nothing_raised was removed.
+  * Cleanup, consolidate mini_shoulda code and fix one test
+  * Fixes a failing test by fixing typo
+  * Update CHANGES doc
+  * [padrino-core,padrino-gen] Seems like every test passes in minitest, huzzah!
+  * [padrino-core] Now passes on mintiest too! weird problem before
+  * [core,gen] still fail on mintiest trickier to fix
+  * Additional fixes to setup minitest
+  * [padrino-helper,padrino-mailer] Update mintiest extensions
+  * [padrino-admin] Tests pass in minitest
+  * [padrino-mailer] Tests are passing on mintiest
+  * TestBlah -> describe "blah" (minitest)
+  * assert_raise => assert_raises (for minitest)
+  * [padrino-helpers] Voila! shoulda is gone, hello minitest! #658
+  * [padrino-helpers] Changes entire helpers codebase to YARD docs!
+  * Fix SystemTimer. Really...
+  * Added the yard task and .yardopts files.
+  * Better way to handle SystemTimer.
+  * Update CHANGES
+  * Merge pull request #657 from postmodern/yard
+  * Added YARD tags, YARD links and kept text within 80 columns.
+  * Prevent system_timer gem on others ruby implementations.
+  * Fixed .document files, so YARD will not parse LICENSE.txt.
+  * Add a .txt extension to LICENSE.
+  * Fixes issue with generator runner for https templates (@xavierRiley)
+  * remove less dependency for less generation #634
+  * Merge pull request #654 from ugisozols/master
+  * Add Latvian translations.
+  * Merge pull request #653 from benjaminoakes/master
+  * Switch back to Haml, since Padrino uses it by default :)
+  * Document use case for Padrino::Admin::AccessControl#allowed? given a dearth of documentation elsewhere.
+  * Ignore doc directory from "rake doc"
+  * [ar:auto:upgrade] remove first cols then add new one.
+  * Merge pull request #652 from ugisozols/master
+  * Remove unneeded commas.
+  * Merge pull request #630 from padrino/routing_questions
+  * only remove index when it comes from the symbol
 = CHANGES
 
 == 0.10.3 (Not Yet Released)
