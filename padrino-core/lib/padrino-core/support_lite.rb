@@ -10,6 +10,7 @@ require 'active_support/core_ext/array/extract_options'     # extract_options
 require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
+require 'yaml' unless defined?(YAML)                        # load yaml for i18n
 
 ##
 # This is an adapted version of active_support/core_ext/string/inflections.rb
@@ -145,12 +146,6 @@ module FileSet
     glob(glob_pattern, file_path) { |f| require f }
   end
 end
-
-##
-# YAML Engine Parsing Fix
-# https://github.com/padrino/padrino-framework/issues/424
-#
-require 'yaml' unless defined?(YAML)
 
 ##
 # Loads our locale configuration files
