@@ -9,6 +9,11 @@ module Padrino
   class Application < Sinatra::Base
     register Padrino::Routing   # Support for advanced routing, controllers, url_for
 
+    ##
+    # Returns the logger for this application.
+    #
+    # @return [Padrino::Logger] Logger associated with this app.
+    #
     def logger
       Padrino.logger
     end
@@ -231,6 +236,9 @@ module Padrino
         end
 
       private
+
+        # Overrides the default middleware for Sinatra based on Padrino conventions
+        # Also initializes the application after setting up the middleware
         def setup_default_middleware(builder)
           setup_sessions builder
           builder.use Padrino::ShowExceptions         if show_exceptions?
