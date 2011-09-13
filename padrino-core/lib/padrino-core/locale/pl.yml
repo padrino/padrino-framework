@@ -13,7 +13,10 @@ pl:
     abbr_day_names: [nie, pon, wto, śro, czw, pia, sob]
     month_names: [~, Styczeń, Luty, Marzec, Kwiecień, Maj, Czerwiec, Lipiec, Sierpień, Wrzesień, Październik, Listopad, Grudzień]
     abbr_month_names: [~, sty, lut, mar, kwi, maj, cze, lip, sie, wrz, paź, lis, gru]
-    order: [ :year, :month, :day ]
+    order:
+      - year
+      - month
+      - day
 
   time:
     formats:
