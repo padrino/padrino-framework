@@ -148,6 +148,7 @@ module Padrino
         # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
         #
         def render(engine, data=nil, options={}, locals={}, &block)
+          began_at = Time.now
           # If engine is a hash then render data converted to json
           content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash)
 
@@ -176,10 +177,10 @@ module Padrino
             options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
             options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
             options[:layout_engine] = layout_engine || engine if options[:layout]
-            logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
+            logger.bench :layout, began_at, "#{root}/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
-            logger.debug "Resolving layout #{root}/views#{options[:layout]}" if defined?(logger)
+            logger.bench :layout, began_at, "#{root}/views#{options[:layout]}" if defined?(logger)
           end
 
           # Cleanup the template

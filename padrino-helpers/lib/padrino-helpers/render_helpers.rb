@@ -29,14 +29,15 @@ module Padrino
       #
       # @api public
       def partial(template, options={})
-        logger.debug "PARTIAL:  #{template} called" if defined?(logger)
+        began_at = Time.now
         options.reverse_merge!(:locals => {}, :layout => false)
-        path = template.to_s.split(File::SEPARATOR)
-        object_name = path[-1].to_sym
-        path[-1] = "_#{path[-1]}"
+        path            = template.to_s.split(File::SEPARATOR)
+        object_name     = path[-1].to_sym
+        path[-1]        = "_#{path[-1]}"
         explicit_engine = options.delete(:engine)
-        template_path = File.join(path).to_sym
+        template_path   = File.join(path).to_sym
         raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
+        logger.bench :partial, began_at, template if defined?(logger)
         if collection = options.delete(:collection)
           options.delete(:object)
           counter = 0

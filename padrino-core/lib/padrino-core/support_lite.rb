@@ -11,6 +11,7 @@ require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
 require 'yaml' unless defined?(YAML)                        # load yaml for i18n
+require 'Win32/Console/ANSI' if RUBY_PLATFORM =~ /win32/    # ruby color suppor for win
 
 ##
 # This is an adapted version of active_support/core_ext/string/inflections.rb
@@ -146,6 +147,34 @@ module FileSet
     glob(glob_pattern, file_path) { |f| require f }
   end
 end
+
+##
+# Few colors for our terminal
+#
+module Colored
+  extend self
+
+  COLORS = { # COLORS
+    :clear   => 0,
+    :bold    => 1,
+    :black   => 30,
+    :red     => 31,
+    :green   => 32,
+    :yellow  => 33,
+    :blue    => 34,
+    :magenta => 35,
+    :cyan    => 36,
+    :white   => 37
+  }
+
+  COLORS.each do |color, value|
+    define_method(color) do
+      ["\e[", value.to_s, "m", self, "\e[", COLORS[:clear], "m"] * ''
+    end
+  end
+end unless defined?(Colored)
+
+String.send(:include, Colored)
 
 ##
 # Loads our locale configuration files
