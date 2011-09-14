@@ -58,20 +58,45 @@ describe "PadrinoCache" do
   end
 
   should 'accept custom cache keys' do
+    called = false
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => true){ cache_key :foo; 'foo' }
-      get('/bar', :cache => true){ cache_key :bar; 'bar' }
+      get '/foo', :cache => true do
+        if called
+          "you'll never see me"
+        else
+          cache_key :foo
+          called = 'foo'
+
+          called
+        end
+      end
+
+      get '/bar', :cache => true do
+        if called
+          cache_key :bar
+          called = 'bar'
+
+          called
+        else
+          "you'll never see me"
+        end
+      end
     end
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
     assert_equal 'foo', @app.cache.get(:foo)
+    get "/foo"
+    assert_equal 'foo', body
+
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
     assert_equal 'bar', @app.cache.get(:bar)
+    get "/bar"
+    assert_equal 'bar', body
   end
 
   should 'delete based on urls' do

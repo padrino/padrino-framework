@@ -1595,13 +1595,19 @@ describe "Routing" do
   should 'have current_path' do
     mock_app do
       controller :foo do
+        get(:index) { current_path }
         get :bar, :map => "/paginate/:page" do
           current_path
         end
+        get(:after) { current_path }
       end
     end
-    get @app.url(:foo, :bar, :page => 10)
+    get "/paginate/10"
     assert_equal "/paginate/10", body
+    get "/foo/after"
+    assert_equal "/foo/after", body
+    get "/foo"
+    assert_equal "/foo", body
   end
 
   should 'accept :map and :parent' do

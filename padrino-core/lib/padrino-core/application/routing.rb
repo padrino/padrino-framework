@@ -25,6 +25,7 @@ class HttpRouter
     Thread.current['padrino.instance'].instance_eval do
       request.route_obj = path.route
       @_response_buffer = nil
+      @route    = path.route
       @params ||= {}
       @params.update(env['router.params'])
       @block_params = if path.route.is_a?(HttpRouter::RegexRoute)
@@ -43,10 +44,8 @@ class HttpRouter
       successful      = false
       begin
         filter! :before
-        (path.route.before_filters - self.class.filters[:before]).each { |filter| instance_eval(&filter)} if path.route.before_filters
-        # If present set current controller layout
+        (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
         @layout = path.route.use_layout if path.route.use_layout
-        @route  = path.route
         @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
         @block_params     = @block_params[0, @route.dest.arity] if @route.dest.arity > 0
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
@@ -54,8 +53,7 @@ class HttpRouter
         successful        = true
         halt @_response_buffer
       ensure
-        @_pending_after_filters ||= []
-        @_pending_after_filters.concat(@route.after_filters) if @route && @route.after_filters && successful
+        (@route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) } if successful
         @layout = parent_layout
         @params = original_params
       end
@@ -63,27 +61,27 @@ class HttpRouter
   end
 
   class Route
-    attr_reader :before_filters, :after_filters
-    attr_accessor :custom_conditions, :use_layout, :controller, :cache
+    attr_accessor :use_layout, :controller, :cache, :cache_key, :cache_expires_in
 
-    def add_before_filter(filter)
-      (@before_filters ||= []) << filter
+    def before_filters(&block)
+      @_before_filters ||= []
+      @_before_filters << block if block_given?
+
+      @_before_filters
     end
 
-    def add_after_filter(filter)
-      (@after_filters ||= []) << filter
+    def after_filters(&block)
+      @_after_filters ||= []
+      @_after_filters << block if block_given?
+
+      @_after_filters
     end
 
-    def before_filters=(filters)
-      filters.each { |filter| add_before_filter(filter) } if filters
-    end
+    def custom_conditions(&block)
+      @_custom_conditions ||= []
+      @_custom_conditions << block if block_given?
 
-    def after_filters=(filters)
-      filters.each { |filter| add_after_filter(filter) } if filters
-    end
-
-    def custom_conditions=(custom_conditions)
-      @custom_conditions = custom_conditions
+      @_custom_conditions
     end
   end
 end
@@ -486,7 +484,7 @@ module Padrino
       # Returns the lat controller, useful inside a layout/view.
       #
       def current_controller
-        @_controller && @_controller.last
+        @_controller and @_controller[-1]
       end
 
       private
@@ -589,19 +587,20 @@ module Padrino
           # Add Sinatra conditions
           options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
           conditions, @conditions = @conditions, []
-          route.custom_conditions = conditions
+          route.custom_conditions.concat(conditions)
 
           invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
           # Add Application defaults
-          route.before_filters = @filters[:before]
-          route.after_filters  = @filters[:after]
+          route.before_filters.concat(@filters[:before])
+          route.after_filters.concat(@filters[:after])
           if @_controller
             route.use_layout = @layout
-            route.controller = Array(@_controller).first.to_s
+            route.controller = Array(@_controller)[0].to_s
           end
 
           deferred_routes[priority] << [route, block]
+
           route
         end
 
@@ -677,6 +676,7 @@ module Padrino
 
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
+
           [path, name, options]
         end
 
@@ -699,6 +699,7 @@ module Padrino
             part = "(#{part})" if param.respond_to?(:optional) && param.optional?
             part
           end
+
           [parent_prefix, path].flatten.join("")
         end
 
@@ -795,13 +796,14 @@ module Padrino
         # Delegate to Sinatra 1.2 for simple url("/foo")
         # http://www.sinatrarb.com/intro#Generating%20URLs
         return super if args.first.is_a?(String) && !args[1].is_a?(Hash)
+
         # Delegate to Padrino named route url generation
-        self.class.url(*args)
+        settings.url(*args)
       end
       alias :url_for :url
 
       def recognize_path(path)
-        self.class.recognize_path(path)
+        settings.recognize_path(path)
       end
 
       def current_path(*path_params)
@@ -873,10 +875,10 @@ module Padrino
           filter! :before
           handle_exception!(boom)
         ensure
-          @_pending_after_filters.each { |block| instance_eval(&block) } if @_pending_after_filters
+          filter! :after unless env['sinatra.static_file']
         end
 
-        def route!(base=self.class, pass_block=nil)
+        def route!(base=settings, pass_block=nil)
           Thread.current['padrino.instance'] = self
           if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
@@ -897,6 +899,7 @@ module Padrino
           end
 
           route_eval(&pass_block) if pass_block
+
           route_missing
         end
     end # InstanceMethods
