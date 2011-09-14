@@ -177,10 +177,10 @@ module Padrino
             options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
             options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
             options[:layout_engine] = layout_engine || engine if options[:layout]
-            logger.bench :layout, began_at, "#{root}/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
+            logger.debug :layout, began_at, "/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
-            logger.bench :layout, began_at, "#{root}/views#{options[:layout]}" if defined?(logger)
+            logger.debug :layout, began_at, "/views#{options[:layout]}" if defined?(logger)
           end
 
           # Cleanup the template

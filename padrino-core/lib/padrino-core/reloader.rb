@@ -136,8 +136,8 @@ module Padrino
 
         # And finally load the specified file
         begin
-          logger.devel "Loading #{file}"   if !reload
-          logger.bench :reload, began_at, file if  reload
+          logger.devel :loading, began_at, file if !reload
+          logger.debug :reload,  began_at, file if  reload
           $LOADED_FEATURES.delete(file)
           verbosity_was, $-v = $-v, nil
           loaded = false

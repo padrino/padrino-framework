@@ -37,7 +37,7 @@ module Padrino
         explicit_engine = options.delete(:engine)
         template_path   = File.join(path).to_sym
         raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
-        logger.bench :partial, began_at, template if defined?(logger)
+        Padrino.logger.debug :partial, began_at, template if Padrino.respond_to?(:logger)
         if collection = options.delete(:collection)
           options.delete(:object)
           counter = 0
