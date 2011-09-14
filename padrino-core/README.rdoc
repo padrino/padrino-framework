@@ -26,11 +26,11 @@ Routing:: Full url named routes, named params, respond_to support, before/after 
 Tag Helpers:: View helpers such as: tag, content_tag, input_tag.
 Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag.
 Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
-Text Helpers:: Useful formatting like: relative_time_ago, js_escape_html, sanitize_html.
+Text Helpers:: Useful formatting like: time_ago_in_words, js_escape_html, sanitize_html.
 Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
 Admin:: Builtin Admin interface (like Django)
 Logging:: Provide a unified logger that can interact with your ORM or any library.
-Reloading::	Automatically reloads server code during development.
+Reloading:: Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user’s locale.
 
 Keep in mind, the user will be able to pull in these components

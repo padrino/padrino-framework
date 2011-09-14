@@ -184,8 +184,7 @@ For more information on using the Padrino form builders, check out the guide for
 === Format Helpers
 
 Format helpers are several useful utilities for manipulating the format of text to achieve a goal.
-The four format helpers are <tt>escape_html</tt>, <tt>relative_time_ago</tt>, <tt>time_in_words</tt>,
-and <tt>js_escape_html</tt>.
+The four format helpers are <tt>escape_html</tt>, <tt>time_ago_in_words</tt>, and <tt>js_escape_html</tt>.
 
 The escape_html and js_escape_html function are for taking an html string and escaping certain characters.
 <tt>escape_html</tt> will escape ampersands, brackets and quotes to their HTML/XML entities. This is useful
