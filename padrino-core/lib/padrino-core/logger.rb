@@ -247,10 +247,11 @@ module Padrino
     #   # => DEBUG - GET (0.056ms) - /blog/categories
     #
     def bench(action, began_at, message, level=:debug, color=:yellow)
-      @_pad ||= 7
-      @_pad = action.to_s.size if action.to_s.size > @_pad
+      @_pad  ||= 8
+      @_pad    = action.to_s.size if action.to_s.size > @_pad
       duration = Time.now - began_at
-      push "%s (" % action.to_s.upcase.rjust(@_pad).send(color) + "%0.4fms".bold.send(color) % duration + ") %s" % message, level
+      color    = :red if duration > 1
+      push "%s (" % action.to_s.upcase.rjust(@_pad).send(color) + "%0.4fms".bold.send(color) % duration + ") %s" % message.to_s, level
     end
 
     ##
@@ -313,11 +314,11 @@ module Padrino
             env["REQUEST_METHOD"],
             began_at,
             [
-              status.to_s[0..3].bold,
-              ' ',
-              @uri_root.to_s.bold,
+              @uri_root.to_s,
               env["PATH_INFO"],
               env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
+              ' - ',
+              status.to_s[0..3].bold
             ] * '',
             :debug,
             :magenta

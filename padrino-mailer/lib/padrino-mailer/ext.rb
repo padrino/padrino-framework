@@ -16,7 +16,6 @@ module Mail # @private
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
-
       # Run the original initialize
       initialize_without_app(*args, &block)
     end
@@ -114,7 +113,6 @@ module Mail # @private
     def settings
       self.class
     end
-    alias :options :settings
 
     ##
     # Sets the message defined template path to the given view path
@@ -185,6 +183,17 @@ module Mail # @private
     def defaults=(attributes)
       @_defaults = attributes
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
+    end
+
+    ##
+    # Check if we can log
+    #
+    def self.logging?
+      @_logging
+    end
+
+    def self.logging=(value)
+      @_logging = value
     end
 
     # Shortcut for delivery_method with smarter smtp overwrites

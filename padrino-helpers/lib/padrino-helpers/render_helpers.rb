@@ -29,7 +29,6 @@ module Padrino
       #
       # @api public
       def partial(template, options={})
-        began_at = Time.now
         options.reverse_merge!(:locals => {}, :layout => false)
         path            = template.to_s.split(File::SEPARATOR)
         object_name     = path[-1].to_sym
@@ -37,7 +36,6 @@ module Padrino
         explicit_engine = options.delete(:engine)
         template_path   = File.join(path).to_sym
         raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
-        Padrino.logger.debug :partial, began_at, template if Padrino.respond_to?(:logger)
         if collection = options.delete(:collection)
           options.delete(:object)
           counter = 0

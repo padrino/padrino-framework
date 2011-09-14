@@ -148,7 +148,6 @@ module Padrino
         # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
         #
         def render(engine, data=nil, options={}, locals={}, &block)
-          began_at = Time.now
           # If engine is a hash then render data converted to json
           content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash)
 
@@ -177,10 +176,8 @@ module Padrino
             options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
             options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
             options[:layout_engine] = layout_engine || engine if options[:layout]
-            logger.debug :layout, began_at, "/views#{options[:layout]}" if defined?(logger) && options[:layout].present?
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
-            logger.debug :layout, began_at, "/views#{options[:layout]}" if defined?(logger)
           end
 
           # Cleanup the template
@@ -236,11 +233,15 @@ module Padrino
         #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
         #
         def resolve_template(template_path, options={})
+          began_at = Time.now
           # Fetch cached template for rendering options
           template_path = template_path.to_s[0] == ?/ ? template_path.to_s : "/#{template_path}"
           rendering_options = [template_path, content_type, locale]
           cached_template = settings.fetch_template_file(rendering_options)
-          return cached_template if cached_template
+          if cached_template
+            logger.debug :cached, began_at, cached_template if settings.logging? && defined?(logger)
+            return cached_template
+          end
 
           # Resolve view path and options
           options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
@@ -269,6 +270,7 @@ module Padrino
 
           raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
+          logger.debug :template, began_at, located_template if settings.logging? && defined?(logger)
           located_template
         end
 

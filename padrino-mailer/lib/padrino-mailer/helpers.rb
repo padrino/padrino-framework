@@ -143,6 +143,7 @@ module Padrino
           #
           def delivery_settings
             @_delivery_setting ||= begin
+              raise "You must setup :delivery_method, see api for more details" if RUBY_PLATFORM =~ /win32/ && !respond_to?(:delivery_method)
               return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
               return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
               return [delivery_method, {}] if delivery_method.is_a?(Symbol)
