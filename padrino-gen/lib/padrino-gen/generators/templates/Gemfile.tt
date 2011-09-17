@@ -2,6 +2,7 @@ source :rubygems
 
 # Server requirements
 # gem 'thin' or mongrel
+# gem 'mizuno' or trinidad on JRuby
 
 # Project requirements
 gem 'rake'

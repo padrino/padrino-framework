@@ -18,7 +18,7 @@ module Padrino
   #
   class Server < Rack::Server
     # Server Handlers
-    Handlers = [:thin, :mongrel, :webrick]
+    Handlers = [:thin, :mongrel, :mizuno, :trinidad, :webrick]
 
     def self.start(app, opts={})
       options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
