@@ -32,14 +32,11 @@ class ColoredIO
 
   def print(o)
     case o
-    when "."
-      @io.send(:print, "#{ESC}32m#{o}#{NND}")
-    when "E"
-      @io.send(:print, "#{ESC}33m#{o}#{NND}")
-    when "F"
-      @io.send(:print, "#{ESC}31m#{o}#{NND}")
-    else
-      @io.send(:print, o)
+    when "." then @io.send(:print, o.green)
+    when "E" then @io.send(:print, o.red)
+    when "F" then @io.send(:print, o.orange)
+    when "S" then @io.send(:print, o.magenta)
+    else @io.send(:print, o)
     end
   end
 
@@ -49,4 +46,3 @@ class ColoredIO
 end
 
 MiniTest::Unit.output = ColoredIO.new(MiniTest::Unit.output)
-
