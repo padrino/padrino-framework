@@ -39,7 +39,7 @@ group :development do
     gem "jruby-openssl"
   end
   gem "mocha",    "~>0.10.0"
-  gem "minitest", "~>2.5.1"
+  gem "minitest", "~>2.6.0"
 end
 
 group :cache do
