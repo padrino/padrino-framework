@@ -149,12 +149,29 @@ module FileSet
 end
 
 ##
+# Removes indentation
+#
+# @example
+#   help <<-EOS.undent
+#     Here my help usage
+#      sample_code
+#
+#     Fix
+#   EOS
+#   puts help
+#
+module Undent
+  def undent
+    gsub(/^.{#{slice(/^ +/).size}}/, '')
+  end
+end
+String.send(:include, Undent)
+
+##
 # Few colors for our terminal
 #
 module Colored
-  extend self
-
-  COLORS = { # COLORS
+  COLORS = {
     :clear   => 0,
     :bold    => 1,
     :black   => 30,
@@ -172,8 +189,7 @@ module Colored
       ["\e[", value.to_s, "m", self, "\e[", COLORS[:clear], "m"] * ''
     end
   end
-end unless defined?(Colored)
-
+end
 String.send(:include, Colored)
 
 ##
