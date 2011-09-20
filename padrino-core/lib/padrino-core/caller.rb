@@ -7,6 +7,7 @@ module Padrino
     %r{lib/tilt.*\.rb$},                             # all tilt code
     %r{lib/rack.*\.rb$},                             # all rack code
     %r{lib/mongrel.*\.rb$},                          # all mongrel code
+    %r{lib/bundler.*\.rb$},                          # all bundler lib
     %r{lib/shotgun.*\.rb$},                          # all shotgun lib
     %r{bin/shotgun$},                                # shotgun binary
     %r{\(.*\)},                                      # generated code

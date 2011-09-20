@@ -150,6 +150,7 @@ end
 
 ##
 # Removes indentation
+# Add colors
 #
 # @example
 #   help <<-EOS.undent
@@ -158,39 +159,34 @@ end
 #
 #     Fix
 #   EOS
-#   puts help
+#   puts help.red.bold
 #
-module Undent
+class String
+  def self.colors
+    @_colors ||= {
+      :clear   => 0,
+      :bold    => 1,
+      :black   => 30,
+      :red     => 31,
+      :green   => 32,
+      :yellow  => 33,
+      :blue    => 34,
+      :magenta => 35,
+      :cyan    => 36,
+      :white   => 37
+    }
+  end
+
+  colors.each do |color, value|
+    define_method(color) do
+      ["\e[", value.to_s, "m", self, "\e[", self.class.colors[:clear], "m"] * ''
+    end
+  end
+
   def undent
     gsub(/^.{#{slice(/^ +/).size}}/, '')
   end
 end
-String.send(:include, Undent)
-
-##
-# Few colors for our terminal
-#
-module Colored
-  COLORS = {
-    :clear   => 0,
-    :bold    => 1,
-    :black   => 30,
-    :red     => 31,
-    :green   => 32,
-    :yellow  => 33,
-    :blue    => 34,
-    :magenta => 35,
-    :cyan    => 36,
-    :white   => 37
-  }
-
-  COLORS.each do |color, value|
-    define_method(color) do
-      ["\e[", value.to_s, "m", self, "\e[", COLORS[:clear], "m"] * ''
-    end
-  end
-end
-String.send(:include, Colored)
 
 ##
 # Loads our locale configuration files
