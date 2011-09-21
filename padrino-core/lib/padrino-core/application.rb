@@ -92,12 +92,14 @@ module Padrino
       end
 
       def register(*extensions, &block) # @private
-        added_methods = extensions.map { |m| m.public_instance_methods }
-        extensions.each do |m|
-          added_methods << m.const_get(:ClassMethods).public_instance_methods if m.const_defined?(:ClassMethods)
-        end
-        Sinatra::Delegator.delegate(*added_methods.uniq.flatten)
+        added_methods = extensions.map { |m| m.public_instance_methods }.flatten
+        Sinatra::Delegator.delegate(*added_methods)
         super(*extensions, &block)
+      end
+
+      def extend(base) # @private
+        Sinatra::Delegator.delegate(*base.public_instance_methods)
+        super(base)
       end
 
       ##
