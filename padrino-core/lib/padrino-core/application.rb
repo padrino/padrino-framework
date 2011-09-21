@@ -7,8 +7,6 @@ module Padrino
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   #
   class Application < Sinatra::Base
-    register Padrino::Routing   # Support for advanced routing, controllers, url_for
-
     ##
     # Returns the logger for this application.
     #
@@ -31,7 +29,17 @@ module Padrino
           File.join(base.root, "/lib/**/*.rb")
         ]).uniq!
         Padrino.require_dependencies(base.prerequisites)
+        Padrino::Application.descendants.push(base)
         super(base) # Loading the subclass inherited method
+      end
+
+      ##
+      # Track descendants of {Padrino::Application}
+      #
+      # @return [Array]
+      #
+      def descendants
+        @_descendants ||= []
       end
 
       ##
@@ -81,6 +89,15 @@ module Padrino
       #
       def routes
         router.routes
+      end
+
+      def register(*extensions, &block) # @private
+        added_methods = extensions.map { |m| m.public_instance_methods }
+        extensions.each do |m|
+          added_methods << m.const_get(:ClassMethods).public_instance_methods if m.const_defined?(:ClassMethods)
+        end
+        Sinatra::Delegator.delegate(*added_methods.uniq.flatten)
+        super(*extensions, &block)
       end
 
       ##
@@ -164,6 +181,9 @@ module Padrino
         # Defines default settings for Padrino application
         #
         def default_configuration!
+          # Reset and register our routing system
+          reset!
+          register Padrino::Routing
           # Overwriting Sinatra defaults
           set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
           set :environment, Padrino.env

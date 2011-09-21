@@ -2,7 +2,7 @@ require 'sinatra/base'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
-FileSet.glob_require('padrino-core/*.rb', __FILE__, :except => /autorun/)
+FileSet.glob_require('padrino-core/*.rb', __FILE__, :except => /(autorun|dsl)\.rb$/)
 
 # Defines our Constants
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)

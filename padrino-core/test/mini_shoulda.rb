@@ -34,7 +34,7 @@ class ColoredIO
     case o
     when "." then @io.send(:print, o.green)
     when "E" then @io.send(:print, o.red)
-    when "F" then @io.send(:print, o.orange)
+    when "F" then @io.send(:print, o.yellow)
     when "S" then @io.send(:print, o.magenta)
     else @io.send(:print, o)
     end
