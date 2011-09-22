@@ -69,7 +69,7 @@ task :fresh => [:uninstall, :install, :clean]
 desc "Pushes repository to GitHub"
 task :push do
   say "Updating submodules"
-  sh "git submodule foreach git pull"
+  sh "git submodule foreach git pull origin master"
   say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
