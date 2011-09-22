@@ -190,7 +190,7 @@ module Padrino
     # @see Padrino::Logger::ColoredLevels
     #
     def colored_level(level)
-      style = ColoredLevels[level].map { |c| "\e[%dm" % Colored::COLORS[c] } * ''
+      style = ColoredLevels[level].map { |c| "\e[%dm" % String.colors[c] } * ''
       [style, level.to_s.upcase.rjust(7), "\e[0m"] * ''
     end
 
@@ -227,7 +227,7 @@ module Padrino
     #
     #
     def push(message = nil, level = nil)
-      self << @format_message % [colored_level(level), Time.now.strftime(@format_datetime).yellow, message.to_s.strip]
+      write @format_message % [colored_level(level), Time.now.strftime(@format_datetime).yellow, message.to_s.strip]
     end
 
     ##
