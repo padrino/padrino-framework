@@ -23,9 +23,6 @@ class MiniTest::Spec
 end
 
 class ColoredIO
-  ESC = "\e["
-  NND = "#{ESC}0m"
-
   def initialize(io)
     @io = io
   end
