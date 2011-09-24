@@ -1,10 +1,9 @@
 module Padrino
   ##
-  # Run the Padrino apps as a self-hosted server using:
-  # thin, mongrel, webrick in that order.
+  # Runs the Padrino apps as a self-hosted server using:
+  # thin, mongrel, or webrick in that order.
   #
-  # ==== Examples
-  #
+  # @example
   #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
   #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "0.0.0.0", port: "3000", adapter: "mongrel"
   #
@@ -14,12 +13,13 @@ module Padrino
   end
 
   ##
-  # This module build a Padrino server
+  # This module builds a Padrino server to run the project based on available handlers.
   #
   class Server < Rack::Server
     # Server Handlers
     Handlers = [:thin, :mongrel, :webrick]
 
+    # Starts the application on the available server with specified options.
     def self.start(app, opts={})
       options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
       options.symbolize_keys!
@@ -38,6 +38,7 @@ module Padrino
       @options, @app = options, app
     end
 
+    # Starts the application on the available server with specified options.
     def start
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
       [:INT, :TERM].each { |sig| trap(sig) { exit } }
@@ -46,16 +47,24 @@ module Padrino
       puts "<= Padrino has ended his set (crowd applauds)" unless options[:daemonize]
     end
 
+    # The application the server will run.
     def app
       @app
     end
     alias :wrapped_app :app
 
+    # The options specified to the server.
     def options
       @options
     end
 
     private
+
+      # Detects the supported handler to use.
+      #
+      # @example
+      #   detect_rack_handler => <ThinHandler>
+      #
       def self.detect_rack_handler
         Handlers.each do |handler|
           begin
