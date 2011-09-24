@@ -18,6 +18,21 @@ class RenderDemo < Padrino::Application
     set :padrino_logging, false
   end
 
+  # set/get flash
+  get '/flash' do
+    flash[:warning] = 'Hello World'
+    render :flash
+  end
+
+  get '/flash_point' do
+    render :flash
+  end
+
+  get '/flash_redirect' do
+    flash[:warning] = 'Hello Redirect'
+    redirect '/flash_point'
+  end
+
   # get current engines from partials
   get '/current_engine' do
     render :current_engine

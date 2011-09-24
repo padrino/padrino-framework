@@ -5,7 +5,6 @@ source :rubygems
 
 # Project requirements
 gem 'rake'
-gem 'rack-flash'
 
 # Component requirements
 

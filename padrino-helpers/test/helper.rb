@@ -12,6 +12,7 @@ class MiniTest::Spec
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
+  attr_reader :app
 
   Webrat.configure do |config|
     config.mode = :rack
