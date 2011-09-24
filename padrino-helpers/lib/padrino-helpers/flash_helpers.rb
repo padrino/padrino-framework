@@ -2,17 +2,16 @@ module Padrino
   module Helpers
     module FlashHelpers
       def self.included(base)
-        base.before { @_flash, session[:_flash] = session[:_flash], nil if settings.sessions? && session[:_flash] }
-        base.alias_method_chain :redirect, :flash
+        base.before { @_flash, session[:_flash] = session[:_flash], nil if settings.sessions? && session[:_flash]; true }
       end
 
       def flash
         @_flash ||= {}
       end
 
-      def redirect_with_flash(uri, *args)
+      def redirect(uri, *args)
         session[:_flash] = flash if settings.sessions? && flash.present?
-        redirect_without_flash(uri, *args)
+        super(uri, *args)
       end
     end # FlashHelpers
   end # Helpers
