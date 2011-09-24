@@ -242,7 +242,7 @@ module Padrino
         # Also initializes the application after setting up the middleware
         def setup_default_middleware(builder)
           setup_sessions builder
-          register Sinatra::Flash                     if flash?
+          register Sinatra::Flash                     if flash? && defined?(Sinatra::Flash)
           builder.use Padrino::ShowExceptions         if show_exceptions?
           builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
           builder.use Padrino::Reloader::Rack         if reload?
