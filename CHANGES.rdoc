@@ -7,6 +7,7 @@
 * NEW #657 improve docs and conform to YARD format (@postmodern)
 * NEW #658 remove shoulda and switch to minitest (plus aliases)
 * NEW #662 create "content_for?" helper (@mlightner)
+* FIX issue by replacing rack-flash with custom helpers
 
 == 0.10.2
 
