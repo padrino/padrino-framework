@@ -4,9 +4,9 @@
 
 * FIX issue with generator runner for https templates (@xavierRiley)
 * FIX #669 YML locale files are now psych compliant
-* NEW #657 improve docs and conform to YARD format (@postmodern)
 * NEW #658 remove shoulda and switch to minitest (plus aliases)
 * NEW #662 create "content_for?" helper (@mlightner)
+* NEW #657 Improves docs and moves all source to YARD format
 
 == 0.10.2
 
