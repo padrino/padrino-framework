@@ -7,7 +7,8 @@ module Padrino
   # These subclassed applications can be easily mounted into other Padrino applications as well.
   #
   class Application < Sinatra::Base
-    register Padrino::Routing   # Support for advanced routing, controllers, url_for
+    # Support for advanced routing, controllers, url_for
+    register Padrino::Routing
 
     ##
     # Returns the logger for this application.
@@ -179,7 +180,7 @@ module Padrino
           set :uri_root, "/"
           set :app_name, self.to_s.underscore.to_sym
           set :default_builder, 'StandardFormBuilder'
-          set :flash, defined?(Rack::Flash)
+          set :flash, defined?(Sinatra::Flash)
           set :authentication, false
           # Padrino locale
           set :locale_path, Proc.new { Dir[File.join(self.root, "/locale/**/*.{rb,yml}")] }
@@ -241,10 +242,10 @@ module Padrino
         # Also initializes the application after setting up the middleware
         def setup_default_middleware(builder)
           setup_sessions builder
+          register Sinatra::Flash                     if flash?
           builder.use Padrino::ShowExceptions         if show_exceptions?
           builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
           builder.use Padrino::Reloader::Rack         if reload?
-          builder.use Rack::Flash, :sweep => true     if flash?
           builder.use Rack::MethodOverride            if method_override?
           builder.use Rack::Head
           setup_protection builder
