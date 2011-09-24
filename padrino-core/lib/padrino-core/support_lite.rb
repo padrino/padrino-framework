@@ -143,8 +143,8 @@ module FileSet
   # Requires each file matched in the glob pattern into the application
   # FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
   #
-  def glob_require(glob_pattern, file_path=nil)
-    glob(glob_pattern, file_path) { |f| require f }
+  def glob_require(glob_pattern, file_path=nil, options={})
+    glob(glob_pattern, file_path) { |f| require(f) if !options[:except] || options[:except] !~ f }
   end
 end
 
