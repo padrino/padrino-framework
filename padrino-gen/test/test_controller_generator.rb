@@ -71,6 +71,14 @@ describe "ControllerGenerator" do
       assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
+    should "generate controller test for minitest" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app', 'subby'))
+      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app', 'subby'))
+    end
+
     should "generate controller test for testspec" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testspec') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }

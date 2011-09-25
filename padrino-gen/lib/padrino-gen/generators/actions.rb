@@ -487,7 +487,7 @@ module Padrino
         #
         # @example
         #   available_choices_for :test
-        #   => [:shoulda, :bacon, :riot]
+        #   => [:shoulda, :bacon, :riot, :minitest]
         #
         # @api semipublic
         def available_choices_for(component)

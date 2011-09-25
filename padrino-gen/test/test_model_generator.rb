@@ -365,6 +365,23 @@ describe "ModelGenerator" do
       assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
+    # MINITEST
+    should "generate test file for minitest" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(/some_user\.wont_be_nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+    end
+
+    should "generate test file for minitest in specified app" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/some_user\.wont_be_nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+    end
+
     # RSPEC
     should "generate test file for rspec" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
