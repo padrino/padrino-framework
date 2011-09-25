@@ -2,7 +2,7 @@ module Padrino
   module Helpers
     module FlashHelpers
       def self.included(base)
-        base.before { @_flash, session[:_flash] = session[:_flash], nil if settings.sessions? && session[:_flash]; true }
+        base.before { @_flash, session[:_flash] = session[:_flash], nil if settings.sessions? && session[:_flash] }
       end
 
       def flash
@@ -10,7 +10,7 @@ module Padrino
       end
 
       def redirect(uri, *args)
-        session[:_flash] = flash if settings.sessions? && flash.present?
+        session[:_flash] = @_flash if settings.sessions? && flash.present?
         super(uri, *args)
       end
     end # FlashHelpers

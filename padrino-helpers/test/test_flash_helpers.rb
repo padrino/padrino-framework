@@ -3,19 +3,16 @@ require File.expand_path('../fixtures/render_app/app.rb', __FILE__)
 
 describe 'FlashHelpers' do
 
-  should 'have correctly filter' do
-    assert_equal 2, RenderDemo.filters[:before].size
-  end
-
   should 'work without sessions' do
-    @app = RenderDemo.tap { |a| a.disable :sessions }
+    @app = RenderDemo
     visit '/flash'
     assert_have_selector :h1, :content => 'Hello World'
   end
 
-  should_eventually 'follow redirects' do
-    @app = RenderDemo.tap { |a| a.enable :sessions }
+  should 'follow redirects' do
+    @app = RenderDemo
     visit '/flash_redirect'
+    follow_redirect!
     assert_have_selector :h1, :content => 'Hello Redirect'
   end
 end

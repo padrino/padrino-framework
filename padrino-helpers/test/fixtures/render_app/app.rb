@@ -12,6 +12,7 @@ end
 class RenderDemo < Padrino::Application
   register Padrino::Rendering
   register Padrino::Helpers
+  enable :sessions
 
   configure do
     set :logging, false
