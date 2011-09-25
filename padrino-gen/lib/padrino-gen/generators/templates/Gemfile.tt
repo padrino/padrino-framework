@@ -1,7 +1,8 @@
 source :rubygems
 
-# Server requirements
-# gem 'thin' or mongrel
+# Server requirements (defaults to WEBrick)
+# gem 'thin'
+# gem 'mongrel'
 
 # Project requirements
 gem 'rake'
@@ -21,10 +22,10 @@ end
 # Padrino
 gem 'padrino', '<%= Padrino.version %>'
 <%- end -%>
-# Padrino EDGE
+# Or Padrino Edge
 # gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
 #
-# Individual GEMS
+# Or Individual Gems
 # gem 'padrino-core', '<%= Padrino.version %>'
 # gem 'padrino-admin', '<%= Padrino.version %>'
 # gem 'padrino-cache', '<%= Padrino.version %>'
