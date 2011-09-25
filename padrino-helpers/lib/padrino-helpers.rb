@@ -51,7 +51,6 @@ module Padrino
         app.helpers Padrino::Helpers::RenderHelpers
         app.helpers Padrino::Helpers::NumberHelpers
         app.helpers Padrino::Helpers::TranslationHelpers
-        app.helpers Padrino::Helpers::FlashHelpers
       end
       alias :included :registered
     end
