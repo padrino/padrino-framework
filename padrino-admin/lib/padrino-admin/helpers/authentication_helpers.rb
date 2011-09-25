@@ -19,8 +19,7 @@ module Padrino
         ##
         # Override the current_account, you must provide an instance of Account Model
         #
-        # ==== Examples:
-        #
+        # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account=nil)

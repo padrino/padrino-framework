@@ -165,8 +165,7 @@ module Padrino
         ##
         # Return the path of the project module. If a prefix given will be prepended.
         #
-        # ==== Examples
-        #
+        # @example
         #   # => /accounts/new
         #   project_module.path
         #   # => /admin/accounts
@@ -177,6 +176,7 @@ module Padrino
           path = File.join(ENV['RACK_BASE_URI'].to_s, path) if ENV['RACK_BASE_URI']
           path
         end
+
       end # ProjectModule
     end # AccessControl
   end # Admin

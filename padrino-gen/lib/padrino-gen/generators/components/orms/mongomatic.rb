@@ -35,7 +35,7 @@ class !NAME! < Mongomatic::Base
   # String datatypes
 
 
-  # Examples
+  # Examples:
   # def validate
   #   expectations do
   #     be_present self['name'], "Name cannot be blank"
