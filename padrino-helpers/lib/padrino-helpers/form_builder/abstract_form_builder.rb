@@ -9,7 +9,7 @@ module Padrino
           @object   = build_object(object)
           @options  = options
           raise "FormBuilder template must be initialized!" unless template
-          raise "FormBuilder object must be not be nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
+          raise "FormBuilder object must not be a nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
         end
 
         # f.error_messages
