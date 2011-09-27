@@ -2,13 +2,19 @@
 
 == 0.10.3 (Not Yet Released)
 
-* FIX issue with generator runner for https templates (@xavierRiley)
-* FIX #669 YML locale files are now psych compliant
-* NEW #658 remove shoulda and switch to minitest (plus aliases)
-* NEW #662 create "content_for?" helper (@mlightner)
-* NEW #657 Improves docs and moves all source to YARD format
+* NEW Upgrade to recently released Sinatra 1.3
 * FIX #679 replaces rack-flash with sinatra-flash
 * NEW #667 Adds mintest testing component to generator
+* FIX #634 Removes less gem dependency for less gen
+* NEW #662 create "content_for?" helper (@mlightner)
+* FIX #669 Fixes YAML locale files to be psych compliant (@skade)
+* NEW Fixes logger to be much cleaner with better formatting
+* FIX issue with generator runner for https templates (@xavierRiley)
+* FIX #669 YML locale files are now psych compliant
+* NEW #658 removes shoulda and switch to minitest (with aliases)
+* NEW #657 Converts RDoc to YARD and improve all docs
+* FIX Document example of Padrino::Admin::AccessControl (@benjaminoakes)
+* NEW Adds Latvian locale translation (@ugisozols)
 
 == 0.10.2
 
