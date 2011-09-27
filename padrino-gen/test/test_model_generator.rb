@@ -371,7 +371,7 @@ describe "ModelGenerator" do
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/some_user\.wont_be_nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
     end
 
     should "generate test file for minitest in specified app" do
@@ -379,7 +379,7 @@ describe "ModelGenerator" do
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/some_user\.wont_be_nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # RSPEC

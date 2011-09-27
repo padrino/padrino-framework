@@ -39,7 +39,7 @@ describe "!NAME!Controller" do
   end
 
   it "should return hello world text" do
-    last_response.body.must_equal "Hello World"
+    assert_equal "Hello World", last_response.body
   end
 end
 TEST
@@ -50,7 +50,7 @@ require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 describe "!NAME! Model" do
   it 'can construct a new instance' do
     @!DNAME! = !NAME!.new
-    @!DNAME!.wont_be_nil
+    refute_nil @!DNAME!
   end
 end
 TEST
