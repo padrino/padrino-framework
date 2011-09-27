@@ -8,6 +8,7 @@
 * NEW #662 create "content_for?" helper (@mlightner)
 * NEW #657 Improves docs and moves all source to YARD format
 * FIX #679 replaces rack-flash with sinatra-flash
+* NEW #667 Adds mintest testing component to generator
 
 == 0.10.2
 
