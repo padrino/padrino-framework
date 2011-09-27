@@ -106,11 +106,12 @@ module Padrino
           return if self.behavior == :revoke
 
           instructions = []
+          instructions << "Run 'bundle install'"
           instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
           instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
           instructions << "Run 'padrino rake seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
-          instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
+          instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
 
           say
           say "="*65, :green
