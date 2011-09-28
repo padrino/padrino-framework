@@ -55,7 +55,7 @@ module Padrino
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
 
-      unless middleware.empty?
+      if middleware.present?
         builder = Rack::Builder.new
         middleware.each { |c,a,b| builder.use(c, *a, &b) }
         builder.run(router)
