@@ -15,6 +15,7 @@
 * NEW #657 Converts RDoc to YARD and improve all docs
 * FIX Document example of Padrino::Admin::AccessControl (@benjaminoakes)
 * NEW Adds Latvian locale translation (@ugisozols)
+* FIX #686 Halt status with code responds as expected
 
 == 0.10.2
 
