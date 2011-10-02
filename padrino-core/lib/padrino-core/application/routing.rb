@@ -51,7 +51,7 @@ class HttpRouter
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful        = true
-        halt @_response_buffer
+        halt halt_response
       ensure
         (@route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) } if successful
         @layout = parent_layout

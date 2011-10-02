@@ -1094,9 +1094,7 @@ describe "Routing" do
     assert_equal "123", body
   end
 
-  # TODO get this to pass
-  # https://github.com/padrino/padrino-framework/issues/686
-  should_eventually "support halting with 404 and message" do
+  should "support halting with 404 and message" do
     mock_app do
       controller do
         get :index do
