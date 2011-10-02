@@ -1,6 +1,6 @@
 MINITEST_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
 PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+require File.expand_path('../../config/boot, __FILE__)
 
 class MiniTest::Unit::TestCase
   include Rack::Test::Methods
