@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.3 (Not Yet Released)
+== 0.10.4 (Not Yet Released)
+
+== 0.10.3
 
 * NEW Upgrade to recently released Sinatra 1.3
 * FIX #679 replaces rack-flash with sinatra-flash
