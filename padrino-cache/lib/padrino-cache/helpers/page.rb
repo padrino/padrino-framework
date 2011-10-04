@@ -89,7 +89,7 @@ module Padrino
               if settings.caching?
                 began_at = Time.now
                 value = settings.cache.get(@route.cache_key || env['PATH_INFO'])
-                logger.debug "GET Cache", began_at, env['PATH_INFO'] if defined?(logger) && value
+                logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
                 halt 200, value if value
               end
             end
@@ -103,7 +103,7 @@ module Padrino
                 else
                   settings.cache.set(@route.cache_key || env['PATH_INFO'], @_response_buffer)
                 end
-                logger.debug "SET Cache", began_at, env['PATH_INFO'] if defined?(logger)
+                logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
               end
             end
           end
