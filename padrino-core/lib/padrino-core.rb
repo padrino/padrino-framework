@@ -4,8 +4,9 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
 FileSet.glob_require('padrino-core/*.rb', __FILE__)
 
-# Defines our Constants
+# The Padrino environment (falls back to the rack env or finally develop)
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+# The Padrino project root path (falls back to the first caller)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
