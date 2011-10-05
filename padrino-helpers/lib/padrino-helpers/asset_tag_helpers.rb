@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ###
+    # Helpers related to producing assets (images,stylesheets,js,etc) within templates.
+    #
     module AssetTagHelpers
       ##
       # Creates a div to display the flash of given type if it exists

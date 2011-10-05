@@ -1,6 +1,9 @@
 module Padrino
   module Helpers
     module OutputHelpers
+      ##
+      # Handler for reading and writing from a haml template.
+      #
       class HamlHandler < AbstractHandler
         ##
         # Returns true if the current template type is same as this handlers; false otherwise.

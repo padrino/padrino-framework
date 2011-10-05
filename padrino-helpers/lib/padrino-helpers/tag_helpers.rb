@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ##
+    # Helpers related to producing html tags within templates.
+    #
     module TagHelpers
       ##
       # Tag values escaped to html entities

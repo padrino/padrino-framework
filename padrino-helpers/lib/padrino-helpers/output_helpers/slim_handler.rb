@@ -4,6 +4,9 @@ Slim::Engine.set_default_options(:buffer => '@_out_buf', :generator => Temple::G
 module Padrino
   module Helpers
     module OutputHelpers
+      ##
+      # Handler for reading and writing from a slim template.
+      #
       class SlimHandler < AbstractHandler
         attr_reader :output_buffer
 

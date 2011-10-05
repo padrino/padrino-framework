@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ###
+    # Helpers related to formatting or manipulating text within templates.
+    #
     module FormatHelpers
       ##
       # Returns escaped text to protect against malicious content

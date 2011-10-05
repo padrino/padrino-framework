@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ##
+    # Helpers related to producing form related tags and inputs into templates.
+    #
     module FormHelpers
       ##
       # Constructs a form for object using given or default form_builder
