@@ -24,7 +24,7 @@ module Padrino
   #   end
   #   run routes
   #
-  # @semipublic
+  # @api semipublic
   class Router
 
     # Constructs a new route mapper instance
