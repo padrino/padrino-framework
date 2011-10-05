@@ -318,11 +318,17 @@ module Padrino
               env["PATH_INFO"],
               env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
               ' - ',
-              status.to_s[0..3].bold
+              status.to_s[0..3].bold,
+              ' ',
+              code_to_name(status)
             ] * '',
             :debug,
             :magenta
           )
+        end
+        
+        def code_to_name(status)
+          ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
         end
     end # Rack
   end # Logger
