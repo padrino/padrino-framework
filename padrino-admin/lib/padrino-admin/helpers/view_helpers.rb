@@ -1,6 +1,12 @@
 module Padrino
   module Admin
+    ##
+    # Contains all admin related helpers.
+    #
     module Helpers
+      ##
+      # i18n translation helpers for admin to retrieve words based on locale.
+      #
       module ViewHelpers
         ##
         # Translates a given word for padrino admin

@@ -2,6 +2,9 @@ require 'openssl'
 
 module Padrino
   module Admin
+    ##
+    # Common utility methods used within the admin application.
+    #
     module Utils
       ##
       # This util it's used for encrypt/decrypt password.

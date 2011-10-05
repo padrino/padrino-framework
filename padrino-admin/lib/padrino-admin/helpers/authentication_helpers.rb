@@ -1,6 +1,9 @@
 module Padrino
   module Admin
     module Helpers
+      ##
+      # Common helpers used for authorization within an application.
+      #
       module AuthenticationHelpers
         ##
         # Returns true if +current_account+ is logged and active.

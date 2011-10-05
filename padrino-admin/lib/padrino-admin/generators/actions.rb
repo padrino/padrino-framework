@@ -1,6 +1,12 @@
 module Padrino
   module Generators
+    ##
+    # Generator action definitions for the admin panel.
+    #
     module Admin
+      ##
+      # Important tasks for setting up or configuring the admin application.
+      #
       module Actions
         ##
         # Tell us which orm we are using

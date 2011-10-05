@@ -1,14 +1,18 @@
 module Padrino
   module Generators
-
+    ##
+    # Defines the generator for creating a new admin app.
+    #
     class AdminApp < Thor::Group
 
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin, self)
 
-      # Define the source template root and themes
+      # Define the source template root and themes.
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
+      # Defines the theme names for admin based on available.
       def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
 
       # Include related modules

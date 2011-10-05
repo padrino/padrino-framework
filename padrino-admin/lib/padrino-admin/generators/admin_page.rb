@@ -1,6 +1,8 @@
 module Padrino
   module Generators
-
+    ##
+    # Defines the generator for creating a new admin page.
+    #
     class AdminPage < Thor::Group
       attr_accessor :default_orm
 
@@ -9,6 +11,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin_page [model]"; end
 
       # Include related modules

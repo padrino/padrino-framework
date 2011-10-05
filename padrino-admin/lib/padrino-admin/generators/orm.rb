@@ -1,7 +1,15 @@
 module Padrino
   module Admin
+    ##
+    # Contains all admin related generator functionality.
+    #
     module Generators
+      # Defines a generic exception for the admin ORM handler.
       class OrmError < StandardError; end
+
+      ##
+      # Defines the generic ORM management functions used to manipulate data for admin.
+      # @private
       class Orm
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm
 
