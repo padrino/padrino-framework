@@ -25,7 +25,7 @@ command on the server. However, smtp is also supported using the following confi
 Once the delivery settings have been defined, the default will become smtp delivery but can be overwritten in each message.
 
 Padrino supports sending quick emails (using either sendmail or smtp) right from your controllers.
-This is ideal for ‘one-off’ emails where the ‘full’ mailer declaration is simply unnecessary.
+This is ideal for one-off emails where the full mailer declaration is simply unnecessary.
 
 Delivering an email from within your controller is simple:
 

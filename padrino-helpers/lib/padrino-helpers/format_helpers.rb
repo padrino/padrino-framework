@@ -206,7 +206,7 @@ module Padrino
       #     The words to be highlighted in the +text+.
       #   @param [Hash] options
       #     Formatting options for the highlight.
-      #   @option options [String] :highlighter (’<strong class="highlight">\1</strong>’)
+      #   @option options [String] :highlighter ('<strong class="highlight">\1</strong>')
       #     The html pattern for wrapping the highlighted words.
       #
       # @return [String] The text with the words specified wrapped with highlighted spans.

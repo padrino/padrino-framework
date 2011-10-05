@@ -35,7 +35,7 @@ Mailer:: Fast and simple delivery support for sending emails (akin to ActionMail
 Admin:: Builtin Admin interface (like Django)
 Logging:: Provide a unified logger that can interact with your ORM or any library.
 Reloading::  Automatically reloads server code during development.
-Localization:: Full support of I18n language localization and can auto-set user’s locale.
+Localization:: Full support of I18n language localization and can auto-set user's locale.
 
 Keep in mind, the user will be able to pull in these components
 {separately into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
@@ -83,4 +83,4 @@ The individual Padrino sub-gems also contain README's which outlines their funct
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright &copy; 2011 Padrino. See LICENSE for details.

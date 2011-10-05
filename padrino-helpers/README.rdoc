@@ -63,8 +63,8 @@ are three major functions for this category: <tt>tag</tt>, <tt>content_tag</tt> 
 The tag and content_tag are for building arbitrary html tags with a name and specified options. If
 the tag contains 'content' within then <tt>content_tag</tt> is used. For example:
 
-  tag(:br, :style => ‘clear:both’) => <br style="clear:both" />
-  content_tag(:p, "demo", :class => ‘light’) => <p class="light">demo</p>
+  tag(:br, :style => 'clear:both') => <br style="clear:both" />
+  content_tag(:p, "demo", :class => 'light') => <p class="light">demo</p>
 
 The input_tag is used to build tags that are related to accepting input from the user:
 

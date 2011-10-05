@@ -2,7 +2,7 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
   ##
-  # Padrino enhances the Sinatra ‘render’ method to have support for
+  # Padrino enhances the Sinatra 'render' method to have support for
   # automatic template engine detection, enhanced layout functionality,
   # locale enabled rendering, among other features.
   #
