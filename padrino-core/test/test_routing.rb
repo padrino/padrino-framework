@@ -4,6 +4,11 @@ class FooError < RuntimeError; end
 
 
 describe "Routing" do
+  setup do
+    Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+  end
+
   should "serve static files with simple cache control" do
     mock_app do
       set :static_cache_control, :public
