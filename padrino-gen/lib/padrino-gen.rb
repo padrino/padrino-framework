@@ -35,7 +35,7 @@ module Padrino
   # Padrino::Generators.load_paths << "custom_generator.rb"
   #
   module Generators
-
+    # Defines the absolute path to the padrino source folder
     DEV_PATH = File.expand_path("../../", File.dirname(__FILE__))
 
     class << self

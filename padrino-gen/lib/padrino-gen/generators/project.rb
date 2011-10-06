@@ -3,6 +3,9 @@ require 'securerandom' unless defined?(SecureRandom)
 
 module Padrino
   module Generators
+    ##
+    # Responsible for generating new Padrino projects based on the specified project components.
+    #
     class Project < Thor::Group
 
       # Add this generator to our padrino-gen
@@ -10,6 +13,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen project [name] [options]"; end
 
       # Include related modules

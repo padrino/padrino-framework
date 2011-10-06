@@ -7,7 +7,7 @@
 * FIX #692 ensure :static_cache_control is properly applied
 * FIX #689 status messages to common padrino logger (@udzura)
 * Fixes logger issue when displaying cache logs
-* Silence YARD undocumented warnings in admin and helpers
+* Silence YARD undocumented warnings in *all* padrino gems (100% documented)
 
 == 0.10.3
 

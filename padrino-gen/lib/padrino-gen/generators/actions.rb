@@ -1,7 +1,10 @@
 module Padrino
   module Generators
+    # Raised when an application does not have a resolved root path.
     class  AppRootNotFound < RuntimeError; end
-
+    ##
+    # Common actions needed to support project and component generation.
+    #
     module Actions
 
       def self.included(base)
@@ -435,6 +438,7 @@ module Padrino
         end
       end
 
+      # Class methods for Thor generators to support the generators and component choices.
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported

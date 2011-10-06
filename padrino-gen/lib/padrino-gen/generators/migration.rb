@@ -1,6 +1,8 @@
 module Padrino
   module Generators
-
+    ##
+    # Responsible for generating migration files for the appropriate ORM component.
+    #
     class Migration < Thor::Group
 
       # Add this generator to our padrino-gen
@@ -8,6 +10,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen migration [name] [fields]"; end
 
       # Include related modules
@@ -25,6 +28,7 @@ module Padrino
       # Show help if no argv given
       require_arguments!
 
+      # Creates the migration file within a Padrino project.
       def create_migration
         self.destination_root = options[:root]
         if in_app_root?

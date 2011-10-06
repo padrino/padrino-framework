@@ -37,7 +37,8 @@ module Padrino
         end
       end
 
-      # @api private
+      # Loads the components available for all generators.
+      # @private
       def setup
         Padrino::Generators.load_components!
 

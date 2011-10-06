@@ -2,6 +2,9 @@ require 'fileutils'
 
 module Padrino
   module Generators
+    ##
+    # Responsible for executing plugin and template instructions including common actions for modifying a project or application.
+    #
     module Runner
 
       # Generates project scaffold based on a given template file
