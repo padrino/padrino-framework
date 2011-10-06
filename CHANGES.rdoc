@@ -2,9 +2,12 @@
 
 == 0.10.4 (Not Yet Released)
 
-* FIX #690 adds proper require to Gemfile
+* FIX #690 adds proper require for sinatra-flash in Gemfile
 * FIX #691 fixes logger error when rendering templates
-* FIX #692 ensure static_cache_control is properly applied
+* FIX #692 ensure :static_cache_control is properly applied
+* FIX #689 status messages to common padrino logger (@udzura)
+* Fixes logger issue when displaying cache logs
+* Silence YARD undocumented warnings in admin and helpers
 
 == 0.10.3
 
