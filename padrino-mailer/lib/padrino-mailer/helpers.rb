@@ -1,5 +1,8 @@
 module Padrino
   module Mailer
+    ##
+    # Helpers for defining and delivering email messages.
+    #
     module Helpers
       def self.included(base) # @private
         base.extend(ClassMethods)
@@ -48,6 +51,9 @@ module Padrino
         settings.deliver(mailer_name, message_name, *attributes)
       end
 
+      ##
+      # Class methods responsible for registering mailers, configuring settings and delivering messages.
+      #
       module ClassMethods
         def inherited(subclass) # @private
           @_registered_mailers ||= {}

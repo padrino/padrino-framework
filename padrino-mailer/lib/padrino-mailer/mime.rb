@@ -1,5 +1,9 @@
 module Padrino
   module Mailer
+
+    ##
+    # Handles MIME type declarations for mail delivery.
+    #
     module Mime
 
       ##
