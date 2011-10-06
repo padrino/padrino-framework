@@ -3,6 +3,7 @@
 == 0.10.4 (Not Yet Released)
 
 * FIX #690 adds proper require to Gemfile
+* FIX #691 fixes logger error when rendering templates
 
 == 0.10.3
 

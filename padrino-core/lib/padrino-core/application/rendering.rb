@@ -270,7 +270,7 @@ module Padrino
 
           raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-          logger.debug :template, began_at, located_template[0] if settings.logging? && defined?(logger)
+          logger.debug :template, began_at, located_template[0] if located_template && settings.logging? && defined?(logger)
           located_template
         end
 
