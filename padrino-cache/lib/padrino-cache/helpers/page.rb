@@ -1,5 +1,8 @@
 module Padrino
   module Cache
+    ##
+    # Helpers supporting page or fragment caching within a request route.
+    #
     module Helpers
       ##
       # Page caching is easy to integrate into your application. To turn it on, simply provide the
@@ -82,7 +85,7 @@ module Padrino
           @route.cache_key = name
         end
 
-        # @api private
+        # @private
         def self.padrino_route_added(route, verb, path, args, options, block) # @private
           if route.cache and %w(GET HEAD).include?(verb)
             route.before_filters do
