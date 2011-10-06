@@ -2,6 +2,8 @@
 
 == 0.10.4 (Not Yet Released)
 
+* FIX #690 adds proper require to Gemfile
+
 == 0.10.3
 
 * NEW Upgrade to recently released Sinatra 1.3
