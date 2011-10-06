@@ -834,6 +834,7 @@ module Padrino
       def static!
         if path = static_file?(request.path_info)
           env['sinatra.static_file'] = path
+          cache_control *settings.static_cache_control if settings.static_cache_control?
           send_file(path, :disposition => nil)
         end
       end

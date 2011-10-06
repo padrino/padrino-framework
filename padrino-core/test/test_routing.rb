@@ -4,6 +4,26 @@ class FooError < RuntimeError; end
 
 
 describe "Routing" do
+  should "serve static files with simple cache control" do
+    mock_app do
+      set :static_cache_control, :public
+      set :public_folder, File.dirname(__FILE__)
+    end
+    get "/#{File.basename(__FILE__)}"
+    assert headers.has_key?('Cache-Control')
+    assert_equal headers['Cache-Control'], 'public'
+  end # static simple
+
+  should "serve static files with cache control and max_age" do
+    mock_app do
+      set :static_cache_control, [:public, :must_revalidate, {:max_age => 300}]
+      set :public_folder, File.dirname(__FILE__)
+    end
+    get "/#{File.basename(__FILE__)}"
+    assert headers.has_key?('Cache-Control')
+    assert_equal headers['Cache-Control'], 'public, must-revalidate, max-age=300'
+  end # static max_age
+
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }

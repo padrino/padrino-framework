@@ -4,6 +4,7 @@
 
 * FIX #690 adds proper require to Gemfile
 * FIX #691 fixes logger error when rendering templates
+* FIX #692 ensure static_cache_control is properly applied
 
 == 0.10.3
 
