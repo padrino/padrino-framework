@@ -1,5 +1,6 @@
-# Defines our PADRINO_LOGGER constants
+# Defines the log level for a Padrino project.
 PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
+# Defines the logger used for a Padrino project.
 PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 
 module Padrino
@@ -155,7 +156,7 @@ module Padrino
     #   Either an IO object or a name of a logfile. Defaults to $stdout
     #
     # @option options [Symbol] :log_level (:production in the production environment and :debug otherwise)
-    #   The log level from, e.g. :fatal or :info.     
+    #   The log level from, e.g. :fatal or :info.
     #
     # @option options [Symbol] :auto_flush (true)
     #   Whether the log should automatically flush after new messages are
@@ -326,7 +327,7 @@ module Padrino
             :magenta
           )
         end
-        
+
         def code_to_name(status)
           ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
         end

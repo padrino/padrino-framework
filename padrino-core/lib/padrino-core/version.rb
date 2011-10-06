@@ -5,6 +5,7 @@
 # without include full padrino core.
 #
 module Padrino
+  # The version constant for the current version of Padrino.
   VERSION = '0.10.3' unless defined?(Padrino::VERSION)
 
   #

@@ -12,8 +12,12 @@ module Padrino
     # Please note that this will not reload files in the background, and does so
     # only when explicitly invoked.
     #
+
+    # The modification times for every file in a project.
     MTIMES          = {}
+    # The list of files loaded as part of a project.
     LOADED_FILES    = {}
+    # The list of object constants and classes loaded as part of the project.
     LOADED_CLASSES  = {}
 
     class << self
@@ -237,6 +241,7 @@ module Padrino
         @last = (Time.now - cooldown)
       end
 
+      # Invoked in order to perform the reload as part of the request stack.
       def call(env)
         if @cooldown && Time.now > @last + @cooldown
           Thread.list.size > 1 ? Thread.exclusive { Padrino.reload! } : Padrino.reload!

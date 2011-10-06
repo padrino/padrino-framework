@@ -7,6 +7,9 @@ module Padrino
   # locale enabled rendering, among other features.
   #
   module Rendering
+    ##
+    # Exception responsible for when an expected template did not exist.
+    #
     class TemplateNotFound < RuntimeError
     end
 
@@ -26,10 +29,10 @@ module Padrino
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
-    ##
-    # Main class that register this extension.
-    #
     class << self
+      ##
+      # Main class that register this extension.
+      #
       def registered(app)
         app.send(:include, InstanceMethods)
         app.extend(ClassMethods)
@@ -37,6 +40,9 @@ module Padrino
       alias :included :registered
     end
 
+    ##
+    # Class methods responsible for rendering templates as part of a request.
+    #
     module ClassMethods
       ##
       # Use layout like rails does or if a block given then like sinatra.
@@ -100,6 +106,7 @@ module Padrino
       end
     end
 
+    # Instance methods that allow enhanced rendering to function properly in Padrino.
     module InstanceMethods
       attr_reader :current_engine
 

@@ -60,6 +60,7 @@ class HttpRouter
     end
   end
 
+  # @private
   class Route
     attr_accessor :use_layout, :controller, :cache, :cache_key, :cache_expires_in
 
@@ -128,9 +129,12 @@ module Padrino
   # which can be used to refer to the url throughout the application.
   #
   module Routing
+    # Defines common content-type alias mappings
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+    # Defines the available route priorities supporting route deferrals.
     ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
+    # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
 
     class Parent < String # @private
@@ -159,6 +163,7 @@ module Padrino
       alias :included :registered
     end
 
+    # Class methods responsible for enhanced routing for controllers.
     module ClassMethods
       ##
       # Method for organize in a better way our routes.
@@ -294,6 +299,9 @@ module Padrino
         add_filter :after, &(args.empty? ? block : construct_filter(*args, &block))
       end
 
+      ##
+      # Adds a filter hook to a request.
+      #
       def  add_filter(type, &block)
         filters[type] << block
       end
@@ -393,6 +401,7 @@ module Padrino
       end
       alias :urls :router
 
+      # Compiles the routes including deferred routes.
       def compiled_router
         if deferred_routes.empty?
           router
@@ -403,10 +412,14 @@ module Padrino
         end
       end
 
+      # Returns all routes that were deferred based on their priority.
       def deferred_routes
         @deferred_routes ||= Hash[ROUTE_PRIORITY.values.sort.map{|p| [p, []]}]
       end
 
+      ##
+      # Resets the http router and all deferred routes.
+      #
       def reset_router!
         @deferred_routes = nil
         router.reset!
@@ -780,6 +793,9 @@ module Padrino
         end
     end
 
+    ##
+    # Instance methods related to recognizing and processing routes and serving static files.
+    #
     module InstanceMethods
       ##
       # Instance method for url generation.
@@ -802,10 +818,12 @@ module Padrino
       end
       alias :url_for :url
 
+      # Returns the recognized path for a route.
       def recognize_path(path)
         settings.recognize_path(path)
       end
 
+      # Returns the current path within a route from specified +path_params+.
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
           path_params[-1] = params.merge(path_params[-1])
