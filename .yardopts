@@ -1,4 +1,4 @@
---exclude /support_lite|padrino-tasks|padrino-core\/cli|generators\/components/
+--exclude /support_lite|padrino-tasks|padrino-core\/cli|generators\/components|config\/boot.rb/
 --output-dir doc/
 --readme README.rdoc
 --no-private
