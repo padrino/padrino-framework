@@ -811,12 +811,16 @@ module Padrino
       end
       alias :url_for :url
 
+      ##
       # Returns the recognized path for a route.
+      #
       def recognize_path(path)
         settings.recognize_path(path)
       end
 
+      ##
       # Returns the current path within a route from specified +path_params+.
+      #
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
           path_params[-1] = params.merge(path_params[-1])
@@ -824,6 +828,17 @@ module Padrino
           path_params << params
         end
         @route.url(*path_params)
+      end
+
+      ##
+      # Returns the current route
+      #
+      # @example
+      #   -if route.controller == :press
+      #     %li=show_article
+      #
+      def route
+        @route
       end
 
       ##
