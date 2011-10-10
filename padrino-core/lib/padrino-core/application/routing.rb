@@ -493,13 +493,6 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
-      ##
-      # Returns the lat controller, useful inside a layout/view.
-      #
-      def current_controller
-        @_controller and @_controller[-1]
-      end
-
       private
         # Parse params from the url method
         def value_to_param(value)
