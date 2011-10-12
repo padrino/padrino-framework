@@ -3,4 +3,5 @@ Gemfile.lock
 .rvmrc
 .yardoc
 *.rbc
+.rbx/
 doc/
