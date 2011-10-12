@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.4 (Not Yet Released)
+== 0.10.5 (Not Yet Released)
+
+== 0.10.4
 
 * FIX #690 adds proper require for sinatra-flash in Gemfile
 * FIX #691 fixes logger error when rendering templates
