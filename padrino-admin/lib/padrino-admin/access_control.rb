@@ -13,7 +13,8 @@ module Padrino
         # Method used by Padrino::Application when we register the extension
         #
         def registered(app)
-          app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
+          charset = [('a'..'z'),('A'..'Z'),(0..9)].map{|i| i.to_a}.flatten
+          app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}_#{(0..16).map{ charset[rand(charset.length)]}.join}".to_sym
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
