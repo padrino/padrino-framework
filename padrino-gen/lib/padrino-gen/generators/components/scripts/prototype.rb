@@ -1,8 +1,8 @@
 def setup_script
   begin
-    get('https://github.com/padrino/padrino-static/raw/master/js/protopak.js',   destination_root("/public/javascripts/protopak.js"))
-    get('https://github.com/padrino/padrino-static/raw/master/js/lowpro.js',     destination_root("/public/javascripts/lowpro.js"))
-    get('https://github.com/padrino/padrino-static/raw/master/ujs/prototype.js', destination_root("/public/javascripts/prototype-ujs.js"))
+    get('https://raw.github.com/padrino/padrino-static/master/js/protopak.js',   destination_root("/public/javascripts/protopak.js"))
+    get('https://raw.github.com/padrino/padrino-static/master/js/lowpro.js',     destination_root("/public/javascripts/lowpro.js"))
+    get('https://raw.github.com/padrino/padrino-static/master/ujs/prototype.js', destination_root("/public/javascripts/prototype-ujs.js"))
   rescue
     copy_file('templates/static/js/protopak.js',   destination_root("/public/javascripts/protopak.js"))
     copy_file('templates/static/js/lowpro.js',     destination_root("/public/javascripts/lowpro.js"))
