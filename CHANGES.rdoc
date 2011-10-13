@@ -1,6 +1,10 @@
 = CHANGES
 
-== 0.10.5 (Not Yet Released)
+== 0.10.6 (Not Yet Released)
+
+== 0.10.5
+
+* FIX #701 make static script assets work again for generator
 
 == 0.10.4
 

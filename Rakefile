@@ -70,7 +70,7 @@ desc "Pushes repository to GitHub"
 task :push do
   say "Updating and verifying submodules"
   sh "git submodule foreach git pull origin master"
-  sh "ls padrino-gen/lib/padrino-gen/generators/templates/static/"
+  sh "ls padrino-gen/lib/padrino-gen/generators/templates/static/README.rdoc"
   say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
