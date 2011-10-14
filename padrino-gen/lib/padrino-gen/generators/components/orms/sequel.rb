@@ -47,12 +47,12 @@ def create_model_file(name, options={})
 end
 
 SQ_MIGRATION = (<<-MIGRATION) unless defined?(SQ_MIGRATION)
-class !FILECLASS! < Sequel::Migration
-  def up
+Sequel.migration do
+  up do
     !UP!
   end
 
-  def down
+  down do
     !DOWN!
   end
 end
