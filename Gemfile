@@ -3,11 +3,11 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 source :rubygems
 
 group :db do
-  gem "dm-core",           ">=1.2.rc1"
-  gem "dm-migrations",     ">=1.2.rc1"
-  gem "dm-validations",    ">=1.2.rc1"
-  gem "dm-aggregates",     ">=1.2.rc1"
-  gem "dm-sqlite-adapter", ">=1.2.rc1"
+  gem "dm-core",           ">=1.2"
+  gem "dm-migrations",     ">=1.2"
+  gem "dm-validations",    ">=1.2"
+  gem "dm-aggregates",     ">=1.2"
+  gem "dm-sqlite-adapter", ">=1.2"
 end
 
 group :development do
