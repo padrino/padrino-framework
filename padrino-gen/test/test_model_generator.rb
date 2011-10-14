@@ -210,7 +210,7 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'person', "name:string", "age:integer", "created:datetime", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/class Person < Sequel::Model/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration do/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
       assert_match_in_file(/String :name/m,   migration_file_path)
       assert_match_in_file(/Integer :age/m,   migration_file_path)

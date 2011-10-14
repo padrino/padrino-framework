@@ -50,9 +50,9 @@ describe "MigrationGenerator" do
       capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class AddEmailToPerson/m, "#{@apptmp}/sample_project/db/migrate/001_add_email_to_person.rb")
-      assert_match_in_file(/class AddNameToPerson/m, "#{@apptmp}/sample_project/db/migrate/002_add_name_to_person.rb")
-      assert_match_in_file(/class AddAgeToUser/m, "#{@apptmp}/sample_project/db/migrate/003_add_age_to_user.rb")
+      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/001_add_email_to_person.rb")
+      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/002_add_name_to_person.rb")
+      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/003_add_age_to_user.rb")
     end
   end
 
@@ -141,9 +141,9 @@ describe "MigrationGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       response_success = capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb"
-      assert_match_in_file(/class ModifyUserFields/m, migration_file_path)
-      assert_match_in_file(/def\sup\s+end/m, migration_file_path)
-      assert_match_in_file(/def\sdown\s+end/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration/m, migration_file_path)
+      assert_match_in_file(/up do\s+end/m, migration_file_path)
+      assert_match_in_file(/down do\s+end/m, migration_file_path)
     end
 
     should "generate migration for adding columns" do
@@ -151,7 +151,7 @@ describe "MigrationGenerator" do
       migration_params = ['AddEmailToUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
-      assert_match_in_file(/class AddEmailToUsers/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration/m, migration_file_path)
       assert_match_in_file(/alter_table :users.*?add_column :email, String/m, migration_file_path)
       assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
       assert_match_in_file(/alter_table :users.*?drop_column :email/m, migration_file_path)
@@ -163,7 +163,7 @@ describe "MigrationGenerator" do
       migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb"
-      assert_match_in_file(/class RemoveEmailFromUsers/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration/m, migration_file_path)
       assert_match_in_file(/alter_table :users.*?drop_column :email/m, migration_file_path)
       assert_match_in_file(/drop_column :age/m, migration_file_path)
       assert_match_in_file(/alter_table :users.*?add_column :email, String/m, migration_file_path)
