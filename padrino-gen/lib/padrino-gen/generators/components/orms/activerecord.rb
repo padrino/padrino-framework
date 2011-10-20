@@ -103,7 +103,7 @@ def setup_orm
     ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_development\"")
     ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_production\"")
     ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"\"#{db}_test\"")
-    require_dependencies 'pg', :require => 'postgres'
+    require_dependencies 'pg'
   else
     ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_development.db\")")
     ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_production.db\")")
