@@ -240,7 +240,7 @@ describe "ProjectGenerator" do
 
       should "properly generate postgres" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=postgres') }
-        assert_match_in_file(/gem 'pg', :require => "postgres"/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'pg'$/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter   => 'postgresql'}, "#{@apptmp}/sample_project/config/database.rb")
       end
