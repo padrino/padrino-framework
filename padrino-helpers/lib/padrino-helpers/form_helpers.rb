@@ -140,9 +140,9 @@ module Padrino
       #   @param [Hash]           options  Error message display options.
       #   @option options [String] :header_tag ("h2")
       #     Used for the header of the error div
-      #   @option options [String] :id ("errorExplanation")
+      #   @option options [String] :id ("field-errors")
       #     The id of the error div.
-      #   @option options [String] :class ("errorExplanation")
+      #   @option options [String] :class ("field-errors")
       #     The class of the error div.
       #   @option options [Array<Object>]  :object
       #     The object (or array of objects) for which to display errors,
@@ -222,7 +222,7 @@ module Padrino
       #   The field on the +object+ to display the error for.
       # @param [Hash] options
       #   The options to control the error display.
-      # @option options [String] :tag ("div")
+      # @option options [String] :tag ("span")
       #   The tag that encloses the error.
       # @option options [String] :prepend ("")
       #   The text to prepend before the field error.
