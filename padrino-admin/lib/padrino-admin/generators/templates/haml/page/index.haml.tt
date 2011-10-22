@@ -1,29 +1,28 @@
-.block
-  .secondary-navigation
-    %ul.wat-cf
-      %li.first.active=link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
-      %li=link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
-  .content
-    %h2.title
-      =pat(:all)
-      =mt(:<%= @orm.name_plural %>)
-    .inner
-      %table.table
+%h2
+  = pat(:all)
+  &nbsp;
+  = mt(:<%= @orm.name_plural %>)
+
+%ul.tabs
+  %li.active= link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
+  %li= link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
+
+.tabs-content.pull-left
+  %table.zebra-striped
+    %thead
+      %tr
+        <%- @orm.columns.each_with_index do |column, i| -%>
+        %th= mat(:<%= @orm.name_singular %>, :<%= column.name %>)
+        <%- end -%>
+        %th &nbsp;
+    %tbody
+      -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr
           <%- @orm.columns.each_with_index do |column, i| -%>
-          %th<%= ".first" if i==0 %>=mat(:<%= @orm.name_singular %>, :<%= column.name %>)
+          %td= <%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>
-          %th.last="&nbsp;"
-        -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
-          %tr
-            <%- @orm.columns.each_with_index do |column, i| -%>
-            %td<%= ".first" if i==0 %>=<%= @orm.name_singular %>.<%= column.name %>
-            <%- end -%>
-            %td.last
-              =button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to
-              ="|"
-              =button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
-      .actions-bar.wat-cf
-        .actions="&nbsp;"
+          %td.action
+            = button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => "pull-left" ) { submit_tag pat(:edit), :class =>"btn primary" }
+            = button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "pull-left", :onsubmit => "return confirm('#{pat(:confirm)}')") { submit_tag pat(:delete), :class =>"btn danger" }
 
--content_for :sidebar, partial("base/sidebar")
+- content_for :sidebar, partial("base/sidebar")

@@ -1,44 +1,59 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Padrino Admin</title>
-  <%%= stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style" %>
-</head>
-<body>
-  <div id="container">
-    <div id="header">
-      <h1><%%= link_to "Padrino Admin", url(:base_index) %></h1>
-      <div id="user-navigation">
-        <ul class="wat-cf">
-          <li><%%= link_to pat(:profile), url(:accounts, :edit, :id => current_account.id) %></li>
-          <li><%%= button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to %></li>
-        </ul>
-      </div>
-      <div id="main-navigation">
-        <ul class="wat-cf">
-          <%% project_modules.each do |project_module| %>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Padrino Admin</title>
+    <!-- Twitter Bootstrap -->
+    <%%= tag :link , :rel => "stylesheet/less", :type => "text/css", :href => asset_path("stylesheets", "admin.less")  %>
+    <%%= javascript_include_tag "bootstrap/less-1.1.3.min" %>
+  </head>
+  <body>
+    <!-- TopBar -->
+    <div class='topbar'>
+      <div class='topbar-inner'>
+        <div class='container-fluid'>
+          <%%= link_to "Padrino Admin", url(:base_index), :class =>
+          "brand" %>
+          <!-- Main Menu -->
+          <ul class='nav'>
+            <%% project_modules.each do |project_module| %>
             <li class="<%%= "active" if request.path_info =~ /^#{project_module.path}/ %>"><%%= link_to project_module.human_name, project_module.path("/admin") %></li>
-          <%% end %>
-        </ul>
-      </div>
-    </div>
-    <div id="wrapper" class="wat-cf">
-      <div class="flash">
-        <%%= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join %>
-      </div>
-      <div id="main">
-        <%%= yield %>
-        <div id="footer">
-          <div class="block">
-            <p>Copyright &copy; <%%= Time.now.year %> Your Site - Powered by <a href="https://github.com/padrino/padrino-framework" target="_blank">Padrino v.<%%= Padrino.version %>.</a></p>
-          </div>
+            <%% end %>
+          </ul>
+          <!-- Login Menu -->
+          <ul class='nav secondary-nav'>
+            <li><%%= link_to pat(:profile), url(:accounts, :edit, :id => current_account.id) %></li>
+            <li><%%= button_to pat(:logout), url(:sessions, :destroy), :method => :delete %></li>
+          </ul>
         </div>
       </div>
-      <div id="sidebar">
+    </div>
+    <div class="container-fluid">
+      <!-- Flash message -->
+      <div><%%= [:error, :warning, :notice].map { |type|
+                flash_tag(type, :class => "alert-message #{type}")
+          }.join %>
+      </div>
+      <!-- Sidebar -->
+      <div class='sidebar'>
         <%%= yield_content :sidebar %>
       </div>
+     <!-- Main Content -->
+     <div class='content'>
+       <%%= yield %>
+     </div>
     </div>
-  </div>
-</body>
+    <!-- Footer -->
+    <footer>
+      <p class='center-block'>
+        Copyright &copy; <%%= Time.now.year %> Your Site - <b>Powered by Padrino <%%= Padrino.version %></b>
+      <p>
+        <a target="_blank" href="http://www.padrinorb.com">Padrino web</a>
+        <a target="_blank" href="http://www.padrinorb.com/blog">Padrino blog</a>
+        <a target="_blank" href="https://github.com/padrino/padrino-framework">Padrino code</a>
+        <a target="_blank" href="http://twitter.com/padrinorb">Padrino twitter</a>
+      </p>
+      </p>
+    </footer>
+  </body>
 </html>

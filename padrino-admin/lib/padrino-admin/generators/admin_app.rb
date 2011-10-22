@@ -38,10 +38,10 @@ module Padrino
             raise SystemExit
           end
 
-          unless self.class.themes.include?(options[:theme])
-            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
-            raise SystemExit
-          end
+          # unless self.class.themes.include?(options[:theme])
+          #   say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
+          #   raise SystemExit
+          # end
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)

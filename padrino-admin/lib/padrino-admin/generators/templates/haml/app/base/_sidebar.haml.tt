@@ -1,11 +1,11 @@
-.block
+.well
   %h3 Simple Block
-  .content
-    %p
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-.block
+  %p
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+.well
   %h3 Links
-  %ul.navigation
-    %li=link_to "Link 1"
-    %li=link_to "Link 2"
+  %ul.unstyled
+    %Li= link_to "Link 1"
+    %li= link_to "Link 2"
