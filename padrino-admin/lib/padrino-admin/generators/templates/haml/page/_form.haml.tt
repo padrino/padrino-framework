@@ -2,7 +2,7 @@
 
 <%- @orm.column_fields.each do |column| -%>
 = f.label :<%= column[:name] %>
-= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => "xlarge"
+= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => "span5"
 %span.help-inline Ex: a simple text
 <%- end -%>
 
