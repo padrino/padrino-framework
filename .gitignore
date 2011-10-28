@@ -5,3 +5,4 @@ Gemfile.lock
 *.rbc
 .rbx/
 doc/
+.DS_Store
