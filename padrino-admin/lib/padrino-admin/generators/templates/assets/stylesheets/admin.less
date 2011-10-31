@@ -3,16 +3,29 @@
 body { padding-top: 60px; }
 footer p { text-align: center; }
 footer p a { padding: 0 5px; }
-.action form { padding: 0 5px; margin :0px;}
-#error  ul { list-style: none;  margin-left: 0; }
-
-.login-logo{ text-align: center; padding: 5px 0;}
-.login-block{
-    background-color : @white;
-    border : 2px  solid @gray;
-    box-shadow: 2px 2px 5px @grayDark;
-    border-radius: 5px;
-    padding-top : 10px;
-    width:500px; margin: 0px auto;
+.action {
+  form { padding: 0 2px; margin: 0px;}
+  input {
+    font-size:11px;
+    padding:2px;
+    width:50px;
+    border-radius:2px;
+  }
 }
-.tabs-content.pull-left{ width:100% }
+th.action  { width: 110px; text-align:center }
+
+.login {
+  form, .actions { margin-bottom:0px; }
+  .alert-message{ margin:10px; }
+  .logo{
+    text-align: center;
+    padding: 5px 0;
+  }
+  background-color: @white;
+  border: 2px solid @gray;
+  box-shadow: 0px 0px 20px @gray;
+  border-radius: 3px;
+  padding-top: 10px;
+  width: 500px;
+  margin: 0px auto;
+}

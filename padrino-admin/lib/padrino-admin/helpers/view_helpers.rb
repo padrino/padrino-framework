@@ -20,15 +20,16 @@ module Padrino
         #
         # @example
         #   # => t("padrino.admin.profile",  :default => "Profile")
-        #   pat(:profile)
+        #   t_admin(:profile)
         #
         #   # => t("padrino.admin.profile",  :default => "My Profile")
-        #   pat(:profile, "My Profile")
+        #   t_admin(:profile, "My Profile")
         #
         def padrino_admin_translate(word, default=nil)
           t("padrino.admin.#{word}", :default => (default || word.to_s.humanize))
         end
-        alias :pat :padrino_admin_translate
+        alias :t_admin :padrino_admin_translate
+        alias :pat :t_admin
 
         ##
         # Translates attribute name for the given model.
@@ -42,12 +43,13 @@ module Padrino
         #
         # @example
         #   # => t("models.account.email", :default => "Email")
-        #   mat(:account, :email)
+        #   t_attr(:account, :email)
         #
         def model_attribute_translate(model, attribute)
           t("models.#{model}.attributes.#{attribute}", :default => attribute.to_s.humanize)
         end
-        alias :mat :model_attribute_translate
+        alias :t_attr :model_attribute_translate
+        alias :mat :t_attr
 
         ##
         # Translates model name
@@ -59,12 +61,13 @@ module Padrino
         #
         # @example
         #   # => t("models.account.name", :default => "Account")
-        #   mt(:account)
+        #   t_model(:account)
         #
         def model_translate(model)
           t("models.#{model}.name", :default => model.to_s.humanize)
         end
-        alias :mt :model_translate
+        alias :t_model :model_translate
+        alias :mt :t_model
 
       end # ViewHelpers
     end # Helpers

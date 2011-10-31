@@ -1,28 +1,23 @@
-%h2
-  = pat(:all)
-  &nbsp;
-  = mt(:<%= @orm.name_plural %>)
+%h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
 
 %ul.tabs
-  %li.active= link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
-  %li= link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
+  %li.active= link_to t_admin(:list), url(:<%= @orm.name_plural %>, :index)
+  %li=link_to t_admin(:new), url(:<%= @orm.name_plural %>, :new)
 
-.tabs-content.pull-left
+.tabs-content
   %table.zebra-striped
     %thead
       %tr
         <%- @orm.columns.each_with_index do |column, i| -%>
-        %th= mat(:<%= @orm.name_singular %>, :<%= column.name %>)
+        %th.blue.header=t_attr(:<%= @orm.name_singular %>, :<%= column.name %>)
         <%- end -%>
-        %th &nbsp;
+        %th.blue.header.action &nbsp;
     %tbody
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr
           <%- @orm.columns.each_with_index do |column, i| -%>
-          %td= <%= @orm.name_singular %>.<%= column.name %>
+          %td=<%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>
           %td.action
-            = button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => "pull-left" ) { submit_tag pat(:edit), :class =>"btn primary" }
-            = button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "pull-left", :onsubmit => "return confirm('#{pat(:confirm)}')") { submit_tag pat(:delete), :class =>"btn danger" }
-
-- content_for :sidebar, partial("base/sidebar")
+            =button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) { submit_tag t_admin(:edit), :class =>'btn primary' }
+            =button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => 'pull-left', :onsubmit => "return confirm('#{pat(:confirm)}')") { submit_tag t_admin(:delete), :class =>'btn danger' }

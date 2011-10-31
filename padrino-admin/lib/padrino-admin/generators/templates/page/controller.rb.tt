@@ -13,7 +13,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   post :create do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
+      flash[:success] = '<%= @orm.klass_name %> was successfully created.'
       redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular%>.id)
     else
       render '<%= @orm.name_plural %>/new'
@@ -28,7 +28,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   put :update, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
+      flash[:success] = '<%= @orm.klass_name %> was successfully updated.'
       redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
     else
       render '<%= @orm.name_plural %>/edit'
@@ -38,7 +38,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   delete :destroy, :with => :id do
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.destroy %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
+      flash[:success] = '<%= @orm.klass_name %> was successfully destroyed.'
     else
       flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
     end

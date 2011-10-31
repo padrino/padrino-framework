@@ -1,48 +1,44 @@
 !!! 5
-%html{:lang => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
+%html{:lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml'}
   %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
-    / Twitter Bootstrap
-    = tag :link , :rel => "stylesheet/less", :type => "text/css", :href => asset_path("stylesheets", "admin.less")
-    = javascript_include_tag "bootstrap/less-1.1.3.min"
+    =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+    =stylesheet_link_tag :tables
+    =javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min', 'tables-1.8.2.min', 'application'
+    =javascript_include_tag %w[bootstrap/alerts bootstrap/modal bootstrap/tabs bootstrap/twipsy]
 
   %body
-    / TopBar
     .topbar
       .topbar-inner
         .container-fluid
-          = link_to "Padrino Admin", url(:base_index), :class => "brand"
-
-          / Main Menu
+          =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
           %ul.nav
-            - project_modules.each do |project_module|
-              %li{:class => ("active" if request.path_info =~ /^#{project_module.path}/)}
-                = link_to project_module.human_name, project_module.path("/admin")
-
-          / Login Menu
+            -project_modules.each do |project_module|
+              %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
+                =link_to project_module.human_name, project_module.path('/admin')
           %ul.nav.secondary-nav
-            %li= link_to pat(:profile), url(:accounts, :edit, :id => current_account.id)
-            %li= button_to pat(:logout), url(:sessions, :destroy), :method => :delete
+            %li=link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
+            %li=button_to 'Logout', url(:sessions, :destroy), :method => :delete
     .container-fluid
-      / Flash message
-      %div= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
-
-      / Sidebar
-      .sidebar= yield_content :sidebar
-
-      / Main Content
-      .content= yield
-
-    / Footer
+      -[:error, :warning, :success].each do |type|
+        -next if flash[type].blank?
+        .alert-message(class=type data-alert=true)
+          =link_to '&times;', '#', :class => :close
+          =flash[type]
+      -if sidebar = yield_content(:sidebar)
+        .sidebar=sidebar
+        .content=yield
+      -else
+        .content-fluid=yield
     %footer
       %p.center-block
         Copyright &copy;
-        = Time.now.year
-        Your Site -
+        =Time.now.year
+        YourSite -
         %b Powered by Padrino v.#{Padrino.version}
         %p
-          = link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
-          = link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
-          = link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
-          = link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
+          =link_to 'Padrino Web', 'http://www.padrinorb.com', :target => :_blank
+          =link_to 'Padrino Blog', 'http://www.padrinorb.com/blog', :target => :_blank
+          =link_to 'Padrino Code', 'https://github.com/padrino/padrino-framework', :target => :_blank
+          =link_to 'Padrino Twitter', 'http://twitter.com/padrinorb', :target => :_blank
