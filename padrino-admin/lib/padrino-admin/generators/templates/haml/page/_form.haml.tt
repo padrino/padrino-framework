@@ -1,12 +1,12 @@
-<%- @orm.column_fields.each do |column| -%>
-.group
-  =f.label :<%= column[:name] %>
-  =f.error_message_on :<%= column[:name] %>
-  <% if column[:field_type] == :text_area %>~<% else %>=<% end %>f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
-  %span.description Ex: a simple text
+= error_messages_for :<%= @orm.name_singular %>, :class =>"alert-message block-message error", :id => "error", :header_tag => "h3"
 
+<%- @orm.column_fields.each do |column| -%>
+= f.label :<%= column[:name] %>
+= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => "span5"
+%span.help-inline Ex: a simple text
 <%- end -%>
 
-.group.navform.wat-cf
-  =f.submit pat(:save), :class => :button
-  =f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => :button
+.actions
+  = f.submit pat(:save), :class => "btn primary"
+  &nbsp;
+  = f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => "btn default"
