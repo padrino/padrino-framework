@@ -21,7 +21,11 @@
             %li=link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
             %li=button_to 'Logout', url(:sessions, :destroy), :method => :delete
     .container-fluid
-      .content-fuild=[:error, :warning, :success].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
+      -[:error, :warning, :success].each do |type|
+        -next if flash[type].blank?
+        .alert-message(class=type data-alert=true)
+          =link_to '&times;', '#', :class => :close
+          =flash[type]
       -if sidebar = yield_content(:sidebar)
         .sidebar=sidebar
         .content=yield
