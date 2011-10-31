@@ -1,12 +1,12 @@
-= error_messages_for :<%= @orm.name_singular %>, :class =>"alert-message block-message error", :id => "error", :header_tag => "h3"
+=error_messages_for :<%= @orm.name_singular %>, :class =>'alert-message block-message error', :id => 'error', :header_tag => 'h3'
 
 <%- @orm.column_fields.each do |column| -%>
-= f.label :<%= column[:name] %>
-= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => "span5"
-%span.help-inline Ex: a simple text
+.clearfix
+  =f.label :<%= column[:name] %>
+  =f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'span5'
+  %span.help-inline Ex: a simple text
 <%- end -%>
 
 .actions
-  = f.submit pat(:save), :class => "btn primary"
-  &nbsp;
-  = f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => "btn default"
+  =f.submit t_admin(:save), :class => 'btn primary'
+  =f.submit t_admin(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn default'

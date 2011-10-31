@@ -1,4 +1,3 @@
-= image_tag "padrino.jpg"
 %p
   Padrino is a ruby framework built upon the Sinatra web library.
   Sinatra is a DSL for creating simple web applications in Ruby.
@@ -23,5 +22,3 @@
     %tr
       %td MultiLanguage
       %td English, German, Russian, Danish, French, Brazilian and Italian localizations
-
-- content_for :sidebar, partial("base/sidebar")

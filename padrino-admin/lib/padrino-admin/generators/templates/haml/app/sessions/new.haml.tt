@@ -1,28 +1,24 @@
 !!! 5
-%html
+%html{:lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml'}
   %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
-
-    / Twitter Bootstrap
-    = tag :link , :rel => "stylesheet/less", :type => "text/css", :href => asset_path("stylesheets", "admin.less")
-    = javascript_include_tag "bootstrap/less-1.1.3.min"
+    =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+    =javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min'
 
   %body
-    .login-block
-      .login-logo
-        = image_tag "padrino.jpg"
-      %div= [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
-      = form_tag(url(:sessions, :create)) do
+    .login
+      .logo=image_tag 'logo.jpg'
+      -form_tag url(:sessions, :create) do
+        =[:error, :warning, :success].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
         .clearfix
           %label(for="email") Login
-          .input= text_field_tag :email, :value => params[:email]
+          .input=text_field_tag :email, :value => params[:email]
         .clearfix
           %label(for="password") Password
-          .input= password_field_tag :password, :value => params[:password]
+          .input=password_field_tag :password, :value => params[:password]
         .clearfix
           %label Bypass login?
-          .input= check_box_tag :bypass
+          .input=check_box_tag :bypass
         .actions
-          .input= submit_tag('Sign In', :class => "btn")
-
+          .input=submit_tag('Sign In', :class => 'btn')
