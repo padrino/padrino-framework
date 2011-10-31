@@ -68,7 +68,6 @@ module Padrino
         def check_box(field, options={})
           html =[]
           unchecked_value = options.delete(:uncheck_value)
-          puts unchecked_value
           options.reverse_merge!(:id => field_id(field), :value => '1')
           options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
           html << @template.hidden_field_tag(options[:name] || field_name(field), :value => unchecked_value, :id => nil) if unchecked_value
