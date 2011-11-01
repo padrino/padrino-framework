@@ -24,10 +24,10 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen plugin sets up a plugin within a Padrino application"
 
-      argument :plugin_file, :desc => "The name or path to the Padrino plugin", :optional => true
+      argument :plugin_file, :desc => 'The name or path to the Padrino plugin', :optional => true
 
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
-      class_option :list, :desc => "list available plugins", :aliases => '-l', :default => false, :type => :boolean
+      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.',   :type => :string
+      class_option :list, :desc => 'list available plugins', :aliases => '-l', :default => false, :type => :boolean
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       # Show help if no argv given
       require_arguments!
@@ -47,7 +47,7 @@ module Padrino
               plugins = res.body.scan(%r{/plugins/(\w+)_plugin.rb}).uniq
             end
           end
-          say "Available plugins:", :green
+          say 'Available plugins:', :green
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
         else # executing the plugin instructions
           if in_app_root?
@@ -55,7 +55,7 @@ module Padrino
             self.destination_root = options[:root]
             execute_runner(:plugin, plugin_file)
           else
-            say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+            say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
           end
         end
       end
