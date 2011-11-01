@@ -1,0 +1,12 @@
+= error_messages_for :<%= @orm.name_singular %>, :class =>'alert-message block-message error hide modal', :header_tag => 'h4'
+
+<%- @orm.column_fields.each do |column| -%>
+div class="clearfix"
+  = f.label :<%= column[:name] %>
+  = f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'span5'
+  span class="help-inline" Ex: a simple text
+<%- end -%>
+
+div class="actions"
+  = f.submit t_admin(:save), :class => 'btn primary'
+  = f.submit t_admin(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn default'

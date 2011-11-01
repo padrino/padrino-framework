@@ -1,0 +1,9 @@
+h2 #{t_admin(:all)} #{t_model(:<= @orm.name_singular >)}
+
+ul class="tabs"
+  li=link_to t_admin(:list), url(:<= @orm.name_plural >, :index)
+  li class="active"=link_to t_admin(:new), url(:<= @orm.name_plural >, :new)
+
+div class="tabs-content"
+  -form_for :<= @orm.name_singular >, url(:<= @orm.name_plural >, :create), :class => 'form-stacked' do |f|
+    =partial '<= @orm.name_plural >/form', :locals => { :f => f }
