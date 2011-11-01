@@ -117,6 +117,33 @@ describe "ModelGenerator" do
     end
   end
 
+  # MINIRECORD
+  context "model generator using mini_record" do
+    should "generate hooks for auto upgrade" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      assert_match_in_file(
+        "Padrino.after_load do\n  ActiveRecord::Base.descendants.each(&:auto_upgrade!)",
+        "#{@apptmp}/sample_project/config/boot.rb"
+      )
+    end
+
+    should "generate model file" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :surname, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, :as => :integer/m, "#{@apptmp}/sample_project/models/user.rb")
+    end
+
+    should "generate model file with camelized name" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+    end
+  end
+
   # COUCHREST
   context "model generator using couchrest" do
     should "generate model file with no properties" do

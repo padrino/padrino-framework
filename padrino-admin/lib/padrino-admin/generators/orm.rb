@@ -42,6 +42,7 @@ module Padrino
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
+            when :mini_record  then @klass.columns
             when :datamapper   then @klass.properties.map { |p| dm_column(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
@@ -85,7 +86,7 @@ module Padrino
 
         def find(params=nil)
           case orm
-            when :activerecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
+            when :activerecord, :mini_record, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
             when :sequel then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
@@ -109,7 +110,7 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :mini_record, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
             when :datamapper then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"

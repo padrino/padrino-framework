@@ -1,19 +1,4 @@
-AR = (<<-AR) unless defined?(AR)
-##
-# You can use other adapters like:
-#
-#   ActiveRecord::Base.configurations[:development] = {
-#     :adapter   => 'mysql',
-#     :encoding  => 'utf8',
-#     :reconnect => true,
-#     :database  => 'your_database',
-#     :pool      => 5,
-#     :username  => 'root',
-#     :password  => '',
-#     :host      => 'localhost',
-#     :socket    => '/tmp/mysql.sock'
-#   }
-#
+MR = (<<-MR) unless defined?(MR)
 ActiveRecord::Base.configurations[:development] = {
 !DB_DEVELOPMENT!
 }
@@ -44,7 +29,7 @@ ActiveSupport.escape_html_entities_in_json = false
 
 # Now we can estabilish connection with our db
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
-AR
+MR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
   :adapter   => 'mysql',
@@ -83,10 +68,8 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :adapter => 'sqlite3',
   :database => !DB_NAME!
 SQLITE
-
-
 def setup_orm
-  ar = AR
+  ar = MR
   db = @app_name.underscore
   case options[:adapter]
   when 'mysql'
@@ -110,62 +93,32 @@ def setup_orm
     ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', \"#{db}_test.db\")")
     require_dependencies 'sqlite3'
   end
-  require_dependencies 'activerecord', :require => 'active_record'
-  create_file("config/database.rb", ar)
+  require_dependencies 'mini_record'
+  create_file('config/database.rb', ar)
+  insert_hook('ActiveRecord::Base.descendants.each(&:auto_upgrade!)', :after_load)
 end
 
-AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)
+MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)
 class !NAME! < ActiveRecord::Base
-
+  # Fields
+  !FIELDS!
 end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.camelize)
-  create_file(model_path, model_contents,:skip => true)
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  column_declarations = field_tuples.map { |field, kind| "field :#{field}, :as => :#{kind}" }.join("\n  ")
+  model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  model_contents.gsub!(/!FIELDS!/, column_declarations)
+  create_file(model_path, model_contents)
 end
-
-AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
-class !FILECLASS! < ActiveRecord::Migration
-  def self.up
-    !UP!
-  end
-
-  def self.down
-    !DOWN!
-  end
-end
-MIGRATION
-
-AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)
-create_table :!TABLE! do |t|
-  !FIELDS!
-end
-MIGRATION
-
-AR_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(AR_MODEL_DOWN_MG)
-drop_table :!TABLE!
-MIGRATION
 
 def create_model_migration(migration_name, name, columns)
-  output_model_migration(migration_name, name, columns,
-       :base => AR_MIGRATION,
-       :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-       :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
+  # NO MIGRATION NEEDED
 end
-
-AR_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)
-change_table :!TABLE! do |t|
-  !COLUMNS!
-end
-MIGRATION
 
 def create_migration_file(migration_name, name, columns)
-  output_migration_file(migration_name, name, columns,
-    :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
-    :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove => Proc.new { |field, kind| "t.remove :#{field}" }
-  )
+  # NO MIGRATION NEEDED
 end
