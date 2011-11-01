@@ -271,7 +271,7 @@ module Padrino
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| "#{k.to_sym} => '#{v.to_s}'" }.join(", ")
+        gem_options   = options.map { |k, v| ":#{k} => '#{v.to_s}'" }.join(", ")
         write_option  = gem_options.present? ? ", #{gem_options}" : ''
         write_version = version.present? ? ", '#{version.to_s}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
