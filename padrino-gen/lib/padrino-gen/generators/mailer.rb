@@ -11,7 +11,7 @@ module Padrino
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the banner for this CLI generator
-      def self.banner; "padrino-gen mailer [name]"; end
+      def self.banner; 'padrino-gen mailer [name]'; end
 
       # Include related modules
       include Thor::Actions
@@ -20,11 +20,11 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen mailer generates a new Padrino mailer"
 
-      argument :name, :desc => "The name of your padrino mailer"
-      argument :actions, :desc => "The delivery actions to add to your mailer", :type => :array, :default => []
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
-      class_option :app, :desc => "The application destination path", :aliases => '-a', :default => "/app", :type => :string
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
+      argument     :name,    :desc => 'The name of your padrino mailer'
+      argument     :actions, :desc => 'The delivery actions to add to your mailer',                             :type =>  :array, :default =>  []
+      class_option :root,    :desc => 'The root destination',             :aliases => '-r', :default => '.',    :type => :string
+      class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
+      class_option :destroy,                                              :aliases => '-d', :default => false,  :type => :boolean
 
       # Show help if no argv given
       require_arguments!
@@ -42,10 +42,10 @@ module Padrino
           @actions = actions.map{|a| a.to_sym}
           @short_name = name.to_s.gsub(/mailer/i, '').underscore.downcase
           @mailer_basename = @short_name.underscore
-          template "templates/mailer.rb.tt", destination_root(app, "mailers", "#{@mailer_basename}.rb")
+          template 'templates/mailer.rb.tt', destination_root(app, 'mailers', "#{@mailer_basename}.rb")
           empty_directory destination_root(app, 'views', 'mailers', @mailer_basename)
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end # Mailer

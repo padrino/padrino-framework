@@ -20,9 +20,9 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen migration generates a new migration file"
 
-      argument :name, :desc => "The name of your padrino migration"
-      argument :columns, :desc => "The columns for the migration", :type => :array, :default => []
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      argument :name, :desc => 'The name of your padrino migration'
+      argument :columns, :desc => 'The columns for the migration', :type => :array, :default => []
+      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
@@ -36,11 +36,11 @@ module Padrino
           if include_component_module_for(:orm)
             create_migration_file(name, name, columns)
           else
-            say "<= You need an ORM adapter for run this generator. Sorry!"
+            say '<= You need an ORM adapter for run this generator. Sorry!'
             raise SystemExit
           end
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end # Migration
