@@ -2,6 +2,7 @@ hu:
   padrino:
     admin:
       save: ment
+      save_and_continue: Mentés és folytatás
       cancel: elvet
       list: lista
       edit: szerkeszt

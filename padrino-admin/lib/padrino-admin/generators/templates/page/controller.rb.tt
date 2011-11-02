@@ -14,6 +14,7 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
       flash[:success] = '<%= @orm.klass_name %> was successfully created.'
+      params[:s_c] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       redirect url(:<%= @orm.name_plural %>, :index)
     else
       render '<%= @orm.name_plural %>/new'
@@ -29,7 +30,7 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
       flash[:success] = '<%= @orm.klass_name %> was successfully updated.'
-      redirect url(:<%= @orm.name_plural %>, :index)
+      params[:s_c] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
       render '<%= @orm.name_plural %>/edit'
     end
