@@ -1,7 +1,7 @@
 doctype 5
-html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+html lang='en' xmlns='http://www.w3.org/1999/xhtml'
   head
-    meta content="text/html; charset=utf-8" http-equiv="Content-Type"
+    meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
     == tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
     == stylesheet_link_tag :tables
@@ -9,28 +9,28 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     == javascript_include_tag %w[bootstrap/alerts bootstrap/modal bootstrap/tabs bootstrap/twipsy]
 
   body
-    div clas="topbar"
-      div clas="topbar-inner"
-        div clas="container-fluid"
-          ==link_to 'Padrino Admin', url(:base_index), :class => 'brand'
+    div class="topbar"
+      div class="topbar-inner"
+        div class="container-fluid"
+          == link_to 'Padrino Admin', url(:base_index), :class => 'brand'
           ul class="nav"
             - project_modules.each do |project_module|
-              li class={"active" if request.path_info =~ /^#{project_module.path}/}
-                == link_to project_module.human_name, project_module.path("/admin")
+              li class={'active' if request.path_info =~ /^#{project_module.path}/}
+                == link_to project_module.human_name, project_module.path('/admin')
           ul class="nav secondary-nav"
-            li ==link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
-            li ==button_to 'Logout', url(:sessions, :destroy), :method => :delete
+            li == link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
+            li == button_to 'Logout', url(:sessions, :destroy), :method => :delete
     div class="container-fluid"
-      -[:error, :warning, :success].each do |type|
-        -next if flash[type].blank?
-        div class="alert-message(clas==type data-alert=true)"
+      - [:error, :warning, :success].each do |type|
+        - next if flash[type].blank?
+        div class="alert-message block-message #{type} hide modal"
           == link_to '&times;', '#', :class => :close
           == flash[type]
-      - if sidebar == yield_content(:sidebar)
+      - if sidebar = yield_content(:sidebar)
         div class="sidebar" == sidebar
         div class="content" == yield
       - else
-        div class="content-fluid" == yield
+        div class="content-fluid" ==yield
     footer
       p class="center-block"
         ' Copyright &copy; #{Time.now.year} Your Site -
@@ -40,3 +40,4 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
           == link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
           == link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
           == link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
+
