@@ -15,7 +15,6 @@ Admin.controllers :<%= @orm.name_plural %> do
     if <%= @orm.save %>
       flash[:success] = '<%= @orm.klass_name %> was successfully created.'
       params[:s_c] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
-      redirect url(:<%= @orm.name_plural %>, :index)
     else
       render '<%= @orm.name_plural %>/new'
     end
