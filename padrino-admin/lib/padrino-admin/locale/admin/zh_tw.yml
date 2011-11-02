@@ -2,6 +2,7 @@ zh_tw:
   padrino:
     admin:
       save: 儲存
+      save_and_continue: 保存并继续
       cancel: 取消
       list: 列表
       edit: 編輯

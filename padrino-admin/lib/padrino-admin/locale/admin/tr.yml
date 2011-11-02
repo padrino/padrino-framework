@@ -2,6 +2,7 @@ tr:
   padrino:
     admin:
       save: Kaydet
+      save_and_continue: Kaydet ve devam et
       cancel: Vazgeç
       list: Liste
       edit: Değiştir

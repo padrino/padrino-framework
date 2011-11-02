@@ -2,6 +2,7 @@ lv:
   padrino:
     admin:
       save: Saglabāt
+      save_and_continue: Išsaugoti ir tęsti
       cancel: Atcelt
       list: Saraksts
       edit: Labot
