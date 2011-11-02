@@ -51,7 +51,7 @@ describe "AdminPageGenerator" do
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.haml"
       end
-      assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :people, '/people'", "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.haml"
     end
@@ -75,7 +75,7 @@ describe "AdminPageGenerator" do
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.erb"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.erb"
       end
-      assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :people, '/people'", "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.erb"
     end
@@ -94,7 +94,7 @@ describe "AdminPageGenerator" do
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.slim"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.slim"
       end
-      assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :people, '/people'", "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
       assert_match_in_file "check_box_tag :bypass", "#{@apptmp}/sample_project/admin/views/sessions/new.slim"
     end
@@ -115,7 +115,7 @@ describe "AdminPageGenerator" do
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/people/_form.haml"
       end
-      assert_match_in_file 'role.project_module :people, "/people"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :people, '/people'", "#{@apptmp}/sample_project/admin/app.rb"
       # For Page
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/pages.rb"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
@@ -126,7 +126,7 @@ describe "AdminPageGenerator" do
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
       end
-      assert_match_in_file 'role.project_module :pages, "/pages"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :pages, '/pages'", "#{@apptmp}/sample_project/admin/app.rb"
     end
   end
 end
