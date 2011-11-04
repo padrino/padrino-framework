@@ -2,6 +2,7 @@ ja:
   padrino:
     admin:
       save: 保存
+      save_and_continue: 保存して続行
       cancel: キャンセル
       list: 一覧
       edit: 編集

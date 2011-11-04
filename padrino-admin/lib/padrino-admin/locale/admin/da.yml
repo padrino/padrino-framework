@@ -2,6 +2,7 @@ da:
   padrino:
     admin:
       save: Gem
+      save_and_continue: Gem og fortsæt
       cancel: Annuller
       list: Liste
       edit: Rediger

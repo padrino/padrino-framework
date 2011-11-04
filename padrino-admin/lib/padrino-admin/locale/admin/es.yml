@@ -2,6 +2,7 @@ es:
   padrino:
     admin:
       save: Guardar
+      save_and_continue: Guardar y continuar
       cancel: Cancelar
       list: Listar
       edit: Editar
