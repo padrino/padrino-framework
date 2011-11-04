@@ -2,6 +2,7 @@
   padrino:
     admin:
       save: Lagre
+      save_and_continue: Lagre og fortsett
       cancel: Avbryt
       list: Liste
       edit: Rediger

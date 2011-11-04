@@ -1,0 +1,24 @@
+doctype 5
+html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+  head
+    meta content='text/html; charset=utf-8' http-equiv='Content-Type'
+    title Padrino Admin
+    == tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+    == javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min'
+
+  body
+    div class="login"
+      div class="logo" == image_tag 'logo.jpg'
+      - form_tag url(:sessions, :create) do
+        div == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
+        div class="clearfix"
+          label for="email" Login
+          div class="input" == text_field_tag :email, :value => params[:email]
+        div class="clearfix"
+          label for="password" Password
+          div class="input" == password_field_tag :password, :value => params[:password]
+        div class="clearfix"
+          label Bypass login?
+          div class="input" == check_box_tag :bypass
+        div class="actions"
+          div class="input" == submit_tag('Sign In', :class => 'btn')

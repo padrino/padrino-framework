@@ -2,6 +2,7 @@ nl:
   padrino:
     admin:
       save: Opslaan
+      save_and_continue: Opslaan en doorgaan
       cancel: Annuleren
       list: Lijst
       edit: Bewerken

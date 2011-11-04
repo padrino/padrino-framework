@@ -2,6 +2,7 @@ fr:
   padrino:
     admin:
       save: Sauver
+      save_and_continue: Sauver et continuer
       cancel: Annuler
       list: Liste
       edit: Editer
