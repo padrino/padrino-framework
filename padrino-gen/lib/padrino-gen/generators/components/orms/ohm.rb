@@ -20,6 +20,44 @@ OHM = (<<-OHM) unless defined?(OHM)
 #  when :production then Ohm.connect(:db => 1)
 #  when :test then Ohm.connect(:db => 2)
 # end
+
+# this monkey patch provides traditional (hash of arrays) error handling for ohm models
+unless Ohm::Model.new.errors.kind_of? Hash
+  module Ohm
+    class Model
+
+      alias_method :old_errors, :errors
+
+      def errors
+        @errors ||= ErrorsHash.new(self.class.to_reference, self.old_errors)
+      end
+
+      class ErrorsHash < Hash
+        def initialize(scope, errors)
+          @scope  = scope
+          self.replace Hash.new { |hash, key| hash[key] = [] }
+
+          errors.each do |key, value|
+            self[key] << value
+          end
+        end
+
+        def push(arr)
+          self[arr[0]] << arr[1]
+        end
+
+        def full_messages
+          self.map do |key, value|
+            value.uniq.map do |reason|
+              I18n::t("ohm.%s.%s.%s" % [@scope, key, reason])
+            end.join(', ')
+          end
+        end
+      end
+
+    end
+  end
+end
 OHM
 
 def setup_orm
