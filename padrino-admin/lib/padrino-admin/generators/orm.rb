@@ -119,7 +119,10 @@ module Padrino
         end
 
         def destroy
-          "#{name_singular}.destroy"
+          case orm
+            when :ohm then "#{name_singular}.delete"
+            else "#{name_singular}.destroy"
+          end
         end
       end # Orm
     end # Generators
