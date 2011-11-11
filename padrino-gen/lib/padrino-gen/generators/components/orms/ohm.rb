@@ -55,6 +55,12 @@ unless Ohm::Model.new.errors.kind_of? Hash
         end
       end
 
+      def update_attributes(attrs)
+        attrs.each do |key, value|
+          send(:"#{key}=", value)
+        end  if attrs
+      end
+
     end
   end
 end
