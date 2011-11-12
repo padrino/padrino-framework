@@ -5,5 +5,5 @@
   %li.active=link_to t_admin(:new), url(:<%= @orm.name_plural %>, :new)
 
 .tabs-content
-  -form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create), :class => 'form-stacked' do |f|
+  -form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create) do |f|
     =partial '<%= @orm.name_plural %>/form', :locals => { :f => f }
