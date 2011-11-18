@@ -35,7 +35,7 @@ module Padrino
         def get(key)
           init
           if ::File.exist?(path_for_key(key))
-            contents = ::File.read(path_for_key(key))
+            contents = ::File.read(path_for_key(key)).force_encoding('ASCII-8BIT')
             expires_in, body = contents.split("\n", 2)
             expires_in = expires_in.to_i
             if expires_in == -1 or Time.new.to_i < expires_in
