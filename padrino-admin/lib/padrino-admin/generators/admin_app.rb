@@ -28,6 +28,7 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
+      class_option :account_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 
       # Copies over the Padrino base admin application
       def create_admin
@@ -60,7 +61,7 @@ module Padrino
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
 
           account_params = [
-            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+            options[:account_model].underscore, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-a=#{options[:app]}",
             "-r=#{options[:root]}"
           ]
@@ -80,11 +81,11 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root], :destroy => options[:destroy])
-          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
+          admin_app = Padrino::Generators::AdminPage.new([options[:account_model].underscore], :root => options[:root], :destroy => options[:destroy])
+          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(options[:account_model].underscore, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{options[:account_model]}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }

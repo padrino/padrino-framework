@@ -1,4 +1,4 @@
-class Account < CouchRest::Model::Base
+class <%= options[:account_model].underscore.camelize %> < CouchRest::Model::Base
   attr_accessor :password, :password_confirmation
 
   # Properties
