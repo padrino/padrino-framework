@@ -304,6 +304,9 @@ if defined?(ActiveRecord)
           # Get the model class
           klass = m.camelize.constantize
 
+          # Avoid non ActiveRecord models
+          next unless klass.ancestors.include?(ActiveRecord::Base)
+
           # Init the processing
           print "Processing #{m.humanize}: "
           FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
