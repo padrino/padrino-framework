@@ -51,7 +51,7 @@ module Padrino
         ARGV.clear
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
-        ENV['PADRINO_LOG_LEVEL'] ||= "test"
+        ENV['PADRINO_LOG_LEVEL'] ||= options[:verbose] ? 'development' : 'test'
         load File.expand_path('../rake.rb', __FILE__)
         silence(:stdout) { require File.expand_path('config/boot.rb') }
         PadrinoTasks.init(true)

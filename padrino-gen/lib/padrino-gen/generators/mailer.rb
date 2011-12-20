@@ -40,9 +40,9 @@ module Padrino
           self.behavior = :revoke if options[:destroy]
           @app_name = fetch_app_name(app)
           @actions = actions.map{|a| a.to_sym}
-          @short_name = name.to_s.gsub(/mailer/i, '').underscore.downcase
+          @short_name = name.to_s.gsub(/_mailer/i, '').underscore.downcase
           @mailer_basename = @short_name.underscore
-          template 'templates/mailer.rb.tt', destination_root(app, 'mailers', "#{@mailer_basename}.rb")
+          template "templates/mailer.rb.tt", destination_root(app, 'mailers', "#{@mailer_basename}.rb")
           empty_directory destination_root(app, 'views', 'mailers', @mailer_basename)
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
