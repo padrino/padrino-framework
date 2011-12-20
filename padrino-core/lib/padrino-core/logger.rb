@@ -301,7 +301,6 @@ module Padrino
 
       def call(env) # @private
         env['rack.logger'] = Padrino.logger
-        env['rack.errors'] = Padrino.logger.log
         began_at = Time.now
         status, header, body = @app.call(env)
         log(env, status, header, began_at)
