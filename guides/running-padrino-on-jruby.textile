@@ -78,3 +78,116 @@ pre[ruby]. warble war
 
 You would get @jrack-test.war@ (the same name as your project diresctory name), and you can deploy this war
 file to tomcat! I tested on tomcat 6.0.20, and it works well with quick response.
+
+h2. How to use jdbc mysql with Activerecord
+
+Let's say you have a padrino project set up to use the mysql SQL adapter and Activerecord as the database
+component.  You want to switch the adapter from the default mysql implementation to jdbc-mysql to take 
+advantage of the native java jdbc implementation.  It's pretty straightforward.  
+
+
+Edit your @Gemfile@ which probably starts something like this:
+
+<pre lang="ruby">
+source :rubygems
+
+# Server requirements (defaults to WEBrick)
+# gem 'thin'
+# gem 'mongrel'
+
+# Project requirements
+gem 'rake'
+gem 'sinatra-flash', :require => 'sinatra/flash'
+
+# Component requirements
+gem 'erubis', "~> 2.7.0"
+gem 'activerecord', :require => "active_record"
+gem 'mysql'
+
+# JRuby deployment requirements
+# please add these lines...
+gem 'jruby-openssl'
+gem 'jruby-rack'
+gem 'warbler'
+
+</pre>
+
+Replace the mysql gem with the gems for jdbc-mysql and activerecord jdbc mysql support.  Your resulting @Gemfile@
+should look like this:
+
+<pre lang="ruby">
+source :rubygems
+
+# Server requirements (defaults to WEBrick)
+# gem 'thin'
+# gem 'mongrel'
+
+# Project requirements
+gem 'rake'
+gem 'sinatra-flash', :require => 'sinatra/flash'
+
+# Component requirements
+gem 'erubis', "~> 2.7.0"
+gem 'activerecord', :require => "active_record"
+# gem 'mysql'
+
+# JRuby deployment requirements
+# please add these lines...
+gem 'jruby-openssl'
+gem 'jruby-rack'
+gem 'warbler'
+
+# mysql-jdbc deployment requirements
+gem "activerecord-jdbc-adapter", "1.2.0"
+gem "activerecord-jdbcmysql-adapter", "1.2.0"
+gem "jdbc-mysql", "~> 5.1.0"
+</pre>
+
+Test your changes by creating some models/migrations:
+
+pre[ruby]. padrino g model post title:string body:text
+
+and run the rake tasks:
+
+pre[ruby]. padrino rake ar:drop ar:create ar:migrate --trace
+
+You should see something like this:
+
+<pre lang="ruby">
+=> Executing Rake ar:drop ar:create ar:migrate --trace ...
+** Invoke ar:drop (first_time)
+** Invoke environment (first_time)
+** Execute environment
+** Execute ar:drop
+** Invoke ar:create (first_time)
+** Invoke environment 
+** Execute ar:create
+** Invoke ar:migrate (first_time)
+** Invoke environment 
+** Execute ar:migrate
+==  CreatePosts: migrating =================================================
+-- create_table(:posts, {:id=>true, :force=>true, :options=>"ENGINE=MyISAM"})
+   -> 0.0910s
+   -> 0 rows
+==  CreatePosts: migrated (0.0920s) ========================================
+
+** Invoke ar:schema:dump (first_time)
+** Invoke environment 
+** Execute ar:schema:dump
+</pre>
+
+You should now be set to use jdbc-mysql instead of the default mysql connector.  This should allow you to use jndi 
+connections defined by application containers like jboss, thus offloading connection property management to the
+container. 
+
+Here's a sample jndi connection section in @config/database.rb@:
+
+<pre lang="ruby">
+ActiveRecord::Base.configurations[:production] = {
+  :adapter   => 'jdbc',
+  :jndi      => 'java:jdbc/jndi_my_padrino_project',
+  :driver    => 'com.mysql.jdbc.Driver'
+
+}
+
+</pre>
