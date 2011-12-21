@@ -336,6 +336,9 @@ module Padrino
       string
     end
 
+    def colorize!
+      self.extend(ColorizedLogger)
+    end
   end
 
   module ColorizedLogger
