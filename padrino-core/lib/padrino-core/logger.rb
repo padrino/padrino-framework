@@ -244,7 +244,7 @@ module Padrino
               env["PATH_INFO"],
               env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
               ' - ',
-              status.to_s[0..3].bold,
+              logger.colorize(status.to_s[0..3], :bold),
               ' ',
               code_to_name(status)
             ] * '',
