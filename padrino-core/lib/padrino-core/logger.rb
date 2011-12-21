@@ -354,7 +354,7 @@ module Padrino
 
     def colorize(string, *colors)
       colors.each do |c|
-        string.send(c)
+        string = string.send(c)
       end
       string
     end
