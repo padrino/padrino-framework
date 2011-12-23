@@ -108,20 +108,13 @@ module Padrino
       #
       #
       def push(message = nil, level = nil)
-        add(level, format_message(message, level))
+        add(Levels[level], format(message, level))
       end
 
       def format(message, level)
         message
       end
 
-      ##
-      # Colorize our level
-      #
-      # @param [String, Symbol] level
-      #
-      # @see Padrino::Logger::ColoredLevels
-      #
       def stylized_level(level)
         level.to_s.upcase.rjust(7)
       end
@@ -146,6 +139,13 @@ module Padrino
         :devel => [:magenta]
       } unless defined?(ColoredLevels)
 
+      ##
+      # Colorize our level
+      #
+      # @param [String, Symbol] level
+      #
+      # @see Padrino::Logging::ColorizedLogger::ColoredLevels
+      #
       def colorize(string, *colors)
         colors.each do |c|
           string = string.send(c)
