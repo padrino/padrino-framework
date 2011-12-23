@@ -367,7 +367,7 @@ module Padrino
 
   module LogFormatter
     def format_message(message, level)
-      @format_message % [stylized_level(level), Time.now.strftime(@format_datetime).yellow, message.to_s.strip]
+      @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
   end
 
