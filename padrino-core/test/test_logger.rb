@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'lumberjack'
+require 'logger'
 
 describe "PadrinoLogger" do
 
@@ -104,6 +105,32 @@ describe "alternate logger: Lumberjack" do
   def setup_logger
     @log = StringIO.new
     Padrino.logger = Lumberjack::Logger.new(@log, :level => :debug)
+  end
+
+  should "annotate the logger to support additional Padrino fancyness" do
+    setup_logger
+    Padrino.logger.debug("Debug message")
+    assert_match(/Debug message/, @log.string)
+  end
+
+  should "colorize log output after colorize! is called" do
+    setup_logger
+    Padrino.logger.colorize!
+
+    mock_app do
+      enable :logging
+      get("/"){ "Foo" }
+    end
+    get "/"
+
+    assert_match /\e\[1m200\e\[0m OK/, @log.string
+  end
+end
+
+describe "alternate logger: stdlib logger" do
+  def setup_logger
+    @log = StringIO.new
+    Padrino.logger = Logger.new(@log)
   end
 
   should "annotate the logger to support additional Padrino fancyness" do
