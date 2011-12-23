@@ -42,6 +42,7 @@ module Padrino
     # :warn:: A warning
     # :info:: generic (useful) information about system operation
     # :debug:: low-level information for developers
+    # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
       :fatal =>  7,
@@ -111,18 +112,55 @@ module Padrino
         add(Levels[level], format(message, level))
       end
 
+      ##
+      # Formats the log message. This method is a noop and should be implemented by other
+      # logger components such as {Padrino::Logger}.
+      #
+      # @param [String] message
+      #   The message to format
+      #
+      # @param [String,Symbol] level
+      #   The log level, one of :debug, :warn...
       def format(message, level)
         message
       end
 
+      ##
+      # The debug level, with some style added. May be reimplemented.
+      #
+      # @example
+      #   stylized_level(:debug) => DEBUG
+      #
+      # @param [String,Symbol] level
+      #   The log level
+      #
       def stylized_level(level)
         level.to_s.upcase.rjust(7)
       end
 
+      ##
+      # Colorizes a string for colored console output. This is a noop and can be reimplemented
+      # to colorize the string as needed.
+      #
+      # @see
+      #   ColorizedLogger
+      #
+      # @param [string]
+      #   The string to be colorized.
+      #
+      # @param [Array<Symbol>]
+      #   The colors to use. Should be applied in the order given.
       def colorize(string, *colors)
         string
       end
 
+      ##
+      # Turns a logger with LoggingExtensions into a logger with colorized output.
+      #
+      # @example
+      #   Padrino.logger = Logger.new($stdout)
+      #   Padrino.logger.colorize!
+      #   Padrino.logger.debug("Fancy Padrino debug string")
       def colorize!
         self.extend(ColorizedLogger)
       end

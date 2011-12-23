@@ -7,7 +7,7 @@ PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 
 module Padrino
   ##
-  # Extensions to the built in Ruby logger.
+  # Padrinos internal logger, using all of Padrino log extensions.
   #
   class Logger
     include Logging::LoggingExtensions
@@ -146,6 +146,10 @@ module Padrino
       @log = nil
     end
 
+    ##
+    # Adds a message to the log - for compatibility with other loggers.
+    #
+    # @private
     def add(level, message = nil)
       write(message)
     end
