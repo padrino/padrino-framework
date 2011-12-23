@@ -100,7 +100,7 @@ describe "PadrinoLogger" do
   end
 end
 
-describe "alternate logger" do
+describe "alternate logger: Lumberjack" do
   def setup_logger
     @log = StringIO.new
     Padrino.logger = Lumberjack::Logger.new(@log, :level => :debug)
@@ -110,5 +110,18 @@ describe "alternate logger" do
     setup_logger
     Padrino.logger.debug("Debug message")
     assert_match(/Debug message/, @log.string)
+  end
+
+  should "colorize log output after colorize! is called" do
+    setup_logger
+    Padrino.logger.colorize!
+
+    mock_app do
+      enable :logging
+      get("/"){ "Foo" }
+    end
+    get "/"
+
+    assert_match /\e\[1m200\e\[0m OK/, @log.string
   end
 end
