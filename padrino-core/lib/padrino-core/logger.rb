@@ -164,7 +164,7 @@ module Padrino
     end
     alias :write :<<
 
-    def format_message(message, level)
+    def format(message, level)
       @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
 

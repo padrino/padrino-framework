@@ -111,7 +111,7 @@ module Padrino
         add(level, format_message(message, level))
       end
 
-      def format_message(message, level)
+      def format(message, level)
         message
       end
 
