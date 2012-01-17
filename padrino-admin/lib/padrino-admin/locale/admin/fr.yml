@@ -4,11 +4,11 @@ fr:
       save: Sauver
       cancel: Annuler
       list: Liste
-      edit: Editer
+      edit: Éditer
       new: Nouveau
       show: Voir
-      delete: Supprimmer
-      confirm: Etes-vous sur ?
+      delete: Supprimer
+      confirm: Êtes-vous certain?
       created_at: Créé à
       all: Tous
       profile: Profile
