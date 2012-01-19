@@ -44,7 +44,7 @@ module Padrino
       [:INT, :TERM].each { |sig| trap(sig) { exit } }
       super
     ensure
-      puts "<= Padrino has ended his set (crowd applauds)" unless options[:daemonize]
+      puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
     end
 
     # The application the server will run.
