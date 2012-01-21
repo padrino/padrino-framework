@@ -168,7 +168,7 @@ pre[bash]. $ padrino-gen project blog
 
 h2. DRY Principles
 
-The main aim of Ruby and Rails is _don't repeat yourself_ but Padrino doesn't just apply this concept for
+The main aim of Ruby on Rails is _don't repeat yourself_ but Padrino doesn't just apply this concept for
 _coding_.
 
 The current Rails version (things changed a little in 3.0 version) copies these for each project:
