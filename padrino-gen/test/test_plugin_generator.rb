@@ -84,12 +84,13 @@ describe "PluginGenerator" do
 
   context "with git commands" do
     should "generate a repository correctly" do
+      skip 'Change stubs here'
       expects_generated_project :test => :rspec, :orm => :activerecord, :name => 'sample_git', :root => "#{@apptmp}"
       expects_git :init, :root => "#{@apptmp}/sample_git"
       expects_git :add, :arguments => '.', :root => "#{@apptmp}/sample_git"
       expects_git :commit, :arguments => 'hello', :root => "#{@apptmp}/sample_git"
       git_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'git_template.rb')
-      capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '> /dev/null') }
+      capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '2>&1 /dev/null') }
     end
   end
 

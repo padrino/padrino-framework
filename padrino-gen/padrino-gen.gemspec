@@ -24,5 +24,4 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("bundler", "~> 1.0")
-  s.add_dependency("grit", "~> 2.4.1")
 end

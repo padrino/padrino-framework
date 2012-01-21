@@ -106,6 +106,6 @@ end
 desc "Publish doc on padrinorb.com/api"
 task :pdoc => :doc do
   say "Publishing doc on padrinorb.com ..."
-  sh "scp -r doc/* root@srv2.lipsiasoft.biz:/mnt/www/apps/padrino/public/api/"
+  sh "scp -r doc/* root@lps2.lipsiasoft.com:/mnt/www/apps/padrino/public/api/"
   sh "rm -rf doc"
 end
