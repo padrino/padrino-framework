@@ -284,7 +284,7 @@ the current version, Padrino comes with component choices for:
 Database Wrapper
 
 * ActiveRecord
-* Datamapper
+* DataMapper
 * Sequel
 * MongoMapper
 * Mongoid
@@ -296,7 +296,7 @@ Tests
 
 * Bacon
 * Shoulda
-* Rspec
+* RSpec
 * Riot
 * Cucumber
 * Testspec
@@ -304,9 +304,9 @@ Tests
 Javascripts
 
 * Prototype
-* Rightjs
+* RightJS
 * JQuery
-* mootools
+* MooTools
 * extcore
 * dojo
 
@@ -321,7 +321,7 @@ Stylesheets
 
 * Sass
 * Less
-* Scss
+* SCSS
 * Compass
 
 Mocks
