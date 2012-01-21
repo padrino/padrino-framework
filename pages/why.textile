@@ -168,7 +168,7 @@ pre[bash]. $ padrino-gen project blog
 
 h2. DRY Principles
 
-The main aim of Ruby and Rails is _don't repeat yourself_ but Padrino doesn't just apply this concept for
+The main aim of Ruby on Rails is _don't repeat yourself_ but Padrino doesn't just apply this concept for
 _coding_.
 
 The current Rails version (things changed a little in 3.0 version) copies these for each project:
@@ -188,7 +188,7 @@ script/server
 Why do we need these commands for each project? With Padrino, you can achieve the same functionality with:
 
 pre[bash]. $ padrino start|stop # for starting and stopping the built-in server
-$ padrino-gen ... # that act as script/generate (can also use <tt>padrino g</tt>)
+$ padrino-gen ... # that act as script/generate (can also use padrino g)
 
 Why does each project need a <tt>Rakefile</tt>? How many times do you actually change it? In padrino, to run
 rake tasks you can simply do:
@@ -236,7 +236,7 @@ $ padrino-gen app show_room_1
 $ padrino-gen app show_room_2
 $ padrino-gen app show_room_3
 
-Then in your application you have a tree like:
+Then in your project you have a tree like:
 
 pre[bash]. /showrooms
 |-app            # is the core we can store our basic logic (models, seo helpers etc...).
@@ -284,7 +284,7 @@ the current version, Padrino comes with component choices for:
 Database Wrapper
 
 * ActiveRecord
-* Datamapper
+* DataMapper
 * Sequel
 * MongoMapper
 * Mongoid
@@ -296,7 +296,7 @@ Tests
 
 * Bacon
 * Shoulda
-* Rspec
+* RSpec
 * Riot
 * Cucumber
 * Testspec
@@ -304,9 +304,9 @@ Tests
 Javascripts
 
 * Prototype
-* Rightjs
+* RightJS
 * JQuery
-* mootools
+* MooTools
 * extcore
 * dojo
 
@@ -321,7 +321,7 @@ Stylesheets
 
 * Sass
 * Less
-* Scss
+* SCSS
 * Compass
 
 Mocks
