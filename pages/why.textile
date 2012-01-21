@@ -236,7 +236,7 @@ $ padrino-gen app show_room_1
 $ padrino-gen app show_room_2
 $ padrino-gen app show_room_3
 
-Then in your application you have a tree like:
+Then in your project you have a tree like:
 
 pre[bash]. /showrooms
 |-app            # is the core we can store our basic logic (models, seo helpers etc...).
