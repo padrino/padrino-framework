@@ -110,8 +110,7 @@ going on. A little extra effort goes a long way!
 
 h2. Directory Tree
 
-We think that a framework must meet small projects and big projects requirements so for a thin app, a Rails
-tree maybe a too big, less clean and less concise.
+We think that a framework must meet small project and big project requirements so for a thin app, a Rails tree is too big and complex.
 
 pre[bash]. $ rails blog
 /blog
