@@ -176,11 +176,6 @@ describe "AssetTagHelpers" do
       self.class.expects(:asset_stamp).returns(false)
       assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
     end
-
-    should "have xhtml convention tag" do
-      self.class.expects(:asset_stamp).returns(false)
-      assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" />'
-    end
   end
 
   context 'for #stylesheet_link_tag method' do
