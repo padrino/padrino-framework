@@ -179,8 +179,8 @@
       #   # => <img src="images/pony.jpg" alt="My Little Pony">
       #
       # @api public
-      def tag(name, options = nil, open = false)
-        "<#{name}#{tag_options(options) if options}#{open ? '>' : ' />'}"
+      def tag(name, options = nil)
+        "<#{name}#{tag_options(options) if options}>"
       end
 
       private
