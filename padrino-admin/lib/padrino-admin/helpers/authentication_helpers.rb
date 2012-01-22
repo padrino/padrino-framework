@@ -96,11 +96,13 @@ module Padrino
           end
 
           def login_from_session
-            account_model.find_by_id(session[settings.session_id]) if account_model
+            admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
           end
 
-          def account_model
-            settings.account_model_name.constantize rescue nil
+          def admin_model_obj
+            @_admin_model_obj ||= settings.admin_model.constantize
+          rescue NameError => e
+            raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
           end
       end # AuthenticationHelpers
     end # Helpers

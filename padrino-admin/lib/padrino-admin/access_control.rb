@@ -14,13 +14,12 @@ module Padrino
         #
         def registered(app)
           app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
-          app.set :account_model_name, 'Account' unless app.respond_to?(:account_model_name)
+          app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
           app.send(:cattr_accessor, :access_control)
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
-          app.send(:access_control).account_model_name = app.settings.account_model_name
         end
         alias :included :registered
       end
@@ -29,23 +28,14 @@ module Padrino
       # This base access control class where roles are defined as are authorizations.
       #
       class Base
-        attr_accessor :account_model_name
-
         def initialize # @private
           @roles, @authorizations, @project_modules = [], [], []
-        end
-
-        def account_model
-          account_model_name.constantize
-        rescue NameError => e
-          raise Padrino::Admin::AccessControlError, "You must define an #{account_model_name} Model!"
         end
 
         ##
         # We map project modules for a given role or roles
         #
         def roles_for(*roles, &block)
-          account_model
           raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 

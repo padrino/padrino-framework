@@ -14,7 +14,7 @@ describe "AccountModelGenerator" do
   context 'account model using couchrest' do
     setup do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=couchrest') }
-      generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project")
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
 
       @model = "#{@apptmp}/sample_project/admin/models/account.rb"
     end

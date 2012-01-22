@@ -7,7 +7,6 @@ class Admin < Padrino::Application
   ##
   # Application configuration options
   #
-  # set :account_model_name, 'User' # Change the model that manage Admin rights
   # set :raise_errors, true         # Raise exceptions (will stop application) (default for test)
   # set :dump_errors, true          # Exception backtraces are written to STDERR (default for production/development)
   # set :show_exceptions, true      # Shows a stack trace in browser (default for development)
@@ -21,6 +20,7 @@ class Admin < Padrino::Application
   # layout  :my_layout              # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
 
+  set :admin_model, '<%= options[:admin_model] %>'
   set :login_page, "/admin/sessions/new"
 
   enable  :sessions

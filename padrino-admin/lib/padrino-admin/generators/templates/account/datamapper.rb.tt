@@ -1,4 +1,4 @@
-class <%= options[:account_model].underscore.camelize %>
+class <%= options[:admin_model].underscore.camelize %>
   include DataMapper::Resource
   include DataMapper::Validate
   attr_accessor :password, :password_confirmation
