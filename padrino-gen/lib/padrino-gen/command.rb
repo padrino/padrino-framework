@@ -13,7 +13,9 @@ module Padrino
   #
   # @api semipublic
   def self.bin_gen(*args)
+    args = [args.flatten.map.to_a]
     @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path("../../../bin/padrino-gen", __FILE__)]
+
     args.empty? ? @_padrino_gen_bin : system(args.unshift(@_padrino_gen_bin).join(" "))
   end
 end # Padrino
