@@ -96,7 +96,11 @@ module Padrino
           end
 
           def login_from_session
-            Account.find_by_id(session[settings.session_id]) if defined?(Account)
+            account_model.find_by_id(session[settings.session_id]) if account_model
+          end
+
+          def account_model
+            settings.account_model_name.constantize rescue nil
           end
       end # AuthenticationHelpers
     end # Helpers
