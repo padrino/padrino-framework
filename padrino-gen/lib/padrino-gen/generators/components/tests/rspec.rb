@@ -64,13 +64,13 @@ end
 
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
-  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
   create_file destination_root(controller_spec_path), rspec_contents, :skip => true
 end
 
 def generate_model_test(name)
-  rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+  rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   model_spec_path = File.join('spec',options[:app],'models',"#{name.to_s.underscore}_spec.rb")
   create_file destination_root(model_spec_path), rspec_contents, :skip => true
 end
