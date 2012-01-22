@@ -151,8 +151,7 @@
       #
       # @api semipublic
       def input_tag(type, options = {})
-        options.reverse_merge!(:type => type)
-        tag(:input, options)
+        tag(:input, options.reverse_merge!(:type => type))
       end
 
       ##
@@ -188,19 +187,19 @@
         # Returns a compiled list of HTML attributes
         ##
         def tag_options(options)
-          unless options.blank?
-            attributes = []
-            options.each do |attribute, value|
-              next if value.nil? || value == false
-              value = attribute if BOOLEAN_ATTRIBUTES.include?(attribute)
-              if attribute == :data && value.is_a?(Hash)
-                value.each { |k, v| attributes << %[data-#{k.to_s.dasherize}="#{escape_value(v)}"] }
-              else
-                attributes << %[#{attribute}="#{escape_value(value)}"]
-              end
+          return if options.blank?
+          attributes = []
+          options.each do |attribute, value|
+            next if value.nil? || value == false
+            if attribute == :data && value.is_a?(Hash)
+              value.each { |k, v| attributes << %[data-#{k.to_s.dasherize}="#{escape_value(v)}"] }
+            elsif BOOLEAN_ATTRIBUTES.include?(attribute)
+              attributes << attribute.to_s
+            else
+              attributes << %[#{attribute}="#{escape_value(value)}"]
             end
-            " #{attributes.join(' ')}"
           end
+          " #{attributes.join(' ')}"
         end
 
         ##
