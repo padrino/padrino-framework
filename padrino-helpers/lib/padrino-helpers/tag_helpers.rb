@@ -16,7 +16,7 @@
       BOOLEAN_ATTRIBUTES = [
         :autoplay,
         :autofocus,
-        :autobuffer,
+        :formnovalidate,
         :checked,
         :disabled,
         :hidden,
@@ -61,7 +61,7 @@
       #   @option options [Boolean] :hidden
       #     Specifies whether or not the element is hidden from view.
       #   @option options [Boolean] :draggable
-      #     Specifies whether or not the element is draggable.
+      #     Specifies whether or not the element is draggable. (true, false, :auto)
       #   @option options [Boolean] :contenteditable
       #     Specifies whether or not the element is editable.
       #
@@ -119,7 +119,7 @@
       # @option options [Boolean] :spellcheck
       #   Specifies whether or not the input should have it's spelling and grammar checked for errors.
       # @option options [Boolean] :draggable
-      #   Specifies whether or not the input is draggable.
+      #   Specifies whether or not the input is draggable. (true, false, :auto)
       # @option options [String] :pattern
       #   Specifies the regular expression pattern that the input's value is checked against.
       # @option options [Symbol] :autocomplete
@@ -176,6 +176,9 @@
       #
       #   tag :img, :src => 'images/pony.jpg', :alt => 'My Little Pony'
       #   # => <img src="images/pony.jpg" alt="My Little Pony">
+      #
+      #   tag :img, :src => 'sinatra.jpg, :data => { :nsfw => false, :geo => [34.087, -118.407] }
+      #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407">
       #
       # @api public
       def tag(name, options = nil)
