@@ -304,8 +304,33 @@ module Padrino
       #
       # @api public
       def text_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:text, options)
+        input_tag(:text, options.reverse_merge!(:name => name))
+      end
+
+      # @api public
+      def number_field_tag(name, options={})        
+        input_tag(:number, options.reverse_merge(:name => name))
+      end
+      
+      # @api public
+      def telephone_field_tag(name, options={})
+        input_tag(:tel, options.reverse_merge(:name => name))
+      end
+      alias_method :phone_field_tag, :telephone_field_tag
+
+      # @api public
+      def email_field_tag(name, options={})
+        input_tag(:email, options.reverse_merge(:name => name))
+      end
+      
+      # @api public
+      def search_field_tag(name, options={})
+        input_tag(:search, options.reverse_merge(:name => name))
+      end
+
+      # @api public
+      def url_field_tag(name, options={})
+        input_tag(:url, options.reverse_merge(:name => name))
       end
 
       ##
