@@ -88,10 +88,9 @@ module Padrino
           template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{options[:account_model]}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
-            append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
-          else
-            template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
+            sh "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
           end
+          template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
 
           empty_directory destination_root("admin/controllers")
           empty_directory destination_root("admin/views")
