@@ -117,6 +117,33 @@ describe "ModelGenerator" do
     end
   end
 
+  # MINIRECORD
+  context "model generator using mini_record" do
+    should "generate hooks for auto upgrade" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      assert_match_in_file(
+        "Padrino.after_load do\n  ActiveRecord::Base.descendants.each(&:auto_upgrade!)",
+        "#{@apptmp}/sample_project/config/boot.rb"
+      )
+    end
+
+    should "generate model file" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :surname, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, :as => :integer/m, "#{@apptmp}/sample_project/models/user.rb")
+    end
+
+    should "generate model file with camelized name" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
+      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+    end
+  end
+
   # COUCHREST
   context "model generator using couchrest" do
     should "generate model file with no properties" do
@@ -210,7 +237,7 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'person', "name:string", "age:integer", "created:datetime", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/class Person < Sequel::Model/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/class CreatePeople < Sequel::Migration/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration do/m, migration_file_path)
       assert_match_in_file(/create_table :people/m, migration_file_path)
       assert_match_in_file(/String :name/m,   migration_file_path)
       assert_match_in_file(/Integer :age/m,   migration_file_path)
@@ -363,6 +390,23 @@ describe "ModelGenerator" do
       assert_match_in_file(/SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+    end
+
+    # MINITEST
+    should "generate test file for minitest" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+    end
+
+    should "generate test file for minitest in specified app" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # RSPEC

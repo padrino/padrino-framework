@@ -1,6 +1,10 @@
 module Padrino
   module Cache
+    ##
+    # Defines the available storage adapters for persisting the cache.
+    #
     module Store
+      # The defined duration for the expiration edge.
       EXPIRES_EDGE = 86400
 
       autoload :File,     'padrino-cache/store/file'

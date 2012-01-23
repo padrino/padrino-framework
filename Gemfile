@@ -3,11 +3,11 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 source :rubygems
 
 group :db do
-  gem "dm-core",           ">=1.2.rc1"
-  gem "dm-migrations",     ">=1.2.rc1"
-  gem "dm-validations",    ">=1.2.rc1"
-  gem "dm-aggregates",     ">=1.2.rc1"
-  gem "dm-sqlite-adapter", ">=1.2.rc1"
+  gem "dm-core",           ">=1.2"
+  gem "dm-migrations",     ">=1.2"
+  gem "dm-validations",    ">=1.2"
+  gem "dm-aggregates",     ">=1.2"
+  gem "dm-sqlite-adapter", ">=1.2"
 end
 
 group :development do
@@ -15,14 +15,15 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git" # :path => "/Developer/src/Extras/sinatra"
   end
-  gem "json",      "1.5.3"
-  gem "nokogiri",  "1.4.4"
-  gem "rack",      "~> 1.3.0"
+  gem "json",      ">= 1.5.3"
+  gem "nokogiri",  ">= 1.4.4"
+  gem "grit",      ">= 2.4.1"
+  gem "rack",      ">= 1.3.0"
   gem "rake",      ">= 0.8.7"
   gem "yard",      ">= 0.7.2"
   gem "rack-test", ">= 0.5.0"
-  gem "fakeweb",   ">=1.2.8"
-  gem "webrat",    "= 0.5.1"
+  gem "fakeweb",   ">= 1.2.8"
+  gem "webrat",    ">= 0.5.1"
   gem "haml",      ">= 2.2.22"
   gem "erubis",    ">= 2.7.0"
   gem "slim",      ">= 0.9.2"
@@ -39,7 +40,7 @@ group :development do
     gem "jruby-openssl"
   end
   gem "mocha",    "~>0.10.0"
-  gem "minitest", "~>2.5.1"
+  gem "minitest", "~>2.6.0"
 end
 
 group :cache do

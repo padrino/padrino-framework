@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ##
+    # Helpers related to rendering within templates (i.e partials).
+    #
     module RenderHelpers
       ##
       # Render a partials with collections support

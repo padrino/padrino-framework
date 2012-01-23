@@ -149,32 +149,44 @@ module FileSet
 end
 
 ##
-# Few colors for our terminal
+# Removes indentation
+# Add colors
 #
-module Colored
-  extend self
+# @example
+#   help <<-EOS.undent
+#     Here my help usage
+#      sample_code
+#
+#     Fix
+#   EOS
+#   puts help.red.bold
+#
+class String
+  def self.colors
+    @_colors ||= {
+      :clear   => 0,
+      :bold    => 1,
+      :black   => 30,
+      :red     => 31,
+      :green   => 32,
+      :yellow  => 33,
+      :blue    => 34,
+      :magenta => 35,
+      :cyan    => 36,
+      :white   => 37
+    }
+  end
 
-  COLORS = { # COLORS
-    :clear   => 0,
-    :bold    => 1,
-    :black   => 30,
-    :red     => 31,
-    :green   => 32,
-    :yellow  => 33,
-    :blue    => 34,
-    :magenta => 35,
-    :cyan    => 36,
-    :white   => 37
-  }
-
-  COLORS.each do |color, value|
+  colors.each do |color, value|
     define_method(color) do
-      ["\e[", value.to_s, "m", self, "\e[", COLORS[:clear], "m"] * ''
+      ["\e[", value.to_s, "m", self, "\e[", self.class.colors[:clear], "m"] * ''
     end
   end
-end unless defined?(Colored)
 
-String.send(:include, Colored)
+  def undent
+    gsub(/^.{#{slice(/^ +/).size}}/, '')
+  end
+end
 
 ##
 # Loads our locale configuration files

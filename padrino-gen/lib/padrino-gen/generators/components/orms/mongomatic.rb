@@ -35,7 +35,7 @@ class !NAME! < Mongomatic::Base
   # String datatypes
 
 
-  # Examples
+  # Examples:
   # def validate
   #   expectations do
   #     be_present self['name'], "Name cannot be blank"
@@ -69,7 +69,7 @@ def create_model_file(name, options={})
     column_declarations = field_tuples.map { |field, kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
     # Really ugly oneliner
     integers = field_tuples.select { |col, type| type =~ /[Ii]nteger/ }.map { |field, kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")
-    model_contents = MONGOMATIC_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+    model_contents = MONGOMATIC_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
     model_contents.gsub!(/!FIELDS!/, column_declarations)
     model_contents.gsub!(/!INTEGERS!/, integers)
     create_file(model_path, model_contents)

@@ -1,6 +1,8 @@
 module Padrino
   module Generators
-
+    ##
+    # Responsible for generating new models for the specified ORM component within a project or application.
+    #
     class Model < Thor::Group
 
       # Add this generator to our padrino-gen
@@ -8,6 +10,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen model [name] [fields]"; end
 
       # Include related modules

@@ -4,8 +4,9 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
 FileSet.glob_require('padrino-core/*.rb', __FILE__)
 
-# Defines our Constants
+# The Padrino environment (falls back to the rack env or finally develop)
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+# The Padrino project root path (falls back to the first caller)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
@@ -55,7 +56,7 @@ module Padrino
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
 
-      unless middleware.empty?
+      if middleware.present?
         builder = Rack::Builder.new
         middleware.each { |c,a,b| builder.use(c, *a, &b) }
         builder.run(router)
@@ -109,21 +110,6 @@ module Padrino
         Encoding.default_internal = Encoding::UTF_8
       end
       nil
-    end
-
-    ##
-    # Determines whether the dependencies are locked by Bundler.
-    # otherwise return nil
-    #
-    # @return [:locked, :unlocked, nil]
-    #   Returns +:locked+ if the +Gemfile.lock+ file exists, or +:unlocked+
-    #   if only the +Gemfile+ exists.
-    #
-    # @deprecated Will be removed in 1.0.0
-    #
-    def bundle
-      return :locked   if File.exist?(root('Gemfile.lock'))
-      return :unlocked if File.exist?(root("Gemfile"))
     end
 
     ##

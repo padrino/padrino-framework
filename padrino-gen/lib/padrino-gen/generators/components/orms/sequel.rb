@@ -42,17 +42,17 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   create_file(model_path, model_contents)
 end
 
 SQ_MIGRATION = (<<-MIGRATION) unless defined?(SQ_MIGRATION)
-class !FILECLASS! < Sequel::Migration
-  def up
+Sequel.migration do
+  up do
     !UP!
   end
 
-  def down
+  down do
     !DOWN!
   end
 end
@@ -71,7 +71,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-         :column_format => Proc.new { |field, kind| "#{kind.camelize} :#{field}" },
+         :column_format => Proc.new { |field, kind| "#{kind.underscore.camelize} :#{field}" },
          :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
 end
 
@@ -84,7 +84,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.camelize}"  },
+    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
     :remove => Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end

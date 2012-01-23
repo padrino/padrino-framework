@@ -130,7 +130,7 @@ describe "ProjectGenerator" do
     should "output gem files for base app" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none') }
       assert_match_in_file(/gem 'padrino'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'rack-flash'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'sinatra-flash'/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
 
@@ -142,18 +142,18 @@ describe "ProjectGenerator" do
       assert_match_in_file(/require 'riot\/rr'/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
+    should "properly generate for rr and minitest" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
+      assert_match(/applying.*?rr.*?mock/, out)
+      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/include RR::Adapters::MiniTest/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
     should "properly generater for rr and bacon" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=bacon', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/RR::Adapters::RRMethods/m, "#{@apptmp}/sample_project/test/test_config.rb")
-    end
-
-    should "properly generate for mocha and rspec" do
-      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}",'--test=rspec', '--mock=mocha', '--script=none') }
-      assert_match(/applying.*?mocha.*?mock/, out)
-      assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/include RR::Adapters::RRMethods/m, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
     should "properly generate for rr and rspec" do
@@ -161,6 +161,13 @@ describe "ProjectGenerator" do
       assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+    end
+
+    should "properly generate for mocha and rspec" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}",'--test=rspec', '--mock=mocha', '--script=none') }
+      assert_match(/applying.*?mocha.*?mock/, out)
+      assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
   end
 
@@ -233,7 +240,7 @@ describe "ProjectGenerator" do
 
       should "properly generate postgres" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=postgres') }
-        assert_match_in_file(/gem 'pg', :require => "postgres"/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'pg'$/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter   => 'postgresql'}, "#{@apptmp}/sample_project/config/database.rb")
       end
@@ -460,6 +467,22 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
       assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
     end
+
+    should "properly generate for minitest" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+      assert_match(/applying.*?minitest.*?test/, out)
+      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:require => "rack\/test"/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:group => "test"/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'minitest'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/include Rack::Test::Methods/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/MiniTest::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/SampleProject\.tap/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+    end # minitest
 
     should "properly generate for testspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testspec', '--script=none') }

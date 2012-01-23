@@ -1,14 +1,18 @@
 module Padrino
   module Generators
-
+    ##
+    # Defines the generator for creating a new admin app.
+    #
     class AdminApp < Thor::Group
 
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin, self)
 
-      # Define the source template root and themes
+      # Define the source template root and themes.
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
+      # Defines the theme names for admin based on available.
       def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
 
       # Include related modules
@@ -24,6 +28,7 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
+      class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 
       # Copies over the Padrino base admin application
       def create_admin
@@ -56,7 +61,7 @@ module Padrino
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
 
           account_params = [
-            "account", "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+            options[:admin_model].underscore, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-a=#{options[:app]}",
             "-r=#{options[:root]}"
           ]
@@ -76,17 +81,16 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new(["account"], :root => options[:root], :destroy => options[:destroy])
-          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(:account, orm, columns, column_fields)
+          admin_app = Padrino::Generators::AdminPage.new([options[:admin_model].underscore], :root => options[:root], :destroy => options[:destroy])
+          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(options[:admin_model].underscore, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "account.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{options[:admin_model].underscore}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
-            append_file(destination_root("db/seeds.rb")) { "\n\n" + File.read(self.class.source_root+"/templates/account/seeds.rb.tt") }
-          else
-            template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
+            run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
           end
+          template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
 
           empty_directory destination_root("admin/controllers")
           empty_directory destination_root("admin/views")
@@ -106,11 +110,12 @@ module Padrino
           return if self.behavior == :revoke
 
           instructions = []
+          instructions << "Run 'bundle install'"
           instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
           instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
           instructions << "Run 'padrino rake seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
-          instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
+          instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
 
           say
           say "="*65, :green

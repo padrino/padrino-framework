@@ -1,7 +1,10 @@
 module Padrino
   module Generators
+    # Raised when an application does not have a resolved root path.
     class  AppRootNotFound < RuntimeError; end
-
+    ##
+    # Common actions needed to support project and component generation.
+    #
     module Actions
 
       def self.included(base)
@@ -303,7 +306,7 @@ module Padrino
       # @api public
       def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
-        register = data.present? ? "  register #{name.to_s.camelize}Initializer\n" : "  register #{name}\n"
+        register = data.present? ? "  register #{name.to_s.underscore.camelize}Initializer\n" : "  register #{name}\n"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
         template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
       end
@@ -435,6 +438,7 @@ module Padrino
         end
       end
 
+      # Class methods for Thor generators to support the generators and component choices.
       module ClassMethods
         # Defines a class option to allow a component to be chosen and add to component type list
         # Also builds the available_choices hash of which component choices are supported
@@ -487,7 +491,7 @@ module Padrino
         #
         # @example
         #   available_choices_for :test
-        #   => [:shoulda, :bacon, :riot]
+        #   => [:shoulda, :bacon, :riot, :minitest]
         #
         # @api semipublic
         def available_choices_for(component)

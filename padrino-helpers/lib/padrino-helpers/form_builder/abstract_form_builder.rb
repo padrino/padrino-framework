@@ -9,7 +9,7 @@ module Padrino
           @object   = build_object(object)
           @options  = options
           raise "FormBuilder template must be initialized!" unless template
-          raise "FormBuilder object must be not be nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
+          raise "FormBuilder object must not be a nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
         end
 
         # f.error_messages
@@ -40,6 +40,37 @@ module Padrino
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.text_field_tag field_name(field), options
+        end
+
+       def number_field(field, options={})
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
+          @template.number_field_tag field_name(field), options
+        end
+
+        def telephone_field(field, options={})
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
+          @template.telephone_field_tag field_name(field), options
+        end
+        alias_method :phone_field, :telephone_field
+
+        def email_field(field, options={})
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
+          @template.email_field_tag field_name(field), options
+        end
+
+        def search_field(field, options={})
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
+          @template.search_field_tag field_name(field), options
+        end
+
+        def url_field(field, options={})
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
+          @template.url_field_tag field_name(field), options
         end
 
         # f.text_area :summary, :value => "(enter summary)", :id => 'summary'

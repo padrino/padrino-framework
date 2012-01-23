@@ -2,6 +2,9 @@ require 'fileutils'
 
 module Padrino
   module Generators
+    ##
+    # Responsible for executing plugin and template instructions including common actions for modifying a project or application.
+    #
     module Runner
 
       # Generates project scaffold based on a given template file
@@ -90,16 +93,11 @@ module Padrino
       #   git :commit, "hello world"
       #
       # @api public
-      def git(action, arguments=nil)
+      def git(*args)
         FileUtils.cd(destination_root) do
-          require 'grit' unless defined?(::Grit)
-          if action.to_s == 'init'
-            ::Grit::Repo.init(arguments || destination_root)
-            say "Git repo has been initialized", :green
-          else
-            @_git ||= ::Grit::Repo.new(destination_root)
-            @_git.method(action).call(arguments)
-          end
+          cmd = "git %s" % args.join(' ')
+          say cmd, :green
+          system cmd
         end
       end
 

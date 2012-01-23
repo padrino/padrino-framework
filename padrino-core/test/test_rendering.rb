@@ -203,6 +203,27 @@ describe "Rendering" do
 
   context 'for application render functionality' do
 
+    should "work properly with logging and missing layout" do
+      create_view :index, "<%= foo %>"
+      mock_app do
+        enable :logging
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "bar", body
+    end
+
+    should "work properly with logging and layout" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        enable :logging
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
     should 'be compatible with sinatra render' do
       mock_app do
         get("/"){ render :erb, "<%= 1+2 %>" }

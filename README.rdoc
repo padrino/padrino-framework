@@ -8,18 +8,18 @@ Padrino is the godfather of Sinatra. Follow us on
 
 == Preface
 
-Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.sinatrarb.com].
-Sinatra is a DSL for creating simple web applications in Ruby with speed and minimal effort.
-This framework tries hard to make it as fun and easy as possible to code much more advanced web applications by
-building upon the Sinatra philosophies and foundation.
+Padrino is a ruby framework built upon the excellent {Sinatra Web Library}[http://www.sinatrarb.com].
+Sinatra is a DSL for creating simple web applications in Ruby quickly and with minimal effort.
+This framework tries to make it as fun and easy as possible to code more advanced web applications by
+building upon the Sinatra philosophies and foundations.
 
 == Introduction
 
-Many people love Sinatra's simplicity and lightweight but often quickly come to miss a great deal
-of functionality provided by other web frameworks such as Rails when building non-trivial applications.
+Many people love that Sinatra is simple and lightweight but soon begin to miss the great deal
+of functionality provided by other web frameworks such as Django or Rails when building non-trivial applications.
 
-Our goal with this framework is to match the essence of Sinatra and at the same time create a standard library
-of tools, helpers and components that will make Sinatra suitable for more complex applications.
+Our goal with this framework is to adhere to the essence of Sinatra and at the same time create a standard library
+of tools, helpers and components that will make Sinatra suitable for increasingly complex applications.
 
 Here is a brief overview of functionality provided by the Padrino framework:
 
@@ -32,14 +32,15 @@ Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag
 Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
 Text Helpers:: Useful formatting like: time_ago_in_words, js_escape_html, sanitize_html.
 Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
+Caching:: Simple route and fragment caching to easily speed up your web requests.
 Admin:: Builtin Admin interface (like Django)
 Logging:: Provide a unified logger that can interact with your ORM or any library.
 Reloading::  Automatically reloads server code during development.
-Localization:: Full support of I18n language localization and can auto-set user’s locale.
+Localization:: Full support of I18n language localization and can auto-set user's locale.
 
-Keep in mind, the user will be able to pull in these components
-{separately into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
-or use them altogether for a comprehensive upgrade to Sinatra (a full-stack Padrino application).
+Keep in mind, developers are able to individually pull in these modular components
+{into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
+or use them altogether for a full-stack Padrino application.
 
 == Installation
 
@@ -50,7 +51,7 @@ To install the padrino framework, simply grab the latest version from gemcutter:
 This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
 
-For a more detailed look at Padrino installation,
+For a more detailed look at installing Padrino,
 check out the {Installation Guide}[http://www.padrinorb.com/guides/installation].
 
 == Usage
@@ -60,23 +61,25 @@ additional tools and helpers to build upon that foundation. This README and Padr
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic
 usage of Sinatra itself.
 
-You can also check out the
-{Understanding Sinatra}[http://www.padrinorb.com/guides/underlying-sinatra-overview] guide
-to learn more about these fundamentals.
+You can also check out the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
+to learn more about how Sinatra and Padrino work together.
 
 For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for
-{Using Padrino in Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
+{Using Padrino within Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
 
 == Getting Started
 
 Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
-of existing Sinatra Functionality!
+of existing sinatra functionality!
 
-Best way to get started with building Padrino applications is to read following resources:
+First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
+to learn more about how Sinatra and Padrino work together.
+
+Best way to learn more about building Padrino applications is to read following resources:
 
 * {Padrino Guides}[http://www.padrinorb.com/guides] - Guides outlining the major functionality within Padrino.
 * {Blog Tutorial}[http://www.padrinorb.com/guides/blog-tutorial] - Step-by-step guide to building a blog application with Padrino.
-* {Padrino RDoc}[http://www.padrinorb.com/api/index.html] - Rdoc documentation for the Padrino framework.
+* {Padrino API}[http://www.padrinorb.com/api/index.html] - YARD documentation for the Padrino framework.
 * {Quick Overview}[http://www.padrinorb.com/guides/basic-projects] - Outlines basic generation commands.
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.

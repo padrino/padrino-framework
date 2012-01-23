@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ###
+    # Helpers related to buffer output for various template engines.
+    #
     module OutputHelpers
 
       def self.included(base) # @private

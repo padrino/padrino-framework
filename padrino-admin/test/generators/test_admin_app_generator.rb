@@ -57,7 +57,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
     end
 
@@ -89,7 +89,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.erb"
     end
 
@@ -121,7 +121,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
     end
 
@@ -154,7 +154,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'role.project_module :accounts, "/accounts"', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
     end
 
@@ -173,7 +173,7 @@ describe "AdminAppGenerator" do
         generate(:admin_app, "--root=#{@apptmp}/sample_project")
       end
 
-      assert_match_in_file '# Old Seeds Content', "#{@apptmp}/sample_project/db/seeds.rb"
+      assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
     end
 

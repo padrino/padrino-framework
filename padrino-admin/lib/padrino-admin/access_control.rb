@@ -5,15 +5,16 @@ module Padrino
     class AccessControlError < StandardError # @private
     end
     ##
-    # This module give to a padrino application an access control functionality
+    # This module enables access control functionality within a padrino application.
     #
     module AccessControl
-      ##
-      # Method used by Padrino::Application when we register the extension
-      #
       class << self
+        ##
+        # Method used by Padrino::Application when we register the extension
+        #
         def registered(app)
           app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
+          app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
@@ -23,6 +24,9 @@ module Padrino
         alias :included :registered
       end
 
+      ##
+      # This base access control class where roles are defined as are authorizations.
+      #
       class Base
         def initialize # @private
           @roles, @authorizations, @project_modules = [], [], []
@@ -32,7 +36,6 @@ module Padrino
         # We map project modules for a given role or roles
         #
         def roles_for(*roles, &block)
-          raise Padrino::Admin::AccessControlError, "You must define an Account Model!" unless defined?(Account)
           raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 
@@ -111,6 +114,9 @@ module Padrino
         end
       end # Base
 
+      ###
+      # Project Authorization Class
+      #
       class Authorization
         attr_reader :allowed, :denied, :project_modules, :roles
 
@@ -165,8 +171,7 @@ module Padrino
         ##
         # Return the path of the project module. If a prefix given will be prepended.
         #
-        # ==== Examples
-        #
+        # @example
         #   # => /accounts/new
         #   project_module.path
         #   # => /admin/accounts
@@ -177,6 +182,7 @@ module Padrino
           path = File.join(ENV['RACK_BASE_URI'].to_s, path) if ENV['RACK_BASE_URI']
           path
         end
+
       end # ProjectModule
     end # AccessControl
   end # Admin

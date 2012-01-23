@@ -1,5 +1,6 @@
-# Defines our PADRINO_LOGGER constants
+# Defines the log level for a Padrino project.
 PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
+# Defines the logger used for a Padrino project.
 PADRINO_LOGGER    = ENV['PADRINO_LOGGER'] unless defined?(PADRINO_LOGGER)
 
 module Padrino
@@ -155,7 +156,7 @@ module Padrino
     #   Either an IO object or a name of a logfile. Defaults to $stdout
     #
     # @option options [Symbol] :log_level (:production in the production environment and :debug otherwise)
-    #   The log level from, e.g. :fatal or :info.     
+    #   The log level from, e.g. :fatal or :info.
     #
     # @option options [Symbol] :auto_flush (true)
     #   Whether the log should automatically flush after new messages are
@@ -190,7 +191,7 @@ module Padrino
     # @see Padrino::Logger::ColoredLevels
     #
     def colored_level(level)
-      style = ColoredLevels[level].map { |c| "\e[%dm" % Colored::COLORS[c] } * ''
+      style = ColoredLevels[level].map { |c| "\e[%dm" % String.colors[c] } * ''
       [style, level.to_s.upcase.rjust(7), "\e[0m"] * ''
     end
 
@@ -227,7 +228,7 @@ module Padrino
     #
     #
     def push(message = nil, level = nil)
-      self << @format_message % [colored_level(level), Time.now.strftime(@format_datetime).yellow, message.to_s.strip]
+      write @format_message % [colored_level(level), Time.now.strftime(@format_datetime).yellow, message.to_s.strip]
     end
 
     ##
@@ -318,11 +319,17 @@ module Padrino
               env["PATH_INFO"],
               env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
               ' - ',
-              status.to_s[0..3].bold
+              status.to_s[0..3].bold,
+              ' ',
+              code_to_name(status)
             ] * '',
             :debug,
             :magenta
           )
+        end
+
+        def code_to_name(status)
+          ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
         end
     end # Rack
   end # Logger

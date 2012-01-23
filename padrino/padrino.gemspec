@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.description = "The Godfather of Sinatra provides a full-stack agnostic framework on top of Sinatra"
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
-  s.platform    = Gem::Platform::RUBY
+  s.platform = Gem::Platform::RUBY
   s.date = Time.now.strftime("%Y-%m-%d")
 
   s.extra_rdoc_files = Dir["*.rdoc"]

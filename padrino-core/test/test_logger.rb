@@ -64,6 +64,15 @@ describe "PadrinoLogger" do
       assert_match /GET/, Padrino.logger.log.string
     end
 
+    should 'log an application\'s status code' do
+      mock_app do
+        enable :logging
+        get("/"){ "Foo" }
+      end
+      get "/"
+      assert_match /\e\[1m200\e\[0m OK/, Padrino.logger.log.string
+    end
+
     context "static asset logging" do
       should 'not log static assets by default' do
         mock_app do

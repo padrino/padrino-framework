@@ -1,12 +1,24 @@
 module Padrino
   module Admin
+    ##
+    # Contains all admin related helpers.
+    #
     module Helpers
+      ##
+      # i18n translation helpers for admin to retrieve words based on locale.
+      #
       module ViewHelpers
         ##
-        # Translate a given word for padrino admin
+        # Translates a given word for padrino admin
         #
-        # ==== Examples
+        # @param [String] word
+        #  The specified word to admin translate.
+        # @param [String] default
+        #   The default fallback if no word is available for the locale.
         #
+        # @return [String] The translated word for the current locale.
+        #
+        # @example
         #   # => t("padrino.admin.profile",  :default => "Profile")
         #   pat(:profile)
         #
@@ -19,10 +31,16 @@ module Padrino
         alias :pat :padrino_admin_translate
 
         ##
-        # Translate attribute name for the given model
+        # Translates attribute name for the given model.
         #
-        # ==== Examples
+        # @param [Symbol] model
+        #  The model name for the translation.
+        # @param [Symbol] attribute
+        #  The attribute name in the model to translate.
         #
+        # @return [String] The translated attribute name for the current locale.
+        #
+        # @example
         #   # => t("models.account.email", :default => "Email")
         #   mat(:account, :email)
         #
@@ -32,10 +50,14 @@ module Padrino
         alias :mat :model_attribute_translate
 
         ##
-        # Translate model name
+        # Translates model name
         #
-        # ==== Examples
+        # @param [Symbol] attribute
+        #  The attribute name in the model to translate.
         #
+        # @return [String] The translated model name for the current locale.
+        #
+        # @example
         #   # => t("models.account.name", :default => "Account")
         #   mt(:account)
         #
@@ -43,6 +65,7 @@ module Padrino
           t("models.#{model}.name", :default => model.to_s.humanize)
         end
         alias :mt :model_translate
+
       end # ViewHelpers
     end # Helpers
   end # Admin

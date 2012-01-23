@@ -3,13 +3,18 @@ require 'net/https'
 
 module Padrino
   module Generators
+    ##
+    # Responsible for executing plugins instructions within a Padrino project.
+    #
     class Plugin < Thor::Group
+      # Defines the default URL for official padrino recipe plugins
       PLUGIN_URL = 'https://github.com/padrino/padrino-recipes/tree/master/plugins'
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:plugin, self)
 
       # Define the source plugin root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen plugin [plugin_identifier] [options]"; end
 
       # Include related modules

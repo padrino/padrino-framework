@@ -1,13 +1,21 @@
 module Padrino
   module Admin
+    ##
+    # Contains all admin related generator functionality.
+    #
     module Generators
+      # Defines a generic exception for the admin ORM handler.
       class OrmError < StandardError; end
+
+      ##
+      # Defines the generic ORM management functions used to manipulate data for admin.
+      # @private
       class Orm
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm
 
         def initialize(name, orm, columns=nil, column_fields=nil)
           name            = name.to_s
-          @klass_name     = name.camelize
+          @klass_name     = name.underscore.camelize
           @klass          = @klass_name.constantize rescue nil
           @name_singular  = name.underscore.gsub(/^.*\//, '') # convert submodules i.e. FooBar::Jank.all # => jank
           @name_plural    = @name_singular.pluralize
@@ -34,6 +42,7 @@ module Padrino
         def columns
           @columns ||= case orm
             when :activerecord then @klass.columns
+            when :mini_record  then @klass.columns
             when :datamapper   then @klass.properties.map { |p| dm_column(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values
@@ -77,7 +86,7 @@ module Padrino
 
         def find(params=nil)
           case orm
-            when :activerecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
+            when :activerecord, :mini_record, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
             when :sequel then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
@@ -101,7 +110,7 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :mini_record, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
             when :datamapper then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"

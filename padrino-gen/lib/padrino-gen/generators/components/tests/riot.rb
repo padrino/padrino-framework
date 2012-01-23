@@ -88,13 +88,13 @@ end
 
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
-  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), riot_contents, :skip => true
 end
 
 def generate_model_test(name)
-  riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize)
+  riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   path = options[:app] == '.' ? '/..' : '/../..'
   riot_contents.gsub!(/!PATH!/,path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")

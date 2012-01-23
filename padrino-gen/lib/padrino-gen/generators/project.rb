@@ -3,6 +3,9 @@ require 'securerandom' unless defined?(SecureRandom)
 
 module Padrino
   module Generators
+    ##
+    # Responsible for generating new Padrino projects based on the specified project components.
+    #
     class Project < Thor::Group
 
       # Add this generator to our padrino-gen
@@ -10,6 +13,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen project [name] [options]"; end
 
       # Include related modules
@@ -31,8 +35,8 @@ module Padrino
       class_option :template,     :desc => "Generate project from template",                        :aliases => '-p', :default => nil,      :type => :string
 
       # Definitions for the available customizable components
-      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
-      component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot], :default => :none
+      component_option :orm,        "database engine",    :aliases => '-d', :choices => [:activerecord, :mini_record, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
+      component_option :test,       "testing framework",  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot, :minitest], :default => :none
       component_option :mock,       "mocking library",    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     "javascript library", :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
       component_option :renderer,   "template engine",    :aliases => '-e', :choices => [:haml, :erb, :liquid, :slim], :default => :haml

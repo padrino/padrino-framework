@@ -1,3 +1,4 @@
+gem 'minitest'
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'mocha' # Load mocha after minitest
@@ -20,3 +21,25 @@ class MiniTest::Spec
   alias :assert_not_nil   :refute_nil
   alias :assert_not_equal :refute_equal
 end
+
+class ColoredIO
+  def initialize(io)
+    @io = io
+  end
+
+  def print(o)
+    case o
+    when "." then @io.send(:print, o.green)
+    when "E" then @io.send(:print, o.red)
+    when "F" then @io.send(:print, o.yellow)
+    when "S" then @io.send(:print, o.magenta)
+    else @io.send(:print, o)
+    end
+  end
+
+  def puts(*o)
+    super
+  end
+end
+
+MiniTest::Unit.output = ColoredIO.new(MiniTest::Unit.output)

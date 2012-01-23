@@ -1,34 +1,24 @@
 source :rubygems
 
 # Server requirements
-# gem 'thin' or mongrel
-# gem 'mizuno' or trinidad on JRuby
+# gem 'thin' # or mongrel
+# gem 'mizuno', :platform => 'jruby' # or trinidad on JRuby
 
 # Project requirements
 gem 'rake'
-gem 'rack-flash'
+gem 'sinatra-flash', :require => 'sinatra/flash'
 
 # Component requirements
 
 # Test requirements
 
+# Padrino Stable Gem
+<% if options.dev? %># <% end %>gem 'padrino', '<%= Padrino.version %>'
 
-<%- if options.dev? -%>
-# Padrino
-%w(core gen helpers cache mailer admin).each do |gem|
-  gem 'padrino-' + gem, :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + gem
-end
-<%- else -%>
-# Padrino
-gem 'padrino', '<%= Padrino.version %>'
-<%- end -%>
-# Padrino EDGE
+# Or Padrino Edge
 # gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
-#
-# Individual GEMS
-# gem 'padrino-core', '<%= Padrino.version %>'
-# gem 'padrino-admin', '<%= Padrino.version %>'
-# gem 'padrino-cache', '<%= Padrino.version %>'
-# gem 'padrino-gen', '<%= Padrino.version %>'
-# gem 'padrino-helpers', '<%= Padrino.version %>'
-# gem 'padrino-mailer', '<%= Padrino.version %>'
+
+# Or Individual Gems
+<% unless options.dev? %># <% end %>%w(core gen helpers cache mailer admin).each do |g|
+<% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
+<% unless options.dev? %># <% end %>end

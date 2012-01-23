@@ -2,11 +2,14 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
   ##
-  # Padrino enhances the Sinatra ‘render’ method to have support for
+  # Padrino enhances the Sinatra 'render' method to have support for
   # automatic template engine detection, enhanced layout functionality,
   # locale enabled rendering, among other features.
   #
   module Rendering
+    ##
+    # Exception responsible for when an expected template did not exist.
+    #
     class TemplateNotFound < RuntimeError
     end
 
@@ -26,10 +29,10 @@ module Padrino
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
-    ##
-    # Main class that register this extension.
-    #
     class << self
+      ##
+      # Main class that register this extension.
+      #
       def registered(app)
         app.send(:include, InstanceMethods)
         app.extend(ClassMethods)
@@ -37,6 +40,9 @@ module Padrino
       alias :included :registered
     end
 
+    ##
+    # Class methods responsible for rendering templates as part of a request.
+    #
     module ClassMethods
       ##
       # Use layout like rails does or if a block given then like sinatra.
@@ -100,6 +106,7 @@ module Padrino
       end
     end
 
+    # Instance methods that allow enhanced rendering to function properly in Padrino.
     module InstanceMethods
       attr_reader :current_engine
 
@@ -270,7 +277,7 @@ module Padrino
 
           raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-          logger.debug :template, began_at, located_template[0] if settings.logging? && defined?(logger)
+          logger.debug :template, began_at, located_template[0] if located_template && settings.logging? && defined?(logger)
           located_template
         end
 

@@ -33,5 +33,5 @@ begin
   require 'padrino-gen'
   Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb']
 rescue LoadError
-
+  # Fail silently
 end

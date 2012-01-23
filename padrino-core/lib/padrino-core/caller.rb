@@ -1,4 +1,6 @@
 module Padrino
+
+  # List of callers in a Padrino application that should be ignored as part of a stack trace.
   PADRINO_IGNORE_CALLERS = [
     %r{lib/padrino-.*$},                             # all padrino code
     %r{/padrino-.*/(lib|bin)},                       # all padrino code

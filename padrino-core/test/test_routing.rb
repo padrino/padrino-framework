@@ -4,6 +4,31 @@ class FooError < RuntimeError; end
 
 
 describe "Routing" do
+  setup do
+    Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+  end
+
+  should "serve static files with simple cache control" do
+    mock_app do
+      set :static_cache_control, :public
+      set :public_folder, File.dirname(__FILE__)
+    end
+    get "/#{File.basename(__FILE__)}"
+    assert headers.has_key?('Cache-Control')
+    assert_equal headers['Cache-Control'], 'public'
+  end # static simple
+
+  should "serve static files with cache control and max_age" do
+    mock_app do
+      set :static_cache_control, [:public, :must_revalidate, {:max_age => 300}]
+      set :public_folder, File.dirname(__FILE__)
+    end
+    get "/#{File.basename(__FILE__)}"
+    assert headers.has_key?('Cache-Control')
+    assert_equal headers['Cache-Control'], 'public, must-revalidate, max-age=300'
+  end # static max_age
+
   should 'ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
@@ -51,6 +76,13 @@ describe "Routing" do
     assert_equal "Your lucky number: 1234 1234", body
     get "/page/99"
     assert_equal "My lucky number: 99 99", body
+  end
+
+  should 'accept regexp routes with generate with :generate_with' do
+    mock_app do
+      get(%r{/fob|/baz}, :name => :foo, :generate_with => '/fob') { "regexp" }
+    end
+    assert_equal "/fob", @app.url(:foo)
   end
 
   should "parse routes with question marks" do
@@ -1092,6 +1124,20 @@ describe "Routing" do
 
     get "/route/123"
     assert_equal "123", body
+  end
+
+  should "support halting with 404 and message" do
+    mock_app do
+      controller do
+        get :index do
+          halt 404, "not found"
+        end
+      end
+    end
+
+    get "/"
+    assert_equal 404, status
+    assert_equal "not found", body
   end
 
   should "allow passing & halting in before filters" do

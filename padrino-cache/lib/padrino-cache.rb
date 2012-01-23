@@ -91,12 +91,12 @@ module Padrino
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page
-        app.set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app.app_name.to_s ,'cache'))
+        app.set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache'))
         app.disable :caching
       end
       alias :included :registered
 
-      # @api private
+      # @private
       def padrino_route_added(route, verb, path, args, options, block) # @private
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)
       end

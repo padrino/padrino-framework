@@ -3,4 +3,6 @@ Gemfile.lock
 .rvmrc
 .yardoc
 *.rbc
+.rbx/
 doc/
+.DS_Store

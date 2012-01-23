@@ -1,6 +1,9 @@
 module Padrino
   module Helpers
     module OutputHelpers
+      ##
+      # Handler for reading and writing from an erb template.
+      #
       class ErbHandler < AbstractHandler
         attr_reader :output_buffer
 

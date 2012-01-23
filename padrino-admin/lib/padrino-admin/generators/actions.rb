@@ -1,6 +1,12 @@
 module Padrino
   module Generators
+    ##
+    # Generator action definitions for the admin panel.
+    #
     module Admin
+      ##
+      # Important tasks for setting up or configuring the admin application.
+      #
       module Actions
         ##
         # Tell us which orm we are using
@@ -21,7 +27,7 @@ module Padrino
         # Tell us for now wich orm we support
         #
         def supported_orm
-          [:datamapper, :activerecord, :mongomapper, :mongoid, :couchrest, :sequel]
+          [:mini_record, :datamapper, :activerecord, :mongomapper, :mongoid, :couchrest, :sequel]
         end
 
         ##
@@ -35,18 +41,18 @@ module Padrino
         # Add access_control permission in our app.rb
         #
         def add_project_module(controller)
-          permission = "    role.project_module :#{controller}, \"/#{controller}\"\n"
-          inject_into_file destination_root("/admin/app.rb"),  permission, :after => "access_control.roles_for :admin do |role|\n"
+          permission = "    role.project_module :#{controller}, '/#{controller}'\n"
+          inject_into_file destination_root('/admin/app.rb'),  permission, :after => "access_control.roles_for :admin do |role|\n"
         end
 
         ##
         # Remove from access_control permissions
         #
         def remove_project_module(controller)
-          path = destination_root("/admin/app.rb")
-          say_status :replace, "admin/app.rb", :red
+          path = destination_root('/admin/app.rb')
+          say_status :replace, 'admin/app.rb', :red
           content = File.binread(path)
-          content.gsub!(/^\s+role\.project_module :#{controller}, "\/#{controller}"\n/, '')
+          content.gsub!(/^\s+role\.project_module :#{controller}, '\/#{controller}'\n/, '')
           File.open(path, 'wb') { |f| f.write content }
         end
       end # Actions

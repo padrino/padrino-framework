@@ -68,8 +68,9 @@ task :fresh => [:uninstall, :install, :clean]
 
 desc "Pushes repository to GitHub"
 task :push do
-  say "Updating submodules"
-  sh "git submodule foreach git pull"
+  say "Updating and verifying submodules"
+  sh "git submodule foreach git pull origin master"
+  sh "ls padrino-gen/lib/padrino-gen/generators/templates/static/README.rdoc"
   say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
@@ -84,6 +85,7 @@ task :publish => :push do
   end
   Rake::Task["clean"].invoke
 end
+task :release => :publish
 
 desc "Run tests for all padrino stack gems"
 task :test do
@@ -105,6 +107,6 @@ end
 desc "Publish doc on padrinorb.com/api"
 task :pdoc => :doc do
   say "Publishing doc on padrinorb.com ..."
-  sh "scp -r doc/* root@srv2.lipsiasoft.biz:/mnt/www/apps/padrino/public/api/"
+  sh "scp -r doc/* root@lps2.lipsiasoft.com:/mnt/www/apps/padrino/public/api/"
   sh "rm -rf doc"
 end

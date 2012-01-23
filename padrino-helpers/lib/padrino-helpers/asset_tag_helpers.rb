@@ -1,5 +1,8 @@
 module Padrino
   module Helpers
+    ###
+    # Helpers related to producing assets (images,stylesheets,js,etc) within templates.
+    #
     module AssetTagHelpers
       ##
       # Creates a div to display the flash of given type if it exists
@@ -150,7 +153,7 @@ module Padrino
       # @api public
       def feed_tag(mime, url, options={})
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
-        content_tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
+        tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
       end
 
       ##
@@ -288,9 +291,9 @@ module Padrino
       # @api public
       def javascript_include_tag(*sources)
         options = sources.extract_options!.symbolize_keys
-        options.reverse_merge!(:type => 'text/javascript', :content => "")
+        options.reverse_merge!(:type => 'text/javascript')
         sources.flatten.map { |source|
-          tag(:script, options.reverse_merge(:src => asset_path(:js, source)))
+          content_tag(:script, nil, options.reverse_merge(:src => asset_path(:js, source)))
         }.join("\n")
       end
 
