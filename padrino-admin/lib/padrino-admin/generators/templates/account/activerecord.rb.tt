@@ -1,4 +1,4 @@
-class Account < ActiveRecord::Base
+class <%= options[:admin_model].underscore.camelize %> < ActiveRecord::Base
   attr_accessor :password, :password_confirmation
 
   # Validations

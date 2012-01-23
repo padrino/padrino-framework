@@ -14,6 +14,7 @@ module Padrino
         #
         def registered(app)
           app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym
+          app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
@@ -35,7 +36,6 @@ module Padrino
         # We map project modules for a given role or roles
         #
         def roles_for(*roles, &block)
-          raise Padrino::Admin::AccessControlError, "You must define an Account Model!" unless defined?(Account)
           raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
           raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 

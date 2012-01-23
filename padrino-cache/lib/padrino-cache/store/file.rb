@@ -35,16 +35,17 @@ module Padrino
         def get(key)
           init
           if ::File.exist?(path_for_key(key))
-            contents = ::File.read(path_for_key(key))
+            read_method = ::File.respond_to?(:binread) ? :binread : :read
+            contents    = ::File.send(read_method, path_for_key(key))
             expires_in, body = contents.split("\n", 2)
             expires_in = expires_in.to_i
             if expires_in == -1 or Time.new.to_i < expires_in
               Marshal.load(body) if body
-            else
+            else # expire the key
               delete(key)
               nil
             end
-          else
+          else # key can't be found
             nil
           end
         end

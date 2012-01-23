@@ -306,7 +306,7 @@ module Padrino
       # @api public
       def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
-        register = data.present? ? "  register #{name.to_s.camelize}Initializer\n" : "  register #{name}\n"
+        register = data.present? ? "  register #{name.to_s.underscore.camelize}Initializer\n" : "  register #{name}\n"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
         template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
       end
