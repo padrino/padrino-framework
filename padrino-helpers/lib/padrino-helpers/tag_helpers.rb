@@ -1,4 +1,4 @@
-﻿module Padrino
+module Padrino
   module Helpers
     ##
     # Helpers related to producing html tags within templates.
