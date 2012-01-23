@@ -85,6 +85,7 @@ task :publish => :push do
   end
   Rake::Task["clean"].invoke
 end
+task :release => :publish
 
 desc "Run tests for all padrino stack gems"
 task :test do
