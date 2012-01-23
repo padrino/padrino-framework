@@ -2,7 +2,7 @@ source :rubygems
 
 # Server requirements
 # gem 'thin' # or mongrel
-# gem 'mizuno', :platform => 'jruby' # or trinidad on JRuby
+# gem 'trinidad', :platform => 'jruby'
 
 # Project requirements
 gem 'rake'
