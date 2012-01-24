@@ -738,7 +738,7 @@ describe "FormBuilder" do
 
     should "display correct image submit button html" do
       actual_html = standard_builder.image_submit('/system/ok.png', :class => 'large')
-      assert_has_tag('input.large[type=image]', :src => "/system/ok.png?#{@stamp}") { actual_html }
+      assert_has_tag('input.large[type=image]', :src => "/system/ok.png") { actual_html }
     end
 
     should "display correct image submit button in haml" do

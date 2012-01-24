@@ -375,7 +375,7 @@ module Padrino
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
         html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { javascript_mapping[$1] }
       end
-
+      alias :escape_javascript :js_escape_html
     end # FormatHelpers
   end # Helpers
 end # Padrino
