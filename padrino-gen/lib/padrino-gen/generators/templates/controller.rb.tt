@@ -17,5 +17,5 @@
   # get '/example' do
   #   'Hello world!'
   # end
-  <%= "\n" + @actions %>
+  <%= "\n#{@actions}" %>
 end

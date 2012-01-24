@@ -87,14 +87,14 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
-    assert_equal 'foo', @app.cache.get(:foo)
+    assert_equal 'foo', @app.cache.get(:foo)[:response_buffer]
     get "/foo"
     assert_equal 'foo', body
 
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
-    assert_equal 'bar', @app.cache.get(:bar)
+    assert_equal 'bar', @app.cache.get(:bar)[:response_buffer]
     get "/bar"
     assert_equal 'bar', body
   end

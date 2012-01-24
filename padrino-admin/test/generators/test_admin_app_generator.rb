@@ -169,7 +169,7 @@ describe "AdminAppGenerator" do
         generate(:admin_app, "--root=#{@apptmp}/sample_project")
       end
 
-      assert_match_in_file '# Old Seeds Content', "#{@apptmp}/sample_project/db/seeds.rb"
+      assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
     end
 

@@ -1,4 +1,4 @@
-class Account
+class <%= options[:admin_model].underscore.camelize %>
   include MongoMapper::Document
   attr_accessor :password, :password_confirmation
 

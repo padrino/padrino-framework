@@ -62,13 +62,13 @@ end
 
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
-  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
+  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), bacon_contents, :skip => true
 end
 
 def generate_model_test(name)
-  bacon_contents  = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+  bacon_contents  = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   path = options[:app] == '.' ? '/..' : '/../..'
   bacon_contents.gsub!(/!PATH!/,path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")

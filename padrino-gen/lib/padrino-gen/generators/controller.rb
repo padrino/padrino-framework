@@ -21,7 +21,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen controller generates a new Padrino controller"
 
       argument     :name,    :desc => 'The name of your padrino controller'
-      argument     :fields,  :desc => 'The fields for the controller',                                          :type => :array, :default => []
+      argument     :fields,  :desc => 'The fields for the controller',                      :default => [],     :type => :array
       class_option :root,    :desc => 'The root destination',             :aliases => '-r', :default => '.',    :type => :string
       class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
       class_option :destroy,                                              :aliases => '-d', :default => false,  :type => :boolean
@@ -37,8 +37,8 @@ module Padrino
         if in_app_root?
           app = options[:app]
           check_app_existence(app)
-          @app_name = fetch_app_name(app)
-          @actions  = controller_actions(fields)
+          @app_name   = fetch_app_name(app)
+          @actions    = controller_actions(fields)
           @controller = name.to_s.underscore
           self.behavior = :revoke if options[:destroy]
           template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")

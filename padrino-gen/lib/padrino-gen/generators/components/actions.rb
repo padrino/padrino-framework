@@ -31,8 +31,8 @@ module Padrino
             field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
             column_declarations = field_tuples.map(&options[:column_format]).join("\n      ")
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
-            contents = contents.gsub(/!NAME!/, model_name.camelize).gsub(/!TABLE!/, model_name.underscore)
-            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
+            contents = contents.gsub(/!NAME!/, model_name.underscore.camelize).gsub(/!TABLE!/, model_name.underscore)
+            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             current_migration_number = return_last_migration_number
             contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
             migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
@@ -67,7 +67,7 @@ module Padrino
           else
             return if migration_exist?(filename)
             change_format = options[:change_format]
-            migration_scan = filename.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
+            migration_scan = filename.underscore.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
             tuples = direction ? columns.map { |value| value.split(":") } : []
             tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
@@ -77,7 +77,7 @@ module Padrino
             back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
             contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
-            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.camelize)
+            contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             current_migration_number = return_last_migration_number
             contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
             migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"

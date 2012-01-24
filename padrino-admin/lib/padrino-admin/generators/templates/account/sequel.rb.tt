@@ -1,4 +1,4 @@
-class Account < ::Sequel::Model
+class <%= options[:admin_model].underscore.camelize %> < ::Sequel::Model
 
   plugin :validation_helpers
 

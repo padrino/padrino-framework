@@ -1,8 +1,8 @@
 source :rubygems
 
-# Server requirements (defaults to WEBrick)
-# gem 'thin'
-# gem 'mongrel'
+# Server requirements
+# gem 'thin' # or mongrel
+# gem 'trinidad', :platform => 'jruby'
 
 # Project requirements
 gem 'rake'

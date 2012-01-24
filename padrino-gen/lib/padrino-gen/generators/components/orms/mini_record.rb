@@ -14,8 +14,15 @@ ActiveRecord::Base.configurations[:test] = {
 # Setup our logger
 ActiveRecord::Base.logger = logger
 
-# Include Active Record class name as root for JSON serialized output.
-ActiveRecord::Base.include_root_in_json = true
+# Raise exception on mass assignment protection for Active Record models
+ActiveRecord::Base.mass_assignment_sanitizer = :strict
+
+# Log the query plan for queries taking more than this (works
+# with SQLite, MySQL, and PostgreSQL)
+ActiveRecord::Base.auto_explain_threshold_in_seconds = 0.5
+
+# Doesn't include Active Record class name as root for JSON serialized output.
+ActiveRecord::Base.include_root_in_json = false
 
 # Store the full class name (including module namespace) in STI type column.
 ActiveRecord::Base.store_full_sti_class = true
@@ -110,7 +117,7 @@ def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }
   column_declarations = field_tuples.map { |field, kind| "field :#{field}, :as => :#{kind}" }.join("\n  ")
-  model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
 end

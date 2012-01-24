@@ -7,37 +7,19 @@ describe "TagHelpers" do
   end
 
   context 'for #tag method' do
-    should("support tags with no content no attributes") do
-      assert_has_tag(:br) { tag(:br) }
-    end
-
-    should("support tags with no content with attributes") do
-      actual_html = tag(:br, :style => 'clear:both', :class => 'yellow')
-      assert_has_tag(:br, :class => 'yellow', :style=>'clear:both') { actual_html }
-    end
-
     should "support selected attribute by using 'selected' if true" do
       actual_html = tag(:option, :selected => true)
       assert_has_tag('option', :selected => 'selected') { actual_html }
     end
 
-    should "support tags with content no attributes" do
-      assert_has_tag(:p, :content => "Demo String") { tag(:p, :content => "Demo String") }
-    end
-
-    should "support tags with content and attributes" do
-      actual_html = tag(:p, :content => "Demo", :class => 'large', :id => 'intro')
-      assert_has_tag('p#intro.large', :content => "Demo") { actual_html }
-    end
-
-    should "support open tags" do
-      actual_html = tag(:p, :class => 'demo', :open => true)
-      assert_equal "<p class=\"demo\">", actual_html
+    should "support data attributes" do
+      actual_html = tag(:a, :data => { :remote => true, :method => 'post'})
+      assert_has_tag(:a, 'data-remote' => 'true', 'data-method' => 'post') { actual_html }
     end
 
     should "escape html" do
       actual_html = tag(:br, :class => 'Example "bar"')
-      assert_equal "<br class=\"Example &quot;bar&quot;\" />", actual_html
+      assert_equal "<br class=\"Example &quot;bar&quot;\">", actual_html
     end
   end
 

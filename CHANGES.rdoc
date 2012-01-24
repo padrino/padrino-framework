@@ -2,6 +2,25 @@
 
 == 0.10.6 (Not Yet Released)
 
+* FIX #760 better html5 helper support (@Cirex)
+* NEW #764 adds a few form inputs in helpers (@Cirex)
+* FIX #680 upgrade to activesupport and activerecord 3.2
+* FIX Adds support for minirecord generators
+* FIX Upgrade to latest datamapper
+* FIX #702 Change to new sequel migration syntax (@funny-falcon)
+* FIX #705 incorrect require when using AR with pg gem (@udzura)
+* FIX #724 Use binread for file cache on 1.9.X
+* FIX #729 Added setting to change model name for admin
+* NEW Adds regexp route generation support (@joshbuddy)
+* FIX #720 Set PADRINO_LOG_LEVEL constant by default (@marcosdsanchez)
+* FIX #725 app.app_name is not set error in padrino-cache (@modeverv)
+* FIX #733 Mailer generator now handles hyphens
+* FIX Replace Sinatra quote with Godfather movie reference on server exit (@danishkhan)
+* FIX #743 Correctly parse arguments to padrino binary
+* FIX #745 Cache now stores response and content_type (@sumskyi)
+* FIX #676 Adds support for trinidad web server on jruby
+* FIX #736 Logger refactoring to support other loggers (@skade)
+
 == 0.10.5
 
 * FIX #701 make static script assets work again for generator
