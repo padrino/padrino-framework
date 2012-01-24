@@ -41,6 +41,7 @@ group :development do
   end
   gem "mocha",    "~>0.10.0"
   gem "minitest", "~>2.6.0"
+  gem "lumberjack"
 end
 
 group :cache do

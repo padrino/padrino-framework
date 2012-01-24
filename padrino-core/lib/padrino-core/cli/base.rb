@@ -41,7 +41,6 @@ module Padrino
       method_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development
       method_option :list,        :type => :string,  :aliases => "-T", :desc => "Display the tasks (matching optional PATTERN) with descriptions, then exit."
       method_option :trace,       :type => :boolean, :aliases => "-t", :desc => "Turn on invoke/execute tracing, enable full backtrace."
-      method_option :verbose,     :type => :boolean, :aliases => "-v", :desc => "Log message to standard output."
       def rake(*args)
         prepare :rake
         args << "-T" if options[:list]
@@ -51,9 +50,8 @@ module Padrino
         ARGV.clear
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
-        ENV['PADRINO_LOG_LEVEL'] ||= options[:verbose] ? 'development' : 'test'
         load File.expand_path('../rake.rb', __FILE__)
-        silence(:stdout) { require File.expand_path('config/boot.rb') }
+        require File.expand_path('config/boot.rb')
         PadrinoTasks.init(true)
       end
 
