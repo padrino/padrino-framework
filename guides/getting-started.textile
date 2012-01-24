@@ -149,9 +149,9 @@ applications.
 
 h2. Extending Padrino Projects
 
-As you being building real projects with Padrino, you will quickly require additional functionality not built
+As you start building real projects with Padrino, you will quickly require additional functionality not built
 into Padrino itself. Thankfully finding and using modular libraries that add additional functionality to your
-Sinatra and Padrino applications is quite painless.
+Sinatra and Padrino application is quite painless.
 
 In order to manage dependencies for a project, Padrino relies on another RubyGem called
 "Bundler":http://gembundler.com. A default Padrino Gemfile looks akin to this:
