@@ -12,6 +12,7 @@ module Padrino
       include Thor::Actions
 
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :help, :type => :boolean, :desc => "Show help usage"
 
       # We need to TRY to load boot because some of our app dependencies maybe have
       # custom generators, so is necessary know who are.
