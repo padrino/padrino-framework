@@ -16,7 +16,7 @@ th.action  { width: 110px; text-align:center }
 
 .login {
   form, .actions { margin-bottom:0px; }
-  .alert-message{ margin:10px; }
+  .label{ &.error { background-color: #c43c35; } }
   .logo{
     text-align: center;
     padding: 5px 0;
@@ -28,4 +28,19 @@ th.action  { width: 110px; text-align:center }
   padding-top: 10px;
   width: 500px;
   margin: 0px auto;
+  .control-group > label {
+    float: left;
+    width: 40px;
+    padding-top: 5px;
+    text-align: right;
+  }
+  .controls {
+    margin-left: 60px;
+  }
+
 }
+
+.flash-error,#field-errors, #deleter{ border: 2px solid red; }
+.flash-success{ border: 2px solid green; }
+.flash-warning{ border: 2px solid orange; }
+#deleter-body > form{ text-align: center; }
