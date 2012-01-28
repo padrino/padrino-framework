@@ -27,6 +27,7 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     div class="fluid-container" class={'sidebar-left' if sidebar}
       - if sidebar
         div class="fluid-sidebar" == sidebar
+      div class='fluid-content '== breadcrumbs settings.breadcrumbs, true
       div class="fluid-content"
         - [:error, :warning, :success].each do |type|
           - next if flash[type].blank?
