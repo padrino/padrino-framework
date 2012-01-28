@@ -18,6 +18,8 @@ div class="tabs-content"
           <%- @orm.columns.each_with_index do |column, i| -%>
           <%- if column.name == "created_at" || column.name == "updated_at" -%>
           td == time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
+          <%- elsif column.type == :boolean -%>
+          td == tof <%= @orm.name_singular %>.<%= column.name %>
           <%- else -%>
           td == <%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>
