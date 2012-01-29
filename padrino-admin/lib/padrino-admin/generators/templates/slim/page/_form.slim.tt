@@ -1,10 +1,10 @@
-== error_messages_for :<%= @orm.name_singular %>, :header_tag => 'h4'
+== error_messages_for :<%= @orm.name_singular %>, :header_tag => 'h4', :class =>'hide'
 
 <%- @orm.column_fields.each do |column| -%>
 fieldset class='control-group'
   == f.label :<%= column[:name] %>, :class => 'control-label'
   div class='controls'
-    == f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'span4'
+    == f.<%= column[:field_type] %> :<%= column[:name] %>
     p class='help-block' Ex: a simple text
 <%- end -%>
 

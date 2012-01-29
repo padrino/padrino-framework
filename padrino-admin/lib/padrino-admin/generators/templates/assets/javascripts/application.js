@@ -1,22 +1,44 @@
+
+
 $(function(){
+    function openModal(source, title_tag, type,close) {
+        // clearModal();
+        $('#padrino-modal-title').append($(source + ' ' + title_tag).html());
+        $(source + ' ' + title_tag).remove();
+        $('#padrino-modal-body').append($(source).html());
+        $(source).remove();
+        $('#padrino-modal').addClass('flash-'+type);
+        $('#padrino-modal .modal-header').addClass('alert-'+type);
+        $('#padrino-modal-close').html(close);
+        $('#padrino-modal').modal('show');
+    };
 
-    $('#field-errors').addClass('modal fade');
-    $('#field-errors h4').wrapAll("<div class='modal-header alert alert-error'></div>");
-    $('#field-errors .modal-header').prepend("<a href='#' class='close' data-dismiss='modal'> &times;</a>");
-    $('#field-errors p').wrap("<div class='modal-body'></div>") ;
-    $('#field-errors ul').wrap("<div class='modal-body'></div>") ;
-    $('#field-errors').append("<div class='modal-footer'><a href='#' class='btn primary' data-dismiss='modal'>Close</a></div>");
-    $('#field-errors').modal();
+    function clearModal(){
+        $('#padrino-modal-title').empty();
+        $('#padrino-modal-body').empty();
+        $('#padrino-modal-close').empty();
 
-    $('#flash-result').modal('show');
-
-
-    $('#deleter').on('hide', function () {
-        $('#deleter-title').empty();
-        $('#deleter .modal-body').empty();
-        $('#deleter-close').empty();
+    };
+    // Form validation color
+    $('.invalid').parent().each(function(){
+        $(this).parent().addClass('error');
+    });
+    // form error
+    if($('#field-errors').length){
+        openModal('#field-errors','h4',"error",'Close');
+    };
+    // flash result
+    if($('#flash-result').length){
+        openModal('#flash-result','h4',$('#flash-result').attr('class'),'Close');
+    };
+    // clear modal
+    $('#padrino-modal').on('hide',function(){
+        $('#padrino-modal-title').empty();
+        $('#padrino-modal-body').empty();
+        $('#padrino-modal-close').empty();
     });
 
+    // i need to fix
     $(".btn_delete").click(function(){
         // find form
         var form ="."+ $(this).attr('data-form');
@@ -24,14 +46,17 @@ $(function(){
         // remove hide class
         $(clone).removeClass('hide');
         // insert form into modal
-        $('#deleter .modal-body').append($(clone));
-        $('#deleter-title').append( $(form + ' input:submit').val() + ' : ' +$(form).attr('data-title') );
-        $('#deleter-close').append($(this).attr('data-cancel'));
-        $(clone).append($('#deleter-close').clone().removeClass('hide'));
-        $(clone).prepend("<h4>"+$(clone).attr('data-title')+"</h4");
+        $('#padrino-modal-body').append($(clone));
+        $('#padrino-modal').addClass('flash-error');
+        $('#padrino-modal .modal-header').addClass('alert-error');
+        $('#padrino-modal-title').append( $(form + ' input:submit').val() + ' : ' +$(form).attr('data-title') );
+        $('#padrino-modal-close').append($(this).attr('data-cancel'));
+        $('#padrino-modal-close').addClass('hide');
+
+        $(clone).append($('#padrino-modal-close').clone().removeClass('hide'));
+        $(clone).prepend("<h4>"+$(clone).attr('data-title')+"</h4>");
         $(clone).append("<div class='clearfix' />");
         // show modal
-        $('#deleter').modal('show');
-
+        $('#padrino-modal').modal('show');
     });
 });

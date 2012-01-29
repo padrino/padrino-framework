@@ -31,23 +31,18 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
       div class="fluid-content"
         - [:error, :warning, :success].each do |type|
           - next if flash[type].blank?
-          div id='flash-result' class='modal hide fade flash-#{type}'
-            div class="modal-header alert alert-#{type}"
-              a href='#' class='close' data-dismiss='modal' &times;
-              h4 = type
-            div class="modal-body"
-              == flash[type]
-            div class="modal-footer"
-              a href="#" class="btn" data-dismiss="modal" Close
+          div id='flash-result' class='#{type}'
+            h4 = type
+            == flash[type]
 
         / modal to delete
-        div id='deleter' class='modal hide fade'
-          div class="modal-header alert alert-error"
+        div id='padrino-modal' class='modal hide fade'
+          div class="modal-header alert"
             a href='#' class='close' data-dismiss='modal' &times;
-            h5 id='deleter-title'
-          div class="modal-body" id='deleter-body'
+            h5 id='padrino-modal-title'
+          div class="modal-body" id='padrino-modal-body'
           div class="modal-footer"
-            a href="#" id='deleter-close' class="btn  pull-right hide" data-dismiss="modal"
+            a href="#" id='padrino-modal-close' class="btn  pull-right" data-dismiss="modal"
 
         == yield
     footer
