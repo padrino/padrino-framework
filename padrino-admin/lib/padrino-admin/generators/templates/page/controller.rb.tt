@@ -27,7 +27,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   get :edit, :with => :id do
-    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id], 'Edit'
+    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id],  t_admin(:edit)
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     render '<%= @orm.name_plural %>/edit'
   end
