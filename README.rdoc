@@ -1,3 +1,5 @@
+== Edit by WaYdotNET
+I've not update haml generator of padrino-admin (not work now.. in the next day work :D)
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on
