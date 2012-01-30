@@ -8,6 +8,8 @@
 <%- end -%>
 
 .actions
+  =f.submit t_admin(:save), :class => 'btn primary'
+  &nbsp;
   =f.submit t_admin(:save_and_continue), :class => 'btn primary', :name => 'save_and_continue'
-  =f.submit t_admin(:save), :class => 'btn default'
+  &nbsp;
   =f.submit t_admin(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn default'

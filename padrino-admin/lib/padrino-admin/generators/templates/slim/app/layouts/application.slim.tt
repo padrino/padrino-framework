@@ -35,7 +35,6 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
             h4 = type
             == flash[type]
 
-        / modal to delete
         div id='padrino-modal' class='modal hide fade'
           div class="modal-header alert"
             a href='#' class='close' data-dismiss='modal' &times;

@@ -10,7 +10,7 @@
     =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
     =stylesheet_link_tag :tables
     =javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min', 'tables-1.8.2.min', 'application'
-    =javascript_include_tag %w[bootstrap/alerts bootstrap/modal bootstrap/tabs bootstrap/twipsy]
+    =javascript_include_tag %w[bootstrap/bootstrap-alerts bootstrap/bootstrap-modal bootstrap/bootstrap-tabs bootstrap/bootstrap-twipsy]
 
   %body
     .topbar
@@ -32,8 +32,10 @@
           =flash[type]
       -if sidebar = yield_content(:sidebar)
         .sidebar=sidebar
+        .content=breadcrumbs settings.breadcrumbs, true
         .content=yield
       -else
+        .content-fluid=breadcrumbs settings.breadcrumbs, true
         .content-fluid=yield
     %footer
       %p.center-block

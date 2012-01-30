@@ -1,4 +1,8 @@
 Admin.controllers :<%= @orm.name_plural %> do
+  before do
+    settings.breadcrumbs.reset
+    settings.breadcrumbs.add :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :index), t_model(:<%= @orm.name_singular %>)
+  end
 
   before do
     settings.breadcrumbs.reset

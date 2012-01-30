@@ -16,7 +16,14 @@
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr
           <%- @orm.columns.each_with_index do |column, i| -%>
+          <%- if column.name == "created_at" || column.name == "updated_at" -%>
+          %td=time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
+          <%- elsif column.type == :boolean -%>
+          %td= tof <%= @orm.name_singular %>.<%= column.name %>
+          <%- else -%>
+          <%- else -%>
           %td=<%= @orm.name_singular %>.<%= column.name %>
+          <%- end -%>
           <%- end -%>
           %td.action
             =button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) { submit_tag t_admin(:edit), :class =>'btn primary' }
