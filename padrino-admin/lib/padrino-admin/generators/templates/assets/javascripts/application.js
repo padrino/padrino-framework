@@ -1,8 +1,5 @@
-
-
 $(function(){
     function openModal(source, title_tag, type,close) {
-        // clearModal();
         $('#padrino-modal-title').append($(source + ' ' + title_tag).html());
         $(source + ' ' + title_tag).remove();
         $('#padrino-modal-body').append($(source).html());
@@ -13,12 +10,7 @@ $(function(){
         $('#padrino-modal').modal('show');
     };
 
-    function clearModal(){
-        $('#padrino-modal-title').empty();
-        $('#padrino-modal-body').empty();
-        $('#padrino-modal-close').empty();
 
-    };
     // Form validation color
     $('.invalid').parent().each(function(){
         $(this).parent().addClass('error');
@@ -36,6 +28,9 @@ $(function(){
         $('#padrino-modal-title').empty();
         $('#padrino-modal-body').empty();
         $('#padrino-modal-close').empty();
+        $('#padrino-modal').removeClass('flash-error');
+        $('#padrino-modal').removeClass('flash-warning');
+        $('#padrino-modal').removeClass('flash-success');
     });
 
     // i need to fix
