@@ -1,6 +1,7 @@
 # before_install: sudo apt-get install redis-server libmemcache-dev memcached
 install:
   - gem update --system
+  - bundle update
 rvm:
   - 1.8.7
   - 1.9.2
