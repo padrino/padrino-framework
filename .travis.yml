@@ -1,5 +1,4 @@
-# http://about.travis-ci.org/docs/user/build-configuration/
-before_install: apt-get install redis-server libmemcache-dev memcached
+before_install: sudo apt-get install redis-server libmemcache-dev memcached
 install:
   - gem update --system
 rvm:
