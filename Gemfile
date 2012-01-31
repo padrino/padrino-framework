@@ -45,14 +45,12 @@ group :development do
 end
 
 group :cache do
-  # TODO: enable and fix in travis-ci
-  gem "redis",     ">= 2.0.0" unless ENV['TRAVIS']
-  gem "mongo",     ">= 1.3.1"
+  gem "redis", ">= 2.0.0"
+  gem "mongo", ">= 1.3.1"
   platforms :mri do
     gem "bson_ext",  ">= 1.3.1"
     gem 'dalli',     ">= 1.0.2"
-    # TODO: enable and fix in travis-ci
-    gem "memcached", ">= 0.20.1" unless ENV['TRAVIS']
+    gem "memcached", ">= 0.20.1"
   end
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
