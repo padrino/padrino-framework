@@ -1,5 +1,15 @@
-== Edit by WaYdotNET
-I've not update haml generator of padrino-admin (not work now.. in the next day work :D)
+== (Padrino Admin TwitterBootstrap 2.0)
+* Padrino-Modal: rack-flash and delete function into modal :D
+* highlights error field
+* tof helper: Automatic replace true or false with relative image (list.slim and list.haml)
+* Breadcrumbs
+* Automatic time_ago_in_words when column model is created_at or updated_at
+* Migrate function for MiniRecord
+
+
+=== By WaYdotNET
+
+
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on
