@@ -3,6 +3,7 @@
 
 .carousel {
   position: relative;
+  margin-bottom: @baseLineHeight;
   line-height: 1;
 }
 
@@ -20,15 +21,21 @@
     .transition(.6s ease-in-out left);
   }
 
-  .active, 
-  .next, 
+  // Account for jankitude on images
+  .item > img {
+    display: block;
+    line-height: 1;
+  }
+
+  .active,
+  .next,
   .prev { display: block; }
 
   .active {
     left: 0;
   }
 
-  .next, 
+  .next,
   .prev {
     position: absolute;
     top: 0;
@@ -41,7 +48,7 @@
   .prev {
     left: -100%;
   }
-  .next.left, 
+  .next.left,
   .prev.right {
     left: 0;
   }
@@ -68,13 +75,19 @@
   font-size: 60px;
   font-weight: 100;
   line-height: 30px;
-  color: #fff;
+  color: @white;
   text-align: center;
   background: @grayDarker;
-  border: 3px solid #fff;
+  border: 3px solid @white;
   .border-radius(23px);
   .opacity(50);
-  .transition(all .2s linear);
+
+  // we can't have this transition here
+  // because webkit cancels the carousel
+  // animation if you trip this while
+  // in the middle of another animation
+  // ;_;
+  // .transition(opacity .2s linear);
 
   // Reposition the right one
   &.right {
