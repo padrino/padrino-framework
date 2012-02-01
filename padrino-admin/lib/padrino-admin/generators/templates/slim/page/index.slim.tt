@@ -1,6 +1,6 @@
 h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
 
-ul class="nav tabs"
+ul class="nav nav-tabs"
   li class="active" == link_to t_admin(:list), url(:<%= @orm.name_plural %>, :index)
   li == link_to t_admin(:new), url(:<%= @orm.name_plural %>, :new)
 
@@ -25,6 +25,6 @@ div class="tabs-content"
           <%- end -%>
           <%- end -%>
           td class="action"
-            == button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) { submit_tag t_admin(:edit), :class =>'btn primary' }
-            == button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-title"=>"#{pat(:confirm)}",  "data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag t_admin(:delete), :class =>'btn danger pull-left' }
-            == submit_tag t_admin(:delete), :class =>'btn_delete btn danger pull-left',"data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-cancel" => "#{t_admin(:cancel)}"
+            == button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) { submit_tag t_admin(:edit), :class =>'btn btn-primary' }
+            == button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-title"=>"#{pat(:confirm)}",  "data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag t_admin(:delete), :class =>'btn btn-danger pull-left' }
+            == submit_tag t_admin(:delete), :class =>'btn_delete btn btn-danger pull-left',"data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-cancel" => "#{t_admin(:cancel)}"

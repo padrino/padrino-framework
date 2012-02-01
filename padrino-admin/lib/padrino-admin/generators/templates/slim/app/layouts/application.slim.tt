@@ -12,9 +12,9 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     == javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   body
-    div class='navbar navbar-fixed'
+    div class='navbar navbar-fixed-top'
       div class='navbar-inner'
-        div class='fluid-container'
+        div class='container-fluid'
           == link_to 'Padrino Admin', url(:base_index), :class => 'brand'
           ul class="nav pull-left"
             - project_modules.each do |project_module|
@@ -24,32 +24,33 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
             li == link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
             li == button_to 'Logout', url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
     - sidebar = yield_content(:sidebar)
-    div class="fluid-container" class={'sidebar-left' if sidebar}
-      - if sidebar
-        div class="fluid-sidebar" == sidebar
-      div class='fluid-content '== breadcrumbs settings.breadcrumbs, true
-      div class="fluid-content"
-        - [:error, :warning, :success].each do |type|
-          - next if flash[type].blank?
-          div id='flash-result' class='#{type}'
-            h4 = type
-            == flash[type]
+    div class="container-fluid"
+      div class='row-fluid'
+        - if sidebar
+          div class="span2" == sidebar
+        div class={'span10' if sidebar}
+          == breadcrumbs settings.breadcrumbs, true
+          - [:error, :warning, :success].each do |type|
+            - next if flash[type].blank?
+            div id='flash-result' class='#{type}'
+              h4 = type
+              == flash[type]
 
-        div id='padrino-modal' class='modal hide fade'
-          div class="modal-header alert"
-            a href='#' class='close' data-dismiss='modal' &times;
-            h5 id='padrino-modal-title'
-          div class="modal-body" id='padrino-modal-body'
-          div class="modal-footer"
-            a href="#" id='padrino-modal-close' class="btn  pull-right" data-dismiss="modal"
+          div id='padrino-modal' class='modal hide fade'
+            div class="modal-header alert"
+              a href='#' class='close' data-dismiss='modal' &times;
+              h5 id='padrino-modal-title'
+            div class="modal-body" id='padrino-modal-body'
+            div class="modal-footer"
+              a href="#" id='padrino-modal-close' class="btn  pull-right" data-dismiss="modal"
 
-        == yield
-    footer
-      p class="center-block"
-        | Copyright &copy; #{Time.now.year} Your Site -
-        b Powered by Padrino v.#{Padrino.version}
-        p
-          == link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
-          == link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
-          == link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
-          == link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
+          == yield
+      footer
+        p class="center-block"
+          | Copyright &copy; #{Time.now.year} Your Site -
+          b Powered by Padrino v.#{Padrino.version}
+          p
+            == link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
+            == link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
+            == link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
+            == link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
