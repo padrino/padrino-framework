@@ -38,8 +38,8 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
 
           div id='padrino-modal' class='modal hide fade'
             div class="modal-header alert"
-              a href='#' class='close' data-dismiss='modal' &times;
-              h5 id='padrino-modal-title'
+              a class='close' data-dismiss='modal' x
+              h3 id='padrino-modal-title'
             div class="modal-body" id='padrino-modal-body'
             div class="modal-footer"
               a href="#" id='padrino-modal-close' class="btn  pull-right" data-dismiss="modal"
