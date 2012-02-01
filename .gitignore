@@ -6,3 +6,5 @@ Gemfile.lock
 .rbx/
 doc/
 .DS_Store
+
+padrino-gen/lib/padrino-gen/generators/cli.rb
