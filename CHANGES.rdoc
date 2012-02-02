@@ -21,6 +21,8 @@
 * FIX #676 Adds support for trinidad web server on jruby
 * FIX #736 Logger refactoring to support other loggers (@skade)
 * NEW Adds alias 'escape_javascript' for 'js_escape_html' method
+* FIX Asset files from absolute paths should not have asset stamps associated
+* FIX Updated stylesheets initializers to respect spaces.
 
 == 0.10.5
 

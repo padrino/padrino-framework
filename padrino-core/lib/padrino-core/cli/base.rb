@@ -78,6 +78,7 @@ module Padrino
           require 'padrino-core/command'
           require 'padrino-gen/command'
           ARGV.shift
+          ARGV << 'help' if ARGV.empty?
           Padrino.bin_gen(*ARGV)
         rescue
           puts "<= You need padrino-gen! Run: gem install padrino-gen"
