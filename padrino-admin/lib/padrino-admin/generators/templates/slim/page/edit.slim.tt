@@ -1,10 +1,10 @@
 h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
 
-ul class="tabs"
+ul class="nav nav-tabs"
   li == link_to t_admin(:list), url(:<%= @orm.name_plural %>, :index)
   li == link_to t_admin(:new), url(:<%= @orm.name_plural %>, :new)
   li class="active" == link_to t_admin(:edit), url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
 
 div class="tabs-content"
-  - form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :update, :id => @<%= @orm.name_singular %>.id), :method => :put, :class => 'form-stacked' do |f|
+  - form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :update, :id => @<%= @orm.name_singular %>.id), :method => :put, :class => 'form-horizontal' do |f|
     == partial '<%= @orm.name_plural %>/form', :locals => { :f => f }

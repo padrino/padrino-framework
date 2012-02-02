@@ -338,27 +338,24 @@ module Padrino
       # @api semipublic
       def asset_path(kind, source)
         return source if source =~ /^http/
-        asset_folder  = case kind
-          when :css then 'stylesheets'
-          when :js  then 'javascripts'
-          else kind.to_s
-        end
+        is_absolute  = source =~ %r{^/}
+        asset_folder = asset_folder_name(kind)
         source = source.to_s.gsub(/\s/, '%20')
-        ignore_extension = (asset_folder.to_s == kind.to_s) # don't append extension
+        ignore_extension = (asset_folder.to_s == kind.to_s) # don't append an extension
         source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
-        result_path   = source if source =~ %r{^/} # absolute path
-        result_path ||= uri_root_path(asset_folder, source)
-        timestamp = asset_timestamp(result_path)
+        result_path = is_absolute ? source : uri_root_path(asset_folder, source)
+        timestamp = asset_timestamp(result_path, is_absolute)
         "#{result_path}#{timestamp}"
       end
 
       private
 
         ##
-        # Returns the uri root of the application.
+        # Returns the uri root of the application with optional paths appended.
         #
         # @example
-        #   uri_root_path("/some/path") => "/base/some/path"
+        #   uri_root_path("/some/path") => "/root/some/path"
+        #   uri_root_path("javascripts", "test.js") => "/uri/root/javascripts/test.js"
         #
         def uri_root_path(*paths)
           root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
@@ -370,13 +367,30 @@ module Padrino
         #
         # @example
         #   asset_timestamp("some/path/to/file.png") => "?154543678"
+        #   asset_timestamp("/some/absolute/path.png", true) => nil
         #
-        def asset_timestamp(file_path)
+        def asset_timestamp(file_path, absolute=false)
           return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
-          public_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
-          stamp = Time.now.to_i unless public_path && File.exist?(public_path)
-          stamp ||= File.mtime(public_path).to_i
-          "?#{stamp}"
+          public_file_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
+          stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
+          stamp ||= Time.now.to_i unless absolute
+          "?#{stamp}" if stamp
+        end
+
+        ###
+        # Returns the asset folder given a kind.
+        #
+        # @example
+        #   asset_folder_name(:css) => 'stylesheets'
+        #   asset_folder_name(:js)  => 'javascripts'
+        #   asset_folder_name(:images) => 'images'
+        #
+        def asset_folder_name(kind)
+          case kind
+          when :css then 'stylesheets'
+          when :js  then 'javascripts'
+          else kind.to_s
+          end
         end
 
         ##

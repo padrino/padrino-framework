@@ -1,3 +1,53 @@
+== (Padrino Admin TwitterBootstrap 2.0)
+* Padrino-Modal: rack-flash and delete function into modal :D
+* highlights error field
+* tof helper: Automatic replace true or false with relative image (list.slim and list.haml)
+* Breadcrumbs
+* Automatic time_ago_in_words when column model is created_at or updated_at
+* Migrate function for MiniRecord
+
+==== Padrino-Modal
+All result from rack-flash and delete request, now is automatic insert into modal javascript plugin
+
+http://padrino.waydotnet.com/images/modal1.jpg
+http://padrino.waydotnet.com/images/modal2.jpg
+http://padrino.waydotnet.com/images/modal3.jpg
+
+==== highlights error field
+
+http://padrino.waydotnet.com/images/error.jpg
+
+==== tof_helper
+Automatic replace true or false with relative image (list.slim and list.haml)
+
+http://padrino.waydotnet.com/images/tof.jpg
+
+==== Breadcrumbs
+Automatic Breadcrumbs system:
+
+http://padrino.waydotnet.com/images/bread1.jpg
+
+http://padrino.waydotnet.com/images/bread2.jpg
+
+==== time_ago_in_words
+Automatic time_ago_in_words when column model is created_at or updated_at
+
+http://padrino.waydotnet.com/images/time.jpg
+
+==== MiniRecord migrate
+Migrate function for MiniRecord
+
+http://padrino.waydotnet.com/images/mini_record.jpg
+
+
+=== Demo:
+  http://padrino.waydotnet.com/admin
+  user: test@padrinorb.cpm
+  password: test
+
+=== By WaYdotNET
+
+
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on

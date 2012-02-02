@@ -8,41 +8,54 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
     =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
-    =stylesheet_link_tag :tables
-    =javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min', 'tables-1.8.2.min', 'application'
-    =javascript_include_tag %w[bootstrap/alerts bootstrap/modal bootstrap/tabs bootstrap/twipsy]
+    =javascript_include_tag 'jquery-1.7.1.min', 'less-1.2.1.min', 'application'
+    /! Twitter Bootstrap
+    =javascript_include_tag %w[bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse]
+    =javascript_include_tag %w[bootstrap/bootstrap-dropdown bootstrap/bootstrap-modal bootstrap/bootstrap-tooltip bootstrap/bootstrap-scrollspy]
+    =javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   %body
-    .topbar
-      .topbar-inner
+    .navbar.navbar-fixed-top
+      .navbar-inner
         .container-fluid
           =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
-          %ul.nav
-            -project_modules.each do |project_module|
+          %u.nav.pull-left
+            - project_modules.each do |project_module|
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
-          %ul.nav.secondary-nav
+          %ul.nav.pull-right
             %li=link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
-            %li=button_to 'Logout', url(:sessions, :destroy), :method => :delete
+            %li=button_to 'Logout', url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
+    - sidebar = yield_content(:sidebar)
     .container-fluid
-      -[:error, :warning, :success].each do |type|
-        -next if flash[type].blank?
-        .alert-message(class=type data-alert=true)
-          =link_to '&times;', '#', :class => :close
-          =flash[type]
-      -if sidebar = yield_content(:sidebar)
-        .sidebar=sidebar
-        .content=yield
-      -else
-        .content-fluid=yield
-    %footer
-      %p.center-block
-        Copyright &copy;
-        =Time.now.year
-        YourSite -
-        %b Powered by Padrino v.#{Padrino.version}
-        %p
-          =link_to 'Padrino Web', 'http://www.padrinorb.com', :target => :_blank
-          =link_to 'Padrino Blog', 'http://www.padrinorb.com/blog', :target => :_blank
-          =link_to 'Padrino Code', 'https://github.com/padrino/padrino-framework', :target => :_blank
-          =link_to 'Padrino Twitter', 'http://twitter.com/padrinorb', :target => :_blank
+      .row-fluid
+        - if sidebar
+          .span2=sidebar
+        %div{:class => ('span10' if sidebar)}
+          =breadcrumbs settings.breadcrumbs, true
+          -[:error, :warning, :success].each do |type|
+            -next if flash[type].blank?
+            #flash-result(class=type)
+              %h4=type
+              =flash[type]
+
+          #padrino-modal.modal.hide.fade
+            .modal-header
+              %a.close{:data => {:dismiss => 'modal'}} x
+              %h3#padrino-modal-title
+            #padrino-modal-body.modal-body
+            .modal-footer
+              %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
+
+          =yield
+      %footer
+        %p.center-block
+          Copyright &copy;
+          =Time.now.year
+          Your Site -
+          %b Powered by Padrino v.#{Padrino.version}
+          %p
+            =link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
+            =link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
+            =link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
+            =link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank

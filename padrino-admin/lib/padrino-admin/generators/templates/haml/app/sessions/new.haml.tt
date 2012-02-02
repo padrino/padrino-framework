@@ -8,21 +8,29 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
     =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
-    =javascript_include_tag 'jquery-1.6.4.min', 'less-1.1.3.min'
+    =javascript_include_tag 'jquery-1.7.1.min', 'less-1.2.1.min'
+
 
   %body
-    .login
-      .logo=image_tag 'logo.jpg'
-      -form_tag url(:sessions, :create) do
-        =[:error, :warning, :success].map { |type| flash_tag(type, :class => "alert-message #{type}") }.join
-        .clearfix
-          %label(for="email") Login
-          .input=text_field_tag :email, :value => params[:email]
-        .clearfix
-          %label(for="password") Password
-          .input=password_field_tag :password, :value => params[:password]
-        .clearfix
-          %label Bypass login?
-          .input=check_box_tag :bypass
-        .actions
-          .input=submit_tag('Sign In', :class => 'btn')
+  - form_tag url(:sessions, :create), :class=>'form-horizontal' do
+    #padrino-modal.login
+      .modal-header
+        .logo=image_tag 'logo.jpg'
+      #padrino-modal-body.modal-body
+        =[:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}") }.join
+
+        %fieldset.control-group
+          %label.control-label{:for=>"email"} Login
+          .controls=text_field_tag :email, :value => params[:email]
+        %fieldset.control-group
+          %label.control-label{:for=>'password'} Password
+          .controls=password_field_tag :password, :value => params[:password]
+        %fieldset.control-group
+          %label.control-label
+          .controls
+            %label.checkbox
+              =check_box_tag :bypass
+              Bypass login?
+
+      .modal-footer
+        =submit_tag('Sign In', :class => 'btn pull-right')

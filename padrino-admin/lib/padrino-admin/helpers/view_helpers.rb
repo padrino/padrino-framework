@@ -69,6 +69,13 @@ module Padrino
         alias :t_model :model_translate
         alias :mt :t_model
 
+        ##
+        # Replace true or false with relative image
+        #
+        def tof(status)
+          status ? (image_tag "buttons/tick.png") : (image_tag "buttons/cross.png")
+        end
+
       end # ViewHelpers
     end # Helpers
   end # Admin

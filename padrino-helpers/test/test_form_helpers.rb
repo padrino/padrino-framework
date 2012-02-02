@@ -749,7 +749,7 @@ describe "FormHelpers" do
 
     should "display image submit tag in ruby with absolute path" do
       actual_html = image_submit_tag('/system/ok.png', :class => 'success')
-      assert_has_tag(:input, :type => 'image', :class => "success", :src => "/system/ok.png?#{@stamp}") { actual_html }
+      assert_has_tag(:input, :type => 'image', :class => "success", :src => "/system/ok.png") { actual_html }
     end
 
     should "display image submit tag in erb" do
