@@ -7,7 +7,7 @@ rvm:
   - 1.9.2
   - 1.9.3
   - ree
-  - rbx
+  - rbx-19mode
   - ruby-head
 
 notifications:
