@@ -42,8 +42,9 @@ if defined?(ActiveRecord)
               Dir.mkdir File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
               ActiveRecord::Base.establish_connection(config)
               ActiveRecord::Base.connection
-            rescue
-              $stderr.puts $!, *($!.backtrace)
+            rescue StandardError => e
+              $stderr.puts *(e.backtrace)
+              $stderr.puts e.inspect
               $stderr.puts "Couldn't create database for #{config.inspect}"
             end
           end
@@ -62,8 +63,9 @@ if defined?(ActiveRecord)
             ActiveRecord::Base.establish_connection(config.merge(:database => nil))
             ActiveRecord::Base.connection.create_database(config[:database], creation_options)
             ActiveRecord::Base.establish_connection(config)
-          rescue
-            $stderr.puts $!
+          rescue StandardError => e
+            $stderr.puts *(e.backtrace)
+            $stderr.puts e.inspect
             $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
             $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
           end
@@ -73,8 +75,9 @@ if defined?(ActiveRecord)
             ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
             ActiveRecord::Base.connection.create_database(config[:database], config.merge(:encoding => @encoding))
             ActiveRecord::Base.establish_connection(config)
-          rescue
-            $stderr.puts $!, *($!.backtrace)
+          rescue StandardError => e
+            $stderr.puts *(e.backtrace)
+            $stderr.puts e.inspect
             $stderr.puts "Couldn't create database for #{config.inspect}"
           end
         end
@@ -92,8 +95,10 @@ if defined?(ActiveRecord)
           begin
             # Only connect to local databases
             local_database?(config) { drop_database(config) }
-          rescue Exception => e
-            puts "Couldn't drop #{config[:database]} : #{e.inspect}"
+          rescue StandardError => e
+            $stderr.puts *(e.backtrace)
+            $stderr.puts e.inspect
+            $stderr.puts "Couldn't drop #{config[:database]}"
           end
         end
       end
@@ -104,8 +109,10 @@ if defined?(ActiveRecord)
       config = ActiveRecord::Base.configurations[Padrino.env || :development]
       begin
         drop_database(config)
-      rescue Exception => e
-        puts "Couldn't drop #{config[:database]} : #{e.inspect}"
+      rescue StandardError => e
+        $stderr.puts *(e.backtrace)
+        $stderr.puts e.inspect
+        $stderr.puts "Couldn't drop #{config[:database]}"
       end
     end
 
