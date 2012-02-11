@@ -149,6 +149,7 @@ MIGRATION
 AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|
   !FIELDS!
+  t.timestamps
 end
 MIGRATION
 
