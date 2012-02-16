@@ -60,6 +60,9 @@ module Padrino
               logger.debug "SET Fragment", began_at, key.to_s if defined?(logger)
               concat_content(value)
             end
+          else
+            value = capture_html(&block)
+            concat_content(value)   
           end
         end
       end # Fragment
