@@ -134,6 +134,7 @@ def create_model_file(name, options={})
   create_file(model_path, model_contents,:skip => true)
 end
 
+
 AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration
   def self.up
@@ -149,6 +150,7 @@ MIGRATION
 AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|
   !FIELDS!
+  t.timestamps
 end
 MIGRATION
 

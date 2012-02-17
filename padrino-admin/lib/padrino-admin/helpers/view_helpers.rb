@@ -42,8 +42,8 @@ module Padrino
         # @return [String] The translated attribute name for the current locale.
         #
         # @example
-        #   # => t("models.account.email", :default => "Email")
-        #   t_attr(:account, :email)
+        #   # => t("models.account.attributes.email", :default => "Email")
+        #   mat(:account, :email)
         #
         def model_attribute_translate(model, attribute)
           t("models.#{model}.attributes.#{attribute}", :default => attribute.to_s.humanize)

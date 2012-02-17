@@ -29,7 +29,7 @@ module Padrino
             # If we are outside app we need to load support_lite
             require 'padrino-core/support_lite' unless defined?(SupportLite)
           end
-        rescue Exception => e
+        rescue StandardError => e
           puts "=> Problem loading #{boot}"
           puts ["=> #{e.message}", *e.backtrace].join("\n  ")
         ensure
