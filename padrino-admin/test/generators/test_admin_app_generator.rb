@@ -59,6 +59,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
+      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do

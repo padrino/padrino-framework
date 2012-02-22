@@ -80,6 +80,11 @@ describe "ModelGenerator" do
 
   # ACTIVERECORD
   context "model generator using activerecord" do
+    should "add activerecord middleware" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
+      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
+    end
+
     should "generate model file" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
@@ -122,9 +127,14 @@ describe "ModelGenerator" do
     should "generate hooks for auto upgrade" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
       assert_match_in_file(
-        "Padrino.after_load do\n  ActiveRecord::Base.descendants.each(&:auto_upgrade!)",
+        "Padrino.after_load do\n  ActiveRecord::Base.auto_upgrade!",
         "#{@apptmp}/sample_project/config/boot.rb"
       )
+    end
+
+    should "add activerecord middleware" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
+      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
     end
 
     should "generate model file" do
