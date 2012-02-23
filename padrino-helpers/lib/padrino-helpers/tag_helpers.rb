@@ -181,8 +181,8 @@ module Padrino
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407">
       #
       # @api public
-      def tag(name, options = nil)
-        "<#{name}#{tag_options(options) if options}>"
+      def tag(name, options = nil, open = false)
+        "<#{name}#{tag_options(options) if options}#{open ? '>' : ' />'}"
       end
 
       private
