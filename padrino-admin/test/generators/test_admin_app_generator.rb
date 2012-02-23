@@ -59,7 +59,6 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
-      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do
@@ -157,6 +156,24 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
+    end
+
+    should 'not add activerecord middleware for #datamapper' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
+      assert_no_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
+    end
+
+    should 'add activerecord middleware for #activerecord' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
+    end
+
+    should 'add activerecord middleware for #mini_record' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=mini_record', '-e=haml') }
+      capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
     end
 
     should 'not conflict with existing seeds file' do
