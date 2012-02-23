@@ -85,7 +85,7 @@ if defined?(Mongoid)
 
         begin
           collection.rename("#{collection_name}_old")
-        rescue Exception => e
+        rescue StandardError => e
           puts "Unable to rename database #{collection_name} to #{collection_name}_old"
           puts "reason: #{e.message}\n\n"
         end
@@ -95,7 +95,7 @@ if defined?(Mongoid)
 
         begin
           new_collection.rename(collection_name)
-        rescue Exception => e
+        rescue StandardError => e
           puts "Unable to rename database #{new_collection.name} to #{collection_name}"
           puts "reason: #{e.message}\n\n"
         end

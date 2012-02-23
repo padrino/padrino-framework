@@ -1,4 +1,4 @@
-# before_install: sudo apt-get install redis-server libmemcache-dev memcached
+lang: ruby
 install:
   - gem update --system
   - bundle update
@@ -7,7 +7,6 @@ rvm:
   - 1.9.2
   - 1.9.3
   - ree
-  - rbx-19mode
   - ruby-head
 
 notifications:
