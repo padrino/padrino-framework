@@ -138,16 +138,16 @@ module Padrino
       #
       # @example
       #   input_tag :text, :name => 'handle'
-      #   # => <input type="test" name="handle">
+      #   # => <input type="test" name="handle" />
       #
       #   input_tag :password, :name => 'password', :size => 20
-      #   # => <input type="password" name="password" size="20">
+      #   # => <input type="password" name="password" size="20" />
       #
       #   input_tag :text, :name => 'username', :required => true, :autofocus => true
-      #   # => <input type="text" name="username" required autofocus>
+      #   # => <input type="text" name="username" required autofocus />
       #
       #   input_tag :number, :name => 'credit_card', :autocomplete => :off
-      #   # => <input type="number" autocomplete="off">
+      #   # => <input type="number" autocomplete="off" />
       #
       # @api semipublic
       def input_tag(type, options = {})
@@ -172,13 +172,13 @@ module Padrino
       #   # => <hr class="dotted">
       #
       #   tag :input, :name => 'username', :type => :text
-      #   # => <input name="username" type="text">
+      #   # => <input name="username" type="text" />
       #
       #   tag :img, :src => 'images/pony.jpg', :alt => 'My Little Pony'
-      #   # => <img src="images/pony.jpg" alt="My Little Pony">
+      #   # => <img src="images/pony.jpg" alt="My Little Pony" />
       #
       #   tag :img, :src => 'sinatra.jpg, :data => { :nsfw => false, :geo => [34.087, -118.407] }
-      #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407">
+      #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
       # @api public
       def tag(name, options = nil, open = false)
