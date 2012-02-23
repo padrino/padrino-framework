@@ -15,7 +15,7 @@ describe "FormatHelpers" do
   context 'for #simple_format method' do
     should "format simple text into html format" do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
-      assert_equal "<p>Here is some basic text...\n<br>...with a line break.</p>", actual_text
+      assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
     end
 
     should "format more text into html format" do
@@ -31,7 +31,7 @@ describe "FormatHelpers" do
     context 'wrapped in a custom tag' do
       should "format simple text into html format" do
         actual_text = simple_format("Here is some basic text...\n...with a line break.", :tag => :div)
-        assert_equal "<div>Here is some basic text...\n<br>...with a line break.</div>", actual_text
+        assert_equal "<div>Here is some basic text...\n<br />...with a line break.</div>", actual_text
       end
 
       should "format more text into html format" do

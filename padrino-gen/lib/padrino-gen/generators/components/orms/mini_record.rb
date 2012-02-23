@@ -102,7 +102,8 @@ def setup_orm
   end
   require_dependencies 'mini_record'
   create_file('config/database.rb', ar)
-  insert_hook('ActiveRecord::Base.descendants.each(&:auto_upgrade!)', :after_load)
+  insert_hook('ActiveRecord::Base.auto_upgrade!', :after_load)
+  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
 end
 
 MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)

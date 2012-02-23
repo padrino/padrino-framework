@@ -118,6 +118,7 @@ def setup_orm
     require_dependencies 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record'
+  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
 end
 
