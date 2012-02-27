@@ -15,6 +15,7 @@
     =javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   %body
+<<<<<<< HEAD
     .navbar.navbar-fixed-top
       .navbar-inner
         .container-fluid
@@ -24,7 +25,7 @@
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
           %ul.nav.pull-right
-            %li=link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
+            %li=link_to pat(:profile), url(:<%= options[:admin_model].underscore.pluralize %>, :edit, :id => current_account.id
             %li=button_to 'Logout', url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
     - sidebar = yield_content(:sidebar)
     .container-fluid
@@ -46,7 +47,6 @@
             #padrino-modal-body.modal-body
             .modal-footer
               %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
-
           =yield
       %footer
         %p.center-block

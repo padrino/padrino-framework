@@ -11,6 +11,7 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     == javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   body
+<<<<<<< HEAD
     div class='navbar navbar-fixed-top'
       div class='navbar-inner'
         div class='container-fluid'
@@ -20,8 +21,8 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
               li class={'active' if request.path_info =~ /^#{project_module.path}/}
                 == link_to project_module.human_name, project_module.path('/admin')
           ul class='nav pull-right'
-            li == link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
-            li == button_to 'Logout', url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
+            li == link_to pat(:profile), url(:<%= options[:admin_model].underscore.pluralize  %>, :edit, :id => current_account.id)
+            li == button_to pat(:logout', url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
     - sidebar = yield_content(:sidebar)
     div class="container-fluid"
       div class='row-fluid'
