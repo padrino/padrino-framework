@@ -11,7 +11,6 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     == javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   body
-<<<<<<< HEAD
     div class='navbar navbar-fixed-top'
       div class='navbar-inner'
         div class='container-fluid'

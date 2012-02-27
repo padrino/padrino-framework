@@ -15,7 +15,6 @@
     =javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
 
   %body
-<<<<<<< HEAD
     .navbar.navbar-fixed-top
       .navbar-inner
         .container-fluid
