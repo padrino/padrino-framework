@@ -76,6 +76,27 @@ module Padrino
           status ? (image_tag "buttons/tick.png") : (image_tag "buttons/cross.png")
         end
 
+        ##
+        # Icon's Bootstrap helper
+        #
+        # @param [String] word
+        #  The specified word to admin translate.
+        #
+        # @param [String] icon
+        #  The specified icon type
+        #
+        # @param [String] default
+        #   The default fallback if no word is available for the locale.
+        #
+        # @return [String] The translated word for the current locale
+        # with relative icon.
+        #
+        def t_admin_with_icon(word, icon='glass', default=nil)
+          content = content_tag(:i, '', :class=> "icon-#{icon}")
+          content << t_admin(word, default)
+        end
+        alias :t_icon :t_admin_with_icon
+
       end # ViewHelpers
     end # Helpers
   end # Admin
