@@ -11,7 +11,7 @@ require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
 require 'yaml' unless defined?(YAML)                        # load yaml for i18n
-require 'Win32/Console/ANSI' if RUBY_PLATFORM =~ /win32/    # ruby color suppor for win
+require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
 
 ##
 # This is an adapted version of active_support/core_ext/string/inflections.rb
