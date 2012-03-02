@@ -1,8 +1,8 @@
 %h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
 
 %ul.nav.nav-tabs
-  %li.active= link_to t_admin(:list), url(:<%= @orm.name_plural %>, :index)
-  %li=link_to t_admin(:new), url(:<%= @orm.name_plural %>, :new)
+  %li.active= link_to ti("list",t_admin(:list)), url(:<%= @orm.name_plural %>, :index)
+  %li=link_to ti("plus", t_admin(:new)), url(:<%= @orm.name_plural %>, :new)
 
 .tabs-content
   %table.table.zebra-striped
