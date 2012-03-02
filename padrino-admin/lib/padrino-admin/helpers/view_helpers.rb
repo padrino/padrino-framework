@@ -79,23 +79,23 @@ module Padrino
         ##
         # Icon's Bootstrap helper
         #
-        # @param [String] word
-        #  The specified word to admin translate.
-        #
         # @param [String] icon
         #  The specified icon type
         #
-        # @param [String] default
-        #   The default fallback if no word is available for the locale.
+        # @param [Symbol] tag
+        #   The HTML tag.
         #
-        # @return [String] The translated word for the current locale
-        # with relative icon.
+        # @return [String] html tag with prepend icon
         #
-        def t_admin_with_icon(word, icon='glass', default=nil)
+        # @example
+        #   ti( "edit", t_admin(:list))
+        #
+        def tag_icon(icon='glass',tag)
           content = content_tag(:i, '', :class=> "icon-#{icon}")
-          content << t_admin(word, default)
+          content << tag
         end
-        alias :t_icon :t_admin_with_icon
+        alias :t_icon :tag_icon
+        alias :ti :tag_icon
 
       end # ViewHelpers
     end # Helpers
