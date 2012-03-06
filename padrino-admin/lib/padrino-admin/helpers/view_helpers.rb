@@ -90,8 +90,8 @@ module Padrino
         # @example
         #   ti( "edit", t_admin(:list))
         #
-        def tag_icon(icon='glass',tag)
-          content = content_tag(:i, '', :class=> "icon-#{icon}")
+        def tag_icon(icon,tag)
+          content = content_tag(:i, "", :class=> "icon-#{icon}")
           content << tag
         end
         alias :t_icon :tag_icon
