@@ -17,6 +17,11 @@ describe "TagHelpers" do
       assert_has_tag(:a, 'data-remote' => 'true', 'data-method' => 'post') { actual_html }
     end
 
+    should "support nested data attributes" do
+      actual_html = tag(:div, {:dojo => {:type => 'dijit.form.TextBox', :props => 'readOnly: true'}})
+      assert_has_tag(:div, 'data-dojo-type' => 'dijit.form.TextBox', 'data-dojo-props' => 'readOnly: true') { actual_html }
+    end
+
     should "escape html" do
       actual_html = tag(:br, :class => 'Example "bar"')
       assert_equal "<br class=\"Example &quot;bar&quot;\">", actual_html
