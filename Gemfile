@@ -31,9 +31,8 @@ group :development do
   gem "builder",   ">= 2.1.2"
   gem "bcrypt-ruby", :require => "bcrypt"
   platforms :mri_18 do
-    gem "ruby-debug"
-    gem "rcov",         "~> 0.9.8"
-    gem "ruby-prof",    ">= 0.9.1"
+    # gem "rcov",         "~> 0.9.8"
+    # gem "ruby-prof",    ">= 0.9.1"
     gem "system_timer", ">= 1.0"
   end
   platforms :jruby do

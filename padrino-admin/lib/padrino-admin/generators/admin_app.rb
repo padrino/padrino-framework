@@ -59,6 +59,7 @@ module Padrino
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
+          insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
 
           account_params = [
             options[:admin_model].underscore, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
@@ -103,10 +104,13 @@ module Padrino
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
-          add_project_module :accounts
+          model_singular = options[:admin_model].underscore
+          model_plural = model_singular.pluralize
+
+          add_project_module model_plural
           require_dependencies('bcrypt-ruby', :require => 'bcrypt')
-          gsub_file destination_root("admin/views/accounts/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
-          gsub_file destination_root("admin/controllers/accounts.rb"), "if account.destroy", "if account != current_account && account.destroy"
+          gsub_file destination_root("admin/views/#{model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          gsub_file destination_root("admin/controllers/#{model_plural}.rb"), "if #{model_singular}.destroy", "if #{model_singular} != current_account && #{model_singular}.destroy"
           return if self.behavior == :revoke
 
           instructions = []

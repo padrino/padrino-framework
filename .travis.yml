@@ -1,4 +1,4 @@
-# before_install: sudo apt-get install redis-server libmemcache-dev memcached
+lang: ruby
 install:
   - gem update --system
   - bundle update
