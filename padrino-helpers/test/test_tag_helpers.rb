@@ -27,7 +27,7 @@ describe "TagHelpers" do
     end
 
     should "support nested data attributes" do
-      actual_html = tag(:div, {:dojo => {:type => 'dijit.form.TextBox', :props => 'readOnly: true'}})
+      actual_html = tag(:div, :data => {:dojo => {:type => 'dijit.form.TextBox', :props => 'readOnly: true'}})
       assert_has_tag(:div, 'data-dojo-type' => 'dijit.form.TextBox', 'data-dojo-props' => 'readOnly: true') { actual_html }
     end
     
