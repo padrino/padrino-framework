@@ -16,6 +16,7 @@ LESS_INIT = <<-LESS unless defined?(LESS_INIT)
 LESS
 
 def setup_stylesheet
+  require_dependencies 'less'
   require_dependencies 'rack-less'
   initializer :less, LESS_INIT
   empty_directory destination_root('/app/stylesheets')
