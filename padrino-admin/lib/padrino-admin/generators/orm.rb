@@ -25,6 +25,13 @@ module Padrino
           raise OrmError, "Model '#{klass_name}' could not be found!" if @columns.nil? && @klass.nil?
         end
 
+        def activerecord?
+          case orm
+          when :activerecord, :mini_record then true
+          else false
+          end
+        end
+
         def field_type(type)
           type = :string if type.nil? # couchrest-Hack to avoid the next line to fail
           type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
