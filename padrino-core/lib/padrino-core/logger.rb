@@ -368,8 +368,6 @@ module Padrino
       @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
 
-    
-
     ##
     # Padrino::Loggger::Rack forwards every request to an +app+ given, and
     # logs a line in the Apache common log format to the +logger+, or
@@ -391,28 +389,28 @@ module Padrino
       end
 
       private
-        def log(env, status, header, began_at)
-          return if env['sinatra.static_file'] and !logger.log_static
-          logger.bench(
-            env["REQUEST_METHOD"],
-            began_at,
-            [
-              @uri_root.to_s,
-              env["PATH_INFO"],
-              env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
-              ' - ',
-              logger.colorize(status.to_s[0..3], :bold),
-              ' ',
-              code_to_name(status)
-            ] * '',
-            :debug,
-            :magenta
-          )
-        end
+      def log(env, status, header, began_at)
+        return if env['sinatra.static_file'] && (!logger.respond_to?(:log_static) || !logger.log_static)
+        logger.bench(
+          env["REQUEST_METHOD"],
+          began_at,
+          [
+            @uri_root.to_s,
+            env["PATH_INFO"],
+            env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
+            ' - ',
+            logger.colorize(status.to_s[0..3], :bold),
+            ' ',
+            code_to_name(status)
+          ] * '',
+          :debug,
+          :magenta
+        )
+      end
 
-        def code_to_name(status)
-          ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
-        end
+      def code_to_name(status)
+        ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
+      end
     end # Rack
   end # Logger
 end # Padrino
