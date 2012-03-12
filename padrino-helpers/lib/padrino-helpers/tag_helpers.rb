@@ -28,6 +28,12 @@ module Padrino
         :selected
       ]
 
+      DATA_ATTRIBUTES = [
+        :method,
+        :remote,
+        :confirm
+      ]
+
       ##
       # Creates an HTML tag with given name, content, and options
       #
@@ -92,7 +98,9 @@ module Padrino
 
         content = content.join("\n") if content.respond_to?(:join)
 
-        output = "<#{name}#{tag_options(options) if options}>#{content}</#{name}>"
+        options    = parse_data_options(name, options)
+        attributes = tag_attributes(options)
+        output = "<#{name}#{attributes}>#{content}</#{name}>"
         block_is_template?(block) ? concat_content(output) : output
       end
 
@@ -182,34 +190,35 @@ module Padrino
       #
       # @api public
       def tag(name, options = nil, open = false)
-        "<#{name}#{tag_options(options) if options}#{open ? '>' : ' />'}"
+        options    = parse_data_options(name, options)
+        attributes = tag_attributes(options)
+        "<#{name}#{attributes}#{open ? '>' : ' />'}"
       end
 
       private
       ##
       # Returns a compiled list of HTML attributes
       ##
-      def tag_options(options)
-        return if options.blank?
-        attributes = []
-        options.each do |attribute, value|
-          next if value.nil? || value == false
-          if value.is_a?(Hash)
-            attributes << nested_values(attribute, value)
-          elsif BOOLEAN_ATTRIBUTES.include?(attribute)
-            attributes << attribute.to_s
+      def tag_attributes(options)
+        return '' if options.nil?
+        attributes = options.map do |k, v|
+          next if v.nil? || v == false
+          if v.is_a?(Hash)
+            nested_values(k, v)
+          elsif BOOLEAN_ATTRIBUTES.include?(k)
+            k.to_s
           else
-            attributes << %(#{attribute}="#{escape_value(value)}")
+            %(#{k}="#{escape_value(v)}")
           end
-        end
-        " #{attributes.join(' ')}"
+        end.compact
+        attributes.empty? ? '' : " #{attributes * ' '}"
       end
 
       ##
       # Escape tag values to their HTML/XML entities.
       ##
       def escape_value(string)
-        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)){|c| ESCAPE_VALUES[c] }
+        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)) { |c| ESCAPE_VALUES[c] }
       end
 
       ##
@@ -223,6 +232,20 @@ module Padrino
             %(#{attribute}-#{k.to_s.dasherize}="#{escape_value(v)}")
           end
         end * ' '
+      end
+
+      ##
+      # Parses custom data attributes
+      #
+      def parse_data_options(tag, options)
+        return if options.nil?
+        options = options.dup
+        options.each do |k, v|
+          next if !DATA_ATTRIBUTES.include?(k) || (tag.to_s == 'form' && k == :method)
+          options["data-#{k}"] = options.delete(k)
+          options[:rel] = 'nofollow' if k == :method
+        end
+        options
       end
     end # TagHelpers
   end # Helpers

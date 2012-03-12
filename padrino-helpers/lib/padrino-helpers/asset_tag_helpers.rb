@@ -70,7 +70,6 @@ module Padrino
       # @api public
       def link_to(*args, &block)
         options = args.extract_options!
-        options = parse_js_attributes(options) # parses remote, method and confirm options
         anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
 
         if block_given?
@@ -354,86 +353,65 @@ module Padrino
       end
 
       private
+      ##
+      # Returns the uri root of the application with optional paths appended.
+      #
+      # @example
+      #   uri_root_path("/some/path") => "/root/some/path"
+      #   uri_root_path("javascripts", "test.js") => "/uri/root/javascripts/test.js"
+      #
+      def uri_root_path(*paths)
+        root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
+        File.join(ENV['RACK_BASE_URI'].to_s, root_uri || '/', *paths)
+      end
 
-        ##
-        # Returns the uri root of the application with optional paths appended.
-        #
-        # @example
-        #   uri_root_path("/some/path") => "/root/some/path"
-        #   uri_root_path("javascripts", "test.js") => "/uri/root/javascripts/test.js"
-        #
-        def uri_root_path(*paths)
-          root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
-          File.join(ENV['RACK_BASE_URI'].to_s, root_uri || '/', *paths)
-        end
+      ##
+      # Returns the timestamp mtime for an asset
+      #
+      # @example
+      #   asset_timestamp("some/path/to/file.png") => "?154543678"
+      #   asset_timestamp("/some/absolute/path.png", true) => nil
+      #
+      def asset_timestamp(file_path, absolute=false)
+        return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
+        public_file_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
+        stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
+        stamp ||= Time.now.to_i unless absolute
+        "?#{stamp}" if stamp
+      end
 
-        ##
-        # Returns the timestamp mtime for an asset
-        #
-        # @example
-        #   asset_timestamp("some/path/to/file.png") => "?154543678"
-        #   asset_timestamp("/some/absolute/path.png", true) => nil
-        #
-        def asset_timestamp(file_path, absolute=false)
-          return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
-          public_file_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
-          stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
-          stamp ||= Time.now.to_i unless absolute
-          "?#{stamp}" if stamp
+      ###
+      # Returns the asset folder given a kind.
+      #
+      # @example
+      #   asset_folder_name(:css) => 'stylesheets'
+      #   asset_folder_name(:js)  => 'javascripts'
+      #   asset_folder_name(:images) => 'images'
+      #
+      def asset_folder_name(kind)
+        case kind
+        when :css then 'stylesheets'
+        when :js  then 'javascripts'
+        else kind.to_s
         end
+      end
 
-        ###
-        # Returns the asset folder given a kind.
-        #
-        # @example
-        #   asset_folder_name(:css) => 'stylesheets'
-        #   asset_folder_name(:js)  => 'javascripts'
-        #   asset_folder_name(:images) => 'images'
-        #
-        def asset_folder_name(kind)
-          case kind
-          when :css then 'stylesheets'
-          when :js  then 'javascripts'
-          else kind.to_s
-          end
+      ##
+      # Parses link_to options for given correct conditions
+      #
+      # @example
+      #   parse_conditions("/some/url", :if => false) => true
+      #
+      def parse_conditions(url, options)
+        if options.has_key?(:if)
+          condition = options.delete(:if)
+          condition == :current ? url == request.path_info : condition
+        elsif condition = options.delete(:unless)
+          condition == :current ? url != request.path_info : !condition
+        else
+          true
         end
-
-        ##
-        # Parses link_to options for given correct conditions
-        #
-        # @example
-        #   parse_conditions("/some/url", :if => false) => true
-        #
-        def parse_conditions(url, options)
-          if options.has_key?(:if)
-            condition = options.delete(:if)
-            condition == :current ? url == request.path_info : condition
-          elsif condition = options.delete(:unless)
-            condition == :current ? url != request.path_info : !condition
-          else
-            true
-          end
-        end
-
-        ##
-        # Parses link_to options for given js declarations (remote, method, confirm)
-        # Not destructive on options; returns updated options
-        #
-        # parse_js_attributes(:remote => true, :confirm => "test", :method => :delete)
-        # => { "data-remote" => true, "data-method" => "delete", "data-confirm" => "test" }
-        #
-        def parse_js_attributes(options)
-          options = options.dup
-          options['data-remote'] = 'true' if options.delete(:remote)
-          if link_confirm = options.delete(:confirm)
-            options['data-confirm'] = link_confirm
-          end
-          if link_method = options.delete(:method)
-            options['data-method'] = link_method
-            options['rel'] = 'nofollow'
-          end
-          options
-        end
+      end
     end # AssetTagHelpers
   end # Helpers
 end # Padrino
