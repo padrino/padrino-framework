@@ -195,6 +195,10 @@ module Padrino
           options.each do |attribute, value|
             next if value.nil? || value == false
             if attribute == :data && value.is_a?(Hash)
+              while sub = value.detect{|k, v| v.is_a?(Hash)} do #Recurse through sub hashes
+                sub[1].each { |k, v| value["#{sub[0].to_s.dasherize}-#{k.to_s.dasherize}"] = v }
+                value.delete(sub[0])
+              end
               value.each { |k, v| attributes << %[data-#{k.to_s.dasherize}="#{escape_value(v)}"] }
             elsif BOOLEAN_ATTRIBUTES.include?(attribute)
               attributes << attribute.to_s
