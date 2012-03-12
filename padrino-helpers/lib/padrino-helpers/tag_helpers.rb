@@ -247,13 +247,13 @@ module Padrino
       #
       def parse_data_options(tag, options)
         return if options.nil?
-        options = options.dup
+        parsed_options = options.dup
         options.each do |k, v|
           next if !DATA_ATTRIBUTES.include?(k) || (tag.to_s == 'form' && k == :method)
-          options["data-#{k}"] = options.delete(k)
-          options[:rel] = 'nofollow' if k == :method
+          parsed_options["data-#{k}"] = parsed_options.delete(k)
+          parsed_options[:rel] = 'nofollow' if k == :method
         end
-        options
+        parsed_options
       end
     end # TagHelpers
   end # Helpers
