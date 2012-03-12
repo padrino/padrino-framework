@@ -2,11 +2,11 @@ module Padrino
   module Helpers
     ##
     # Helpers related to producing html tags within templates.
-    ##
+    #
     module TagHelpers
       ##
       # Tag values escaped to html entities
-      ##
+      #
       ESCAPE_VALUES = {
         "<" => "&lt;",
         ">" => "&gt;",
@@ -28,6 +28,14 @@ module Padrino
         :selected
       ]
 
+      ##
+      # Custom data attributes,
+      # feel free to update with yours:
+      #
+      #   Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
+      #   text_field :foo, :dialog => true
+      #   # Generates: <input type="text" data-dialog="true" name="foo" />
+      #
       DATA_ATTRIBUTES = [
         :method,
         :remote,

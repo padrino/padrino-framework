@@ -74,13 +74,11 @@ module Padrino
       #
       # @api public
       def form_tag(url, options={}, &block)
-        desired_method = options[:method]
-        data_method = options.delete(:method) if options[:method].to_s !~ /get|post/i
-        options.reverse_merge!(:method => "post", :action => url)
-        options[:enctype] = "multipart/form-data" if options.delete(:multipart)
-        options["data-remote"] = "true" if options.delete(:remote)
-        options["data-method"] = data_method if data_method
-        options["accept-charset"] ||= "UTF-8"
+        desired_method = options[:method].to_s
+        options.delete(:method) unless desired_method =~ /get|post/i
+        options.reverse_merge!(:method => 'post', :action => url)
+        options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
+        options['accept-charset'] ||= 'UTF-8'
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += capture_html(&block)
         concat_content content_tag(:form, inner_form_html, options)

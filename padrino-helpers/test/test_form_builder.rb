@@ -63,7 +63,7 @@ describe "FormBuilder" do
 
     should "display correct form html with remote option and method put" do
       actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :remote => true, :method => 'put') { "Demo" }
-      assert_has_tag('form', :"accept-charset" => "UTF-8", :method => 'post', "data-method" => 'put', "data-remote" => 'true') { actual_html }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :method => 'post', "data-remote" => 'true') { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 
