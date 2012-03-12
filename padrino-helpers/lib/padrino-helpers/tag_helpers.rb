@@ -186,35 +186,44 @@ module Padrino
       end
 
       private
-        ##
-        # Returns a compiled list of HTML attributes
-        ##
-        def tag_options(options)
-          return if options.blank?
-          attributes = []
-          options.each do |attribute, value|
-            next if value.nil? || value == false
-            if attribute == :data && value.is_a?(Hash)
-              while sub = value.detect{|k, v| v.is_a?(Hash)} do #Recurse through sub hashes
-                sub[1].each { |k, v| value["#{sub[0].to_s.dasherize}-#{k.to_s.dasherize}"] = v }
-                value.delete(sub[0])
-              end
-              value.each { |k, v| attributes << %[data-#{k.to_s.dasherize}="#{escape_value(v)}"] }
-            elsif BOOLEAN_ATTRIBUTES.include?(attribute)
-              attributes << attribute.to_s
-            else
-              attributes << %[#{attribute}="#{escape_value(value)}"]
-            end
+      ##
+      # Returns a compiled list of HTML attributes
+      ##
+      def tag_options(options)
+        return if options.blank?
+        attributes = []
+        options.each do |attribute, value|
+          next if value.nil? || value == false
+          if value.is_a?(Hash)
+            attributes << nested_values(attribute, value)
+          elsif BOOLEAN_ATTRIBUTES.include?(attribute)
+            attributes << attribute.to_s
+          else
+            attributes << %(#{attribute}="#{escape_value(value)}")
           end
-          " #{attributes.join(' ')}"
         end
+        " #{attributes.join(' ')}"
+      end
 
-        ##
-        # Escape tag values to their HTML/XML entities.
-        ##
-        def escape_value(string)
-          string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)){|c| ESCAPE_VALUES[c] }
-        end
+      ##
+      # Escape tag values to their HTML/XML entities.
+      ##
+      def escape_value(string)
+        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)){|c| ESCAPE_VALUES[c] }
+      end
+
+      ##
+      # Iterate through nested values
+      #
+      def nested_values(attribute, hash)
+        hash.map do |k, v|
+          if v.is_a?(Hash)
+            nested_values("#{attribute}-#{k.to_s.dasherize}", v)
+          else
+            %(#{attribute}-#{k.to_s.dasherize}="#{escape_value(v)}")
+          end
+        end * ' '
+      end
     end # TagHelpers
   end # Helpers
 end # Padrino

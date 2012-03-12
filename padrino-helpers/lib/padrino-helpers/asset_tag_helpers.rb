@@ -17,13 +17,18 @@ module Padrino
       # @example
       #   flash_tag(:notice, :id => 'flash-notice')
       #   # Generates: <div class="notice">flash-notice</div>
+      #   flash_tag(:error, :success)
+      #   # Generates: <div class="error">flash-error</div>
+      #   # <div class="success">flash-success</div>
       #
       # @api public
-      def flash_tag(kind, options={})
-        flash_text = flash[kind]
-        return '' if flash_text.blank?
-        options.reverse_merge!(:class => kind)
-        content_tag(:div, flash_text, options)
+      def flash_tag(*args)
+        options = args.extract_options!
+        args.map do |kind|
+          flash_text = flash[kind]
+          next if flash_text.blank?
+          content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+        end.compact * "\n"
       end
 
       ##
@@ -69,14 +74,14 @@ module Padrino
         anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
 
         if block_given?
-          url = args[0] ? args[0] + anchor.to_s : anchor || 'javascript:void(0);'
+          url = args[0] ? args[0] + anchor.to_s : anchor || '#'
           options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
           return '' unless parse_conditions(url, options)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
-          name, url = args[0], (args[1] ? args[1] + anchor.to_s : anchor || 'javascript:void(0);')
+          name, url = args[0], (args[1] ? args[1] + anchor.to_s : anchor || '#')
           return name unless parse_conditions(url, options)
           options.reverse_merge!(:href => url)
           content_tag(:a, name, options)
@@ -119,8 +124,8 @@ module Padrino
         desired_method = options[:method]
         options.delete(:method) if options[:method].to_s !~ /get|post/i
         options.reverse_merge!(:method => 'post', :action => url)
-        options[:enctype] = "multipart/form-data" if options.delete(:multipart)
-        options["data-remote"] = "true" if options.delete(:remote)
+        options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
+        options['data-remote'] = 'true' if options.delete(:remote)
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += block_given? ? capture_html(&block) : submit_tag(name)
         content_tag('form', inner_form_html, options)
@@ -419,13 +424,13 @@ module Padrino
         #
         def parse_js_attributes(options)
           options = options.dup
-          options["data-remote"] = "true" if options.delete(:remote)
+          options['data-remote'] = 'true' if options.delete(:remote)
           if link_confirm = options.delete(:confirm)
-            options["data-confirm"] = link_confirm
+            options['data-confirm'] = link_confirm
           end
           if link_method = options.delete(:method)
-            options["data-method"] = link_method
-            options["rel"] = "nofollow"
+            options['data-method'] = link_method
+            options['rel'] = 'nofollow'
           end
           options
         end

@@ -183,8 +183,8 @@ module Padrino
       # Removes the specified class and constant.
       #
       def remove_constant(const)
-        return if exclude_constants.compact.uniq.any? { |c| const.to_s.index(c) == 0 } &&
-                 !include_constants.compact.uniq.any? { |c| const.to_s.index(c) == 0 }
+        return if exclude_constants.compact.uniq.any? { |c| const.name.index(c) == 0 } &&
+                 !include_constants.compact.uniq.any? { |c| const.name.index(c) == 0 }
         begin
           parts  = const.to_s.sub(/^::(Object)?/, 'Object::').split('::')
           object = parts.pop

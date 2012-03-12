@@ -92,11 +92,7 @@ task :test do
   # Omit the padrino metagem since no tests there
   GEM_PATHS[0..-2].each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    begin
-      sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"
-    rescue RuntimeError
-      #Don't stop tests if one fails
-    end
+    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"
   end
 end
 
