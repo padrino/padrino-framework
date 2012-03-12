@@ -70,7 +70,7 @@ module Padrino
         define_method(name) do |*args|
           return if number < level
           if args.size > 1
-            bench(*args)
+            bench(args[0], args[1], args[2], name)
           else
             push(args * '', name)
           end
@@ -102,7 +102,9 @@ module Padrino
         @_pad    = action.to_s.size if action.to_s.size > @_pad
         duration = Time.now - began_at
         color    = :red if duration > 1
-        push "%s (" % colorize(action.to_s.upcase.rjust(@_pad), color) + colorize("%0.4fms", :bold, color) % duration + ") %s" % message.to_s, level
+        action   = colorize(action.to_s.upcase.rjust(@_pad), color)
+        duration = colorize('%0.4fms' % duration, :bold, color)
+        push "#{action} (#{duration}) #{message}", level
       end
 
       ##
@@ -274,8 +276,8 @@ module Padrino
 
       stream = case config[:stream]
         when :to_file
-          FileUtils.mkdir_p(Padrino.root("log")) unless File.exists?(Padrino.root("log"))
-          File.new(Padrino.root("log", "#{Padrino.env}.log"), "a+")
+          FileUtils.mkdir_p(Padrino.root('log')) unless File.exists?(Padrino.root('log'))
+          File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
         when :null   then StringIO.new
         when :stdout then $stdout
         when :stderr then $stderr
@@ -368,8 +370,6 @@ module Padrino
       @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
     end
 
-    
-
     ##
     # Padrino::Loggger::Rack forwards every request to an +app+ given, and
     # logs a line in the Apache common log format to the +logger+, or
@@ -391,28 +391,28 @@ module Padrino
       end
 
       private
-        def log(env, status, header, began_at)
-          return if env['sinatra.static_file'] and !logger.log_static
-          logger.bench(
-            env["REQUEST_METHOD"],
-            began_at,
-            [
-              @uri_root.to_s,
-              env["PATH_INFO"],
-              env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
-              ' - ',
-              logger.colorize(status.to_s[0..3], :bold),
-              ' ',
-              code_to_name(status)
-            ] * '',
-            :debug,
-            :magenta
-          )
-        end
+      def log(env, status, header, began_at)
+        return if env['sinatra.static_file'] && (!logger.respond_to?(:log_static) || !logger.log_static)
+        logger.bench(
+          env["REQUEST_METHOD"],
+          began_at,
+          [
+            @uri_root.to_s,
+            env["PATH_INFO"],
+            env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
+            ' - ',
+            logger.colorize(status.to_s[0..3], :bold),
+            ' ',
+            code_to_name(status)
+          ] * '',
+          :debug,
+          :magenta
+        )
+      end
 
-        def code_to_name(status)
-          ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
-        end
+      def code_to_name(status)
+        ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
+      end
     end # Rack
   end # Logger
 end # Padrino
