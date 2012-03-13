@@ -28,7 +28,7 @@ describe "FormHelpers" do
 
     should "display correct form with remote and method is put" do
       actual_html = form_tag('/update', :"accept-charset" => "UTF-8", :method => 'put', :remote => true) { "Demo" }
-      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "UTF-8", :"data-method" => 'put') { actual_html }
+      assert_has_tag(:form, "data-remote" => 'true', :"accept-charset" => "UTF-8") { actual_html }
       assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'put') { actual_html }
     end
 

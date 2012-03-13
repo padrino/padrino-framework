@@ -9,7 +9,7 @@ describe "AssetTagHelpers" do
   end
 
   def flash
-    { :notice => "Demo notice" }
+    @_flash ||= { :notice => "Demo notice" }
   end
 
   context 'for #flash_tag method' do
@@ -19,6 +19,14 @@ describe "AssetTagHelpers" do
     should "display flash with given attributes" do
       actual_html = flash_tag(:notice, :class => 'notice', :id => 'notice-area')
       assert_has_tag('div.notice#notice-area', :content => "Demo notice") { actual_html }
+    end
+    should "display multiple flash tags with given attributes" do
+      flash[:error] = 'wrong'
+      flash[:success] = 'okey'
+      actual_html = flash_tag(:success, :error, :id => 'area')
+      assert_has_tag('div.success#area', :content => flash[:success]) { actual_html }
+      assert_has_tag('div.error#area', :content => flash[:error]) { actual_html }
+      assert_has_no_tag('div.notice') { actual_html }
     end
   end
 
@@ -39,7 +47,7 @@ describe "AssetTagHelpers" do
 
     should "display link element with void url and options" do
       actual_link = link_to('Sign up', :class => "test")
-      assert_has_tag('a', :content => "Sign up", :href => 'javascript:void(0);', :class => 'test') { actual_link }
+      assert_has_tag('a', :content => "Sign up", :href => '#', :class => 'test') { actual_link }
     end
 
     should "display link element with remote option" do

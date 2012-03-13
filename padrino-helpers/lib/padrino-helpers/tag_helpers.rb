@@ -2,11 +2,11 @@ module Padrino
   module Helpers
     ##
     # Helpers related to producing html tags within templates.
-    ##
+    #
     module TagHelpers
       ##
       # Tag values escaped to html entities
-      ##
+      #
       ESCAPE_VALUES = {
         "<" => "&lt;",
         ">" => "&gt;",
@@ -26,6 +26,20 @@ module Padrino
         :readonly,
         :required,
         :selected
+      ]
+
+      ##
+      # Custom data attributes,
+      # feel free to update with yours:
+      #
+      #   Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
+      #   text_field :foo, :dialog => true
+      #   # Generates: <input type="text" data-dialog="true" name="foo" />
+      #
+      DATA_ATTRIBUTES = [
+        :method,
+        :remote,
+        :confirm
       ]
 
       ##
@@ -92,7 +106,9 @@ module Padrino
 
         content = content.join("\n") if content.respond_to?(:join)
 
-        output = "<#{name}#{tag_options(options) if options}>#{content}</#{name}>"
+        options    = parse_data_options(name, options)
+        attributes = tag_attributes(options)
+        output = "<#{name}#{attributes}>#{content}</#{name}>"
         block_is_template?(block) ? concat_content(output) : output
       end
 
@@ -182,35 +198,63 @@ module Padrino
       #
       # @api public
       def tag(name, options = nil, open = false)
-        "<#{name}#{tag_options(options) if options}#{open ? '>' : ' />'}"
+        options    = parse_data_options(name, options)
+        attributes = tag_attributes(options)
+        "<#{name}#{attributes}#{open ? '>' : ' />'}"
       end
 
       private
-        ##
-        # Returns a compiled list of HTML attributes
-        ##
-        def tag_options(options)
-          return if options.blank?
-          attributes = []
-          options.each do |attribute, value|
-            next if value.nil? || value == false
-            if attribute == :data && value.is_a?(Hash)
-              value.each { |k, v| attributes << %[data-#{k.to_s.dasherize}="#{escape_value(v)}"] }
-            elsif BOOLEAN_ATTRIBUTES.include?(attribute)
-              attributes << attribute.to_s
-            else
-              attributes << %[#{attribute}="#{escape_value(value)}"]
-            end
+      ##
+      # Returns a compiled list of HTML attributes
+      ##
+      def tag_attributes(options)
+        return '' if options.nil?
+        attributes = options.map do |k, v|
+          next if v.nil? || v == false
+          if v.is_a?(Hash)
+            nested_values(k, v)
+          elsif BOOLEAN_ATTRIBUTES.include?(k)
+            k.to_s
+          else
+            %(#{k}="#{escape_value(v)}")
           end
-          " #{attributes.join(' ')}"
-        end
+        end.compact
+        attributes.empty? ? '' : " #{attributes * ' '}"
+      end
 
-        ##
-        # Escape tag values to their HTML/XML entities.
-        ##
-        def escape_value(string)
-          string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)){|c| ESCAPE_VALUES[c] }
+      ##
+      # Escape tag values to their HTML/XML entities.
+      ##
+      def escape_value(string)
+        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)) { |c| ESCAPE_VALUES[c] }
+      end
+
+      ##
+      # Iterate through nested values
+      #
+      def nested_values(attribute, hash)
+        hash.map do |k, v|
+          if v.is_a?(Hash)
+            nested_values("#{attribute}-#{k.to_s.dasherize}", v)
+          else
+            %(#{attribute}-#{k.to_s.dasherize}="#{escape_value(v)}")
+          end
+        end * ' '
+      end
+
+      ##
+      # Parses custom data attributes
+      #
+      def parse_data_options(tag, options)
+        return if options.nil?
+        parsed_options = options.dup
+        options.each do |k, v|
+          next if !DATA_ATTRIBUTES.include?(k) || (tag.to_s == 'form' && k == :method)
+          parsed_options["data-#{k}"] = parsed_options.delete(k)
+          parsed_options[:rel] = 'nofollow' if k == :method
         end
+        parsed_options
+      end
     end # TagHelpers
   end # Helpers
 end # Padrino

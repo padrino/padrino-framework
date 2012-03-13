@@ -113,8 +113,8 @@ module ObjectSpace
     # Returns all the classes in the object space.
     def classes
       ObjectSpace.each_object(Module).select do |klass|
-        # Why this? Ruby when you remove a constant don't clean it from
-        # rb_tables, this mean that here we can found classes that was
+        # Why? Ruby, when you remove a costant dosen't remove it from
+        # rb_tables, this mean that here we can find classes that was
         # removed.
         klass.name rescue false
       end
