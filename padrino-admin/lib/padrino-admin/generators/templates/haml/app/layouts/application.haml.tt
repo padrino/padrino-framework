@@ -1,31 +1,60 @@
-!!! Strict
-%html{:lang => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
+!!! 5
+%html{:lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml'}
   %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
-    =stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style"
+    =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+    =javascript_include_tag 'jquery-1.7.1.min', 'less-1.2.1.min', 'application'
+    /! Twitter Bootstrap
+    =javascript_include_tag %w[bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse]
+    =javascript_include_tag %w[bootstrap/bootstrap-dropdown bootstrap/bootstrap-modal bootstrap/bootstrap-tooltip bootstrap/bootstrap-scrollspy]
+    =javascript_include_tag %w[bootstrap/bootstrap-tab bootstrap/bootstrap-popover bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
+
   %body
-    #container
-      #header
-        %h1=link_to "Padrino Admin", url(:base_index)
-        #user-navigation
-          %ul.wat-cf
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
+          %u.nav.pull-left
+            - project_modules.each do |project_module|
+              %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
+                =link_to project_module.human_name, project_module.path('/admin')
+          %ul.nav.pull-right
             %li=link_to pat(:profile), url(:<%= options[:admin_model].underscore.pluralize %>, :edit, :id => current_account.id)
-            %li=button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to
-        #main-navigation
-          %ul.wat-cf
-            -project_modules.each do |project_module|
-              %li{:class => ("active" if request.path_info =~ /^#{project_module.path}/)}
-                =link_to project_module.human_name, project_module.path("/admin")
-      #wrapper.wat-cf
-        .flash=[:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
-        #main
+            %li=button_to pat(:logout), url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
+    - sidebar = yield_content(:sidebar)
+    .container-fluid
+      .row-fluid
+        - if sidebar
+          .span2=sidebar
+        %div{:class => ('span10' if sidebar)}
+          =breadcrumbs settings.breadcrumbs, true
+          -[:error, :warning, :success].each do |type|
+            -next if flash[type].blank?
+            #flash-result(class=type)
+              %h4=type
+              =flash[type]
+
+          #padrino-modal.modal.hide.fade
+            .modal-header
+              %a.close{:data => {:dismiss => 'modal'}} x
+              %h3#padrino-modal-title
+            #padrino-modal-body.modal-body
+            .modal-footer
+              %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
           =yield
-          #footer
-            .block
-              %p
-                Copyright &copy;
-                =Time.now.year
-                Your Site - Powered by
-                =link_to "Padrino v.#{Padrino.version}", "http://padrino.github.com", :target => :_blank
-        #sidebar=yield_content :sidebar
+      %footer
+        %p.center-block
+          Copyright &copy;
+          =Time.now.year
+          Your Site -
+          %b Powered by Padrino v.#{Padrino.version}
+          %p
+            =link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
+            =link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
+            =link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
+            =link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank

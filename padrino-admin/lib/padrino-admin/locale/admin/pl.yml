@@ -2,6 +2,7 @@ pl:
   padrino:
     admin:
       save: Zapisz
+      save_and_continue: Zapisz i kontynuuj
       cancel: Anuluj
       list: Lista
       edit: Edycja

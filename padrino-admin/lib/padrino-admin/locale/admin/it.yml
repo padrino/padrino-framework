@@ -2,6 +2,7 @@ it:
   padrino:
     admin:
       save: Salva
+      save_and_continue: Salva e continua
       cancel: Annulla
       list: Elenco
       edit: Modifica

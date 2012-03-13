@@ -39,10 +39,10 @@ module Padrino
             raise SystemExit
           end
 
-          unless self.class.themes.include?(options[:theme])
-            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
-            raise SystemExit
-          end
+          # unless self.class.themes.include?(options[:theme])
+          #   say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
+          #   raise SystemExit
+          # end
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
@@ -99,7 +99,6 @@ module Padrino
           empty_directory destination_root("admin/views/layouts")
           empty_directory destination_root("admin/views/sessions")
 
-          template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")

@@ -2,6 +2,7 @@ uk:
   padrino:
     admin:
       save: Зберегти
+      save_and_continue: Зберегти та продовжити
       cancel: Скасувати
       list: Список
       edit: Змінити
