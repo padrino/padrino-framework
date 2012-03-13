@@ -47,6 +47,7 @@ http://padrino.waydotnet.com/images/mini_record.jpg
 
 === By WaYdotNET
 
+'http://api.coderwall.com/waydotnet/endorsecount.png
 
 = Padrino
 
