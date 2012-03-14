@@ -48,13 +48,13 @@
               %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
           =yield
       %footer
-        %p.center-block
+        %p
           Copyright &copy;
           =Time.now.year
           Your Site -
           %b Powered by Padrino v.#{Padrino.version}
-          %p
-            =link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
-            =link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
-            =link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
-            =link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
+        %p
+          =link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
+          =link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
+          =link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
+          =link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
