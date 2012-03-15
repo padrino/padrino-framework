@@ -1,10 +1,20 @@
-== (Padrino Admin TwitterBootstrap 2.0)
+== (Padrino Admin TwitterBootstrap 2.0.2)
 * Padrino-Modal: rack-flash and delete function into modal :D
 * highlights error field
 * tof helper: Automatic replace true or false with relative image (list.slim and list.haml)
 * Breadcrumbs
 * Automatic time_ago_in_words when column model is created_at or updated_at
 * Migrate function for MiniRecord
+
+===== add/update
+* tag_icon helper
+
+==== tag_icon
+Automatic icon
+
+http://padrino.waydotnet.com/images/icon.jpg
+
+
 
 ==== Padrino-Modal
 All result from rack-flash and delete request, now is automatic insert into modal javascript plugin

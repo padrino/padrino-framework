@@ -4,7 +4,7 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
     == tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
-    == javascript_include_tag 'jquery-1.7.1.min', 'less-1.2.1.min', 'application'
+    == javascript_include_tag 'jquery-1.7.1.min', 'less-1.3.0.min', 'application'
     /! Twitter Bootstrap
     == javascript_include_tag %w[bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse]
     == javascript_include_tag %w[bootstrap/bootstrap-dropdown bootstrap/bootstrap-modal bootstrap/bootstrap-tooltip bootstrap/bootstrap-scrollspy]
