@@ -89,7 +89,7 @@ simple view template:
     = javascript_include 'application'
   %body
     ...
-    = flash :notice
+    = flash_tag :notice
     %p= link_to 'Blog', '/blog', :class => 'example'
     %p Mail me at #{mail_to 'fake@faker.com', "Fake Email Link", :cc => "test@demo.com"}
     %p= image 'padrino.png', :width => '35', :class => 'logo'
