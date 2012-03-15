@@ -29,7 +29,7 @@ module Padrino
       # @api public
       def form_for(object, url, settings={}, &block)
         form_html = capture_html(builder_instance(object, settings), &block)
-        form_tag(url, settings) { form_html }
+        form(url, settings) { form_html }
       end
 
       ##
@@ -70,10 +70,10 @@ module Padrino
       # @return [String] The html form with the specified options and input fields.
       #
       # @example
-      #   form_tag '/register', :class => "registration_form" do ... end
+      #   form '/register', :class => "registration_form" do ... end
       #
       # @api public
-      def form_tag(url, options={}, &block)
+      def form(url, options={}, &block)
         desired_method = options[:method].to_s
         options.delete(:method) unless desired_method =~ /get|post/i
         options.reverse_merge!(:method => 'post', :action => url)
@@ -81,7 +81,7 @@ module Padrino
         options['accept-charset'] ||= 'UTF-8'
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += capture_html(&block)
-        concat_content content_tag(:form, inner_form_html, options)
+        concat_content content(:form, inner_form_html, options)
       end
 
       ##
@@ -101,33 +101,33 @@ module Padrino
       # @api semipublic
       def hidden_form_method_field(desired_method)
         return '' if desired_method.blank? || desired_method.to_s =~ /get|post/i
-        hidden_field_tag(:_method, :value => desired_method)
+        hidden_field(:_method, :value => desired_method)
       end
 
       ##
       # Constructs a field_set to group fields with given options
       #
-      # @overload field_set_tag(legend=nil, options={}, &block)
+      # @overload field_set(legend=nil, options={}, &block)
       #   @param [String] legend  The legend caption for the fieldset
       #   @param [Hash]   options The html options for the fieldset.
       #   @param [Proc]   block   The content inside the fieldset.
-      # @overload field_set_tag(options={}, &block)
+      # @overload field_set(options={}, &block)
       #   @param [Hash]   options The html options for the fieldset.
       #   @param [Proc]   block   The content inside the fieldset.
       #
       # @return [String] The html for the fieldset tag based on given +options+.
       #
       # @example
-      #   field_set_tag(:class => "office-set") { }
-      #   field_set_tag("Office", :class => 'office-set') { }
+      #   field_set(:class => "office-set") { }
+      #   field_set("Office", :class => 'office-set') { }
       #
       # @api public
-      def field_set_tag(*args, &block)
+      def field_set(*args, &block)
         options = args.extract_options!
         legend_text = args[0].is_a?(String) ? args.first : nil
-        legend_html = legend_text.blank? ? '' : content_tag(:legend, legend_text)
+        legend_html = legend_text.blank? ? '' : content(:legend, legend_text)
         field_set_content = legend_html + capture_html(&block)
-        concat_content content_tag(:fieldset, field_set_content, options)
+        concat_content content(:fieldset, field_set_content, options)
       end
 
       ##
@@ -136,7 +136,7 @@ module Padrino
       # @overload error_messages_for(*objects, options = {})
       #   @param [Array<Object>]  object   Splat of objects to display errors for.
       #   @param [Hash]           options  Error message display options.
-      #   @option options [String] :header_tag ("h2")
+      #   @option options [String] :header ("h2")
       #     Used for the header of the error div
       #   @option options [String] :id ("field-errors")
       #     The id of the error div.
@@ -195,16 +195,16 @@ module Padrino
               object_name = options[:object_name].to_s.underscore.gsub(/\//, ' ')
               object.errors.map { |f, msg|
                 field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
-                content_tag(:li, "%s %s" % [field, msg])
+                content(:li, "%s %s" % [field, msg])
               }
             }.join
 
             contents = ''
-            contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
-            contents << content_tag(:p, message) unless message.blank?
-            contents << content_tag(:ul, error_messages)
+            contents << content(options[:header] || :h2, header_message) unless header_message.blank?
+            contents << content(:p, message) unless message.blank?
+            contents << content(:ul, error_messages)
 
-            content_tag(:div, contents, html)
+            content(:div, contents, html)
           end
         else
           ''
@@ -249,7 +249,7 @@ module Padrino
           tag   = options.delete(:tag)
           # Array(error).first is necessary because some orm give us an array others directly a value
           error = [options.delete(:prepend), Array(error).first, options.delete(:append)].compact.join(" ")
-          content_tag(tag, error, options)
+          content(tag, error, options)
         else
           ''
         end
@@ -270,19 +270,19 @@ module Padrino
       # @return [String] The html for this label with the given +options+.
       #
       # @example
-      #   label_tag :username, :class => 'long-label'
-      #   label_tag :username, :class => 'long-label' do ... end
+      #   label :username, :class => 'long-label'
+      #   label :username, :class => 'long-label' do ... end
       #
       # @api public
-      def label_tag(name, options={}, &block)
+      def label(name, options={}, &block)
         options.reverse_merge!(:caption => "#{name.to_s.humanize}: ", :for => name)
         caption_text = options.delete(:caption)
         caption_text << "<span class='required'>*</span> " if options.delete(:required)
         if block_given? # label with inner content
           label_content = caption_text + capture_html(&block)
-          concat_content(content_tag(:label, label_content, options))
+          concat_content(content(:label, label_content, options))
         else # regular label
-          content_tag(:label, caption_text, options)
+          content(:label, caption_text, options)
         end
       end
 
@@ -334,18 +334,18 @@ module Padrino
       #     Generated HTML with specified +options+
       #
       # @example
-      #   text_field_tag :first_name, :maxlength => 40, :required => true
+      #   text_field :first_name, :maxlength => 40, :required => true
       #   # => <input name="first_name" maxlength="40" required type="text">
       #
-      #   text_field_tag :last_name, :class => 'string', :size => 40
+      #   text_field :last_name, :class => 'string', :size => 40
       #   # => <input name="last_name" class="string" size="40" type="text">
       #
-      #   text_field_tag :username, :placeholder => 'Your Username'
+      #   text_field :username, :placeholder => 'Your Username'
       #   # => <input name="username" placeholder="Your Username" type="text">
       #
       # @api public
-      def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge!(:name => name))
+      def text_field(name, options={})
+        input(:text, options.reverse_merge!(:name => name))
       end
 
       ##
@@ -396,21 +396,21 @@ module Padrino
       #     Generated HTML with specified +options+
       #
       # @example
-      #   number_field_tag :quanity, :class => 'numeric'
+      #   number_field :quanity, :class => 'numeric'
       #   # => <input name="quanity" class="numeric" type="number">
       #
-      #   number_field_tag :zip_code, :pattern => /[0-9]{5}/
+      #   number_field :zip_code, :pattern => /[0-9]{5}/
       #   # => <input name="zip_code" pattern="[0-9]{5}" type="number">
       #
-      #   number_field_tag :credit_card, :autocomplete => :off
+      #   number_field :credit_card, :autocomplete => :off
       #   # => <input name="credit_card" autocomplete="off" type="number">
       #
-      #   number_field_tag :age, :min => 18, :max => 120, :step => 1
+      #   number_field :age, :min => 18, :max => 120, :step => 1
       #   # => <input name="age" min="18" max="120" step="1" type="number">
       #
       # @api public
-      def number_field_tag(name, options={})        
-        input_tag(:number, options.reverse_merge(:name => name))
+      def number_field(name, options={})        
+        input(:number, options.reverse_merge(:name => name))
       end
       
       ##
@@ -419,22 +419,22 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   telephone_field_tag :phone_number, :class => 'string'
+      #   telephone_field :phone_number, :class => 'string'
       #   # => <input name="phone_number" class="string" type="tel">
       #
-      #  telephone_field_tag :cell_phone, :tabindex => 1
-      #  telephone_field_tag :work_phone, :tabindex => 2
-      #  telephone_field_tag :home_phone, :tabindex => 3
+      #  telephone_field :cell_phone, :tabindex => 1
+      #  telephone_field :work_phone, :tabindex => 2
+      #  telephone_field :home_phone, :tabindex => 3
       #
       #  # => <input name="cell_phone" tabindex="1" type="tel">
       #  # => <input name="work_phone" tabindex="2" type="tel">
       #  # => <input name="home_phone" tabindex="3" type="tel">
       #
       # @api public
-      def telephone_field_tag(name, options={})
-        input_tag(:tel, options.reverse_merge(:name => name))
+      def telephone_field(name, options={})
+        input(:tel, options.reverse_merge(:name => name))
       end
-      alias_method :phone_field_tag, :telephone_field_tag
+      alias_method :phone_field, :telephone_field
 
       ##
       # Creates an email field input with the given name and options
@@ -442,15 +442,15 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   email_field_tag :email, :placeholder => 'you@example.com'
+      #   email_field :email, :placeholder => 'you@example.com'
       #   # => <input name="email" placeholder="you@example.com" type="email">
       #
-      #   email_field_tag :email, :value => 'padrinorb@gmail.com', :readonly => true
+      #   email_field :email, :value => 'padrinorb@gmail.com', :readonly => true
       #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email">
       #
       # @api public
-      def email_field_tag(name, options={})
-        input_tag(:email, options.reverse_merge(:name => name))
+      def email_field(name, options={})
+        input(:email, options.reverse_merge(:name => name))
       end
       
       ##
@@ -459,21 +459,21 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #  search_field_tag :search, :placeholder => 'Search this website...'
+      #  search_field :search, :placeholder => 'Search this website...'
       #  # => <input name="search" placeholder="Search this website..." type="search">
       #
-      #  search_field_tag :search, :maxlength => 15, :class => ['search', 'string']
+      #  search_field :search, :maxlength => 15, :class => ['search', 'string']
       #  # => <input name="search" maxlength="15" class="search string">
       #
-      #  search_field_tag :search, :id => 'search'
+      #  search_field :search, :id => 'search'
       #  # => <input name="search" id="search" type="search">
       #
-      #  search_field_tag :search, :autofocus => true
+      #  search_field :search, :autofocus => true
       #  # => <input name="search" autofocus type="search">
       #
       # @api public
-      def search_field_tag(name, options={})
-        input_tag(:search, options.reverse_merge(:name => name))
+      def search_field(name, options={})
+        input(:search, options.reverse_merge(:name => name))
       end
 
       ##
@@ -482,15 +482,15 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #  url_field_tag :favorite_website, :placeholder => 'http://padrinorb.com'
+      #  url_field :favorite_website, :placeholder => 'http://padrinorb.com'
       #  <input name="favorite_website" placeholder="http://padrinorb.com." type="url">
       #
-      #  url_field_tag :home_page, :class => 'string url'
+      #  url_field :home_page, :class => 'string url'
       #  <input name="home_page" class="string url", type="url">
       #
       # @api public
-      def url_field_tag(name, options={})
-        input_tag(:url, options.reverse_merge(:name => name))
+      def url_field(name, options={})
+        input(:url, options.reverse_merge(:name => name))
       end
 
       ##
@@ -499,12 +499,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   hidden_field_tag :session_key, :value => "__secret__"
+      #   hidden_field :session_key, :value => "__secret__"
       #
       # @api public
-      def hidden_field_tag(name, options={})
+      def hidden_field(name, options={})
         options.reverse_merge!(:name => name)
-        input_tag(:hidden, options)
+        input(:hidden, options)
       end
 
       ##
@@ -513,12 +513,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   text_area_tag :username, :class => 'long', :value => "Demo?"
+      #   text_area :username, :class => 'long', :value => "Demo?"
       #
       # @api public
-      def text_area_tag(name, options={})
+      def text_area(name, options={})
         options.reverse_merge!(:name => name, :rows => "", :cols => "")
-        content_tag(:textarea, options.delete(:value).to_s, options)
+        content(:textarea, options.delete(:value).to_s, options)
       end
 
       ##
@@ -527,12 +527,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   password_field_tag :password, :class => 'long'
+      #   password_field :password, :class => 'long'
       #
       # @api public
-      def password_field_tag(name, options={})
+      def password_field(name, options={})
         options.reverse_merge!(:name => name)
-        input_tag(:password, options)
+        input(:password, options)
       end
 
       ##
@@ -541,12 +541,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   check_box_tag :remember_me, :value => 'Yes'
+      #   check_box :remember_me, :value => 'Yes'
       #
       # @api public
-      def check_box_tag(name, options={})
+      def check_box(name, options={})
         options.reverse_merge!(:name => name, :value => '1')
-        input_tag(:checkbox, options)
+        input(:checkbox, options)
       end
 
       ##
@@ -555,12 +555,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   radio_button_tag :remember_me, :value => 'true'
+      #   radio_button :remember_me, :value => 'true'
       #
       # @api public
-      def radio_button_tag(name, options={})
+      def radio_button(name, options={})
         options.reverse_merge!(:name => name)
-        input_tag(:radio, options)
+        input(:radio, options)
       end
 
       ##
@@ -569,12 +569,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   file_field_tag :photo, :class => 'long'
+      #   file_field :photo, :class => 'long'
       #
       # @api public
-      def file_field_tag(name, options={})
+      def file_field(name, options={})
         options.reverse_merge!(:name => name)
-        input_tag(:file, options)
+        input(:file, options)
       end
 
       ##
@@ -583,18 +583,18 @@ module Padrino
       # @example
       #   options = [['caption', 'value'], ['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
       #   options = ['option', 'red', 'yellow' ]
-      #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
-      #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
+      #   select(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
+      #   select(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
       #
       #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
       #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
       #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
-      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #   select(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
       #
       #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
       #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
       #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
-      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #   select(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
       #
       # @param [String] name
       #   The name of the input field.
@@ -618,7 +618,7 @@ module Padrino
       # @return [String] The html input field based on the +options+ specified
       #
       # @api public
-      def select_tag(name, options={})
+      def select(name, options={})
         options.reverse_merge!(:name => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
@@ -630,7 +630,7 @@ module Padrino
         end
         select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
-        content_tag(:select, select_options_html, options)
+        content(:select, select_options_html, options)
       end
 
       ##
@@ -644,12 +644,12 @@ module Padrino
       # @return [String] The html button based on the +options+ specified.
       #
       # @example
-      #   button_tag "Cancel", :class => 'clear'
+      #   button "Cancel", :class => 'clear'
       #
       # @api public
-      def button_tag(caption, options = {})
+      def button(caption, options = {})
         options.reverse_merge!(:value => caption)
-        input_tag(:button, options)
+        input(:button, options)
       end
 
       ##
@@ -663,12 +663,12 @@ module Padrino
       # @return [String] The html submit button based on the +options+ specified.
       #
       # @example
-      #   submit_tag "Create", :class => 'success'
+      #   submit "Create", :class => 'success'
       #
       # @api public
-      def submit_tag(caption="Submit", options={})
+      def submit(caption="Submit", options={})
         options.reverse_merge!(:value => caption)
-        input_tag(:submit, options)
+        input(:submit, options)
       end
 
       # Constructs a submit button from the given options
@@ -681,12 +681,12 @@ module Padrino
       # @return [String] The html image button based on the +options+ specified.
       #
       # @example
-      #   submit_tag "Create", :class => 'success'
+      #   submit "Create", :class => 'success'
       #
       # @api public
-      def image_submit_tag(source, options={})
+      def image_submit(source, options={})
         options.reverse_merge!(:src => image_path(source))
-        input_tag(:image, options)
+        input(:image, options)
       end
 
       protected
@@ -706,7 +706,7 @@ module Padrino
           return '' if option_items.blank?
           option_items.map do |caption, value|
             value ||= caption
-            content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
+            content(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
           end
         end
 
@@ -716,13 +716,13 @@ module Padrino
         def grouped_options_for_select(collection, selected=nil, prompt=false)
           if collection.is_a?(Hash)
             collection.map do |key, value|
-              content_tag :optgroup, :label => key do
+              content :optgroup, :label => key do
                 options_for_select(value, selected)
               end
             end
           elsif collection.is_a?(Array)
             collection.map do |optgroup|
-              content_tag :optgroup, :label => optgroup.first do
+              content :optgroup, :label => optgroup.first do
                 options_for_select(optgroup.last, selected)
               end
             end
@@ -735,9 +735,9 @@ module Padrino
         def blank_option(prompt)
           return unless prompt
           case prompt
-            when String then content_tag(:option, prompt,       :value => '')
-            when Array  then content_tag(:option, prompt.first, :value => prompt.last)
-            else             content_tag(:option, '',           :value => '')
+            when String then content(:option, prompt,       :value => '')
+            when Array  then content(:option, prompt.first, :value => prompt.last)
+            else             content(:option, '',           :value => '')
           end
         end
 

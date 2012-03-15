@@ -53,10 +53,10 @@ module Padrino
       # @return [String] HTML with tags stripped.
       #
       # @example
-      #   strip_tags("<b>Hey</b>") => "Hey"
+      #   strips("<b>Hey</b>") => "Hey"
       #
       # @api public
-      def strip_tags(html)
+      def strips(html)
         html.gsub(/<\/?[^>]*>/, "") if html
       end
 
@@ -81,12 +81,12 @@ module Padrino
       # @api public
       def simple_format(text, options={})
         t = options.delete(:tag) || :p
-        start_tag = tag(t, options, true)
+        start = tag(t, options, true)
         text = text.to_s.dup
         text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
-        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}")  # 2+ newline  -> paragraph
+        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start}")  # 2+ newline  -> paragraph
         text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
-        text.insert 0, start_tag
+        text.insert 0, start
         text << "</#{t}>"
       end
 
