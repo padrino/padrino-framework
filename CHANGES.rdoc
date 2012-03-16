@@ -1,7 +1,14 @@
 = CHANGES
 
-== 0.10.6 (Not Yet Released)
+== 0.10.7 (Not Yet Released)
 
+== 0.10.6
+
+* FIX #786 reloader issues with routes
+* FIX Lumberjack Logging Compatibility
+* FIX Write cached css into public stylesheets path (@fnordfish)
+* FIX Fixes error with less component (@fnordfish)
+* NEW #787 Support Nested Data Attributes in Tags (@agios)
 * FIX #760 better html5 helper support (@Cirex)
 * NEW #764 adds a few form inputs in helpers (@Cirex)
 * FIX #680 upgrade to activesupport and activerecord 3.2
