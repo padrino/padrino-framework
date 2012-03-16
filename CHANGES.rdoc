@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.6 (Not Yet Released)
+== 0.10.7 (Not Yet Released)
+
+== 0.10.6
 
 * FIX #786 reloader issues with routes
 * FIX Lumberjack Logging Compatibility
