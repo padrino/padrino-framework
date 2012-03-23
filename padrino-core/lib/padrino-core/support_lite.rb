@@ -194,6 +194,13 @@ end
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
 
 ##
+# Make sure we can always use the class name
+#
+class Module
+  alias :_orig_name :to_s
+end
+
+##
 # Used to determine if this file has already been required
 #
 module SupportLite; end

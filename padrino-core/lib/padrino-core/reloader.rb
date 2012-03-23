@@ -103,7 +103,7 @@ module Padrino
       # We lock dependencies sets to prevent reloading of protected constants
       #
       def lock!
-        klasses = ObjectSpace.classes.map { |klass| klass.to_s.split('::')[0] }.uniq
+        klasses = ObjectSpace.classes.map { |klass| klass._orig_name.split('::')[0] }.uniq
         klasses = klasses | Padrino.mounted_apps.map { |app| app.app_class }
         Padrino::Reloader.exclude_constants.concat(klasses)
       end
@@ -252,3 +252,4 @@ module Padrino
     end
   end # Reloader
 end # Padrino
+
