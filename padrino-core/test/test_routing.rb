@@ -1448,6 +1448,21 @@ describe "Routing" do
     assert_equal "foo", body
   end
 
+  should_eventually "reset provides for routes that didn't use it" do
+    mock_app do
+      get('/foo', :provides => :js){}
+      get('/bar'){}
+    end
+    get '/foo'
+    assert ok?
+    get '/foo.js'
+    assert ok?
+    get '/bar'
+    assert ok?
+    get '/bar.js'
+    assert_equal 404, status
+  end
+
   should "pass controller conditions to each route" do
     counter = 0
 
