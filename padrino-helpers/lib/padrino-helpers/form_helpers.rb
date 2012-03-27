@@ -703,7 +703,7 @@ module Padrino
         # Returns the options tags for a select based on the given option items
         #
         def options_for_select(option_items, selected_value=nil)
-          return '' if option_items.blank?
+          return [] if option_items.blank?
           option_items.map do |caption, value|
             value ||= caption
             content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
