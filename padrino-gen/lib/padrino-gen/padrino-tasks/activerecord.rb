@@ -55,7 +55,7 @@ if defined?(ActiveRecord)
         end
       rescue
         case config[:adapter]
-        when 'mysql', 'mysql2'
+        when 'mysql', 'mysql2', 'jdbcmysql'
           @charset   = ENV['CHARSET']   || 'utf8'
           @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
           creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
@@ -184,7 +184,7 @@ if defined?(ActiveRecord)
     task :charset => :environment do
       config = ActiveRecord::Base.configurations[Padrino.env || :development]
       case config[:adapter]
-      when 'mysql', 'mysql2'
+      when 'mysql', 'mysql2', 'jdbcmysql'
         ActiveRecord::Base.establish_connection(config)
         puts ActiveRecord::Base.connection.charset
       when 'postgresql'
@@ -199,7 +199,7 @@ if defined?(ActiveRecord)
     task :collation => :environment do
       config = ActiveRecord::Base.configurations[Padrino.env || :development]
       case config[:adapter]
-      when 'mysql', 'mysql2'
+      when 'mysql', 'mysql2', 'jdbcmysql'
         ActiveRecord::Base.establish_connection(config)
         puts ActiveRecord::Base.connection.collation
       else
@@ -256,7 +256,7 @@ if defined?(ActiveRecord)
       task :dump => :environment do
         abcs = ActiveRecord::Base.configurations
         case abcs[Padrino.env][:adapter]
-        when "mysql", "mysql2", "oci", "oracle"
+        when "mysql", "mysql2", "oci", "oracle", 'jdbcmysql'
           ActiveRecord::Base.establish_connection(abcs[Padrino.env])
           File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
         when "postgresql"
@@ -337,7 +337,7 @@ if defined?(ActiveRecord)
 
   def drop_database(config)
     case config[:adapter]
-    when 'mysql', 'mysql2'
+    when 'mysql', 'mysql2', 'jdbcmysql'
       ActiveRecord::Base.establish_connection(config)
       ActiveRecord::Base.connection.drop_database config[:database]
     when /^sqlite/
