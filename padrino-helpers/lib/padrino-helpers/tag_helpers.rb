@@ -25,7 +25,8 @@ module Padrino
         :muted,
         :readonly,
         :required,
-        :selected
+        :selected,
+        :pubdate
       ]
 
       ##
@@ -168,6 +169,63 @@ module Padrino
       # @api semipublic
       def input_tag(type, options = {})
         tag(:input, options.reverse_merge!(:type => type))
+      end
+
+      ##
+      # Creates an HTML time tag with the given time and options
+      #
+      # @param [Date, Time] time
+      #   The time to be used in this tag
+      # @param [String] content
+      #   The content inside of the the tag
+      # @param [Hash] options
+      #   The HTML options to include in this tag
+      # @param [Proc] block
+      #   The block returning HTML content
+      #
+      # @macro global_html_attributes
+      #
+      # @return [String]
+      #   Generated HTML with specified +options+
+      #
+      # @example
+      #   time_tag(comment.created_at)
+      #   # => <time datetime="2012-03-28T17:56:23Z">
+      #   # =>   March 28, 2012 14:02
+      #   # => </time>
+      #
+      #   time_tag(comment.created_at, :pubdate => true)
+      #   # => <time datetime="2012-03-28T17:56:23Z" pubdate>
+      #   # =>   March 28, 2012 14:02
+      #   # => </time>
+      #
+      #   time_tag(comment.created_at, :format => :short)
+      #   # => <time datetime="2012-03-28T17:56:23Z">
+      #   # =>   28 Mar 14:02
+      #   # => </time>
+      #
+      #   time_tag(comment.created_at, 'Less then a minute ago')
+      #   # => <time datetime="2012-03-28T17:56:23Z">
+      #   # =>   Less then a minute ago
+      #   # => </time>
+      #
+      #   time_tag(comment.created_at) { 'Less then a minute ago' }
+      #   # => <time datetime="2012-03-28T17:56:23Z">
+      #   # =>   Less then a minute ago
+      #   # => </time>
+      #
+      # @api public
+      def time_tag(time, *args, &block)
+        options = args.extract_options!
+        options.reverse_merge!(:datetime => time.utc.iso8601)
+
+        if block_given?
+          content_tag(:time, options, &block)
+        else
+          format  = options.delete(:format) || :long
+          content = args.shift || localize(time, :format => format)
+          content_tag(:time, content, options)
+        end
       end
 
       ##
