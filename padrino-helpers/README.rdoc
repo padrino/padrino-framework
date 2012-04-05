@@ -18,7 +18,7 @@ such as within a layout. One such popular example is including assets onto the l
   # app/views/site/index.erb
   ...
   <% content_for :assets do %>
-    <%= stylesheet_link_tag 'index', 'custom' %>
+    <%= stylesheet_link 'index', 'custom' %>
   <% end %>
   ...
 
@@ -28,7 +28,7 @@ Added to a template, this will capture the includes from the block and allow the
   ...
   <head>
     <title>Example</title>
-    <%= stylesheet_link_tag 'style' %>
+    <%= stylesheet_link 'style' %>
     <%= yield_content :assets %>
   </head>
   ...
@@ -39,16 +39,16 @@ location the content is yielded within the layout. You can also check if content
 
 The capture_html and the concat_content methods allow content to be manipulated and stored for use in building
 additional helpers accepting blocks or displaying information in a template. One example is the use of
-these in constructing a simplified 'form_tag' helper which accepts a block.
+these in constructing a simplified 'form' helper which accepts a block.
 
-  # form_tag '/register' do ... end
-  def form_tag(url, options={}, &block)
+  # form '/register' do ... end
+  def form(url, options={}, &block)
     # ... truncated ...
     inner_form_html = capture_html(&block)
     concat_content '<form>' + inner_form_html + '</form>'
   end
 
-This will capture the template body passed into the form_tag block and then append the content
+This will capture the template body passed into the form block and then append the content
 to the template through the use of <tt>concat_content</tt>. Note have been built to work for both haml and erb
 templates using the same syntax.
 
@@ -58,18 +58,18 @@ For more information on using output helpers, check out the guide for
 === Tag Helpers
 
 Tag helpers are the basic building blocks used to construct html 'tags' within a view template. There
-are three major functions for this category: <tt>tag</tt>, <tt>content_tag</tt> and <tt>input_tag</tt>.
+are three major functions for this category: <tt>tag</tt>, <tt>content</tt> and <tt>input</tt>.
 
-The tag and content_tag are for building arbitrary html tags with a name and specified options. If
-the tag contains 'content' within then <tt>content_tag</tt> is used. For example:
+The tag and content are for building arbitrary html tags with a name and specified options. If
+the tag contains 'content' within then <tt>content</tt> is used. For example:
 
   tag(:br, :style => 'clear:both') => <br style="clear:both" />
-  content_tag(:p, "demo", :class => 'light') => <p class="light">demo</p>
+  content(:p, "demo", :class => 'light') => <p class="light">demo</p>
 
-The input_tag is used to build tags that are related to accepting input from the user:
+The input is used to build tags that are related to accepting input from the user:
 
-  input_tag :text, :class => "demo" => <input type='text' class='demo' />
-  input_tag :password, :value => "secret", :class => "demo"
+  input :text, :class => "demo" => <input type='text' class='demo' />
+  input :password, :value => "secret", :class => "demo"
 
 Note that all of these accept html options and result in returning a string containing html tags.
 
@@ -85,14 +85,14 @@ simple view template:
   # app/views/example.haml
   ...
   %head
-    = stylesheet_link_tag 'layout'
-    = javascript_include_tag 'application'
+    = stylesheet_link 'layout'
+    = javascript_include 'application'
   %body
     ...
     = flash_tag :notice
     %p= link_to 'Blog', '/blog', :class => 'example'
     %p Mail me at #{mail_to 'fake@faker.com', "Fake Email Link", :cc => "test@demo.com"}
-    %p= image_tag 'padrino.png', :width => '35', :class => 'logo'
+    %p= image 'padrino.png', :width => '35', :class => 'logo'
 
 For more information on using asset helpers, check out the guide for
 {Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
@@ -102,22 +102,22 @@ For more information on using asset helpers, check out the guide for
 Form helpers are the 'standard' form tag helpers you would come to expect when building forms. A simple
 example of constructing a non-object form would be:
 
-  - form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
-    = flash_tag(:notice)
-    - field_set_tag do
+  - form '/destroy', :class => 'destroy-form', :method => 'delete' do
+    = flash_tag:notice)
+    - field_set do
       %p
-        = label_tag :username, :class => 'first'
-        = text_field_tag :username, :value => params[:username]
+        = label :username, :class => 'first'
+        = text_field :username, :value => params[:username]
       %p
-        = label_tag :password, :class => 'first'
-        = password_field_tag :password, :value => params[:password]
+        = label :password, :class => 'first'
+        = password_field :password, :value => params[:password]
       %p
-        = label_tag :strategy
-        = select_tag :strategy, :options => ['delete', 'destroy'], :selected => 'delete'
+        = label :strategy
+        = select :strategy, :options => ['delete', 'destroy'], :selected => 'delete'
       %p
-        = check_box_tag :confirm_delete
-    - field_set_tag(:class => 'buttons') do
-      = submit_tag "Remove"
+        = check_box :confirm_delete
+    - field_set(:class => 'buttons') do
+      = submit "Remove"
 
 For more information on using form helpers, check out the guide for
 {Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].

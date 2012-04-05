@@ -5,9 +5,9 @@ module Padrino
     #
     module AssetTagHelpers
       ##
-      # Creates a div to display the flash of given type if it exists
+      # Creates divs to display the flash of given types if they exist
       #
-      # @param [Symbol] kind
+      # @param [Symbol] kinds
       #   The type of flash to display in the tag.
       # @param [Hash] options
       #   The html options for this section.
@@ -17,7 +17,7 @@ module Padrino
       # @example
       #   flash_tag(:notice, :id => 'flash-notice')
       #   # Generates: <div class="notice">flash-notice</div>
-      #   flash_tag(:error, :success)
+      #   flash:tag(:error, :success)
       #   # Generates: <div class="error">flash-error</div>
       #   # <div class="success">flash-success</div>
       #
@@ -27,7 +27,7 @@ module Padrino
         args.map do |kind|
           flash_text = flash[kind]
           next if flash_text.blank?
-          content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+          content(:div, flash_text, options.reverse_merge(:class => kind))
         end.compact * "\n"
       end
 
@@ -77,13 +77,13 @@ module Padrino
           options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
           return '' unless parse_conditions(url, options)
-          result_link = content_tag(:a, link_content, options)
+          result_link = content(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
           name, url = args[0], (args[1] ? args[1] + anchor.to_s : anchor || '#')
           return name unless parse_conditions(url, options)
           options.reverse_merge!(:href => url)
-          content_tag(:a, name, options)
+          content(:a, name, options)
         end
       end
 
@@ -126,8 +126,8 @@ module Padrino
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
         options['data-remote'] = 'true' if options.delete(:remote)
         inner_form_html  = hidden_form_method_field(desired_method)
-        inner_form_html += block_given? ? capture_html(&block) : submit_tag(name)
-        content_tag('form', inner_form_html, options)
+        inner_form_html += block_given? ? capture_html(&block) : submit(name)
+        content('form', inner_form_html, options)
       end
 
       ##
@@ -149,13 +149,13 @@ module Padrino
       # @return [String] Feed link html tag with specified +options+.
       #
       # @example
-      #   feed_tag :atom, url(:blog, :posts, :format => :atom), :title => "ATOM"
+      #   feed :atom, url(:blog, :posts, :format => :atom), :title => "ATOM"
       #   # Generates: <link type="application/atom+xml" rel="alternate" href="/blog/posts.atom" title="ATOM" />
-      #   feed_tag :rss, url(:blog, :posts, :format => :rss)
+      #   feed :rss, url(:blog, :posts, :format => :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
       # @api public
-      def feed_tag(mime, url, options={})
+      def feed(mime, url, options={})
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
         tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
       end
@@ -202,13 +202,13 @@ module Padrino
       #
       # @example
       #   # Generates: <meta name="keywords" content="weblog,news">
-      #   meta_tag "weblog,news", :name => "keywords"
+      #   meta "weblog,news", :name => "keywords"
       #
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
+      #   meta "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #
       # @api public
-      def meta_tag(content, options={})
+      def meta(content, options={})
         options.reverse_merge!("content" => content)
         tag(:meta, options)
       end
@@ -224,13 +224,13 @@ module Padrino
       # @return [String] The favicon link html tag with specified +options+.
       #
       # @example
-      #   favicon_tag 'favicon.png'
-      #   favicon_tag 'icons/favicon.png'
+      #   favicon 'favicon.png'
+      #   favicon 'icons/favicon.png'
       #   # or override some options
-      #   favicon_tag 'favicon.png', :type => 'image/ico'
+      #   favicon 'favicon.png', :type => 'image/ico'
       #
       # @api public
-      def favicon_tag(source, options={})
+      def favicon(source, options={})
         type = File.extname(source).gsub('.','')
         options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
         tag(:link, options)
@@ -247,10 +247,10 @@ module Padrino
       # @return [String] Image html tag with +url+ and specified +options+.
       #
       # @example
-      #   image_tag('icons/avatar.png')
+      #   image('icons/avatar.png')
       #
       # @api public
-      def image_tag(url, options={})
+      def image(url, options={})
         options.reverse_merge!(:src => image_path(url))
         tag(:img, options)
       end
@@ -260,17 +260,17 @@ module Padrino
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/stylesheets for inclusion. You can provide also a full path.
       #
-      # @overload stylesheet_link_tag(*sources, options={})
+      # @overload stylesheet_link(*sources, options={})
       #   @param [Array<String>] sources   Splat of css source paths
       #   @param [Hash]          options   The html options for the link tag
       #
       # @return [String] Stylesheet link html tag for +sources+ with specified +options+.
       #
       # @example
-      #   stylesheet_link_tag 'style', 'application', 'layout'
+      #   stylesheet_link 'style', 'application', 'layout'
       #
       # @api public
-      def stylesheet_link_tag(*sources)
+      def stylesheet_link(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
         sources.flatten.map { |source|
@@ -283,21 +283,21 @@ module Padrino
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/javascript for inclusion. You can provide also a full path.
       #
-      # @overload javascript_include_tag(*sources, options={})
+      # @overload javascript_include(*sources, options={})
       #   @param [Array<String>] sources   Splat of js source paths
       #   @param [Hash]          options   The html options for the script tag
       #
       # @return [String] Script tag for +sources+ with specified +options+.
       #
       # @example
-      #   javascript_include_tag 'application', :extjs
+      #   javascript_include 'application', :extjs
       #
       # @api public
-      def javascript_include_tag(*sources)
+      def javascript_include(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:type => 'text/javascript')
         sources.flatten.map { |source|
-          content_tag(:script, nil, options.reverse_merge(:src => asset_path(:js, source)))
+          content(:script, nil, options.reverse_merge(:src => asset_path(:js, source)))
         }.join("\n")
       end
 

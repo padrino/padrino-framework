@@ -1,0 +1,11 @@
+<%= content :p, "Test 1", :class => 'test', :id => "test1" %>
+
+<%= content :p, "Test 2" %>
+
+<% content(:p, :class => 'test', :id => 'test3') do %>
+  <span>Test 3</span>
+<% end %>
+
+<% content(:p) do %>
+  <span>Test 4</span>
+<% end %>

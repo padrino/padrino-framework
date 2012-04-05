@@ -23,18 +23,18 @@ class MiniTest::Spec
     return time
   end
 
-  # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
+  # assert_has(:h1, :content => "yellow") { "<h1>yellow</h1>" }
   # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {}, &block)
+  def assert_has(name, attributes = {}, &block)
     html = block && block.call
     matcher = HaveSelector.new(name, attributes)
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
   end
 
-  # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
+  # assert_has_no, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
   # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {}, &block)
+  def assert_has_no(name, attributes = {}, &block)
     html = block && block.call
     attributes.merge!(:count => 0)
     matcher = HaveSelector.new(name, attributes)

@@ -1,0 +1,70 @@
+== form '/simple', :class => 'simple-form' do
+  == error_messages_for nil
+  == field_set do
+    == hidden_field :session_id, :value => "__secret__"
+    == label :username
+    == text_field :username
+    == label :password
+    == password_field :password
+    == label :email
+    == email_field :email
+    == label :age
+    == number_field :age
+    == label :telephone
+    == telephone_field :telephone
+    == label :webpage
+    == url_field :webpage
+    == label :search
+    == search_field :search
+    == label  :color
+    == select :color, :options => ['green', 'orange', 'purple']
+    == label  :gender
+    == radio_button :gender, :value => 'male'
+    == radio_button :gender, :value => 'female'
+    == check_box :remember_me
+    == submit
+
+== form '/advanced', :id => 'advanced', :class => 'advanced-form', :method => 'get' do
+  == error_messages_for MarkupUser.new, :header_message => "There are problems with saving user!"
+  == hidden_field :session_id, :value => "__secret__"
+  == field_set "Advanced", :class => 'advanced-field-set' do
+    p
+      == label :username, :class => 'first', :caption => "Nickname"
+      == text_field :username, :value => params[:username], :id => 'the_username'
+    p
+      == label :password, :class => 'first'
+      == password_field :password, :value => params[:password]
+    p
+      == label :email, :caption => 'Email Address'
+      == email_field :email, :class => 'string'
+    p
+      == label :age, :class => 'age'
+      == number_field :age, :class => 'numeric'
+    p
+      == label :telephone, :class => 'telephone'
+      == telephone_field :telephone, :class => 'numeric'
+    p
+      == label :webpage, :caption => 'Your Home Page'
+      == url_field :webpage, :class => 'string'
+    p
+      == label :search
+      == search_field :search, :class => 'string'
+    p
+      == label :about, :class => 'about', :caption => "About Me"
+      == text_area :about, :class => 'large'
+    p
+      == label :gender, :class => 'gender'
+      == radio_button :gender, :value => 'male', :checked => true
+      == radio_button :gender, :value => 'female'
+    p
+      == label :photo, :class => 'photo'
+      == file_field :photo, :class => 'upload'
+    p
+      == label :fav_color
+      == select :fav_color, :options => [ ['green', '1'], ['orange', '2'], ['purple', '3'] ], :selected => '2'
+    p
+      == check_box :remember_me, :value => "1", :checked => true
+  == field_set(:class => 'buttons') do
+    == submit "Login"
+    == button "Cancel"
+    == image_submit "buttons/submit.png"

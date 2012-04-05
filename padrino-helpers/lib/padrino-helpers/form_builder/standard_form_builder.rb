@@ -17,25 +17,25 @@ module Padrino
         #
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
           class_eval <<-EOF
-          def #{field_type}_block(field, options={}, label_options={})
-            label_options.reverse_merge!(:caption => options.delete(:caption)) if options[:caption]
-            field_html = label(field, label_options)
-            field_html << #{field_type}(field, options)
-            @template.content_tag(:p, field_html)
-          end
+            def #{field_type}_block(field, options={}, label_options={})
+              label_options.reverse_merge!(:caption => options.delete(:caption)) if options[:caption]
+              field_html = label(field, label_options)
+              field_html << #{field_type}(field, options)
+              @template.content(:p, field_html)
+            end
           EOF
         end
 
         # submit_block("Update")
         def submit_block(caption, options={})
           submit_html = self.submit(caption, options)
-          @template.content_tag(:p, submit_html)
+          @template.content(:p, submit_html)
         end
 
         # image_submit_block("submit.png")
         def image_submit_block(source, options={})
           submit_html = self.image_submit(source, options)
-          @template.content_tag(:p, submit_html)
+          @template.content(:p, submit_html)
         end
       end # StandardFormBuilder
     end # FormBuilder

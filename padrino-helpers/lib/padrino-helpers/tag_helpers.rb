@@ -45,7 +45,7 @@ module Padrino
       ##
       # Creates an HTML tag with given name, content, and options
       #
-      # @overload content_tag(name, content, options = nil)
+      # @overload content(name, content, options = nil)
       #   @param [Symbol] name
       #     The name of the HTML tag to create.
       #   @param [String] content
@@ -53,7 +53,7 @@ module Padrino
       #   @param [Hash] options
       #     The HTML options to include in this tag.
       #
-      # @overload content_tag(name, options = nil, &block)
+      # @overload content(name, options = nil, &block)
       #   @param [Symbol] name
       #     The name of the HTML tag to create.
       #   @param [Hash] options
@@ -83,13 +83,13 @@ module Padrino
       #   Generated HTML with specified +options+
       #
       # @example
-      #   content_tag(:p, 'Hello World', :class => 'light')
+      #   content(:p, 'Hello World', :class => 'light')
       #
       #   # => <p class="light">
       #   # =>   Hello World
       #   # => </p>
       #
-      #   content_tag(:p, :class => 'dark') do
+      #   content(:p, :class => 'dark') do
       #     link_to 'Padrino', 'http://www.padrinorb.com'
       #   end
       #
@@ -98,7 +98,7 @@ module Padrino
       #   # => </p>
       #
       # @api public
-      def content_tag(name, content = nil, options = nil, &block)
+      def content(name, content = nil, options = nil, &block)
         if block_given?
           options = content if content.is_a?(Hash)
           content = capture_html(&block)
@@ -153,20 +153,20 @@ module Padrino
       #   Generated HTML with specified +options+
       #
       # @example
-      #   input_tag :text, :name => 'handle'
+      #   input :text, :name => 'handle'
       #   # => <input type="test" name="handle" />
       #
-      #   input_tag :password, :name => 'password', :size => 20
+      #   input :password, :name => 'password', :size => 20
       #   # => <input type="password" name="password" size="20" />
       #
-      #   input_tag :text, :name => 'username', :required => true, :autofocus => true
+      #   input :text, :name => 'username', :required => true, :autofocus => true
       #   # => <input type="text" name="username" required autofocus />
       #
-      #   input_tag :number, :name => 'credit_card', :autocomplete => :off
+      #   input :number, :name => 'credit_card', :autocomplete => :off
       #   # => <input type="number" autocomplete="off" />
       #
       # @api semipublic
-      def input_tag(type, options = {})
+      def input(type, options = {})
         tag(:input, options.reverse_merge!(:type => type))
       end
 

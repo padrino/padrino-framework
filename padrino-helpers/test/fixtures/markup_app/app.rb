@@ -36,7 +36,7 @@ class MarkupDemo < Sinatra::Base
 
     def ruby_not_template_block
       determine_block_is_template('ruby') do
-        content_tag(:span, "This not a template block")
+        content(:span, "This not a template block")
       end
     end
   end
