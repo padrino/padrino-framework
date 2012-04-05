@@ -37,7 +37,7 @@ module Padrino
       #
       # @example Register the helper module
       #   require 'padrino-helpers'
-      #   class Padrino::Appliocation
+      #   class Padrino::Application
       #     register Padrino::Helpers
       #   end
       #
