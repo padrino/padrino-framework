@@ -189,6 +189,14 @@ class String
 end
 
 ##
+# Make sure we can always use the class name
+# In reloader for accessing class_name Foo._orig_klass_name
+#
+class Module
+  alias :_orig_klass_name :to_s
+end
+
+##
 # Loads our locale configuration files
 #
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
