@@ -28,7 +28,9 @@ definition.
 You can also configure the mailer to not run during tests. This can be done with:
 
 pre[ruby]. # app/app.rb
-set :delivery_method, :test
+configure :test do
+  set :delivery_method, :test
+end
 
 h2. Quick Usage
 
