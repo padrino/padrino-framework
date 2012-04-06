@@ -82,8 +82,8 @@ body message template which should be defined in <tt>[views_path]/mailers/sample
 as shown below:
 
 pre[erb]. # ./views/mailers/sample/registration_email.erb
-This is the body of the email and can access the <%= name %> variable.
-That's all there is to defining the body of the email which can be in plain text or html.
+This is the body of the email and can access the <%= name %> variable (note the lack of an <tt>@</tt> 
+on <tt>name</tt>). That's all there is to defining the body of the email which can be in plain text or html.
 
 Note that the mailer has full support for content type resolution and the email could also be in the path
 @./views/mailers/sample/registration_email.html.erb@ or @./views/mailers/sample/registration_email.plain.erb@
