@@ -25,11 +25,6 @@ set :delivery_method, :smtp => {
 Once those have been defined, the default will become smtp delivery unless overwritten in an individual mail
 definition.
 
-You can also configure the mailer to not run during tests. This can be done with:
-
-pre[ruby]. # app/app.rb
-set :delivery_method, :test
-
 h2. Quick Usage
 
 Padrino supports sending any arbitrary email (using either sendmail or smtp) right from your controllers. This
@@ -87,8 +82,8 @@ body message template which should be defined in <tt>[views_path]/mailers/sample
 as shown below:
 
 pre[erb]. # ./views/mailers/sample/registration_email.erb
-This is the body of the email and can access the <%= name %> variable.
-That's all there is to defining the body of the email which can be in plain text or html.
+This is the body of the email and can access the <%= name %> variable (note the lack of an <tt>@</tt> 
+on <tt>name</tt>). That's all there is to defining the body of the email which can be in plain text or html.
 
 Note that the mailer has full support for content type resolution and the email could also be in the path
 @./views/mailers/sample/registration_email.html.erb@ or @./views/mailers/sample/registration_email.plain.erb@
@@ -189,4 +184,31 @@ email :custom_email do |name, user|
 # ...
 render('path/to/template') # relative to views_path/mailers
 end
+end
+
+h2. Testing Email
+
+You can configure the mailer so that it doesn't run during tests. This can be done with:
+
+pre[ruby]. # app/app.rb
+configure :test do
+  set :delivery_method, :test
+end
+
+In the <tt>:test</tt> environment, mail deliveries are stacked up in the <tt>Mail::TestMailer.deliveries</tt>
+array. As a convenience, you may add the following to your test configuration:
+
+pre[ruby]. # test/test_config.rb
+def pop_last_delivery
+Mail::TestMailer.deliveries.pop
+end  
+
+Then, you can test email contents like this:
+
+pre[ruby].
+it "sets the state to :complete and sends an email" do
+email = pop_last_delivery
+assert_equal("Thanks for registering", email.subject)
+assert_equal("site@site.com", email.from.first)
+assert_equal(@user.email, email.to.first)
 end
