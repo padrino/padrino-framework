@@ -1,4 +1,4 @@
-class <%= options[:admin_model].underscore.camelize %>
+class <%= @model_name %>
   include MongoMapper::Document
   attr_accessor :password, :password_confirmation
 
@@ -36,11 +36,11 @@ class <%= options[:admin_model].underscore.camelize %>
   end
 
   private
-    def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password)
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(password)
+  end
 
-    def password_required
-      crypted_password.blank? || password.present?
-    end
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 end

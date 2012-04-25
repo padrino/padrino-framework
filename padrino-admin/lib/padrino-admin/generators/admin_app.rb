@@ -61,16 +61,21 @@ module Padrino
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
 
-          account_params = [
-            options[:admin_model].underscore, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+
+          # Setup Admin Model
+          @model_name     = options[:admin_model].classify
+          @model_singular = @model_name.underscore
+          @model_plural   = @model_singular.pluralize
+
+          params = [
+            @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
             "-a=#{options[:app]}",
             "-r=#{options[:root]}"
           ]
+          params << "-s" if options[:skip_migration]
+          params << "-d" if options[:destroy]
 
-          account_params << "-s" if options[:skip_migration]
-          account_params << "-d" if options[:destroy]
-
-          Padrino::Generators::Model.start(account_params)
+          Padrino::Generators::Model.start(params)
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
           column_fields = [
@@ -82,11 +87,11 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new([options[:admin_model].underscore], :root => options[:root], :destroy => options[:destroy])
-          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(options[:admin_model].underscore, orm, columns, column_fields)
+          admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy])
+          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
           admin_app.invoke_all
 
-          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{options[:admin_model].underscore}.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{@model_singular}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
@@ -104,15 +109,14 @@ module Padrino
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
-          model_singular = options[:admin_model].underscore
-          model_plural = model_singular.pluralize
-
-          add_project_module model_plural
+          add_project_module @model_plural
           require_dependencies('bcrypt-ruby', :require => 'bcrypt')
-          gsub_file destination_root("admin/views/#{model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
-          gsub_file destination_root("admin/views/layouts/application.#{ext}"), ":accounts", ":#{model_plural}"
-          gsub_file destination_root("admin/controllers/#{model_plural}.rb"), "if #{model_singular}.destroy", "if #{model_singular} != current_account && #{model_singular}.destroy"
-          gsub_file destination_root("admin/controllers/sessions.rb"), "Account.", "#{options[:admin_model]}."
+
+          # A nicer select box
+          gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+
+          # Destroy account only if not logged in
+          gsub_file destination_root("admin/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
           return if self.behavior == :revoke
 
           instructions = []
