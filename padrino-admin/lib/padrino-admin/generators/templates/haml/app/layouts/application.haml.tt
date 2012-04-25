@@ -24,8 +24,8 @@
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
           %ul.nav.pull-right
-            %li=link_to pat(:profile), url(:<%= options[:admin_model].underscore.pluralize %>, :edit, :id => current_account.id)
-            %li=button_to pat(:logout), url(:sessions, :destroy), :method => :delete,:class => 'navbar-search'
+            %li=link_to pat(:profile), url(:<%= @model_plurarl %>, :edit, :id => current_account.id)
+            %li=button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => 'button_to navbar-search'
     - sidebar = yield_content(:sidebar)
     .container-fluid
       .row-fluid
@@ -46,6 +46,7 @@
             #padrino-modal-body.modal-body
             .modal-footer
               %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
+
           =yield
       %footer
         %p
