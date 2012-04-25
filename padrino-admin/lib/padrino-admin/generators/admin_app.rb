@@ -110,7 +110,9 @@ module Padrino
           add_project_module model_plural
           require_dependencies('bcrypt-ruby', :require => 'bcrypt')
           gsub_file destination_root("admin/views/#{model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          gsub_file destination_root("admin/views/layouts/application.#{ext}"), ":accounts", ":#{model_plural}"
           gsub_file destination_root("admin/controllers/#{model_plural}.rb"), "if #{model_singular}.destroy", "if #{model_singular} != current_account && #{model_singular}.destroy"
+          gsub_file destination_root("admin/controllers/sessions.rb"), "Account.", "#{options[:admin_model]}."
           return if self.behavior == :revoke
 
           instructions = []
