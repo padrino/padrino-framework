@@ -81,6 +81,12 @@ describe "AssetTagHelpers" do
       assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
       assert_have_selector :a, :content => "Test 2 With Block", :href => '/test2', :class => 'test', :id => 'test2'
     end
+
+    should "display link block element in slim" do
+      visit '/slim/link_to'
+      assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
+      assert_have_selector :a, :content => "Test 2 With Block", :href => '/test2', :class => 'test', :id => 'test2'
+    end
   end
 
   context 'for #mail_to method' do
