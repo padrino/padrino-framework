@@ -2,6 +2,8 @@
 
 == 0.10.7 (Not Yet Released)
 
+* FIX #777 for slim template block capturing
+
 == 0.10.6
 
 * FIX #786 reloader issues with routes
