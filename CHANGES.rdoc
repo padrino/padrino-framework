@@ -2,7 +2,13 @@
 
 == 0.10.7 (Not Yet Released)
 
-* FIX #777 for slim template block capturing
+* FIX #777 Improve slim template block capturing
+* FIX #807 Fixes reloader class name resolution
+* NEW #813 Added support for activerecord-jdbcmysql-adapter (@rameshpy)
+* FIX #814 Fix options_for_select result in a corner case (@whitequark)
+* FIX #828 Remove explicit tlsmail dependency (@trevor)
+* FIX #829 Adding an options attribute to ProjectModule (@simonc)
+* FIX #780 Respect user defined model name for admin (@joelcuevas)
 
 == 0.10.6
 
