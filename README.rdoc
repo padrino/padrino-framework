@@ -1,4 +1,4 @@
-== (Padrino Admin TwitterBootstrap 2.0.2)
+== (Padrino Admin TwitterBootstrap 2.0.3)
 * Padrino-Modal: rack-flash and delete function into modal :D
 * highlights error field
 * tof helper: Automatic replace true or false with relative image (list.slim and list.haml)
