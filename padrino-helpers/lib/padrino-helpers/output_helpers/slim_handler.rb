@@ -31,12 +31,11 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          buffer = ''
-          old_buffer, @_out_buf = @_out_buf, buffer
+          self.output_buffer, _buf_was = "", self.output_buffer
           block.call(*args)
-          buffer
-        ensure
-          self.output_buffer = old_buffer
+          ret = eval("@_out_buf", block.binding)
+          self.output_buffer = _buf_was
+          ret
         end
 
         ##
