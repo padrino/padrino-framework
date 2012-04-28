@@ -1,4 +1,4 @@
-class <%= options[:admin_model].underscore.camelize %> < CouchRest::Model::Base
+class <%= @model_name %> < CouchRest::Model::Base
   attr_accessor :password, :password_confirmation
 
   # Properties
@@ -44,23 +44,23 @@ class <%= options[:admin_model].underscore.camelize %> < CouchRest::Model::Base
   end
 
   private
-    def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password)
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(password)
+  end
 
-    def password_required
-      crypted_password.blank? || password.present?
-    end
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 
-    def unique_email_validator
-      account = Account.find_by_email(email)
+  def unique_email_validator
+    account = self.class.find_by_email(email)
 
-      # didn't find email in the database
-      return if account.nil?
+    # didn't find email in the database
+    return if account.nil?
 
-      # account with same email in database is this account
-      return if has_key?('_id') && self['_id'] == account['_id']
+    # account with same email in database is this account
+    return if has_key?('_id') && self['_id'] == account['_id']
 
-      errors.add(:email, "is not unique")
-    end
+    errors.add(:email, "is not unique")
+  end
 end

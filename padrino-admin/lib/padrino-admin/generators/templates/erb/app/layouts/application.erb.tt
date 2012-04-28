@@ -11,7 +11,7 @@
       <h1><%%= link_to "Padrino Admin", url(:base_index) %></h1>
       <div id="user-navigation">
         <ul class="wat-cf">
-          <li><%%= link_to pat(:profile), url(:<%= options[:admin_model].underscore.pluralize %>, :edit, :id => current_account.id) %></li>
+          <li><%%= link_to pat(:profile), url(:<%= @model_plural %>, :edit, :id => current_account.id) %></li>
           <li><%%= button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to %></li>
         </ul>
       </div>
