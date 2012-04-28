@@ -97,7 +97,11 @@ module Padrino
         #
         # @api private
         def method_missing *args
-          @backend.send(*args)
+          if @backend.respond_to?(name)
+            @backend.send(*args)
+          else
+            super
+          end
         end
       end # Redis
     end # Store
