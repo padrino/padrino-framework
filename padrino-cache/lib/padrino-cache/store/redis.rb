@@ -97,7 +97,8 @@ module Padrino
         #
         # @api private
         def method_missing *args
-          if @backend.respond_to?(name)
+          method = args[0].to_s
+          if @backend.respond_to?(method)
             @backend.send(*args)
           else
             super
