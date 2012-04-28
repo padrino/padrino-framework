@@ -96,10 +96,9 @@ module Padrino
         # tries to pass them on the the redis gem.
         #
         # @api private
-        def method_missing *args
-          method = args[0].to_s
-          if @backend.respond_to?(method)
-            @backend.send(*args)
+        def method_missing(name, *args, &block)
+          if @backend.respond_to?(name)
+            @backend.send(name, *args, &block)
           else
             super
           end
