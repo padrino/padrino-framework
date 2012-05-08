@@ -765,7 +765,9 @@ module Padrino
             catch_all = (accepts.delete "*/*" || accepts.empty?)
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
 
-            if !url_format && matching_types.first
+            if params[:format]
+              accept_format = params[:format]
+            elsif !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             elsif catch_all
