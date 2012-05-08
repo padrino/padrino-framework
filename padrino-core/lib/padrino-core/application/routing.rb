@@ -425,6 +425,25 @@ module Padrino
         router.reset!
       end
 
+      def value_to_param(value)
+        case value
+        when Array
+          value.map{|v| value_to_param(v)}.compact
+        when Hash
+          hash = {}
+          value.each do |k, v|
+            v = value_to_param(v)
+            hash[k] = v unless v.nil?
+          end
+          hash
+        when nil
+          nil
+        else
+          value.respond_to?(:to_param) ? value.to_param : value
+        end
+      end
+      private :value_to_param
+
       ##
       # Recognize a given path
       #
