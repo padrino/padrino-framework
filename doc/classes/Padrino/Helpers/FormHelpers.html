@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers::FormHelpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers::FormHelpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-helpers/lib/padrino-helpers/form_helpers_rb.html">padrino-helpers/lib/padrino-helpers/form_helpers.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000366">button_tag</a></li>
+        
+        <li><a href="#M000362">check_box_tag</a></li>
+        
+        <li><a href="#M000352">error_message_on</a></li>
+        
+        <li><a href="#M000349">error_messages_for</a></li>
+        
+        <li><a href="#M000348">field_set_tag</a></li>
+        
+        <li><a href="#M000345">fields_for</a></li>
+        
+        <li><a href="#M000364">file_field_tag</a></li>
+        
+        <li><a href="#M000342">form_for</a></li>
+        
+        <li><a href="#M000346">form_tag</a></li>
+        
+        <li><a href="#M000355">hidden_field_tag</a></li>
+        
+        <li><a href="#M000347">hidden_form_method_field</a></li>
+        
+        <li><a href="#M000367">image_submit_tag</a></li>
+        
+        <li><a href="#M000353">label_tag</a></li>
+        
+        <li><a href="#M000369">options_for_select</a></li>
+        
+        <li><a href="#M000368">options_from_collection</a></li>
+        
+        <li><a href="#M000359">password_field_tag</a></li>
+        
+        <li><a href="#M000363">radio_button_tag</a></li>
+        
+        <li><a href="#M000360">select_tag</a></li>
+        
+        <li><a href="#M000365">submit_tag</a></li>
+        
+        <li><a href="#M000358">text_area_tag</a></li>
+        
+        <li><a href="#M000356">text_field_tag</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000366"></a><b>button_tag</b>(caption, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a button input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  button_tag &quot;Cancel&quot;, :class =&gt; 'clear'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000366_source')" id="l_M000366_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L331" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000366_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 331</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">button_tag</span>(<span class="ruby-identifier">caption</span>, <span class="ruby-identifier">options</span> = {})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">caption</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:button</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000362"></a><b>check_box_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a check_box from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  check_box_tag :remember_me, :value =&gt; 'Yes'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000362_source')" id="l_M000362_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L283" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000362_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 283</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_box_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'1'</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:checkbox</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000352"></a><b>error_message_on</b>(object, field, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns a string containing the error message attached to the
+<tt>method</tt> on the <tt>object</tt> if one exists.
+</p>
+<h4>Options</h4>
+<table>
+<tr><td valign="top">:tag:</td><td>The tag that enclose your error. (Default &#8216;div&#8217;)
+
+</td></tr>
+<tr><td valign="top">:prepend:</td><td>Text to add before error.
+
+</td></tr>
+<tr><td valign="top">:append:</td><td>Text to add after error.
+
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  # =&gt; &lt;span class=&quot;error&quot;&gt;can't be blank&lt;/div&gt;
+  error_message_on :post, :title
+
+  # =&gt; &lt;div class=&quot;custom&quot; style=&quot;border:1px solid red&quot;&gt;can't be blank&lt;/div&gt;
+  error_message_on :post, :title, :tag =&gt; :id, :class =&gt; :custom, :style =&gt; &quot;border:1px solid red&quot;
+
+  # =&gt; &lt;div class=&quot;error&quot;&gt;This title can't be blank (or it won't work)&lt;/div&gt;
+  error_message_on :post, :title, :prepend =&gt; &quot;This title&quot;, :append =&gt; &quot;(or it won't work)&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000352_source')" id="l_M000352_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L173" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000352_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 173</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">error_message_on</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">field</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">object</span> = <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{object}&quot;</span>)
+        <span class="ruby-identifier">error</span>  = <span class="ruby-identifier">object</span>.<span class="ruby-identifier">errors</span>[<span class="ruby-identifier">field</span>] <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">error</span>
+          <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:tag</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:span</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:error</span>)
+          <span class="ruby-identifier">tag</span>   = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:tag</span>)
+          <span class="ruby-comment cmt"># Array(error).first is necessary because some orm give us an array others directly a value</span>
+          <span class="ruby-identifier">error</span> = [<span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:prepend</span>), <span class="ruby-constant">Array</span>(<span class="ruby-identifier">error</span>).<span class="ruby-identifier">first</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:append</span>)].<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; &quot;</span>)
+          <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">tag</span>, <span class="ruby-identifier">error</span>, <span class="ruby-identifier">options</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-value str">''</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000349"></a><b>error_messages_for</b>(*objects)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs list html for the errors for a given symbol
+</p>
+<h4>Options</h4>
+<table>
+<tr><td valign="top">:header_tag:</td><td>Used for the header of the error div (default: &#8220;h2&#8221;).
+
+</td></tr>
+<tr><td valign="top">:id:</td><td>The id of the error div (default: &#8220;errorExplanation&#8221;).
+
+</td></tr>
+<tr><td valign="top">:class:</td><td>The class of the error div (default: &#8220;errorExplanation&#8221;).
+
+</td></tr>
+<tr><td valign="top">:object:</td><td>The object (or array of objects) for which to display errors,
+
+</td></tr>
+</table>
+<p>
+if you need to escape the instance variable convention.
+</p>
+<table>
+<tr><td valign="top">:object_name:</td><td>The object name to use in the header, or any text that you prefer.
+
+</td></tr>
+</table>
+<p>
+If <tt>:object_name</tt> is not set, the name of the first object will be
+used.
+</p>
+<table>
+<tr><td valign="top">:header_message:</td><td>The message in the header of the error div. Pass <tt>nil</tt>
+
+</td></tr>
+</table>
+<p>
+or an empty string to avoid the header message altogether. (Default:
+&#8220;X errors prohibited this object from being saved&#8221;).
+</p>
+<table>
+<tr><td valign="top">:message:</td><td>The explanation message after the header message and before
+
+</td></tr>
+</table>
+<p>
+the error list. Pass <tt>nil</tt> or an empty string to avoid the
+explanation message altogether. (Default: &#8220;There were problems with
+the following fields:&#8221;).
+</p>
+<h4>Examples</h4>
+<pre>
+  error_messages_for :user
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000349_source')" id="l_M000349_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L106" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000349_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 106</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">error_messages_for</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">objects</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">extract_options!</span>.<span class="ruby-identifier">symbolize_keys</span>
+        <span class="ruby-identifier">objects</span> = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">object_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">object_name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{object_name}&quot;</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">object_name</span> }.<span class="ruby-identifier">compact</span>
+        <span class="ruby-identifier">count</span>   = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">sum</span>, <span class="ruby-identifier">object</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sum</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">size</span> }
+
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">count</span>.<span class="ruby-identifier">zero?</span>
+          <span class="ruby-identifier">html</span> = {}
+          [<span class="ruby-identifier">:id</span>, <span class="ruby-identifier">:class</span>, <span class="ruby-identifier">:style</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">key</span>)
+              <span class="ruby-identifier">value</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">key</span>]
+              <span class="ruby-identifier">html</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">value</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">blank?</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">html</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-value str">'field-errors'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">key</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:style</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:object_name</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">class</span>
+
+          <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">with_options</span> <span class="ruby-identifier">:locale</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:locale</span>], <span class="ruby-identifier">:scope</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">:models</span>, <span class="ruby-identifier">:errors</span>, <span class="ruby-identifier">:template</span>] <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">locale</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">header_message</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:header_message</span>)
+              <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_message</span>]
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">object_name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:object_name</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>)
+              <span class="ruby-identifier">object_name</span> = <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-identifier">:name</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">object_name</span>.<span class="ruby-identifier">humanize</span>, <span class="ruby-identifier">:scope</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">:models</span>, <span class="ruby-identifier">object_name</span>], <span class="ruby-identifier">:count</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>)
+              <span class="ruby-identifier">locale</span>.<span class="ruby-identifier">t</span> <span class="ruby-identifier">:header</span>, <span class="ruby-identifier">:count</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">count</span>, <span class="ruby-identifier">:model</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">object_name</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-identifier">message</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:message</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">locale</span>.<span class="ruby-identifier">t</span>(<span class="ruby-identifier">:body</span>)
+            <span class="ruby-identifier">error_messages</span> = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">object</span><span class="ruby-operator">|</span>
+              <span class="ruby-identifier">object_name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:object_name</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>)
+              <span class="ruby-identifier">object</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span>, <span class="ruby-identifier">msg</span><span class="ruby-operator">|</span>
+                <span class="ruby-identifier">field</span> = <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-identifier">f</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">humanize</span>, <span class="ruby-identifier">:scope</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">:models</span>, <span class="ruby-identifier">object_name</span>, <span class="ruby-identifier">:attributes</span>])
+                <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:li</span>, <span class="ruby-value str">&quot;%s %s&quot;</span> <span class="ruby-operator">%</span> [<span class="ruby-identifier">field</span>, <span class="ruby-identifier">msg</span>])
+              }
+            }.<span class="ruby-identifier">join</span>
+
+            <span class="ruby-identifier">contents</span> = <span class="ruby-value str">''</span>
+            <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_tag</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">:h2</span>, <span class="ruby-identifier">header_message</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">header_message</span>.<span class="ruby-identifier">blank?</span>
+            <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:p</span>, <span class="ruby-identifier">message</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">blank?</span>
+            <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:ul</span>, <span class="ruby-identifier">error_messages</span>)
+
+            <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:div</span>, <span class="ruby-identifier">contents</span>, <span class="ruby-identifier">html</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-value str">''</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000348"></a><b>field_set_tag</b>(*args, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a field_set to group fields with given options
+</p>
+<h4>Examples</h4>
+<pre>
+  field_set_tag(&quot;Office&quot;, :class =&gt; 'office-set')
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000348_source')" id="l_M000348_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L75" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000348_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 75</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">field_set_tag</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">extract_options!</span>
+        <span class="ruby-identifier">legend_text</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-identifier">legend_html</span> = <span class="ruby-identifier">legend_text</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-value">? </span><span class="ruby-value str">''</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:legend</span>, <span class="ruby-identifier">legend_text</span>)
+        <span class="ruby-identifier">field_set_content</span> = <span class="ruby-identifier">legend_html</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">concat_content</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-value str">'fieldset'</span>, <span class="ruby-identifier">field_set_content</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000345"></a><b>fields_for</b>(object, settings={}, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs form fields for an object using given or default form_builder
+Used within an existing form to allow alternate objects within one form
+</p>
+<h4>Examples</h4>
+<pre>
+  fields_for @user.assignment do |assignment| ... end
+  fields_for :assignment do |assigment| ... end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000345_source')" id="l_M000345_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L27" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000345_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 27</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fields_for</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">settings</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">builder_class</span> = <span class="ruby-identifier">configured_form_builder_class</span>(<span class="ruby-identifier">settings</span>[<span class="ruby-identifier">:builder</span>])
+        <span class="ruby-identifier">fields_html</span> = <span class="ruby-identifier">capture_html</span>(<span class="ruby-identifier">builder_class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">object</span>), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">concat_content</span> <span class="ruby-identifier">fields_html</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000364"></a><b>file_field_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a file field input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  file_field_tag :photo, :class =&gt; 'long'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000364_source')" id="l_M000364_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L307" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000364_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 307</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">file_field_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:file</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000342"></a><b>form_for</b>(object, url, settings={}, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a form for object using given or default form_builder
+</p>
+<h4>Examples</h4>
+<pre>
+  form_for :user, '/register' do |f| ... end
+  form_for @user, '/register', :id =&gt; 'register' do |f| ... end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000342_source')" id="l_M000342_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L12" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000342_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 12</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">form_for</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">url</span>, <span class="ruby-identifier">settings</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">builder_class</span> = <span class="ruby-identifier">configured_form_builder_class</span>(<span class="ruby-identifier">settings</span>[<span class="ruby-identifier">:builder</span>])
+        <span class="ruby-identifier">form_html</span> = <span class="ruby-identifier">capture_html</span>(<span class="ruby-identifier">builder_class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">object</span>), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">form_tag</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">settings</span>) { <span class="ruby-identifier">form_html</span> }
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000346"></a><b>form_tag</b>(url, options={}, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a form without object based on options
+</p>
+<h4>Examples</h4>
+<pre>
+  form_tag '/register' do ... end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000346_source')" id="l_M000346_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L40" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000346_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 40</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">form_tag</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">options</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">desired_method</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:method</span>]
+        <span class="ruby-identifier">data_method</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:method</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:method</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!~</span> <span class="ruby-regexp re">/get|post/i</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:method</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;post&quot;</span>, <span class="ruby-identifier">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:enctype</span>] = <span class="ruby-value str">&quot;multipart/form-data&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:multipart</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;data-remote&quot;</span>] = <span class="ruby-value str">&quot;true&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:remote</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;data-method&quot;</span>] = <span class="ruby-identifier">data_method</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">data_method</span>
+        <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;accept-charset&quot;</span>] = <span class="ruby-value str">&quot;UTF-8&quot;</span>
+        <span class="ruby-identifier">inner_form_html</span>  = <span class="ruby-identifier">hidden_form_method_field</span>(<span class="ruby-identifier">desired_method</span>)
+        <span class="ruby-identifier">inner_form_html</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">hidden_field_tag</span>(<span class="ruby-identifier">:&quot;_utf8&quot;</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;&amp;#9731;&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">concat_content</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-value str">'form'</span>, <span class="ruby-identifier">inner_form_html</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000355"></a><b>hidden_field_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a hidden field input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  hidden_field_tag :session_key, :value =&gt; &quot;__secret__&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000355_source')" id="l_M000355_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L214" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000355_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 214</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">hidden_field_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:hidden</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000347"></a><b>hidden_form_method_field</b>(desired_method)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the hidden method field for &#8216;put&#8217; and
+&#8216;delete&#8217; forms Only &#8216;get&#8217; and &#8216;post&#8217;
+are allowed within browsers; &#8216;put&#8217; and &#8216;delete&#8217; are
+just specified using hidden fields with form action still
+&#8216;put&#8217;.
+</p>
+<h4>Examples</h4>
+<pre>
+  # Generate: &lt;input name=&quot;_method&quot; value=&quot;delete&quot; /&gt;
+  hidden_form_method_field('delete')
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000347_source')" id="l_M000347_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L63" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000347_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 63</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">hidden_form_method_field</span>(<span class="ruby-identifier">desired_method</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">desired_method</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">desired_method</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/get|post/i</span>
+        <span class="ruby-identifier">hidden_field_tag</span>(<span class="ruby-identifier">:_method</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">desired_method</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000367"></a><b>image_submit_tag</b>(source, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a submit button from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  submit_tag &quot;Create&quot;, :class =&gt; 'success'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000367_source')" id="l_M000367_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L342" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000367_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 342</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">image_submit_tag</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:src</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">image_path</span>(<span class="ruby-identifier">source</span>))
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:image</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000353"></a><b>label_tag</b>(name, options={}, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a label tag from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  label_tag :username, :class =&gt; 'long-label'
+  label_tag :username, :class =&gt; 'long-label' do ... end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000353_source')" id="l_M000353_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L195" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000353_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 195</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">label_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:caption</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{name.to_s.humanize}: &quot;</span>, <span class="ruby-identifier">:for</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">caption_text</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:caption</span>)
+        <span class="ruby-identifier">caption_text</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;&lt;span class='required'&gt;*&lt;/span&gt; &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:required</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span> <span class="ruby-comment cmt"># label with inner content</span>
+          <span class="ruby-identifier">label_content</span> = <span class="ruby-identifier">caption_text</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">capture_html</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+          <span class="ruby-identifier">concat_content</span>(<span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:label</span>, <span class="ruby-identifier">label_content</span>, <span class="ruby-identifier">options</span>))
+        <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt"># regular label</span>
+          <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:label</span>, <span class="ruby-identifier">caption_text</span>, <span class="ruby-identifier">options</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000369"></a><b>options_for_select</b>(option_items, selected_value=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the options tags for a select based on the given option items
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000369_source')" id="l_M000369_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L358" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000369_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 358</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">options_for_select</span>(<span class="ruby-identifier">option_items</span>, <span class="ruby-identifier">selected_value</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">option_items</span>.<span class="ruby-identifier">blank?</span>
+        <span class="ruby-identifier">option_items</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">caption</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">value</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">caption</span>
+          <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:option</span>, <span class="ruby-identifier">caption</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span>, <span class="ruby-identifier">:selected</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">option_is_selected?</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">caption</span>, <span class="ruby-identifier">selected_value</span>))
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000368"></a><b>options_from_collection</b>(collection, fields)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns an array of option items for a select field based on the given
+collection fields is an array containing the fields to display from each
+item in the collection
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000368_source')" id="l_M000368_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L351" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000368_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 351</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">options_from_collection</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">fields</span>)
+        <span class="ruby-identifier">collection</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">item</span><span class="ruby-operator">|</span> [ <span class="ruby-identifier">item</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">fields</span>.<span class="ruby-identifier">first</span>), <span class="ruby-identifier">item</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">fields</span>.<span class="ruby-identifier">last</span>) ] }
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000359"></a><b>password_field_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a password field input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  password_field_tag :password, :class =&gt; 'long'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000359_source')" id="l_M000359_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L250" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000359_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 250</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">password_field_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:password</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000363"></a><b>radio_button_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a radio_button from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  radio_button_tag :remember_me, :value =&gt; 'true'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000363_source')" id="l_M000363_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L295" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000363_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 295</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">radio_button_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:radio</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000360"></a><b>select_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a check_box from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  options = [['caption', 'value'], ['Green', 'green1'], ['Blue', 'blue1'], ['Black', &quot;black1&quot;]]
+  options = ['option', 'red', 'yellow' ]
+  select_tag(:favorite_color, :options =&gt; ['red', 'yellow'], :selected =&gt; 'green1')
+  select_tag(:country, :collection =&gt; @countries, :fields =&gt; [:name, :code], :include_blank =&gt; 'None')
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000360_source')" id="l_M000360_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L265" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000360_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 265</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">select_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">collection</span>, <span class="ruby-identifier">fields</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:collection</span>), <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:fields</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:options</span>] = <span class="ruby-identifier">options_from_collection</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">fields</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">collection</span>
+        <span class="ruby-identifier">blank</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:include_blank</span>)
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:options</span>].<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">blank</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">?</span> [<span class="ruby-identifier">blank</span>, <span class="ruby-value str">''</span>] <span class="ruby-operator">:</span> <span class="ruby-value str">''</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">blank</span>
+        <span class="ruby-identifier">select_options_html</span> = <span class="ruby-identifier">options_for_select</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:options</span>), <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:selected</span>))
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{options[:name]}[]&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:multiple</span>]
+        <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:select</span>, <span class="ruby-identifier">select_options_html</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000365"></a><b>submit_tag</b>(caption=&quot;Submit&quot;, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a submit button from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  submit_tag &quot;Create&quot;, :class =&gt; 'success'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000365_source')" id="l_M000365_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L319" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000365_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 319</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">submit_tag</span>(<span class="ruby-identifier">caption</span>=<span class="ruby-value str">&quot;Submit&quot;</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">caption</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:submit</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000358"></a><b>text_area_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a text area input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  text_area_tag :username, :class =&gt; 'long', :value =&gt; &quot;Demo?&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000358_source')" id="l_M000358_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L238" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000358_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 238</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">text_area_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:textarea</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:value</span>).<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000356"></a><b>text_field_tag</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Constructs a text field input from the given options
+</p>
+<h4>Examples</h4>
+<pre>
+  text_field_tag :username, :class =&gt; 'long'
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000356_source')" id="l_M000356_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers/form_helpers.rb#L226" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000356_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers/form_helpers.rb, line 226</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">text_field_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>)
+        <span class="ruby-identifier">input_tag</span>(<span class="ruby-identifier">:text</span>, <span class="ruby-identifier">options</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

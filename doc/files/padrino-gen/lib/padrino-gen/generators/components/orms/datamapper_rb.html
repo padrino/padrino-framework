@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>datamapper.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />datamapper.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/orms/datamapper.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">DM</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-DM) unless defined?(DM) ## # A MySQL connection: # DataMapper.setup(:default, 'mysql://user:password@localhost/the_database_name') # # # A Postgres connection: # DataMapper.setup(:default, 'postgres://user:password@localhost/the_database_name') # # # A Sqlite3 connection # DataMapper.setup(:default, &quot;sqlite3://&quot; + Padrino.root('db', &quot;development.db&quot;)) #   DataMapper.logger = logger  case Padrino.env   when :development then DataMapper.setup(:default, !DB_DEVELOPMENT!)   when :production  then DataMapper.setup(:default, !DB_PRODUCTION!)   when :test        then DataMapper.setup(:default, !DB_TEST!) end DM ) unless defined?(DM)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DM_MODEL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MODEL) unless defined?(DM_MODEL) class !NAME!   include DataMapper::Resource    # property &lt;name&gt;, &lt;type&gt;   property :id, Serial   !FIELDS! end MODEL ) unless defined?(DM_MODEL)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DM_MIGRATION</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION) unless defined?(DM_MIGRATION) migration !VERSION!, :!FILENAME! do   up do     !UP!   end    down do     !DOWN!   end end MIGRATION ) unless defined?(DM_MIGRATION)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DM_MODEL_UP_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG) create_table :!TABLE! do   column :id, DataMapper::Property::Integer, :serial =&gt; true   !FIELDS! end MIGRATION ).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DM_MODEL_DOWN_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION) unless defined?(DM_MODEL_DOWN_MG) drop_table :!TABLE! MIGRATION ) unless defined?(DM_MODEL_DOWN_MG)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DM_CHANGE_MG</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MIGRATION).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG) modify_table :!TABLE! do   !COLUMNS! end MIGRATION ).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

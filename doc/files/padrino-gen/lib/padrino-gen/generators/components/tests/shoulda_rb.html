@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>shoulda.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />shoulda.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/tests/shoulda.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SHOULDA_SETUP</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP) PADRINO_ENV = 'test' unless defined?(PADRINO_ENV) require File.expand_path(File.dirname(__FILE__) + &quot;/../config/boot&quot;)  class Test::Unit::TestCase   include Rack::Test::Methods    def app     ##     # You can handle all padrino applications using instead:     #   Padrino.application     CLASS_NAME.tap { |app|  }   end end TEST ).gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SHOULDA_CONTROLLER_TEST</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST) require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')  class !NAME!ControllerTest &lt; Test::Unit::TestCase   context &quot;!NAME!Controller&quot; do     setup do       get '/'     end      should &quot;return hello world text&quot; do       assert_equal &quot;Hello World&quot;, last_response.body     end   end end TEST ).gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SHOULDA_RAKE</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE) require 'rake/testtask'  Rake::TestTask.new(:test) do |test|   test.pattern = 'test/**/*_test.rb'   test.verbose = true end TEST ).gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SHOULDA_MODEL_TEST</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST) require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')  class !NAME!Test &lt; Test::Unit::TestCase   context &quot;!NAME! Model&quot; do     should 'construct new instance' do       @!DNAME! = !NAME!.new       assert_not_nil @!DNAME!     end   end end TEST ).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

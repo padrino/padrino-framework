@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Cache::Store::File</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Cache::Store::File</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-cache/lib/padrino-cache/store/file_rb.html">padrino-cache/lib/padrino-cache/store/file.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            <a href="../../../Object.html">Object</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000412">delete</a></li>
+        
+        <li><a href="#M000413">flush</a></li>
+        
+        <li><a href="#M000410">get</a></li>
+        
+        <li><a href="#M000409">new</a></li>
+        
+        <li><a href="#M000411">set</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000409"></a><b>new</b>(root)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000409_source')" id="l_M000409_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cb29cca59f268a3df23399a710514dbb489fdbe8/padrino-cache/lib/padrino-cache/store/file.rb#L5" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000409_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-cache/lib/padrino-cache/store/file.rb, line 5</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">root</span>)
+          <span class="ruby-ivar">@root</span> = <span class="ruby-identifier">root</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000412"></a><b>delete</b>(key)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000412_source')" id="l_M000412_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cb29cca59f268a3df23399a710514dbb489fdbe8/padrino-cache/lib/padrino-cache/store/file.rb#L37" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000412_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-cache/lib/padrino-cache/store/file.rb, line 37</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">key</span>)
+          <span class="ruby-identifier">init</span>
+          <span class="ruby-constant">Array</span>(<span class="ruby-identifier">key</span>).<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm_rf</span>(<span class="ruby-identifier">path_for_key</span>(<span class="ruby-identifier">k</span>)) }
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000413"></a><b>flush</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000413_source')" id="l_M000413_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cb29cca59f268a3df23399a710514dbb489fdbe8/padrino-cache/lib/padrino-cache/store/file.rb#L42" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000413_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-cache/lib/padrino-cache/store/file.rb, line 42</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">flush</span>
+          <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm_rf</span>(<span class="ruby-ivar">@root</span>)
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000410"></a><b>get</b>(key)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000410_source')" id="l_M000410_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cb29cca59f268a3df23399a710514dbb489fdbe8/padrino-cache/lib/padrino-cache/store/file.rb#L9" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000410_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-cache/lib/padrino-cache/store/file.rb, line 9</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">key</span>)
+          <span class="ruby-identifier">init</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">path_for_key</span>(<span class="ruby-identifier">key</span>))
+            <span class="ruby-identifier">contents</span> = <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path_for_key</span>(<span class="ruby-identifier">key</span>))
+            <span class="ruby-identifier">expires_in</span>, <span class="ruby-identifier">body</span> = <span class="ruby-identifier">contents</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>, <span class="ruby-value">2</span>)
+            <span class="ruby-identifier">expires_in</span> = <span class="ruby-identifier">expires_in</span>.<span class="ruby-identifier">to_i</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expires_in</span> <span class="ruby-operator">==</span> <span class="ruby-value">-1</span> <span class="ruby-keyword kw">or</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">expires_in</span>
+              <span class="ruby-identifier">body</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">key</span>)
+              <span class="ruby-keyword kw">nil</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-keyword kw">nil</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000411"></a><b>set</b>(key, value, opts = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000411_source')" id="l_M000411_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cb29cca59f268a3df23399a710514dbb489fdbe8/padrino-cache/lib/padrino-cache/store/file.rb#L26" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000411_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-cache/lib/padrino-cache/store/file.rb, line 26</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">opts</span> = <span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">init</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:expires_in</span>]
+            <span class="ruby-identifier">expires_in</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:expires_in</span>].<span class="ruby-identifier">to_i</span>
+            <span class="ruby-identifier">expires_in</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">expires_in</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expires_in</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">EXPIRES_EDGE</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">expires_in</span> = <span class="ruby-value">-1</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path_for_key</span>(<span class="ruby-identifier">key</span>), <span class="ruby-value str">'w'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">expires_in</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span> } <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

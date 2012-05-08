@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>couchrest.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table border='0' cellpadding='0' cellspacing='0' width="100%" class='banner'>
+      <tr><td>
+        <table width="100%" border='0' cellpadding='0' cellspacing='0'><tr>
+          <td class="file-title" colspan="2"><span class="file-title-prefix">File</span><br />couchrest.rb</td>
+          <td align="right">
+            <table border='0' cellspacing="0" cellpadding="2">
+              <tr>
+                <td>Path:</td>
+                <td>padrino-gen/lib/padrino-gen/generators/components/orms/couchrest.rb</td>
+              </tr>
+              <tr>
+                <td>Modified:</td>
+                <td>Mon Dec 13 04:58:43 +0100 2010</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table><br />
+
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">COUCHREST</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-COUCHREST) unless defined?(COUCHREST) case Padrino.env   when :development then COUCHDB_NAME = '!NAME!_development'   when :production  then COUCHDB_NAME = '!NAME!_production'   when :test        then COUCHDB_NAME = '!NAME!_test' end COUCHDB = CouchRest.database!(COUCHDB_NAME) COUCHREST ) unless defined?(COUCHREST)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CR_MODEL</td>
+            <td>=</td>
+            <td class="attr-value">(&lt;&lt;-MODEL) unless defined?(CR_MODEL) class !NAME! &lt; CouchRest::ExtendedDocument   include CouchRest::Validation    use_database COUCHDB    unique_id :id   # property &lt;name&gt;   !FIELDS! end MODEL ) unless defined?(CR_MODEL)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

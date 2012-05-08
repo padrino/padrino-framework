@@ -1,0 +1,294 @@
+.small
+  font-size: 11px
+
+.gray
+  color: #999999
+
+.hightlight
+  background-color: #FFFFCC
+
+a
+  &:link, &:visited, &:hover, &:active
+    color: #AF0000
+
+h1, h2, h3
+  color: #AF0000
+
+a
+  -moz-outline: none
+
+body
+  color: #222
+  background: #f0f0ee
+  font-family: helvetica, arial, sans-serif
+
+hr
+  background: #f0f0ee
+  color: #f0f0ee
+
+#header
+  background: #AF0000
+  h1
+    padding: 20px 0
+    a
+      &:link, &:active, &:hover, &:visited
+        color: #FFF
+
+#user-navigation
+  top: auto
+  bottom: 5px
+  right: 25px
+
+#main .block .content
+  background: #FFF
+  padding-top: 1px
+  h2
+    margin-left: 15px
+
+#sidebar
+  .block
+    background: #FFF
+  h3
+    background: #AF0000
+    color: #FFF
+    border-bottom: 5px solid #2a0000
+
+#main-navigation ul li
+  padding-left: 15px
+  a
+    padding: 8px 0
+  &.active
+    padding: 0
+    margin-left: 15px
+    margin-left: 15px
+    a
+      padding: 8px 15px
+
+#sidebar ul li a
+  &:link, &:visited
+    background: #FFF
+    border-bottom: 1px solid #F0F0EE
+    text-decoration: none
+  &:hover, &:active
+    background: #470E0E
+    color: #FFF
+
+#main-navigation
+  background: #2a0000
+  ul li
+    background: #2a0000
+    margin-right: 0
+    &.active
+      background: #f0f0ee
+    a
+      &:link, &:visited, &:hover, &:active
+        text-decoration: none
+        color: #FFF
+
+.secondary-navigation ul li a
+  &:link, &:visited, &:hover, &:active
+    text-decoration: none
+    color: #FFF
+
+#user-navigation ul li a
+  &:link, &:visited, &:hover, &:active
+    text-decoration: none
+    color: #FFF
+
+.secondary-navigation li a:hover
+  background: #470E0E
+
+#main-navigation ul li.active a
+  &:link, &:visited, &:hover, &:active
+    color: #2a0000
+
+.secondary-navigation
+  background: #AF0000
+  border-bottom-color: #2a0000
+  ul li.active
+    background-color: #2a0000
+    a:hover
+      background-color: #2a0000
+
+#footer .block
+  color: #FFF
+  background: #2a0000
+  p
+    margin: 0
+    padding: 10px
+
+/* pagination
+
+.pagination
+  span.current
+    background: #2a0000
+    color: #FFF
+    border-color: #2a0000
+  a
+    color: #2a0000
+    border-color: #2a0000
+    &:hover
+      color: #FFF
+      background: #2a0000
+
+/* tables
+
+.table
+  th
+    background: #100000
+    border-bottom: 3px solid #700000
+    color: #FFF
+  td
+    border-bottom: 1px solid #F0F0EE
+
+/* forms
+
+.form
+  input
+    &.text_field, &.password_field
+      width: 100%
+      border: 1px solid #2a0000
+  textarea.text_area
+    width: 100%
+    border: 1px solid #2a0000
+  input.button
+    padding: 5px 10px 5px 10px
+    background-color: #AF0000
+    text-decoration: none
+    cursor: pointer
+    color: #FFF
+    font-size: 14px
+    border: 0px
+    margin: 0px
+  .button:hover
+    background: #2A0000
+  .description
+    font-style: italic
+    color: #8C8C8C
+    font-size: .9em
+
+/* flash-messages
+
+.flash
+  .message
+    -moz-border-radius: 3px
+    -webkit-border-radius: 3px
+    text-align: center
+    margin: 0 auto 15px
+    p
+      margin: 8px
+  .error
+    border: 1px solid #fbb
+    background-color: #fdd
+  .warning
+    border: 1px solid #fffaaa
+    background-color: #ffffcc
+  .notice
+    border: 1px solid #1FDF00
+    background-color: #BBFFB6
+
+/* lists
+
+ul.list li
+  border-bottom-color: #F0F0EE
+  border-bottom-width: 1px
+  border-bottom-style: solid
+  .item .avatar
+    border-color: #F0F0EE
+    border-width: 1px
+    border-style: solid
+    padding: 2px
+
+/* box
+
+#box .block
+  background: #FFF
+  h2
+    background: #AF0000
+    color: #FFF
+
+/* rounded borders
+
+#main
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+  -moz-border-radius-topright: 4px
+  -webkit-border-top-right-radius: 4px
+
+#main-navigation
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+  -moz-border-radius-topright: 4px
+  -webkit-border-top-right-radius: 4px
+  li
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+
+.secondary-navigation, #main .block
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+  -moz-border-radius-topright: 4px
+  -webkit-border-top-right-radius: 4px
+
+#sidebar
+  .block, h3
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+
+ul.list li, #footer .block, .form input.button
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+  -moz-border-radius-topright: 4px
+  -webkit-border-top-right-radius: 4px
+
+#box .block
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+  -moz-border-radius-topright: 4px
+  -webkit-border-top-right-radius: 4px
+  h2
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+
+.secondary-navigation
+  li.first a, ul li.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+
+.table th
+  &.first
+    -moz-border-radius-topleft: 4px
+    -webkit-border-top-left-radius: 4px
+  &.last
+    -moz-border-radius-topright: 4px
+    -webkit-border-top-right-radius: 4px
+
+.secondary-navigation ul li.first
+  -moz-border-radius-topleft: 4px
+  -webkit-border-top-left-radius: 4px
+
+#sidebar
+  -moz-border-radius-bottomleft: 4px
+  -webkit-border-bottom-left-radius: 4px
+  -moz-border-radius-bottomright: 4px
+  -webkit-border-bottom-right-radius: 4px
+  .block
+    -moz-border-radius-bottomleft: 4px
+    -webkit-border-bottom-left-radius: 4px
+    -moz-border-radius-bottomright: 4px
+    -webkit-border-bottom-right-radius: 4px
+
+#main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block
+  -moz-border-radius-bottomleft: 4px
+  -webkit-border-bottom-left-radius: 4px
+  -moz-border-radius-bottomright: 4px
+  -webkit-border-bottom-right-radius: 4px
+
+.secondary-navigation
+  border-bottom-width: 5px

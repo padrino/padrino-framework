@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Generators::Actions::ClassMethods</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Generators::Actions::ClassMethods</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../../files/padrino-gen/lib/padrino-gen/generators/actions_rb.html">padrino-gen/lib/padrino-gen/generators/actions.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000172">available_choices_for</a></li>
+        
+        <li><a href="#M000167">component_option</a></li>
+        
+        <li><a href="#M000171">component_types</a></li>
+        
+        <li><a href="#M000169">require_arguments!</a></li>
+        
+        <li><a href="#M000170">require_arguments?</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000172"></a><b>available_choices_for</b>(component)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the list of available choices for the given component (including
+none)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000172_source')" id="l_M000172_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L237" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000172_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 237</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">available_choices_for</span>(<span class="ruby-identifier">component</span>)
+          <span class="ruby-ivar">@available_choices</span>[<span class="ruby-identifier">component</span>] <span class="ruby-operator">+</span> [<span class="ruby-identifier">:none</span>]
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000167"></a><b>component_option</b>(name, caption, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Defines a class option to allow a component to be chosen and add to
+component type list Also builds the available_choices hash of which
+component choices are supported <a
+href="ClassMethods.html#M000167">component_option</a> :test, &#8220;Testing
+framework&#8221;, :aliases => &#8217;-t&#8217;, :choices => [:bacon,
+:shoulda]
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000167_source')" id="l_M000167_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L214" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000167_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 214</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">component_option</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">caption</span>, <span class="ruby-identifier">options</span> = {})
+          (<span class="ruby-ivar">@component_types</span>   <span class="ruby-operator">||=</span> []) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">name</span> <span class="ruby-comment cmt"># TODO use ordered hash and combine with choices below</span>
+          (<span class="ruby-ivar">@available_choices</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>)[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:choices</span>]
+          <span class="ruby-identifier">description</span> = <span class="ruby-node">&quot;The #{caption} component (#{options[:choices].join(', ')}, none)&quot;</span>
+          <span class="ruby-identifier">class_option</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:default</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:choices</span>].<span class="ruby-identifier">first</span>, <span class="ruby-identifier">:aliases</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:aliases</span>], <span class="ruby-identifier">:desc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">description</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000171"></a><b>component_types</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the compiled list of component types which can be specified
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000171_source')" id="l_M000171_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L232" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000171_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 232</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">component_types</span>
+          <span class="ruby-ivar">@component_types</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000169"></a><b>require_arguments!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Tell to padrino that for this Thor::Group is necessary a task to run
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000169_source')" id="l_M000169_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L222" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000169_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 222</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">require_arguments!</span>
+          <span class="ruby-ivar">@require_arguments</span> = <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000170"></a><b>require_arguments?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return true if we need an arguments for our Thor::Group
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000170_source')" id="l_M000170_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L227" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000170_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 227</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">require_arguments?</span>
+          <span class="ruby-ivar">@require_arguments</span>
+        <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

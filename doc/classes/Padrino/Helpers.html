@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Helpers</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Helpers</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers_rb.html">padrino-helpers/lib/padrino-helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/translation_helpers_rb.html">padrino-helpers/lib/padrino-helpers/translation_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/output_helpers_rb.html">padrino-helpers/lib/padrino-helpers/output_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/asset_tag_helpers_rb.html">padrino-helpers/lib/padrino-helpers/asset_tag_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/format_helpers_rb.html">padrino-helpers/lib/padrino-helpers/format_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/form_helpers_rb.html">padrino-helpers/lib/padrino-helpers/form_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/number_helpers_rb.html">padrino-helpers/lib/padrino-helpers/number_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/dom_helpers_rb.html">padrino-helpers/lib/padrino-helpers/dom_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/render_helpers_rb.html">padrino-helpers/lib/padrino-helpers/render_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/tag_helpers_rb.html">padrino-helpers/lib/padrino-helpers/tag_helpers.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/form_builder/standard_form_builder_rb.html">padrino-helpers/lib/padrino-helpers/form_builder/standard_form_builder.rb</a>
+                            
+                            <a href="../../files/padrino-helpers/lib/padrino-helpers/form_builder/abstract_form_builder_rb.html">padrino-helpers/lib/padrino-helpers/form_builder/abstract_form_builder.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+This component provides a great deal of view helpers related to html markup
+generation. There are helpers for generating tags, forms, links, images,
+and more. Most of the basic methods should be very familiar to anyone who
+has used rails view helpers.
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000298">registered</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/AssetTagHelpers.html">Padrino::Helpers::AssetTagHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/DomHelpers.html">Padrino::Helpers::DomHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/FormBuilder.html">Padrino::Helpers::FormBuilder</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/FormHelpers.html">Padrino::Helpers::FormHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/FormatHelpers.html">Padrino::Helpers::FormatHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/NumberHelpers.html">Padrino::Helpers::NumberHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/OutputHelpers.html">Padrino::Helpers::OutputHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/RenderHelpers.html">Padrino::Helpers::RenderHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/TagHelpers.html">Padrino::Helpers::TagHelpers</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="Helpers/TranslationHelpers.html">Padrino::Helpers::TranslationHelpers</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000298"></a><b>registered</b>(app)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000298_source')" id="l_M000298_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/cbdc0e848c70b80aa5d9b9d80c2c462a0bf3adc7/padrino-helpers/lib/padrino-helpers.rb#L31" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000298_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-helpers/lib/padrino-helpers.rb, line 31</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">registered</span>(<span class="ruby-identifier">app</span>)
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">set</span> <span class="ruby-identifier">:default_builder</span>, <span class="ruby-value str">'StandardFormBuilder'</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">DomHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">OutputHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">TagHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">AssetTagHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">FormHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">FormatHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">RenderHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">NumberHelpers</span>
+        <span class="ruby-identifier">app</span>.<span class="ruby-identifier">helpers</span> <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Helpers</span><span class="ruby-operator">::</span><span class="ruby-constant">TranslationHelpers</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

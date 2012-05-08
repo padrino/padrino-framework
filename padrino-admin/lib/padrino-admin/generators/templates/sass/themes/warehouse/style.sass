@@ -1,0 +1,329 @@
+a
+  &:link, &:visited
+    color: #07b
+    text-decoration: none
+  color: #d30
+  &:hover, &:active
+    color: #d30
+
+h1, h2, h3
+  color: #444
+
+body
+  color: #333
+  background: #EBEBEB
+  font: normal 12px / 1.5em "Lucida Grande", "Helvetica Neue", Arial, sans-serif
+
+hr
+  background: #aaa
+
+p
+  font-size: 12px
+  line-height: 20px
+
+input.check_box
+  vertical-align: middle
+
+#header h1
+  font-size: 28px
+  padding: 5px 0
+  margin: 5px 0
+
+.hightlight
+  background-color: #ffc
+
+.small
+  font-size: 11px
+
+.gray
+  color: #999
+
+#header
+  background: #232C30
+  h1 a
+    &:link, &:active, &:hover, &:visited
+      color: #eaeaea
+
+#main
+  background: #EBEBEB
+  width: 73%
+  .block
+    -moz-border-radius-topleft: 4px
+    -moz-border-radius-topright: 4px
+    padding: 0
+    margin-bottom: 20px
+    padding-bottom: 20px
+    background: transparent
+    .content
+      border-left: 1px solid #ddd
+      border-top: 1px solid #ddd
+      border-bottom: 1px solid #ccc
+      border-right: 1px solid #ccc
+      background: #fff
+    h2.title
+      margin: 10px 0 5px 0
+      background-color: none
+      padding: 5px 5px 5px 15px
+      font-size: 18px
+      color: #456
+
+.main_container
+  padding: 10px
+
+#footer
+  background-color: #ddd
+  border-top: 1px solid #bbb
+  .block
+    font-size: 11px
+    background-color: #ddd
+    padding: 0 10px
+    text-align: right
+
+/* #sidebar .block { background: #FFF; padding-bottom:0px; }
+
+#sidebar
+  .notice
+    background-color: #ffc
+    padding: 0 10px
+    border-bottom: 1px solid #ddd
+    border-right: 1px solid #ddd
+    border-top: 1px solid #fff
+    border-left: 1px solid #fff
+    h2
+      font-size: 16px
+      margin: 5px 0
+      border-bottom: 1px solid #456
+    p
+      font-size: 12px
+  .block
+    padding-bottom: 0
+    .content
+      padding: 0 10px
+  h3
+    background: #fff
+    border-bottom: 1px solid #ccc
+    border-right: 1px solid #ccc
+    border-left: 1px solid #ddd
+    border-top: 1px solid #ddd
+    padding: 5px 10px
+    color: #333
+    font-weight: bold
+  ul
+    li a
+      &:link, &:visited
+        font-size: 12px
+      &:hover, &:active
+        background: none
+        color: #444
+        font-size: 12px
+        text-decoration: underline
+    &.navigation li
+      &.last a
+        border-bottom: none
+      a
+        &:link, &:visited
+          padding: 5px 10px
+          color: #6a6a6a
+          text-decoration: none
+        &:hover
+          text-decoration: underline
+  .block .sidebar-block h4
+    border-bottom: 1px dotted #aaa
+
+#main-navigation ul li
+  background: #456
+  border-top: 1px solid #5C738A
+  color: #eee
+  border-top-left-radius: 5px
+  border-top-right-radius: 5px
+  &:hover
+    border-top-color: #7593B0
+    background-color: #576C82 !important
+    color: #fff
+  &.active
+    border-top: 1px solid #fff
+    background-color: #eee !important
+    color: #333
+  a
+    &:link, &:visited, &:hover, &:active
+      text-decoration: none
+      color: #FFF
+
+.secondary-navigation ul li a
+  &:link, &:visited, &:hover, &:active
+    text-decoration: none
+    color: #FFF
+
+#user-navigation ul li a
+  &:link, &:visited, &:hover, &:active
+    text-decoration: none
+    color: #FFF
+  &:link, &:visited
+    color: #CDE
+    border-bottom: 1px dotted #345
+  &:hover
+    color: #fff
+    border-bottom: 1px dotted #CDE
+    text-decoration: none
+
+#main-navigation ul li
+  a
+    font-size: 12px
+    padding: 3px 10px
+  &.active a
+    &:link, &:visited, &:hover, &:active
+      color: #364b69
+
+.secondary-navigation
+  background: #eaeaea
+  border-bottom: 0px
+  ul li
+    background: #456
+    border-top: 1px solid #5C738A
+    color: #eee
+    margin-right: 5px
+    border-top-left-radius: 5px
+    border-top-right-radius: 5px
+    a
+      padding: 3px 10px
+    &.active
+      &:hover
+        background: #fff !important
+        border-top: 1px solid #ccc
+        border-right: 1px solid #ccc
+      border-top: 1px solid #ddd
+      border-left: 1px solid #ddd
+      border-right: 1px solid #ccc
+      border-bottom: 1px solid #fff
+      margin-bottom: -1px
+      background-color: #fff !important
+      color: #333
+      a
+        color: #333
+    &:hover
+      border-top-color: #7593B0
+      background-color: #576C82 !important
+      color: #fff
+
+/* pagination
+
+.pagination
+  span
+    &.current
+      background: #576C82
+      color: #FFF
+      border: 1px solid #7593B0
+      -moz-border-radius: 5px
+    &.disabled
+      background: #eee
+      color: #aaa
+      border: 1px solid #ddd
+      -moz-border-radius: 5px
+  a
+    color: #364B69
+    border: 1px solid #ddd
+    -moz-border-radius: 5px
+    font-size: 11px
+    &:hover
+      color: #444
+      background: #eaeaea
+      border: 1px solid #576C82
+
+/* tables
+
+.table
+  th
+    background: #576C82
+    color: #FFF
+    font-weight: normal
+    padding: 3px
+    a.toggle
+      display: block
+      width: 12px
+      height: 12px
+      background: transparent url('images/tick.png') center no-repeat
+      text-indent: -9999px
+      -moz-outline: none
+    &.first
+      width: 30px
+      text-align: center
+  td
+    border-bottom: 1px solid #AAA
+
+/* forms
+
+.form
+  input.text, textarea.textarea
+    border: 1px solid #ddd
+    padding: 5px
+    width: 99%
+  input
+    &.text_field, &.password_field
+      border-right: 1px solid #ddd
+      border-bottom: 1px solid #ddd
+      border-top: 2px solid #ccc
+      border-left: 2px solid #ccc
+      width: 99%
+  textarea.text_area
+    border-right: 1px solid #ddd
+    border-bottom: 1px solid #ddd
+    border-top: 2px solid #ccc
+    border-left: 2px solid #ccc
+    width: 99%
+  .navform
+    padding: 10px
+    background-color: #eee
+    font-size: 14px
+    border-bottom: 1px solid #ddd
+    border-right: 1px solid #ddd
+    border-top: 1px solid #eee
+    border-left: 1px solid #eee
+    input
+      font-size: 14px
+
+.description
+  color: #aaa
+  font-family: Georgia, serif
+
+/* flash-messages
+
+.flash
+  .message
+    -moz-border-radius: 3px
+    -webkit-border-radius: 3px
+    text-align: center
+    margin: 0 auto 5px
+    width: 80%
+    p
+      margin: 8px
+  .error
+    border: 1px solid #fbb
+    background-color: #fdd
+  .warning
+    border: 1px solid #fffaaa
+    background-color: #ffffcc
+  .notice
+    border: 1px solid #ddf
+    background-color: #eef
+
+/* lists
+
+ul.list li
+  border-bottom-color: #F0F0EE
+  .item .avatar
+    border-color: #F0F0EE
+    margin: 3px 10px 0 0
+  .left
+    padding: 5px 5px
+
+/* box
+
+#box .block
+  background: #FFF
+  border: 1px solid #ddd
+  border-radius: 10px
+  h2
+    background: #576C82
+    color: #FFF
+    border-top-left-radius: 5px
+    border-top-right-radius: 5px

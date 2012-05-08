@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Generators::Mailer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Generators::Mailer</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-gen/lib/padrino-gen/generators/mailer_rb.html">padrino-gen/lib/padrino-gen/generators/mailer.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Thor::Group
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000136">banner</a></li>
+        
+        <li><a href="#M000137">create_mailer</a></li>
+        
+        <li><a href="#M000135">source_root</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <span>Thor::Actions</span>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../Mailer/Helpers.html">Padrino::Mailer::Helpers</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../Mailer/Helpers.html">Padrino::Mailer::Helpers</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000136"></a><b>banner</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000136_source')" id="l_M000136_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8baa1ed4583449d7e6909cb8154a548a46a42353/padrino-gen/lib/padrino-gen/generators/mailer.rb#L11" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000136_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/mailer.rb, line 11</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">banner</span>; <span class="ruby-value str">&quot;padrino-gen mailer [name]&quot;</span>; <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000135"></a><b>source_root</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Define the source template root
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000135_source')" id="l_M000135_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8baa1ed4583449d7e6909cb8154a548a46a42353/padrino-gen/lib/padrino-gen/generators/mailer.rb#L10" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000135_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/mailer.rb, line 10</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">source_root</span>; <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-keyword kw">__FILE__</span>)); <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000137"></a><b>create_mailer</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000137_source')" id="l_M000137_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/8baa1ed4583449d7e6909cb8154a548a46a42353/padrino-gen/lib/padrino-gen/generators/mailer.rb#L29" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000137_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/mailer.rb, line 29</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_mailer</span>
+        <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">destination_root</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:root</span>]
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">in_app_root?</span>
+          <span class="ruby-identifier">app</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:app</span>]
+          <span class="ruby-identifier">check_app_existence</span>(<span class="ruby-identifier">app</span>)
+          <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">behavior</span> = <span class="ruby-identifier">:revoke</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:destroy</span>]
+          <span class="ruby-ivar">@app_name</span> = <span class="ruby-identifier">fetch_app_name</span>(<span class="ruby-identifier">app</span>)
+          <span class="ruby-ivar">@actions</span> = <span class="ruby-identifier">actions</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_sym</span>}
+          <span class="ruby-ivar">@short_name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/mailer/i</span>, <span class="ruby-value str">''</span>).<span class="ruby-identifier">underscore</span>.<span class="ruby-identifier">downcase</span>
+          <span class="ruby-ivar">@mailer_basename</span> = <span class="ruby-ivar">@short_name</span>.<span class="ruby-identifier">underscore</span>
+          <span class="ruby-identifier">template</span> <span class="ruby-value str">&quot;templates/mailer.rb.tt&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;mailers&quot;</span>, <span class="ruby-node">&quot;#{@mailer_basename}.rb&quot;</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'views'</span>, <span class="ruby-value str">'mailers'</span>, <span class="ruby-ivar">@mailer_basename</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;You are not at the root of a Padrino application! (config/boot.rb not found)&quot;</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

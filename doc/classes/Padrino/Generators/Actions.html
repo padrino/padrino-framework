@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Generators::Actions</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Module</span><br />Padrino::Generators::Actions</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-gen/lib/padrino-gen/generators/actions_rb.html">padrino-gen/lib/padrino-gen/generators/actions.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000164">app_skeleton</a></li>
+        
+        <li><a href="#M000140">apply_component_for</a></li>
+        
+        <li><a href="#M000162">ask</a></li>
+        
+        <li><a href="#M000163">check_app_existence</a></li>
+        
+        <li><a href="#M000148">destination_root</a></li>
+        
+        <li><a href="#M000139">execute_component_setup</a></li>
+        
+        <li><a href="#M000151">fetch_app_name</a></li>
+        
+        <li><a href="#M000142">fetch_component_choice</a></li>
+        
+        <li><a href="#M000149">in_app_root?</a></li>
+        
+        <li><a href="#M000141">include_component_module_for</a></li>
+        
+        <li><a href="#M000138">included</a></li>
+        
+        <li><a href="#M000157">initializer</a></li>
+        
+        <li><a href="#M000156">insert_hook</a></li>
+        
+        <li><a href="#M000155">insert_into_gemfile</a></li>
+        
+        <li><a href="#M000150">invalid_fields</a></li>
+        
+        <li><a href="#M000158">require_contrib</a></li>
+        
+        <li><a href="#M000153">require_dependencies</a></li>
+        
+        <li><a href="#M000154">require_dependency</a></li>
+        
+        <li><a href="#M000144">resolve_valid_choice</a></li>
+        
+        <li><a href="#M000143">retrieve_component_config</a></li>
+        
+        <li><a href="#M000161">run_bundler</a></li>
+        
+        <li><a href="#M000147">store_component_config</a></li>
+        
+        <li><a href="#M000159">test?</a></li>
+        
+        <li><a href="#M000160">tiny?</a></li>
+        
+        <li><a href="#M000145">valid_choice?</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Actions/ClassMethods.html">Padrino::Generators::Actions::ClassMethods</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000138"></a><b>included</b>(base)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000138_source')" id="l_M000138_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L7" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000138_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 7</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">included</span>(<span class="ruby-identifier">base</span>)
+        <span class="ruby-identifier">base</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">ClassMethods</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000164"></a><b>app_skeleton</b>(app, tiny=false)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Generates standard and tiny applications within a project
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000164_source')" id="l_M000164_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L193" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000164_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 193</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">app_skeleton</span>(<span class="ruby-identifier">app</span>, <span class="ruby-identifier">tiny</span>=<span class="ruby-keyword kw">false</span>)
+        <span class="ruby-identifier">directory</span>(<span class="ruby-value str">&quot;app/&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>))
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tiny</span> <span class="ruby-comment cmt"># generate tiny structure</span>
+          <span class="ruby-identifier">template</span> <span class="ruby-value str">&quot;templates/controller.rb.tt&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;controllers.rb&quot;</span>)
+          <span class="ruby-identifier">template</span> <span class="ruby-value str">&quot;templates/helper.rb.tt&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;helpers.rb&quot;</span>)
+          <span class="ruby-ivar">@short_name</span> = <span class="ruby-value str">'notifier'</span>
+          <span class="ruby-identifier">template</span> <span class="ruby-value str">&quot;templates/mailer.rb.tt&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;mailers.rb&quot;</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;views&quot;</span>, <span class="ruby-value str">&quot;layouts&quot;</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">&quot;views&quot;</span>, <span class="ruby-value str">&quot;mailers&quot;</span>)
+        <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt"># generate standard folders</span>
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'controllers'</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'helpers'</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'views'</span>)
+          <span class="ruby-identifier">empty_directory</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'views'</span>, <span class="ruby-value str">'layouts'</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000140"></a><b>apply_component_for</b>(choice, component)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the related module for a given component and option
+generator_module_for(&#8216;rr&#8217;, :mock)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000140_source')" id="l_M000140_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L22" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000140_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 22</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply_component_for</span>(<span class="ruby-identifier">choice</span>, <span class="ruby-identifier">component</span>)
+        <span class="ruby-comment cmt"># I need to override Thor#apply because for unknow reason :verobse =&gt; false break tasks.</span>
+        <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-keyword kw">__FILE__</span>) <span class="ruby-operator">+</span> <span class="ruby-node">&quot;/components/#{component.to_s.pluralize}/#{choice}.rb&quot;</span>)
+        <span class="ruby-identifier">say_status</span> <span class="ruby-identifier">:apply</span>, <span class="ruby-node">&quot;#{component.to_s.pluralize}/#{choice}&quot;</span>
+        <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+        <span class="ruby-identifier">instance_eval</span>(<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>).<span class="ruby-identifier">read</span>)
+        <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000162"></a><b>ask</b>(statement, default=nil, color=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Ask something to the user and receives a response.
+</p>
+<h4>Example</h4>
+<pre>
+  ask(&quot;What is your name?&quot;)
+  ask(&quot;Path for ruby&quot;, &quot;/usr/local/bin/ruby&quot;) =&gt; &quot;Path for ruby (leave blank for /usr/local/bin/ruby):&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000162_source')" id="l_M000162_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L173" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000162_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 173</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ask</span>(<span class="ruby-identifier">statement</span>, <span class="ruby-identifier">default</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">color</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-identifier">default_text</span> = <span class="ruby-identifier">default</span> <span class="ruby-value">? </span><span class="ruby-node">&quot; (leave blank for #{default}):&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-identifier">say</span>(<span class="ruby-node">&quot;#{statement}#{default_text} &quot;</span>, <span class="ruby-identifier">color</span>)
+        <span class="ruby-identifier">result</span> = <span class="ruby-identifier">$stdin</span>.<span class="ruby-identifier">gets</span>.<span class="ruby-identifier">strip</span>
+        <span class="ruby-identifier">result</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-value">? </span><span class="ruby-identifier">default</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">result</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000163"></a><b>check_app_existence</b>(app)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Raise SystemExit if the app is inexistent
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000163_source')" id="l_M000163_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L181" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000163_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 181</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_app_existence</span>(<span class="ruby-identifier">app</span>)
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>))
+          <span class="ruby-identifier">say</span>
+          <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;=================================================================&quot;</span>
+          <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;We didn't found #{app.underscore.camelize}!                      &quot;</span>
+          <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;=================================================================&quot;</span>
+          <span class="ruby-identifier">say</span>
+          <span class="ruby-comment cmt"># raise SystemExit</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000148"></a><b>destination_root</b>(*paths)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the root for this thor class (also aliased as destination root).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000148_source')" id="l_M000148_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L83" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000148_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 83</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">paths</span>)
+        <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@destination_stack</span>.<span class="ruby-identifier">last</span>, <span class="ruby-identifier">paths</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000139"></a><b>execute_component_setup</b>(component, choice)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Performs the necessary generator for a given component choice <a
+href="Actions.html#M000139">execute_component_setup</a>(:mock,
+&#8216;rr&#8217;)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000139_source')" id="l_M000139_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L13" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000139_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 13</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">execute_component_setup</span>(<span class="ruby-identifier">component</span>, <span class="ruby-identifier">choice</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">say</span>(<span class="ruby-node">&quot;Skipping generator for #{component} component...&quot;</span>, <span class="ruby-identifier">:yellow</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">choice</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'none'</span>
+        <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;Applying '#{choice}' (#{component})...&quot;</span>, <span class="ruby-identifier">:yellow</span>
+        <span class="ruby-identifier">apply_component_for</span>(<span class="ruby-identifier">choice</span>, <span class="ruby-identifier">component</span>)
+        <span class="ruby-identifier">send</span>(<span class="ruby-node">&quot;setup_#{component}&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">respond_to?</span>(<span class="ruby-node">&quot;setup_#{component}&quot;</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000151"></a><b>fetch_app_name</b>(app='app')
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the app_name for the application at root
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000151_source')" id="l_M000151_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L99" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000151_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 99</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch_app_name</span>(<span class="ruby-identifier">app</span>=<span class="ruby-value str">'app'</span>)
+        <span class="ruby-identifier">app_path</span> = <span class="ruby-identifier">destination_root</span>(<span class="ruby-identifier">app</span>, <span class="ruby-value str">'app.rb'</span>)
+        <span class="ruby-ivar">@app_name</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">app_path</span>).<span class="ruby-identifier">scan</span>(<span class="ruby-regexp re">/class\s(.*?)\s&lt;/</span>).<span class="ruby-identifier">flatten</span>[<span class="ruby-value">0</span>]
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000142"></a><b>fetch_component_choice</b>(component)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the component choice stored within the .component file of an
+application <a
+href="Actions.html#M000142">fetch_component_choice</a>(:mock)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000142_source')" id="l_M000142_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L43" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000142_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 43</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch_component_choice</span>(<span class="ruby-identifier">component</span>)
+        <span class="ruby-identifier">retrieve_component_config</span>(<span class="ruby-identifier">destination_root</span>(<span class="ruby-value str">'.components'</span>))[<span class="ruby-identifier">component</span>]
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000149"></a><b>in_app_root?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if inside a <a href="../../Padrino.html">Padrino</a>
+application
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000149_source')" id="l_M000149_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L88" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000149_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 88</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">in_app_root?</span>
+        <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">destination_root</span>(<span class="ruby-value str">'config/boot.rb'</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000141"></a><b>include_component_module_for</b>(component, choice=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Includes the component module for the given component and choice Determines
+the choice using .components file <a
+href="Actions.html#M000141">include_component_module_for</a>(:mock) <a
+href="Actions.html#M000141">include_component_module_for</a>(:mock,
+&#8216;rr&#8217;)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000141_source')" id="l_M000141_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L35" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000141_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 35</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">include_component_module_for</span>(<span class="ruby-identifier">component</span>, <span class="ruby-identifier">choice</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-identifier">choice</span> = <span class="ruby-identifier">fetch_component_choice</span>(<span class="ruby-identifier">component</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">choice</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">choice</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'none'</span>
+        <span class="ruby-identifier">apply_component_for</span>(<span class="ruby-identifier">choice</span>, <span class="ruby-identifier">component</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000157"></a><b>initializer</b>(name, data=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Registers and Creates Initializer. initializer :test, &#8220;some stuff
+here&#8220;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000157_source')" id="l_M000157_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L136" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000157_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 136</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initializer</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">data</span>=<span class="ruby-keyword kw">nil</span>)
+        <span class="ruby-ivar">@_init_name</span>, <span class="ruby-ivar">@_init_data</span> = <span class="ruby-identifier">name</span>, <span class="ruby-identifier">data</span>
+        <span class="ruby-identifier">register</span> = <span class="ruby-identifier">data</span>.<span class="ruby-identifier">present?</span> <span class="ruby-value">? </span><span class="ruby-node">&quot;  register #{name.to_s.camelize}Initializer\n&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;  register #{name}\n&quot;</span>
+        <span class="ruby-identifier">inject_into_file</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-value str">&quot;/app/app.rb&quot;</span>), <span class="ruby-identifier">register</span>, <span class="ruby-identifier">:after</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;Padrino::Application\n&quot;</span>
+        <span class="ruby-identifier">template</span> <span class="ruby-value str">&quot;templates/initializer.rb.tt&quot;</span>, <span class="ruby-identifier">destination_root</span>(<span class="ruby-node">&quot;/lib/#{name}_init.rb&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">present?</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000156"></a><b>insert_hook</b>(include_text, where)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Inserts an hook before or after load in our boot.rb <a
+href="Actions.html#M000156">insert_hook</a>(&#8220;DataMapper.finalize&#8220;,
+:after_load)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000156_source')" id="l_M000156_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L130" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000156_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 130</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">insert_hook</span>(<span class="ruby-identifier">include_text</span>, <span class="ruby-identifier">where</span>)
+        <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-value str">'config/boot.rb'</span>, <span class="ruby-node">&quot;  #{include_text}\n&quot;</span>, <span class="ruby-identifier">:after</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;Padrino.#{where} do\n&quot;</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000155"></a><b>insert_into_gemfile</b>(name, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Inserts a required gem into the Gemfile to add the bundler dependency <a
+href="Actions.html#M000155">insert_into_gemfile</a>(name) <a
+href="Actions.html#M000155">insert_into_gemfile</a>(name, :group =>
+&#8216;test&#8217;, :require => &#8216;foo&#8217;) <a
+href="Actions.html#M000155">insert_into_gemfile</a>(name, :group =>
+&#8216;test&#8217;, :version => &#8220;>1.2.3&#8220;)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000155_source')" id="l_M000155_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L118" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000155_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 118</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">insert_into_gemfile</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">after_pattern</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:group</span>] <span class="ruby-operator">?</span> <span class="ruby-node">&quot;#{options[:group].to_s.capitalize} requirements\n&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;Component requirements\n&quot;</span>
+        <span class="ruby-identifier">version</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:version</span>)
+        <span class="ruby-identifier">gem_options</span>   = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;#{k.inspect} =&gt; #{v.inspect}&quot;</span> }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;, &quot;</span>)
+        <span class="ruby-identifier">write_option</span> = <span class="ruby-identifier">gem_options</span>.<span class="ruby-identifier">present?</span> <span class="ruby-value">? </span><span class="ruby-node">&quot;, #{gem_options}&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>
+        <span class="ruby-identifier">write_version</span> = <span class="ruby-identifier">version</span>.<span class="ruby-identifier">present?</span> <span class="ruby-value">? </span><span class="ruby-node">&quot;, #{version.inspect}&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>
+        <span class="ruby-identifier">include_text</span>  = <span class="ruby-node">&quot;gem '#{name}'&quot;</span><span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">write_version</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">write_option</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+        <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-value str">'Gemfile'</span>, <span class="ruby-identifier">include_text</span>, <span class="ruby-identifier">:after</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">after_pattern</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000150"></a><b>invalid_fields</b>(fields)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns the field with an unacceptable name(for symbol) else returns nil
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000150_source')" id="l_M000150_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L93" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000150_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 93</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">invalid_fields</span>(<span class="ruby-identifier">fields</span>)
+        <span class="ruby-identifier">results</span> = <span class="ruby-identifier">fields</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">field</span><span class="ruby-operator">|</span> <span class="ruby-identifier">field</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;:&quot;</span>).<span class="ruby-identifier">first</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\W/</span> }
+        <span class="ruby-identifier">results</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">results</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000158"></a><b>require_contrib</b>(contrib)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Insert the regired gem and add in boot.rb custom contribs.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000158_source')" id="l_M000158_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L144" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000158_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 144</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">require_contrib</span>(<span class="ruby-identifier">contrib</span>)
+        <span class="ruby-identifier">insert_into_gemfile</span> <span class="ruby-value str">'padrino-contrib'</span>
+        <span class="ruby-identifier">contrib</span> = <span class="ruby-value str">&quot;require '&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;padrino-contrib&quot;</span>, <span class="ruby-identifier">contrib</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;'\n&quot;</span>
+        <span class="ruby-identifier">inject_into_file</span> <span class="ruby-identifier">destination_root</span>(<span class="ruby-value str">&quot;/config/boot.rb&quot;</span>), <span class="ruby-identifier">contrib</span>, <span class="ruby-identifier">:before</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;\nPadrino.load!&quot;</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000153"></a><b>require_dependencies</b>(*gem_names)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Adds all the specified gems into the Gemfile for bundler <a
+href="Actions.html#M000153">require_dependencies</a>
+&#8216;active_record&#8217; <a
+href="Actions.html#M000153">require_dependencies</a> &#8216;mocha&#8217;,
+&#8216;bacon&#8217;, :group => &#8216;test&#8217; <a
+href="Actions.html#M000153">require_dependencies</a> &#8216;json&#8217;,
+:version => &#8220;>=1.2.3&#8220;
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Actions.html#M000154">require_dependency</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000153_source')" id="l_M000153_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L108" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000153_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 108</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">require_dependencies</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">gem_names</span>)
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">gem_names</span>.<span class="ruby-identifier">extract_options!</span>
+        <span class="ruby-identifier">gem_names</span>.<span class="ruby-identifier">reverse</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">lib</span><span class="ruby-operator">|</span> <span class="ruby-identifier">insert_into_gemfile</span>(<span class="ruby-identifier">lib</span>, <span class="ruby-identifier">options</span>) }
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000154"></a><b>require_dependency</b>(*gem_names)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Alias for <a href="Actions.html#M000153">require_dependencies</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000144"></a><b>resolve_valid_choice</b>(component)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Prompts the user if necessary until a valid choice is returned for the
+component <a href="Actions.html#M000144">resolve_valid_choice</a>(:mock) =>
+&#8216;rr&#8217;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000144_source')" id="l_M000144_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L55" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000144_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 55</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">resolve_valid_choice</span>(<span class="ruby-identifier">component</span>)
+        <span class="ruby-identifier">available_string</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">available_choices_for</span>(<span class="ruby-identifier">component</span>).<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;, &quot;</span>)
+        <span class="ruby-identifier">choice</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">component</span>]
+        <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">valid_choice?</span>(<span class="ruby-identifier">component</span>, <span class="ruby-identifier">choice</span>)
+          <span class="ruby-identifier">say</span>(<span class="ruby-node">&quot;Option for --#{component} '#{choice}' is not available.&quot;</span>, <span class="ruby-identifier">:red</span>)
+          <span class="ruby-identifier">choice</span> = <span class="ruby-identifier">ask</span>(<span class="ruby-node">&quot;Please enter a valid option for #{component} (#{available_string}):&quot;</span>)
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">choice</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000143"></a><b>retrieve_component_config</b>(target)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Loads the component config back into a hash i.e <a
+href="Actions.html#M000143">retrieve_component_config</a>(&#8230;) => {
+:mock => &#8216;rr&#8217;, :test => &#8216;riot&#8217;, &#8230; }
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000143_source')" id="l_M000143_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L49" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000143_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 49</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">retrieve_component_config</span>(<span class="ruby-identifier">target</span>)
+        <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_file</span>(<span class="ruby-identifier">target</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000161"></a><b>run_bundler</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Run the bundler
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000161_source')" id="l_M000161_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L161" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000161_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 161</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run_bundler</span>
+        <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;Bundling application dependencies using bundler...&quot;</span>, <span class="ruby-identifier">:yellow</span>
+        <span class="ruby-identifier">in_root</span> { <span class="ruby-identifier">run</span> <span class="ruby-value str">'bundle install'</span> }
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000147"></a><b>store_component_config</b>(destination)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Creates a component_config file at the destination containing all component
+options Content is a yamlized version of a hash containing component name
+mapping to chosen value
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000147_source')" id="l_M000147_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L73" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000147_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 73</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">store_component_config</span>(<span class="ruby-identifier">destination</span>)
+        <span class="ruby-identifier">components</span> = <span class="ruby-ivar">@_components</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>
+        <span class="ruby-identifier">create_file</span>(<span class="ruby-identifier">destination</span>) <span class="ruby-keyword kw">do</span>
+          <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">component_types</span>.<span class="ruby-identifier">inject</span>({}) { <span class="ruby-operator">|</span><span class="ruby-identifier">result</span>, <span class="ruby-identifier">comp</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">result</span>[<span class="ruby-identifier">comp</span>] = <span class="ruby-identifier">components</span>[<span class="ruby-identifier">comp</span>].<span class="ruby-identifier">to_s</span>; <span class="ruby-identifier">result</span>
+          }.<span class="ruby-identifier">to_yaml</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000159"></a><b>test?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return true if our project has test component
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000159_source')" id="l_M000159_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L151" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000159_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 151</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test?</span>
+        <span class="ruby-identifier">fetch_component_choice</span>(<span class="ruby-identifier">:test</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">'none'</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000160"></a><b>tiny?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Return true if we have a tiny skeleton
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000160_source')" id="l_M000160_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L156" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000160_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 156</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tiny?</span>
+        <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">destination_root</span>(<span class="ruby-value str">&quot;app/controllers.rb&quot;</span>))
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000145"></a><b>valid_choice?</b>(component, choice)
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+Returns true if the option passed is a valid choice for component
+valid_option?(:mock, &#8216;rr&#8217;)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000145_source')" id="l_M000145_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/c1563ee77806d1dc0913ec12f64adb29ff7cb701/padrino-gen/lib/padrino-gen/generators/actions.rb#L67" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000145_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/actions.rb, line 67</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">valid_choice?</span>(<span class="ruby-identifier">component</span>, <span class="ruby-identifier">choice</span>)
+        <span class="ruby-identifier">choice</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">available_choices_for</span>(<span class="ruby-identifier">component</span>).<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">choice</span>.<span class="ruby-identifier">to_sym</span>)
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

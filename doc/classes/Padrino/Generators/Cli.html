@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Padrino::Generators::Cli</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'>
+        <tr>
+            <td class="file-title"><span class="file-title-prefix">Class</span><br />Padrino::Generators::Cli</td>
+            <td align="right">
+                <table cellspacing="0" cellpadding="2">
+                    <tr valign="top">
+                        <td>In:</td>
+                        <td>
+                            
+                            <a href="../../../files/padrino-gen/lib/padrino-gen/generators/cli_rb.html">padrino-gen/lib/padrino-gen/generators/cli.rb</a>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Parent:</td>
+                        <td>
+                            
+                            Thor::Group
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description"><p>
+This class bootstrap <tt>config/boot</tt> and perform
++Padrino::Generators.load_components!+ for handle 3rd party generators
+</p>
+</div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <ul>
+        
+        <li><a href="#M000146">load_boot</a></li>
+        
+        <li><a href="#M000152">setup</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <span>Thor::Actions</span>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000146"></a><b>load_boot</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  
+                  <p>
+We need to TRY to load boot because some of our app dependencies maybe have
+custom generators, so is necessary know who are.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000146_source')" id="l_M000146_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2f44399a04fdcdf01b4376109e75f690e01483f0/padrino-gen/lib/padrino-gen/generators/cli.rb#L18" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000146_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/cli.rb, line 18</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_boot</span>
+        <span class="ruby-keyword kw">begin</span>
+          <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'PADRINO_LOG_LEVEL'</span>] <span class="ruby-operator">||=</span> <span class="ruby-value str">&quot;test&quot;</span>
+          <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'BUNDLE_GEMFILE'</span>] = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:root</span>], <span class="ruby-value str">&quot;Gemfile&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:root</span>]
+          <span class="ruby-identifier">boot</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:root</span>] <span class="ruby-operator">?</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:root</span>], <span class="ruby-value str">'config/boot.rb'</span>) <span class="ruby-operator">:</span> <span class="ruby-value str">'config/boot.rb'</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">boot</span>)
+            <span class="ruby-identifier">require</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">boot</span>)
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-comment cmt"># If we are outside app we need to load support_lite</span>
+            <span class="ruby-identifier">require</span> <span class="ruby-value str">'padrino-core/support_lite'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">SupportLite</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;=&gt; Problem loading #{boot}&quot;</span>
+          <span class="ruby-identifier">puts</span> [<span class="ruby-node">&quot;=&gt; #{e.message}&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n  &quot;</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title">
+                    
+                    <a name="M000152"></a><b>setup</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000152_source')" id="l_M000152_source">show</a>
+                        
+                        | <a href="http://github.com/lenzcom/padrino-framework/blob/2f44399a04fdcdf01b4376109e75f690e01483f0/padrino-gen/lib/padrino-gen/generators/cli.rb#L35" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000152_source" class="dyn-source">
+                        <pre><span class="ruby-comment cmt"># File padrino-gen/lib/padrino-gen/generators/cli.rb, line 35</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setup</span>
+        <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Generators</span>.<span class="ruby-identifier">load_components!</span>
+
+        <span class="ruby-identifier">generator_kind</span>  = <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-value">0</span>).<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ARGV</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">present?</span>
+        <span class="ruby-identifier">generator_class</span> = <span class="ruby-constant">Padrino</span><span class="ruby-operator">::</span><span class="ruby-constant">Generators</span>.<span class="ruby-identifier">mappings</span>[<span class="ruby-identifier">generator_kind</span>]
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">generator_class</span>
+          <span class="ruby-identifier">args</span> = <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">generator_class</span>.<span class="ruby-identifier">require_arguments?</span> <span class="ruby-value">? </span>[<span class="ruby-value str">&quot;-h&quot;</span>] <span class="ruby-operator">:</span> <span class="ruby-constant">ARGV</span>
+          <span class="ruby-identifier">generator_class</span>.<span class="ruby-identifier">start</span>(<span class="ruby-identifier">args</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Please specify generator to use (#{Padrino::Generators.mappings.keys.join(&quot;, &quot;)})&quot;</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    
