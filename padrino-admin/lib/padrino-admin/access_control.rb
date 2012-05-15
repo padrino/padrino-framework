@@ -145,9 +145,9 @@ module Padrino
         ##
         # Create a project module
         #
-        def project_module(name, path)
+        def project_module(name, path, options={})
           allow(path)
-          @project_modules << ProjectModule.new(name, path)
+          @project_modules << ProjectModule.new(name, path, options)
         end
       end # Authorization
 
@@ -155,10 +155,10 @@ module Padrino
       # Project Module class
       #
       class ProjectModule
-        attr_reader :name
+        attr_reader :name, :options
 
-        def initialize(name, path) # @private
-          @name, @path = name, path
+        def initialize(name, path, options={}) # @private
+          @name, @path, @options = name, path, options
         end
 
         ##

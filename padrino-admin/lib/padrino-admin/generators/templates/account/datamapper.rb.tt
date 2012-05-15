@@ -1,4 +1,4 @@
-class <%= options[:admin_model].underscore.camelize %>
+class <%= @model_name %>
   include DataMapper::Resource
   include DataMapper::Validate
   attr_accessor :password, :password_confirmation
@@ -45,11 +45,11 @@ class <%= options[:admin_model].underscore.camelize %>
   end
 
   private
-    def password_required
-      crypted_password.blank? || password.present?
-    end
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 
-    def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(password) if password.present?
+  end
 end

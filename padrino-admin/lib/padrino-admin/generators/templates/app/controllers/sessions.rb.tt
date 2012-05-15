@@ -5,11 +5,11 @@ Admin.controllers :sessions do
   end
 
   post :create do
-    if account = <%= options[:admin_model] %>.authenticate(params[:email], params[:password])
+    if account = <%= @model_name %>.authenticate(params[:email], params[:password])
       set_current_account(account)
       redirect url(:base, :index)
     elsif Padrino.env == :development && params[:bypass]
-      account = <%= options[:admin_model] %>.first
+      account = <%= @model_name %>.first
       set_current_account(account)
       redirect url(:base, :index)
     else

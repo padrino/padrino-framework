@@ -89,6 +89,20 @@ module Padrino
         def flush
           @backend.flushdb
         end
+
+        ##
+        # Redis has a ton of powerful features (see: https://github.com/redis/redis-rb), which we
+        # can't use due to how strict the cache library is. This method catches all method calls and
+        # tries to pass them on the the redis gem.
+        #
+        # @api private
+        def method_missing(name, *args, &block)
+          if @backend.respond_to?(name)
+            @backend.send(name, *args, &block)
+          else
+            super
+          end
+        end
       end # Redis
     end # Store
   end # Cache

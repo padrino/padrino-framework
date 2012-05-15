@@ -100,8 +100,7 @@ describe "OutputHelpers" do
     should_eventually "work for slim templates" do
       visit '/slim/capture_concat'
       assert_have_selector 'p', :content => "The slim block passed in is a template", :class => 'is_template'
-      # TODO Get SLIM template detection working (fix block_is_erb? method)
-      # assert_have_no_selector 'p', :content => "The ruby block passed in is a template", :class => 'is_template'
+      assert_have_no_selector 'p', :content => "The ruby block passed in is a template", :class => 'is_template'
     end
   end
 

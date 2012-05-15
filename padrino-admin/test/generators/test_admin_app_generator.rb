@@ -125,6 +125,45 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
     end
 
+    should 'correctly generate a new padrino admin application with a custom model' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project", '-m=User') }
+      assert_file_exists("#{@apptmp}/sample_project")
+      assert_file_exists("#{@apptmp}/sample_project/admin")
+      assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/admin/controllers")
+      assert_file_exists("#{@apptmp}/sample_project/admin/controllers/users.rb")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/controllers/users.rb")
+      assert_file_exists("#{@apptmp}/sample_project/admin/controllers/base.rb")
+      assert_file_exists("#{@apptmp}/sample_project/admin/controllers/sessions.rb")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/users/_form.slim")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/views/users/_form.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/users/edit.slim")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/views/users/edit.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/users/index.slim")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/views/users/index.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/users/new.slim")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/views/users/new.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/base/index.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/base/_sidebar.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/base/index.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/layouts/application.slim")
+      assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.slim")
+      assert_file_exists("#{@apptmp}/sample_project/public/admin")
+      assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
+      assert_file_exists("#{@apptmp}/sample_project/models/user.rb")
+      assert_no_match_in_file(/Account/, "#{@apptmp}/sample_project/models/user.rb")
+      assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
+      assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
+      assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
+      assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'role.project_module :users, \'/users\'', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file 'button_to pat(:logout)', "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
+    end
+
     should 'correctly generate a new padrino admin application with model in non-default application path' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }

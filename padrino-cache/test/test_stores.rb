@@ -96,6 +96,13 @@ begin
       Padrino.cache.flush
     end
 
+    eval <<-REDIS_TEST
+should 'add a value to a list' do
+  Padrino.cache.lpush(@test_key, "test")
+  assert_equal "test", Padrino.cache.lpop(@test_key)
+end
+    REDIS_TEST
+
     eval COMMON_TESTS
   end
 rescue LoadError
