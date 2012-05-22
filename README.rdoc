@@ -52,7 +52,7 @@ http://padrino.waydotnet.com/images/mini_record.jpg
 
 === Demo:
   http://padrino.waydotnet.com/admin
-  user: test@padrinorb.cpm
+  user: test@padrinorb.com
   password: test
 
 === By WaYdotNET
