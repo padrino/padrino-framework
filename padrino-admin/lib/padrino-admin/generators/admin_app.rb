@@ -39,10 +39,10 @@ module Padrino
             raise SystemExit
           end
 
-          # unless self.class.themes.include?(options[:theme])
-          #   say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
-          #   raise SystemExit
-          # end
+          unless self.class.themes.include?(options[:theme])
+            say "<= You need to choose a theme from: #{self.class.themes.join(", ")}", :yellow
+            raise SystemExit
+          end
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
@@ -55,17 +55,17 @@ module Padrino
           self.behavior = :revoke if options[:destroy]
 
           empty_directory destination_root("admin")
-          directory "templates/app",       destination_root("admin")
-          directory "templates/assets",    destination_root("public", "admin")
-          template  "templates/app.rb.tt", destination_root("admin/app.rb")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
-          insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
-
 
           # Setup Admin Model
           @model_name     = options[:admin_model].classify
           @model_singular = @model_name.underscore
           @model_plural   = @model_singular.pluralize
+
+          directory "templates/app",       destination_root("admin")
+          directory "templates/assets",    destination_root("public", "admin")
+          template  "templates/app.rb.tt", destination_root("admin/app.rb")
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
+          insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
 
           params = [
             @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
@@ -104,6 +104,7 @@ module Padrino
           empty_directory destination_root("admin/views/layouts")
           empty_directory destination_root("admin/views/sessions")
 
+          template "templates/#{ext}/app/base/_sidebar.#{ext}.tt",       destination_root("admin/views/base/_sidebar.#{ext}")
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
