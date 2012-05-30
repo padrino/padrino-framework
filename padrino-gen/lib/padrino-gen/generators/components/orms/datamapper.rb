@@ -32,7 +32,7 @@ def setup_orm
     dm-validations
   ).each { |dep| require_dependencies dep }
   require_dependencies case options[:adapter]
-    when 'mysql'
+    when 'mysql', 'mysql2'
       dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{db}_development\"")
       dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://root@localhost/#{db}_production\"")
       dm.gsub!(/!DB_TEST!/,"\"mysql://root@localhost/#{db}_test\"")
