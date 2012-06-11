@@ -68,6 +68,11 @@ module Padrino
         IRB.start
       end
 
+      desc "c", "Boots up the Padrino application irb console"
+      def c(*args)
+        invoke(:console, args)
+      end
+
       desc "generate", "Executes the Padrino generator with given options."
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
