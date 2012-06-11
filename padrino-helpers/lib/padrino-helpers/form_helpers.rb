@@ -245,8 +245,7 @@ module Padrino
         object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
         error  = object.errors[field] rescue nil
         # Array(error).first is necessary because some ORMs give us an array others directly a value
-        error  = Array(error).first
-        if error
+        if error = Array(error)[0]
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)
           error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
