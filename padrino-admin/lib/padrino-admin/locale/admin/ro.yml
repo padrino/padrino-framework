@@ -1,0 +1,16 @@
+ro:
+  padrino:
+    admin:
+      save: Salvează
+      cancel: Anulează
+      list: Listă
+      edit: Editează
+      new: Crează
+      show: Afișează
+      delete: Șterge
+      confirm: Ești sigur?
+      created_at: Creat la
+      all: Toate
+      profile: Profil
+      settings: Setări
+      logout: Delogare
