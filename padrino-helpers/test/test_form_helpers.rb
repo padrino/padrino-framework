@@ -177,6 +177,12 @@ describe "FormHelpers" do
       actual_html = error_message_on(:user, :fake, :prepend => "foo", :append => "bar")
       assert actual_html.blank?
     end
+
+    should "display no message when error isn't present in an Array" do
+      @user = mock_model("User", :errors => { :a => [], :b => "2" }, :blank? => false)
+      actual_html = error_message_on(:user, :a, :prepend => "foo", :append => "bar")
+      assert actual_html.blank?
+    end
   end
 
   context 'for #label_tag method' do
