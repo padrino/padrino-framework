@@ -214,7 +214,7 @@ module Padrino
           if v.is_a?(Hash)
             nested_values(k, v)
           elsif BOOLEAN_ATTRIBUTES.include?(k)
-            k.to_s
+            %(#{k}="#{k}")
           else
             %(#{k}="#{escape_value(v)}")
           end
