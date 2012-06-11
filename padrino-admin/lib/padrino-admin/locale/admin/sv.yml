@@ -1,0 +1,16 @@
+sv:
+  padrino:
+    admin:
+      save: Spara
+      cancel: Avbryt
+      list: Lista
+      edit: Redigera
+      new: Ny
+      show: Visa
+      delete: Radera
+      confirm: Är du säker?
+      created_at: Skapad
+      all: Alla
+      profile: Profil
+      settings: Inställningar
+      logout: Logga ut
