@@ -1,3 +1,4 @@
+require 'jdbc/sqlite3' if RUBY_ENGINE == 'jruby'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
