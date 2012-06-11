@@ -1,30 +1,30 @@
 .block
   .secondary-navigation
     ul.wat-cf
-      li.first.active==link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
-      li==link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
+      li.first.active == link_to pat(:list), url(:<%= @orm.name_plural %>, :index)
+      li == link_to pat(:new), url(:<%= @orm.name_plural %>, :new)
   .content
     h2.title
-      ==pat(:all)
-      =="&nbsp;"
-      ==mt(:<%= @orm.name_plural %>)
+      == pat(:all)
+      == '&nbsp;'
+      == mt(:<%= @orm.name_plural %>)
     .inner
       table.table
         tr
           <%- @orm.columns.each_with_index do |column, i| -%>
           th<%= ".first" if i==0 %>=mat(:<%= @orm.name_singular %>, :<%= column.name %>)
           <%- end -%>
-          th.last=="&nbsp;"
-        -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
+          th.last == '&nbsp;'
+        - @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
           tr
             <%- @orm.columns.each_with_index do |column, i| -%>
             td<%= ".first" if i==0 %>=<%= @orm.name_singular %>.<%= column.name %>
             <%- end -%>
             td.last
-              ==button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to
-              ==" | "
-              ==button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+              == button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to
+              == ' | '
+              == button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
       .actions-bar.wat-cf
-        .actions=="&nbsp;"
+        .actions == '&nbsp;'
 
 -content_for :sidebar, partial("base/sidebar")

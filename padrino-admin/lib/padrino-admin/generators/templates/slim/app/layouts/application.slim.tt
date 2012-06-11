@@ -1,30 +1,31 @@
 doctype html
-html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+html lang='en' xmlns='http://www.w3.org/1999/xhtml'
   head
-    meta content="text/html; charset=utf-8" http-equiv="Content-Type"
+    meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
-    ==stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style"
+    == stylesheet_link_tag 'base', 'themes/<%= options[:theme] %>/style'
 
   body
     #container
       #header
-        h1==link_to "Padrino Admin", url(:base_index)
+        h1 == link_to 'Padrino Admin', url(:base_index)
         #user-navigation
           ul.wat-cf
-            li==link_to pat(:profile), url(:<%= @model_plural %>, :edit, :id => current_account.id)
-            li==button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to
+            li == link_to pat(:profile), url(:<%= @model_plural %>, :edit, :id => current_account.id)
+            li == button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to
         #main-navigation
           ul.wat-cf
-            -project_modules.each do |project_module|
-              li class={"active" if request.path_info =~ /^#{project_module.path}/}
-                ==link_to project_module.human_name, project_module.path("/admin")
+            - project_modules.each do |project_module|
+              li class=(:active if request.path_info =~ /^#{project_module.path}/)
+                == link_to project_module.human_name, project_module.path('/admin')
       #wrapper.wat-cf
-        .flash==[:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
+        .flash == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
         #main
-          ==yield
+          == yield
           #footer
             .block
               p
                 ' Copyright &copy; #{Time.now.year} Your Site - Powered by
-                ==link_to "Padrino v.#{Padrino.version}", "http://www.padrinorb.com", :target => :_blank
-        #sidebar==yield_content :sidebar
+                == link_to "Padrino v.#{Padrino.version}", 'http://www.padrinorb.com', :target => :_blank
+        #sidebar
+          == yield_content :sidebar
