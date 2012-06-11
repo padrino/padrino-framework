@@ -26,5 +26,5 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
             .block
               p
                 ' Copyright &copy; #{Time.now.year} Your Site - Powered by
-                ==link_to "Padrino v.#{Padrino.version}", "http://padrino.github.com", :target => :_blank
+                ==link_to "Padrino v.#{Padrino.version}", "http://www.padrinorb.com", :target => :_blank
         #sidebar==yield_content :sidebar
