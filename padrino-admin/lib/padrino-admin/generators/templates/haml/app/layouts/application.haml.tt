@@ -27,5 +27,5 @@
                 Copyright &copy;
                 =Time.now.year
                 Your Site - Powered by
-                =link_to "Padrino v.#{Padrino.version}", "http://padrino.github.com", :target => :_blank
+                =link_to "Padrino v.#{Padrino.version}", "https://github.com/padrino/padrino-framework", :target => :_blank
         #sidebar=yield_content :sidebar
