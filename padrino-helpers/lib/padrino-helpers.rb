@@ -2,6 +2,7 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'cgi'
 require 'i18n'
 require 'enumerator'
+require 'active_support/time_with_zone'               # next extension depends on this
 require 'active_support/core_ext/string/conversions'  # to_date
 require 'active_support/core_ext/float/rounding'      # round
 require 'active_support/option_merger'                # with_options

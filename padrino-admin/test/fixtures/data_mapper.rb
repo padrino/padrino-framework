@@ -1,3 +1,4 @@
+require 'jdbc/sqlite3' if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'

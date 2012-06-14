@@ -80,7 +80,7 @@ module Padrino
         end
       end
 
-      # Executes git commmands in project using Grit
+      # Executes git commmands in project
       #
       # @param [Symbol] action
       #   Git command to execute
