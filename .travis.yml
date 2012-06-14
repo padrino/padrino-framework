@@ -8,9 +8,10 @@ rvm:
   - 1.9.3
   - ree
   - ruby-head
+  - jruby
 
 notifications:
-  irc: "irc.freenode.org#padrino"
+  irc: 'irc.freenode.org#padrino'
   recipients:
     - nesquena@gmail.com
     - mr.arthur.chiu@gmail.com

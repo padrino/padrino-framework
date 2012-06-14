@@ -38,7 +38,7 @@ class <%= @model_name %> < ::Sequel::Model
   end
 
   def has_password?(password)
-    ::BCrypt::Password.new(crypted_password) == password
+    ::BCrypt::Password.new(self.crypted_password) == password
   end
 
   private
@@ -47,6 +47,6 @@ class <%= @model_name %> < ::Sequel::Model
   end
 
   def password_required
-    crypted_password.blank? || password.present?
+    self.crypted_password.blank? || password.present?
   end
 end
