@@ -10,7 +10,7 @@
         %h1=link_to "Padrino Admin", url(:base_index)
         #user-navigation
           %ul.wat-cf
-            %li=link_to pat(:profile), url(:<%= @model_plurarl %>, :edit, :id => current_account.id)
+            %li=link_to pat(:profile), url(:<%= @model_plural %>, :edit, :id => current_account.id)
             %li=button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => :button_to
         #main-navigation
           %ul.wat-cf
@@ -27,5 +27,5 @@
                 Copyright &copy;
                 =Time.now.year
                 Your Site - Powered by
-                =link_to "Padrino v.#{Padrino.version}", "http://padrino.github.com", :target => :_blank
+                =link_to "Padrino v.#{Padrino.version}", "http://www.padrinorb.com", :target => :_blank
         #sidebar=yield_content :sidebar

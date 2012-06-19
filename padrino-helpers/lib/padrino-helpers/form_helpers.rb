@@ -244,11 +244,11 @@ module Padrino
       def error_message_on(object, field, options={})
         object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
         error  = object.errors[field] rescue nil
-        if error
+        # Array(error).first is necessary because some ORMs give us an array others directly a value
+        if error = Array(error)[0]
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)
-          # Array(error).first is necessary because some orm give us an array others directly a value
-          error = [options.delete(:prepend), Array(error).first, options.delete(:append)].compact.join(" ")
+          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
           content_tag(tag, error, options)
         else
           ''

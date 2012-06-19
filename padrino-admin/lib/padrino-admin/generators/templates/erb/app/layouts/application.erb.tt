@@ -31,7 +31,7 @@
         <%%= yield %>
         <div id="footer">
           <div class="block">
-            <p>Copyright &copy; <%%= Time.now.year %> Your Site - Powered by <a href="https://github.com/padrino/padrino-framework" target="_blank">Padrino v.<%%= Padrino.version %>.</a></p>
+            <p>Copyright &copy; <%%= Time.now.year %> Your Site - Powered by <a href="http://www.padrinorb.com" target="_blank">Padrino v.<%%= Padrino.version %>.</a></p>
           </div>
         </div>
       </div>

@@ -263,6 +263,14 @@ describe "ProjectGenerator" do
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
       end
 
+      # DataMapper has do_mysql that is the version of MySQL driver.
+      should "properly generate for mysql2" do
+        out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=mysql2') }
+        assert_match_in_file(/gem 'dm-mysql-adapter'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(%r{"mysql://}, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
+      end
+
       should "properly generate for sqlite" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=sqlite') }
         assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/sample_project/Gemfile")
