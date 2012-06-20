@@ -60,6 +60,9 @@ module Padrino
     #
     def load!
       return false if loaded?
+      puts "Started to load Padrino environment"
+      t = Time.now
+
       @_called_from = first_caller
       Padrino.set_encoding
       Padrino.set_load_paths(*load_paths) # We set the padrino load paths
@@ -71,6 +74,8 @@ module Padrino
       Padrino.after_load.each(&:call) # Run after hooks
       Padrino::Reloader.run!
       Thread.current[:padrino_loaded] = true
+
+      puts "Loaded in #{Time.now - t}"
     end
 
     ##

@@ -111,13 +111,34 @@ end
 module ObjectSpace
   class << self
     # Returns all the classes in the object space.
-    def classes
-      ObjectSpace.each_object(Module).select do |klass|
-        # Why? Ruby, when you remove a costant dosen't remove it from
-        # rb_tables, this mean that here we can find classes that was
-        # removed.
-        klass.name rescue false
+    def classes(&block)
+      rs = Set.new
+
+      ObjectSpace.each_object(Class).each do |klass|
+        rs << if block
+          block.call(klass)
+        else
+          klass
+        end
       end
+
+      rs
+    end
+
+    def snapshot
+      @snapshot = ObjectSpace.classes
+    end
+
+    def diff_classes
+      rs = Set.new
+
+      ObjectSpace.each_object(Class).each do |klass|
+        if !@snapshot.include?(klass)
+          rs << klass
+        end
+      end
+
+      rs
     end
   end
 end

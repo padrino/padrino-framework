@@ -33,7 +33,7 @@ module Padrino
       # Specified constants can be excluded from the code unloading process.
       #
       def exclude_constants
-        @_exclude_constants ||= []
+        @_exclude_constants ||= Set.new
       end
 
       ##
@@ -41,7 +41,7 @@ module Padrino
       # Default included constants are: [none]
       #
       def include_constants
-        @_include_constants ||= []
+        @_include_constants ||= Set.new
       end
 
       ##
@@ -103,9 +103,12 @@ module Padrino
       # We lock dependencies sets to prevent reloading of protected constants
       #
       def lock!
-        klasses = ObjectSpace.classes.map { |klass| klass._orig_klass_name.split('::')[0] }.uniq
+        klasses = ObjectSpace.classes do |klass|
+          klass._orig_klass_name.split('::')[0]
+        end
+
         klasses = klasses | Padrino.mounted_apps.map { |app| app.app_class }
-        Padrino::Reloader.exclude_constants.concat(klasses)
+        Padrino::Reloader.exclude_constants.merge(klasses)
       end
 
       ##
@@ -130,8 +133,8 @@ module Padrino
         end
 
         # Duplicate objects and loaded features before load file
-        klasses = ObjectSpace.classes.dup
-        files   = $LOADED_FEATURES.dup
+        ObjectSpace.snapshot
+        files   = Set.new($LOADED_FEATURES.dup)
 
         # Now we can reload dependencies of our file
         if features = LOADED_FILES.delete(file)
@@ -142,7 +145,7 @@ module Padrino
         begin
           logger.devel :loading, began_at, file if !reload
           logger.debug :reload,  began_at, file if  reload
-          $LOADED_FEATURES.delete(file)
+          $LOADED_FEATURES.delete(file) if files.include?(file)
           verbosity_was, $-v = $-v, nil
           loaded = false
           require(file)
@@ -152,18 +155,17 @@ module Padrino
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
           $-v = verbosity_was
-          new_constants = (ObjectSpace.classes - klasses).uniq
+          new_constants = ObjectSpace.diff_classes
           if loaded
             # Store the file details
             LOADED_CLASSES[file] = new_constants
-            LOADED_FILES[file]   = ($LOADED_FEATURES - files - [file]).uniq
+            LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
             # Track only features in our Padrino.root
             LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
           else
             logger.devel "Failed to load #{file}; removing partially defined constants"
             new_constants.each { |klass| remove_constant(klass) }
           end
-
         end
       end
 
@@ -183,8 +185,8 @@ module Padrino
       # Removes the specified class and constant.
       #
       def remove_constant(const)
-        return if exclude_constants.compact.uniq.any? { |c| const._orig_klass_name.index(c) == 0 } &&
-                 !include_constants.compact.uniq.any? { |c| const._orig_klass_name.index(c) == 0 }
+        return if exclude_constants.any? { |c| const._orig_klass_name.index(c) == 0 } &&
+                 !include_constants.any? { |c| const._orig_klass_name.index(c) == 0 }
         begin
           parts  = const.to_s.sub(/^::(Object)?/, 'Object::').split('::')
           object = parts.pop
