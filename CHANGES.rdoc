@@ -1,6 +1,8 @@
 = CHANGES
 
-== 0.10.7 (Not Yet Released)
+== 0.10.8 (Not Yet Released)
+
+== 0.10.7
 
 * FIX #777 Improve slim template block capturing
 * FIX #807 Fixes reloader class name resolution
@@ -9,6 +11,18 @@
 * FIX #828 Remove explicit tlsmail dependency (@trevor)
 * FIX #829 Adding an options attribute to ProjectModule (@simonc)
 * FIX #780 Respect user defined model name for admin (@joelcuevas)
+* FIX #841 Patched to fix rake use in padrino templates (@jasonm23)
+* NEW #836 Adds a catch all method to the redis cache
+* FIX #856 Make mysql2 alias of mysql when DataMapper is selected
+* FIX #858 Add require ActiveSupport::TimeWithZone class for helpers
+* FIX HTML Change boolean helper attributes to conform to xhtml strict
+* FIX #855 Fix error_message_on for empty array (@sshaw)
+* NEW #853 Adds Swedish localization support (@Lejdborg)
+* NEW #853 Adds Romanian localization support (@relu)
+* FIX #850 Prevent JRuby reloading bug (@dn2k)
+* FIX #846 Fix admin generator to understand model_name (@fnordfish)
+* NEW #845 Add CLI shortcut with just 'c' (@joslinm)
+
 
 == 0.10.6
 
