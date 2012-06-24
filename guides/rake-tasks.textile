@@ -32,8 +32,6 @@ end
 
 h2. Routes
 
-__currently not in stable release (coming in 0.9.10)__
-
 p. We have support for retrieving a list of named routes within your application for easy access.
 
 pre[bash]. padrino rake routes
