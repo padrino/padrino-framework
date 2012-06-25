@@ -27,25 +27,25 @@ fr:
         format: "%n %u"
         units:
           byte:
-            one:   "Byte"
-            other: "Bytes"
-          kb: "KB"
-          mb: "MB"
-          gb: "GB"
-          tb: "TB"
+            one:   "Octet"
+            other: "Octets"
+          kb: "Ko"
+          mb: "Mo"
+          gb: "Go"
+          tb: "To"
 
   datetime:
     distance_in_words:
       half_a_minute: "une demi minute"
       less_than_x_seconds:
-        one:   "infèrieur à une seconde"
-        other: "infèrieur à %{count} secondes"
+        one:   "inférieur à une seconde"
+        other: "inférieur à %{count} secondes"
       x_seconds:
         one:   "1 seconde"
         other: "%{count} secondes"
       less_than_x_minutes:
-        one:   "infèrieur à 1 minute"
-        other: "infèrieur à %{count} minutes"
+        one:   "inférieur à 1 minute"
+        other: "inférieur à %{count} minutes"
       x_minutes:
         one:   "1 minute"
         other: "%{count} minutes"
@@ -68,8 +68,8 @@ fr:
         one:   "plus d'un an"
         other: "plus de %{count} ans"
       almost_x_years:
-        one:   "près d'un ans"
-        other: "près de %{count} years"
+        one:   "près d'un an"
+        other: "près de %{count} ans"
   models:
     errors:
       template:
