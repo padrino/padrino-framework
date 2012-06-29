@@ -457,5 +457,23 @@ describe "Rendering" do
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body
     end
+
+    should 'renders hashes and arrays as json' do
+      mock_app do
+        get '/hash' do
+          render({:a => 1, :b => 2})
+        end
+
+        get '/array' do
+          render [:a, 1, :b, 2]
+        end
+      end
+      get '/hash'
+      assert ok?
+      assert_equal '{"a":1,"b":2}', body
+      get '/array'
+      assert ok?
+      assert_equal '["a",1,"b",2]', body
+    end
   end
 end
