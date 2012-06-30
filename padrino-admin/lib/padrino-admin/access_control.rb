@@ -102,11 +102,13 @@ module Padrino
           denied_paths   = authorizations.map(&:denied).flatten.uniq
           if account
             denied_paths.clear
+            # explicit authorizations for the role associated with the given account
             authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
             allowed_paths += authorizations.map(&:allowed).flatten.uniq
+            # other explicit authorizations
             authorizations = @authorizations.find_all { |auth| !auth.roles.include?(role) && !auth.roles.include?(:any) }
-            denied_paths  += authorizations.map(&:allowed).flatten.uniq
-            denied_paths  += authorizations.map(&:denied).flatten.uniq
+            denied_paths  += authorizations.map(&:allowed).flatten.uniq # remove paths explicitly allowed for other roles
+            denied_paths  += authorizations.map(&:denied).flatten.uniq # remove paths explicitly denied to other roles
           end
           return true  if allowed_paths.any? { |p| path =~ /^#{p}/ }
           return false if denied_paths.any?  { |p| path =~ /^#{p}/ }
