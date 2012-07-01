@@ -48,7 +48,7 @@ module Padrino
       # @see ClassMethods#deliver
       # @api public
       def deliver(mailer_name, message_name, *attributes)
-        settings.deliver(mailer_name, message_name, *attributes)
+        settings.deliver(self, mailer_name, message_name, *attributes)
       end
 
       ##
@@ -108,8 +108,8 @@ module Padrino
         #   deliver(:example, :message, "John")
         #
         # @api public
-        def deliver(mailer_name, message_name, *attributes)
-          message = registered_mailers[mailer_name].messages[message_name].call(*attributes)
+        def deliver(context, mailer_name, message_name, *attributes)
+          message = registered_mailers[mailer_name].messages[message_name].call(context, *attributes)
           message.delivery_method(*delivery_settings)
           message.deliver
         end
