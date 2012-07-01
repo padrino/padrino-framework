@@ -17,7 +17,6 @@ group :development do
   end
   gem "json",      ">= 1.5.3"
   gem "nokogiri",  ">= 1.4.4"
-  gem "grit",      ">= 2.4.1"
   gem "rack",      ">= 1.3.0"
   gem "rake",      ">= 0.8.7"
   gem "yard",      ">= 0.7.2"
@@ -38,8 +37,8 @@ group :development do
   platforms :jruby do
     gem "jruby-openssl"
   end
-  gem "mocha",    "~>0.10.0"
-  gem "minitest", "~>2.6.0"
+  gem "mocha",    ">= 0.10.0"
+  gem "minitest", ">= 2.6.0"
   gem "lumberjack"
 end
 

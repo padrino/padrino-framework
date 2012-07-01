@@ -4,9 +4,8 @@ require 'rack/test'
 require 'rack'
 require 'uuid'
 require 'webrat'
-require 'grit'
-require 'thor/group'
 require 'fakeweb'
+require 'thor/group'
 require 'padrino-gen'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
@@ -111,20 +110,6 @@ class MiniTest::Spec
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
   end
-
-  # expects_git :commit, "hello world"
-  def expects_git(command,options={})
-    FileUtils.mkdir_p(options[:root])
-    if command.to_s == 'init'
-      args = options[:arguments] || options[:root]
-      ::Grit::Repo.expects(:init).with(args).returns(true)
-    else
-      base = ::Grit::Git.new(options[:root])
-      ::Grit::Repo.stubs(:new).with(options[:root]).returns(base)
-      ::Grit::Git.any_instance.expects(command.to_sym).with(options[:arguments]).returns(true)
-    end
-  end
-
 end
 
 module Webrat

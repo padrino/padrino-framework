@@ -1,9 +1,9 @@
 doctype html
-html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+html lang='en' xmlns='http://www.w3.org/1999/xhtml'
   head
-    meta content="text/html; charset=utf-8" http-equiv="Content-Type"
+    meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
-    ==stylesheet_link_tag :base, "themes/<%= options[:theme] %>/style"
+    == stylesheet_link_tag 'base', 'themes/<%= options[:theme] %>/style'
 
   body
     #container
@@ -12,20 +12,20 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
         #block-login.block
           h2 Login Box
           .content.login
-            .flash==[:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
-            ==form_tag(url(:sessions, :create), :class => 'form login') do
+            .flash == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
+            - form_tag url(:sessions, :create), :class => 'form login' do
               .group.wat-cf
                 .left
                    label.label.right Login
-                .right==text_field_tag :email, :value => params[:email], :class => :text_field
+                .right == text_field_tag :email, :value => params[:email], :class => :text_field
               .group.wat-cf
                 .left
                    label.label.right Password
-                .right==password_field_tag :password, :value => params[:password], :class => :text_field
-              -if Padrino.env == :development
+                .right == password_field_tag :password, :value => params[:password], :class => :text_field
+              - if Padrino.env == :development
                 .group.wat-cf
                   .left
                      label.label.right Bypass login?
-                  .right==check_box_tag :bypass
+                  .right == check_box_tag :bypass
               .group.navform.wat-cf
-                .right==submit_tag('Sign In', :class => :button)
+                .right == submit_tag 'Sign In', :class => :button
