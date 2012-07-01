@@ -94,7 +94,7 @@ module Padrino
             begin
               super
             rescue NameError
-              self.context.send(meth, *args, &block)
+              @context.send(meth, *args, &block)
             end
           end
 
