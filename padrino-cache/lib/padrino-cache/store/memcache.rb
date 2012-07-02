@@ -20,6 +20,7 @@ module Padrino
         #
         # @api public
         def initialize(client)
+          require 'memcached'
           @backend = client
         rescue
           raise
