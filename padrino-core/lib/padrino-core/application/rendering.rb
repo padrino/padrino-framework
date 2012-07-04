@@ -268,12 +268,13 @@ module Padrino
 
           # Resolve final template to render
           located_template =
-            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
-            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
-            templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
-            templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
-            templates.find { |file, e| file.to_s == "#{template_path}" && simple_content_type } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" ||
+                                       simple_content_type && file.to_s == "#{template_path}.#{locale}" ||
+                                       File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" ||
+                                       simple_content_type && file.to_s == "#{template_path}" } ||
             (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template
+
 
           raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
