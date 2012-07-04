@@ -133,7 +133,7 @@ module Padrino
         end
 
         # Duplicate objects and loaded features before load file
-        ObjectSpace.snapshot
+        klasses = ObjectSpace.classes
         files   = Set.new($LOADED_FEATURES.dup)
 
         # Now we can reload dependencies of our file
@@ -155,7 +155,7 @@ module Padrino
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
           $-v = verbosity_was
-          new_constants = ObjectSpace.diff_classes
+          new_constants = ObjectSpace.new_classes(klasses)
           if loaded
             # Store the file details
             LOADED_CLASSES[file] = new_constants

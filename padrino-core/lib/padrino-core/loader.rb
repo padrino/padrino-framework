@@ -60,7 +60,6 @@ module Padrino
     #
     def load!
       return false if loaded?
-      puts "Started to load Padrino environment"
       t = Time.now
 
       @_called_from = first_caller
@@ -75,7 +74,7 @@ module Padrino
       Padrino::Reloader.run!
       Thread.current[:padrino_loaded] = true
 
-      puts "Loaded in #{Time.now - t}"
+      Padrino.logger.devel "Loaded Padrino in #{Time.now - t} seconds"
     end
 
     ##
@@ -168,9 +167,11 @@ module Padrino
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
           rescue LoadError => e
+            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
           rescue NameError => e
+            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
           rescue Exception => e
