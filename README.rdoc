@@ -12,7 +12,7 @@
 ==== tag_icon
 Automatic icon
 
-http://padrino.waydotnet.com/images/icon.jpg
+pahttp://padrino.waydotnet.com/images/icon.jpg
 
 
 

@@ -60,6 +60,8 @@ module Padrino
     #
     def load!
       return false if loaded?
+      t = Time.now
+
       @_called_from = first_caller
       Padrino.set_encoding
       Padrino.set_load_paths(*load_paths) # We set the padrino load paths
@@ -71,6 +73,8 @@ module Padrino
       Padrino.after_load.each(&:call) # Run after hooks
       Padrino::Reloader.run!
       Thread.current[:padrino_loaded] = true
+
+      Padrino.logger.devel "Loaded Padrino in #{Time.now - t} seconds"
     end
 
     ##
@@ -163,9 +167,11 @@ module Padrino
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
           rescue LoadError => e
+            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
           rescue NameError => e
+            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
           rescue Exception => e
