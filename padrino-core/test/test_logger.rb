@@ -10,6 +10,9 @@ describe "PadrinoLogger" do
   end
 
   def setup_logger(options={})
+    Padrino::Logger.send(:_instance=,       nil)
+    Padrino::Logger.send(:_global_logger=,  nil)
+
     @log    = StringIO.new
     @logger = Padrino::Logger.new(options.merge(:stream => @log))
   end
@@ -103,6 +106,9 @@ end
 
 describe "alternate logger: Lumberjack" do
   def setup_logger
+    Padrino::Logger.send(:_instance=,       nil)
+    Padrino::Logger.send(:_global_logger=,  nil)
+
     @log = StringIO.new
     Padrino.logger = Lumberjack::Logger.new(@log, :level => :debug)
   end
@@ -129,6 +135,9 @@ end
 
 describe "alternate logger: stdlib logger" do
   def setup_logger
+    Padrino::Logger.send(:_instance=,       nil)
+    Padrino::Logger.send(:_global_logger=,  nil)
+
     @log = StringIO.new
     Padrino.logger = Logger.new(@log)
   end
