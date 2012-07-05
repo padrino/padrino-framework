@@ -13,8 +13,8 @@ module Padrino
   #   logger.warn "bar"
   #
   def self.logger
-    Padrino::Logger.setup! if Thread.current[:padrino_logger].nil?
-    Thread.current[:padrino_logger]
+    Padrino::Logger.setup! if Thread.main[:padrino_logger].nil?
+    Thread.main[:padrino_logger]
   end
 
   ##
@@ -36,7 +36,7 @@ module Padrino
   #
   def self.logger=(value)
     value.extend(Padrino::Logger::Extensions) unless (Padrino::Logger::Extensions === value)
-    Thread.current[:padrino_logger] = value
+    Thread.main[:padrino_logger] = value
   end
 
   ##
@@ -217,8 +217,6 @@ module Padrino
     attr_reader   :init_args
     attr_accessor :log_static
 
-    @@mutex = {}
-
     ##
     # Configuration for a given environment, possible options are:
     #
@@ -259,6 +257,8 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
+    @@mutex = Mutex.new
+
     ##
     # Setup a new logger
     #
@@ -284,7 +284,7 @@ module Padrino
         else config[:stream] # return itself, probabilly is a custom stream.
       end
 
-      Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
+      Thread.mai[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
     end
 
     ##
@@ -317,7 +317,6 @@ module Padrino
       @level           = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
       @log             = options[:stream]  || $stdout
       @log.sync        = true
-      @mutex           = @@mutex[@log] ||= Mutex.new
       @format_datetime = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
       @format_message  = options[:format_message]  || "%s -%s%s"
       @log_static      = options.has_key?(:log_static) ? options[:log_static] : false
@@ -328,7 +327,7 @@ module Padrino
     #
     def flush
       return unless @buffer.size > 0
-      @mutex.synchronize do
+      @@mutex.synchronize do
         @log.write(@buffer.slice!(0..-1).join(''))
       end
     end
