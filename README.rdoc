@@ -4,7 +4,9 @@ Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]
 
-{<img src="http://travis-ci.org/padrino/padrino-framework.png" />}[http://travis-ci.org/padrino/padrino-framework]
+{<img src="http://travis-ci.org/padrino/padrino-framework.png" alt="Testing Status" />}[http://travis-ci.org/padrino/padrino-framework]
+{<img src="https://gemnasium.com/padrino/padrino-framework.png" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
+
 
 == Preface
 

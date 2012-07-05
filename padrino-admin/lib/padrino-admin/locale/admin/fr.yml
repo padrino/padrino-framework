@@ -8,9 +8,9 @@ fr:
       new: Nouveau
       show: Voir
       delete: Supprimer
-      confirm: Êtes-vous certain?
-      created_at: Créé à
+      confirm: Êtes-vous certain ?
+      created_at: Créé le
       all: Tous
-      profile: Profile
+      profile: Profil
       settings: Paramètres
       logout: Déconnexion

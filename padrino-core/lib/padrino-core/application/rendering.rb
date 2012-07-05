@@ -156,7 +156,7 @@ module Padrino
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash)
+          content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash) || engine.is_a?(Array)
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }

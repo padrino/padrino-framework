@@ -12,7 +12,7 @@ fr:
     day_names: [Dimanche, Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi]
     abbr_day_names: [Lun, Mar, Mer, Jeu, Ven, Sam, Dim]
     month_names: [~, Janvier, Février, Mars, Avril, Mai, Juin, Juillet, Août, Septembre, Octobre, Novembre, Décembre]
-    abbr_month_names: [~, Jan, Fev, Mar, Avr, Mai, Jui, Jui, Aou, Sep, Oct, Nov, Dec]
+    abbr_month_names: [~, Jan, Fev, Mar, Avr, Mai, Jun, Jul, Aou, Sep, Oct, Nov, Dec]
     order: 
       - day
       - month
