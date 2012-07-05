@@ -6,7 +6,7 @@
     </ul>
   </div>
   <div class="content">
-    <h2 class="title"><%%= pat(:all) %> <%% mt(:<%= @orm.name_plural %>) %></h2>
+    <h2 class="title"><%%= pat(:all) %> <%%= mt(:<%= @orm.name_plural %>) %></h2>
     <div class="inner">
       <table class="table">
         <tr>
