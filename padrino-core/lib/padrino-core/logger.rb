@@ -255,7 +255,7 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
-    @@log_mutex = Mutex.new
+    @@mutex = Mutex.new
     def self.logger
       @@logger || setup!
     end
@@ -336,7 +336,7 @@ module Padrino
     #
     def flush
       return unless @buffer.size > 0
-      @@log_mutex.synchronize do
+      @@mutex.synchronize do
         @log.write(@buffer.slice!(0..-1).join(''))
       end
     end
@@ -368,7 +368,9 @@ module Padrino
     #
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
-      @buffer << message
+      @@mutex.synchronize {
+        @buffer << message
+      }
       flush if @auto_flush
       message
     end
