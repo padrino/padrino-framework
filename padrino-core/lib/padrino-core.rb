@@ -1,8 +1,18 @@
 require 'sinatra/base'
-require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-core/version'
+require 'padrino-core/support_lite'
+require 'padrino-core/application'
 
-FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
-FileSet.glob_require('padrino-core/*.rb', __FILE__)
+require 'padrino-core/caller'
+require 'padrino-core/command'
+require 'padrino-core/loader'
+require 'padrino-core/logger'
+require 'padrino-core/mounter'
+require 'padrino-core/reloader'
+require 'padrino-core/router'
+require 'padrino-core/server'
+require 'padrino-core/tasks'
+
 
 # The Padrino environment (falls back to the rack env or finally develop)
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
