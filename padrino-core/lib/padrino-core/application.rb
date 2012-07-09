@@ -1,3 +1,7 @@
+require 'padrino-core/application/rendering'
+require 'padrino-core/application/routing'
+require 'padrino-core/application/showexceptions'
+
 module Padrino
   class ApplicationSetupError < RuntimeError # @private
   end
