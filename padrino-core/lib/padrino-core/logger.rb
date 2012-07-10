@@ -208,7 +208,6 @@ module Padrino
     end
 
     include Extensions
-    include Colorize
 
     attr_accessor :level
     attr_accessor :auto_flush
@@ -216,6 +215,7 @@ module Padrino
     attr_reader   :log
     attr_reader   :init_args
     attr_accessor :log_static
+    attr_reader   :colorize_logging
 
     @@mutex = {}
 
@@ -233,6 +233,7 @@ module Padrino
     # :format_datetime:: Format of datetime. Defaults to: "%d/%b/%Y %H:%M:%S"
     # :format_message:: Format of message. Defaults to: ""%s - - [%s] \"%s\"""
     # :log_static:: Whether or not to show log messages for static files. Defaults to: false
+    # :colorize_logging:: Whether or not to colorize log messages. Defaults to: true
     #
     # @example
     #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
@@ -311,16 +312,21 @@ module Padrino
     # @option options [Symbol] :log_static (false)
     #   Whether or not to show log messages for static files.
     #
+    # @option options [Symbol] :colorize_logging (true)
+    #   Whether or not to colorize log messages. Defaults to: true
+    #
     def initialize(options={})
-      @buffer          = []
-      @auto_flush      = options.has_key?(:auto_flush) ? options[:auto_flush] : true
-      @level           = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
-      @log             = options[:stream]  || $stdout
-      @log.sync        = true
-      @mutex           = @@mutex[@log] ||= Mutex.new
-      @format_datetime = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message  = options[:format_message]  || "%s -%s%s"
-      @log_static      = options.has_key?(:log_static) ? options[:log_static] : false
+      @buffer           = []
+      @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
+      @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
+      @log              = options[:stream]  || $stdout
+      @log.sync         = true
+      @mutex            = @@mutex[@log] ||= Mutex.new
+      @format_datetime  = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
+      @format_message   = options[:format_message]  || "%s -%s%s"
+      @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
+      @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
+      self.extend(Colorize) if @colorize_logging
     end
 
     ##
