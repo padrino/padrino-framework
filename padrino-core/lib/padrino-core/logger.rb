@@ -326,7 +326,7 @@ module Padrino
       @format_message   = options[:format_message]  || "%s -%s%s"
       @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
-      self.extend(Colorize) if @colorize_logging
+      colorize! if @colorize_logging
     end
 
     ##
