@@ -1,5 +1,6 @@
-MONGOID = (<<-MONGO) unless defined?(MONGOID)
+require 'mongoid'
 
+MONGOID = (<<-MONGO) unless defined?(MONGOID)
 # Connection.new takes host, port
 host = 'localhost'
 port = Mongo::Connection::DEFAULT_PORT
@@ -25,12 +26,38 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 #
 # More installation and setup notes are on http://mongoid.org/docs/
 MONGO
+MONGOID_V3 = (<<-MONGO3) unless defined?(MONGOID_V3) && ::Mongoid::VERSION < '3'
+development:
+  sessions:
+    default:
+      database: !NAME!_development
+      hosts:
+        - localhost:27017
+production:
+  sessions:
+    default:
+      database: !NAME!_production
+      hosts:
+        - localhost:27017
+test:
+  sessions:
+    default:
+      database: !NAME!_test
+      hosts:
+        - localhost:27017
+MONGO3
 
 def setup_orm
-  require_dependencies 'bson_ext', :require => 'mongo'
+  require_dependencies 'bson_ext' #, :require => 'mongo'
   require_dependencies 'mongoid'
   require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
-  create_file("config/database.rb", MONGOID.gsub(/!NAME!/, @app_name.underscore))
+
+  if ::Mongoid::VERSION > '3'
+    create_file('config/database.yml', MONGOID_V3.gsub(/!NAME!/, @app_name.underscore))
+    inject_into_file destination_root('config/boot.rb'), "  Mongoid.load!(File.join(Padrino.root,'config/database.yml'),\"#{@app_name.underscore}_\#{PADRINO_ENV\}\")\n", :after => "Padrino.before_load do\n"
+  else
+    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
+  end
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
