@@ -409,10 +409,10 @@ module Padrino
       #   # => <input name="age" min="18" max="120" step="1" type="number">
       #
       # @api public
-      def number_field_tag(name, options={})        
+      def number_field_tag(name, options={})
         input_tag(:number, options.reverse_merge(:name => name))
       end
-      
+
       ##
       # Creates a telephone field input with the given name and options
       #
@@ -452,7 +452,7 @@ module Padrino
       def email_field_tag(name, options={})
         input_tag(:email, options.reverse_merge(:name => name))
       end
-      
+
       ##
       # Creates a search field input with the given name and options
       #

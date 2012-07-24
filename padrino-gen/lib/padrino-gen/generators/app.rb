@@ -19,12 +19,10 @@ module Padrino
       include Padrino::Generators::Actions
 
       desc "Description:\n\n\tpadrino-gen app generates a new Padrino application"
-
-      argument :name, :desc => "The name of your padrino application"
-
-      class_option :root,    :desc => "The root destination",       :aliases => '-r', :default => ".",   :type => :string
+      argument     :name,    :desc => 'The name of your padrino application'
+      class_option :root,    :desc => 'The root destination',       :aliases => '-r', :default => '.',   :type => :string
       class_option :destroy,                                        :aliases => '-d', :default => false, :type => :boolean
-      class_option :tiny,    :desc => "Generate tiny app skeleton", :aliases => '-i', :default => false, :type => :boolean
+      class_option :tiny,    :desc => 'Generate tiny app skeleton', :aliases => '-i', :default => false, :type => :boolean
 
       # Show help if no argv given
       require_arguments!
@@ -34,24 +32,24 @@ module Padrino
       # @api private
       def create_app
         self.destination_root = options[:root]
-        @app_name = name.gsub(/\W/, "_").underscore.camelize
+        @app_name = name.gsub(/\W/, '_').underscore.camelize
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
           app_skeleton(@app_name.downcase, options[:tiny])
           empty_directory destination_root("public/#{@app_name.downcase}")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}\").to(\"/#{@app_name.downcase}\")"
+          append_file destination_root('config/apps.rb'),  "\nPadrino.mount('#{@app_name}').to('/#{@app_name.downcase}')"
 
           return if self.behavior == :revoke
           say
-          say "="*65, :green
+          say '=' * 65, :green
           say "Your #{@app_name} application has been installed."
-          say "="*65, :green
+          say '='*65, :green
           say "This application has been mounted to /#{@app_name.downcase}"
-          say "You can configure a different path by editing 'config/apps.rb"
-          say "="*65, :green
+          say "You can configure a different path by editing 'config/apps.rb'"
+          say '=' * 65, :green
           say
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end # App

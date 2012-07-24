@@ -2,6 +2,7 @@ pt_br:
   padrino:
     admin:
       save: Salvar
+      save_and_continue: Salvar e continuar
       cancel: Cancelar
       list: Lista
       edit: Editar

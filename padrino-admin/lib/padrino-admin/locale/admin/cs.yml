@@ -2,6 +2,7 @@ cs:
   padrino:
     admin:
       save: Uložit
+      save_and_continue: Uložit a pokračovat
       cancel: Storno
       list: Výpis
       edit: Editovat

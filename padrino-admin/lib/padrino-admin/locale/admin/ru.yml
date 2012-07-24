@@ -2,6 +2,7 @@ ru:
   padrino:
     admin:
       save: Сохранить
+      save_and_continue: Сохранить и продолжить
       cancel: Отмена
       list: Список
       edit: Изменить

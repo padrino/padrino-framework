@@ -59,6 +59,7 @@ end
    padrino
    padrino-admin
    padrino-cache
+   padrino-flash   
    padrino-core
    padrino-gen
    padrino-helpers
