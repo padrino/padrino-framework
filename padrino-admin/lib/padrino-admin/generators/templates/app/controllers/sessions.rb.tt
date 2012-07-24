@@ -21,6 +21,7 @@ Admin.controllers :sessions do
 
   delete :destroy do
     set_current_account(nil)
+    @env['rack.session'][:_id] = nil
     redirect url(:sessions, :new)
   end
 end

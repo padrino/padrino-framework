@@ -1,0 +1,9 @@
+--no-save
+--no-private
+--title Padrino Flash
+--markup-provider redcarpet
+--markup markdown
+lib/**/*.rb
+-
+README.md
+LICENSE

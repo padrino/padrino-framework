@@ -96,6 +96,7 @@ module Padrino
         end
 
         # f.check_box :remember_me, :value => 'true', :uncheck_value => '0'
+        # f.check_box :remember_me, :value => 'true', :uncheck_value => '0'
         def check_box(field, options={})
           html =""
           unchecked_value = options.delete(:uncheck_value) || '0'

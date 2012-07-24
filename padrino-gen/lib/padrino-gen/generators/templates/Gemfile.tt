@@ -6,7 +6,6 @@ source :rubygems
 
 # Project requirements
 gem 'rake'
-gem 'sinatra-flash', :require => 'sinatra/flash'
 
 # Component requirements
 
@@ -22,3 +21,7 @@ gem 'sinatra-flash', :require => 'sinatra/flash'
 <% unless options.dev? %># <% end %>%w(core gen helpers cache mailer admin).each do |g|
 <% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
 <% unless options.dev? %># <% end %>end
+
+# Development
+# Easy logging: just with 'd "#{@my_var}"'
+gem 'log_buddy', :require => 'log_buddy'
