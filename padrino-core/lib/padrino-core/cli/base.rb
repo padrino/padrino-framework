@@ -6,17 +6,17 @@ module Padrino
     class Base < Thor
       include Thor::Actions
 
-      class_option :chdir, :type => :string, :aliases => "-c", :desc => "Change to dir before starting"
-      class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development, :desc => "Padrino Environment"
+      class_option :chdir, :type => :string, :aliases => "-c", :desc => "Change to dir before starting."
+      class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development, :desc => "Padrino Environment."
       class_option :help, :type => :boolean, :desc => "Show help usage"
 
-      desc "start", "Starts the Padrino application"
-      method_option :server,      :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
-      method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address"
-      method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT"
-      method_option :daemonize,   :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background"
-      method_option :pid,         :type => :string,  :aliases => "-i", :desc => "File to store pid"
-      method_option :debug,       :type => :boolean,                   :desc => "Set debugging flags"
+      desc "start", "Starts the Padrino application (alternatively use 's')."
+      method_option :server,    :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
+      method_option :host,      :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address."
+      method_option :port,      :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT."
+      method_option :daemonize, :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background."
+      method_option :pid,       :type => :string,  :aliases => "-i", :desc => "File to store pid."
+      method_option :debug,     :type => :boolean,                   :desc => "Set debugging flags."
       def start
         prepare :start
         require File.expand_path("../adapter", __FILE__)
@@ -24,12 +24,11 @@ module Padrino
         Padrino::Cli::Adapter.start(options)
       end
 
-      desc "s", "Starts the Padrino application"
       def s
         invoke :start
       end
 
-      desc "stop", "Stops the Padrino application"
+      desc "stop", "Stops the Padrino application (alternatively use 'st')."
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
       def stop
         prepare :stop
@@ -37,7 +36,11 @@ module Padrino
         Padrino::Cli::Adapter.stop(options)
       end
 
-      desc "rake", "Execute rake tasks"
+      def st
+        invoke :stop
+      end
+
+      desc "rake", "Execute rake tasks."
       method_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development
       method_option :list,        :type => :string,  :aliases => "-T", :desc => "Display the tasks (matching optional PATTERN) with descriptions, then exit."
       method_option :trace,       :type => :boolean, :aliases => "-t", :desc => "Turn on invoke/execute tracing, enable full backtrace."
@@ -55,7 +58,7 @@ module Padrino
         PadrinoTasks.init(true)
       end
 
-      desc "console", "Boots up the Padrino application irb console"
+      desc "console", "Boots up the Padrino application irb console (alternatively use 'c')."
       def console
         prepare :console
         require File.expand_path("../../version", __FILE__)
@@ -68,12 +71,11 @@ module Padrino
         IRB.start
       end
 
-      desc "c", "Boots up the Padrino application irb console"
       def c(*args)
         invoke(:console, args)
       end
 
-      desc "generate", "Executes the Padrino generator with given options."
+      desc "generate", "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
         begin
@@ -90,17 +92,15 @@ module Padrino
         end
       end
 
-      desc "g", "Executes the Padrino generator with given options."
-      def g(*args)
-        invoke(:generate, args)
-      end
-
-      desc "gen", "Executes the Padrino generator with given options."
       def gen(*args)
         invoke(:generate, args)
       end
 
-      desc "version", "Show current Padrino Version"
+      def g(*args)
+        invoke(:generate, args)
+      end
+
+      desc "version", "Show current Padrino version."
       map "-v" => :version, "--version" => :version
       def version
         require 'padrino-core/version'
