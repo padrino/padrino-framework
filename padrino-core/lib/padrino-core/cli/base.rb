@@ -10,7 +10,7 @@ module Padrino
       class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development, :desc => "Padrino Environment"
       class_option :help, :type => :boolean, :desc => "Show help usage"
 
-      desc "start", "Starts the Padrino application"
+      desc "start", "Starts the Padrino application (alternatively use 's')"
       method_option :server,      :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
       method_option :host,        :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address"
       method_option :port,        :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT"
@@ -24,7 +24,6 @@ module Padrino
         Padrino::Cli::Adapter.start(options)
       end
 
-      desc "s", "Starts the Padrino application"
       def s
         invoke :start
       end
