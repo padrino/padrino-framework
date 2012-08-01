@@ -28,12 +28,16 @@ module Padrino
         invoke :start
       end
 
-      desc "stop", "Stops the Padrino application"
+      desc "stop", "Stops the Padrino application (alternatively use 'st')"
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
       def stop
         prepare :stop
         require File.expand_path("../adapter", __FILE__)
         Padrino::Cli::Adapter.stop(options)
+      end
+
+      def st
+        invoke :stop
       end
 
       desc "rake", "Execute rake tasks"
