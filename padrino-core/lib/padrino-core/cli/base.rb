@@ -58,7 +58,7 @@ module Padrino
         PadrinoTasks.init(true)
       end
 
-      desc "console", "Boots up the Padrino application irb console"
+      desc "console", "Boots up the Padrino application irb console (alternatively use 'c')"
       def console
         prepare :console
         require File.expand_path("../../version", __FILE__)
@@ -71,12 +71,11 @@ module Padrino
         IRB.start
       end
 
-      desc "c", "Boots up the Padrino application irb console"
       def c(*args)
         invoke(:console, args)
       end
 
-      desc "generate", "Executes the Padrino generator with given options."
+      desc "generate", "Executes the Padrino generator with given options"
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
         begin
