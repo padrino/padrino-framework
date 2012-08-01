@@ -75,7 +75,7 @@ module Padrino
         invoke(:console, args)
       end
 
-      desc "generate", "Executes the Padrino generator with given options"
+      desc "generate", "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')"
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
         begin
@@ -92,12 +92,10 @@ module Padrino
         end
       end
 
-      desc "g", "Executes the Padrino generator with given options."
       def g(*args)
         invoke(:generate, args)
       end
 
-      desc "gen", "Executes the Padrino generator with given options."
       def gen(*args)
         invoke(:generate, args)
       end
