@@ -11,6 +11,7 @@ module Padrino
       class_option :help, :type => :boolean, :desc => "Show help usage"
 
       desc "start", "Starts the Padrino application (alternatively use 's')."
+      map "s" => :start
       method_option :server,    :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
       method_option :host,      :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address."
       method_option :port,      :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT."
@@ -24,20 +25,13 @@ module Padrino
         Padrino::Cli::Adapter.start(options)
       end
 
-      def s
-        invoke :start
-      end
-
       desc "stop", "Stops the Padrino application (alternatively use 'st')."
+      map "st" => :stop
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
       def stop
         prepare :stop
         require File.expand_path("../adapter", __FILE__)
         Padrino::Cli::Adapter.stop(options)
-      end
-
-      def st
-        invoke :stop
       end
 
       desc "rake", "Execute rake tasks."
@@ -59,7 +53,8 @@ module Padrino
       end
 
       desc "console", "Boots up the Padrino application irb console (alternatively use 'c')."
-      def console
+      map "c" => :console
+      def console(*args)
         prepare :console
         require File.expand_path("../../version", __FILE__)
         ARGV.clear
@@ -71,11 +66,8 @@ module Padrino
         IRB.start
       end
 
-      def c(*args)
-        invoke(:console, args)
-      end
-
       desc "generate", "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
+      map ["gen", "g"] => :generate
       def generate(*args)
         # Build Padrino g as an alias of padrino-gen
         begin
@@ -92,16 +84,8 @@ module Padrino
         end
       end
 
-      def gen(*args)
-        invoke(:generate, args)
-      end
-
-      def g(*args)
-        invoke(:generate, args)
-      end
-
       desc "version", "Show current Padrino version."
-      map "-v" => :version, "--version" => :version
+      map ["-v", "--version"] => :version
       def version
         require 'padrino-core/version'
         puts "Padrino v. #{Padrino.version}"
