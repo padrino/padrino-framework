@@ -1,0 +1,64 @@
+class Account < Ohm::Model
+  include Ohm::Timestamping
+  include Ohm::Typecast
+  include Ohm::Callbacks
+  include Ohm::Boundaries
+
+  attr_accessor :password, :password_confirmation
+
+  # Keys
+  attribute :name,             String
+  attribute :surname,          String
+  attribute :email,            String
+  attribute :crypted_password, String
+  attribute :role,             String
+
+  index :email
+
+  # Validations
+  def validate
+    assert_present             :email
+    assert_present             :role
+    if password_required
+      assert_present :password
+      assert_present :password_confirmation
+      assert_format :password, /^.{4,40}$/
+      assert self.password == self.password_confirmation, :password_not_confirmed
+    end
+    assert_format :email, /^.{3,100}$/
+    assert_unique :email
+    assert_format :email, /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+    assert_format :role, /[A-Za-z]/
+  end
+
+  # Callbacks
+  before :save, :encrypt_password
+
+  ##
+  # This method is for authentication purpose
+  #
+  def self.authenticate(email, password)
+    account = first(:email => email)  if email.present?
+    account && account.has_password?(password) ? account : nil
+  end
+
+  ##
+  # This method is used by AuthenticationHelper
+  #
+  def self.find_by_id(id)
+    self[id]
+  end
+
+  def has_password?(password)
+    ::BCrypt::Password.new(crypted_password) == password
+  end
+
+  private
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password)  if password_required
+    end
+
+    def password_required
+      crypted_password.blank? || password.present?
+    end
+end

@@ -123,6 +123,7 @@ module Padrino
           instructions << "Run 'bundle install'"
           instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
           instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
+          instructions << "Run 'ohm mani padme hum'" if orm == :ohm
           instructions << "Run 'padrino rake seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
