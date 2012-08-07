@@ -25,6 +25,7 @@ def setup_orm
   db = @app_name.underscore
   %w(
     dm-core
+    dm-types
     dm-aggregates
     dm-constraints
     dm-migrations
