@@ -13,8 +13,7 @@ module Padrino
   #   logger.warn "bar"
   #
   def self.logger
-    Padrino::Logger.setup! if Thread.current[:padrino_logger].nil?
-    Thread.current[:padrino_logger]
+    Padrino::Logger.logger
   end
 
   ##
@@ -35,8 +34,7 @@ module Padrino
   #   Padrino.logger = Buffered.new(STDOUT)
   #
   def self.logger=(value)
-    value.extend(Padrino::Logger::Extensions) unless (Padrino::Logger::Extensions === value)
-    Thread.current[:padrino_logger] = value
+    Padrino::Logger.logger = value
   end
 
   ##
@@ -217,8 +215,6 @@ module Padrino
     attr_reader   :init_args
     attr_accessor :log_static
 
-    @@mutex = {}
-
     ##
     # Configuration for a given environment, possible options are:
     #
@@ -259,6 +255,17 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
+    @@mutex = Mutex.new
+    def self.logger
+      @logger || setup!
+    end
+
+    def self.logger=(logger)
+      logger.extend(Padrino::Logger::Extensions)
+
+      @logger = logger
+    end
+
     ##
     # Setup a new logger
     #
@@ -266,25 +273,27 @@ module Padrino
     #   A {Padrino::Logger} instance
     #
     def self.setup!
-      config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
-      config = Config[config_level]
+      self.logger = begin
+        config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
+        config = Config[config_level]
 
-      unless config
-        warn("No logging configuration for :#{config_level} found, falling back to :production")
-        config = Config[:production]
+        unless config
+          warn("No logging configuration for :#{config_level} found, falling back to :production")
+          config = Config[:production]
+        end
+
+        stream = case config[:stream]
+          when :to_file
+            FileUtils.mkdir_p(Padrino.root('log')) unless File.exists?(Padrino.root('log'))
+            File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
+          when :null   then StringIO.new
+          when :stdout then $stdout
+          when :stderr then $stderr
+          else config[:stream] # return itself, probabilly is a custom stream.
+        end
+
+        Padrino::Logger.new(config.merge(:stream => stream))
       end
-
-      stream = case config[:stream]
-        when :to_file
-          FileUtils.mkdir_p(Padrino.root('log')) unless File.exists?(Padrino.root('log'))
-          File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
-        when :null   then StringIO.new
-        when :stdout then $stdout
-        when :stderr then $stderr
-        else config[:stream] # return itself, probabilly is a custom stream.
-      end
-
-      Thread.current[:padrino_logger] = Padrino::Logger.new(config.merge(:stream => stream))
     end
 
     ##
@@ -317,7 +326,6 @@ module Padrino
       @level           = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
       @log             = options[:stream]  || $stdout
       @log.sync        = true
-      @mutex           = @@mutex[@log] ||= Mutex.new
       @format_datetime = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
       @format_message  = options[:format_message]  || "%s -%s%s"
       @log_static      = options.has_key?(:log_static) ? options[:log_static] : false
@@ -328,7 +336,7 @@ module Padrino
     #
     def flush
       return unless @buffer.size > 0
-      @mutex.synchronize do
+      @@mutex.synchronize do
         @log.write(@buffer.slice!(0..-1).join(''))
       end
     end
@@ -360,7 +368,9 @@ module Padrino
     #
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
-      @buffer << message
+      @@mutex.synchronize {
+        @buffer << message
+      }
       flush if @auto_flush
       message
     end
