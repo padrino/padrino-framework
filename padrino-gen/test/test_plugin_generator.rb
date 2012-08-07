@@ -82,6 +82,20 @@ describe "PluginGenerator" do
     end
   end
 
+  context "with list option" do
+    should "return a list of available plugins with no parameter" do
+      plugin_gen = Padrino::Generators::Plugin.new([], [],{})
+      plugin_gen.expects(:list_plugins).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
+
+    should "return a list of available plugins with list option" do
+      plugin_gen = Padrino::Generators::Plugin.new(['some_plugin'], ["-l", "-r=#{@apptmp}/sample_project"],{})
+      plugin_gen.expects(:list_plugins).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
+  end
+
   context "with git commands" do
     should "generate a repository correctly" do
       skip 'Change stubs here'
