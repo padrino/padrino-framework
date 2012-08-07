@@ -1,3 +1,6 @@
 [submodule "padrino-gen/lib/padrino-gen/generators/templates/static"]
 	path = padrino-gen/lib/padrino-gen/generators/templates/static
 	url = git://github.com/padrino/padrino-static.git
+[submodule "padrino-flash"]
+	path = padrino-flash
+	url = git://github.com/padrino/padrino-flash.git

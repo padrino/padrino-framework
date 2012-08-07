@@ -2,6 +2,7 @@ class Admin < Padrino::Application
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
+  register Padrino::Flash
   register Padrino::Admin::AccessControl
 
   ##
@@ -27,8 +28,8 @@ class Admin < Padrino::Application
   disable :store_location
 
   access_control.roles_for :any do |role|
-    role.protect "/"
-    role.allow "/sessions"
+    role.protect '/'
+    role.allow '/sessions'
   end
 
   access_control.roles_for :admin do |role|
