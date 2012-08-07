@@ -85,10 +85,19 @@ module Padrino
       # @api public
       def email(name, &block)
         raise "The email '#{name}' is already defined" if self.messages[name].present?
-        self.messages[name] = Proc.new { |*attrs|
-          message = Mail::Message.new(self.app)
+        self.messages[name] = Proc.new { |context, *attrs|
+          message = Mail::Message.new(context, self.app)
           message.defaults = self.defaults if self.defaults.any?
           message.delivery_method(*delivery_settings)
+
+          def message.method_missing(meth, *args, &block)
+            begin
+              super
+            rescue NameError
+              @context.send(meth, *args, &block)
+            end
+          end
+
           message.instance_exec(*attrs, &block)
           message
         }
