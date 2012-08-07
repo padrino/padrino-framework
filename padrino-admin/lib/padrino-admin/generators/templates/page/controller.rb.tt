@@ -22,26 +22,38 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   get :edit, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
-    render '<%= @orm.name_plural %>/edit'
+    if @<%= @orm.name_singular %>
+      render '<%= @orm.name_plural %>/edit'
+    else
+      halt 404
+    end
   end
 
   put :update, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
-    if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
-      redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
+    if @<%= @orm.name_singular %>
+      if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
+        flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
+        redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
+      else
+        render '<%= @orm.name_plural %>/edit'
+      end
     else
-      render '<%= @orm.name_plural %>/edit'
+      halt 404
     end
   end
 
   delete :destroy, :with => :id do
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
-    if <%= @orm.destroy %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
+    if <%= @orm.name_singular %>
+      if <%= @orm.destroy %>
+        flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
+      else
+        flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
+      end
+      redirect url(:<%= @orm.name_plural %>, :index)
     else
-      flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
+      halt 404
     end
-    redirect url(:<%= @orm.name_plural %>, :index)
   end
 end
