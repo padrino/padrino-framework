@@ -80,6 +80,29 @@ describe "PluginGenerator" do
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
+
+    should "print a warning if template cannot be found" do
+      template_file  = 'hwat'
+      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/plugins/hwat_plugin.rb"
+      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
+      plugin_gen.expects(:in_app_root?).returns(true).once
+      plugin_gen.expects(:say).with("The template at #{resolved_path} could not be found!", :red).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
+  end
+
+  context "with list option" do
+    should "return a list of available plugins with no parameter" do
+      plugin_gen = Padrino::Generators::Plugin.new([], [],{})
+      plugin_gen.expects(:list_plugins).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
+
+    should "return a list of available plugins with list option" do
+      plugin_gen = Padrino::Generators::Plugin.new(['some_plugin'], ["-l", "-r=#{@apptmp}/sample_project"],{})
+      plugin_gen.expects(:list_plugins).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
   end
 
   context "with git commands" do

@@ -24,10 +24,10 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen plugin sets up a plugin within a Padrino application"
 
-      argument :plugin_file, :desc => 'The name or path to the Padrino plugin', :optional => true
+      argument :plugin_file, :desc => "The name or path to the Padrino plugin", :optional => true
 
-      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.',   :type => :string
-      class_option :list, :desc => 'list available plugins', :aliases => '-l', :default => false, :type => :boolean
+      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
+      class_option :list, :desc => "list available plugins", :aliases => '-l', :default => false, :type => :boolean
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       # Show help if no argv given
       require_arguments!
@@ -36,7 +36,21 @@ module Padrino
       #
       # @api private
       def setup_plugin
-        if options[:list] # list method ran here
+        if options[:list] || plugin_file.nil? # list method ran here
+          list_plugins
+        else # executing the plugin instructions
+          if in_app_root?
+            self.behavior = :revoke if options[:destroy]
+            self.destination_root = options[:root]
+            execute_runner(:plugin, plugin_file)
+          else
+            say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          end
+        end
+      end
+
+      no_tasks do
+        def list_plugins
           plugins = {}
           uri = URI.parse(PLUGIN_URL)
           http = Net::HTTP.new(uri.host, uri.port)
@@ -47,16 +61,8 @@ module Padrino
               plugins = res.body.scan(%r{/plugins/(\w+)_plugin.rb}).uniq
             end
           end
-          say 'Available plugins:', :green
+          say "Available plugins:", :green
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
-        else # executing the plugin instructions
-          if in_app_root?
-            self.behavior = :revoke if options[:destroy]
-            self.destination_root = options[:root]
-            execute_runner(:plugin, plugin_file)
-          else
-            say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
-          end
         end
       end
     end # Plugins

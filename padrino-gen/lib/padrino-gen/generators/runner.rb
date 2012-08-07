@@ -132,7 +132,7 @@ module Padrino
           else # local file on system
             File.expand_path(template_file)
           end
-        self.apply(template_path)
+        self.apply(template_path) rescue say("The template at #{template_path} could not be found!", :red)
       end
     end # Runner
   end # Generators
