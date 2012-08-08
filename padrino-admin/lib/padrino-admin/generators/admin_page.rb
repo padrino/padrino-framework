@@ -31,6 +31,7 @@ module Padrino
       # Create controller for admin
       def create_controller
         self.destination_root = options[:root]
+        self.source_paths.unshift Padrino.root("vendor/padrino-admin/generators")
         if in_app_root?
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)

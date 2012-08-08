@@ -55,6 +55,7 @@ module Padrino
             when :mongoid      then @klass.fields.values
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
             when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
+            when :ohm          then @klass.attributes.map { |a| Column.new( a.to_s, :string ) } # ohm has strings
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -95,7 +96,7 @@ module Padrino
           case orm
             when :activerecord, :mini_record, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
-            when :sequel then "#{klass_name}[#{params}]"
+            when :sequel, :ohm then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -118,14 +119,17 @@ module Padrino
         def update_attributes(params=nil)
           case orm
             when :activerecord, :mini_record, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
-            when :datamapper then "@#{name_singular}.update(#{params})"
+            when :datamapper, :ohm then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
         def destroy
-          "#{name_singular}.destroy"
+          case orm
+            when :ohm then "#{name_singular}.delete"
+            else "#{name_singular}.destroy"
+          end
         end
       end # Orm
     end # Generators

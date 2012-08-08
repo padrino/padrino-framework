@@ -1,5 +1,6 @@
 require 'padrino-core/application/rendering'
 require 'padrino-core/application/routing'
+require 'padrino-core/application/flash'
 require 'padrino-core/application/showexceptions'
 
 module Padrino
@@ -184,7 +185,7 @@ module Padrino
         set :uri_root, '/'
         set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
-        set :flash, defined?(Sinatra::Flash) || defined?(Rack::Flash)
+        set :flash, defined?(Padrino::Flash) || defined?(Rack::Flash)
         set :authentication, false
         # Padrino locale
         set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
@@ -256,14 +257,14 @@ module Padrino
       end
 
        # TODO Remove this in a few versions (rack-flash deprecation)
-       # Move register Sinatra::Flash into setup_default_middleware
-       # Initializes flash using sinatra-flash or rack-flash
+       # Initializes flash using padrino-flash or rack-flash
       def setup_flash(builder)
-        register Sinatra::Flash if flash? && defined?(Sinatra::Flash)
-        if defined?(Rack::Flash) && !defined?(Sinatra::Flash)
+        register Padrino::Flash if flash? && defined?(Padrino::Flash)
+        if defined?(Rack::Flash) && !defined?(Padrino::Flash)
           logger.warn %Q{
-            [Deprecation] In Gemfile, 'rack-flash' should be replaced with 'sinatra-flash'!
-            Rack-Flash is not compatible with later versions of Rack and should be replaced.
+            [Deprecation] 'rack-flash' can be removed in Gemfile.
+            Rack-Flash is not compatible with later versions of Rack and is 
+            replaced with Padrino's own Flash-Helpers.
           }
           builder.use Rack::Flash, :sweep => true if flash?
         end
