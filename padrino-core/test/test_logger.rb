@@ -152,3 +152,30 @@ describe "alternate logger: stdlib logger" do
     assert_match /\e\[1m200\e\[0m OK/, @log.string
   end
 end
+
+describe "options :colorize_logging" do
+  def access_to_mock_app
+    mock_app do
+      enable :logging
+      get("/"){ "Foo" }
+    end
+    get "/"
+  end
+  context 'default' do
+    should 'use colorize logging' do
+      Padrino::Logger.setup!
+
+      access_to_mock_app
+      assert_match /\e\[1m200\e\[0m OK/, Padrino.logger.log.string
+    end
+  end
+  context 'set value is false' do
+    should 'not use colorize logging' do
+      Padrino::Logger::Config[:test][:colorize_logging] = false
+      Padrino::Logger.setup!
+
+      access_to_mock_app
+      assert_match /200 OK/, Padrino.logger.log.string
+    end
+  end
+end
