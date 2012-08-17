@@ -73,7 +73,7 @@ module Padrino
             expires_in = -1
           end
           value = Marshal.dump(value) if value
-          ::File.open(path_for_key(key), 'w') { |f| f << expires_in.to_s << "\n" << value } if value
+          ::File.open(path_for_key(key), 'wb') { |f| f << expires_in.to_s << "\n" << value } if value
         end
 
         ##
