@@ -20,7 +20,7 @@ describe "Application" do
       assert File.identical?(__FILE__, PadrinoPristine.app_file)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
-      assert_equal Padrino.root("views"), PadrinoPristine.views
+      assert_equal Padrino.root('views'), PadrinoPristine.views
       assert  PadrinoPristine.raise_errors
       assert !PadrinoPristine.logging
       assert !PadrinoPristine.sessions
@@ -40,6 +40,7 @@ describe "Application" do
       assert_equal :production, PadrinoPristine.environment
       assert PadrinoPristine.haml[:ugly]
       Padrino.instance_variable_set :@_env, :test
+      PadrinoPristine.send :default_configuration!
     end
 
     should 'check padrino specific options' do
@@ -49,7 +50,7 @@ describe "Application" do
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
       assert  PadrinoPristine.instance_variable_get(:@_configured)
       assert !PadrinoPristine.reload?
-      assert !PadrinoPristine.flash
+      assert PadrinoPristine.flash
     end
 
     should 'set global project settings' do

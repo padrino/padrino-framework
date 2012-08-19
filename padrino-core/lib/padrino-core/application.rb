@@ -179,10 +179,10 @@ module Padrino
         set :sessions, false
         set :public_folder, Proc.new { Padrino.root('public', uri_root) }
         set :views, Proc.new { File.join(root,   "views") }
-        set :images_path, Proc.new { File.join(public, "images") }
+        set :images_path, Proc.new { File.join(public_folder, "images") }
         set :protection, false
         # Haml specific
-        set :haml, { :ugly => (Padrino.env == :production && defined?(Haml)) }
+        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
         # Padrino specific
         set :uri_root, '/'
         set :app_name, settings.to_s.underscore.to_sym
