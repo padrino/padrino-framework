@@ -172,10 +172,14 @@ change_table :!TABLE! do |t|
 end
 MIGRATION
 
+AR_REMOVE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_REMOVE_MG)
+remove_columns :!TABLE!, !COLUMNS!
+MIGRATION
+
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
+    :base => AR_MIGRATION, :change_format => AR_CHANGE_MG, :remove_format => AR_REMOVE_MG,
     :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove => Proc.new { |field, kind| "t.remove :#{field}" }
+    :remove => Proc.new { |field, kind| ":#{field}" }
   )
 end
