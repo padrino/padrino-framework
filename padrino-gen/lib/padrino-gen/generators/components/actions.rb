@@ -67,6 +67,7 @@ module Padrino
           else
             return if migration_exist?(filename)
             change_format = options[:change_format]
+            remove_format = options[:remove_format]
             migration_scan = filename.underscore.camelize.scan(/(Add|Remove)(?:.*?)(?:To|From)(.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
             tuples = direction ? columns.map { |value| value.split(":") } : []
@@ -74,7 +75,7 @@ module Padrino
             add_columns    = tuples.map(&options[:add]).join("\n    ")
             remove_columns = tuples.map(&options[:remove]).join("\n    ")
             forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?
-            back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
+            back_text    = remove_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
             contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
