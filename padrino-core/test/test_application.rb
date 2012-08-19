@@ -6,13 +6,8 @@ class PadrinoTestApp  < Padrino::Application; end
 class PadrinoTestApp2 < Padrino::Application; end
 
 describe "Application" do
-  def setup
-    Padrino.clear!
-  end
-
-  def teardown
-    remove_views
-  end
+  before { Padrino.clear! }
+  after  { remove_views }
 
   context 'for application functionality' do
 
@@ -50,7 +45,6 @@ describe "Application" do
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
       assert  PadrinoPristine.instance_variable_get(:@_configured)
       assert !PadrinoPristine.reload?
-      assert  PadrinoPristine.flash
     end
 
     should 'set global project settings' do
@@ -66,14 +60,14 @@ describe "Application" do
       Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
-      PadrinoTestApp.tap { |app| app.send(:default_configuration!)
-        app.get("/") { session[:foo] = "shared" } }
-      PadrinoTestApp2.tap { |app| app.send(:default_configuration!)
-        app.get("/") { session[:foo] } }
-      browser = Rack::Test::Session.new(Rack::MockSession.new(Padrino.application))
-      browser.get '/write'
-      browser.get '/read'
-      assert_equal 'shared', browser.last_response.body
+      PadrinoTestApp.send :default_configuration!
+      PadrinoTestApp.get("/") { session[:foo] = "shared" }
+      PadrinoTestApp2.send(:default_configuration!)
+      PadrinoTestApp2.get("/") { session[:foo] }
+      @app = Padrino.application
+      get '/write'
+      get '/read'
+      assert_equal 'shared', body
     end
 
     # compare to: test_routing: allow global provides
