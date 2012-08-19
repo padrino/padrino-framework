@@ -29,13 +29,12 @@ describe "Application" do
       assert defined?(Haml), 'Haml not defined'
       assert_equal :test, PadrinoPristine.environment
       assert !PadrinoPristine.haml[:ugly]
-      Padrino.instance_variable_set :@_env, :production
-      PadrinoPristine.send :default_configuration!
-      assert_equal :production, Padrino.env
-      assert_equal :production, PadrinoPristine.environment
-      assert PadrinoPristine.haml[:ugly]
-      Padrino.instance_variable_set :@_env, :test
-      PadrinoPristine.send :default_configuration!
+      Padrino.stub :env, :production do
+        PadrinoPristine.send :default_configuration!
+        assert_equal :production, Padrino.env
+        assert_equal :production, PadrinoPristine.environment
+        assert PadrinoPristine.haml[:ugly]
+      end
     end
 
     should 'check padrino specific options' do
