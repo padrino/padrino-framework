@@ -78,20 +78,20 @@ describe "SimpleReloader" do
       last_body = body
       assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
       assert_equal 1, @app.errors.size
-      assert_equal 1, @app.filters[:after].size
+      assert_equal 2, @app.filters[:after].size # app + content-type + padrino-flash
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
-      assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
+      assert_equal 3, @app.extensions.size # [Padrino::Routing, Padrino::Rendering, Padrino::Flash]
       assert_equal 0, @app.templates.size
       @app.reload!
       get "/rand"
       assert_not_equal last_body, body
       assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
       assert_equal 1, @app.errors.size
-      assert_equal 1, @app.filters[:after].size
+      assert_equal 2, @app.filters[:after].size
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
-      assert_equal 2, @app.extensions.size # [Padrino::Routing, Padrino::Rendering]
+      assert_equal 3, @app.extensions.size # [Padrino::Routing, Padrino::Rendering, Padrino::Flash]
       assert_equal 0, @app.templates.size
     end
   end

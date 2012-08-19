@@ -34,6 +34,7 @@ describe "Application" do
         assert_equal :production, Padrino.env
         assert_equal :production, PadrinoPristine.environment
         assert PadrinoPristine.haml[:ugly]
+        PadrinoPristine.environment = :test
       end
     end
 
@@ -60,9 +61,9 @@ describe "Application" do
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
       PadrinoTestApp.send :default_configuration!
-      PadrinoTestApp.get("/") { session[:foo] = "shared" }
+      PadrinoTestApp.get('/') { session[:foo] = "shared" }
       PadrinoTestApp2.send(:default_configuration!)
-      PadrinoTestApp2.get("/") { session[:foo] }
+      PadrinoTestApp2.get('/') { session[:foo] }
       @app = Padrino.application
       get '/write'
       get '/read'

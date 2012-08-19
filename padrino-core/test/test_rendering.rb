@@ -468,7 +468,7 @@ describe "Rendering" do
     should 'renders hashes and arrays as json' do
       mock_app do
         get '/hash' do
-          render({:a => 1, :b => 2})
+          render({:a => 1})
         end
 
         get '/array' do
@@ -477,7 +477,7 @@ describe "Rendering" do
       end
       get '/hash'
       assert ok?
-      assert_equal '{"a":1,"b":2}', body
+      assert_equal '{"a":1}', body
       get '/array'
       assert ok?
       assert_equal '["a",1,"b",2]', body
