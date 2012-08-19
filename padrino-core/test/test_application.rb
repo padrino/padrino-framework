@@ -59,7 +59,9 @@ describe "Application" do
       Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
+      PadrinoTestApp.send :default_configuration!
       PadrinoTestApp.get("/") { session[:foo] = "shared" }
+      PadrinoTestApp2.send(:default_configuration!)
       PadrinoTestApp2.get("/") { session[:foo] }
       @app = Padrino.application
       get '/write'
