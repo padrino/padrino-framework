@@ -181,11 +181,8 @@ module Padrino
         set :views, Proc.new { File.join(root,   "views") }
         set :images_path, Proc.new { File.join(public, "images") }
         set :protection, false
-        # haml engine
-        if Padrino.env == :production && defined?(Haml)
-          set :haml, {:ugly => true}
-        end
-
+        # Haml specific
+        set :haml, { :ugly => (Padrino.env == :production && defined?(Haml)) }
         # Padrino specific
         set :uri_root, '/'
         set :app_name, settings.to_s.underscore.to_sym

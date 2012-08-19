@@ -1,7 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require 'haml'
 
 class PadrinoPristine < Padrino::Application; end
-class PadrinoTestApp < Padrino::Application; end
+class PadrinoTestApp  < Padrino::Application; end
 class PadrinoTestApp2 < Padrino::Application; end
 
 describe "Application" do
@@ -20,13 +21,25 @@ describe "Application" do
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
       assert_equal Padrino.root("views"), PadrinoPristine.views
-      assert PadrinoPristine.raise_errors
+      assert  PadrinoPristine.raise_errors
       assert !PadrinoPristine.logging
       assert !PadrinoPristine.sessions
       assert !PadrinoPristine.dump_errors
       assert !PadrinoPristine.show_exceptions
-      assert PadrinoPristine.raise_errors
+      assert  PadrinoPristine.raise_errors
       assert !Padrino.configure_apps
+    end
+
+    should 'check haml options on production' do
+      assert defined?(Haml), 'Haml not defined'
+      assert_equal :test, PadrinoPristine.environment
+      assert !PadrinoPristine.haml[:ugly]
+      Padrino.instance_variable_set :@_env, :production
+      PadrinoPristine.send :default_configuration!
+      assert_equal :production, Padrino.env
+      assert_equal :production, PadrinoPristine.environment
+      assert PadrinoPristine.haml[:ugly]
+      Padrino.instance_variable_set :@_env, :test
     end
 
     should 'check padrino specific options' do
@@ -34,7 +47,7 @@ describe "Application" do
       PadrinoPristine.send(:setup_application!)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
-      assert PadrinoPristine.instance_variable_get(:@_configured)
+      assert  PadrinoPristine.instance_variable_get(:@_configured)
       assert !PadrinoPristine.reload?
       assert !PadrinoPristine.flash
     end
