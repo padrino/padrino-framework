@@ -50,7 +50,7 @@ describe "Application" do
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
       assert  PadrinoPristine.instance_variable_get(:@_configured)
       assert !PadrinoPristine.reload?
-      assert PadrinoPristine.flash
+      assert  PadrinoPristine.flash
     end
 
     should 'set global project settings' do
