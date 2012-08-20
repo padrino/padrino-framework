@@ -319,9 +319,7 @@ describe "ProjectGenerator" do
     should "properly generate for ohm" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ohm', '--script=none') }
       assert_match(/applying.*?ohm.*?orm/, out)
-      assert_match_in_file(/gem 'json'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'ohm-contrib', :require => "ohm\/contrib"/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
     end
 

@@ -41,9 +41,9 @@ Mongoid::Config.sessions = {default: {hosts: ["#\{host\}:#\{port\}"], database: 
 MONGO
 
 def setup_orm
-  require_dependencies 'bson_ext'
-  require_dependencies 'mongo',   :require => 'mongo'
   require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '>=3.0' : '~>2.0')
+  require_dependencies 'mongo',   :require => 'mongo'
+  require_dependencies 'bson_ext'
 
   if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
     require_dependencies('SystemTimer', :require => 'system_timer')
