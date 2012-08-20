@@ -258,13 +258,13 @@ module Padrino
 
     @@mutex = Mutex.new
     def self.logger
-      @logger || setup!
+      @_logger || setup!
     end
 
     def self.logger=(logger)
       logger.extend(Padrino::Logger::Extensions)
 
-      @logger = logger
+      @_logger = logger
     end
 
     ##
@@ -441,4 +441,3 @@ module Kernel # @private
     Padrino.logger
   end
 end # Kernel
-

@@ -1,6 +1,36 @@
-MONGOID = (<<-MONGO) unless defined?(MONGOID3)
-host          = 'localhost'
-port          = Mongo::Connection::DEFAULT_PORT
+MONGOID = (<<-MONGO) unless defined?(MONGOID)
+# Connection.new takes host, port
+host = 'localhost'
+port = Mongo::Connection::DEFAULT_PORT
+
+database_name = case Padrino.env
+  when :development then '!NAME!_development'
+  when :production  then '!NAME!_production'
+  when :test        then '!NAME!_test'
+end
+
+Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
+
+# You can also configure Mongoid this way
+# Mongoid.configure do |config|
+#   name = @settings["database"]
+#   host = @settings["host"]
+#   config.master = Mongo::Connection.new.db(name)
+#   config.slaves = [
+#     Mongo::Connection.new(host, @settings["slave_one"]["port"], :slave_ok => true).db(name),
+#     Mongo::Connection.new(host, @settings["slave_two"]["port"], :slave_ok => true).db(name)
+#   ]
+# end
+#
+# More installation and setup notes are on http://mongoid.org/docs/
+MONGO
+
+MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
+# Connection.new takes host, port
+
+host = 'localhost'
+port = Mongo::Connection::DEFAULT_PORT
+
 database_name = case Padrino.env
   when :development then '!NAME!_development'
   when :production  then '!NAME!_production'
@@ -12,10 +42,18 @@ MONGO
 
 def setup_orm
   require_dependencies 'bson_ext'
-  require_dependencies 'mongo', :require => 'mongo'
-  require_dependencies 'mongoid'
-  require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
-  create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
+  require_dependencies 'mongo',   :require => 'mongo'
+  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '>=3.0' : '~>2.0')
+
+  if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
+    require_dependencies('SystemTimer', :require => 'system_timer')
+  end
+
+  if RUBY_VERSION >= '1.9'
+     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @app_name.underscore))
+  else
+    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
+  end
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
