@@ -68,7 +68,7 @@ describe Padrino::Flash do
 
   routes = Proc.new do
     get :index do
-      params[:key] ? flash[params[:key].to_sym].to_s : flash.to_s
+      params[:key] ? flash[params[:key].to_sym].to_s : flash.now.inspect
     end
 
     post :index do
@@ -102,7 +102,7 @@ describe Padrino::Flash do
 
     should 'show nothing' do
       get '/'
-      assert_equal '', body
+      assert_equal '{}', body
     end
 
     should 'set a flash' do
@@ -124,7 +124,7 @@ describe Padrino::Flash do
 
     should 'show nothing' do
       get '/'
-      assert_equal '', body
+      assert_equal '{}', body
     end
 
     should 'set a flash' do
