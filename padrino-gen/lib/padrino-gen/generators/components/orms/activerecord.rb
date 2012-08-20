@@ -148,7 +148,7 @@ class !FILECLASS! < ActiveRecord::Migration
 end
 MIGRATION
 
-AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_MODEL_UP_MG)
+AR_MODEL_UP_MG = (<<-MIGRATION) unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|
   !FIELDS!
   t.timestamps
@@ -161,9 +161,11 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :base => AR_MIGRATION,
-       :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-       :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
+    :base          => AR_MIGRATION,
+    :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :up            => AR_MODEL_UP_MG,
+    :down          => AR_MODEL_DOWN_MG
+  )
 end
 
 AR_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)
@@ -174,8 +176,9 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
-    :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove => Proc.new { |field, kind| "t.remove :#{field}" }
+    :base          => AR_MIGRATION,
+    :change_format => AR_CHANGE_MG,
+    :add           => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :remove        => Proc.new { |field, kind| "t.remove :#{field}" }
   )
 end
