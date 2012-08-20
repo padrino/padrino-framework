@@ -1,5 +1,3 @@
-require 'mongoid'
-
 MONGOID = (<<-MONGO) unless defined?(MONGOID)
 # Connection.new takes host, port
 host = 'localhost'
@@ -27,7 +25,7 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 # More installation and setup notes are on http://mongoid.org/docs/
 MONGO
 
-MONGOID3 = (<<-Mv3) unless defined?(MONGOID3) && ::Mongoid::VERSION > '3'
+MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
 # Connection.new takes host, port
 
 host = 'localhost'
@@ -39,16 +37,19 @@ database_name = case Padrino.env
   when :test        then '!NAME!_test'
 end
 
-Mongoid::Config.sessions= {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
-Mv3
+Mongoid::Config.sessions = {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
+MONGO
 
 def setup_orm
   require_dependencies 'bson_ext'
-  require_dependencies 'mongo', :require => 'mongo'
-  require_dependencies 'mongoid'
-  require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
+  require_dependencies 'mongo',   :require => 'mongo'
+  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '>=3.0' : '~>2.0')
 
-  if ::Mongoid::VERSION > '3'
+  if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
+    require_dependencies('SystemTimer', :require => 'system_timer')
+  end
+
+  if RUBY_VERSION >= '1.9'
      create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @app_name.underscore))
   else
     create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
