@@ -1544,8 +1544,8 @@ describe "Routing" do
   end
 
   should "have overideable format" do
+    ::Rack::Mime::MIME_TYPES[".other"] = "text/html"
     mock_app do
-      ::Rack::Mime::MIME_TYPES[".other"] = "text/html"
       before do
         params[:format] ||= :other
       end
@@ -1553,6 +1553,7 @@ describe "Routing" do
     end
     get "/format_test"
     assert_equal "other", body
+    ::Rack::Mime::MIME_TYPES.delete('.other')
   end
 
   should 'invokes handlers registered with ::error when raised' do
