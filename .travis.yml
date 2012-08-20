@@ -7,18 +7,15 @@ rvm:
   - 1.9.2
   - 1.9.3
   - ree
-  - ruby-head
   - jruby
-
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
     - nesquena@gmail.com
     - mr.arthur.chiu@gmail.com
     - joshbuddy@gmail.com
-    - d.dagostino@lipsiasoft.com
+    - info@daddye.it
     - florian.gilcher@asquera.de
-
 branches:
   only:
     - master
