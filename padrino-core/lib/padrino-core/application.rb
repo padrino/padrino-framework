@@ -178,14 +178,15 @@ module Padrino
         set :method_override, true
         set :sessions, false
         set :public_folder, Proc.new { Padrino.root('public', uri_root) }
-        set :views, Proc.new { File.join(root,   "views") }
-        set :images_path, Proc.new { File.join(public, "images") }
+        set :views, Proc.new { File.join(root, 'views') }
+        set :images_path, Proc.new { File.join(public_folder, 'images') }
         set :protection, false
+        # Haml specific
+        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
         # Padrino specific
         set :uri_root, '/'
         set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
-        set :flash, defined?(Padrino::Flash) || defined?(Rack::Flash)
         set :authentication, false
         # Padrino locale
         set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
@@ -246,28 +247,14 @@ module Padrino
       # Also initializes the application after setting up the middleware
       def setup_default_middleware(builder)
         setup_sessions builder
-        setup_flash builder
         builder.use Padrino::ShowExceptions         if show_exceptions?
         builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
         builder.use Padrino::Reloader::Rack         if reload?
         builder.use Rack::MethodOverride            if method_override?
         builder.use Rack::Head
+        register    Padrino::Flash
         setup_protection builder
         setup_application!
-      end
-
-       # TODO Remove this in a few versions (rack-flash deprecation)
-       # Initializes flash using padrino-flash or rack-flash
-      def setup_flash(builder)
-        register Padrino::Flash if flash? && defined?(Padrino::Flash)
-        if defined?(Rack::Flash) && !defined?(Padrino::Flash)
-          logger.warn %Q{
-            [Deprecation] 'rack-flash' can be removed in Gemfile.
-            Rack-Flash is not compatible with later versions of Rack and is 
-            replaced with Padrino's own Flash-Helpers.
-          }
-          builder.use Rack::Flash, :sweep => true if flash?
-        end
       end
     end # self
   end # Application

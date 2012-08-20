@@ -137,6 +137,7 @@ describe "Rendering" do
     should 'use correct layout with each controller' do
       create_layout :foo, "foo layout at <%= yield %>"
       create_layout :bar, "bar layout at <%= yield %>"
+      create_layout :baz, "baz layout at <%= yield %>"
       create_layout :application, "default layout at <%= yield %>"
       mock_app do
         get("/"){ render :erb, "application" }
@@ -148,6 +149,10 @@ describe "Rendering" do
           layout :bar
           get("/"){ render :erb, "bar" }
         end
+        controller :baz do
+          layout :baz
+          get("/"){ render :erb, "baz", :layout => true }
+        end
         controller :none do
           get("/") { render :erb, "none" }
           get("/with_foo_layout")  { render :erb, "none with layout", :layout => :foo }
@@ -157,6 +162,8 @@ describe "Rendering" do
       assert_equal "foo layout at foo", body
       get "/bar"
       assert_equal "bar layout at bar", body
+      get "/baz"
+      assert_equal "baz layout at baz", body
       get "/none"
       assert_equal "default layout at none", body
       get "/none/with_foo_layout"
@@ -461,7 +468,7 @@ describe "Rendering" do
     should 'renders hashes and arrays as json' do
       mock_app do
         get '/hash' do
-          render({:a => 1, :b => 2})
+          render({:a => 1})
         end
 
         get '/array' do
@@ -470,7 +477,7 @@ describe "Rendering" do
       end
       get '/hash'
       assert ok?
-      assert_equal '{"a":1,"b":2}', body
+      assert_equal '{"a":1}', body
       get '/array'
       assert ok?
       assert_equal '["a",1,"b",2]', body
