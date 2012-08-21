@@ -18,7 +18,7 @@
   font-size: 11px;
   font-style: normal;
   font-weight: normal;
-  text-transform: normal;
+  text-transform: none;
   letter-spacing: normal;
   line-height: 1.4em;
 }
@@ -29,7 +29,7 @@
   font-size: 13px;
   font-style: italic;
   font-weight: normal;
-  text-transform: normal;
+  text-transform: none;
   letter-spacing: normal;
   line-height: 1.6em;
 }
@@ -63,7 +63,7 @@ hr {
   font-size: 28px;
   font-style: normal;
   font-weight: bold;
-  text-transform: normal;
+  text-transform: none;
   letter-spacing: -1px;
   line-height: 1.2em;
 }
@@ -95,7 +95,7 @@ hr {
   font-size: 22px;
   font-style: normal;
   font-weight: bold;
-  text-transform: normal;
+  text-transform: none;
   letter-spacing: -1px;
   line-height: 1.2em;
 }
@@ -104,7 +104,7 @@ hr {
   font-size: 13px;
   font-style: normal;
   font-weight: normal;
-  text-transform: normal;
+  text-transform: none;
   letter-spacing: normal;
   line-height: 1.45em;
 }
@@ -160,7 +160,7 @@ hr {
 
 #sidebar ul li a:hover, #sidebar ul li a:active {
   background: #666666;
-  color: #ffffff;;
+  color: #ffffff;
 }
 
 #main-navigation {
