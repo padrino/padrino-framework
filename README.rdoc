@@ -1,18 +1,16 @@
-== (Padrino Admin TwitterBootstrap 2.0.3)
+== (Padrino Admin TwitterBootstrap 2.1)
 * Padrino-Modal: rack-flash and delete function into modal :D
 * highlights error field
 * tof helper: Automatic replace true or false with relative image (list.slim and list.haml)
 * Breadcrumbs
 * Automatic time_ago_in_words when column model is created_at or updated_at
 * Migrate function for MiniRecord
-
-===== add/update
 * tag_icon helper
+* Automatic icon
 
-==== tag_icon
-Automatic icon
 
-pahttp://padrino.waydotnet.com/images/icon.jpg
+==== Automatic icon
+http://padrino.waydotnet.com/images/icon.jpg
 
 
 
