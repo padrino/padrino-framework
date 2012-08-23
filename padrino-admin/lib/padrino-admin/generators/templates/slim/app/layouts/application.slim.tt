@@ -8,8 +8,8 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
     /! Twitter Bootstrap
     == javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button]
     == javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown]
-    == javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]
     == javascript_include_tag %w[ bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
+    == javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]
 
   body
     div class='navbar navbar-fixed-top'
@@ -30,7 +30,7 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
           div class="span2" == sidebar
         div class={'span10' if sidebar}
           == breadcrumbs settings.breadcrumbs, true
-          - [:error, :warning, :success].each do |type|
+          - [:error, :warning, :success, :notice].each do |type|
             - next if flash[type].blank?
             div id='flash-result' class='#{type}'
               h4 = type
