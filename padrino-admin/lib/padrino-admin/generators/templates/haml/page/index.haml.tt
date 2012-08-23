@@ -5,7 +5,7 @@
   %li=link_to ti("plus", t_admin(:new)), url(:<%= @orm.name_plural %>, :new)
 
 .tabs-content
-  %table.table.zebra-striped
+  %table.table.zebra-striped.table-hover
     %thead
       %tr
         <%- @orm.columns.each_with_index do |column, i| -%>

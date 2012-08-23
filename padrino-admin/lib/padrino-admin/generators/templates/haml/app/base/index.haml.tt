@@ -6,7 +6,7 @@
 %h3 Padrino Admin
 %p
   Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
-  %table.table
+  %table.table.table-hover
     %tr
       %td Orm Agnostic
       %td Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest
