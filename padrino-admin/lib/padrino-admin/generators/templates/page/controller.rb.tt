@@ -1,4 +1,8 @@
 Admin.controllers :<%= @orm.name_plural %> do
+  before do
+    settings.breadcrumbs.reset
+    settings.breadcrumbs.add :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :index), t_model(:<%= @orm.name_singular %>)
+  end
 
   get :index do
     @<%= @orm.name_plural %> = <%= @orm.all %>
@@ -6,6 +10,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   get :new do
+    settings.breadcrumbs.add :<%= @orm.name_singular %>_new , url(:<%= @orm.name_plural %>, :new), t_admin(:new)
     @<%= @orm.name_singular %> = <%= @orm.build %>
     render '<%= @orm.name_plural %>/new'
   end
@@ -14,13 +19,14 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
       flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
-      redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular%>.id)
+      params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
       render '<%= @orm.name_plural %>/new'
     end
   end
 
   get :edit, :with => :id do
+    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id],  t_admin(:edit)
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
@@ -34,7 +40,7 @@ Admin.controllers :<%= @orm.name_plural %> do
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
         flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
-        redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
+        params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       else
         render '<%= @orm.name_plural %>/edit'
       end
