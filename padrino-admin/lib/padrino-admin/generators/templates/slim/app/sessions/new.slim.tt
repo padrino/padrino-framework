@@ -10,7 +10,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       div id='padrino-modal' class='login'
         div class="modal-header"
-          div class="logo" == image_tag 'logo.jpg'
+          div class="logo" == image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
         div class="modal-body" id='padrino-modal-body'
           div == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}") }.join
 

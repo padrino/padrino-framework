@@ -15,7 +15,7 @@
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       #padrino-modal.login
         .modal-header
-          .logo=image_tag 'logo.jpg'
+          .logo=image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
         #padrino-modal-body.modal-body
           =[:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}") }.join
 
