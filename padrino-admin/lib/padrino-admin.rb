@@ -22,11 +22,6 @@ end
 String.send(:include, Padrino::Admin::Utils::Crypt)
 
 ##
-# Load our Padrino::Admin locales
-#
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
-
-##
 # Now we need to add admin generators to padrino-gen
 #
 begin

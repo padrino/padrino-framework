@@ -1,3 +1,15 @@
+== (Padrino Admin TwitterBootstrap 2.1)
+* Slim, Haml, Erb engine
+* Remove all locale, now only English
+* Remove all unused helper
+* Padrino-Modal: rack-flash and delete function into modal :D
+* highlights error field
+* Automatic replace true or false with relative image (list.slim, list.haml, list.erb)
+* Breadcrumbs
+* Automatic time_ago_in_words when column model is created_at or updated_at
+* Migrate function for MiniRecord
+* tag_icon helper
+
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on
@@ -88,4 +100,4 @@ The individual Padrino sub-gems also contain README's which outlines their funct
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2012 Padrino. See LICENSE for details.
