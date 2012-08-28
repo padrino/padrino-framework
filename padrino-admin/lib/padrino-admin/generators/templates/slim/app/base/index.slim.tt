@@ -1,25 +1,21 @@
-#block-text.block
-  .content
-    h2.title Dashboard
-    .inner
-      p.first
-        ' Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        ' Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        ' Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        span.hightlight
-          | Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      p
-        span.small
-          | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-      p
-        span.gray
-          | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-      hr
-      p
-        ' Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        ' Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        ' Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        span.hightlight
-          | Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-- content_for :sidebar, partial("base/sidebar")
+p
+  | Padrino is a ruby framework built upon the Sinatra web library.
+    Sinatra is a DSL for creating simple web applications in Ruby.
+    Padrino was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
+hr
+h3 Padrino Admin
+p
+  Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
+  table class='table table-hover'
+    tr
+      td Orm Agnostic
+      td Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest
+    tr
+      td Authentication
+      td User Authentication Support, User Authorization Management
+    tr
+      td Template Agnostic
+      td Erb, Haml, Slim Rendering Support
+    tr
+      td Scaffold
+      td You can create a new "admin interface" by providing a single Model
