@@ -9,7 +9,7 @@
     %thead
       %tr
         <%- @orm.columns.each_with_index do |column, i| -%>
-        %th.header=t_attr(:<%= @orm.name_singular %>, :<%= column.name %>)
+        %th.header= :<%= column.name %>
         <%- end -%>
         %th.header.action &nbsp;
     %tbody
