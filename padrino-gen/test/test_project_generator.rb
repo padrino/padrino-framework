@@ -299,7 +299,7 @@ describe "ProjectGenerator" do
         assert_match_in_file(/gem 'mongoid', '>=3.0'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/Mongoid::Config.sessions/, "#{@apptmp}/project.com/config/database.rb")
       else
-        assert_match_in_file(/gem 'mongoid', '~>2.0'"/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'mongoid', '~>2.0'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/Mongoid.database/, "#{@apptmp}/project.com/config/database.rb")
       end
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
