@@ -47,11 +47,7 @@ TEST
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
-describe "!NAME! Model" do
-  let(:!DNAME!) { !NAME!.new }
-  it 'can be created' do
-    !DNAME!.should_not be_nil
-  end
+describe !NAME! do
 end
 TEST
 
