@@ -58,7 +58,7 @@ check out the {Installation Guide}[http://www.padrinorb.com/guides/installation]
 
 == Usage
 
-Padrino is a framework which builds on the existing functionality and Sinatra and provides a variety of
+Padrino is a framework which builds on the existing functionality of Sinatra and provides a variety of
 additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus
 on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic
 usage of Sinatra itself.
