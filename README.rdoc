@@ -1,4 +1,5 @@
-== (Padrino Admin TwitterBootstrap 2.1)
+== (Padrino Admin TwitterBootstrap 2.1.1)
+
 * Slim, Haml, Erb engine
 * Remove all locale, now only English
 * Remove all unused helper
@@ -9,6 +10,14 @@
 * Automatic time_ago_in_words when column model is created_at or updated_at
 * Migrate function for MiniRecord
 * tag_icon helper
+
+=== Retro compatibility (0.10.x)
+
+With this version of Padrino admin, we remove some helper... but if you use old generate page, you need this plugin:
+
+```ruby
+padrino g plugin https://raw.github.com/WaYdotNET/padrino-recipes/master/plugins/old_admin_plugin.rb
+```
 
 = Padrino
 
