@@ -91,6 +91,23 @@ module Padrino
         puts "Padrino v. #{Padrino.version}"
       end
 
+      desc "runner", "Run a piece of code in the Padrino application environment (alternatively use 'run' or 'r')."
+      map ["run", "r"] => :runner
+      def runner(*args)
+        prepare :runner
+
+        code_or_file = args.shift
+        abort "Please specify code or file" if code_or_file.nil?
+
+        require File.expand_path('config/boot.rb')
+
+        if File.exist?(code_or_file)
+          eval(File.read(code_or_file), nil, code_or_file)
+        else
+          eval(code_or_file)
+        end
+      end
+
       private
         def prepare(task)
           if options.help?
