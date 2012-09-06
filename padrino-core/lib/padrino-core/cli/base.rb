@@ -98,7 +98,6 @@ module Padrino
         abort "Please specify code or file" if code_or_file.nil?
 
         prepare :runner
-        require File.expand_path("../adapter", __FILE__)
         require File.expand_path('config/boot.rb')
 
         if File.exist?(code_or_file)
