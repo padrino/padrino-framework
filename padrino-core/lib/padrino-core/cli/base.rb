@@ -94,10 +94,11 @@ module Padrino
       desc "runner", "Run a piece of code in the Padrino application environment (alternatively use 'run' or 'r')."
       map ["run", "r"] => :runner
       def runner(*args)
+        prepare :runner
+
         code_or_file = args.shift
         abort "Please specify code or file" if code_or_file.nil?
 
-        prepare :runner
         require File.expand_path('config/boot.rb')
 
         if File.exist?(code_or_file)
