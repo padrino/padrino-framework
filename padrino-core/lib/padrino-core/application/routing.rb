@@ -166,7 +166,7 @@ module Padrino
     # Class methods responsible for enhanced routing for controllers.
     module ClassMethods
       ##
-      # Method for organize in a better way our routes.
+      # Method to organize our routes in a better way.
       #
       # @param [Array] args
       #   Controller arguments.
@@ -237,8 +237,8 @@ module Padrino
       #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
       #   end
       #
-      # In a controller before and after filters are scoped and didn't affect other controllers or main app.
-      # In a controller layout are scoped and didn't affect others controllers and main app.
+      # In a controller, before and after filters are scoped and don't affect other controllers or the main app.
+      # In a controller, layouts are scoped and don't affect other controllers or the main app.
       #
       # @example
       #   controller :posts do
