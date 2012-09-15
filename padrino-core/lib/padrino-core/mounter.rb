@@ -106,8 +106,9 @@ module Padrino
       app_obj.routes.map { |route|
         name_array     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
         request_method = route.conditions[:request_method][0]
-        full_path = File.join(uri_root, route.original_path)
         next if route.named.blank? || request_method == 'HEAD'
+        original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
+        full_path = File.join(uri_root, original_path)
         OpenStruct.new(:verb => request_method, :identifier => route.named, :name => name_array, :path => full_path)
       }.compact
     end
