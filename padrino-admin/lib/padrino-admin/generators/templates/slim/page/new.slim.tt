@@ -1,5 +1,3 @@
-h2 All #{:<%= @orm.name_singular %>.to_s.humanize}
-
 ul class="nav nav-tabs"
   li == link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
   li class="active" == link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new)

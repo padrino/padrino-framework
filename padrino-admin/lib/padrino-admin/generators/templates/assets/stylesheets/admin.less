@@ -22,9 +22,9 @@ th.action  { width: 110px; text-align:center }
     padding: 5px 0;
   }
   background-color: @white;
-  border: 2px solid @gray;
+  border: 1px solid @linkColor;
   box-shadow: 0px 0px 20px @gray;
-  border-radius: 3px;
+  border-radius: 5px;
   padding-top: 10px;
   width: 500px;
   margin: 0px auto;
@@ -39,12 +39,54 @@ th.action  { width: 110px; text-align:center }
   }
 
 }
+.flash-error, .flash-danger { border: 2px solid  @errorText;   }
+.flash-success, .flash-notice { border: 2px solid  @successText; }
+.flash-warning { border: 2px solid  @warningText; }
 
-.flash-error   { border: 2px solid red; }
-.flash-success { border: 2px solid green; }
-.flash-notice { border: 2px solid green; }
-.flash-warning { border: 2px solid orange; }
+.alert-notice {
+  background-color: @successBackground;
+  border-color: @successBorder;
+  color: @successText;
+}
+.alert-warning {
+  background-color: @warningBackground;
+  border-color: @warningBorder;
+  color: @warningText;
+}
+
 #deleter-body > form{ text-align: center; }
 
 @iconSpritePath:          "../../images/glyphicons-halflings.png";
 @iconWhiteSpritePath:     "../../images/glyphicons-halflings-white.png";
+
+.dropdown-form{
+  margin:0;
+  padding:0;
+  :hover {
+    color: @dropdownLinkColorHover;
+    text-decoration: none;
+    outline: 0;
+    background-color: @dropdownLinkBackgroundActive;
+    #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
+  }
+}
+body{ font-size: 13px; }
+
+.footer {
+  padding: 70px 0;
+  margin-top: 70px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f5f5f5;
+}
+.footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+.footer-links {
+  margin: 10px 0;
+  text-align: center;
+}
+.footer-links li {
+  display: inline;
+  margin-right: 10px;
+}

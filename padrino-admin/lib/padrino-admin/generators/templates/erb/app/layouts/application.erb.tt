@@ -8,7 +8,7 @@
     <!-- Twitter Bootstrap -->
     <%%= javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button] %>
     <%%= javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown] %>
-    <%%= javascript_include_tag %w[ bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead] %>
+    <%%= javascript_include_tag %w[bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead] %>
     <%%= javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab] %>
   </head>
   <body>
@@ -16,6 +16,19 @@
       <div class='navbar-inner'>
         <div class='container-fluid'>
           <%%= link_to 'Padrino Admin', url(:base_index), :class => 'brand' %>
+
+          <ul class='nav pull-right'>
+            <li class="dropdown">
+              <a class='dropdown-toggle' href='#' data-toggle='dropdown'>
+                <%%= tag_icon :user %> <b class='caret'></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><%%= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id)%></li>
+                <li><%%= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') {link_to tag_icon(:off, 'Logout'),'#', "data-method" => :delete, :class => 'to_submit' } %></li>
+              </ul>
+            </li>
+          </ul>
+
           <ul class="nav pull-left">
             <%% project_modules.each do |project_module| %>
               <%% if request.path_info =~ /^#{project_module.path}/ %>
@@ -25,15 +38,11 @@
               <%% end %>
                 <%%= link_to project_module.human_name, project_module.path('/admin') %>
                 </li>
-                <%% end %>
-          </ul>
-          <ul class='nav pull-right'>
-            <li> <%%= link_to 'Profile', url(:<%= @model_plural %>, :edit, :id => current_account.id) %> </li>
-            <li> <%%= button_to 'Logout', url(:sessions, :destroy), :method => :delete, :class => 'button_to navbar-search' %></li>
+            <%% end %>
           </ul>
         </div>
       </div>
-      </div>
+    </div>
     <%% sidebar = yield_content(:sidebar) %>
     </div>
     <div class="container-fluid">
@@ -47,33 +56,33 @@
           <%%= breadcrumbs settings.breadcrumbs, true %>
           <%% [:error, :warning, :success, :notice].each do |type| %>
             <%% next if flash[type].blank? %>
-            <div id='flash-result' class='<%%= type %>'>
+            <div id='flash-result' class='<%%= type %> hide'>
               <h4><%%= type %></h4>
               <%%= flash[type] %>
             </div>
           <%% end %>
            </div>
-          <div id='padrino-modal' class='modal hide fade'>
-            <div class="modal-header">
-              <a class='close' data-dismiss='modal'>x</a>
-              <h3 id='padrino-modal-title'></h3>
+           <div class="modal hide fade" id="padrino-modal">
+             <div class="modal-header" id="padrino-modal-header">
+               <button class="close" data-dismiss="modal" type="button">&times;</button>
+               <h4 id="padrino-modal-title"></h4>
+             </div>
+             <div class="modal-body" id="padrino-modal-body"></div>
+             <div class="modal-footer" id="padrino-modal-footer">
+               <a class="btn  pull-right" data-dismiss="modal" href="#" id="padrino-modal-close"></a>
            </div>
-            <div class="modal-body" id='padrino-modal-body'></div>
-            <div class="modal-footer">
-              <a href="#" id='padrino-modal-close' class="btn  pull-right" data-dismiss="modal"></a>
-            </div>
-          </div>
+           </div>
           <%%= yield %>
            </div>
-      <footer>
+      <footer class='footer'>
         <p class="center-block"> Copyright &copy; <%= Time.now.year %> Your Site -
           <b>Powered by Padrino v.<%= Padrino.version %></b>
-          <p>
-            <%%= link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank %>
-            <%%= link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank %>
-            <%%= link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank %>
-            <%%= link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank %>
-          </p>
+          <ul class='footer-links'>
+            <li><%%= link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini' %></li>
+            <li><%%= link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini' %></li>
+            <li><%%= link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'  %></li>
+            <li><%%= link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini' %></li>
+          </ul>
         </p>
       </footer>
   </body>

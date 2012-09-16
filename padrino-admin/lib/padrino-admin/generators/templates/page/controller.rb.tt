@@ -62,4 +62,13 @@ Admin.controllers :<%= @orm.name_plural %> do
       halt 404
     end
   end
+
+  delete :delete_multiple do
+    @<%= @orm.name_plural %> = <%= @orm.find("params[:#{@orm.name_singular}_ids]") %> if params[:<%= @orm.name_singular %>_ids]
+    halt 500 unless params[:<%= @orm.name_singular %>_ids]
+    if <%= @orm.klass_name %>.destroy @<%= @orm.name_plural %>
+      flash[:notice] = '<%= @orm.name_plural %> have been successfully destroyed.'
+    end
+    redirect url(:<%= @orm.name_plural %>, :index)
+  end
 end

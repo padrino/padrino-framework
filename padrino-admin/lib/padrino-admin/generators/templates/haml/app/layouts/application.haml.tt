@@ -20,13 +20,21 @@
       .navbar-inner
         .container-fluid
           =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
-          %u.nav.pull-left
+
+          %ul.nav.pull-right
+            %li.dropdown
+              %a.dropdown-toggle{:href => "#", :data =>{:toggle => 'dropdown'}}
+                =tag_icon :user
+                %b.caret
+              %ul.dropdown-menu
+                %li= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id)
+                %li= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') {link_to tag_icon(:off, 'Logout'),'#', "data-method" => :delete, :class => 'to_submit' }
+
+          %ul.nav.pull-left
             - project_modules.each do |project_module|
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
-          %ul.nav.pull-right
-            %li= link_to 'Profile', url(:<%= @model_plural %>, :edit, :id => current_account.id)
-            %li= button_to 'Logout', url(:sessions, :destroy), :method => :delete, :class => 'button_to navbar-search'
+
     - sidebar = yield_content(:sidebar)
     .container-fluid
       .row-fluid
@@ -36,27 +44,27 @@
           =breadcrumbs settings.breadcrumbs, true
           -[:error, :warning, :success, :notice].each do |type|
             -next if flash[type].blank?
-            #flash-result(class=type)
+            #flash-result{:class => "#{type} hide"}
               %h4=type
               =flash[type]
 
           #padrino-modal.modal.hide.fade
-            .modal-header
-              %a.close{:data => {:dismiss => 'modal'}} x
-              %h3#padrino-modal-title
+            #padrino-modal-header.modal-header
+              %button.close(type='button' data-dismiss='modal') &times;
+              %h4#padrino-modal-title
             #padrino-modal-body.modal-body
-            .modal-footer
-              %a#padrino-modal-close.btn.pull-right{:data => {:dismiss => 'modal'}}
+            #padrino-modal-footer.modal-footer
+              %a#padrino-modal-close.btn.pull-right data-dismiss='modal'
 
           =yield
-      %footer
-        %p
+      %footer.footer
+        %p.center-block
           Copyright &copy;
           =Time.now.year
           Your Site -
           %b Powered by Padrino v.#{Padrino.version}
-        %p
-          =link_to "Padrino web", "http://www.padrinorb.com", :target => :_blank
-          =link_to "Padrino blog", "http://www.padrinorb.com/blog", :target => :_blank
-          =link_to "Padrino code", "https://github.com/padrino/padrino-framework", :target => :_blank
-          =link_to "Padrino twitter", "http://twitter.com/padrinorb", :target => :_blank
+        %ul.footer-links
+          %li= link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini'
+          %li= link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini'
+          %li= link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'
+          %li= link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini'
