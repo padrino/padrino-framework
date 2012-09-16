@@ -113,11 +113,13 @@ describe "Mounter" do
       class ::OneApp < Padrino::Application
         get("/test") { "test" }
         get(:index, :provides => [:js, :json]) { "index" }
+        get(%r{/foo|/baz}) { "regexp" }
         controllers :posts do
           get(:index) { "index" }
           get(:new, :provides => :js) { "new" }
           get(:show, :provides => [:js, :html], :with => :id) { "show" }
           post(:create, :provides => :js, :with => :id) { "create" }
+          get(:regexp, :map => %r{/foo|/baz}) { "regexp" }
         end
       end
       class ::TwoApp < Padrino::Application
@@ -133,9 +135,9 @@ describe "Mounter" do
       Padrino.mount("one_app").to("/")
       Padrino.mount("two_app").to("/two_app")
 
-      assert_equal 11, Padrino.mounted_apps[0].routes.size
+      assert_equal 15, Padrino.mounted_apps[0].routes.size
       assert_equal 7, Padrino.mounted_apps[1].routes.size
-      assert_equal 5, Padrino.mounted_apps[0].named_routes.size
+      assert_equal 6, Padrino.mounted_apps[0].named_routes.size
       assert_equal 5, Padrino.mounted_apps[1].named_routes.size
 
       first_route = Padrino.mounted_apps[0].named_routes[3]
@@ -148,6 +150,10 @@ describe "Mounter" do
       assert_equal "(:users, :create)", another_route.name
       assert_equal "POST", another_route.verb
       assert_equal "/two_app/users/create", another_route.path
+      regexp_route = Padrino.mounted_apps[0].named_routes[5]
+      assert_equal "posts_regexp", regexp_route.identifier.to_s
+      assert_equal "(:posts, :regexp)", regexp_route.name
+      assert_equal "/\\/foo|\\/baz/", regexp_route.path
     end
 
     should 'correctly instantiate a new padrino application' do
