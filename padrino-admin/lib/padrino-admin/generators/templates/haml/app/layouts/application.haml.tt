@@ -23,11 +23,11 @@
 
           %ul.nav.pull-right
             %li.dropdown
-              %a.dropdown-toggle{:href => "#", :data =>{:toggle => 'dropdown'}}
+              %a#user-menu.dropdown-toggle{:href => "#", :data =>{:toggle => 'dropdown'}}
                 =tag_icon :user
                 %b.caret
               %ul.dropdown-menu
-                %li= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id)
+                %li= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id), :class => "Edit"
                 %li= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') {link_to tag_icon(:off, 'Logout'),'#', "data-method" => :delete, :class => 'to_submit' }
 
           %ul.nav.pull-left
