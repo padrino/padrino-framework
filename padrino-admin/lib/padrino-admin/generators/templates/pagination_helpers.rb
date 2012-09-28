@@ -55,7 +55,7 @@ Admin.helpers do
   # generate a title for the table header
   def sort_title(column)
     # the next line may be replaced by the appropriate I18n calls
-    result = column.to_s.camel_case
+    result = column.to_s.camelize
     if column == @sort_column
       if @sort_direction == :asc
         # add the utf-8 character for a up_triangle
