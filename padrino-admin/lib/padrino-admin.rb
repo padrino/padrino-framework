@@ -13,7 +13,10 @@ module Padrino
   # Scaffold:: You can simply create a new "admin interface" simply providing a Model
   # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
   #
-  module Admin; end
+  module Admin
+    # set a pagination default for all models
+    SORT_PAGE_SIZE = 20
+  end
 end
 
 ##

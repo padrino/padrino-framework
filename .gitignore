@@ -6,3 +6,5 @@ Gemfile.lock
 .rbx/
 doc/
 .DS_Store
+redis.*
+dump.*

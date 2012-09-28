@@ -39,7 +39,7 @@ Admin.helpers do
     if model.instance_variable_defined?(:@sort_page_size)
       page_size ||= model.sort_page_size 
     end
-    page_size ||= SORT_PAGE_SIZE
+    page_size ||= Padrino::Admin::SORT_PAGE_SIZE
     page_size = page_size.to_i.abs
     page_size.zero? ? 1 : page_size
   end
