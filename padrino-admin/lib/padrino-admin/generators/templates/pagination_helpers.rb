@@ -1,13 +1,13 @@
 Admin.helpers do
 
   # sort and paginate with the help of some instance varaiables
-  def sort_page(model, model_pural, model_singular, orm, params)
+  def sort_page(model, model_plural, model_singular, orm, params)
     @sort_model = model
     @sort_column = sort_column(params)
     @sort_direction = sort_direction(params)
     @sort_page_no = sort_page_no(params)
     @sort_page_size = sort_page_size(params, model)
-    @sort_route = model-Plural
+    @sort_route = model_plural
     sort_it(orm)
   end
   

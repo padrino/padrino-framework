@@ -2,7 +2,7 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   get :index do
     @<%= @orm.name_plural %> = sort_page(
-      <%= @orm.klass %>,
+      <%= @orm %>,
       :<%= @orm.name_plural %>,
       :<%= @orm.name_singular %>,
       :<%= @orm.orm %>,

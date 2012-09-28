@@ -25,12 +25,12 @@
               =button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
       .digg_pagination
         - will_paginate @<%= @orm.name_plural %>
-      - form_tag "<%= @orm.name_plural %>", :method => :get do
-        - label :page_size
-        - number_field_tag :page_size, :value => @sort_page_size
-        - hidden_field_tag :sort, :value => @sort_column
-        - hidden_field_tag :direction, :value => @sort_direction
-        - submit_tag "Change it"
+      - form_tag '<%= @orm.name_plural %>', :method => :get do
+        = label-tag :page_size
+        = number_field_tag :page_size, :value => @sort_page_size
+        = hidden_field_tag :sort, :value => @sort_column
+        = hidden_field_tag :direction, :value => @sort_direction
+        = submit_tag "Change it"
       .actions-bar.wat-cf
         .actions="&nbsp;"
 
