@@ -8,6 +8,7 @@ Admin.helpers do
     @sort_page_no = sort_page_no(params)
     @sort_page_size = sort_page_size(params, model)
     @sort_route = model_plural
+    @sort_orm = orm
     sort_it(orm)
   end
   
@@ -43,13 +44,26 @@ Admin.helpers do
     page_size = page_size.to_i.abs
     page_size.zero? ? 1 : page_size
   end
+
+  # decide if we have already implemented the changes for this orm  
+  def sort_orm_supported?(orm)
+    case orm
+    when :sequel
+      true
+    else
+      false
+  end
   
   # generate a link for the table header
   def sort_link(column)
     direction = (column == @sort_column && 
                  @sort_direction == :asc) ? :desc : :asc
-    link_to sort_title(column), url(@sort_route, :index, 
-      :sort => column, :direction => direction, :page_size => @sort_page_size)
+    if sort_orm_supported?(@sort_orm)
+      link_to sort_title(column), url(@sort_route, :index, 
+        :sort => column, :direction => direction, :page_size => @sort_page_size)
+    else
+      column.to_s.camelize
+    end
   end 
   
   # generate a title for the table header
@@ -77,8 +91,8 @@ Admin.helpers do
       sorted.paginate(@sort_page_no, @sort_page_size)
     # insert here the code for other adapters
     else
-      # unsorted/unpaginated as up to now for the rest
-      model.all
+      # unsorted/unpaginated for the rest
+      @sort_model.all
     end 
   end
 end
