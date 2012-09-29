@@ -52,6 +52,7 @@ Admin.helpers do
       true
     else
       false
+    end
   end
   
   # generate a link for the table header
