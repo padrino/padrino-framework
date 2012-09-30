@@ -14,6 +14,8 @@ module Padrino
   # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
   #
   module Admin
+    # maintain an array of orms, which are supported by "sort_page"
+    SORT_VALID_ORMS = [:sequel]
     # set a pagination default for all models
     SORT_PAGE_SIZE = 20
   end

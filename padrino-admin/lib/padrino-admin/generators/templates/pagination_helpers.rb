@@ -9,7 +9,7 @@ Admin.helpers do
     @sort_page_size = sort_page_size(params, model)
     @sort_route = model_plural
     @sort_orm = orm
-    sort_it(orm)
+    sort_it
   end
   
   # restrict the possible direction values, set :asc as default
@@ -46,20 +46,15 @@ Admin.helpers do
   end
 
   # decide if we have already implemented the changes for this orm  
-  def sort_orm_supported?(orm)
-    case orm
-    when :sequel
-      true
-    else
-      false
-    end
+  def sort_valid_orm?
+    Padrino::Admin::SORT_VALID_ORM.include? @sort_orm
   end
   
   # generate a link for the table header
   def sort_link(column)
     direction = (column == @sort_column && 
                  @sort_direction == :asc) ? :desc : :asc
-    if sort_orm_supported?(@sort_orm)
+    if sort_valid_orm?
       link_to sort_title(column), url(@sort_route, :index, 
         :sort => column, :direction => direction, :page_size => @sort_page_size)
     else
@@ -84,8 +79,8 @@ Admin.helpers do
   end
   
   # sort the model as requested
-  def sort_it(orm)
-    case orm
+  def sort_it
+    case @sort_orm
     when :sequel
       sorted = @sort_model.order(@sort_column)
       sorted = sorted.reverse if @sort_direction == :desc
