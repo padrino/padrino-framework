@@ -47,7 +47,7 @@ Admin.helpers do
 
   # decide if we have already implemented the changes for this orm  
   def sort_valid_orm?
-    Padrino::Admin::SORT_VALID_ORM.include? @sort_orm
+    Padrino::Admin::SORT_VALID_ORMS.include? @sort_orm
   end
   
   # generate a link for the table header
