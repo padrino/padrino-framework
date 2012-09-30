@@ -2,15 +2,36 @@ Admin.helpers do
 
   # sort and paginate with the help of some instance varaiables
   def sort_page(model, model_plural, model_singular, orm, params)
-    @sort_model = model
-    @sort_column = sort_column(params)
-    @sort_direction = sort_direction(params)
-    @sort_page_no = sort_page_no(params)
-    @sort_page_size = sort_page_size(params, model)
-    @sort_route = model_plural
     @sort_orm = orm
-    sort_it
+    @sort_model = model
+    if sort_valid_orm?
+      @sort_column = sort_column(params)
+      @sort_direction = sort_direction(params)
+      @sort_page_no = sort_page_no(params)
+      @sort_page_size = sort_page_size(params, model)
+      @sort_route = model_plural
+      sort_it
+    else
+      # unsorted/unpaginated for unsupported orms
+      @sort_model.all   
+    end
   end
+  
+  # generate a link for the table header
+  def sort_link(column)
+    direction = (column == @sort_column && 
+                 @sort_direction == :asc) ? :desc : :asc
+    if sort_valid_orm?
+      # generate a link
+      link_to sort_title(column), url(@sort_route, :index, 
+        :sort => column, :direction => direction, :page_size => @sort_page_size)
+    else
+      # generate plain text
+      column.to_s.camelize
+    end
+  end 
+
+  # private
   
   # restrict the possible direction values, set :asc as default
   def sort_direction(params)
@@ -50,18 +71,6 @@ Admin.helpers do
     Padrino::Admin::SORT_VALID_ORMS.include? @sort_orm
   end
   
-  # generate a link for the table header
-  def sort_link(column)
-    direction = (column == @sort_column && 
-                 @sort_direction == :asc) ? :desc : :asc
-    if sort_valid_orm?
-      link_to sort_title(column), url(@sort_route, :index, 
-        :sort => column, :direction => direction, :page_size => @sort_page_size)
-    else
-      column.to_s.camelize
-    end
-  end 
-  
   # generate a title for the table header
   def sort_title(column)
     # the next line may be replaced by the appropriate I18n calls
@@ -86,9 +95,6 @@ Admin.helpers do
       sorted = sorted.reverse if @sort_direction == :desc
       sorted.paginate(@sort_page_no, @sort_page_size)
     # insert here the code for other adapters
-    else
-      # unsorted/unpaginated for the rest
-      @sort_model.all
     end 
   end
 end
