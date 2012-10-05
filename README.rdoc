@@ -113,13 +113,9 @@ Best way to learn more about building Padrino applications is to read following 
 
 If you modify .less and .coffee files into the admin section, you MUST recompile those files into .css and .js
 
-```shell
-lessc admin.less > compiled/admin.css -x
-```
+  $ lessc admin.less > compiled/admin.css -x
 
-```shell
-coffee --compile application.coffee
-```
+  $ coffee --compile application.coffee
 
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
