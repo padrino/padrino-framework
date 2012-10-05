@@ -1,6 +1,6 @@
 ul class="nav nav-tabs"
   li class="active" == link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
-  li == link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new)
+  li == link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new), :id => 'new'
 
 div class="tabs-content"
   table class="table table-striped table-hover table-condensed" id="multiple_list"
@@ -8,7 +8,7 @@ div class="tabs-content"
       tr
         th class='header'
           div class='dropdown'
-            a href='#' class='dropdown-toggle btn btn-mini btn-link' data-toggle='dropdown'
+            a href='#' class='dropdown-toggle btn btn-mini btn-link' data-toggle='dropdown' id='cogs'
               == tag_icon :cogs
               b class='caret'
             ul class='dropdown-menu'
@@ -17,10 +17,10 @@ div class="tabs-content"
               li
                 div class='hide'
                   - form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f|
-                    button type='submit' class='to_submit btn btn-danger pull-left' == tag_icon(:trash,"Delete Checked")
+                    button type='submit' class='to_submit btn btn-danger pull-left' id='multiple_delete_button' == tag_icon(:trash,"Delete Checked")
                     h5 Are you sure to delete the select?
 
-                == link_to tag_icon(:trash, 'Delete Checked'), :id =>'', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
+                == link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
         <%- @orm.columns.each_with_index do |column, i| -%>
         th class='header' == :<%= column.name %>
         <%- end -%>
@@ -40,6 +40,6 @@ div class="tabs-content"
           <%- end -%>
           <%- end -%>
           td class="action"
-            == button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) {link_to tag_icon(:edit, 'Edit') , :class =>'btn btn-mini btn-link to_submit' }
+            == button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) {link_to tag_icon(:edit, 'Edit') , :class =>'btn btn-mini btn-link to_submit Edit' }
             == button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag :delete, :class =>'btn btn-danger pull-left' }
-            == link_to tag_icon(:trash, 'Delete'), :class =>'btn_delete btn btn-link btn-mini pull-right', 'data-form' => ".#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", 'data-title'=>'Are you sure?', 'data-cancel' => 'Cancel', 'data-type'=>'warning'
+            == link_to tag_icon(:trash, 'Delete'), :class =>'btn_delete btn btn-link btn-mini pull-right', 'data-form' => ".#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", 'data-title'=>'Are you sure?', 'data-cancel' => 'Cancel', 'data-type' => 'warning'

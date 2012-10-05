@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />sy
     <title>Padrino Admin</title>
-    <%%= tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less') %>
-    <%%= javascript_include_tag 'jquery-1.7.1.min', 'less-1.3.0.min' %>
+    <%% unless PADRINO_ENV == 'production' %>
+      <%%= tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less') %>
+      <%%= javascript_include_tag 'jquery-1.7.1.min', 'less-1.3.0.min' %>
+    <%% else %>
+      <%%= stylesheet_link_tag 'compiled/admin' %>
+    <%% end %>
   </head>
   <body>
     <%% form_tag url(:sessions, :create), :class=>'form-horizontal' do %>

@@ -1,5 +1,4 @@
-$ ->
-
+jQuery ->
   # local variables
   pModal = $ '#padrino-modal'
   pHeader = $ '#padrino-modal-header'
@@ -70,6 +69,6 @@ $ ->
 
 
   # general submit method
-  $('.to_submit').click -> $(this).parent().submit()
+  $('.to_submit').click -> $(this).parent('form:first').submit()
   $('#check_all').click -> $('#multiple_list :checkbox').attr 'checked','checked'
   $('#uncheck_all').click -> $('#multiple_list :checkbox').removeAttr 'checked'

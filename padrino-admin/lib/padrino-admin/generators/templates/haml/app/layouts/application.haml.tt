@@ -7,13 +7,19 @@
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
-    =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
-    =javascript_include_tag 'jquery-1.7.1.min', 'less-1.3.0.min', 'application'
-    /! Twitter Bootstrap
-    =javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button]
-    =javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown]
-    =javascript_include_tag %w[ bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
-    =javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]
+    =javascript_include_tag 'jquery-1.7.1.min'
+    - unless PADRINO_ENV == 'production'
+      =tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+      =javascript_include_tag 'less-1.3.0.min'
+      /! Twitter Bootstrap
+      =javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button]
+      =javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown]
+      =javascript_include_tag %w[ bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
+      =javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]
+    - else
+      =stylesheet_link_tag 'compiled/admin'
+      =javascript_include_tag 'bootstrap/bootstrap.min'
+    =javascript_include_tag 'application'
 
   %body
     .navbar.navbar-fixed-top
@@ -27,8 +33,8 @@
                 =tag_icon :user
                 %b.caret
               %ul.dropdown-menu
-                %li= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id), :class => "Edit"
-                %li= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') {link_to tag_icon(:off, 'Logout'),'#', "data-method" => :delete, :class => 'to_submit' }
+                %li= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id), :class => "Edit", :id => "user-profile"
+                %li= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }
 
           %ul.nav.pull-left
             - project_modules.each do |project_module|
@@ -54,7 +60,7 @@
               %h4#padrino-modal-title
             #padrino-modal-body.modal-body
             #padrino-modal-footer.modal-footer
-              %a#padrino-modal-close.btn.pull-right data-dismiss='modal'
+              %a#padrino-modal-close.btn.pull-right(data-dismiss='modal' href='#')
 
           =yield
       %footer.footer
