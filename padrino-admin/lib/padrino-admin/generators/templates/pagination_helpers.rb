@@ -8,7 +8,7 @@ Admin.helpers do
       @sort_column = sort_column(params)
       @sort_direction = sort_direction(params)
       @sort_page_no = sort_page_no(params)
-      @sort_page_size = sort_page_size(params, model)
+      @sort_per_page = sort_per_page(params, model)
       @sort_route = model_plural
       sort_it
     else
@@ -44,7 +44,13 @@ Admin.helpers do
   def sort_column(params, model=@sort_model)
     column = params[:sort]
     column = column.to_sym unless column.nil?
-    model.columns.include?(column) ? column : :id
+    case @sort_orm
+    when :sequel
+      columns = model-columns
+    when :datamapper
+      columns = model.properties.collect { |x| x.name}
+    end
+    columns.include?(column) ? column : :id
   end
   
   # restrict the possible page number to > zero, set 1 as default
@@ -55,15 +61,15 @@ Admin.helpers do
     page_no.zero? ? 1 : page_no
   end
   
-  # restrict page_size to > 0, set to model or global definition as default 
-  def sort_page_size(params, model)
-    page_size = params[:page_size]
-    if model.instance_variable_defined?(:@sort_page_size)
-      page_size ||= model.sort_page_size 
+  # restrict per_page to > 0, set to model or global definition as default 
+  def sort_per_page(params, model)
+    per_page = params[:per_page]
+    if model.instance_variable_defined?(:@per_page)
+      per_page ||= model.per_page 
     end
-    page_size ||= Padrino::Admin::SORT_PAGE_SIZE
-    page_size = page_size.to_i.abs
-    page_size.zero? ? 1 : page_size
+    per_page ||= Padrino::Admin::SORT_PER_PAGE
+    per_page = per_page.to_i.abs
+    per_page.zero? ? 1 : per_page
   end
 
   # decide if we have already implemented the changes for this orm  
@@ -93,8 +99,11 @@ Admin.helpers do
     when :sequel
       sorted = @sort_model.order(@sort_column)
       sorted = sorted.reverse if @sort_direction == :desc
-      sorted.paginate(@sort_page_no, @sort_page_size)
-    # insert here the code for other adapters
+      sorted.paginate(@sort_page_no, @sort_per_page)
+    when :datamapper
+      sorted = @sort_model.all(:order => [@sort_column.asc])
+      sorted = sorted.reverse if @sort_direction == :desc
+      sorted.paginate(:page => @sort_page_no, :per_page => @sort_per_page)
     end 
   end
 end

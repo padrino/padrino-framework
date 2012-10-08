@@ -15,9 +15,9 @@ module Padrino
   #
   module Admin
     # maintain an array of orms, which are supported by "sort_page"
-    SORT_VALID_ORMS = [:sequel]
+    SORT_VALID_ORMS = [:sequel, :datamapper]
     # set a pagination default for all models
-    SORT_PAGE_SIZE = 20
+    SORT_PER_PAGE = 20
   end
 end
 
