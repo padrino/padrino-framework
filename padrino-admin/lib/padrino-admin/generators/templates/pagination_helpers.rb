@@ -72,9 +72,10 @@ Admin.helpers do
     per_page.zero? ? 1 : per_page
   end
 
-  # decide if we have already implemented the changes for this orm  
+  # decide if we are ready for this orm  
   def sort_valid_orm?
-    Padrino::Admin::SORT_VALID_ORMS.include? @sort_orm
+    defined?(WillPaginate) and 
+      Padrino::Admin::SORT_VALID_ORMS.include? @sort_orm
   end
   
   # generate a title for the table header

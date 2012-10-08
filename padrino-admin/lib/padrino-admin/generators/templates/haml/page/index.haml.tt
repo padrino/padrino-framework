@@ -23,7 +23,7 @@
               =button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to
               ="|"
               =button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
-      <%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
+      <%- if defined?(WillPaginate) and Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
       .digg_pagination
         = will_paginate @<%= @orm.name_plural %>
       - form_tag '<%= @orm.name_plural %>', :method => :get do
