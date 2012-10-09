@@ -24,7 +24,7 @@
               ="|"
               =button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
       <%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
-      - if defined? WillPaginate
+      - if defined? WillPaginate 
         .digg_pagination
           = will_paginate @<%= @orm.name_plural %>
         - form_tag '<%= @orm.name_plural %>', :method => :get do

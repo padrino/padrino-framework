@@ -24,7 +24,7 @@ Admin.helpers do
     if sort_valid_orm?
       # generate a link
       link_to sort_title(column), url(@sort_route, :index, 
-        :sort => column, :direction => direction, :page_size => @sort_page_size)
+        :sort => column, :direction => direction, :page_size => @sort_per_page)
     else
       # generate plain text
       column.to_s.camelize
