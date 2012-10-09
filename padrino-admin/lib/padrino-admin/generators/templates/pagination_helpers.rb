@@ -46,7 +46,7 @@ Admin.helpers do
     column = column.to_sym unless column.nil?
     case @sort_orm
     when :sequel
-      columns = model-columns
+      columns = model.columns
     when :datamapper
       columns = model.properties.collect { |x| x.name}
     end
@@ -63,7 +63,7 @@ Admin.helpers do
   
   # restrict per_page to > 0, set to model or global definition as default 
   def sort_per_page(params, model)
-    per_page = params[:per_page]
+    per_page = params[:page_size]
     if model.instance_variable_defined?(:@per_page)
       per_page ||= model.per_page 
     end
