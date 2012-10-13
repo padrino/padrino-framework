@@ -97,11 +97,11 @@ Admin.helpers do
   def sort_columns
     case @sort_orm
     when :sequel
-      columns = model.columns
+      columns = @sort_model.columns
     when :datamapper
-      columns = model.properties.collect { |x| x.name}
+      columns = @sort_model.properties.collect { |x| x.name}
     when :activerecord
-      columns = model.column_names
+      columns = @sort_model.column_names
       columns = columns.map {|x| x.to_sym}
     end
   end
