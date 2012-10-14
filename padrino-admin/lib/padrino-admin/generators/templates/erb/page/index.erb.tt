@@ -26,6 +26,7 @@
           </td>
         </tr>
         <%% end %>
+      </table>
       <%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
         <%%- if defined? WillPaginate -%>
           <div class="digg_pagination">
@@ -40,7 +41,6 @@
           <%%- end -%>cd 
         <%%- end -%>
       <%- end -%>
-       </table>
       <div class="actions-bar wat-cf">
         <div class="actions"></div>
       </div>
