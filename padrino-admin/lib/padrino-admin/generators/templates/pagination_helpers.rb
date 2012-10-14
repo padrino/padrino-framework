@@ -9,7 +9,7 @@ Admin.helpers do
       @sort_column = sort_column(params)
       @sort_direction = sort_direction(params)
       @sort_page_no = sort_page_no(params)
-      @sort_per_page = sort_per_page(params, model)
+      @sort_per_page = sort_per_page(params)
       @sort_route = model_plural
       sort_it
     else
@@ -57,13 +57,19 @@ Admin.helpers do
   end
   
   # restrict per_page to > 0, set to model or global definition as default 
-  def sort_per_page(params, model)
+  def sort_per_page(params)
     per_page = params[:page_size]
-    if model.instance_variable_defined?(:@per_page)
-      per_page ||= model.per_page 
+    if @sort_model.instance_variable_defined?(:@per_page)
+      per_page ||= @sort_model.per_page 
     end
     per_page ||= Padrino::Admin::SORT_PER_PAGE
     per_page = per_page.to_i.abs
+    # save change for this session
+    if @sort_model.instance_variable_defined?(:@per_page) 
+      if per_page != @sort_model.per_page 
+        @sort_per_page = per_page
+      end
+    end
     per_page.zero? ? 1 : per_page
   end
 
@@ -119,8 +125,8 @@ Admin.helpers do
       sorted.paginate(:page => @sort_page_no, :per_page => @sort_per_page)
     when :activerecord
       order = @sort_column.to_s + ' ' + @sort_direction.to_s.upcase
-      sorted = @sort_model.paginate(:all, 
-        :page => @sort_page_no, :order => order)
+      @sort_model.per_page = @sort_per_page
+      @sort_model.page(@sort_page_no).order(order)
     end 
   end
 end
