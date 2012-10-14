@@ -26,7 +26,7 @@
           </td>
         </tr>
         <%% end %>
-      <%%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
+      <%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
         <%%- if defined? WillPaginate -%>
           <div class="digg_pagination">
             <%%= will_paginate @<%= @orm.name_plural %> %>
@@ -39,7 +39,7 @@
             <%%= submit_tag "Change it" %>
           <%%- end -%>cd 
         <%%- end -%>
-      <%%- end -%>
+      <%- end -%>
        </table>
       <div class="actions-bar wat-cf">
         <div class="actions"></div>
