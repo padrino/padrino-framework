@@ -11,7 +11,7 @@
       <table class="table">
         <tr>
           <%- @orm.columns.each_with_index do |column, i| -%>
-          <th<%= " class=\"first\"" if i==0 %>><%=sort_link(:<%= column.name %>) %></th>
+          <th<%= " class=\"first\"" if i==0 %>><%= sort_link(:<%= column.name %>) %></th>
           <%- end -%>
           <th class="last">&nbsp;</th>
         </tr>
