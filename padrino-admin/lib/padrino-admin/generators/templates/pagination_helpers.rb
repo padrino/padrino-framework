@@ -59,15 +59,15 @@ Admin.helpers do
   # restrict per_page to > 0, set to model or global definition as default 
   def sort_per_page(params)
     per_page = params[:page_size]
-    if @sort_model.instance_variable_defined?(:@per_page)
+    if @sort_model.respond_to?(:per_page)
       per_page ||= @sort_model.per_page 
     end
     per_page ||= Padrino::Admin::SORT_PER_PAGE
     per_page = per_page.to_i.abs
     # save change for this session
-    if @sort_model.instance_variable_defined?(:@per_page) 
+    if @sort_model.respond_to?(:per_page) 
       if per_page != @sort_model.per_page 
-        @sort_per_page = per_page
+        @sort_model.per_page = per_page
       end
     end
     per_page.zero? ? 1 : per_page
