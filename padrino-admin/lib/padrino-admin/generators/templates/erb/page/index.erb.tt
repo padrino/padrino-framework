@@ -31,14 +31,14 @@
         <%%- if defined? WillPaginate -%>
           <div class="digg_pagination">
             <%%= will_paginate @<%= @orm.name_plural %> %>
-          <\div>
+          </div>
           <%%- form_tag '<%= @orm.name_plural %>', :method => :get do -%>
             <%%= label_tag :page_size %>
             <%%= number_field_tag :page_size, :value => @sort_per_page %>
             <%%= hidden_field_tag :sort, :value => @sort_column %>
             <%%= hidden_field_tag :direction, :value => @sort_direction %>
             <%%= submit_tag "Change it" %>
-          <%%- end -%>cd 
+          <%%- end -%>
         <%%- end -%>
       <%- end -%>
       <div class="actions-bar wat-cf">
