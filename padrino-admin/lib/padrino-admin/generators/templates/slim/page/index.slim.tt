@@ -12,7 +12,7 @@
       table.table
         tr
           <%- @orm.columns.each_with_index do |column, i| -%>
-          th<%= ".first" if i==0 %>=sort_link(:<%= column.name %>)
+          th<%= ".first" if i==0 %> == sort_link(:<%= column.name %>)
           <%- end -%>
           th.last == '&nbsp;'
         - @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
