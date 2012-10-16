@@ -12,7 +12,7 @@
       table.table
         tr
           <%- @orm.columns.each_with_index do |column, i| -%>
-          th<%= ".first" if i==0 %>=mat(:<%= @orm.name_singular %>, :<%= column.name %>)
+          th<%= ".first" if i==0 %> == sort_link(:<%= column.name %>)
           <%- end -%>
           th.last == '&nbsp;'
         - @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
@@ -24,6 +24,17 @@
               == button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to
               == ' | '
               == button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+      <%- if Padrino::Admin::SORT_VALID_ORMS.include?(@orm.orm) -%>
+      - if defined? WillPaginate 
+        .digg_pagination
+          == will_paginate @<%= @orm.name_plural %>
+        - form_tag '<%= @orm.name_plural %>', :method => :get do
+          == label_tag :page_size
+          == number_field_tag :page_size, :value => @sort_per_page
+          == hidden_field_tag :sort, :value => @sort_column
+          == hidden_field_tag :direction, :value => @sort_direction
+          == submit_tag "Change it"
+      <%- end -%>
       .actions-bar.wat-cf
         .actions == '&nbsp;'
 

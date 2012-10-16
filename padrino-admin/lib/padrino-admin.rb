@@ -13,7 +13,12 @@ module Padrino
   # Scaffold:: You can simply create a new "admin interface" simply providing a Model
   # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
   #
-  module Admin; end
+  module Admin
+    # maintain an array of orms, which are supported by "sort_page"
+    SORT_VALID_ORMS = [:sequel, :datamapper, :activerecord]
+    # set a pagination default for all models
+    SORT_PER_PAGE = 20
+  end
 end
 
 ##

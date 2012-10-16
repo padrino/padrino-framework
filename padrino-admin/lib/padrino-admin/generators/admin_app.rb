@@ -64,6 +64,10 @@ module Padrino
           directory "templates/app",       destination_root("admin")
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
+          
+          copy_file "templates/pagination_helpers.rb", 
+            destination_root("admin", "helpers", "pagination_helpers.rb")
+                                           
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
           insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
 
@@ -123,6 +127,7 @@ module Padrino
           instructions << "Run 'bundle install'"
           instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
           instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
+          instructions << "Run 'padrino rake sq:migrate:auto'" if orm == :sequel
           instructions << "Run 'ohm mani padme hum'" if orm == :ohm
           instructions << "Run 'padrino rake seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
