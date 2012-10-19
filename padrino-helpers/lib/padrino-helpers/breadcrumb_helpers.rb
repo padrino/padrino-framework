@@ -37,7 +37,7 @@ module Padrino
       #
       # @api public
       def set_home(url, caption)
-        self.home = { :url => url, :caption => caption, :name => :home }
+        self.home = { :url => url, :caption => caption.to_s.humanize, :name => :home }
         reset
       end
 
@@ -85,7 +85,7 @@ module Padrino
       #
       # @api public
       def add(name, url, caption)
-        items << { :name => name, :url => url.to_s, :caption => caption.to_s }
+        items << { :name => name, :url => url.to_s, :caption => caption.to_s.humanize }
       end
 
       alias :<< :add

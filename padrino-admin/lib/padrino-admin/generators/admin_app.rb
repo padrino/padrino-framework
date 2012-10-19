@@ -8,12 +8,12 @@ module Padrino
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin, self)
 
-      # Define the source template root and themes.
+      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
       # Defines the theme names for admin based on available.
-      def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
+      # def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
 
       # Include related modules
       include Thor::Actions
@@ -26,7 +26,7 @@ module Padrino
       class_option :app, :aliases => "-a", :desc => "The model destination path", :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
+      # class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 

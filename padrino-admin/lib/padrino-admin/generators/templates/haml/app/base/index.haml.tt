@@ -19,6 +19,3 @@
     %tr
       %td Scaffold
       %td You can create a new "admin interface" by providing a single Model
-    %tr
-      %td MultiLanguage
-      %td English, German, Russian, Danish, French, Brazilian and Italian localizations

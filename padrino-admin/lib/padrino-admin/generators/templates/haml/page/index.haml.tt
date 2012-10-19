@@ -1,30 +1,44 @@
-%h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
-
 %ul.nav.nav-tabs
-  %li.active= link_to ti("list",t_admin(:list)), url(:<%= @orm.name_plural %>, :index)
-  %li=link_to ti("plus", t_admin(:new)), url(:<%= @orm.name_plural %>, :new)
+  %li.active=link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
+  %li=link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new), :id => 'new'
 
 .tabs-content
-  %table.table.zebra-striped.table-hover
+  %table#multiple_list.table.table-striped.table-hover.table-condensed
     %thead
       %tr
+        %th.header
+          .dropdown
+            %a#cogs.dropdown-toggle.btn.btn-mini.btn-link(href='#' data-toggle='dropdown')
+              = tag_icon :cogs
+              %b.caret
+            %ul.dropdown-menu
+              %li= link_to tag_icon(:check,'Select All'), '#', :id => 'check_all'
+              %li= link_to tag_icon('check-empty','Unselect All'), '#', :id => 'uncheck_all'
+              %li
+                .hide
+                  - form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f|
+                    %button#multiple_delete_button.to_submit.btn.btn-danger.pull-left{:type => 'submit'}= tag_icon(:trash,"Delete Checked")
+                    %h5 Are you sure to delete the select?
+                  =link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
         <%- @orm.columns.each_with_index do |column, i| -%>
-        %th.blue.header=t_attr(:<%= @orm.name_singular %>, :<%= column.name %>)
+        %th.header= :<%= column.name %>
         <%- end -%>
-        %th.blue.header.action &nbsp;
+        %th.header.action Action
+
     %tbody
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr
+          %td= check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
           <%- @orm.columns.each_with_index do |column, i| -%>
           <%- if column.name == "created_at" || column.name == "updated_at" -%>
           %td=time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
           <%- elsif column.type == :boolean -%>
-          %td= tof <%= @orm.name_singular %>.<%= column.name %>
+          %td= <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove)
           <%- else -%>
           %td=<%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>
           <%- end -%>
           %td.action
-            =button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) { submit_tag t_admin(:edit), :class =>'btn btn-primary' }
-            =button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-title"=>"#{pat(:confirm)}",  "data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag t_admin(:delete), :class =>'btn btn-danger pull-left' }
-            =submit_tag t_admin(:delete), :class =>'btn_delete btn btn-danger pull-left',"data-form" => "#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", "data-cancel" => "#{t_admin(:cancel)}"
+            =button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ){ link_to tag_icon(:edit, 'Edit') , :class =>'btn btn-mini btn-link to_submit Edit' }
+            =button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag :delete, :class =>'btn btn-danger pull-left' }
+            =link_to tag_icon(:trash, 'Delete'), :class =>'btn_delete btn btn-link btn-mini pull-right', 'data-form' => ".#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", 'data-title'=>'Are you sure?', 'data-cancel' => 'Cancel', 'data-type' => 'warning'

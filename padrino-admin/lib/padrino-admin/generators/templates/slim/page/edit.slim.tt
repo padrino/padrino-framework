@@ -1,9 +1,7 @@
-h2 #{t_admin(:all)} #{t_model(:<%= @orm.name_singular %>)}
-
 ul class="nav nav-tabs"
-  li == link_to ti("list", t_admin(:list)), url(:<%= @orm.name_plural %>, :index)
-  li == link_to ti("plus", t_admin(:new)), url(:<%= @orm.name_plural %>, :new)
-  li class="active" == link_to ti("edit", t_admin(:edit)), url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
+  li == link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
+  li == link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new)
+  li class="active" == link_to tag_icon(:edit, :edit), url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
 
 div class="tabs-content"
   - form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :update, :id => @<%= @orm.name_singular %>.id), :method => :put, :class => 'form-horizontal' do |f|

@@ -93,7 +93,7 @@ module Padrino
       #
       # @example
       #   logger.bench 'GET', started_at, '/blog/categories'
-      #   # => DEBUG - GET (0.056ms) - /blog/categories
+      #   # => DEBUG - GET (0.0056s) - /blog/categories
       #
       def bench(action, began_at, message, level=:debug, color=:yellow)
         @_pad  ||= 8
@@ -101,7 +101,7 @@ module Padrino
         duration = Time.now - began_at
         color    = :red if duration > 1
         action   = colorize(action.to_s.upcase.rjust(@_pad), color)
-        duration = colorize('%0.4fms' % duration, :bold, color)
+        duration = colorize('%0.4fs' % duration, :bold, color)
         push "#{action} (#{duration}) #{message}", level
       end
 
