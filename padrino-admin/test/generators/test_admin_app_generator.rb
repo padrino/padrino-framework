@@ -52,7 +52,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "button_to 'Logout'", "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
+      assert_match_in_file "button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }", "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
     end
 
     should 'correctly generate a new padrino admin application with erb renderer' do
@@ -83,7 +83,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "button_to 'Logout'", "#{@apptmp}/sample_project/admin/views/layouts/application.erb"
+      assert_match_in_file "button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }", "#{@apptmp}/sample_project/admin/views/layouts/application.erb"
     end
 
     should 'correctly generate a new padrino admin application with slim renderer' do
@@ -114,7 +114,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "button_to 'Logout'", "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
+      assert_match_in_file "button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }", "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
     end
 
     should 'correctly generate a new padrino admin application with a custom model' do
@@ -152,7 +152,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :users, \'/users\'', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "button_to 'Logout'", "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
+      assert_match_in_file "button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }", "#{@apptmp}/sample_project/admin/views/layouts/application.slim"
     end
 
     should 'correctly generate a new padrino admin application with model in non-default application path' do
@@ -184,7 +184,7 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'Padrino.mount("Admin").to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file "button_to 'Logout'", "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
+      assert_match_in_file "button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' }", "#{@apptmp}/sample_project/admin/views/layouts/application.haml"
     end
 
     should 'not add activerecord middleware for #datamapper' do
