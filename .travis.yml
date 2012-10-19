@@ -19,3 +19,4 @@ notifications:
 branches:
   only:
     - master
+services: mongodb
