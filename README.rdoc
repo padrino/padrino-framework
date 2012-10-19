@@ -31,7 +31,6 @@ Padrino is the godfather of Sinatra. Follow us on
 {<img src="http://travis-ci.org/padrino/padrino-framework.png" alt="Testing Status" />}[http://travis-ci.org/padrino/padrino-framework]
 {<img src="https://gemnasium.com/padrino/padrino-framework.png" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
 
-
 == Preface
 
 Padrino is a ruby framework built upon the excellent {Sinatra Web Library}[http://www.sinatrarb.com].
@@ -115,7 +114,6 @@ If you modify .less and .coffee files into the admin section, you MUST recompile
   $ lessc admin.less > compiled/admin.css -x
 
   $ coffee --compile application.coffee
-
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
 
