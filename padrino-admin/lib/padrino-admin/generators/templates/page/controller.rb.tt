@@ -1,4 +1,8 @@
 Admin.controllers :<%= @orm.name_plural %> do
+  before do
+    settings.breadcrumbs.reset
+    settings.breadcrumbs.add :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :index), :<%= @orm.name_singular %>
+  end
 
   get :index do
     @<%= @orm.name_plural %> = <%= @orm.all %>
@@ -6,6 +10,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   get :new do
+    settings.breadcrumbs.add :<%= @orm.name_singular %>_new , url(:<%= @orm.name_plural %>, :new), :new
     @<%= @orm.name_singular %> = <%= @orm.build %>
     render '<%= @orm.name_plural %>/new'
   end
@@ -14,13 +19,14 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
       flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
-      redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular%>.id)
+      params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
       render '<%= @orm.name_plural %>/new'
     end
   end
 
   get :edit, :with => :id do
+    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id],  :edit
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
@@ -31,10 +37,11 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   put :update, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
+    puts params[@<%= @orm.name_singular %>]
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
         flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
-        redirect url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id)
+        params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       else
         render '<%= @orm.name_plural %>/edit'
       end
@@ -55,5 +62,17 @@ Admin.controllers :<%= @orm.name_plural %> do
     else
       halt 404
     end
+  end
+
+  delete :delete_multiple do
+    unless params[:<%= @orm.name_singular %>_ids]
+      flash[:error] = 'You must select at least one <%= @orm.name_singular %> '
+      redirect(url(:<%= @orm.name_plural %>, :index))
+    end
+    <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids]")) %>
+    if <%= @orm.multiple_destroy(@orm.name_plural) %>
+      flash[:notice] = '<%= @orm.name_plural %> have been successfully destroyed.'
+    end
+    redirect url(:<%= @orm.name_plural %>, :index)
   end
 end

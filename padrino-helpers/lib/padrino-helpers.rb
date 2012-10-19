@@ -32,6 +32,7 @@ module Padrino
       #   Padrino::Helpers::FormatHelpers
       #   Padrino::Helpers::RenderHelpers
       #   Padrino::Helpers::NumberHelpers
+      #   Padrino::Helpers::Breadcrumbs
       #
       # @param [Sinatra::Application] app
       #   The specified padrino application
@@ -52,6 +53,7 @@ module Padrino
         app.helpers Padrino::Helpers::RenderHelpers
         app.helpers Padrino::Helpers::NumberHelpers
         app.helpers Padrino::Helpers::TranslationHelpers
+        app.helpers Padrino::Helpers::Breadcrumbs
       end
       alias :included :registered
     end

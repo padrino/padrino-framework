@@ -1,36 +1,53 @@
-<div class="block">
-  <div class="secondary-navigation">
-    <ul class="wat-cf">
-      <li class="first active"><%%= link_to pat(:list), url(:<%= @orm.name_plural %>, :index) %></li>
-      <li><%%= link_to pat(:new), url(:<%= @orm.name_plural %>, :new) %></li>
-    </ul>
-  </div>
-  <div class="content">
-    <h2 class="title"><%%= pat(:all) %> <%%= mt(:<%= @orm.name_plural %>) %></h2>
-    <div class="inner">
-      <table class="table">
+<ul class="nav nav-tabs">
+  <li class="active"> <%%= link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index) %></li>
+  <li> <%%= link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural  %>, :new), :id => 'new' %></li>
+</ul>
+<div class="tabs-content">
+  <table id="multiple_list" class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th class='header'>
+          <div class="dropdown">
+            <a href="#" id='cogs' class='dropdown-toggle btn btn-mini btn-link' data-toggle='dropdown'><%%= tag_icon :cogs %> <b class='caret' > </b></a>
+            <ul class="dropdown-menu">
+              <li><%%= link_to tag_icon(:check,'Select All'), '#', :id => 'check_all' %></li>
+              <li><%%= link_to tag_icon('check-empty','Unselect All'), '#', :id => 'uncheck_all' %></li>
+              <li>
+                <div class="hide">
+                  <%% form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f| %>
+                  <button type='submit' class='to_submit btn btn-danger pull-left' id='multiple_delete_button' > <%%= tag_icon(:trash,"Delete Checked") %> </button>
+                  <h5>Are you sure to delete the select?</h5>
+                  <%% end %>
+                </div>
+                <%%= link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete' %>
+              </li>
+            </ul>
+          </div>
+        </th>
+        <%- @orm.columns.each_with_index do |column, i| -%>
+        <th class="header"> <%%= :<%= column.name %> %></th>
+        <%- end -%>
+        <th class="header action"> Action</th>
+    </thead>
+
+    <tbody>
+      <%% @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>| %>
         <tr>
+          <td> <%%= check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id %> </td>
           <%- @orm.columns.each_with_index do |column, i| -%>
-          <th<%= " class=\"first\"" if i==0 %>><%%= mat(:<%= @orm.name_singular %>, :<%= column.name %>) %></th>
+          <%- if column.name == "created_at" || column.name == "updated_at" -%>
+          <td> <%%= time_ago_in_words <%= @orm.name_singular %>.<%= column.name %> %></td>
+          <%- elsif column.type == :boolean -%>
+          <td> <%%= <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove) %> </td>
+          <%- else -%>
+          <td> <%%= <%= @orm.name_singular %>.<%= column.name %> %> </td>
           <%- end -%>
-          <th class="last">&nbsp;</th>
-        </tr>
-        <%% @<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>| %>
-        <tr>
-          <%- @orm.columns.each_with_index do |column, i| -%>
-          <td<%= " class=\"first\"" if i==0 %>><%%= <%= @orm.name_singular %>.<%= column.name %> %></td>
           <%- end -%>
-          <td class="last">
-            <%%= button_to pat(:edit), url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :method => :get, :class => :button_to %> |
-            <%%= button_to pat(:delete), url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')" %>
-          </td>
-        </tr>
-        <%% end %>
-      </table>
-      <div class="actions-bar wat-cf">
-        <div class="actions"></div>
-      </div>
-    </div>
-  </div>
+          <td class="action">
+            <%%= button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) {link_to tag_icon(:edit, 'Edit') , :class =>'btn btn-mini btn-link to_submit Edit' } %>
+            <%%= button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag :delete, :class =>'btn btn-danger pull-left' } %>
+            <%%= link_to tag_icon(:trash, 'Delete'), :class =>'btn_delete btn btn-link btn-mini pull-right', 'data-form' => ".#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", 'data-title'=>'Are you sure?', 'data-cancel' => 'Cancel', 'data-type' => 'warning' %>
+      <%% end %>
+    </tbody>
+  </table>
 </div>
-<%% content_for :sidebar, partial("base/sidebar") %>

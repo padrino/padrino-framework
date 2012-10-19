@@ -27,10 +27,15 @@ class Admin < Padrino::Application
   disable :store_location
 
   access_control.roles_for :any do |role|
-    role.protect "/"
-    role.allow "/sessions"
+    role.protect '/'
+    role.allow '/sessions'
   end
 
   access_control.roles_for :admin do |role|
   end
+
+  breadcrumbs = Padrino::Helpers::Breadcrumb.new
+  breadcrumbs.set_home '/admin', 'Admin'
+  set :breadcrumbs, breadcrumbs
+
 end

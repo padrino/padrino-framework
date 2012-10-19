@@ -270,11 +270,11 @@ module Padrino
       # @api public
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
-        version = options.delete(:version)
-        gem_options   = options.map { |k, v| "#{k.inspect} => #{v.inspect}" }.join(", ")
-        write_option = gem_options.present? ? ", #{gem_options}" : ""
-        write_version = version.present? ? ", #{version.inspect}" : ""
-        include_text  = "gem '#{name}'"<< write_version << write_option << "\n"
+        version       = options.delete(:version)
+        gem_options   = options.map { |k, v| ":#{k} => '#{v.to_s}'" }.join(", ")
+        write_option  = gem_options.present? ? ", #{gem_options}" : ''
+        write_version = version.present? ? ", '#{version.to_s}'" : ''
+        include_text  = "gem '#{name}'" << write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
@@ -351,14 +351,14 @@ module Padrino
       #
       # @api public
       def tiny?
-        File.exist?(destination_root("app/controllers.rb"))
+        File.exist?(destination_root('app/controllers.rb'))
       end
 
       # Run the bundler
       #
       # @api semipublic
       def run_bundler
-        say "Bundling application dependencies using bundler...", :yellow
+        say 'Bundling application dependencies using bundler...', :yellow
         in_root { run 'bundle install' }
       end
 
@@ -418,12 +418,12 @@ module Padrino
       #
       # @api private
       def app_skeleton(app, tiny=false)
-        directory("app/", destination_root(app))
+        directory('app/', destination_root(app))
         if tiny # generate tiny structure
-          template "templates/controller.rb.tt", destination_root(app, "controllers.rb")
-          template "templates/helper.rb.tt", destination_root(app, "helpers.rb")
+          template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
+          template 'templates/helper.rb.tt', destination_root(app, 'helpers.rb')
           @short_name = 'notifier'
-          template "templates/mailer.rb.tt", destination_root(app, "mailers.rb")
+          template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')
         else # generate standard folders
           empty_directory destination_root(app, 'controllers')
           empty_directory destination_root(app, 'helpers')

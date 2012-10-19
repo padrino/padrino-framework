@@ -1,31 +1,34 @@
-doctype html
-html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+doctype 5
+html lang="en" xmlns="http://www.w3.org/1999/xhtml"
   head
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
-    == stylesheet_link_tag 'base', 'themes/<%= options[:theme] %>/style'
-
+    == javascript_include_tag 'jquery-1.7.1.min'
+    - unless PADRINO_ENV == 'production'
+      == tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less')
+      == javascript_include_tag 'less-1.3.0.min'
+    - else
+      == stylesheet_link_tag 'compiled/admin'
   body
-    #container
-      #box
-        h1 Padrino Admin
-        #block-login.block
-          h2 Login Box
-          .content.login
-            .flash == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
-            - form_tag url(:sessions, :create), :class => 'form login' do
-              .group.wat-cf
-                .left
-                   label.label.right Login
-                .right == text_field_tag :email, :value => params[:email], :class => :text_field
-              .group.wat-cf
-                .left
-                   label.label.right Password
-                .right == password_field_tag :password, :value => params[:password], :class => :text_field
-              - if Padrino.env == :development
-                .group.wat-cf
-                  .left
-                     label.label.right Bypass login?
-                  .right == check_box_tag :bypass
-              .group.navform.wat-cf
-                .right == submit_tag 'Sign In', :class => :button
+    - form_tag url(:sessions, :create), :class=>'form-horizontal' do
+      div id='padrino-modal' class='login'
+        div class="modal-header"
+          div class="logo" == image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
+        div class="modal-body" id='padrino-modal-body'
+          div == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}") }.join
+
+          fieldset class='control-group'
+            label for="email" class='control-label' Login
+            div class='controls' == text_field_tag :email, :value => params[:email]
+          fieldset class='control-group'
+            label for='password' class='control-label' Password
+            div class='controls' == password_field_tag :password, :value => params[:password]
+          fieldset class='control-group'
+            label class='control-label'
+            div class='controls'
+              label class="checkbox"
+                == check_box_tag :bypass
+                | Bypass login?
+
+        div class="modal-footer"
+          == submit_tag('Sign In', :class => 'btn pull-right')

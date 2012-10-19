@@ -20,8 +20,8 @@ module Padrino
       # @api private
       def load_boot
         begin
-          ENV['PADRINO_LOG_LEVEL'] ||= "test"
-          ENV['BUNDLE_GEMFILE'] = File.join(options[:root], "Gemfile") if options[:root]
+          ENV['PADRINO_LOG_LEVEL'] ||= 'test'
+          ENV['BUNDLE_GEMFILE'] = File.join(options[:root], 'Gemfile') if options[:root]
           boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
           if File.exist?(boot)
             require File.expand_path(boot)
@@ -47,7 +47,7 @@ module Padrino
         generator_class = Padrino::Generators.mappings[generator_kind]
 
         if generator_class
-          args = ARGV.empty? && generator_class.require_arguments? ? ["-h"] : ARGV
+          args = ARGV.empty? && generator_class.require_arguments? ? ['-h'] : ARGV
           generator_class.start(args)
         else
           puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(", ")})"

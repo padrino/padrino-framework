@@ -1,12 +1,16 @@
-<%- @orm.column_fields.each do |column| -%>
-.group
-  =f.label :<%= column[:name] %>
-  =f.error_message_on :<%= column[:name] %>
-  <% if column[:field_type] == :text_area %>~<% else %>=<% end %>f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %>
-  %span.description Ex: a simple text
+=error_messages_for :<%= @orm.name_singular %>, :class =>'hide', :header_tag => 'h4'
 
+<%- @orm.column_fields.each do |column| -%>
+%fieldset.control-group
+  =f.label :<%= column[:name] %>, :class => 'control-label'
+  .controls
+    =f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xxlarge'
+    %span.help-inline Ex: a simple text
 <%- end -%>
 
-.group.navform.wat-cf
-  =f.submit pat(:save), :class => :button
-  =f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => :button
+.actions
+  =f.submit 'Save', :class => 'btn btn-primary'
+  &nbsp;
+  =f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue'
+  &nbsp;
+  =f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn'
