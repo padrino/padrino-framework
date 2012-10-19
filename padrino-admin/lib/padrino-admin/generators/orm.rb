@@ -131,6 +131,25 @@ module Padrino
             else "#{name_singular}.destroy"
           end
         end
+
+        def find_by_ids(params=nil)
+          case orm
+            when :datamapper, :couchrest then "#{klass_name}.all(:id => #{params})"
+            when :mongoid then "#{klass_name}.find(#{params})"
+            else find(params)
+          end
+        end
+
+        def multiple_destroy(params=nil)
+          case orm
+            when :ohm then "#{params}.delete"
+            when :sequel then  "#{klass_name}.destroy"
+            when :datamapper then "#{params}.destroy"
+            when :couchrest, :mongoid, :mongomapper then "#{params}.each(&:destroy)"
+            else "#{klass_name}.destroy #{params}"
+          end
+        end
+
       end # Orm
     end # Generators
   end # Admin
