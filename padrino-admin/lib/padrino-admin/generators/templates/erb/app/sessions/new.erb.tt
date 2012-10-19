@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />sy
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
     <title>Padrino Admin</title>
     <%% unless PADRINO_ENV == 'production' %>
       <%%= tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less') %>
@@ -30,7 +30,7 @@
           </fieldset>
 
           <fieldset class='control-group'>
-            <label for='password' class='control-label'>Password></label>
+            <label for='password' class='control-label'>Password</label>
             <div class='controls'> <%%= password_field_tag :password, :value => params[:password] %></div>
           </fieldset>
 
