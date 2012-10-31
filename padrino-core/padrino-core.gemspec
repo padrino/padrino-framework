@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
 
   s.add_dependency("tilt", "~> 1.3.0")
-  s.add_dependency("sinatra", "= 1.3.2")
+  s.add_dependency("sinatra", "~> 1.3.1")
   s.add_dependency("http_router", "~> 0.10.2")
   s.add_dependency("thor", "~> 0.15.2")
   s.add_dependency("activesupport", "~> 3.2.0")
