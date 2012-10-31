@@ -1629,11 +1629,12 @@ describe "Routing" do
 
   should 'render a custom 404 page' do
     mock_app do
-      error(404) { "not found" }
+      error(404) { "custom 404 not found" }
     end
     get "/"
     assert_equal 404, status
-    assert_match /not found/, body
+    assert_equal "custom 404 not found", body
+    assert_equal "custom 404 not found".length.to_s, headers['Content-Length']
   end
 
   should 'recognize paths' do
