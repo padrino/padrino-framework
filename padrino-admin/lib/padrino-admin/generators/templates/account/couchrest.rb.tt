@@ -22,7 +22,7 @@ class <%= @model_name %> < CouchRest::Model::Base
   validate                  :unique_email_validator
 
   # Callbacks
-  before_save :encrypt_password, :if => :password_required
+  after_validation :encrypt_password, :if => :password_required
 
   ##
   # This method is for authentication purpose
