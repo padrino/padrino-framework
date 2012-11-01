@@ -31,7 +31,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><%%= link_to tag_icon(:edit, 'Profile'), url(:<%= @model_plural %>, :edit, :id => current_account.id), :class => "Edit", :id => 'user-profile' %></li>
-                <li><%%= button_to('Logout', url(:sessions, :destroy), :method => :delete, :class =>'dropdown-form') { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' } %></li>
+                <li class='dropdown-form'><%%= button_to('Logout', url(:sessions, :destroy), :method => :delete) { link_to tag_icon(:off, 'Logout'),'#', :id => 'user-logout', :class => 'to_submit' } %></li>
               </ul>
             </li>
           </ul>
