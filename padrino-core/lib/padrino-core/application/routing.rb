@@ -654,7 +654,7 @@ module Padrino
 
             unless controller.empty?
               # Now we need to add our controller path only if not mapped directly
-              if map.blank? and !absolute_map
+              if !absolute_map
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
                 path = File.join(controller_path, path)
