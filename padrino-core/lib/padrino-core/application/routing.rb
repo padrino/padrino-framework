@@ -626,6 +626,12 @@ module Padrino
           # We need check if path is a symbol, if that it's a named route
           map = options.delete(:map)
 
+          relative_path = false
+          if map == :index
+            map = '/'
+            relative_path = true
+          end
+
           if path.kind_of?(Symbol) # path i.e :index or :show
             name = path                                                # The route name
             path = map ? map.dup : (path == :index ? '/' : path.to_s)  # The route path
@@ -654,7 +660,7 @@ module Padrino
 
             unless controller.empty?
               # Now we need to add our controller path only if not mapped directly
-              if map.blank? and !absolute_map
+              if !absolute_map or relative_path
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
                 path = File.join(controller_path, path)
