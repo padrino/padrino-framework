@@ -140,6 +140,14 @@ describe "ControllerGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/test/subby/controllers/demo_items_controller_test.rb")
     end
 
+    should "generate controller test for steak" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=steak') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/feature "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/acceptance/controllers/demo_items_controller_spec.rb")
+    end
+
     should "generate controller test for cucumber" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=cucumber') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
