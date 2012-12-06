@@ -9,10 +9,9 @@ MONGO
 
 def setup_orm
   mongomatic = MONGOMATIC
-  require_dependencies 'bson_ext', :require => 'mongo'
   require_dependencies 'mongomatic'
+  require_dependencies 'bson_ext', :require => 'mongo'
   create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 MONGOMATIC_MODEL = (<<-MODEL) unless defined?(MONGOMATIC_MODEL)
@@ -36,7 +35,7 @@ class !NAME! < Mongomatic::Base
   # String datatypes
 
 
-  # Examples
+  # Examples:
   # def validate
   #   expectations do
   #     be_present self['name'], "Name cannot be blank"
@@ -66,11 +65,11 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-    field_tuples = options[:fields].collect { |value| value.split(":") }
-    column_declarations = field_tuples.collect { |field, kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
+    field_tuples = options[:fields].map { |value| value.split(":") }
+    column_declarations = field_tuples.map { |field, kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
     # Really ugly oneliner
-    integers = field_tuples.select { |col, type| type =~ /[Ii]nteger/ }.collect { |field, kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")
-    model_contents = MONGOMATIC_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+    integers = field_tuples.select { |col, type| type =~ /[Ii]nteger/ }.map { |field, kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")
+    model_contents = MONGOMATIC_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
     model_contents.gsub!(/!FIELDS!/, column_declarations)
     model_contents.gsub!(/!INTEGERS!/, integers)
     create_file(model_path, model_contents)

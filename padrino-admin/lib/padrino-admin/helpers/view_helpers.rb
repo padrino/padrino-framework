@@ -1,48 +1,31 @@
 module Padrino
   module Admin
+    ##
+    # Contains all admin related helpers.
+    #
     module Helpers
+      ##
+      # Admin helpers
+      #
       module ViewHelpers
         ##
-        # Translate a given word for padrino admin
+        # Icon's Bootstrap helper
         #
-        # ==== Examples
+        # @param [Symbol] icon
+        #  The specified icon type
         #
-        #   # => t("padrino.admin.profile",  :default => "Profile")
-        #   pat(:profile)
+        # @param [Symbol] tag
+        #   The HTML tag.
         #
-        #   # => t("padrino.admin.profile",  :default => "My Profile")
-        #   pat(:profile, "My Profile")
+        # @return [String] html tag with prepend icon
         #
-        def padrino_admin_translate(word, default=nil)
-          t("padrino.admin.#{word}", :default => (default || word.to_s.humanize))
+        # @example
+        #   tag_icon(:edit, :list)
+        #
+        def tag_icon(icon, tag = nil)
+          content = content_tag(:i, '', :class=> "icon-#{icon.to_s}")
+          content << " #{tag.to_s}"
         end
-        alias :pat :padrino_admin_translate
-
-        ##
-        # Translate attribute name for the given model
-        #
-        # ==== Examples
-        #
-        #   # => t("models.account.email", :default => "Email")
-        #   mat(:account, :email)
-        #
-        def model_attribute_translate(model, attribute)
-          t("models.#{model}.attributes.#{attribute}", :default => attribute.to_s.humanize)
-        end
-        alias :mat :model_attribute_translate
-
-        ##
-        # Translate model name
-        #
-        # ==== Examples
-        #
-        #   # => t("models.account.name", :default => "Account")
-        #   mt(:account)
-        #
-        def model_translate(model)
-          t("models.#{model}.name", :default => model.to_s.humanize)
-        end
-        alias :mt :model_translate
       end # ViewHelpers
     end # Helpers
   end # Admin

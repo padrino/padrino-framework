@@ -1,112 +1,243 @@
 ##
 # This file loads certain extensions required by Padrino from ActiveSupport.
 #
-# Why use ActiveSupport and not our own library or extlib?
-#
-# 1) Rewriting custom method extensions needed (i.e string inflectors) is not a good use of time.
-# 2) Loading custom method extensions or separate gems would conflict with AS when AR or MM has been loaded.
-# 3) Datamapper 1.0 supports ActiveSupport 3.0 and no longer requires extlib.
-#
+require 'active_support/core_ext/module/aliasing'           # alias_method_chain
+require 'active_support/core_ext/hash/keys'                 # symbolize_keys
+require 'active_support/core_ext/hash/reverse_merge'        # reverse_merge
+require 'active_support/core_ext/hash/slice'                # slice
+require 'active_support/core_ext/object/blank'              # present?
+require 'active_support/core_ext/array/extract_options'     # extract_options
+require 'active_support/inflector/methods'                  # constantize
+require 'active_support/inflector/inflections'              # pluralize
+require 'active_support/inflections'                        # load default inflections
+require 'yaml' unless defined?(YAML)                        # load yaml for i18n
+require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
 
-require 'active_support/core_ext/string/conversions' unless String.method_defined?(:to_date)
-require 'active_support/core_ext/kernel'             unless Kernel.method_defined?(:silence_warnings)
-require 'active_support/core_ext/module'             unless Module.method_defined?(:alias_method_chain)
-require 'active_support/core_ext/class/attribute_accessors' unless Class.method_defined?(:cattr_reader)
-require 'active_support/core_ext/hash/keys'          unless Hash.method_defined?(:symbolize_keys!)
-require 'active_support/core_ext/hash/deep_merge'    unless Hash.method_defined?(:deep_merge)
-require 'active_support/core_ext/hash/reverse_merge' unless Hash.method_defined?(:reverse_merge)
-require 'active_support/core_ext/hash/slice'         unless Hash.method_defined?(:slice)
-require 'active_support/core_ext/object/blank'       unless Object.method_defined?(:present?)
-require 'active_support/core_ext/array'              unless Array.method_defined?(:from)
-require 'active_support/ordered_hash'                unless defined?(ActiveSupport::OrderedHash)
-require 'active_support/inflector'                   unless String.method_defined?(:humanize)
-require 'active_support/core_ext/float/rounding'     unless Float.method_defined?(:round)
-require 'active_support/option_merger'               unless defined?(ActiveSupport::OptionMerger)
+##
+# This is an adapted version of active_support/core_ext/string/inflections.rb
+# to prevent loading several dependencies including I18n gem.
+#
+# Issue: https://github.com/rails/rails/issues/1526
+#
+class String
+  ##
+  # Returns the plural form of the word in the string.
+  #
+  #   "post".pluralize             # => "posts"
+  #   "octopus".pluralize          # => "octopi"
+  #   "sheep".pluralize            # => "sheep"
+  #   "words".pluralize            # => "words"
+  #   "the blue mailman".pluralize # => "the blue mailmen"
+  #   "CamelOctopus".pluralize     # => "CamelOctopi"
+  #
+  def pluralize
+    ActiveSupport::Inflector.pluralize(self)
+  end
 
-begin
-  require 'active_support/core_ext/symbol'
-rescue LoadError
-  # AS 3.0 has been removed it because is now available in Ruby > 1.8.7 but we want keep Ruby 1.8.6 support.
-  class Symbol
-    # Turns the symbol into a simple proc, which is especially useful for enumerations like: people.map(&:name)
-    def to_proc
-      Proc.new { |*args| args.shift.__send__(self, *args) }
+  ##
+  # Returns the singular form of the word in the string.
+  #
+  #   "posts".singularize            # => "post"
+  #   "octopi".singularize           # => "octopus"
+  #   "sheep".singularize            # => "sheep"
+  #   "words".singularize            # => "word"
+  #   "the blue mailmen".singularize # => "the blue mailman"
+  #   "CamelOctopi".singularize      # => "CamelOctopus"
+  #
+  def singularize
+    ActiveSupport::Inflector.singularize(self)
+  end
+
+  ##
+  # +constantize+ tries to find a declared constant with the name specified
+  # in the string. It raises a NameError when the name is not in CamelCase
+  # or is not initialized.
+  #
+  #   "Module".constantize # => Module
+  #   "Class".constantize  # => Class
+  #
+  def constantize
+    ActiveSupport::Inflector.constantize(self)
+  end
+
+  ##
+  # The reverse of +camelize+. Makes an underscored, lowercase form from the expression in the string.
+  #
+  # +underscore+ will also change '::' to '/' to convert namespaces to paths.
+  #
+  #   "ActiveRecord".underscore         # => "active_record"
+  #   "ActiveRecord::Errors".underscore # => active_record/errors
+  #
+  def underscore
+    ActiveSupport::Inflector.underscore(self)
+  end
+
+  ##
+  # By default, +camelize+ converts strings to UpperCamelCase. If the argument to camelize
+  # is set to <tt>:lower</tt> then camelize produces lowerCamelCase.
+  #
+  # +camelize+ will also convert '/' to '::' which is useful for converting paths to namespaces.
+  #
+  #   "active_record".camelize                # => "ActiveRecord"
+  #   "active_record".camelize(:lower)        # => "activeRecord"
+  #   "active_record/errors".camelize         # => "ActiveRecord::Errors"
+  #   "active_record/errors".camelize(:lower) # => "activeRecord::Errors"
+  #
+  def camelize(first_letter = :upper)
+    case first_letter
+      when :upper then ActiveSupport::Inflector.camelize(self, true)
+      when :lower then ActiveSupport::Inflector.camelize(self, false)
     end
-  end unless :to_proc.respond_to?(:to_proc)
+  end
+  alias_method :camelcase, :camelize
+
+  ##
+  # Create a class name from a plural table name like Rails does for table names to models.
+  # Note that this returns a string and not a class. (To convert to an actual class
+  # follow +classify+ with +constantize+.)
+  #
+  #   "egg_and_hams".classify # => "EggAndHam"
+  #   "posts".classify        # => "Post"
+  #
+  # Singular names are not handled correctly.
+  #
+  #   "business".classify # => "Busines"
+  #
+  def classify
+    ActiveSupport::Inflector.classify(self)
+  end
 end
 
-# On ActiveSupport < 3.0.0 this is called misc
-begin
-  require 'active_support/core_ext/object/with_options'
-rescue LoadError
-  require 'active_support/core_ext/object/misc'
-end unless Object.method_defined?(:with_options)
+module ObjectSpace
+  class << self
+    ##
+    # Returns all the classes in the object space.
+    # Optionally, a block can be passed, for example the following code
+    # would return the classes that start with the character "A":
+    #
+    #  ObjectSpace.classes do |klass|
+    #    if klass.to_s[0] == "A"
+    #      klass
+    #    end
+    #  end
+    #
+    def classes(&block)
+      rs = Set.new
 
-if defined?(ActiveSupport::CoreExtensions::Hash) && !Hash.method_defined?(:slice)
-  # This mean that we are using AS 2.3.x
-  class Hash
-    include ActiveSupport::CoreExtensions::Hash::Keys
-    include ActiveSupport::CoreExtensions::Hash::DeepMerge
-    include ActiveSupport::CoreExtensions::Hash::ReverseMerge
-    include ActiveSupport::CoreExtensions::Hash::Slice
+      ObjectSpace.each_object(Class).each do |klass|
+        if block
+          if r = block.call(klass)
+            # add the returned value if the block returns something
+            rs << r
+          end
+        else
+          rs << klass
+        end
+      end
 
-    def ordered_collect(&block)
-      keys = self.stringify_keys.keys.sort
-      keys.collect { |key| block.call(key, self[key.to_sym]) }
+      rs
+    end
+
+    ##
+    # Returns a list of existing classes that are not included in "snapshot"
+    # This method is useful to get the list of new classes that were loaded
+    # after an event like requiring a file.
+    # Usage:
+    #
+    #   snapshot = ObjectSpace.classes
+    #   # require a file
+    #   ObjectSpace.new_classes(snapshot)
+    #
+    def new_classes(snapshot)
+      self.classes do |klass|
+        if !snapshot.include?(klass)
+          klass
+        end
+      end
     end
   end
 end
 
 ##
-# Used to know if this file was required
-#
-module SupportLite; end unless defined?(SupportLite)
-
-module ObjectSpace
-  class << self
-    # Returns all the classes in the object space.
-    def classes
-      klasses = []
-      ObjectSpace.each_object(Class)  { |o| klasses << o }
-      klasses
-    end
-  end
-end unless ObjectSpace.respond_to?(:classes)
-
-class Object
-  def full_const_get(name)
-    list = name.split("::")
-    list.shift if list.first.blank?
-    obj = self
-    list.each do |x|
-      # This is required because const_get tries to look for constants in the
-      # ancestor chain, but we only want constants that are HERE
-      obj = obj.const_defined?(x) ? obj.const_get(x) : obj.const_missing(x)
-    end
-    obj
-  end
-end unless Object.method_defined?(:full_const_get)
-
 # FileSet helper method for iterating and interacting with files inside a directory
-class FileSet
+#
+module FileSet
+  extend self
+  ##
   # Iterates over every file in the glob pattern and yields to a block
   # Returns the list of files matching the glob pattern
   # FileSet.glob('padrino-core/application/*.rb', __FILE__) { |file| load file }
-  def self.glob(glob_pattern, file_path=nil, &block)
+  #
+  def glob(glob_pattern, file_path=nil, &block)
     glob_pattern = File.join(File.dirname(file_path), glob_pattern) if file_path
     file_list = Dir.glob(glob_pattern).sort
     file_list.each { |file| block.call(file) }
     file_list
   end
 
+  ##
   # Requires each file matched in the glob pattern into the application
   # FileSet.glob_require('padrino-core/application/*.rb', __FILE__)
-  def self.glob_require(glob_pattern, file_path=nil)
-    self.glob(glob_pattern, file_path) { |f| require f }
+  #
+  def glob_require(glob_pattern, file_path=nil)
+    glob(glob_pattern, file_path) { |f| require f }
   end
-end unless defined?(FileSet)
+end
 
 ##
-# Loads our locales configuration files
+# Removes indentation
+# Add colors
+#
+# @example
+#   help <<-EOS.undent
+#     Here my help usage
+#      sample_code
+#
+#     Fix
+#   EOS
+#   puts help.red.bold
+#
+class String
+  def self.colors
+    @_colors ||= {
+      :clear   => 0,
+      :bold    => 1,
+      :black   => 30,
+      :red     => 31,
+      :green   => 32,
+      :yellow  => 33,
+      :blue    => 34,
+      :magenta => 35,
+      :cyan    => 36,
+      :white   => 37
+    }
+  end
+
+  colors.each do |color, value|
+    define_method(color) do
+      ["\e[", value.to_s, "m", self, "\e[", self.class.colors[:clear], "m"] * ''
+    end
+  end
+
+  def undent
+    gsub(/^.{#{slice(/^ +/).size}}/, '')
+  end
+end
+
+##
+# Make sure we can always use the class name
+# In reloader for accessing class_name Foo._orig_klass_name
+#
+class Module
+  alias :_orig_klass_name :to_s
+end
+
+##
+# Loads our locale configuration files
 #
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n)
+
+##
+# Used to determine if this file has already been required
+#
+module SupportLite; end

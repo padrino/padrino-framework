@@ -1,5 +1,4 @@
 MONGOID = (<<-MONGO) unless defined?(MONGOID)
-
 # Connection.new takes host, port
 host = 'localhost'
 port = Mongo::Connection::DEFAULT_PORT
@@ -26,11 +25,35 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 # More installation and setup notes are on http://mongoid.org/docs/
 MONGO
 
+MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
+# Connection.new takes host, port
+
+host = 'localhost'
+port = Mongo::Connection::DEFAULT_PORT
+
+database_name = case Padrino.env
+  when :development then '!NAME!_development'
+  when :production  then '!NAME!_production'
+  when :test        then '!NAME!_test'
+end
+
+Mongoid::Config.sessions = {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
+MONGO
+
 def setup_orm
-  require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'mongoid'
-  create_file("config/database.rb", MONGOID.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
+  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '>=3.0' : '~>2.0')
+  require_dependencies 'mongo',   :require => 'mongo'
+  require_dependencies 'bson_ext'
+
+  if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
+    require_dependencies('SystemTimer', :require => 'system_timer')
+  end
+
+  if RUBY_VERSION >= '1.9'
+     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @app_name.underscore))
+  else
+    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
+  end
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
@@ -46,16 +69,15 @@ class !NAME!
 
   # You can create a composite key in mongoid to replace the default id using the key macro:
   # key :field <, :another_field, :one_more ....>
-
 end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].collect { |value| value.split(":") }
-  column_declarations = field_tuples.collect { |field, kind| "field :#{field}, :type => #{kind.camelize}" }.join("\n  ")
-  model_contents = MONGOID_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  column_declarations = field_tuples.map { |field, kind| "field :#{field}, :type => #{kind.underscore.camelize}" }.join("\n  ")
+  model_contents = MONGOID_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
 end

@@ -12,9 +12,11 @@ class Riot::Situation
   ##
   # You can handle all padrino applications using instead:
   #   Padrino.application
+  # Or just the Application itself like:
+  #   CLASS_NAME.tap { |app|  }
 
   def app
-    CLASS_NAME.tap { |app|  }
+    @app || Padrino.application
   end
 end
 
@@ -27,14 +29,14 @@ class Riot::Context
   #     asserts(:status).equals(200)
   #   end
   def app(app=nil, &block)
-    setup { @app = (app || block) }
+    setup { @app = (app || block.call) }
   end
 end
 
 TEST
 
 RIOT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 context "!NAME!Controller" do
   context "description here" do
@@ -50,14 +52,21 @@ TEST
 RIOT_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_RAKE)
 require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |test|
-  test.pattern = 'test/**/*_test.rb'
-  test.verbose = true
+test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
+
+test_tasks.each do |folder|
+  Rake::TestTask.new("test:\#{folder}") do |test|
+    test.pattern = "test/\#{folder}/**/*_test.rb"
+    test.verbose = true
+  end
 end
+
+desc "Run application test suite"
+task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../test_config.rb')
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 context "!NAME! Model" do
   context 'can be created' do
@@ -79,11 +88,15 @@ end
 
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
-  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-  create_file destination_root("test/controllers/#{name.to_s.underscore}_controller_test.rb"), riot_contents, :skip => true
+  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
+  create_file destination_root(controller_test_path), riot_contents, :skip => true
 end
 
 def generate_model_test(name)
-  riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize)
-  create_file destination_root("test/models/#{name.to_s.underscore}_test.rb"), riot_contents, :skip => true
+  riot_contents = RIOT_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  path = options[:app] == '.' ? '/..' : '/../..'
+  riot_contents.gsub!(/!PATH!/,path)
+  model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
+  create_file destination_root(model_test_path), riot_contents, :skip => true
 end

@@ -38,12 +38,12 @@ You can also instruct the generator to skip a certain component to avoid using o
 
 The available components and their default options are listed below:
 
-test::       rspec (default), bacon, shoulda, cucumber, testspec, riot
-renderer::   haml  (default), erb, erubis, liquid
+test::       rspec (default), bacon, shoulda, cucumber, testspec, riot, minitest
+renderer::   haml  (default), erb, erubis, liquid, slim
 stylesheet:: sass  (default), less, compass
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, rightjs, extcore, dojo
-orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, sequel, couchrest
+orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, sequel, couchrest, ohm, mongomatic, ripple
 
 In addition, you can generate projects based on existing templates:
 
@@ -160,4 +160,4 @@ To learn more about the mailer generator, check out the guide to
 
 == Copyright
 
-Copyright (c) 2010 Padrino. See LICENSE for details.
+Copyright (c) 2011 Padrino. See LICENSE for details.

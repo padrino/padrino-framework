@@ -1,74 +1,79 @@
 module Padrino
-
   ##
-  # Run the Padrino apps as a self-hosted server using:
-  # thin, mongrel, webrick in that order.
+  # Runs the Padrino apps as a self-hosted server using:
+  # thin, mongrel, or webrick in that order.
   #
-  # ==== Examples
-  #
+  # @example
   #   Padrino.run! # with these defaults => host: "localhost", port: "3000", adapter: the first found
-  #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "localhost", port: "3000", adapter: "mongrel"
+  #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "0.0.0.0", port: "3000", adapter: "mongrel"
   #
   def self.run!(options={})
     Padrino.load!
-    Server.build(options)
+    Server.start(Padrino.application, options)
   end
 
   ##
-  # This module build a Padrino server
+  # This module builds a Padrino server to run the project based on available handlers.
   #
-  module Server
+  class Server < Rack::Server
+    # Server Handlers
+    Handlers = [:thin, :puma, :mongrel, :trinidad, :webrick]
 
-    class LoadError < RuntimeError; end
+    # Starts the application on the available server with specified options.
+    def self.start(app, opts={})
+      options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
+      options.symbolize_keys!
+      options[:Host] = options.delete(:host) || '0.0.0.0'
+      options[:Port] = options.delete(:port) || 3000
+      options[:AccessLog] = []
+      if options[:daemonize]
+        options[:pid] = options[:pid].blank? ? File.expand_path('tmp/pids/server.pid') : opts[:pid]
+        FileUtils.mkdir_p(File.dirname(options[:pid]))
+      end
+      options[:server] = detect_rack_handler if options[:server].blank?
+      new(options, app).start
+    end
 
-    Handlers = %w[thin mongrel webrick] unless const_defined?(:Handlers)
+    def initialize(options, app)
+      @options, @app = options, app
+    end
+
+    # Starts the application on the available server with specified options.
+    def start
+      puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
+      [:INT, :TERM].each { |sig| trap(sig) { exit } }
+      super
+    ensure
+      puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
+    end
+
+    # The application the server will run.
+    def app
+      @app
+    end
+    alias :wrapped_app :app
+
+    # The options specified to the server.
+    def options
+      @options
+    end
 
     private
-      def self.build(options={})
-        host    = options[:host] || "localhost"
-        port    = options[:port] || 3000
-        adapter = options[:adapter]
 
-        handler_name = adapter ? adapter.to_s.capitalize : detect_handler.name.gsub(/.*::/, '')
-
-        begin
-          handler = Rack::Handler.get(handler_name.downcase)
-        rescue
-          raise LoadError, "#{handler_name} not supported yet, available adapters are: #{Handlers.inspect}"
-          exit
-        end
-
-        puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} on #{port}"
-
-        handler.run Padrino.application, :Host => host, :Port => port do |server|
-          trap(:INT) do
-            # Use thins' hard #stop! if available, otherwise just #stop
-            server.respond_to?(:stop!) ? server.stop! : server.stop
-            puts "<= Padrino has ended his set (crowd applauds)"
-          end
-        end
-      rescue RuntimeError => e
-        if e.message =~ /no acceptor/
-          if port < 1024 && RUBY_PLATFORM !~ /mswin|win|mingw/ && Process.uid != 0
-            puts "=> Only root may open a priviledged port #{port}!"
-          else
-            puts "=> Someone is already performing on port #{port}!"
-          end
-        else
-          raise e
-        end
-      rescue Errno::EADDRINUSE
-        puts "=> Someone is already performing on port #{port}!"
-      end
-
-      def self.detect_handler
-        Handlers.each do |server_name|
+      # Detects the supported handler to use.
+      #
+      # @example
+      #   detect_rack_handler => <ThinHandler>
+      #
+      def self.detect_rack_handler
+        Handlers.each do |handler|
           begin
-            return Rack::Handler.get(server_name.downcase)
-          rescue Exception
+            return handler if Rack::Handler.get(handler.to_s.downcase)
+          rescue LoadError
+          rescue NameError
           end
         end
-        raise LoadError, "Server handler (#{servers.join(',')}) not found."
+        fail "Server handler (#{Handlers.join(', ')}) not found."
       end
   end # Server
 end # Padrino

@@ -1,4 +1,4 @@
-class Account
+class <%= @model_name %>
   include DataMapper::Resource
   include DataMapper::Validate
   attr_accessor :password, :password_confirmation
@@ -8,7 +8,7 @@ class Account
   property :name,             String
   property :surname,          String
   property :email,            String
-  property :crypted_password, String
+  property :crypted_password, String, :length => 70
   property :role,             String
 
   # Validations
@@ -45,11 +45,11 @@ class Account
   end
 
   private
-    def password_required
-      crypted_password.blank? || !password.blank?
-    end
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 
-    def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(password)
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(password) if password.present?
+  end
 end

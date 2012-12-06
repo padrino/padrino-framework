@@ -2,6 +2,7 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 class PadrinoApp < Padrino::Application
+  register Padrino::Rendering
   register Padrino::Helpers
   register Padrino::Mailer
 
@@ -35,7 +36,7 @@ class PadrinoApp < Padrino::Application
       via     :test
       render  'sample/foo_message'
     end
-    
+
     message :helper do |name|
       subject "Welcome Helper!"
       to      'jim@fake.com'
@@ -44,7 +45,7 @@ class PadrinoApp < Padrino::Application
       via     :test
       render  'sample/helper_message'
     end
-    
+
   end
 
   post "/deliver/inline" do
@@ -66,12 +67,12 @@ class PadrinoApp < Padrino::Application
     result = deliver(:sample, :welcome, "Bobby")
     result ? "mail delivered" : 'mail not delivered'
   end
-  
+
   post "/deliver/helper" do
     result = deliver(:sample, :helper, "Jim")
     result ? "mail delivered" : 'mail not delivered'
   end
-  
+
 end
 
 Padrino.mount("PadrinoApp").to("/")

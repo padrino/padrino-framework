@@ -1,2 +1,8 @@
-.bundle
 Gemfile.lock
+.bundle
+.rvmrc
+.yardoc
+*.rbc
+.rbx/
+doc/
+.DS_Store

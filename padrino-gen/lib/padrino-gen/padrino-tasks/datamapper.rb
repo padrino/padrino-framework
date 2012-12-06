@@ -23,14 +23,14 @@ if defined?(DataMapper)
       end
 
       desc "Migrate up using migrations"
-      task :up, :version, :needs => :load do |t, args|
+      task :up, [:version] => :load do |t, args|
         version = args[:version] || ENV['VERSION']
         migrate_up!(version)
         puts "<= dm:migrate:up #{version} executed"
       end
 
       desc "Migrate down using migrations"
-      task :down, :version, :needs => :load do |t, args|
+      task :down, [:version] => :load do |t, args|
         version = args[:version] || ENV['VERSION']
         migrate_down!(version)
         puts "<= dm:migrate:down #{version} executed"
@@ -50,7 +50,7 @@ if defined?(DataMapper)
       puts "=> Creating database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("createdb", "-E", charset, "-U", user, database)
+          system("createdb", "-E", charset, "-h", host, "-U", user, database)
           puts "<= dm:create executed"
         when 'mysql'
           query = [
@@ -74,7 +74,7 @@ if defined?(DataMapper)
       puts "=> Dropping database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("dropdb", "-U", user, database)
+          system("dropdb", "-h", host, "-U", user, database)
           puts "<= dm:drop executed"
         when 'mysql'
           query = [

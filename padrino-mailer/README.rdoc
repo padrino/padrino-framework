@@ -25,7 +25,7 @@ command on the server. However, smtp is also supported using the following confi
 Once the delivery settings have been defined, the default will become smtp delivery but can be overwritten in each message.
 
 Padrino supports sending quick emails (using either sendmail or smtp) right from your controllers.
-This is ideal for ‘one-off’ emails where the ‘full’ mailer declaration is simply unnecessary.
+This is ideal for one-off emails where the full mailer declaration is simply unnecessary.
 
 Delivering an email from within your controller is simple:
 
@@ -91,7 +91,7 @@ is invoking the render function passing the <tt>name</tt> attribute to the body 
 
 Once the mailer definition has been completed and the template has been defined, the email can be sent using:
 
-  deliver(:sample, :registration_email, "Bob", "21")
+  deliver(:sample, :registration, "Bob", "21")
 
 And that will then deliver the email according the the configured options. This is all you need to send basic emails.
 
@@ -100,4 +100,4 @@ The mailer also supports the attachment of files and various other options. Be s
 
 == Copyright
 
-Copyright (c) 2010 Padrino. See LICENSE for details.
+Copyright (c) 2011 Padrino. See LICENSE for details.

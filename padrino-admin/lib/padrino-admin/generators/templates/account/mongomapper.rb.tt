@@ -1,4 +1,4 @@
-class Account
+class <%= @model_name %>
   include MongoMapper::Document
   attr_accessor :password, :password_confirmation
 
@@ -21,7 +21,7 @@ class Account
   validates_format_of       :role,     :with => /[A-Za-z]/
 
   # Callbacks
-  before_save :generate_password
+  before_save :encrypt_password, :if => :password_required
 
   ##
   # This method is for authentication purpose
@@ -36,11 +36,11 @@ class Account
   end
 
   private
-    def generate_password
-      self.crypted_password = ::BCrypt::Password.create(password)
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(password)
+  end
 
-    def password_required
-      crypted_password.blank? || !password.blank?
-    end
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 end

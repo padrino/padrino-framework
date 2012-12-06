@@ -2,12 +2,10 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'rack/test'
-require 'uuid'
 require 'rack'
-require 'shoulda'
-require 'mocha'
+require 'uuid'
 require 'thor/group'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
@@ -15,31 +13,20 @@ require 'padrino-admin'
 Padrino::Generators.load_components!
 
 module Kernel
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    $stdout = $stderr = log_buffer = StringIO.new
-    block.call
-    $stdout = STDOUT
-    $stderr = STDERR
-    log_buffer.string
-  end
-  alias :silence_stdout :silence_logger
-
   def load_fixture(file)
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)
     file += ".rb" if file !~ /.rb$/
-    silence_stdout { load File.join(File.dirname(__FILE__), "fixtures", file) }
+    capture_io { load File.join(File.dirname(__FILE__), "fixtures", file) }
   end
 end
 
 class Class
   # Allow assertions in request context
-  include Test::Unit::Assertions
+  include MiniTest::Assertions
 end
 
-class Test::Unit::TestCase
+class MiniTest::Spec
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block
@@ -47,7 +34,7 @@ class Test::Unit::TestCase
   # the application.
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
-    @app.send :include, Test::Unit::Assertions
+    @app.send :include, MiniTest::Assertions
     @app.register Padrino::Helpers
   end
 

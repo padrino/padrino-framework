@@ -1,6 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPadrinoCache < Test::Unit::TestCase
+describe "PadrinoCache" do
+
+  def teardown
+    tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")
+    `rm -rf #{tmp}`
+  end
+
   should 'cache a fragment' do
     called = false
     mock_app do
@@ -52,18 +58,45 @@ class TestPadrinoCache < Test::Unit::TestCase
   end
 
   should 'accept custom cache keys' do
+    called = false
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => proc{|req| "cached"}){ 'test' }
-      get('/bar', :cache => proc{|req| "cached"}){ halt 500 }
+      get '/foo', :cache => true do
+        if called
+          "you'll never see me"
+        else
+          cache_key :foo
+          called = 'foo'
+
+          called
+        end
+      end
+
+      get '/bar', :cache => true do
+        if called
+          cache_key :bar
+          called = 'bar'
+
+          called
+        else
+          "you'll never see me"
+        end
+      end
     end
     get "/foo"
     assert_equal 200, status
-    assert_equal 'test', body
+    assert_equal 'foo', body
+    assert_equal 'foo', @app.cache.get(:foo)[:response_buffer]
+    get "/foo"
+    assert_equal 'foo', body
+
     get "/bar"
     assert_equal 200, status
-    assert_equal 'test', body
+    assert_equal 'bar', body
+    assert_equal 'bar', @app.cache.get(:bar)[:response_buffer]
+    get "/bar"
+    assert_equal 'bar', body
   end
 
   should 'delete based on urls' do

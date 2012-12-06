@@ -1,0 +1,92 @@
+@import "bootstrap/bootstrap.less";
+
+body { padding-top: 60px; }
+footer p { text-align: center; }
+footer p a { padding: 0 5px; }
+.action {
+  form { padding: 0 2px; margin: 0px;}
+  input {
+    font-size:11px;
+    padding:2px;
+    width:50px;
+    border-radius:2px;
+  }
+}
+th.action  { width: 110px; text-align:center }
+
+.login {
+  form, .actions { margin-bottom:0px; }
+  .label{ &.error { background-color: #c43c35; } }
+  .logo{
+    text-align: center;
+    padding: 5px 0;
+  }
+  background-color: @white;
+  border: 1px solid @linkColor;
+  box-shadow: 0px 0px 20px @gray;
+  border-radius: 5px;
+  padding-top: 10px;
+  width: 500px;
+  margin: 0px auto;
+  .control-group > label {
+    float: left;
+    width: 40px;
+    padding-top: 5px;
+    text-align: right;
+  }
+  .controls {
+    margin-left: 100px;
+  }
+
+}
+.flash-error, .flash-danger { border: 2px solid  @errorText;   }
+.flash-success, .flash-notice { border: 2px solid  @successText; }
+.flash-warning { border: 2px solid  @warningText; }
+
+.alert-notice {
+  background-color: @successBackground;
+  border-color: @successBorder;
+  color: @successText;
+}
+.alert-warning {
+  background-color: @warningBackground;
+  border-color: @warningBorder;
+  color: @warningText;
+}
+
+#deleter-body > form{ text-align: center; }
+
+@iconSpritePath:          "../../images/glyphicons-halflings.png";
+@iconWhiteSpritePath:     "../../images/glyphicons-halflings-white.png";
+
+.dropdown-form{
+  margin:0;
+  padding:0;
+  :hover {
+    color: @dropdownLinkColorHover;
+    text-decoration: none;
+    outline: 0;
+    background-color: @dropdownLinkBackgroundActive;
+    #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
+  }
+}
+body{ font-size: 13px; }
+
+.footer {
+  padding: 70px 0;
+  margin-top: 70px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f5f5f5;
+}
+.footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+.footer-links {
+  margin: 10px 0;
+  text-align: center;
+}
+.footer-links li {
+  display: inline;
+  margin-right: 10px;
+}

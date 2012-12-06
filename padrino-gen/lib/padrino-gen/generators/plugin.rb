@@ -3,13 +3,18 @@ require 'net/https'
 
 module Padrino
   module Generators
+    ##
+    # Responsible for executing plugins instructions within a Padrino project.
+    #
     class Plugin < Thor::Group
+      # Defines the default URL for official padrino recipe plugins
       PLUGIN_URL = 'https://github.com/padrino/padrino-recipes/tree/master/plugins'
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:plugin, self)
 
       # Define the source plugin root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen plugin [plugin_identifier] [options]"; end
 
       # Include related modules
@@ -28,8 +33,24 @@ module Padrino
       require_arguments!
 
       # Create the Padrino Plugin
+      #
+      # @api private
       def setup_plugin
-        if options[:list] # list method ran here
+        if options[:list] || plugin_file.nil? # list method ran here
+          list_plugins
+        else # executing the plugin instructions
+          if in_app_root?
+            self.behavior = :revoke if options[:destroy]
+            self.destination_root = options[:root]
+            execute_runner(:plugin, plugin_file)
+          else
+            say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          end
+        end
+      end
+
+      no_tasks do
+        def list_plugins
           plugins = {}
           uri = URI.parse(PLUGIN_URL)
           http = Net::HTTP.new(uri.host, uri.port)
@@ -42,14 +63,6 @@ module Padrino
           end
           say "Available plugins:", :green
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
-        else # executing the plugin instructions
-          if in_app_root?
-            self.behavior = :revoke if options[:destroy]
-            self.destination_root = options[:root]
-            execute_runner(:plugin, plugin_file)
-          else
-            say "You are not at the root of a Padrino application! (config/boot.rb not found)"
-          end
         end
       end
     end # Plugins

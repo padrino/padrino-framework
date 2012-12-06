@@ -1,5 +1,5 @@
-module Mail #:nodoc:
-  class Message #:nodoc:
+module Mail # @private
+  class Message # @private
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
     attr_reader :template_cache
@@ -16,7 +16,6 @@ module Mail #:nodoc:
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
-
       # Run the original initialize
       initialize_without_app(*args, &block)
     end
@@ -25,8 +24,7 @@ module Mail #:nodoc:
     ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
     #
-    # ==== Examples
-    #
+    # @example
     #   # This add a email plain part if a template called bar.plain.* is found
     #   # and a html part if a template called bar.html.* is found
     #   email do
@@ -50,8 +48,7 @@ module Mail #:nodoc:
     # html_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
-    # ==== Examples
-    #
+    # @example
     #  text_part "Some text"
     #  text_part { render('multipart/basic.text') }
     #
@@ -69,8 +66,7 @@ module Mail #:nodoc:
     # text_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
-    # ==== Examples
-    #
+    # @example
     #  html_part "Some <b>Html</b> text"
     #  html_part { render('multipart/basic.html') }
     #
@@ -86,8 +82,7 @@ module Mail #:nodoc:
     ##
     # Allows you to add a part in block form to an existing mail message object
     #
-    # ==== Examples
-    #
+    # @example
     #  mail = Mail.new do
     #    part :content_type => "multipart/alternative", :content_disposition => "inline" do |p|
     #      p.part :content_type => "text/plain", :body => "test text\nline #2"
@@ -118,7 +113,6 @@ module Mail #:nodoc:
     def settings
       self.class
     end
-    alias :options :settings
 
     ##
     # Sets the message defined template path to the given view path
@@ -177,11 +171,29 @@ module Mail #:nodoc:
     end
 
     ##
+    # Return the default encoding
+    #
+    def self.default_encoding
+      "utf-8"
+    end
+
+    ##
     # Modify the default attributes for this message (if not explicitly specified)
     #
     def defaults=(attributes)
       @_defaults = attributes
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
+    end
+
+    ##
+    # Check if we can log
+    #
+    def self.logging?
+      @_logging
+    end
+
+    def self.logging=(value)
+      @_logging = value
     end
 
     # Shortcut for delivery_method with smarter smtp overwrites
@@ -221,7 +233,7 @@ module Mail #:nodoc:
           part do |p|
             p.content_type(format)
             p.send(:render, engine, data, options, locals, &block)
-            add_multipart_alternate_header unless html_part.blank?
+            add_multipart_alternate_header if html_part.present? || provides.include?(:html)
           end
         end
         # Setup the body if we don't have provides

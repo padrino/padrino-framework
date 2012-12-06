@@ -2,6 +2,9 @@ require 'openssl'
 
 module Padrino
   module Admin
+    ##
+    # Common utility methods used within the admin application.
+    #
     module Utils
       ##
       # This util it's used for encrypt/decrypt password.
@@ -26,7 +29,7 @@ module Padrino
         end
 
       private
-        def build_cipher(type, password) #:nodoc:
+        def build_cipher(type, password) # @private
           cipher = OpenSSL::Cipher::Cipher.new("DES-EDE3-CBC").send(type)
           cipher.pkcs5_keyivgen(password)
           cipher

@@ -1,7 +1,7 @@
 SEQUEL = (<<-SEQUEL) unless defined?(SEQUEL)
 Sequel::Model.plugin(:schema)
 Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
-DB = case Padrino.env
+Sequel::Model.db = case Padrino.env
   when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
   when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
   when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
@@ -13,11 +13,11 @@ def setup_orm
   db = @app_name.underscore
   require_dependencies 'sequel'
   require_dependencies case options[:adapter]
-  when 'mysql'
-    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
-    sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
-    sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{db}_test\"")
-    'mysql'
+  when 'mysql', 'mysql2'
+    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"#{options[:adapter]}://localhost/#{db}_development\"")
+    sequel.gsub!(/!DB_PRODUCTION!/, "\"#{options[:adapter]}://localhost/#{db}_production\"")
+    sequel.gsub!(/!DB_TEST!/,"\"#{options[:adapter]}://localhost/#{db}_test\"")
+    options[:adapter]
   when 'postgres'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"postgres://localhost/#{db}_production\"")
@@ -27,10 +27,9 @@ def setup_orm
     sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_development.db\")")
     sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_production.db\")")
     sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_test.db\")")
-    'sqlite3-ruby'
+    'sqlite3'
   end
   create_file("config/database.rb", sequel)
-  empty_directory('app/models')
   empty_directory('db/migrate')
 end
 
@@ -43,17 +42,17 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   create_file(model_path, model_contents)
 end
 
 SQ_MIGRATION = (<<-MIGRATION) unless defined?(SQ_MIGRATION)
-class !FILECLASS! < Sequel::Migration
-  def up
+Sequel.migration do
+  up do
     !UP!
   end
 
-  def down
+  down do
     !DOWN!
   end
 end
@@ -72,7 +71,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-         :column_format => Proc.new { |field, kind| "#{kind.camelize} :#{field}" },
+         :column_format => Proc.new { |field, kind| "#{kind.underscore.camelize} :#{field}" },
          :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
 end
 
@@ -85,7 +84,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.camelize}"  },
+    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
     :remove => Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end

@@ -1,7 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'i18n'
 
-class TestRendering < Test::Unit::TestCase
+describe "Rendering" do
+  def setup
+    Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+  end
+
   def teardown
     remove_views
   end
@@ -96,13 +101,15 @@ class TestRendering < Test::Unit::TestCase
     end
 
     should 'by default use html file when no other is given' do
-      create_layout :foo, "html file", :format => :html
+      create_layout :baz, "html file", :format => :html
 
       mock_app do
-        get('/content_type_test', :provides => [:html, :xml]) { render :foo }
+        get('/content_type_test', :provides => [:html, :xml]) { render :baz }
       end
 
       get "/content_type_test"
+      assert_equal "html file", body
+      get "/content_type_test.html"
       assert_equal "html file", body
       get "/content_type_test.xml"
       assert_equal "html file", body
@@ -120,16 +127,17 @@ class TestRendering < Test::Unit::TestCase
 
       get "/default_rendering_test"
       assert_equal "html file", body
-      assert_raise Padrino::Rendering::TemplateNotFound do
+      assert_raises Padrino::Rendering::TemplateNotFound do
         get "/default_rendering_test.xml"
       end
 
-      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge(@save)
+      Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge!(@save)
     end
 
     should 'use correct layout with each controller' do
       create_layout :foo, "foo layout at <%= yield %>"
       create_layout :bar, "bar layout at <%= yield %>"
+      create_layout :baz, "baz layout at <%= yield %>"
       create_layout :application, "default layout at <%= yield %>"
       mock_app do
         get("/"){ render :erb, "application" }
@@ -141,6 +149,10 @@ class TestRendering < Test::Unit::TestCase
           layout :bar
           get("/"){ render :erb, "bar" }
         end
+        controller :baz do
+          layout :baz
+          get("/"){ render :erb, "baz", :layout => true }
+        end
         controller :none do
           get("/") { render :erb, "none" }
           get("/with_foo_layout")  { render :erb, "none with layout", :layout => :foo }
@@ -150,6 +162,8 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "foo layout at foo", body
       get "/bar"
       assert_equal "bar layout at bar", body
+      get "/baz"
+      assert_equal "baz layout at baz", body
       get "/none"
       assert_equal "default layout at none", body
       get "/none/with_foo_layout"
@@ -159,7 +173,63 @@ class TestRendering < Test::Unit::TestCase
     end
   end
 
+  should 'solve layout in layouts paths' do
+    create_layout :foo, "foo layout <%= yield %>"
+    create_layout :"layouts/bar", "bar layout <%= yield %>"
+    mock_app do
+      get("/") { render :erb, "none" }
+      get("/foo") { render :erb, "foo", :layout => :foo }
+      get("/bar") { render :erb, "bar", :layout => :bar }
+    end
+    get "/"
+    assert_equal "none", body
+    get "/foo"
+    assert_equal "foo layout foo", body
+    get "/bar"
+    assert_equal "bar layout bar", body
+  end
+
+  should 'render correctly if layout was not found or not exist' do
+    create_layout :application, "application layout for <%= yield %>"
+    create_view :foo, "index", :format => :html
+    create_view :foo, "xml.rss", :format => :rss
+    mock_app do
+      get("/foo", :provides => [:html, :rss]) { render('foo') }
+      get("/baz", :provides => :js) { render(:erb, 'baz') }
+      get("/bar") { render :haml, "haml" }
+    end
+    get "/foo"
+    assert_equal "application layout for index", body
+    get "/foo.rss"
+    assert_equal "<rss/>", body.chomp
+    get "/baz.js"
+    assert_equal "baz", body
+    get "/bar"
+    assert_equal "haml", body.chomp
+  end
+
   context 'for application render functionality' do
+
+    should "work properly with logging and missing layout" do
+      create_view :index, "<%= foo %>"
+      mock_app do
+        enable :logging
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "bar", body
+    end
+
+    should "work properly with logging and layout" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        enable :logging
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
 
     should 'be compatible with sinatra render' do
       mock_app do
@@ -167,6 +237,36 @@ class TestRendering < Test::Unit::TestCase
       end
       get "/"
       assert_equal "3", body
+    end
+
+    should "support passing locals into render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
+    should "support passing locals into sinatra render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render :erb, :index, { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
+    end
+
+    should "support passing locals into special nil engine render" do
+      create_layout :application, "layout <%= yield %>"
+      create_view :index, "<%= foo %>"
+      mock_app do
+        get("/") { render nil, :index, { :layout => true }, { :foo => "bar" } }
+      end
+      get "/"
+      assert_equal "layout bar", body
     end
 
     should 'be compatible with sinatra views' do
@@ -303,7 +403,7 @@ class TestRendering < Test::Unit::TestCase
       assert_equal "Im Italian Js", body
       I18n.locale = :en
       get "/foo.pk"
-      assert_equal 404, status
+      assert_equal 405, status
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -345,7 +445,7 @@ class TestRendering < Test::Unit::TestCase
       get "/bar.json"
       assert_equal "Im a json", body
       get "/bar.pk"
-      assert_equal 404, status
+      assert_equal 405, status
     end
 
     should 'renders erb with blocks' do
@@ -363,6 +463,24 @@ class TestRendering < Test::Unit::TestCase
       get '/'
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body
+    end
+
+    should 'renders hashes and arrays as json' do
+      mock_app do
+        get '/hash' do
+          render({:a => 1})
+        end
+
+        get '/array' do
+          render [:a, 1, :b, 2]
+        end
+      end
+      get '/hash'
+      assert ok?
+      assert_equal '{"a":1}', body
+      get '/array'
+      assert ok?
+      assert_equal '["a",1,"b",2]', body
     end
   end
 end

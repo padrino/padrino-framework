@@ -10,8 +10,8 @@ DM = (<<-DM) unless defined?(DM)
 # DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "development.db"))
 #
 
-
 DataMapper.logger = logger
+DataMapper::Property::String.length(255)
 
 case Padrino.env
   when :development then DataMapper.setup(:default, !DB_DEVELOPMENT!)
@@ -23,9 +23,17 @@ DM
 def setup_orm
   dm = DM
   db = @app_name.underscore
-  require_dependencies 'data_mapper'
+  %w(
+    dm-core
+    dm-types
+    dm-aggregates
+    dm-constraints
+    dm-migrations
+    dm-timestamps
+    dm-validations
+  ).each { |dep| require_dependencies dep }
   require_dependencies case options[:adapter]
-    when 'mysql'
+    when 'mysql', 'mysql2'
       dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{db}_development\"")
       dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://root@localhost/#{db}_production\"")
       dm.gsub!(/!DB_TEST!/,"\"mysql://root@localhost/#{db}_test\"")
@@ -43,7 +51,6 @@ def setup_orm
   end
 
   create_file("config/database.rb", dm)
-  empty_directory('app/models')
   insert_hook("DataMapper.finalize", :after_load)
 end
 
@@ -60,10 +67,10 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.camelize)
-  field_tuples = options[:fields].collect { |value| value.split(":") }
-  field_tuples.collect! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
-  column_declarations = field_tuples.collect { |field, kind|"property :#{field}, #{kind.camelize}" }.join("\n  ")
+  model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
+  column_declarations = field_tuples.map { |field, kind|"property :#{field}, #{kind.underscore.camelize}" }.join("\n  ")
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
 end
@@ -82,7 +89,7 @@ MIGRATION
 
 DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
-  column :id, DataMapper::Property::Integer, :serial => true
+  column :id, Integer, :serial => true
   !FIELDS!
 end
 MIGRATION
@@ -93,7 +100,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}" },
+       :column_format => Proc.new { |field, kind| "column :#{field}, #{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
@@ -106,7 +113,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, DataMapper::Property::#{kind.classify}" },
+    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
     :remove => Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end

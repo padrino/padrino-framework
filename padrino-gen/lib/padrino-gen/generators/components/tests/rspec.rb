@@ -31,20 +31,23 @@ TEST
 RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
 require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = "./spec/**/*_spec.rb"
-  # Put spec opts in a file named .rspec in root
+spec_tasks = Dir['spec/*/'].map { |d| File.basename(d) }
+
+spec_tasks.each do |folder|
+  RSpec::Core::RakeTask.new("spec:\#{folder}") do |t|
+    t.pattern = "./spec/\#{folder}/**/*_spec.rb"
+    t.rspec_opts = %w(-fs --color)
+  end
 end
+
+desc "Run complete application spec suite"
+task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
 TEST
 
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
-describe "!NAME! Model" do
-  let(:!DNAME!) { !NAME!.new }
-  it 'can be created' do
-    !DNAME!.should_not be_nil
-  end
+describe !NAME! do
 end
 TEST
 
@@ -57,11 +60,13 @@ end
 
 # Generates a controller test given the controllers name
 def generate_controller_test(name)
-  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.camelize)
-  create_file destination_root("spec/controllers/#{name.to_s.underscore}_controller_spec.rb"), rspec_contents, :skip => true
+  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
+  create_file destination_root(controller_spec_path), rspec_contents, :skip => true
 end
 
 def generate_model_test(name)
-  rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  create_file destination_root("spec/models/#{name.to_s.underscore}_spec.rb"), rspec_contents, :skip => true
+  rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
+  model_spec_path = File.join('spec',options[:app],'models',"#{name.to_s.underscore}_spec.rb")
+  create_file destination_root(model_spec_path), rspec_contents, :skip => true
 end

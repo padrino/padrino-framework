@@ -1,6 +1,8 @@
 module Padrino
   module Generators
-
+    ##
+    # Defines the generator for creating a new admin page.
+    #
     class AdminPage < Thor::Group
       attr_accessor :default_orm
 
@@ -9,6 +11,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin_page [model]"; end
 
       # Include related modules
@@ -28,12 +31,11 @@ module Padrino
       # Create controller for admin
       def create_controller
         self.destination_root = options[:root]
+        self.source_paths.unshift Padrino.root("vendor/padrino-admin/generators")
         if in_app_root?
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
             self.behavior = :revoke if options[:destroy]
-            ext = fetch_component_choice(:renderer)
-
             empty_directory destination_root("/admin/views/#{@orm.name_plural}")
 
             template "templates/page/controller.rb.tt",       destination_root("/admin/controllers/#{@orm.name_plural}.rb")
@@ -42,7 +44,7 @@ module Padrino
             template "templates/#{ext}/page/index.#{ext}.tt", destination_root("/admin/views/#{@orm.name_plural}/index.#{ext}")
             template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("/admin/views/#{@orm.name_plural}/new.#{ext}")
 
-            add_project_module(@orm.name_plural) unless options[:destroy]
+            options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end
         else
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"

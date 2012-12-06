@@ -14,11 +14,11 @@ end
 
 SimpleDemo.controllers do
   get "/" do
-    'The magick number is: 39!' # Change only the number!!!
+    'The magick number is: 2767356926488785838763860464013972991031534522105386787489885890443740254365!' # Change only the number!!!
   end
 
   get "/rand" do
-    rand(99).to_s
+    rand(2 ** 256).to_s
   end
 end
 

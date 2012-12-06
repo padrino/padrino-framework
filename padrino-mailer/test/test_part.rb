@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestPart < Test::Unit::TestCase
+describe "Part" do
 
   context "the part" do
     should "use correctly parts" do
@@ -29,7 +29,7 @@ class TestPart < Test::Unit::TestCase
       assert_equal :plain, message.parts[0].content_type
       assert_equal "plain text", message.parts[0].body.decoded
       assert_equal :html, message.parts[1].content_type
-      assert_equal "This is a foo message in mailers/sample dir", message.parts[1].body.decoded
+      assert_equal "This is a foo message in mailers/sample dir", message.parts[1].body.decoded.chomp
       assert_equal :plain, message.parts[2].content_type
       assert_equal "other", message.parts[2].body.decoded
     end
@@ -54,9 +54,9 @@ class TestPart < Test::Unit::TestCase
       assert_not_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded
+      assert_equal "plain text", message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded
+      assert_equal "text html", message.parts[1].body.decoded.chomp
     end
 
     should "works with less explict multipart templates" do
@@ -74,9 +74,9 @@ class TestPart < Test::Unit::TestCase
       assert_not_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded
+      assert_equal "plain text", message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded
+      assert_equal "text html", message.parts[1].body.decoded.chomp
     end
 
     should "works with provides" do
@@ -89,11 +89,12 @@ class TestPart < Test::Unit::TestCase
         render  'multipart/basic'
       end
 
+      assert_match /^multipart\/alternative/, message['content-type'].value
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded
+      assert_equal "plain text", message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded
+      assert_equal "text html", message.parts[1].body.decoded.chomp
     end
 
     # should "provide a way to instantiate a new part as you go down" do

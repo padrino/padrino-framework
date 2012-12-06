@@ -5,29 +5,59 @@ module Padrino
     #
     # You can set the default delivery settings from your app through:
     #
-    #   set :delivery_method, :smtp => {
-    #     :address         => 'smtp.yourserver.com',
-    #     :port            => '25',
-    #     :user_name       => 'user',
-    #     :password        => 'pass',
-    #     :authentication  => :plain # :plain, :login, :cram_md5, no auth by default
-    #     :domain          => "localhost.localdomain" # the HELO domain provided by the client to the server
-    #   }
+    #  set :delivery_method, :smtp => {
+    #    :address         => 'smtp.yourserver.com',
+    #    :port            => '25',
+    #    :user_name       => 'user',
+    #    :password        => 'pass',
+    #    :authentication  => :plain
+    #  }
     #
     # or sendmail:
     #
-    #   set :delivery_method, :sendmail
+    #  set :delivery_method, :sendmail
     #
     # or for tests:
     #
-    #   set :delivery_method, :test
+    #  set :delivery_method, :test
     #
-    # and then all delivered mail will use these settings unless otherwise specified.
+    # and all delivered mail will use these settings unless otherwise specified.
+    #
+    # Define a mailer in your application:
+    #
+    #   # app/mailers/sample_mailer.rb
+    #   MyAppName.mailers :sample do
+    #     defaults :content_type => 'html'
+    #     email :registration do |name, age|
+    #       to      'user@domain.com'
+    #       from    'admin@site.com'
+    #       subject 'Welcome to the site!'
+    #       locals  :name => name
+    #       render  'registration'
+    #     end
+    #   end
+    #
+    # Use the mailer to deliver messages:
+    #
+    #  deliver(:sample, :registration, "Bob", "21")
+    #
+    # For a more detailed guide, please read the {Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide.
     #
     class Base
       attr_accessor :delivery_settings, :app, :mailer_name, :messages
 
-      def initialize(app, name, &block) #:nodoc:
+      # Constructs a +Mailer+ base object with specified options.
+      #
+      # @param [Sinatra::Application] app
+      #   The application tied to this mailer.
+      # @param [Symbol] name
+      #   The name of this mailer.
+      # @param [Proc] block
+      #   The +email+ definitions block.
+      #
+      # @see Padrino::Mailer::Helpers::ClassMethods#mailer
+      # @api private
+      def initialize(app, name, &block) # @private
         @mailer_name = name
         @messages    = {}
         @defaults    = {}
@@ -38,8 +68,12 @@ module Padrino
       ##
       # Defines a mailer object allowing the definition of various email messages that can be delivered
       #
-      # ==== Examples
+      # @param [Symbol] name
+      #   The name of this email message.
+      # @param [Proc] block
+      #   The message definition (i.e subject, to, from, locals).
       #
+      # @example
       #   email :birthday do |name, age|
       #     subject "Happy Birthday!"
       #     to   'john@fake.com'
@@ -48,6 +82,7 @@ module Padrino
       #     render 'birthday'
       #   end
       #
+      # @api public
       def email(name, &block)
         raise "The email '#{name}' is already defined" if self.messages[name].present?
         self.messages[name] = Proc.new { |*attrs|
@@ -62,13 +97,16 @@ module Padrino
 
       # Defines the default attributes for a message in this mailer (including app-wide defaults)
       #
-      # ==== Examples
+      # @param [Hash] attributes
+      #   The hash of message options to use as default.
       #
+      # @example
       #   mailer :alternate do
-      #    defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
-      #    email(:foo) do ... end
+      #     defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
+      #     email(:foo) do; end
       #   end
       #
+      # @api public
       def defaults(attributes=nil)
         if attributes.nil? # Retrieve the default values
           @app.respond_to?(:mailer_defaults) ? @app.mailer_defaults.merge(@defaults) : @defaults

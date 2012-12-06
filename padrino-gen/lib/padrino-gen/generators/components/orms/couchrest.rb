@@ -1,26 +1,35 @@
 COUCHREST = (<<-COUCHREST) unless defined?(COUCHREST)
 case Padrino.env
-  when :development then COUCHDB_NAME = '!NAME!_development'
-  when :production  then COUCHDB_NAME = '!NAME!_production'
-  when :test        then COUCHDB_NAME = '!NAME!_test'
+  when :development then db_name = '!NAME!_development'
+  when :production  then db_name = '!NAME!_production'
+  when :test        then db_name = '!NAME!_test'
 end
-COUCHDB = CouchRest.database!(COUCHDB_NAME)
+
+CouchRest::Model::Base.configure do |conf|
+  conf.model_type_key = 'type' # compatibility with CouchModel 1.1
+  conf.database = CouchRest.database!(db_name)
+  conf.environment = Padrino.env
+  # conf.connection = {
+  #   :protocol => 'http',
+  #   :host     => 'localhost',
+  #   :port     => '5984',
+  #   :prefix   => 'padrino',
+  #   :suffix   => nil,
+  #   :join     => '_',
+  #   :username => nil,
+  #   :password => nil
+  # }
+end
 COUCHREST
 
 def setup_orm
-  require_dependencies 'couchrest'
-  require_dependencies 'couchrest_extended_document'
+  require_dependencies 'couchrest_model', :version => '~>1.1.0'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 CR_MODEL = (<<-MODEL) unless defined?(CR_MODEL)
-class !NAME! < CouchRest::ExtendedDocument
-  include CouchRest::Validation
-
-  use_database COUCHDB
-
+class !NAME! < CouchRest::Model::Base
   unique_id :id
   # property <name>
   !FIELDS!
@@ -30,9 +39,9 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].collect { |value| value.split(":") }
-  column_declarations = field_tuples.collect { |field, kind| "property :#{field}" }.join("\n  ")
-  model_contents = CR_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  column_declarations = field_tuples.map { |field, kind| "property :#{field}" }.join("\n  ")
+  model_contents = CR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
 end

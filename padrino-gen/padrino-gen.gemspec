@@ -1,3 +1,6 @@
+#!/usr/bin/env gem build
+# encoding: utf-8
+
 require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
 Gem::Specification.new do |s|
@@ -8,16 +11,17 @@ Gem::Specification.new do |s|
   s.summary = "Generators for easily creating and building padrino applications"
   s.homepage = "http://www.padrinorb.com"
   s.description = "Generators for easily creating and building padrino applications from the console"
-  s.default_executable = "padrino-gen"
-  s.executables = ["padrino-gen"]
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
+
   s.extra_rdoc_files = Dir["*.rdoc"]
-  s.files = %w(.document .gitignore LICENSE README.rdoc Rakefile padrino-gen.gemspec) + Dir.glob("{bin,lib,test}/**/*")
-  s.rdoc_options = ["--charset=UTF-8"]
-  s.require_path = "lib"
+  s.files         = `git ls-files`.split("\n") | Dir.glob("{lib}/**/*")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
+  s.rdoc_options  = ["--charset=UTF-8"]
+
   s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("bundler", ">= 1.0.2")
-  s.add_dependency("git")
+  s.add_dependency("bundler", "~> 1.0")
 end

@@ -1,6 +1,9 @@
 module Padrino
   module Admin
     module Helpers
+      ##
+      # Common helpers used for authorization within an application.
+      #
       module AuthenticationHelpers
         ##
         # Returns true if +current_account+ is logged and active.
@@ -19,8 +22,7 @@ module Padrino
         ##
         # Override the current_account, you must provide an instance of Account Model
         #
-        # ==== Examples:
-        #
+        # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account=nil)
@@ -51,15 +53,17 @@ module Padrino
         # By default this method is used in Admin Apps.
         #
         def login_required
-          store_location! if store_location
-          return access_denied unless allowed?
+          unless allowed?
+            store_location! if store_location
+            access_denied
+          end
         end
 
         ##
-        # Store in session[:return_to] the env['HTTP_REFERER']
+        # Store in session[:return_to] the env['REQUEST_URI']
         #
         def store_location!
-          session[:return_to] = env['HTTP_REFERER']
+          session[:return_to] = env['REQUEST_URI']
         end
 
         ##
@@ -94,7 +98,13 @@ module Padrino
           end
 
           def login_from_session
-            Account.find_by_id(session[settings.session_id]) if defined?(Account)
+            admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
+          end
+
+          def admin_model_obj
+            @_admin_model_obj ||= settings.admin_model.constantize
+          rescue NameError => e
+            raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
           end
       end # AuthenticationHelpers
     end # Helpers

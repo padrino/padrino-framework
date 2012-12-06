@@ -1,16 +1,9 @@
+require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
-require 'padrino-core/command'
+require 'padrino-gen/command'
+require 'active_support/ordered_hash'
 
 module Padrino
-  ##
-  # This method return the correct location of padrino-gen bin or
-  # exec it using Kernel#system with the given args
-  #
-  def self.bin_gen(*args)
-    @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path("../../bin/padrino-gen", __FILE__)]
-    args.empty? ? @_padrino_gen_bin : system(args.unshift(@_padrino_gen_bin).join(" "))
-  end
-
   ##
   # This module it's used for register generators
   #
@@ -26,13 +19,14 @@ module Padrino
   # Padrino::Generators.load_paths << "custom_generator.rb"
   #
   module Generators
-
+    # Defines the absolute path to the padrino source folder
     DEV_PATH = File.expand_path("../../", File.dirname(__FILE__))
 
     class << self
       ##
       # Here we store our generators paths
       #
+      # @api semipublic
       def load_paths
         @_files ||= []
       end
@@ -40,6 +34,7 @@ module Padrino
       ##
       # Return a ordered list of task with their class
       #
+      # @api semipublic
       def mappings
         @_mappings ||= ActiveSupport::OrderedHash.new
       end
@@ -47,6 +42,17 @@ module Padrino
       ##
       # Gloabl add a new generator class to +padrino-gen+
       #
+      # @param [Symbol] name
+      #   key name for generator mapping
+      # @param [Class] klass
+      #   class of generator
+      #
+      # @return [Hash] generator mappings
+      #
+      # @example
+      #   Padrino::Generators.add_generator(:controller, Controller)
+      #
+      # @api semipublic
       def add_generator(name, klass)
         mappings[name] = klass
       end
@@ -54,6 +60,7 @@ module Padrino
       ##
       # Load Global Actions and Component Actions then all files in +load_path+.
       #
+      # @api private
       def load_components!
         require 'padrino-gen/generators/actions'
         require 'padrino-gen/generators/components/actions'

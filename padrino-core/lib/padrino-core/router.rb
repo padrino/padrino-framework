@@ -11,13 +11,7 @@ module Padrino
   # * Ignore server names (this solve issues with vhost and domain aliases)
   # * Use hosts instead of server name for mappings (this help us with our vhost and doman aliases)
   #
-  # ==== Options
-  #
-  # :to:: The class of application that you want mount
-  # :path:: Map the app to the given path
-  # :host:: Map the app to the given host
-  #
-  # ==== Examples
+  # @example
   #
   #   routes = Padrino::Router.new do
   #     map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
@@ -30,17 +24,33 @@ module Padrino
   #   end
   #   run routes
   #
+  # @api semipublic
   class Router
+
+    # Constructs a new route mapper instance
     def initialize(*mapping, &block)
       @mapping = []
       mapping.each { |m| map(m) }
       instance_eval(&block) if block
     end
 
-    def sort!
-      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
-    end
-
+    ##
+    # Map a route path and host to a specified application.
+    #
+    # @param [Hash] options
+    #  The options to map.
+    # @option options [Sinatra::Application] :to
+    #  The class of the application to mount.
+    # @option options [String] :path ("/")
+    #  The path to map the specified application.
+    # @option options [String] :host
+    #  The host to map the specified application.
+    #
+    # @example
+    #  map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
+    #
+    # @return [Array] The sorted route mappings.
+    # @api semipublic
     def map(options={})
       path = options[:path] || "/"
       host = options[:host]
@@ -57,6 +67,8 @@ module Padrino
       sort!
     end
 
+    # The call handler setup to route a request given the mappings specified.
+    # @api private
     def call(env)
       rPath = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
@@ -74,6 +86,13 @@ module Padrino
             'PATH_INFO'   => rest))
       end
       [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{rPath}"]]
+    end
+
+    private
+
+    # Sorts the mapped routes in consistent order
+    def sort!
+      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
     end
   end # Router
 end # Padrino

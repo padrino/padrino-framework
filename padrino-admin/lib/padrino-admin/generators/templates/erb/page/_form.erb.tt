@@ -1,11 +1,19 @@
+<%%= error_messages_for :<%= @orm.name_singular %>, :header_tag => 'h4', :class =>'hide' %>
+
 <% @orm.column_fields.each do |column| -%>
-<div class="group">
-  <%%= f.label :<%= column[:name] %> %><%%= f.error_message_on :<%= column[:name] %> %>
-  <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => :<%= column[:field_type] %> %>
-  <span class="description">Ex: a simple text</span>
-</div>
+<fieldset class='control-group'>
+  <%%= f.label :<%= column[:name] %>, :class => 'control-label' %>
+  <div class='controls'>
+    <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xxlarge' %>
+    <span class='help-inline'> Ex: a simple text</span>
+  </div>
+</fieldset>
 <% end %>
-<div class="group navform wat-cf">
-  <%%= f.submit pat(:save), :class => :button %>
-  <%%= f.submit pat(:cancel), :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => :button %>
+
+<div class="actions">
+  <%%= f.submit 'Save', :class => 'btn btn-primary' %>
+  &nbsp;
+  <%%= f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue' %>
+  &nbsp;
+  <%%= f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn' %>
 </div>

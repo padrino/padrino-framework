@@ -1,11 +1,341 @@
 = CHANGES
 
+== 0.10.8 (Not Yet Released)
+
+== 0.10.7
+
+* FIX #777 Improve slim template block capturing
+* FIX #807 Fixes reloader class name resolution
+* NEW #813 Added support for activerecord-jdbcmysql-adapter (@rameshpy)
+* FIX #814 Fix options_for_select result in a corner case (@whitequark)
+* FIX #828 Remove explicit tlsmail dependency (@trevor)
+* FIX #829 Adding an options attribute to ProjectModule (@simonc)
+* FIX #780 Respect user defined model name for admin (@joelcuevas)
+* FIX #841 Patched to fix rake use in padrino templates (@jasonm23)
+* NEW #836 Adds a catch all method to the redis cache
+* FIX #856 Make mysql2 alias of mysql when DataMapper is selected
+* FIX #858 Add require ActiveSupport::TimeWithZone class for helpers
+* FIX HTML Change boolean helper attributes to conform to xhtml strict
+* FIX #855 Fix error_message_on for empty array (@sshaw)
+* NEW #853 Adds Swedish localization support (@Lejdborg)
+* NEW #853 Adds Romanian localization support (@relu)
+* FIX #850 Prevent JRuby reloading bug (@dn2k)
+* FIX #846 Fix admin generator to understand model_name (@fnordfish)
+* NEW #845 Add CLI shortcut with just 'c' (@joslinm)
+
+
+== 0.10.6
+
+* FIX #786 reloader issues with routes
+* FIX Lumberjack Logging Compatibility
+* FIX Write cached css into public stylesheets path (@fnordfish)
+* FIX Fixes error with less component (@fnordfish)
+* NEW #787 Support Nested Data Attributes in Tags (@agios)
+* FIX #760 better html5 helper support (@Cirex)
+* NEW #764 adds a few form inputs in helpers (@Cirex)
+* FIX #680 upgrade to activesupport and activerecord 3.2
+* FIX Adds support for minirecord generators
+* FIX Upgrade to latest datamapper
+* FIX #702 Change to new sequel migration syntax (@funny-falcon)
+* FIX #705 incorrect require when using AR with pg gem (@udzura)
+* FIX #724 Use binread for file cache on 1.9.X
+* FIX #729 Added setting to change model name for admin
+* NEW Adds regexp route generation support (@joshbuddy)
+* FIX #720 Set PADRINO_LOG_LEVEL constant by default (@marcosdsanchez)
+* FIX #725 app.app_name is not set error in padrino-cache (@modeverv)
+* FIX #733 Mailer generator now handles hyphens
+* FIX Replace Sinatra quote with Godfather movie reference on server exit (@danishkhan)
+* FIX #743 Correctly parse arguments to padrino binary
+* FIX #745 Cache now stores response and content_type (@sumskyi)
+* FIX #676 Adds support for trinidad web server on jruby
+* FIX #736 Logger refactoring to support other loggers (@skade)
+* NEW Adds alias 'escape_javascript' for 'js_escape_html' method
+* FIX Asset files from absolute paths should not have asset stamps associated
+* FIX Updated stylesheets initializers to respect spaces.
+
+== 0.10.5
+
+* FIX #701 make static script assets work again for generator
+
+== 0.10.4
+
+* FIX #690 adds proper require for sinatra-flash in Gemfile
+* FIX #691 fixes logger error when rendering templates
+* FIX #692 ensure :static_cache_control is properly applied
+* FIX #689 status messages to common padrino logger (@udzura)
+* FIX logger issue when displaying cache logs
+* FIX #694 issue with minitest generator (@runa)
+* NEW Silence YARD undocumented warnings in padrino gems
+
+== 0.10.3
+
+* NEW Upgrade to recently released Sinatra 1.3
+* FIX #679 replaces rack-flash with sinatra-flash
+* NEW #667 Adds mintest testing component to generator
+* FIX #634 Removes less gem dependency for less gen
+* NEW #662 create "content_for?" helper (@mlightner)
+* FIX #669 Fixes YAML locale files to be psych compliant (@skade)
+* NEW Fixes logger to be much cleaner with better formatting
+* FIX issue with generator runner for https templates (@xavierRiley)
+* FIX #669 YML locale files are now psych compliant
+* NEW #658 removes shoulda and switch to minitest (with aliases)
+* NEW #657 Converts RDoc to YARD and improve all docs
+* FIX Document example of Padrino::Admin::AccessControl (@benjaminoakes)
+* NEW Adds Latvian locale translation (@ugisozols)
+* FIX #686 Halt status with code responds as expected
+
+== 0.10.2
+
+* NEW support for TravisCI with build configurations
+* NEW support of mysql2 when using sequel as adapter (@rafaelss)
+* NEW #636 print which views are called in log when in development mode (@minikomi)
+* NEW support of ActiveRecord 3.1 and ActiveSupport 3.1
+* NEW yard doc available {here}[http://www.padrinorb.com/api/index.html]
+* FIX #624 potential issue with libxml-ruby (@farcaller)
+* FIX #618 allow to map routes using "index" reserved word
+* FIX #633 RACK_ENV now is respected also using bundled server
+* FIX rendering error for partials when they start with a forward slash (@philly-mac)
+* FIX all our sources files now are vim friendly
+* FIX preserve the original options when resolving a template (@Xylakant)
+* FIX bad path in shoulda test generator (@futurechimp)
+* FIX require path in model tests to generate correctly if specifing app
+* FIX #647 allow to override view errors
+* FIX #646 compat with ActiveRecord >3.0.10
+* FIX #381 escape "<> from tag helpers values
+* FIX #639 prevent XSS from admin login (@eikes)
+* FIX #620 render :json => obj now set content_type to 'application/json;charset=utf-8'
+* FIX #575 when using html parts now mailer content type is 'multipart/alternative'
+* FIX #631 reloading futzing with the query parameters (Hollin Wilkins & Dave Willett @ TrueCar in San Francisco)
+* FIX recognize_path now is compatible with http_router > 0.10
+
+== 0.10.1
+
+* Added a Mongo store for padrino-cache [Thanks to aliem]
+* Adds restful support for parent controller declaration
+* Before filters are called regardless of matching
+* Fix env['padrino.instance'] where create a loop and is too long to show in Padrino::ShowExceptions.
+* Compat with Slim 1.0, Compat with Ruby 1.9.3. FIX #596
+* Translation fixes for IT, CS, DE, NL, and more with locale tests
+* Fixes for FR, CN and RU locales [Thanks to TweeKane]
+* Compatibility with Bundler > 1.0 in Gemfile
+* Admin generator properly destroys access control on removal
+* Fixes admin generation when used with namespaced models
+* Allow logger to be configured before load [Thanks to skade]
+* Fix an error message [Thanks mariozig]
+* Fix doc bug in logger [Thanks Xylakant]
+* Adds host parameter to DM Postgresql Adapter [Thanks to Aigeruth]
+* Cleanup models folder in apps that is no longer used by default
+
+== 0.10.0
+
+* Fix `padrino s` shortcut to accept options
+* Fix Padrino::Application#run! (now correctly accepts options)
+* Fix Padrino::Server (now has correct defaults options)
+* Fix Padrino::Reloader with strange constants or paths #565
+* Fix Padrino::Reloader reloading also $LOADED_FEATURES deps
+* Fix Double loading of boot.rb in rake tasks. #560
+* Fix an issue with haml rendering on rubinius
+* Fix our tests to meets ruby < 1.9 needs
+* Fix issue #556 now we resolve correctly prerequisites of your app
+* Enhancement for #556 now is possible to add custom prerequisites to our app
+* Change move Padrino.current_controller in public apis
+* Enhancement, now Padrino::Reloader works without ActiveSupport::Dependency or with it disabled #567 [Thanks Bernerdschaefer]
+* Cleanup padrino-core dependencies now we have less less ActiveSupport dependencies, we are very very thin finally!
+* Fix bundler gem dependency mismatch #553
+* Fix command issue with padrino g or padrino gen on rubinius #531
+* Fix issue #562, now is no more necessary "bundle exec anything"
+* Remove Padrino::Rendering from autoloading (manually must be loaded)
+* New Enhancement to controller filters
+* Add option to specify model generation of Account from padrino-admin
+* Generates models by default into `/models`
+* Controllers accept :conditions option [Thanks to Bernerdschaefer]
+* Added Hungarian translation [Thanks to Kormány Zsolt]
+* Added Riak support through Ripple
+* Updated couchrest_model dependency to ~>1.1.0
+* Fix issue #571, don't handle Gemfile if we are outside a Padrino project
+* Fix issue #569, prevent a little problem with DM and string length
+* Require only individual gems of DataMapper to use a thin environment and prevent to load old gems like json 1.4
+* Support for priority route ordering in controllers
+
+== 0.9.29
+
+* Cleanup SupportLite
+* Cleanup Reloader
+* Cleanup Padrino::Application
+* Cleanup Gemfile generation
+* Cleanup Reloader
+* Cleanup Application Server
+* Improved Reloader
+* Decoupled Reloader, Loader, Application
+* Fixed Reloader in some extreme scenarios
+* Make methods of Padrino::Application that act as Padrino Core
+* Fixed error logging
+* Added Padrino.clear, useful to clean a Padrino Enviroment
+* Improved granularity of our reloader locking and prevent reloading of unnecessary deps
+* Use Sequel::Model.db= instead of DB= because is more simple change on the fly connections
+* Added compatibility with CouchRest::Model 1.1+
+* Cleanup support lite and improved compatiblity with jruby
+* Expose Padrino::Application.load_paths
+* Added a new method to load custom app dependencies
+* Added a new format helper 'truncate_words' [Thanks cearls!]
+* Fixes support for local vars passing in render
+* Rake 0.9 and 0.8.7 compat
+* Use Rack::Flash as Rails do
+* Fix a deprecation with model_name.human
+
+== 0.9.28
+
+* Fixed couchrest Account Model
+* Generate SystemTimer for Mongoid only if Ruby 1.8 [Thanks to RoryO]
+* Generate SystemTimer for Mongomapper only if Ruby 1.8
+* Add `padrino s` as alias for `padrino start`
+* Fixed Gemfile for couchrest
+* Updated Gemfile for mongoid
+* Fix a possible loop in require_dependencies
+* Added padrino rake gen useful to create a Rakefile to handle for example with heroku
+
+== 0.9.27
+
+* Use sass gem, because now is separated from haml
+* Escape regex in our reloader
+* Use CouchRest::Model instead of CouchRest::ExtendedDocument [Thanks Burgestrand!]
+* Fixes issues with offline generation of js (from padrino-static)
+* Fixes YAML parsing bug by using syck
+* Use sinatra 1.2.5
+* Make logger sinatra 1.3 compat
+* Use new sqlite3 gem in generated projects
+* Removed padrino_logging and use instead simple logging to avoid conflicts
+* By default use logging only on development
+* Uses raise_errors, dump_errors, show_exceptions as Sinatra::Base do
+* Refactored Padrino::Application
+* Added a global configuration in config/apps.rb used by each Padrino Applicaitons
+* Moved session_secret in global configuration project
+* Use SecureRandom to generate session secret
+* Support 'partial' in Sinatra with explicit engine
+* Added recognize_path method ex: recognize_path(request.referrer) => [:controller_action, { :id => 1 }]
+* Added current_path method ex: current_path(:merge => :param) => "/current/1234/merge/param"
+* Support for jruby-memcache-client/memcache-client
+* Added MongoMapper task for drop database
+
+== 0.9.26
+
+* Padrino::Logger compatible with Rack::CommonLogger
+* Added session_path and ability to use custom Rack::Session::Cookie options
+* Fixed dependency loader
+* Fixed mounting sub-apps
+* Fixed shared sessions
+
+== 0.9.25
+
+* Fixes to allow flexible libraries in padrino-cache
+* Allow select tag to take a range of options [Thanks activestylus]
+* Allow grouped options in a select_tag [Thanks activestylus]
+* Use MongoMapper official gem
+* Fixes ERBHandler type detection
+* Fixes Routes with globs that when something is after the glob i.e. get :show, :map => '/pictures/*path.html'
+* Updated http_router to ~> 0.7.0
+* Completed Padrino Cache Doc [Thanks to Onethirtyfive]
+* Added a global Padrino.cache option
+* Padrino-Cache now is able to store ruby objects
+* Fix expire_in on redis store in Padrino Cache
+* Added Ajax Helpers
+* Use https://github.com/padrino/padrino-static for download js and ujs adapters (if no internet connection use a local copy)
+* Added session_secret task generator and as default in our app templates
+* Correctly work with nested parameters sent to url [Thanks to Funny-falcon]
+* Fix ajax request detection for dataType: 'application/javascript'
+* Removed lib from excluded list of our reloader
+* Added in our logs app name space for urls and layouts
+* Preserve spaces for text_area using admin/haml
+* Prevent using missing rendering engines on admin allowing user to use a different way
+* Fixed AbstractFormBuilder class scope name [Thanks to Funny-falcon]
+* Changed layout of our logger
+* Logs for cache GET and SET
+* Caching instructions in main app template
+* Fixes NotFound Sinatra Errors
+* Require correct rspec/exceptions in cucumber.
+* Stylesheet_link_tag and javascript_include_tag should allow array inputs for sources (instead of argument array)
+* More space for edit/delete actions in the Admin Section
+* Added a nice confirm dialog to prevent mistakes in the Admin Section
+* Added the correct DELETE method to the logout in the Admin Section
+* Added setting log_static setting to Padrino.logger [Thanks to railsjedi]
+* Added stylesheet_link_tag and javascript_include_tag to allow array input for sources [Thanks to railsjedi]
+* Added ruby-debug19 to Gemfile [Thanks to railsjedi]
+* Allow simple_format to use a custom tag instead the only p tag
+* Fix collision with AS load_dependency
+* Fix File Store when cache dir is deleted after init
+* Added empty rows and cols to text_area tag to be w3c
+* Update Sinatra to 1.2.3 and HttpRouter to 0.6.9
+* Added cache_key inside route for a simple/fast expiring caching
+* Updated plugin git command to use Grit instead
+* Removed ./bundle/environment stuff
+* Rubinius compat [Thx to Rakaur]
+* Fixed setting custom views path
+* Removed deprecated dom helpers
+* Completed support for Slim
+* Adds Slim admin support
+* Do not enforce rack sessions for Rack:Flash
+* Now erubis is the standard for the erb templates like in tilt/sinatra
+* Fix stop daemonized padrino from non standard path
+* Fix app path when generating sub-applications
+* Use sass gem because now is separated from haml
+* Allow combining different templates (ex: render a partial built with haml from a slim/erubis view)
+* Use sessions for uri_root
+* Fix padrino admin page title
+
+== 0.9.24
+
+* Delayed
+
+== 0.9.23
+
+* Allow 406 on (.format) urls via a flag
+* Adds method_override flag to Padrino by default
+* Routing compatibility with the Sinatra 1.2 url method
+* Padrino now requires to ~> sinatra 1.2.0
+
+== 0.9.22
+
+* Fix no more password encryption when password is blank
+* Fix mongoid dependency
+* Fix admin mongomapper template to encrypt password
+* Allow disabling of Padrino::Logger via :padrino_logging
+* Use Sinatra::Base instead of Sinatra::Application
+* Added Japanese Translations [Thanks to udzura]
+* Set status to 406 on non-provided ACCEPTS
+* Returns first provided mime-type on ACCEPT = */*
+* Assume */* if no ACCEPT header is given
+
+== 0.9.21
+
+* Support of regex captures in routes
+* Fixed routing issues with :index
+* Creation of empty directories for images/javascripts/stylesheets/tmp
+* Updated mongomapper adapter to use rails3 branch
+* Removed snowtag
+* Updated datamapper gen to store correctly passwords
+* Added Slim template to Padrino Admin [Thanks to Matthew Winter]
+* Added Traditional Chinese support(zh_tw) [Thanks to ayamomiji]
+* Include padrino-cache gem as part of standard install
+* Added Rake Task for Mongoid
+* Ensure project name are valid
+* Removed erubis support
+* Refactored the output handlers for helpers
+* Improves select_tag 'selected' option
+* Basic nested object form support
+* Updated mongoid adapter to use 2.0.0.beta.20
+* Remove legacy bundler setup from config/boot.rb
+* Change to routes to fix param assembly order
+* Fixed optional parameter routing test
+* Fixes error_message_on object name bug [Thanks craigp]
+* Removed default index page
+* Fetch Layout Path in app/views and app/views/layouts with :layout => :foo
+* Fixes issue with layout and format resolution in render
+* Added Simplified Chinese support(zh_cn)
+
 == 0.9.20
 
-* Now before_load hooks are called before each *require_dependency*
 * Removed Rspec1 generator
 * Upgraded router to 0.5.0
-* Merged shared_views [Thanks to Wprater]
 * Allow adding middlewares in front of the router
 * Fixed DataMapper Admin Adapter and Encrypt Passwords
 * Changed default ActiveRecord config with :reconnect => true
@@ -15,7 +345,16 @@
 * Removed mount_core
 * Fix camelized model names in model generation
 * Added slim renderer component
-* Now the content format can be set explicitly in a param [Thanks to qzio]
+* Now the content format can be set explicitly in a param [Thanks to Qzio]
+* Fixed I18n load_path [Thanks to Pirj]
+* Updated column proprieties for DataMapper
+* Now Mounter accept namespaced applications [Thanks to Mcmire]
+* Updated ar:translate to be more compat with AS 3.+
+* remove strict_format in layouts to work with Sinatra as a standalone
+* Change Padrino Admin to generate model in own app, not default generated app.
+* Sinatra 1.1.2 Compat
+* Test compatibility with Sinatra 1.1.0 and 1.1.2
+* Fixed spaces in asset_path
 
 == 0.9.19
 

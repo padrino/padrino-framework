@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/padrino_app/app')
 
-class TestPadrinoMailer < Test::Unit::TestCase
+describe "PadrinoMailer" do
 
   context 'for mail delivery in sample sinatra application' do
     setup { @app = SinatraApp }
@@ -82,7 +82,7 @@ class TestPadrinoMailer < Test::Unit::TestCase
       assert_email_sent(:to => 'john@apple.com', :from => 'joe@smith.com',
                         :subject => 'Test Email', :body => 'Test Body', :delivery_method => @app.delivery_method)
     end
-    
+
     should_eventually 'be able to deliver a basic email using Padrino::Helpers' do
       post '/deliver/helper'
       assert_equal 'mail delivered', body
@@ -90,6 +90,6 @@ class TestPadrinoMailer < Test::Unit::TestCase
                         :content_type => 'text/html', :delivery_method => @app.delivery_method,
                         :subject => "Welcome Helper!", :body => "<a href=\"#\">jim</a>")
     end
-    
+
   end
 end

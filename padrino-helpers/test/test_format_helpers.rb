@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
-class TestFormatHelpers < Test::Unit::TestCase
+describe "FormatHelpers" do
   def app
     MarkupDemo.tap { |app| app.set :environment, :test }
   end
@@ -24,8 +24,25 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
 
     should "support defining a class for the paragraphs" do
-      actual_text = simple_format("Look ma! A class!", :class => 'description')
-      assert_equal "<p class=\"description\">Look ma! A class!</p>", actual_text
+      actual_text = simple_format("Look me! A class!", :class => 'description')
+      assert_equal "<p class=\"description\">Look me! A class!</p>", actual_text
+    end
+
+    context 'wrapped in a custom tag' do
+      should "format simple text into html format" do
+        actual_text = simple_format("Here is some basic text...\n...with a line break.", :tag => :div)
+        assert_equal "<div>Here is some basic text...\n<br />...with a line break.</div>", actual_text
+      end
+
+      should "format more text into html format" do
+        actual_text = simple_format("We want to put a paragraph...\n\n...right there.", :tag => :div)
+        assert_equal "<div>We want to put a paragraph...</div>\n\n<div>...right there.</div>", actual_text
+      end
+
+      should "support defining a class for the paragraphs" do
+        actual_text = simple_format("Look me! A class!", :class => 'description', :tag => :div)
+        assert_equal "<div class=\"description\">Look me! A class!</div>", actual_text
+      end
     end
   end
 
@@ -92,20 +109,35 @@ class TestFormatHelpers < Test::Unit::TestCase
     end
   end
 
+  context 'for #truncate_words method' do
+    should "support default truncation" do
+      actual_text = truncate_words("Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.")
+      assert_equal "Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...", actual_text
+    end
+    should "support specifying length" do
+      actual_text = truncate_words("Once upon a time in a world far far away", :length => 8)
+      assert_equal "Once upon a time in a world far...", actual_text
+    end
+    should "support specifying omission text" do
+      actual_text = truncate_words("And they found that many people were sleeping better.", :length => 4, :omission => "(clipped)")
+      assert_equal "And they found that(clipped)", actual_text
+    end
+  end
+
   context 'for #h and #h! method' do
     should "escape the simple html" do
-      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h('<h1>hello</h1>')
-      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', escape_html('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', escape_html('<h1>hello</h1>')
     end
     should "escape all brackets, quotes and ampersands" do
-      assert_equal '&lt;h1&gt;&lt;&gt;&quot;&amp;demo&amp;&quot;&lt;&gt;&lt;/h1&gt;', h('<h1><>"&demo&"<></h1>')
+      assert_equal '&lt;h1&gt;&lt;&gt;&quot;&amp;demo&amp;&quot;&lt;&gt;&lt;&#x2F;h1&gt;', h('<h1><>"&demo&"<></h1>')
     end
     should "return default text if text is empty" do
       assert_equal 'default', h!("", "default")
       assert_equal '&nbsp;', h!("")
     end
     should "return text escaped if not empty" do
-      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h!('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h!('<h1>hello</h1>')
     end
   end
 

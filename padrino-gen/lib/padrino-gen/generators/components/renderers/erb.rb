@@ -1,3 +1,3 @@
 def setup_renderer
-  # Nothing to do
+  require_dependencies 'erubis', :version => "~> 2.7.0"
 end

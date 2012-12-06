@@ -9,10 +9,10 @@ end
 MONGO
 
 def setup_orm
-  require_dependencies 'bson_ext', :require => 'mongo'
   require_dependencies 'mongo_mapper'
+  require_dependencies 'bson_ext', :require => 'mongo'
+  require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
   create_file("config/database.rb", MONGO.gsub(/!NAME!/, @app_name.underscore))
-  empty_directory('app/models')
 end
 
 MM_MODEL = (<<-MODEL) unless defined?(MM_MODEL)
@@ -28,9 +28,9 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].collect { |value| value.split(":") }
-  column_declarations = field_tuples.collect { |field, kind| "key :#{field}, #{kind.camelize}" }.join("\n  ")
-  model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.camelize)
+  field_tuples = options[:fields].map { |value| value.split(":") }
+  column_declarations = field_tuples.map { |field, kind| "key :#{field}, #{kind.underscore.camelize}" }.join("\n  ")
+  model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
 end

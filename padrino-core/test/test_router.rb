@@ -1,7 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/simple')
 
-class TestRouter < Test::Unit::TestCase
+describe "Router" do
+
+  def setup
+    Padrino.clear!
+  end
 
   should "dispatch paths correctly" do
     app = lambda { |env|
@@ -104,10 +108,9 @@ class TestRouter < Test::Unit::TestCase
   end
 
   should "works with padrino core applications" do
-    Padrino.mounted_apps.clear
     Padrino.mount("simple_demo").host("padrino.org")
-    assert_equal ["simple_demo"], Padrino.mounted_apps.collect(&:name)
-    assert_equal ["padrino.org"], Padrino.mounted_apps.collect(&:app_host)
+    assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
+    assert_equal ["padrino.org"], Padrino.mounted_apps.map(&:app_host)
 
     res = Rack::MockRequest.new(Padrino.application).get("/")
     assert res.not_found?
@@ -120,7 +123,6 @@ class TestRouter < Test::Unit::TestCase
   end
 
   should "works with padrino applications" do
-    Padrino.mounted_apps.clear
     Padrino.mount("simple_demo").to("/foo").host(/.*\.padrino.org/)
 
     res = Rack::MockRequest.new(Padrino.application).get("/")

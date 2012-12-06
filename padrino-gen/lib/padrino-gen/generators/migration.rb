@@ -1,6 +1,8 @@
 module Padrino
   module Generators
-
+    ##
+    # Responsible for generating migration files for the appropriate ORM component.
+    #
     class Migration < Thor::Group
 
       # Add this generator to our padrino-gen
@@ -8,6 +10,7 @@ module Padrino
 
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen migration [name] [fields]"; end
 
       # Include related modules
@@ -17,14 +20,15 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen migration generates a new migration file"
 
-      argument :name, :desc => "The name of your padrino migration"
-      argument :columns, :desc => "The columns for the migration", :type => :array, :default => []
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      argument :name, :desc => 'The name of your padrino migration'
+      argument :columns, :desc => 'The columns for the migration', :type => :array, :default => []
+      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
       # Show help if no argv given
       require_arguments!
 
+      # Creates the migration file within a Padrino project.
       def create_migration
         self.destination_root = options[:root]
         if in_app_root?
@@ -32,11 +36,11 @@ module Padrino
           if include_component_module_for(:orm)
             create_migration_file(name, name, columns)
           else
-            say "<= You need an ORM adapter for run this generator. Sorry!"
+            say '<= You need an ORM adapter for run this generator. Sorry!'
             raise SystemExit
           end
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end # Migration

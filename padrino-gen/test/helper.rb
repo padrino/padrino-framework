@@ -1,20 +1,17 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'rack/test'
 require 'rack'
 require 'uuid'
-require 'shoulda'
-require 'mocha'
 require 'webrat'
-require 'git'
-require 'thor/group'
 require 'fakeweb'
+require 'thor/group'
 require 'padrino-gen'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 Padrino::Generators.load_components!
 
-class Test::Unit::TestCase
+class MiniTest::Spec
   include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
@@ -84,7 +81,7 @@ class Test::Unit::TestCase
     project_root = options[:root]
     project_name = options[:name]
     settings = options.slice!(:name, :root)
-    components = settings.map { |component, value| "--#{component}=#{value}" }
+    components = settings.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
     params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end
@@ -108,48 +105,16 @@ class Test::Unit::TestCase
     Thor::Actions::CreateFile.expects(:new).with(anything, path, kind_of(Proc), anything).returns(instance)
   end
 
-  def expects
-
-  end
-
   # expects_rake "custom"
   def expects_rake(command,options={})
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
   end
-
-  # expects_git :commit, "hello world"
-  def expects_git(command,options={})
-    #options.reverse_merge!(:root => '/tmp')
-    FileUtils.mkdir_p(options[:root])
-      if command.to_s == 'init'
-        args = options[:arguments] || options[:root]
-        ::Git.expects(:init).with(args).returns(true)
-      else
-        base = ::Git::Base.new
-        # base.expects(command.to_sym).with(options[:arguments]).returns(true)
-        ::Git.stubs(:open).with(options[:root]).returns(base)
-        ::Git::Base.any_instance.expects(command.to_sym).with(options[:arguments]).returns(true)
-      end
-  end
-
-end
-
-class Object
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    orig_stdout = $stdout
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = orig_stdout
-    log_buffer.rewind && log_buffer.read
-  end
 end
 
 module Webrat
   module Logging
-    def logger # :nodoc:
+    def logger # # @private
       @logger = nil
     end
   end

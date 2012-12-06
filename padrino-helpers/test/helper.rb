@@ -1,24 +1,11 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require 'test/unit'
-require 'shoulda'
-require 'mocha'
+require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'rack/test'
 require 'webrat'
 require 'padrino-helpers'
+require 'active_support/time'
 
-# We need some extension for do our tests
-begin
-  # As 2.3.x
-  require 'active_support/core_ext/date'
-  require 'active_support/core_ext/time'
-  require 'active_support/core_ext/numeric'
-  require 'active_support/duration'
-rescue LoadError
-  # As 3.x
-  require 'active_support/time'
-end
-
-class Test::Unit::TestCase
+class MiniTest::Spec
   include Padrino::Helpers::OutputHelpers
   include Padrino::Helpers::TagHelpers
   include Padrino::Helpers::AssetTagHelpers
@@ -55,26 +42,24 @@ class Test::Unit::TestCase
     assert matcher.matches?(html), matcher.failure_message
   end
 
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    orig_stdout = $stdout
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = orig_stdout
-    log_buffer.rewind && log_buffer.read
-  end
-
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
+
+  # mock_model("Business", :new_record? => true) => <Business>
+  def mock_model(klazz, options={})
+    options.reverse_merge!(:class => klazz, :new_record? => false, :id => 20, :errors => {})
+    record = stub(options)
+    record.stubs(:to_ary => [record])
+    record
+  end
 end
 
 module Webrat
   module Logging
-    def logger # :nodoc:
+    def logger # @private
       @logger = nil
     end
   end

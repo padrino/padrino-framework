@@ -8,9 +8,9 @@ nl:
       format:
         unit: '€'
         format: '%u %n'
-        separator:
-        delimiter:
-        precision:
+        separator: ","
+        delimiter: "."
+        precision: 2
     percentage:
       format:
         delimiter: ""
@@ -36,36 +36,40 @@ nl:
 
   datetime:
     distance_in_words:
-      half_a_minute: 'een halve minuut'
+      half_a_minute: "een halve minuut"
       less_than_x_seconds:
-        zero: 'minder dan 1 seconde'
-        one: 'minder dan 1 seconde'
-        other: 'minder dan %{count} seconden'
+        one:   "minder dan \xC3\xA9\xC3\xA9n seconde"
+        other: "minder dan %{count} seconden"
       x_seconds:
-        one: '1 seconde'
-        other: '%{count} seconden'
+        one:   "1 seconde"
+        other: "%{count} seconden"
       less_than_x_minutes:
-        zero: 'minder dan 1 minuut'
-        one: 'minder dan 1 minuut'
-        other: 'minder dan %{count} minuten'
+        one:   "minder dan \xC3\xA9\xC3\xA9n minuut"
+        other: "minder dan %{count} minuten"
       x_minutes:
-        one: '1 minuut'
-        other: '%{count} minuten'
+        one:   "1 minuut"
+        other: "%{count} minuten"
       about_x_hours:
-        one: 'ongeveer 1 uur'
-        other: 'ongeveer %{count} uur'
+        one:   "ongeveer \xC3\xA9\xC3\xA9n uur"
+        other: "ongeveer %{count} uur"
       x_days:
-        one: '1 dag'
-        other: '%{count} dagen'
+        one:   "1 dag"
+        other: "%{count} dagen"
       about_x_months:
-        one: 'ongeveer 1 dag'
-        other: 'ongeveer %{count} dagen'
+        one: "ongeveer \xC3\xA9\xC3\xA9n maand"
+        other: "ongeveer %{count} maanden"
       x_months:
-        one: '1 maand'
-        other: '%{count} maanden'
+        one:   "1 maand"
+        other: "%{count} maanden"
       about_x_years:
-        one: 'ongeveer 1 jaar'
-        other: 'ongeveer %{count} jaar'
+        one: "ongeveer \xC3\xA9\xC3\xA9n jaar"
+        other: "ongeveer %{count} jaar"
+      over_x_years:
+        one: "meer dan \xC3\xA9\xC3\xA9n jaar"
+        other: "meer dan %{count} jaar"
+      almost_x_years:
+        one:   "bijna \xC3\xA9\xC3\xA9n jaar"
+        other: "bijna %{count} jaar"
       over_x_years:
         one: 'meer dan 1 jaar'
         other: 'meer dan %{count} jaar'

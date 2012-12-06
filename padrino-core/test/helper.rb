@@ -1,39 +1,23 @@
 ENV['PADRINO_ENV'] = 'test'
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
 require File.expand_path('../../../load_paths', __FILE__)
+require File.expand_path('../mini_shoulda', __FILE__)
 require 'padrino-core'
-require 'test/unit'
+require 'json'
 require 'rack/test'
 require 'rack'
-require 'shoulda'
 
-module Kernel
-  # Silences the output by redirecting to stringIO
-  # silence_logger { ...commands... } => "...output..."
-  def silence_logger(&block)
-    $stdout = log_buffer = StringIO.new
-    block.call
-    $stdout = STDOUT
-    log_buffer.string
-  end
-  alias :silence_stdout :silence_logger
+# Rubies < 1.9 don't handle hashes in the properly order so to prevent
+# this issue for now we remove extra values from mimetypes.
+Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
-  def silence_warnings
-    old_verbose, $VERBOSE = $VERBOSE, nil
-    yield
-  ensure
-    $VERBOSE = old_verbose
-  end unless respond_to?(:silence_warnings)
-
-end
-
-class Class
+class Sinatra::Base
   # Allow assertions in request context
-  include Test::Unit::Assertions
+  include MiniTest::Assertions
 end
 
-class Test::Unit::TestCase
+class MiniTest::Spec
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block
@@ -60,6 +44,8 @@ class Test::Unit::TestCase
     else
       super(name, *args, &block)
     end
+  rescue Rack::Test::Error # no response yet
+    super(name, *args, &block)
   end
 
   alias :response :last_response

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestAdminApplication < Test::Unit::TestCase
+describe "AdminApplication" do
 
   def setup
     load_fixture 'data_mapper'
@@ -9,6 +9,7 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'require correctly login' do
     mock_app do
       register Padrino::Admin::AccessControl
+      enable :sessions
 
       # Do a simple mapping
       access_control.roles_for :any do |role|
@@ -37,6 +38,7 @@ class TestAdminApplication < Test::Unit::TestCase
       set    :app_name, :basic_app
       register Padrino::Admin::AccessControl
       enable :store_location
+      enable :sessions
       set    :login_page, "/login"
 
       access_control.roles_for :any do |role|
@@ -70,6 +72,7 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'set advanced roles with store location and login page' do
     mock_app do
       register Padrino::Admin::AccessControl
+      enable :sessions
 
       access_control.roles_for :any do |role|
         role.protect "/"
@@ -146,6 +149,7 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
+      enable :sessions
 
       access_control.roles_for :any do |role|
         role.protect "/cart"
@@ -196,6 +200,7 @@ class TestAdminApplication < Test::Unit::TestCase
   should 'check access control helper' do
     mock_app do
       register Padrino::Admin::AccessControl
+      enable :sessions
 
       access_control.roles_for :any do |role|
         role.project_module :foo, "/foo"
@@ -220,11 +225,11 @@ class TestAdminApplication < Test::Unit::TestCase
       end
 
       get "/modules" do
-        project_modules.collect { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
+        project_modules.map { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
       end
 
       get "/modules-prefixed" do
-        project_modules.collect { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
+        project_modules.map { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
       end
     end
 
@@ -243,4 +248,4 @@ class TestAdminApplication < Test::Unit::TestCase
     get "/modules"
     assert_equal "admin => /admin", body
   end
-end unless RUBY_PLATFORM =~ /java/ # DM seems to have some problems on JRuby
+end

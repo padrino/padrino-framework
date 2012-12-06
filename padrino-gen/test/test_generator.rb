@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class TestGenerator < Test::Unit::TestCase
+describe "Generator" do
 
   context "the generator" do
     should "have default generators" do

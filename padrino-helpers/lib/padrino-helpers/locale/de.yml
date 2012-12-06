@@ -8,9 +8,9 @@ de:
       format:
         unit: '€'
         format: '%n%u'
-        separator:
-        delimiter:
-        precision:
+        separator: ","
+        delimiter: "."
+        precision: 2
     percentage:
       format:
         delimiter: ""
@@ -69,6 +69,9 @@ de:
       over_x_years:
         one: 'mehr als 1 Jahr'
         other: 'mehr als %{count} Jahre'
+      almost_x_years:
+        one: 'fast ein Jahr'
+        other: 'fast %{count} Jahre'
   models:
     errors:
       template:

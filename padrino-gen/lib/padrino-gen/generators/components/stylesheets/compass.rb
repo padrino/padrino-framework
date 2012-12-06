@@ -1,4 +1,4 @@
-COMPASS_INIT = (<<-COMPASS).gsub(/^ {10}/, '') unless defined?(COMPASS_INIT)
+COMPASS_INIT = <<-COMPASS unless defined?(COMPASS_INIT)
 # Enables support for Compass, a stylesheet authoring framework based on SASS.
 # See http://compass-style.org/ for more details.
 # Store Compass/SASS files (by default) within 'app/stylesheets'
@@ -26,7 +26,7 @@ module CompassInitializer
 end
 COMPASS
 
-COMPASS_REGISTER = (<<-COMPASSR).gsub(/^ {10}/, '') unless defined?(COMPASS_REGISTER)
+COMPASS_REGISTER = <<-COMPASSR unless defined?(COMPASS_REGISTER)
   register CompassInitializer\n
 COMPASSR
 

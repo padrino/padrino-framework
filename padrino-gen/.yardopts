@@ -1,0 +1,5 @@
+--title 'Padrino Gen Documentation'
+--charset utf-8
+--protected
+--exclude lib/padrino-gen/generators/components
+lib/**/*.rb
