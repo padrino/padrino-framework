@@ -40,7 +40,7 @@ module Padrino
       end
 
       ##
-      # Gloabl add a new generator class to +padrino-gen+
+      # Global add a new generator class to +padrino-gen+
       #
       # @param [Symbol] name
       #   key name for generator mapping
@@ -72,7 +72,7 @@ module Padrino
 end # Padrino
 
 ##
-# We add our generators to Padrino::Genererator
+# We add our generators to Padrino::Generators
 #
 Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{project,app,mailer,controller,model,migration,plugin}.rb']
 
