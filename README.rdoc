@@ -1,4 +1,4 @@
-== (Padrino Admin TwitterBootstrap 2.1.1)
+== (Padrino Admin TwitterBootstrap 2.2.2)
 
 * Slim, Haml, Erb engine
 * Remove all locale, now only English
