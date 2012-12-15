@@ -8,8 +8,58 @@ module Padrino
   #   Padrino.run!("localhost", "4000", "mongrel") # use => host: "0.0.0.0", port: "3000", adapter: "mongrel"
   #
   def self.run!(options={})
-    Padrino.load!
-    Server.start(Padrino.application, options)
+    print 'Preloading Padrino ... '
+    Padrino.preload!
+    puts 'DONE!'
+
+    loop do
+      @int       = false
+      @first_run = true
+      @pid       = fork do
+        puts '>> Load application dependencies ... '
+        Padrino.load!
+        Server.start(Padrino.application, options)
+      end
+      @mtimes  ||= {}
+
+      puts '>> Spawn a new processes with PID: %d' % @pid
+
+      trap :HUP do
+        puts ">> Performing restart"
+        Process.kill(:INT, @pid)
+        @int = true
+      end
+
+      %w[INT KILL QUIT TERM].each do |signal|
+        trap(signal) do
+          if @restart
+            @restart = false
+          else
+            abort '<= Padrino has ended has left the guns (crowd applauds)'
+          end
+        end
+      end
+
+      until @int do
+        Dir[Padrino.root("**/*.rb")].sort.each do |file|
+          if !@mtimes.has_key?(file)
+            logger.debug "Detected a new file: #{file}"
+            Process.kill(:HUP, Process.pid)
+            @restart = true
+          elsif @mtimes[file] < File.mtime(file)
+            logger.debug "Detected modified file #{file}"
+            Process.kill(:HUP, Process.pid)
+            @restart = true
+          end unless @first_run
+          @mtimes[file] = File.mtime(file)
+        end
+
+        @first_run = false
+        sleep 0.2
+      end
+
+      Process.waitpid(@pid)
+    end
   end
 
   ##
@@ -17,7 +67,7 @@ module Padrino
   #
   class Server < Rack::Server
     # Server Handlers
-    Handlers = [:thin, :puma, :mongrel, :trinidad, :webrick]
+    Handlers = [:thin, :mongrel, :webrick]
 
     # Starts the application on the available server with specified options.
     def self.start(app, opts={})
@@ -44,7 +94,7 @@ module Padrino
       [:INT, :TERM].each { |sig| trap(sig) { exit } }
       super
     ensure
-      puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
+      puts "<= Padrino has ended his set (crowd applauds)" unless options[:daemonize]
     end
 
     # The application the server will run.
@@ -59,21 +109,20 @@ module Padrino
     end
 
     private
-
-      # Detects the supported handler to use.
-      #
-      # @example
-      #   detect_rack_handler => <ThinHandler>
-      #
-      def self.detect_rack_handler
-        Handlers.each do |handler|
-          begin
-            return handler if Rack::Handler.get(handler.to_s.downcase)
-          rescue LoadError
-          rescue NameError
-          end
+    # Detects the supported handler to use.
+    #
+    # @example
+    #   detect_rack_handler => <ThinHandler>
+    #
+    def self.detect_rack_handler
+      Handlers.each do |handler|
+        begin
+          return handler if Rack::Handler.get(handler.to_s.downcase)
+        rescue LoadError
+        rescue NameError
         end
-        fail "Server handler (#{Handlers.join(', ')}) not found."
       end
+      fail "Server handler (#{Handlers.join(', ')}) not found."
+    end
   end # Server
 end # Padrino

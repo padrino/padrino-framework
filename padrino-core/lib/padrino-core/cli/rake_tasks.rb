@@ -1,11 +1,7 @@
 # Load rake tasks from common rake task definition locations
-Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
-  begin
-    load(file)
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-  end
-end
+Dir["lib/tasks/**/*.rake"].
+  concat(Dir["tasks/**/*.rake"]).
+  concat(Dir["{test,spec}/*.rake"]).each  { |rake| load(rake) }
 
 # Loads the Padrino applications mounted within the project
 # setting up the required environment for Padrino

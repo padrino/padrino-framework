@@ -1,29 +1,29 @@
-require 'sinatra/base'
-require 'padrino-core/version'
-require 'padrino-core/support_lite'
-require 'padrino-core/application'
-
-require 'padrino-core/caller'
-require 'padrino-core/command'
-require 'padrino-core/loader'
-require 'padrino-core/logger'
-require 'padrino-core/mounter'
-require 'padrino-core/reloader'
-require 'padrino-core/router'
-require 'padrino-core/server'
-require 'padrino-core/tasks'
-
-
 # The Padrino environment (falls back to the rack env or finally develop)
-PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+PADRINO_ENV  = ENV['PADRINO_ENV']  ||= ENV['RACK_ENV'] ||= 'development'  unless defined?(PADRINO_ENV)
+
+require 'padrino-core/support'
+FileSet.glob_require('padrino-core/*.rb', __FILE__)
+
 # The Padrino project root path (falls back to the first caller)
-PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
+PADRINO_ROOT = ENV['PADRINO_ROOT'] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
+
 
 module Padrino
   class ApplicationLoadError < RuntimeError # @private
   end
 
   class << self
+
+    ##
+    # Create a new Padrino::Application. The block is evaluated in the new app's
+    # class scope.
+    #
+    def new(&block)
+      base = Class.new(Padrino::Application)
+      base.class_eval(&block) if block_given?
+      base
+    end
+
     ##
     # Helper method for file references.
     #
@@ -120,6 +120,21 @@ module Padrino
         Encoding.default_internal = Encoding::UTF_8
       end
       nil
+    end
+
+    ##
+    # Determines whether the dependencies are locked by Bundler.
+    # otherwise return nil
+    #
+    # @return [:locked, :unlocked, nil]
+    #   Returns +:locked+ if the +Gemfile.lock+ file exists, or +:unlocked+
+    #   if only the +Gemfile+ exists.
+    #
+    # @deprecated Will be removed in 1.0.0
+    #
+    def bundle
+      return :locked   if File.exist?(root('Gemfile.lock'))
+      return :unlocked if File.exist?(root("Gemfile"))
     end
 
     ##

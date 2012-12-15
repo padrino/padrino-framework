@@ -4,7 +4,7 @@ Padrino is the godfather of Sinatra.
 
 == Preface
 
-Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.sinatrarb.com].
+Padrino is a ruby framework built upon the excellent {Sinatra Microframework}[http://www.padrinorb.com].
 Sinatra is a DSL for creating simple web applications in Ruby with speed and minimal effort.
 This framework tries hard to make it as fun and easy as possible to code much more advanced web applications by
 building upon the Sinatra philosophies and foundation.

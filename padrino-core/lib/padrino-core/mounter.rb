@@ -31,7 +31,6 @@ module Padrino
       ensure_app_file! || ensure_app_object!
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @uri_root  = "/"
-      Padrino::Reloader.exclude_constants << @app_class
     end
 
     ##
@@ -85,7 +84,7 @@ module Padrino
       app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
       app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exists?(app_obj.public_folder)
       app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
-      app_obj.setup_application! # Initializes the app here with above settings.
+      # app_obj.setup_application! # Initializes the app here with above settings.
       router.map(:to => app_obj, :path => app_data.uri_root, :host => app_data.app_host)
     end
 
@@ -106,9 +105,8 @@ module Padrino
       app_obj.routes.map { |route|
         name_array     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
         request_method = route.conditions[:request_method][0]
+        full_path = File.join(uri_root, route.original_path)
         next if route.named.blank? || request_method == 'HEAD'
-        original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
-        full_path = File.join(uri_root, original_path)
         OpenStruct.new(:verb => request_method, :identifier => route.named, :name => name_array, :path => full_path)
       }.compact
     end
@@ -140,44 +138,44 @@ module Padrino
     end
 
     protected
-      ##
-      # Locates and requires the file to load the app constant
-      #
-      def locate_app_object
-        @_app_object ||= begin
-          ensure_app_file!
-          Padrino.require_dependencies(app_file)
-          app_constant
-        end
+    ##
+    # Locates and requires the file to load the app constant
+    #
+    def locate_app_object
+      @_app_object ||= begin
+        ensure_app_file!
+        Padrino.require_dependencies(app_file)
+        app_constant
       end
+    end
 
-      ##
-      # Returns the determined location of the mounted application main file
-      #
-      def locate_app_file
-        candidates  = []
-        candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
-        candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-        candidates << Padrino.mounted_root(name.downcase, "app.rb")
-        candidates << Padrino.root("app", "app.rb")
-        candidates.find { |candidate| File.exist?(candidate) }
-      end
+    ##
+    # Returns the determined location of the mounted application main file
+    #
+    def locate_app_file
+      candidates  = []
+      candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
+      candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
+      candidates << Padrino.mounted_root(name.downcase, "app.rb")
+      candidates << Padrino.root("app", "app.rb")
+      candidates.find { |candidate| File.exist?(candidate) }
+    end
 
-      ###
-      # Raises an exception unless app_file is located properly
-      #
-      def ensure_app_file!
-        message = "Unable to locate source file for app '#{app_class}', try with :app_file => '/path/app.rb'"
-        raise MounterException, message unless @app_file
-      end
+    ###
+    # Raises an exception unless app_file is located properly
+    #
+    def ensure_app_file!
+      message = "Unable to locate source file for app '#{app_class}', try with :app_file => '/path/app.rb'"
+      raise MounterException, message unless @app_file
+    end
 
-      ###
-      # Raises an exception unless app_obj is defined properly
-      #
-      def ensure_app_object!
-        message = "Unable to locate app for '#{app_class}', try with :app_class => 'MyAppClass'"
-        raise MounterException, message unless @app_obj
-      end
+    ###
+    # Raises an exception unless app_obj is defined properly
+    #
+    def ensure_app_object!
+      message = "Unable to locate app for '#{app_class}', try with :app_class => 'MyAppClass'"
+      raise MounterException, message unless @app_obj
+    end
   end
 
   class << self

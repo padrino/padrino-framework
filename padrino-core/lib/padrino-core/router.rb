@@ -39,7 +39,7 @@ module Padrino
     #
     # @param [Hash] options
     #  The options to map.
-    # @option options [Sinatra::Application] :to
+    # @option options [Padrino::Application] :to
     #  The class of the application to mount.
     # @option options [String] :path ("/")
     #  The path to map the specified application.
