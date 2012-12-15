@@ -126,7 +126,7 @@ begin
 
     eval COMMON_TESTS
   end
-rescue LoadError
+rescue LoadError, Mongo::ConnectionFailure
   warn "Skipping Mongo tests"
 end
 
