@@ -7,3 +7,5 @@ Gemfile.lock
 doc/
 .DS_Store
 tags
+/padrino-admin/lib/padrino-admin/generators/templates/assets/javascripts/jquery-1.8.2.min.js
+/padrino-admin/lib/padrino-admin/generators/templates/assets/stylesheets/bootstrap/media.less
