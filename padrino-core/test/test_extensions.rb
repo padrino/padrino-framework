@@ -6,8 +6,8 @@ describe 'Extensions' do
     end
 
     private
-      def im_hiding_in_ur_foos
-      end
+    def im_hiding_in_ur_foos
+    end
   end
 
   module BarExtensions

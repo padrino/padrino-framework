@@ -2,7 +2,7 @@ require File.expand_path('../helper', __FILE__)
 
 describe 'filters' do
 
-  it "executes filters in the order defined" do
+  it 'executes filters in the order defined' do
     count = 0
     mock_app do
       get('/') { 'Hello World' }
@@ -22,7 +22,7 @@ describe 'filters' do
     assert_equal 'Hello World', body
   end
 
-  it "can modify the request" do
+  it 'can modify the request' do
     mock_app {
       get('/foo') { 'foo' }
       get('/bar') { 'bar' }
@@ -34,7 +34,7 @@ describe 'filters' do
     assert_equal 'bar', body
   end
 
-  it "can modify instance variables available to routes" do
+  it 'can modify instance variables available to routes' do
     mock_app {
       before { @foo = 'bar' }
       get('/foo') { @foo }
@@ -45,7 +45,7 @@ describe 'filters' do
     assert_equal 'bar', body
   end
 
-  it "allows redirects" do
+  it 'allows redirects' do
     mock_app {
       before { redirect '/bar' }
       get('/foo') do
@@ -60,7 +60,7 @@ describe 'filters' do
     assert_equal '', body
   end
 
-  it "does not modify the response with its return value" do
+  it 'does not modify the response with its return value' do
     mock_app {
       before { 'Hello World!' }
       get '/foo' do
@@ -74,11 +74,11 @@ describe 'filters' do
     assert_equal 'cool', body
   end
 
-  it "does modify the response with halt" do
+  it 'does modify the response with halt' do
     mock_app {
       before { halt 302, 'Hi' }
       get '/foo' do
-        "should not happen"
+        'should not happen'
       end
     }
 
@@ -87,7 +87,7 @@ describe 'filters' do
     assert_equal 'Hi', body
   end
 
-  it "gives you access to params" do
+  it 'gives you access to params' do
     mock_app {
       before { @foo = params['foo'] }
       get('/foo') { @foo }
@@ -98,7 +98,7 @@ describe 'filters' do
     assert_equal 'cool', body
   end
 
-  it "properly unescapes parameters" do
+  it 'properly unescapes parameters' do
     mock_app {
       before { @foo = params['foo'] }
       get('/foo') { @foo }
@@ -109,7 +109,7 @@ describe 'filters' do
     assert_equal 'bar:baz/bend', body
   end
 
-  it "runs filters defined in superclasses" do
+  it 'runs filters defined in superclasses' do
     base = Padrino.new
     base.before { @foo = 'hello from superclass' }
 
@@ -137,7 +137,7 @@ describe 'filters' do
   it 'takes an optional route pattern' do
     ran_filter = false
     mock_app do
-      before("/b*") { ran_filter = true }
+      before('/b*') { ran_filter = true }
       get('/foo') { }
       get('/bar') { }
     end
@@ -150,7 +150,7 @@ describe 'filters' do
   it 'generates block arguments from route pattern' do
     subpath = nil
     mock_app do
-      before("/foo/:sub") { |s| subpath = s }
+      before('/foo/:sub') { |s| subpath = s }
       get('/foo/*') { }
     end
     get '/foo/bar'
@@ -160,7 +160,7 @@ end
 
 describe 'After Filters' do
 
-  it "executes filters in the order defined" do
+  it 'executes filters in the order defined' do
     invoked = 0
     mock_app do
       before   { invoked = 2 }
@@ -173,7 +173,7 @@ describe 'After Filters' do
     assert_equal 8, invoked
   end
 
-  it "executes filters in the order defined" do
+  it 'executes filters in the order defined' do
     count = 0
     mock_app do
       get('/') { 'Hello World' }
@@ -193,7 +193,7 @@ describe 'After Filters' do
     assert_equal 'Hello World', body
   end
 
-  it "allows redirects" do
+  it 'allows redirects' do
     mock_app {
       get('/foo') { 'ORLY' }
       after { redirect '/bar' }
@@ -205,7 +205,7 @@ describe 'After Filters' do
     assert_equal '', body
   end
 
-  it "does not modify the response with its return value" do
+  it 'does not modify the response with its return value' do
     mock_app {
       get('/foo') { 'cool' }
       after { 'Hello World!' }
@@ -216,10 +216,10 @@ describe 'After Filters' do
     assert_equal 'cool', body
   end
 
-  it "does modify the response with halt" do
+  it 'does modify the response with halt' do
     mock_app {
       get '/foo' do
-        "should not be returned"
+        'should not be returned'
       end
       after { halt 302, 'Hi' }
     }
@@ -229,7 +229,7 @@ describe 'After Filters' do
     assert_equal 'Hi', body
   end
 
-  it "runs filters defined in superclasses" do
+  it 'runs filters defined in superclasses' do
     count = 2
     base = Padrino.new
     base.after { count *= 2 }
@@ -257,7 +257,7 @@ describe 'After Filters' do
   it 'takes an optional route pattern' do
     ran_filter = false
     mock_app do
-      after("/b*") { ran_filter = true }
+      after('/b*') { ran_filter = true }
       get('/foo') { }
       get('/bar') { }
     end
@@ -280,7 +280,7 @@ describe 'After Filters' do
   it 'generates block arguments from route pattern' do
     subpath = nil
     mock_app do
-      after("/foo/:sub") { |s| subpath = s }
+      after('/foo/:sub') { |s| subpath = s }
       get('/foo/*') { }
     end
     get '/foo/bar'

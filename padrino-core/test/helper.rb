@@ -22,13 +22,14 @@ class MiniTest::Spec
   # given. Used in setup or individual spec methods to establish
   # the application.
   def mock_app(base=nil, &block)
-    @app = if base
-             base = Class.new(base)
-             base.class_eval(&block)
-             base
-           else
-             Padrino.new(&block)
-           end
+    @app =
+      if base
+        base = Class.new(base)
+        base.class_eval(&block)
+        base
+      else
+        Padrino.new(&block)
+      end
   end
 
   def app

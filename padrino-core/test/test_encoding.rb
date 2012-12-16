@@ -3,18 +3,15 @@ require File.expand_path('../helper', __FILE__)
 require 'erb'
 
 describe 'Encoding' do
-  before do
-    @base = Padrino.new
-    @base.set :views, File.dirname(__FILE__) + "/views"
+  let(:base) do
+    Padrino.new { set :views, File.dirname(__FILE__) + '/views' }
   end
 
   it 'allows unicode strings in ascii templates per default (1.9)' do
-    next unless defined? Encoding
-    @base.new!.erb(File.read(@base.views + "/ascii.erb").encode("ASCII"), {}, :value => "åkej")
+    base.new!.erb(File.read(base.views + '/ascii.erb').encode('ASCII'), {}, :value => 'åkej')
   end
 
   it 'allows ascii strings in unicode templates per default (1.9)' do
-    next unless defined? Encoding
-    @base.new!.erb(:utf8, {}, :value => "Some Lyrics".encode("ASCII"))
+    base.new!.erb(:utf8, {}, :value => 'Some Lyrics'.encode('ASCII'))
   end
 end
