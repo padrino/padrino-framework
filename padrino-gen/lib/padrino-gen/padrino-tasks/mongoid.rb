@@ -1,9 +1,65 @@
 if defined?(Mongoid)
   namespace :mi do
 
+    if Mongoid::VERSION =~ /^[012]\./
+      # Mongoid 2 API
+      def mongoid_collections
+        Mongoid.master.collections
+      end
+
+      def mongoid_collection(name)
+        Mongoid.master.collection(name)
+      end
+
+      def mongoid_new_collection(collection, name)
+        collection.db.collection(name)
+      end
+
+      def enum_mongoid_documents(collection)
+        collection.find({}, :timeout => false, :sort => "_id") do |cursor|
+          cursor.each do |doc|
+            yield doc
+          end
+        end
+      end
+
+      def rename_mongoid_collection(collection, new_name)
+        collection.rename(new_name)
+      end
+    else
+      # Mongoid 3+ API
+      def mongoid_collections
+        Mongoid.default_session.collections
+      end
+
+      def mongoid_collection(name)
+        Mongoid.default_session[name]
+      end
+
+      def mongoid_new_collection(collection, name)
+        Mongoid.default_session[name]
+      end
+
+      def enum_mongoid_documents(collection)
+        collection.find.sort(:_id => 1).each do |doc|
+          yield doc
+        end
+      end
+
+      def rename_mongoid_collection(collection, new_name)
+        db_name = collection.database.name
+        collection.database.session.with(:database => :admin) do |admin|
+          admin.command(
+            :renameCollection => "#{db_name}.#{collection.name}",
+            :to               => "#{db_name}.#{new_name}",
+            :dropTarget       => true)
+        end
+      end
+    end
+
     desc 'Drops all the collections for the database for the current Padrino.env'
     task :drop => :environment do
-      Mongoid.master.collections.select {|c| c.name !~ /system/ }.each(&:drop)
+      mongoid_collections.select {|c| c.name !~ /system/ }.each(&:drop)
     end
 
     # Helper to retrieve a list of models.
@@ -33,7 +89,7 @@ if defined?(Mongoid)
 
     def convert_ids(obj)
       if obj.is_a?(String) && obj =~ /^[a-f0-9]{24}$/
-        BSON::ObjectId(obj)
+        defined?(Moped) ? Moped::BSON::ObjectId.from_string(obj) : BSON::ObjectId(obj)
       elsif obj.is_a?(Array)
         obj.map do |v|
           convert_ids(v)
@@ -57,18 +113,16 @@ if defined?(Mongoid)
         puts "Converting #{collection_name} to use ObjectIDs"
 
         # get old collection
-        collection = Mongoid.master.collection(collection_name)
+        collection = mongoid_collection(collection_name)
 
         # get new collection (a clean one)
-        collection.db["#{collection_name}_new"].drop
-        new_collection = collection.db["#{collection_name}_new"]
+        mongoid_collection("#{collection_name}_new").drop
+        new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
         # convert collection documents
-        collection.find({}, :timeout => false, :sort => "_id") do |cursor|
-           cursor.each do |doc|
-            new_doc = convert_ids(doc)
-            new_collection.insert(new_doc, :safe => true)
-          end
+        enum_mongoid_documents(collection) do |doc|
+          new_doc = convert_ids(doc)
+          new_collection.insert(new_doc, :safe => true)
         end
 
         puts "Done! Converted collection is in #{new_collection.name}\n\n"
@@ -76,15 +130,15 @@ if defined?(Mongoid)
 
       # no errors. great! now rename _new to collection_name
       collection_names.each do |collection_name|
-        collection = Mongoid.master.collection(collection_name)
-        new_collection = collection.db["#{collection_name}_new"]
+        collection = mongoid_collection(collection_name)
+        new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
         # swap collection to _old
         puts "Moving #{collection.name} to #{collection_name}_old"
-        collection.db["#{collection_name}_old"].drop
+        mongoid_new_collection(collection, "#{collection_name}_old").drop
 
         begin
-          collection.rename("#{collection_name}_old")
+          rename_mongoid_collection(collection, "#{collection_name}_old")
         rescue StandardError => e
           puts "Unable to rename database #{collection_name} to #{collection_name}_old"
           puts "reason: #{e.message}\n\n"
@@ -94,7 +148,7 @@ if defined?(Mongoid)
         puts "Moving #{new_collection.name} to #{collection_name}\n\n"
 
         begin
-          new_collection.rename(collection_name)
+          rename_mongoid_collection(new_collection, collection_name)
         rescue StandardError => e
           puts "Unable to rename database #{new_collection.name} to #{collection_name}"
           puts "reason: #{e.message}\n\n"
@@ -107,8 +161,8 @@ if defined?(Mongoid)
     desc "Clean up old collections backed up by objectid_convert"
     task :cleanup_old_collections => :environment do
       collection_names.each do |collection_name|
-        collection = Mongoid.master.collection(collection_name)
-        collection.db["#{collection.name}_old"].drop
+        collection = mongoid_collection(collection_name)
+        mongoid_new_collection(collection, "#{collection.name}_old").drop
       end
     end
   end
