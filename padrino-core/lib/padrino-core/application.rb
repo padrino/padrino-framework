@@ -2,6 +2,7 @@ require 'padrino-core/caller'
 require 'padrino-core/request'
 require 'padrino-core/response'
 require 'padrino-core/helpers'
+require 'padrino-core/setter'
 require 'padrino-core/templates'
 require 'padrino-core/exceptions'
 
@@ -19,10 +20,9 @@ module Padrino
     attr_reader   :template_cache
 
     def initialize(app=nil)
-      super()
       @app = app
       @template_cache = Tilt::Cache.new
-      yield self if block_given?
+      @default_layout = :layout
     end
 
     # Rack call interface.
@@ -97,7 +97,7 @@ module Padrino
     end
 
     # Run routes defined on the class and all superclasses.
-    def route!(base = settings, pass_block=nil)
+    def route!(base=settings, pass_block=nil)
       if routes = base.routes[@request.request_method]
         routes.each do |pattern, keys, conditions, block|
           pass_block = process_route(pattern, keys, conditions) do |*args|
@@ -129,11 +129,11 @@ module Padrino
       route = @request.path_info
       route = '/' if route.empty?
       return unless match = pattern.match(route)
-      values += match.captures.to_a.map { |v| force_encoding URI.decode(v) if v }
+      values += match.captures.to_a.map { |v| force_encoding URI.decode_www_form_component(v) if v }
 
       if values.any?
         original, @params = params, params.merge('splat' => [], 'captures' => values)
-        keys.zip(values) { |k,v| (@params[k] ||= '') << v if v }
+        keys.zip(values) { |k,v| Array === @params[k] ? @params[k] << v : @params[k] = v if v }
       end
 
       catch(:pass) do
@@ -171,6 +171,19 @@ module Padrino
       send_file path, :disposition => nil
     end
 
+    # Dispatch a request with error handling.
+    def dispatch!
+      invoke do
+        static! if settings.static? && (request.get? || request.head?)
+        filter! :before
+        route!
+      end
+    rescue ::Exception => boom
+      invoke { handle_exception!(boom) }
+    ensure
+      filter! :after unless env['padrino.static_file']
+    end
+
     # Enable string or symbol key access to the nested params hash.
     def indifferent_params(object)
       case object
@@ -201,26 +214,20 @@ module Padrino
       elsif res.respond_to? :each
         body res
       end
-    end
-
-    # Dispatch a request with error handling.
-    def dispatch!
-      static! if settings.static? && (request.get? || request.head?)
-      filter! :before
-      route!
-    rescue ::Exception => boom
-      handle_exception!(boom)
-    ensure
-      filter! :after unless env['padrino.static_file']
+      nil
     end
 
     # Error handling during requests.
     def handle_exception!(boom)
       @env['padrino.error'] = boom
-      logger.error ["#{boom.class} - #{boom.message}:", *boom.backtrace].join("\n\t")
-      status boom.respond_to?(:http_status) ? Integer(boom.http_status) : 500
 
-      status(500) unless status.between?(400, 599)
+      if boom.respond_to? :http_status
+        status(boom.http_status)
+      else
+        status(500)
+      end
+
+      status(500) unless status.between? 400, 599
 
       if server_error?
         raise boom if settings.show_exceptions? and settings.show_exceptions != :after_handler
@@ -233,7 +240,7 @@ module Padrino
 
       res = error_block!(boom.class, boom) || error_block!(status, boom)
       return res if res or not server_error?
-      raise boom if settings.raise_errors || settings.show_exceptions?
+      raise boom if settings.raise_errors? or settings.show_exceptions?
       error_block! Exception, boom
     end
 
@@ -241,28 +248,34 @@ module Padrino
     def error_block!(key, *block_params)
       base = settings
       while base.respond_to?(:errors)
-        next base = base.superclass unless args = base.errors[key]
-        args += [block_params]
-        return process_route(*args)
+        next base = base.superclass unless args_array = base.errors[key]
+        args_array.reverse_each do |args|
+          first = args == args_array.first
+          args += [block_params]
+          resp = process_route(*args)
+          return resp unless resp.nil? && !first
+        end
       end
       return false unless key.respond_to? :superclass and key.superclass < Exception
       error_block!(key.superclass, *block_params)
     end
 
     class << self
+      include Setter
       attr_reader :routes, :filters, :templates, :errors
 
       # Removes all routes, filters, middleware and extension hooks from the
       # current class (not routes/filters/... defined by its superclass).
       def reset!
-        @conditions     = []
-        @routes         = {}
-        @filters        = {:before => [], :after => []}
-        @errors         = {}
-        @middleware     = []
-        @prototype      = nil
-        @extensions     = []
-        @templates = superclass.respond_to?(:templates) ? Hash.new { |hash,key| superclass.templates[key] } : {}
+        @conditions = []
+        @routes     = Hash.new { |h,k| h[k] = [] }
+        @filters    = { before: [], after: [] }
+        @errors     = {}
+        @middleware = []
+        @prototype  = nil
+        @extensions = []
+        @templates  =
+          superclass.respond_to?(:templates) ? Hash.new { |h,k| superclass.templates[k] } : {}
       end
 
       # Extension modules registered on this class and all superclasses.
@@ -283,59 +296,6 @@ module Padrino
         end
       end
 
-      # Sets an option to the given value.  If the value is a proc,
-      # the proc will be called every time the option is accessed.
-      def set(option, value = (not_set = true), ignore_setter = false, &block)
-        raise ArgumentError if block and !not_set
-        value, not_set = block, false if block
-
-        if not_set
-          raise ArgumentError unless option.respond_to?(:each)
-          option.each { |k,v| set(k, v) }
-          return self
-        end
-
-        if respond_to?("#{option}=") and not ignore_setter
-          return __send__("#{option}=", value)
-        end
-
-        setter = proc { |val| set option, val, true }
-        getter = proc { value }
-
-        case value
-        when Proc
-          getter = value
-        when Symbol, Fixnum, FalseClass, TrueClass, NilClass
-          # we have a lot of enable and disable calls, let's optimize those
-          class_eval "def self.#{option}() #{value.inspect} end"
-          getter = nil
-        when Hash
-          setter = proc do |val|
-            val = value.merge val if Hash === val
-            set option, val, true
-          end
-        end
-
-        (class << self; self; end).class_eval do
-          define_method("#{option}=", &setter) if setter
-          define_method(option,       &getter) if getter
-          unless method_defined? "#{option}?"
-            class_eval "def #{option}?() !!#{option} end"
-          end
-        end
-        self
-      end
-
-      # Same as calling `set :option, true` for each of the given options.
-      def enable(*opts)
-        opts.each { |key| set(key, true) }
-      end
-
-      # Same as calling `set :option, false` for each of the given options.
-      def disable(*opts)
-        opts.each { |key| set(key, false) }
-      end
-
       # Define a custom error handler. Optionally takes either an Exception
       # class, or an HTTP status code to specify which errors should be
       # handled.
@@ -343,7 +303,7 @@ module Padrino
         args  = compile! "ERROR", //, block
         codes = codes.map { |c| Array(c) }.flatten
         codes << Exception if codes.empty?
-        codes.each { |c| @errors[c] = args }
+        codes.each { |c| (@errors[c] ||= []) << args }
       end
 
       # Sugar for `error(404) { ... }`
@@ -410,6 +370,7 @@ module Padrino
       def host_name(pattern)
         condition { pattern === request.host }
       end
+      alias :host :host_name
 
       # Condition for matching user agent. Parameter should be Regexp.
       # Will set params[:agent].
@@ -430,7 +391,9 @@ module Padrino
         types.map! { |t| mime_types(t) }
         types.flatten!
         condition do
-          if type = request.preferred_type(types)
+          if type = response['Content-Type']
+            types.include? type or types.include? type[/^[^;]+/]
+          elsif type = request.preferred_type(types)
             content_type(type)
             true
           else
@@ -439,34 +402,50 @@ module Padrino
         end
       end
 
+      def desc(text)
+        @desc = text
+      end
+
+      def path(value)
+        @path = value
+      end
+
       public
       # Defining a `GET` handler also automatically defines
       # a `HEAD` handler.
-      def get(path, opts={}, &block)
+      def get(*args, &block)
         conditions = @conditions.dup
-        route('GET', path, opts, &block)
+        desc, path = @desc, @path
+        route(*['GET', *args], &block)
 
-        @conditions = conditions
-        route('HEAD', path, opts, &block)
+        @conditions  = conditions
+        @desc, @path = desc, path
+        route(*['HEAD', *args], &block)
       end
 
-      def put(path, opts={}, &bk)     route 'PUT',     path, opts, &bk end
-      def post(path, opts={}, &bk)    route 'POST',    path, opts, &bk end
-      def delete(path, opts={}, &bk)  route 'DELETE',  path, opts, &bk end
-      def head(path, opts={}, &bk)    route 'HEAD',    path, opts, &bk end
-      def options(path, opts={}, &bk) route 'OPTIONS', path, opts, &bk end
-      def patch(path, opts={}, &bk)   route 'PATCH',   path, opts, &bk end
+      def put      *args, &blk; route(*['PUT',     *args], &blk); end
+      def post     *args, &blk; route(*['POST',    *args], &blk); end
+      def delete   *args, &blk; route(*['DELETE',  *args], &blk); end
+      def head     *args, &blk; route(*['HEAD',    *args], &blk); end
+      def patch    *args, &blk; route(*['PATCH',   *args], &blk); end
+      def options  *args, &blk; route(*['OPTIONS', *args], &blk); end
 
-      private
-      def route(verb, path, options={}, &block)
-        # Because of self.options.host
-        host_name(options.delete(:host)) if options.key?(:host)
+      def route(*args, &block)
+        options = args.extract_options!
+
+        name = args.delete_if { |a| Symbol === a }
+        verb, path = args.values_at(0, 1)
+        path ||= @path
+
         signature = compile!(verb, path, block, options)
-        (@routes[verb] ||= []) << signature
+        routes[verb] << signature
         invoke_hook(:route_added, verb, path, block)
         signature
+      ensure
+        @desc, @path = nil, nil
       end
 
+      private
       def invoke_hook(name, *args)
         extensions.each { |e| e.send(name, *args) if e.respond_to?(name) }
       end
@@ -482,28 +461,34 @@ module Padrino
         options.each_pair { |option, args| send(option, *args) }
         method_name             = "#{verb} #{path}"
         unbound_method          = generate_method(method_name, &block)
-        pattern, keys           = compile path
+        pattern, keys           = compile(path)
         conditions, @conditions = @conditions, []
 
-        [ pattern, keys, conditions, block.arity != 0 ?
-            proc { |a,p| unbound_method.bind(a).call(*p) } :
-            proc { |a,p| unbound_method.bind(a).call } ]
+        [
+          pattern, keys, conditions, block.arity != 0 ?
+            -> a, p { unbound_method.bind(a).call(*p) } :
+            -> a, p { unbound_method.bind(a).call }
+        ]
       end
 
       def compile(path)
         keys = []
         if path.respond_to? :to_str
-          pattern = path.to_str.gsub(/[^\?\%\\\/\:\*\w]/) { |c| encoded(c) }
+          ignore  = ''
+          pattern = path.to_str.gsub(/[^\?\%\\\/\:\*\w]/) do |c|
+            ignore << escaped(c).join if c.match(/[\.@]/)
+            encoded(c)
+          end
           pattern.gsub!(/((:\w+)|\*)/) do |match|
             if match == "*"
               keys << 'splat'
-              "(.*?)"
+              '(.*?)'
             else
               keys << $2[1..-1]
-              "([^/?#]+)"
+              "([^#{ignore}/?#]+)"
             end
           end
-          [/^#{pattern}\/?$/, keys]
+          [/\A#{pattern}\/?\z/, keys]
         elsif path.respond_to?(:keys) && path.respond_to?(:match)
           [path, path.keys]
         elsif path.respond_to?(:names) && path.respond_to?(:match)
@@ -515,11 +500,17 @@ module Padrino
         end
       end
 
+      URI = ::URI.const_defined?(:Parser) ? ::URI::Parser.new : ::URI
+
       def encoded(char)
-        enc = URI.encode(char)
-        enc = "(?:#{Regexp.escape enc}|#{URI.encode char, /./})" if enc == char
+        enc = URI.escape(char)
+        enc = "(?:#{escaped(char, enc).join('|')})" if enc == char
         enc = "(?:#{enc}|#{encoded('+')})" if char == " "
         enc
+      end
+
+      def escaped(char, enc = URI.escape(char))
+        [Regexp.escape(enc), URI.escape(char, /./)]
       end
 
       public
@@ -562,7 +553,7 @@ module Padrino
       end
 
       # Create a new instance without middleware in front of it.
-      alias new! new unless method_defined? :new!
+      alias new! new unless method_defined?(:new!)
 
       # Create a new Padrino application. The block is evaluated in the new app's
       # class scope.

@@ -13,17 +13,6 @@ module Padrino
   end
 
   class << self
-
-    ##
-    # Create a new Padrino::Application. The block is evaluated in the new app's
-    # class scope.
-    #
-    def new(&block)
-      base = Class.new(Padrino::Application)
-      base.class_eval(&block) if block_given?
-      base
-    end
-
     ##
     # Helper method for file references.
     #
@@ -40,6 +29,15 @@ module Padrino
     #
     def root(*args)
       File.expand_path(File.join(PADRINO_ROOT, *args))
+    end
+
+    ##
+    # Create an anonymous Padrino::Application
+    #
+    def new(&block)
+      base = Class.new(Application)
+      base.class_eval(&block) if block_given?
+      base
     end
 
     ##

@@ -22,11 +22,6 @@ module Padrino
       attr_accessor :content_type
     end
 
-    def initialize
-      super
-      @default_layout = :layout
-    end
-
     def erb(template, options={}, locals={})
       render :erb, template, options, locals
     end
@@ -107,7 +102,7 @@ module Padrino
       end
     end
 
-  private
+    private
     # logic shared between builder and nokogiri
     def render_ruby(engine, template, options={}, locals={}, &block)
       options, template = template, nil if template.is_a?(Hash)
@@ -117,19 +112,23 @@ module Padrino
 
     def render(engine, data, options={}, locals={}, &block)
       # merge app-level options
-      options = settings.send(engine).merge(options) if settings.respond_to?(engine)
-      options[:outvar]           ||= '@_out_buf'
-      options[:default_encoding] ||= settings.default_encoding
+      engine_options  = settings.respond_to?(engine) ? settings.send(engine) : {}
+      options         = engine_options.merge(options)
 
       # extract generic options
       locals          = options.delete(:locals) || locals         || {}
       views           = options.delete(:views)  || settings.views || "./views"
       layout          = options.delete(:layout)
       eat_errors      = layout.nil?
-      layout          = @default_layout if layout.nil? or layout == true
+      layout          = engine_options[:layout] if layout.nil? or layout == true
+      layout          = @default_layout         if layout.nil? or layout == true
       content_type    = options.delete(:content_type)  || options.delete(:default_content_type)
       layout_engine   = options.delete(:layout_engine) || engine
       scope           = options.delete(:scope)         || self
+
+      # set some defaults
+      options[:outvar]           ||= '@_out_buf'
+      options[:default_encoding] ||= settings.default_encoding
 
       # compile and render template
       begin
