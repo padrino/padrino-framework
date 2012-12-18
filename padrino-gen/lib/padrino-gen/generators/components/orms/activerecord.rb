@@ -89,7 +89,7 @@ POSTGRES
 SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :adapter => 'sqlite3',
   :database => !DB_NAME!
-SQLIT
+SQLITE
 
 
 def setup_orm
