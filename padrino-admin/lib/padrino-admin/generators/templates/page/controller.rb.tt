@@ -37,7 +37,6 @@ Admin.controllers :<%= @orm.name_plural %> do
 
   put :update, :with => :id do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
-    puts params[@<%= @orm.name_singular %>]
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
         flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
