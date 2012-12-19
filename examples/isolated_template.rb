@@ -2,20 +2,34 @@ require 'bundler/setup'
 require 'padrino-core'
 require 'slim'
 
-module FakeMail
-  extend self
+module Templater1
   include Padrino::Templates
 
   set :views, File.expand_path('../views', __FILE__)
 
-  def mail_template
-    slim 'h1 Hello HTML'
-  end
+  # Inherit templates
+  template(:hello){ 'h1 Hello World!' }
 
-  def page_template
+  def self.page_template
     slim :page
   end
 end
 
-p FakeMail.mail_template
-p FakeMail.page_template
+class Templater2
+  include Templater1
+
+  def self.page_custom
+    slim :hello, layout: false
+  end
+end
+
+class Templater3 < Templater2
+
+  def self.page_cool
+    slim :hello
+  end
+end
+
+p Templater1.page_template
+p Templater2.page_custom
+p Templater3.page_cool

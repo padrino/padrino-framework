@@ -20,8 +20,10 @@ module Padrino
   module Templates
 
     def self.included(base)
-      base.extend(ClassMethods)
-      base.init_templates!
+      unless base.respond_to?(:render)
+        base.extend(ClassMethods)
+        base.init_templates!
+      end
       super
     end
 
@@ -71,6 +73,19 @@ module Padrino
       def inherited(base)
         base.init_templates!
         super
+      end
+
+      def included(base)
+        unless base.respond_to?(:render)
+          base.extend(ClassMethods)
+          base.send(:include, Settings) unless base.respond_to?(:settings)
+          base.set :views, views
+          base.set :templates, templates
+          base.set :default_encoding, default_encoding
+          base.set :template_cache, template_cache
+          base.set :default_layout, default_layout
+        end
+        self
       end
 
       ENGINES.each do |engine, default|
