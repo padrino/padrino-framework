@@ -12,7 +12,8 @@ describe Padrino::Application do
   end
 
   it "responds to #template_cache" do
-    assert_kind_of Tilt::Cache, Padrino::Application.new!.template_cache
+    app = Padrino.new
+    assert_kind_of Tilt::Cache, app.template_cache
   end
 
   class TestApp < Padrino::Application

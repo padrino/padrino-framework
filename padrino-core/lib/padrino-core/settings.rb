@@ -1,6 +1,9 @@
 module Padrino
-  module Setter
-    extend ActiveSupport::Concern
+  module Settings
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
 
     module ClassMethods
       # Sets an option to the given value.  If the value is a proc,

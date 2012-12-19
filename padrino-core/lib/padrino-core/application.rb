@@ -2,7 +2,7 @@ require 'padrino-core/caller'
 require 'padrino-core/request'
 require 'padrino-core/response'
 require 'padrino-core/helpers'
-require 'padrino-core/setter'
+require 'padrino-core/settings'
 require 'padrino-core/templates'
 require 'padrino-core/exceptions'
 require 'padrino-core/routes'
@@ -11,21 +11,19 @@ module Padrino
   class Application
     include Rack::Utils
     include Helpers
+    include Settings
     include Templates
     include Routes
-    include Setter
 
     class NotFound < NameError #:nodoc:
       def http_status; 404; end
     end
 
     attr_accessor :app
-    attr_reader   :template_cache
 
     def initialize(app=nil)
       @app = app
-      @template_cache = Tilt::Cache.new
-      @default_layout = :layout
+      super()
     end
 
     # Rack call interface.
@@ -56,16 +54,6 @@ module Padrino
       end
 
       @response.finish
-    end
-
-    # Access settings defined with Padrino::Application.set.
-    def self.settings
-      self
-    end
-
-    # Access settings defined with Padrino::Application.set.
-    def settings
-      self.class.settings
     end
 
     # Exit the current block, halts any further processing
@@ -310,17 +298,6 @@ module Padrino
       # Sugar for `error(404) { ... }`
       def not_found(&block)
         error 404, &block
-      end
-
-      # Define a named template. The block must return the template source.
-      def template(name, &block)
-        filename, line = Padrino.caller_locations.first
-        templates[name] = [block, filename, line.to_i]
-      end
-
-      # Define the layout template. The block must return the template source.
-      def layout(name=:layout, &block)
-        template name, &block
       end
 
       # Lookup or register a mime type in Rack's mime registry.

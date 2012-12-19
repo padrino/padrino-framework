@@ -229,8 +229,8 @@ describe 'templates' do
   it "is possible to use custom logic for finding template files" do
     mock_app do
       set :views, ["a", "b"].map { |d| File.dirname(__FILE__) + '/views/' + d }
-      def find_template(views, name, engine, &block)
-        Array(views).each { |v| super(v, name, engine, &block) }
+      def self.find_template(views, name, engine, ext, &block)
+        Array(views).each { |v| super(v, name, engine, ext, &block) }
       end
 
       get('/:name') do

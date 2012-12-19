@@ -146,7 +146,7 @@ module Padrino
         verb, path = args.values_at(0, 1)
         path ||= @path
 
-        raise ArgumentError if path.blank? or verb.blank?
+        raise ArgumentError if path.nil? or verb.blank?
 
         signature = compile!(verb, path, block, options)
         routes[verb] << signature
