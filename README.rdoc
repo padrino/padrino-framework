@@ -1,34 +1,10 @@
-== (Padrino Admin TwitterBootstrap 2.1.1)
-
-* Slim, Haml, Erb engine
-* Remove all locale, now only English
-* Remove all unused helper
-* Padrino-Modal: rack-flash and delete function into modal :D
-* highlights error field
-* Automatic replace true or false with relative image (list.slim, list.haml, list.erb)
-* Breadcrumbs
-* Automatic time_ago_in_words when column model is created_at or updated_at
-* Migrate function for MiniRecord
-* tag_icon helper
-* In Production now use compiled file (coffee & less)
-* Batch destroy
-
-
-=== Retro compatibility (0.10.x)
-
-With this version of Padrino admin, we remove some helper... but if you use old generate page, you need this plugin:
-
-```ruby
-padrino g plugin https://raw.github.com/WaYdotNET/padrino-recipes/master/plugins/old_admin_plugin.rb
-```
-
 = Padrino
 
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]
 
-{<img src="http://travis-ci.org/padrino/padrino-framework.png" alt="Testing Status" />}[http://travis-ci.org/padrino/padrino-framework]
+{<img src="https://api.travis-ci.org/padrino/padrino-framework.png" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
 {<img src="https://gemnasium.com/padrino/padrino-framework.png" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
 
 == Preface

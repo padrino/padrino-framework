@@ -60,15 +60,22 @@ th.action  { width: 110px; text-align:center }
 @iconWhiteSpritePath:     "../../images/glyphicons-halflings-white.png";
 
 .dropdown-form{
-  margin:0;
-  padding:0;
-  :hover {
+  :hover, :hover form {
     color: @dropdownLinkColorHover;
     text-decoration: none;
     outline: 0;
     background-color: @dropdownLinkBackgroundActive;
     #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
   }
+   form a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: @baseLineHeight;
+    color: @dropdownLinkColor;
+    white-space: nowrap;
+   }
 }
 body{ font-size: 13px; }
 
