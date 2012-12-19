@@ -5,8 +5,6 @@ require 'slim'
 module Templater1
   include Padrino::Templates
 
-  set :views, File.expand_path('../views', __FILE__)
-
   # Inherit templates
   template(:hello){ 'h1 Hello World!' }
 

@@ -61,17 +61,18 @@ module Padrino
     module ClassMethods
 
       def init_templates!
-        return if self == Padrino::Application
+        return if self == Application
+        view_path = File.join(File.dirname(Padrino.first_caller), '/views')
         send :include, Settings               unless respond_to?(:settings)
-        set :views, './views'                 unless respond_to?(:views)
+        set :views, view_path                 unless respond_to?(:views)
         set :default_encoding, 'utf-8'        unless respond_to?(:default_encoding)
         set :templates, {}                    unless respond_to?(:templates)
         set :template_cache, Tilt::Cache.new  unless respond_to?(:template_cache)
-        set :default_layout, :layout
+        set :default_layout, :layout          unless respond_to?(:default_layout)
       end
 
       def inherited(base)
-        base.init_templates!
+        base.init_templates! if self == Application
         super
       end
 
@@ -79,13 +80,13 @@ module Padrino
         unless base.respond_to?(:render)
           base.extend(ClassMethods)
           base.send(:include, Settings) unless base.respond_to?(:settings)
-          base.set :views, views
-          base.set :templates, templates
+          base.set :views,            views
+          base.set :templates,        templates
           base.set :default_encoding, default_encoding
-          base.set :template_cache, template_cache
-          base.set :default_layout, default_layout
+          base.set :template_cache,   template_cache
+          base.set :default_layout,   default_layout
         end
-        self
+        super
       end
 
       ENGINES.each do |engine, default|
@@ -123,6 +124,10 @@ module Padrino
       end
 
       def render(engine, data, options={}, locals={}, &block)
+        # extract defaults
+        defaults = settings.respond_to?(:"#{engine}_defaults") ? settings.send(:"#{engine}_defaults") : {}
+        options  = defaults.merge(options)
+
         # extract generic options
         locals          = options.delete(:locals) || locals         || {}
         views           = options.delete(:views)  || settings.views || "./views"

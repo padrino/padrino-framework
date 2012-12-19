@@ -144,17 +144,17 @@ describe 'templates' do
   end
 
   it 'allows setting default content type per template engine' do
-    render_app(:str => { :content_type => :txt }) { render :str, 'foo' }
+    render_app(:str_defaults => { :content_type => :txt }) { render :str, 'foo' }
     assert_equal 'text/plain;charset=utf-8', response['Content-Type']
   end
 
   it 'setting default content type does not affect other template engines' do
-    render_app(:str => { :content_type => :txt }) { render :test, 'foo' }
+    render_app(:str_defaults => { :content_type => :txt }) { render :test, 'foo' }
     assert_equal 'text/html;charset=utf-8', response['Content-Type']
   end
 
   it 'setting default content type per template engine does not override content_type' do
-    render_app :str => { :content_type => :txt } do
+    render_app :str_defaults => { :content_type => :txt } do
       content_type :html
       render :str, 'foo'
     end
@@ -187,7 +187,7 @@ describe 'templates' do
   end
 
   it "is possible to use a different engine for the layout than for the template itself globally" do
-    render_app :str => { :layout_engine => :erb } do
+    render_app :str_defaults => { :layout_engine => :erb } do
       settings.template(:layout) { 'Hello <%= yield %>!' }
       render :str, "<%= 'World' %>"
     end
@@ -195,7 +195,7 @@ describe 'templates' do
   end
 
   it "does not leak the content type to the template" do
-    render_app :str => { :layout_engine => :erb } do
+    render_app :str_defaults => { :layout_engine => :erb } do
       settings.template(:layout) { 'Hello <%= yield %>!' }
       render :str, "<%= 'World' %>", :content_type => :txt
     end
