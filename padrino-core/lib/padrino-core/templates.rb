@@ -138,7 +138,7 @@ module Padrino
         settings.template_cache.fetch(:engine, views, name) do
           if found = find_template(views, name)
             File.extname(found)[1..-1]
-          else raise "Unalble to found template '#{name}' in: #{views}"
+          else raise "Template '#{name}' not found in: #{views}"
           end
         end
       end
@@ -213,14 +213,12 @@ module Padrino
 
         # Render layout
         if layout
-          options = options.merge(
-            views: views,
-            layout: false,
-            eat_errors: eat_errors,
-            scope: scope,
-            as: layout_engine
-          )
-          catch(:layout_missing) { return render(layout, options, locals) { output } }
+          options = options.merge(views: views, layout: false, scope: scope, as: layout_engine)
+          begin # TODO: maybe late but return return to the function or to the begin?
+            return render(layout, options, locals) { output }
+          rescue
+            raise unless eat_errors
+          end
         end
 
         output.extend(ContentTyped).content_type = content_type if content_type
@@ -241,7 +239,7 @@ module Padrino
               template.new(path, line.to_i, options) { body }
             else
               file = find_template(views, data, engine.to_s)
-              throw :layout_missing if eat_errors and not file
+              raise "Template '#{data}' was not found" unless file
               template.new(file, 1, options)
             end
           when Proc
