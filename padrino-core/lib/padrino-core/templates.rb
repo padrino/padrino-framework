@@ -69,6 +69,7 @@ module Padrino
         set :templates, {}                    unless respond_to?(:templates)
         set :template_cache, Tilt::Cache.new  unless respond_to?(:template_cache)
         set :default_layout, :layout          unless respond_to?(:default_layout)
+        set :default_engine, nil              unless respond_to?(:default_engine)
       end
 
       def inherited(base)
@@ -85,13 +86,14 @@ module Padrino
           base.set :default_encoding, default_encoding
           base.set :template_cache,   template_cache
           base.set :default_layout,   default_layout
+          base.set :default_engine,   default_engine
         end
         super
       end
 
       ENGINES.each do |engine, default|
-        define_method(engine) do |tpl, opts=default, loc={}, &bk|
-          render(engine, tpl, opts, loc, &bk)
+        define_method(engine) do |data, options=default, locals={}, &block|
+          render(data, options.merge(as: engine), locals, &block)
         end
       end
 
@@ -106,16 +108,6 @@ module Padrino
         settings.template name, &block
       end
 
-      # Calls the given block for every possible template file in views,
-      # named name.ext, where ext is registered on engine.
-      def find_template(views, name, engine, ext)
-        yield File.join(views, "#{name}.#{ext}") # try first preferred ext
-        Tilt.mappings.each do |e, engines|       # try other extensions
-          next unless e != ext and engines.include?(engine)
-          yield File.join(views, "#{name}.#{e}")
-        end
-      end
-
       # logic shared between builder and nokogiri
       def render_ruby(engine, template, options={}, locals={}, &block)
         options, template = template, nil if template.is_a?(Hash)
@@ -123,40 +115,112 @@ module Padrino
         render engine, template, options, locals
       end
 
-      def render(engine, data, options={}, locals={}, &block)
-        # extract defaults
+      def find_template(views, name, preferred_ext=nil, &block)
+
+        base_path = File.join(views, name.to_s)
+
+        return base_path if File.exist?(base_path)
+
+        if preferred_ext
+          result = "#{base_path}.#{preferred_ext}"
+          return result if File.exists?(result)
+        end
+
+        # TODO: add also I18n.locale and content_type suffix
+        settings.template_cache.fetch(:template, views, name, preferred_ext) do
+          exts = Tilt.mappings.keys.join(',')
+          candidates = Dir["#{base_path}.{#{exts}}"]
+          candidates.detect { |f| File.exists?(f) }
+        end
+      end
+
+      def find_engine(views, name)
+        settings.template_cache.fetch(:engine, views, name) do
+          if found = find_template(views, name)
+            File.extname(found)[1..-1]
+          else raise "Unalble to found template '#{name}' in: #{views}"
+          end
+        end
+      end
+
+      ##
+      # Examples:
+      #
+      #   render '/foo/bar'
+      #   # => will look for => /foo/bar.slim etc...
+      #   render :bar
+      #   # => same as above
+      #   render :bar, engine: 'erb'
+      #   # => will look for bar.erb
+      #   render engine: 'slim', -> { 'h1 Hello' }
+      #   # => will render a block in the current provied engine
+      #   render text: 'h1 Hello', engine: 'slim'
+      #   # => same as above
+      #   render slim: 'h1 Hello'
+      #   # => same as above
+      #
+      #
+      def render(data, options={}, locals={}, &block)
+        # Extract defaults
+        if data.is_a?(Hash) && (text = data.delete(:text))
+          data, options = proc { text }, data
+        end
+        engine  = options.delete(:as) || settings.default_engine
+
+        # TODO: Improve look of this
+        case data
+        when Hash
+          k = data.keys[0]
+          v = data.delete(k)
+          options.merge!(data)
+          data, engine = v, k
+        when Symbol
+          if Tilt[engine]
+            data, options = options, {}
+          else
+            engine = find_engine(options.fetch(:views, settings.views), data)
+          end
+        when String
+          engine = find_engine(options.fetch(:views, settings.views), data)
+        else raise "Unable to auto-determine engine from data: #{data}"
+        end unless engine
+
         defaults = settings.respond_to?(:"#{engine}_defaults") ? settings.send(:"#{engine}_defaults") : {}
         options  = defaults.merge(options)
 
-        # extract generic options
+        # Extract generic options
         locals          = options.delete(:locals) || locals         || {}
-        views           = options.delete(:views)  || settings.views || "./views"
+        views           = options.delete(:views)  || settings.views || './views'
         layout          = options.delete(:layout)
         eat_errors      = layout.nil?
-        layout          = settings.default_layout   if layout.nil? or layout == true
+        layout          = settings.default_layout if layout.nil? or layout == true
         content_type    = options.delete(:content_type)  || options.delete(:default_content_type)
-        layout_engine   = options.delete(:layout_engine) || engine
+        layout_engine   = options.delete(:layout_engine) # || engine
         scope           = options.delete(:scope)         || settings
 
-        # set some defaults
+        # Set some defaults
         options[:outvar]           ||= '@_out_buf'
         options[:default_encoding] ||= settings.default_encoding
 
-        # compile and render template
+        # Compile and render template
         begin
-          # TODO: check thread safety
-          layout_was = settings.default_layout
-          settings.default_layout = false
-          template = compile_template(engine, data, options, views)
-          output = template.render(scope, locals, &block)
+          # TODO: actually, this is not thread safe
+          settings.default_layout, layout_was = false, settings.default_layout
+          output = compile_template(engine, data, options, views).render(scope, locals, &block)
         ensure
           settings.default_layout = layout_was
         end
 
-        # render layout
+        # Render layout
         if layout
-          options = options.merge(views: views, layout: false, eat_errors: eat_errors, scope: scope)
-          catch(:layout_missing) { return render(layout_engine, layout, options, locals) { output } }
+          options = options.merge(
+            views: views,
+            layout: false,
+            eat_errors: eat_errors,
+            scope: scope,
+            as: layout_engine
+          )
+          catch(:layout_missing) { return render(layout, options, locals) { output } }
         end
 
         output.extend(ContentTyped).content_type = content_type if content_type
@@ -166,32 +230,23 @@ module Padrino
       private
       def compile_template(engine, data, options, views)
         eat_errors = options.delete :eat_errors
-        settings.template_cache.fetch(engine, data, options) do
-          template = Tilt[engine]
-          raise "Template engine not found: #{engine}" if template.nil?
-
+        template = Tilt[engine]
+        raise "Template engine not found: #{engine}" if template.nil?
+        settings.template_cache.fetch(engine, data, options, views) do
           case data
-          when Symbol
+          when Symbol, String
             body, path, line = settings.templates[data]
             if body
               body = body.call if body.respond_to?(:call)
               template.new(path, line.to_i, options) { body }
             else
-              found = false
-              find_template(views, data, template, engine.to_s) do |file|
-                path ||= file # keep the initial path rather than the last one
-                if found = File.exists?(file)
-                  path = file
-                  break
-                end
-              end
-              throw :layout_missing if eat_errors and not found
-              template.new(path, 1, options)
+              file = find_template(views, data, engine.to_s)
+              throw :layout_missing if eat_errors and not file
+              template.new(file, 1, options)
             end
-          when Proc, String
-            body = data.is_a?(String) ? Proc.new { data } : data
+          when Proc
             path, line = Padrino.first_caller
-            template.new(path, line.to_i, options, &body)
+            template.new(path, line.to_i, options, &data)
           else
             raise ArgumentError, "Sorry, don't know how to render #{data.inspect}."
           end

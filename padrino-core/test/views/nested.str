@@ -1,1 +1,1 @@
-<content>#{render :str, :hello}</content>
+<content>#{render str: :hello}</content>

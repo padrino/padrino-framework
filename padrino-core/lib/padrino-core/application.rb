@@ -38,7 +38,7 @@ module Padrino
       @request  = Request.new(env)
       @response = Response.new
       @params   = indifferent_params(@request.params)
-      template_cache.clear if settings.reload_templates
+      settings.template_cache.clear if settings.reload_templates
       force_encoding(@params)
 
       @response['Content-Type'] = nil
