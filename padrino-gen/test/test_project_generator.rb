@@ -18,6 +18,7 @@ describe "ProjectGenerator" do
       assert_match_in_file(/class SampleProject < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/Padrino.mount\('SampleProject'\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
       assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
       assert_dir_exists("#{@apptmp}/sample_project/public/images")
       assert_dir_exists("#{@apptmp}/sample_project/public/javascripts")
