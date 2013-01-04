@@ -1,6 +1,7 @@
 = CHANGES
 
 == 0.10.8 (Not Yet Released)
+* FIX cleanup and refactoring of documentation (@matthias-guenther)
 
 == 0.10.7
 
