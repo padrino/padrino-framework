@@ -52,7 +52,6 @@ describe "!NAME! Model" do
 end
 TEST
 
-# Setup the testing configuration helper and dependencies
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'bacon', :group => 'test'
@@ -60,7 +59,6 @@ def setup_test
   create_file destination_root("test/test.rake"), BACON_RAKE
 end
 
-# Generates a controller test given the controllers name
 def generate_controller_test(name)
   bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
