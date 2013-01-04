@@ -212,3 +212,16 @@ assert_equal("Thanks for registering", email.subject)
 assert_equal("site@site.com", email.from.first)
 assert_equal(@user.email, email.to.first)
 end
+
+h2. Using helpers in emails
+
+You can use any helpers, included Padrino Helpers, inside your emails.
+
+Just add some code like the following, we recommend you put it somewhere inside config/boot.rb, and you should be good to go:
+
+<pre lang=ruby><code>
+Mail::Message.class_eval do
+  include Padrino::Helpers::NumberHelpers
+  include Padrino::Helpers::TranslationHelpers
+end
+</code></pre>
