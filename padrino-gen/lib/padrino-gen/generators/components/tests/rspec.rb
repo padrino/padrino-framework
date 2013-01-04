@@ -58,7 +58,6 @@ def setup_test
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE
 end
 
-# Generates a controller test given the controllers name
 def generate_controller_test(name)
   rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")

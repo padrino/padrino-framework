@@ -86,7 +86,6 @@ def setup_test
   create_file destination_root("test/test.rake"), RIOT_RAKE
 end
 
-# Generates a controller test given the controllers name
 def generate_controller_test(name)
   riot_contents = RIOT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
