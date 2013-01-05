@@ -81,29 +81,27 @@ this way we prevent collisions.
 h4. ActiveRecord  Tasks:
 
 pre[bash].
-rake ar:abort_if_pending_migrations    # Raises an error if there are pending migrations.
-rake ar:auto:upgrade                   # Uses schema.rb to auto-upgrade.
-rake ar:charset                        # Retrieves database charset.
-rake ar:collation                      # Retrieves databsae collation.
-rake ar:create                         # Creates the database as defined in config/database.yml
-rake ar:create:all                     # Creates local databases as defined in config/database.yml
-rake ar:drop                           # Drops the database for the current Padrino.env
-rake ar:drop:all                       # Drops local databases defined in config/database.yml
-rake ar:forward                        # Pushes the schema to the next version.
-rake ar:migrate                        # Migrates the database through scripts in db/migrate.
-rake ar:migrate:down                   # Runs the "down" for a given migration VERSION.
-rake ar:migrate:redo                   # Rollbacks current migration and migrates up to version
-rake ar:migrate:reset                  # Resets your database using your migrations.
-rake ar:migrate:up                     # Runs the "up" for a given migration VERSION NUMBER
-rake ar:reset                          # Drops and recreates the database using db/schema.rb.
-rake ar:rollback                       # Rolls back the schema to previous schema version.
-rake ar:schema:dump                    # Creates a portable db/schema.rb file.
-rake ar:schema:load                    # Loads a schema.rb file into the database.
-rake ar:schema:to_migration            # Creates a migration from schema.rb
-rake ar:schema:to_migration_with_reset # Creates a migration and resets the migrations log.
-rake ar:setup                          # Creates the database, loads the schema, and seeds data.
-rake ar:structure:dump                 # Dumps the database structure to a SQL file.
-rake ar:version                        # Retrieves the current schema version number.
+rake ar:abort_if_pending_migrations  # Raises an error if there are pending migrations
+rake ar:charset                      # Retrieves the charset for the current environment's database
+rake ar:collation                    # Retrieves the collation for the current environment's database
+rake ar:create                       # Create the database defined in config/database.yml for the current Padrino.env
+rake ar:create:all                   # Create all the local databases defined in config/database.yml
+rake ar:drop                         # Drops the database for the current Padrino.env
+rake ar:drop:all                     # Drops all the local databases defined in config/database.yml
+rake ar:forward                      # Pushes the schema to the next version.
+rake ar:migrate                      # Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false.
+rake ar:migrate:down                 # Runs the "down" for a given migration VERSION.
+rake ar:migrate:redo                 # Rollbacks the database one migration and re migrate up.
+rake ar:migrate:reset                # Resets your database using your migrations for the current environment
+rake ar:migrate:up                   # Runs the "up" for a given migration VERSION.
+rake ar:reset                        # Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.
+rake ar:rollback                     # Rolls the schema back to the previous version.
+rake ar:schema:dump                  # Create a db/schema.rb file that can be portably used against any DB supported by AR
+rake ar:schema:load                  # Load a schema.rb file into the database
+rake ar:setup                        # Create the database, load the schema, and initialize with the seed data
+rake ar:structure:dump               # Dump the database structure to a SQL file
+rake ar:translate                    # Generates .yml files for I18n translations
+rake ar:version                      # Retrieves the current schema version number
 
 p. *rake ar:auto:upgrade*
 
