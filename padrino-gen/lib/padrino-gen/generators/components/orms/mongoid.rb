@@ -51,7 +51,7 @@ Mongoid.load!(File.join(Padrino.root, 'config', 'database.yml'), Padrino.env)
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '~> 3.0.0' : '~>2.0')
+  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '~>3.0.0' : '~>2.0')
   # require_dependencies 'mongo',   :require => 'mongo'
   # require_dependencies 'bson_ext'
 

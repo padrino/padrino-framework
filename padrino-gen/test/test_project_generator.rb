@@ -297,14 +297,13 @@ describe "ProjectGenerator" do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongoid', '--script=none') }
       assert_match(/applying.*?mongoid.*?orm/, out)
       if RUBY_VERSION >= '1.9'
-        assert_match_in_file(/gem 'mongoid', '>=3.0'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/Mongoid::Config.sessions/, "#{@apptmp}/project.com/config/database.rb")
+        assert_match_in_file(/gem 'mongoid', '~>3.0.0'/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/Mongoid.load!/, "#{@apptmp}/project.com/config/database.rb")
+        assert_match_in_file(/production:/, "#{@apptmp}/project.com/config/database.yml")
       else
         assert_match_in_file(/gem 'mongoid', '~>2.0'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/Mongoid.database/, "#{@apptmp}/project.com/config/database.rb")
       end
-      assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
-      assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
     end
 
 
