@@ -25,32 +25,43 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 # More installation and setup notes are on http://mongoid.org/docs/
 MONGO
 
-MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
-# Connection.new takes host, port
+MONGOID3YML = (<<-MONGO) unless defined?(MONGOID3YML)
+development:
+  sessions:
+    default:
+      database: !NAME!_development
+      hosts:
+        - localhost:27017 
+production:
+  sessions:
+    default:
+      database: !NAME!_production
+      hosts:
+        - localhost:27017
+test:
+  sessions:
+    default:
+      database: !NAME!_test
+      hosts:
+        - localhost:27017
+MONGO
 
-host = 'localhost'
-port = Mongo::Connection::DEFAULT_PORT
-
-database_name = case Padrino.env
-  when :development then '!NAME!_development'
-  when :production  then '!NAME!_production'
-  when :test        then '!NAME!_test'
-end
-
-Mongoid::Config.sessions = {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
+MONGOID3DB = (<<-MONGO) unless defined?(MONGOID3DB)
+Mongoid.load!(File.join(Padrino.root, 'config', 'database.yml'), Padrino.env)
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '>=3.0' : '~>2.0')
-  require_dependencies 'mongo',   :require => 'mongo'
-  require_dependencies 'bson_ext'
+  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '~> 3.0.0' : '~>2.0')
+  # require_dependencies 'mongo',   :require => 'mongo'
+  # require_dependencies 'bson_ext'
 
   if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
     require_dependencies('SystemTimer', :require => 'system_timer')
   end
 
   if RUBY_VERSION >= '1.9'
-     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @app_name.underscore))
+     create_file('config/database.yml', MONGOID3YML.gsub(/!NAME!/, @app_name.underscore))
+     create_file('config/database.rb', MONGOID3DB.gsub(/!NAME!/, @app_name.underscore))
   else
     create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
   end
