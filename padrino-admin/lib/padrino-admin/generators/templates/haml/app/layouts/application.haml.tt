@@ -47,7 +47,6 @@
         - if sidebar
           .span2=sidebar
         %div{:class => ('span10' if sidebar)}
-          =breadcrumbs settings.breadcrumbs, true
           -[:error, :warning, :success, :notice].each do |type|
             -next if flash[type].blank?
             #flash-result{:class => "#{type} hide"}

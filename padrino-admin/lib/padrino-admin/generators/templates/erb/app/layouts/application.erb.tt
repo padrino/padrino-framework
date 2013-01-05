@@ -60,7 +60,6 @@
          <%% else %>
            <div>
          <%% end %>
-          <%%= breadcrumbs settings.breadcrumbs, true %>
           <%% [:error, :warning, :success, :notice].each do |type| %>
             <%% next if flash[type].blank? %>
             <div id='flash-result' class='<%%= type %> hide'>
