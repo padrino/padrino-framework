@@ -1,61 +1,58 @@
-@import "bootstrap/bootstrap.less";
-
 body {
   font-size: 13px;
   padding-top: 60px;
 }
-.action {
-  form {
-    padding: 0 2px;
-    margin: 0px;
-  }
-  input {
-    font-size:11px;
-    padding:2px;
-    width:50px;
-    border-radius:2px;
-  }
-  &th {
-    width: 110px;
-    text-align: center;
-  }
+.action form {
+  padding: 0 2px;
+  margin: 0px;
+}
+.action input {
+  font-size: 11px;
+  padding: 2px;
+  width: 50px;
+  border-radius: 2px;
+}
+th.action {
+  width: 110px;
+  text-align: center;
 }
 
 .login {
-  background-color: @white;
-  border: 1px solid @linkColor;
-  box-shadow: 0px 0px 20px @gray;
+  background-color: #fff;
+  border: 1px solid #08c;
+  box-shadow: 0px 0px 20px #555;
   border-radius: 5px;
   padding-top: 10px;
   width: 500px;
   margin: 0px auto;
+}
+.login form, .login .actions {
+  margin-bottom: 0px;
+}
+.login .label.error {
+  background-color: #c43c35;
+}
+.login .logo {
+  text-align: center;
+  padding: 5px 0;
+}
 
-  form, .actions {
-    margin-bottom: 0px;
-  }
-  .label.error {
-    background-color: #c43c35;
-  }
-  .logo {
-    text-align: center;
-    padding: 5px 0;
-  }
-
-  .control-group > label {
-    float: left;
-    width: 40px;
-    padding-top: 5px;
-    text-align: right;
-  }
-  .controls {
-    margin-left: 100px;
-  }
+.login .control-group > label {
+  float: left;
+  width: 40px;
+  padding-top: 5px;
+  text-align: right;
+}
+.login .controls {
+  margin-left: 100px;
 }
 .flash-error, .flash-danger {
-  border: 2px solid @errorText;
+  /* @errorText */
+  border: 2px solid #b94a48;
 }
 .flash-success, .flash-notice {
-  border: 2px solid  @successText;
+  /* @succcessText */
+  border: 2px solid #468847;
 }
 .flash-warning {
   border: 2px solid  @warningText;
@@ -80,26 +77,27 @@ body {
   text-align: center;
 }
 
-@iconSpritePath: "../../images/glyphicons-halflings.png";
-@iconWhiteSpritePath: "../../images/glyphicons-halflings-white.png";
-
-.dropdown-form {
-  :hover, :hover form {
-    color: @dropdownLinkColorHover;
-    text-decoration: none;
-    outline: 0;
-    background-color: @dropdownLinkBackgroundActive;
-    #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
-  }
-   form a {
-    display: block;
-    padding: 3px 20px;
-    clear: both;
-    font-weight: normal;
-    line-height: @baseLineHeight;
-    color: @dropdownLinkColor;
-    white-space: nowrap;
-   }
+.dropdown-form:hover, .dropdown-form:hover form {
+  /* @dropdownLinkColorHover */
+  color: #fff;
+  text-decoration: none;
+  outline: 0;
+  /* @dropdownLinkBackgroundActive */
+  background-color: #08c;
+  /* TODO Implement.
+   * #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
+   */
+}
+.dropdown-form form a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  /* @baseLineHeight */
+  line-height: 20px; 
+  /* @dropdownLinkColor */
+  color: #333;
+  white-space: nowrap;
 }
 
 .footer {
@@ -107,20 +105,20 @@ body {
   margin-top: 70px;
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5;
-  p {
-    margin-bottom: 0;
-    color: #777;
-    text-align: center;
-    a {
-      padding: 0 5px;
-    }
-  }
-  .footer-links {
-    margin: 10px 0;
-    text-align: center;
-    li {
-      display: inline;
-      margin-right: 10px;
-    }
-  }
+}
+.footer p {
+  margin-bottom: 0;
+  color: #777;
+  text-align: center;
+}
+.footer p a {
+  padding: 0 5px;
+}
+.footer .footer-links {
+  margin: 10px 0;
+  text-align: center;
+}
+.footer .footer-links li {
+  display: inline;
+  margin-right: 10px;
 }
