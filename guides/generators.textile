@@ -74,7 +74,7 @@ The available components and their default options are listed below:
 
 |_. Component |_. Default |_. Aliases |_. Options                                                             
 |
-| orm         | none      | -d        | mongoid, activerecord, datamapper, couchrest, mongomatic, ohm, ripple 
+| orm         | none      | -d        | mongoid, activerecord, datamapper, mongomapper, couchrest, mongomatic, ohm, ripple 
 |
 | test        | none      | -t        | bacon, shoulda, cucumber, testspec, riot, rspec                       
 |
