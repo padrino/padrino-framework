@@ -1,5 +1,5 @@
 doctype 5
-html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+html lang='en'
   head
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Padrino Admin
@@ -47,16 +47,17 @@ html lang='en' xmlns='http://www.w3.org/1999/xhtml'
               a href="#" id='padrino-modal-close' class="btn pull-right" data-dismiss="modal"
 
           == yield
-      footer class='footer'
-        p class="center-block"
-          | Copyright &copy; #{Time.now.year} Your Site -
-          b Powered by Padrino v.#{Padrino.version}
 
-        ul class="footer-links"
-          li == link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini'
-          li == link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini'
-          li == link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'
-          li == link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini'
+    footer class='footer clearfix'
+      p
+        | Copyright &copy; #{Time.now.year} Your Site - 
+        b Powered by Padrino v.#{Padrino.version}
+
+      ul class="footer-links"
+        li == link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank
+        li == link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank
+        li == link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank
+        li == link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank
 
     == javascript_include_tag 'jquery-1.8.2.min'
     - unless PADRINO_ENV == 'production'

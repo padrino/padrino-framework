@@ -24,7 +24,7 @@ div class="tabs-content"
         <%- @orm.columns.each_with_index do |column, i| -%>
         th class='header' == :<%= column.name %>
         <%- end -%>
-        th class='header action' Action
+        th class='header action' actions
 
     tbody
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
