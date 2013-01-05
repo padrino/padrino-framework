@@ -49,17 +49,17 @@
               %a#padrino-modal-close.btn.pull-right(data-dismiss='modal' href='#')
 
           =yield
-    %footer.footer
+    %footer.footer.clearfix
       %p
         Copyright &copy;
         =Time.now.year
         Your Site -
         %b Powered by Padrino v.#{Padrino.version}
       %ul.footer-links
-        %li= link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini'
-        %li= link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini'
-        %li= link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'
-        %li= link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini'
+        %li= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank
+        %li= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank
+        %li= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank
+        %li= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank
 
     =javascript_include_tag 'jquery-1.8.2.min'
     - unless PADRINO_ENV == 'production'
