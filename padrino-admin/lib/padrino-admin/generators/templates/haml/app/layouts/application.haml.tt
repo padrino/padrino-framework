@@ -1,19 +1,18 @@
 !!! 5
-%html{:lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml'}
+%html{:lang => 'en'}
   %head
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    =stylesheet_link_tag 'bootstrap', 'admin'
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %title Padrino Admin
+    =stylesheet_link_tag 'bootstrap', 'admin'
   %body
     .navbar.navbar-fixed-top
       .navbar-inner
         .container-fluid
           =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
-
           %ul.nav.pull-right
             %li.dropdown
               %a#user-menu.dropdown-toggle{:href => "#", :data =>{:toggle => 'dropdown'}}
@@ -29,6 +28,7 @@
                 =link_to project_module.human_name, project_module.path('/admin')
 
     - sidebar = yield_content(:sidebar)
+
     .container-fluid
       .row-fluid
         - if sidebar
@@ -49,17 +49,17 @@
               %a#padrino-modal-close.btn.pull-right(data-dismiss='modal' href='#')
 
           =yield
-      %footer.footer
-        %p.center-block
-          Copyright &copy;
-          =Time.now.year
-          Your Site -
-          %b Powered by Padrino v.#{Padrino.version}
-        %ul.footer-links
-          %li= link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini'
-          %li= link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini'
-          %li= link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'
-          %li= link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini'
+    %footer.footer
+      %p
+        Copyright &copy;
+        =Time.now.year
+        Your Site -
+        %b Powered by Padrino v.#{Padrino.version}
+      %ul.footer-links
+        %li= link_to tag_icon(:home, "Padrino web"), "http://www.padrinorb.com", :target => :_blank, :class=>'btn btn-info btn-mini'
+        %li= link_to tag_icon(:heart, "Padrino blog"), "http://www.padrinorb.com/blog", :target => :_blank, :class=>'btn btn-success btn-mini'
+        %li= link_to tag_icon(:github, "Padrino code"), "https://github.com/padrino/padrino-framework", :target => :_blank, :class=>'btn btn-inverse btn-mini'
+        %li= link_to tag_icon(:twitter, "Padrino twitter"), "http://twitter.com/padrinorb", :target => :_blank, :class=>'btn btn-info btn-mini'
 
     =javascript_include_tag 'jquery-1.8.2.min'
     - unless PADRINO_ENV == 'production'
