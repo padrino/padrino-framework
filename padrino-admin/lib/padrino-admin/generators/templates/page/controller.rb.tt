@@ -1,16 +1,12 @@
 Admin.controllers :<%= @orm.name_plural %> do
-  before do
-    settings.breadcrumbs.reset
-    settings.breadcrumbs.add :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :index), :<%= @orm.name_singular %>
-  end
-
   get :index do
+    @title = "<%= @orm.name_plural.capitalize %>"
     @<%= @orm.name_plural %> = <%= @orm.all %>
     render '<%= @orm.name_plural %>/index'
   end
 
   get :new do
-    settings.breadcrumbs.add :<%= @orm.name_singular %>_new , url(:<%= @orm.name_plural %>, :new), :new
+    @title = "New <%= @orm.name_singular %>"
     @<%= @orm.name_singular %> = <%= @orm.build %>
     render '<%= @orm.name_plural %>/new'
   end
@@ -18,15 +14,17 @@ Admin.controllers :<%= @orm.name_plural %> do
   post :create do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
+      @title = "Editing <%= @orm.name_singular %> #{<%= @orm.name_singular %>.id}"
       flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
       params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
+      @title = "New <%= @orm.name_singular %>"
       render '<%= @orm.name_plural %>/new'
     end
   end
 
   get :edit, :with => :id do
-    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id],  :edit
+    @title = "Editing <%= @orm.name_singular %> #{params[:id]}"
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
@@ -36,6 +34,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   put :update, :with => :id do
+    @title = "Editing <%= @orm.name_singular %> #{params[:id]}"
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
@@ -50,6 +49,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   delete :destroy, :with => :id do
+    @title = "<%= @orm.name_plural.capitalize %>"
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.name_singular %>
       if <%= @orm.destroy %>
@@ -64,6 +64,7 @@ Admin.controllers :<%= @orm.name_plural %> do
   end
 
   delete :delete_multiple do
+    @title = "<%= @orm.name_plural.capitalize %>"
     unless params[:<%= @orm.name_singular %>_ids]
       flash[:error] = 'You must select at least one <%= @orm.name_singular %> '
       redirect(url(:<%= @orm.name_plural %>, :index))
