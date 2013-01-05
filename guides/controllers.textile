@@ -132,7 +132,7 @@ get :show, :with => :id do
 # url_for(:admin, :show, :id => 5) => "/admin/show/5"
 end
 
-get :other, with => [:id, :name]  do
+get :other, :with => [:id, :name]  do
 # url is generated as "/admin/other/#{params[:id]}/#{params[:name]}"
 # url_for(:admin, :other, :id => 5, :name => "hey") => "/admin/other/5/hey"
 end
@@ -169,7 +169,7 @@ If need be the parent resource can also be specified on inline routes in additio
 SimpleApp.controllers :product, :parent => :user do
 get :index, :parent => :project do
 # url is generated as "/user/#{params[:user_id]}/project/#{params[:project_id]}/product"
-# url(:product, :index, :user_id => 5, :project_id => 8) => "/user/5/project/8/product"
+# url_for(:product, :index, :user_id => 5, :project_id => 8) => "/user/5/project/8/product"
 end
 end
 </code></pre>
