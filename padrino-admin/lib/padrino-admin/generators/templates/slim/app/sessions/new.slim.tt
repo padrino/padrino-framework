@@ -18,7 +18,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 
           fieldset class='control-group'
             label for="email" class='control-label' Login
-            div class='controls' == text_field_tag :email, :value => params[:email]
+            div class='controls' == text_field_tag :email, :value => params[:email], :autofocus => true
           fieldset class='control-group'
             label for='password' class='control-label' Password
             div class='controls' == password_field_tag :password, :value => params[:password]

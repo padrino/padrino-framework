@@ -26,7 +26,7 @@
 
           <fieldset class='control-group'>
             <label for="email" class='control-label'>Login</label>
-            <div class='controls'> <%%= text_field_tag :email, :value => params[:email] %></div>
+            <div class='controls'> <%%= text_field_tag :email, :value => params[:email], :autofocus => true %></div>
           </fieldset>
 
           <fieldset class='control-group'>

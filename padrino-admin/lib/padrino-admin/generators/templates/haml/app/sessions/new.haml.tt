@@ -23,7 +23,7 @@
 
           %fieldset.control-group
             %label.control-label{:for=>"email"} Login
-            .controls=text_field_tag :email, :value => params[:email]
+            .controls=text_field_tag :email, :value => params[:email], :autofocus => true
           %fieldset.control-group
             %label.control-label{:for=>'password'} Password
             .controls=password_field_tag :password, :value => params[:password]
