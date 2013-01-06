@@ -573,6 +573,7 @@ module Padrino
       #
       # @api public
       def file_field_tag(name, options={})
+        name = "#{name}[]" if options[:multiple]
         options.reverse_merge!(:name => name)
         input_tag(:file, options)
       end
