@@ -484,6 +484,11 @@ describe "FormHelpers" do
       assert_has_tag(:input, :type => 'file', :class => "photo", :name => 'photo') { actual_html }
     end
 
+    should "have an array name with multiple option" do
+      actual_html = file_field_tag(:photos, :multiple => true)
+      assert_has_tag(:input, :name => 'photos[]') { actual_html }
+    end
+
     should "display file field in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.advanced-form input[type=file]', :count => 1, :name => 'photo', :class => 'upload'
