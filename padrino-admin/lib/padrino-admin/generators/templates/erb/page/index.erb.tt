@@ -13,7 +13,7 @@
               <li><%%= link_to tag_icon(:check,'Select All'), '#', :id => 'check_all' %></li>
               <li><%%= link_to tag_icon('check-empty','Unselect All'), '#', :id => 'uncheck_all' %></li>
               <li class=divider></li>
-              <li class=disabled><%=link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected' %></li>
+              <li class=disabled><%%=link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected' %></li>
               <!--<li>
                 <div class="hide">
                   <%% form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f| %>
@@ -26,9 +26,9 @@
             </ul>
           </div>
         </th>
-        <%- @orm.columns.each_with_index do |column, i| -%>
+        <% @orm.columns.each_with_index do |column, i| -%>
         <th class="header"> <%%= :<%= column.name %> %></th>
-        <%- end -%>
+        <% end -%>
         <th class="header action"></th>
     </thead>
 
@@ -52,10 +52,10 @@
               <div class=arrow></div>
               <h3 class=popover-title>Delete <%= @orm.name_singular %></h3>
               <div class=popover-content>
-                <%- form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do -%>
-                  <%=submit_tag :Delete, :class =>'btn btn-danger btn-small' %>
+                <%%- form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do %>
+                  <%%=submit_tag :Delete, :class =>'btn btn-danger btn-small' %>
                   <div class="btn btn-small cancel">Cancel</div>
-                <%- end -%>
+                <%% end %>
               </div>
             </div>
           </td>
