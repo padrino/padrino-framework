@@ -14,8 +14,8 @@
         <div class="modal-body" id="padrino-modal-body">
 
           <%% [:error, :warning, :notice].map do |type|   %>
-            <div class="#{type}">
-              <%%= flash_tag(type, :class => "alert alert-#{type}") %>
+            <div class="flash">
+              <%%= flash_tag(type, :class => "alert alert-#{type}", :boostrap => true) %>
             </div>
           <%% end %>
 
@@ -40,5 +40,6 @@
         <div class="modal-footer"> <%%= submit_tag("Sign In", :class => "btn pull-right") %></div>
       </div>
     <%% end %>
+    <%= javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application %>
   </body>
 </html>

@@ -37,39 +37,9 @@
       </div>
     </div>
 
-    <%% sidebar = yield_content(:sidebar) %>
-
     <div class="container-fluid">
-      <div class="row-fluid">
-        <%% if sidebar %>
-          <div class="span2"> <%%= sidebar %> </div>
-          <div class="span10">
-        <%% else %>
-          <div>
-        <%% end %>
-          <%% [:error, :warning, :success, :notice].each do |type| %>
-            <%% next if flash[type].blank? %>
-            <div id="flash-result" class="<%%= type %> hide">
-              <h4><%%= type %></h4>
-              <%%= flash[type] %>
-            </div>
-          <%% end %>
-        </div>
-
-         <div class="modal hide fade" id="padrino-modal">
-           <div class="modal-header" id="padrino-modal-header">
-             <button class="close" data-dismiss="modal" type="button">&times;</button>
-             <h4 id="padrino-modal-title"></h4>
-           </div>
-           <div class="modal-body" id="padrino-modal-body"></div>
-           <div class="modal-footer" id="padrino-modal-footer">
-             <a class="btn  pull-right" data-dismiss="modal" href="#" id="padrino-modal-close"></a>
-           </div>
-         </div>
-      </div>
-
-      <%%= yield %>
-
+      <div class=flash><%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join %></div>
+      <div class="row-fluid"><%%= yield %></div>
     </div>
     <footer class="footer clearfix">
       <p>Copyright &copy; <%= Time.now.year %> Your Site - <b>Powered by Padrino v.<%= Padrino.version %></b></p>
@@ -80,16 +50,6 @@
         <li><%%= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank %></li>
       </ul>
     </footer>
-    <%%= javascript_include_tag "jquery-1.8.2.min" %>
-    <%% unless PADRINO_ENV == "production" %>
-       <!-- Twitter Bootstrap -->
-       <%%= javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button] %>
-       <%%= javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown] %>
-       <%%= javascript_include_tag %w[bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead] %>
-       <%%= javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab] %>
-    <%% else %>
-      <%%= javascript_include_tag "bootstrap/bootstrap.min" %>
-    <%% end %>
-    <%%= javascript_include_tag "application" %>
+    <%= javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application %>
   </body>
 </html>

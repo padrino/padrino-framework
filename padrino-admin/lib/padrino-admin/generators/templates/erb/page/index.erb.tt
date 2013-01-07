@@ -12,7 +12,9 @@
             <ul class="dropdown-menu">
               <li><%%= link_to tag_icon(:check,'Select All'), '#', :id => 'check_all' %></li>
               <li><%%= link_to tag_icon('check-empty','Unselect All'), '#', :id => 'uncheck_all' %></li>
-              <li>
+              <li class=divider></li>
+              <li class=disabled><%=link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected' %></li>
+              <!--<li>
                 <div class="hide">
                   <%% form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f| %>
                   <button type='submit' class='to_submit btn btn-danger pull-left' id='multiple_delete_button' > <%%= tag_icon(:trash,"Delete Checked") %> </button>
@@ -20,14 +22,14 @@
                   <%% end %>
                 </div>
                 <%%= link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete' %>
-              </li>
+              </li>-->
             </ul>
           </div>
         </th>
         <%- @orm.columns.each_with_index do |column, i| -%>
         <th class="header"> <%%= :<%= column.name %> %></th>
         <%- end -%>
-        <th class="header action">actions</th>
+        <th class="header action"></th>
     </thead>
 
     <tbody>
@@ -44,9 +46,19 @@
           <%- end -%>
           <%- end -%>
           <td class="action">
-            <%%= button_to(:edit, url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id),:method => :get, :class => 'pull-left' ) {link_to tag_icon(:edit, 'Edit') , :class =>'btn btn-mini btn-link to_submit Edit' } %>
-            <%%= button_to(:delete, url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id),:method => :delete, :class => "hide #{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}") { submit_tag :delete, :class =>'btn btn-danger pull-left' } %>
-            <%%= link_to tag_icon(:trash, 'Delete'), :class =>'btn_delete btn btn-link btn-mini pull-right', 'data-form' => ".#{:<%= @orm.name_plural %>}-#{:destroy}-#{<%= @orm.name_singular %>.id}", 'data-title'=>'Are you sure?', 'data-cancel' => 'Cancel', 'data-type' => 'warning' %>
+            <%%= link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "Edit <%= @orm.name_singular %>" %>
+            <%%= link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "Delete <%= @orm.name_singular %>" %>
+            <div class="popover popover-delete-one left">
+              <div class=arrow></div>
+              <h3 class=popover-title>Delete <%= @orm.name_singular %></h3>
+              <div class=popover-content>
+                <%- form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do -%>
+                  <%=submit_tag :Delete, :class =>'btn btn-danger btn-small' %>
+                  <div class="btn btn-small cancel">Cancel</div>
+                <%- end -%>
+              </div>
+            </div>
+          </td>
       <%% end %>
     </tbody>
   </table>
