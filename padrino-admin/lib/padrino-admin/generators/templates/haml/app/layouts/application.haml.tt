@@ -28,28 +28,10 @@
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
 
-    - sidebar = yield_content(:sidebar)
-
     .container-fluid
-      .row-fluid
-        - if sidebar
-          .span2=sidebar
-        %div{:class => ('span10' if sidebar)}
-          -[:error, :warning, :success, :notice].each do |type|
-            -next if flash[type].blank?
-            #flash-result{:class => "#{type} hide"}
-              %h4=type
-              =flash[type]
+      .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+      .row-fluid=yield
 
-          #padrino-modal.modal.hide.fade
-            #padrino-modal-header.modal-header
-              %button.close(type='button' data-dismiss='modal') &times;
-              %h4#padrino-modal-title
-            #padrino-modal-body.modal-body
-            #padrino-modal-footer.modal-footer
-              %a#padrino-modal-close.btn.pull-right(data-dismiss='modal' href='#')
-
-          =yield
     %footer.footer.clearfix
       %p
         Copyright &copy;
@@ -62,13 +44,4 @@
         %li= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank
         %li= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank
 
-    =javascript_include_tag 'jquery-1.8.2.min'
-    - unless PADRINO_ENV == 'production'
-      /! Twitter Bootstrap
-      =javascript_include_tag %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button]
-      =javascript_include_tag %w[bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown]
-      =javascript_include_tag %w[ bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead]
-      =javascript_include_tag %w[bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]
-    - else
-      =javascript_include_tag 'bootstrap/bootstrap.min'
-    =javascript_include_tag 'application'
+    =javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application

@@ -14,11 +14,12 @@ Admin.controllers :<%= @orm.name_plural %> do
   post :create do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
-      @title = "Editing <%= @orm.name_singular %> #{<%= @orm.name_singular %>.id}"
-      flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
+      @title = "Editing <%= @orm.name_singular %> #{@<%= @orm.name_singular %>.id}"
+      flash[:success] = "<%= @orm.klass_name %> was successfully created."
       params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
       @title = "New <%= @orm.name_singular %>"
+      flash[:error] = "Couldn't create the <%= @orm.name_singular %>."
       render '<%= @orm.name_plural %>/new'
     end
   end
@@ -29,6 +30,7 @@ Admin.controllers :<%= @orm.name_plural %> do
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
     else
+      flash[:warning] = "Couldn't find the <%= @orm.name_singular %> with ID #{params[:id]}."
       halt 404
     end
   end
@@ -38,12 +40,14 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
-        flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
+        flash[:success] = '<%= @orm.name_singular %> was successfully updated.'
         params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       else
+        flash[:error] = "Couldn't update the <%= @orm.name_singular %>."
         render '<%= @orm.name_plural %>/edit'
       end
     else
+      flash[:warning] = "Couldn't find the <%= @orm.name_singular %> with ID #{params[:id]}."
       halt 404
     end
   end
@@ -53,12 +57,13 @@ Admin.controllers :<%= @orm.name_plural %> do
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.name_singular %>
       if <%= @orm.destroy %>
-        flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
+        flash[:success] = '<%= @orm.name_singular.capitalize %> was successfully destroyed.'
       else
-        flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
+        flash[:error] = 'Unable to destroy <%= @orm.name_singular %>!'
       end
       redirect url(:<%= @orm.name_plural %>, :index)
     else
+      flash[:warning] = "Couldn't find the <%= @orm.name_singular %> with ID #{params[:id]}."
       halt 404
     end
   end
@@ -66,12 +71,12 @@ Admin.controllers :<%= @orm.name_plural %> do
   delete :delete_multiple do
     @title = "<%= @orm.name_plural.capitalize %>"
     unless params[:<%= @orm.name_singular %>_ids]
-      flash[:error] = 'You must select at least one <%= @orm.name_singular %> '
+      flash[:error] = "You must select at least one <%= @orm.name_singular %>"
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
     <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids]")) %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
-      flash[:notice] = '<%= @orm.name_plural %> have been successfully destroyed.'
+      flash[:success] = "<%= @orm.name_plural.capitalize %> were successfully destroyed."
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end

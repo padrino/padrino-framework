@@ -1,12 +1,11 @@
-=error_messages_for :<%= @orm.name_singular %>, :class =>'hide', :header_tag => 'h4'
-
 <%- @orm.column_fields.each_with_index do |column, index| -%>
-%fieldset.control-group
+- error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>)
+%fieldset.control-group{:class => error ? 'error' : ''}
   =f.label :<%= column[:name] %>, :class => 'control-label'
   .controls
     =f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xxlarge'<%- if (index == 0) -%>, :autofocus => true<%- end -%>
 
-    %span.help-inline Ex: a simple text
+    %span.help-inline=error ? f.error_message_on(:<%= column[:name] %>) : "Ex: a simple text"
 <%- end -%>
 
 .actions

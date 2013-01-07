@@ -6,19 +6,51 @@ body {
 .container-fluid {
   padding-right: 10px;
 }
-.action form {
-  padding: 0 2px;
-  margin: 0px;
-}
-.action input {
-  font-size: 11px;
-  padding: 2px;
-  width: 50px;
-  border-radius: 2px;
-}
-th.action {
+
+.table th.action {
   width: 110px;
   text-align: center;
+}
+.table th:first-child, .table td:first-child {
+  width: 40px;
+  text-align: center;
+}
+.table th:first-child .dropdown-menu {
+  text-align: left;
+}
+.table td {
+  vertical-align: middle !important;
+}
+.table td:first-child > input[type="checkbox"] {
+  margin: 0 !important;
+}
+.table tbody td.action > a {
+  font-size: 1.3em;
+  padding: 4px;
+  display: inline-block;
+  visibility: hidden;
+}
+.table tbody td.action > a:hover {
+  text-decoration: none;
+}
+.table tbody tr:hover td.action > a, .table tbody td.action > a.active {
+  visibility: visible;
+}
+.table tbody td.action {
+  text-align: right;
+  position: relative;
+}
+.table tbody td.action .btn-link {
+  padding: 10px;
+}
+.table tbody td.action .popover {
+  left: -105px;
+  top: -20px;
+  width: 200px;
+  text-align: center;
+}
+.table tbody td.action .popover form {
+  margin: 0;
 }
 
 .login {
@@ -50,6 +82,12 @@ th.action {
 .login .controls {
   margin-left: 100px;
 }
+.flash {
+  text-align: center;
+}
+.flash .alert {
+  display: inline-block;
+}
 .flash-error, .flash-danger {
   /* @errorText */
   border: 2px solid #b94a48;
@@ -59,18 +97,25 @@ th.action {
   border: 2px solid #468847;
 }
 .flash-warning {
-  border: 2px solid  @warningText;
+  /* @warningText */
+  border: 2px solid #c09853;
 }
 
 .alert-notice {
-  background-color: @successBackground;
-  border-color: @successBorder;
-  color: @successText;
+  /* @successBackground */
+  background-color: #dff0d8;
+  /* @successBorder */
+  border-color: #dbeccd;
+  /* @succcessText */
+  color: #468847;
 }
 .alert-warning {
-  background-color: @warningBackground;
-  border-color: @warningBorder;
-  color: @warningText;
+  /* @warningBackground */
+  background-color: #fcf8e3;
+  /* @warningBorder */
+  border-color: #fbeed5;
+  /* @warningText */
+  color: #c09853;
 }
 
 .navbar .nav > li > a {
@@ -81,6 +126,19 @@ th.action {
   text-align: center;
 }
 
+.dropdown-menu li > a.disabled {
+  /* @grayLight */
+  color: #999; 
+  cursor: pointer;
+}
+.dropdown-menu li.disabled:hover, .dropdown-menu li:hover a.disabled:hover {
+  background-color: #fff; 
+  cursor: pointer;
+}
+
+.dropdown-form form {
+  margin: 0;
+}
 .dropdown-form a:hover, .dropdown-form a:hover form {
   /* @dropdownLinkColorHover */
   color: #fff;
@@ -88,9 +146,6 @@ th.action {
   outline: 0;
   /* @dropdownLinkBackgroundActive */
   background-color: #08c;
-  /* TODO Implement.
-   * #gradient > .vertical(@dropdownLinkBackgroundActive, darken(@dropdownLinkBackgroundActive, 5%));
-   */
 }
 .dropdown-form form a {
   display: block;

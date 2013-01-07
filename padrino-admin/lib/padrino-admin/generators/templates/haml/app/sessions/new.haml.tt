@@ -14,7 +14,8 @@
         .modal-header
           .logo=image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
         #padrino-modal-body.modal-body
-          =[:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}") }.join
+          .flash
+            = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
 
           %fieldset.control-group
             %label.control-label{:for=>"email"} Login
@@ -31,3 +32,5 @@
 
         .modal-footer
           =submit_tag('Sign In', :class => 'btn pull-right')
+
+        =javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
