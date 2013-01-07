@@ -1,5 +1,5 @@
-<%% error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>) -%>
 <% @orm.column_fields.each_with_index do |column, index| -%>
+<%% error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>) -%>
 <fieldset class='control-group<%= error ? ' error' : ''%>'>
   <%%= f.label :<%= column[:name] %>, :class => 'control-label' %>
   <div class='controls'>
