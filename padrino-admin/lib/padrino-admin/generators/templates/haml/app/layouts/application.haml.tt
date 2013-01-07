@@ -12,7 +12,7 @@
   %body
     .navbar.navbar-fixed-top
       .navbar-inner
-        .container-fluid
+        .container
           =link_to 'Padrino Admin', url(:base_index), :class => 'brand'
           %ul.nav.pull-right
             %li.dropdown
@@ -28,20 +28,24 @@
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
 
-    .container-fluid
-      .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
-      .row-fluid=yield
+    .container
+      .content
+        .wrapper
+          .proper-content
+            .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+            .row=yield
+          .push
 
-    %footer.footer.clearfix
-      %p
-        Copyright &copy;
-        =Time.now.year
-        Your Site -
-        %b Powered by Padrino v.#{Padrino.version}
-      %ul.footer-links
-        %li= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank
-        %li= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank
-        %li= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank
-        %li= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank
+        .footer
+          %p
+            Copyright &copy;
+            =Time.now.year
+            Your Site -
+            %b Powered by Padrino v.#{Padrino.version}
+            %ul.footer-links
+              %li= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank
+              %li= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank
+              %li= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank
+              %li= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank
 
     =javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
