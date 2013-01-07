@@ -16,7 +16,7 @@ div class="tabs-content"
               li == link_to tag_icon('check-empty','Unselect All'), '#', :id => 'uncheck_all'
               li class='divider'
               li class='disabled' == link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected'
-              -#li
+              / li
                 div class='hide'
                   - form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f|
                     button type='submit' class='to_submit btn btn-danger pull-left' id='multiple_delete_button' == tag_icon(:trash,"Delete Checked")
