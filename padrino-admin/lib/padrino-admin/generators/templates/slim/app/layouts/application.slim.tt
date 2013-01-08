@@ -34,7 +34,7 @@ html lang='en'
         div class='push'
     footer
       p
-        | Copyright &copy; #{Time.now.year} Your Site -
+        | Copyright &copy; #{Time.now.year} Your Site - 
         b Powered by Padrino v.#{Padrino.version}
 
         ul class='footer-links'

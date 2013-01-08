@@ -4,7 +4,7 @@
   <%%= f.label :<%= column[:name] %>, :class => 'control-label' %>
   <div class='controls'>
     <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xlarge input-with-feedback'<%- if (index == 0) -%>, :autofocus => true<%- end -%> %>
-    <span class='help-inline'><%% error ? f.error_message_on(:<%= column[:name] %>) : "Ex: a simple text" %></span>
+    <span class='help-inline'><%%= error ? f.error_message_on(:<%= column[:name] %>) : "Ex: a simple text" %></span>
   </div>
 </fieldset>
 <% end %>
