@@ -171,6 +171,7 @@ html, body, .container, .content { height: 100%; }
   margin-bottom: 0;
   color: #cc0;
   text-align: center;
+  padding : 0 5px;
 }
 .footer p { margin-bottom: 0; color: #777; float: left; }
 .footer p a { padding: 0 5px; }
