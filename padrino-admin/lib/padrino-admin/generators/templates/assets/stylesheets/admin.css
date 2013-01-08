@@ -124,7 +124,7 @@ html, body, .container, .content { height: 100%; }
 }
 
 .navbar .nav > li > a {
-  padding: 13px 15px 7px;
+  padding: 15px 15px 9px;
 }
 
 #deleter-body > form {
