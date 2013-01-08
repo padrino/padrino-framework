@@ -20,7 +20,7 @@ describe "ObjectSpace" do
 
     should "be able to process a the class name given a block" do
       klasses = ObjectSpace.classes do |klass|
-        if klass.to_s =~ /^Padrino::/
+        if klass.name =~ /^Padrino::/
           klass
         end
       end
