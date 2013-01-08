@@ -493,6 +493,13 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
+      # Fix mismatch in verb method arguement size between Sinatra and Padrino
+      def post(path, *args, &block)    route('POST', path, *args, &block)    end
+      def put(path, *args, &block)     route('PUT', path, *args, &block)     end
+      def delete(path, *args, &block)  route('DELETE', path, *args, &block)  end
+      def patch(path, *args, &block)   route('PATCH', path, *args, &block)   end
+      def options(path, *args, &block) route('OPTIONS', path, *args, &block) end
+
       private
         # Parse params from the url method
         def value_to_param(value)
