@@ -77,14 +77,11 @@ html, body, .container, .content { height: 100%; }
   padding: 5px 0;
 }
 
-.login .control-group > label {
-  float: left;
-  width: 40px;
-  padding-top: 5px;
-  text-align: right;
+.login .control-group > .control-label {
+  width: 100px;
 }
-.login .controls {
-  margin-left: 100px;
+.login .control-group > .controls {
+  margin-left: 120px;
 }
 .flash {
   text-align: center;
