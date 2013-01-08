@@ -19,6 +19,7 @@ LESS
 def setup_stylesheet
   require_dependencies 'less'
   require_dependencies 'rack-less'
+  require_dependencies 'therubyracer'
   initializer :less, LESS_INIT
   empty_directory destination_root('/app/stylesheets')
 end
