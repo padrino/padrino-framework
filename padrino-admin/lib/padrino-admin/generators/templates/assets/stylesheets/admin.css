@@ -1,6 +1,5 @@
 body { font-size: 13px; }
 html, body, .container, .content { height: 100%; }
-.container, .content { position: relative; }
 .proper-content { padding-top: 70px; /* >= navbar height */ }
 .push { height: 70px; /* same as the footer */ }
 .wrapper {
@@ -164,18 +163,16 @@ html, body, .container, .content { height: 100%; }
   white-space: nowrap;
   text-decoration: none;
 }
-.footer {
-  position: relative;
+footer {
+  margin: -70px 0 0 0 ;
   height: 69px;
   border-top: 1px solid #999;
-  margin-bottom: 0;
-  color: #cc0;
   text-align: center;
-  padding : 0 5px;
+  padding : 0 20px;
 }
-.footer p { margin-bottom: 0; color: #777; float: left; }
-.footer p a { padding: 0 5px; }
-.footer .footer-links { float: right; }
-.footer .footer-links li { display: inline; }
-.footer .footer-links li a { margin-right: 10px }
-.footer .footer-links li  a:hover{ text-decoration: none; }
+footer p { margin-bottom: 0; color: #777; float: left; }
+footer p a { padding: 0 5px; }
+footer .footer-links { float: right; }
+footer .footer-links li { display: inline; }
+footer .footer-links li a { margin-right: 10px }
+footer .footer-links li  a:hover{ text-decoration: none; }

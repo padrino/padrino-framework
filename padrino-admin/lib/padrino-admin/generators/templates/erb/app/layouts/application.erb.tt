@@ -40,23 +40,22 @@
     <div class='container'>
       <div class='content'>
         <div class='wrapper'>
-          <div class='proper-content'>
+          <div class="proper-content">
             <div class='flash'><%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join %></div>
             <div class='row'><%%= yield %></div>
           </div>
-          <div class='push' />
-        </div>
-        </div>
-        <div class='footer'>
-          <p>Copyright &copy; <%= Time.now.year %> Your Site - <b>Powered by Padrino v.<%= Padrino.version %></b></p>
-          <ul class='footer-links'>
-            <li><%%= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank %></li>
-            <li><%%= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank %></li>
-            <li><%%= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank %></li>
-            <li><%%= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank %></li>
-          </ul>
         </div>
       </div>
+    </div>
+    <footer>
+      <p>Copyright &copy; <%= Time.now.year %> Your Site - <b>Powered by Padrino v.<%= Padrino.version %></b></p>
+      <ul class='footer-links'>
+        <li><%%= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank %></li>
+        <li><%%= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank %></li>
+        <li><%%= link_to tag_icon(:github, "code"), "https://github.com/padrino/padrino-framework", :target => :_blank %></li>
+        <li><%%= link_to tag_icon(:twitter, "twitter"), "http://twitter.com/padrinorb", :target => :_blank %></li>
+      </ul>
+    </footer>
 
     <%%= javascript_include_tag 'jquery-1.8.2.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application %>
   </body>
