@@ -9,8 +9,8 @@ fieldset class='control-group#{error ? ' has-error' : ''}'
 <%- end -%>
 
 div class="actions"
-  == f.submit 'Save', :class => 'btn btn-small btn-primary'
+  == f.submit 'Save', :class => 'btn btn-primary'
   |&nbsp;
-  == f.submit 'Save and continue', :class => 'btn btn-small btn-info', :name => 'save_and_continue'
+  == f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue'
   |&nbsp;
-  == f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn btn-small'
+  == f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn'

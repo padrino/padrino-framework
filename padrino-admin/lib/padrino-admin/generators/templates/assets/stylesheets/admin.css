@@ -56,6 +56,9 @@ html, body, .container, .content { height: 100%; }
 .table tbody td.action .popover form {
   margin: 0;
 }
+.form-horizontal .actions {
+  float :right;
+}
 
 .login {
   background-color: #fff;
@@ -76,7 +79,6 @@ html, body, .container, .content { height: 100%; }
   text-align: center;
   padding: 5px 0;
 }
-
 .login .control-group > .control-label {
   width: 100px;
 }
