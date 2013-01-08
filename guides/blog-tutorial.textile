@@ -575,15 +575,15 @@ sample_blog $ git commit -m "initial commit for app"
 This initializes the Git repository, adds all the contents and commit them to the repo. Next, the application
 must be set up on Heroku.
 
-pre[bash]. sample-blog $ heroku create --stack bamboo-ree-1.8.7
+pre[bash]. sample-blog $ heroku create --stack cedar
 sample-blog $ git push heroku master
 
 That's it, your app is now running on Heroku!
 
 Run @heroku open@ to open your site in your default web browser.
 
-Currently Padrino defaults to *SQLite* but Heroku only supports *PostgreSQL*, so we'll need to add @pg@ as a
-dependency.
+Currently Padrino defaults to *SQLite* but Heroku does not supports it. So we'll use *PostgreSQL*, so we'll 
+need to add @pg@ as a dependency.
 
 pre[ruby]. # Gemfile
 group :production do
@@ -665,12 +665,12 @@ sample_blog $ git push heroku master
 
 Now run our @migrations/seeds@:
 
-pre[bash]. sample_blog $ heroku rake ar:migrate
-sample_blog $ heroku rake seed
+pre[bash]. sample_blog $ heroku run rake ar:migrate
+sample_blog $ heroku run rake seed
 
 You'll see something like:
 
-<pre lang="bash">sample_blog $ heroku rake ar:migrate
+<pre lang="bash">sample_blog $ heroku run rake ar:migrate
 (in /disk1/home/slugs/151491_a295681_03f1/mnt)
 => Located locked Gemfile for production
 ==  CreateAccounts: migrating =================================================
@@ -688,7 +688,7 @@ You'll see something like:
 -> 0.0026s
 ==  AddAccountToPost: migrated (0.0028s) ======================================
 
-MacBook:sample_blog DAddYE$ heroku rake seed
+MacBook:sample_blog DAddYE$ heroku run rake seed
 (in /disk1/home/slugs/151491_7576c59_03f1/mnt)
 => Located locked Gemfile for production
 
