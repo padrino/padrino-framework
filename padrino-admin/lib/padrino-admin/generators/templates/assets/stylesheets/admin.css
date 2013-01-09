@@ -93,7 +93,7 @@ footer .footer-links li a:hover {
   margin: 0;
 }
 .form-horizontal .actions {
-  float :right;
+  text-align :right;
 }
 
 .login {
