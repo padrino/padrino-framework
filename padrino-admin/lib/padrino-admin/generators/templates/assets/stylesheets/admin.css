@@ -1,13 +1,48 @@
-body { font-size: 13px; }
-html, body, .container, .content { height: 100%; }
-.proper-content { padding-top: 70px; /* >= navbar height */ }
-.push { height: 70px; /* same as the footer */ }
-.wrapper {
+/* -- Begin Layout -- */
+html {
+  height: 100%;
+}
+body {
+  font-size: 13px;
+  height: 100%;
+}
+.navbar.navbar-fixed-top .navbar-inner {
+  background-color: white;
+}
+.main {
   min-height: 100%;
   height: auto !important;
-  height: 100%;
-  margin: 0 auto -70px; /* same as the footer */
+  margin: 0 auto -70px; /* margin-bottom: minus footer's height */
+  padding: 0 10px;
 }
+.main-wrapper {
+  padding-top: 70px /* same as footer's height */
+}
+.main-wrapper > .main-push {
+  height: 70px; /* same as the footer */
+}
+footer {
+  margin-top: -70px;
+  height: 70px;
+  border-top: 1px solid #999;
+  padding : 10px 10px 0;
+}
+footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+footer .footer-links {
+  margin: 10px 0 0 0;
+  padding: 0;
+}
+footer .footer-links li {
+  display: inline;
+  margin-right: 10px;
+}
+footer .footer-links li a:hover {
+  text-decoration: none;
+}
+/* -- End Layout -- */
 
 #padrino-modal { margin-top: 60px; }
 
@@ -15,7 +50,7 @@ html, body, .container, .content { height: 100%; }
   width: 110px;
   text-align: center;
 }
-.table th:first-child, .table td:first-child {
+.table th.selectable, .table td.selectable {
   width: 40px;
   text-align: center;
 }
@@ -28,21 +63,22 @@ html, body, .container, .content { height: 100%; }
 .table td:first-child > input[type="checkbox"] {
   margin: 0 !important;
 }
-.table tbody td.action > a {
+.table tbody td.action .wrapper > a {
   font-size: 1.3em;
   padding: 4px;
   display: inline-block;
   visibility: hidden;
 }
-.table tbody td.action > a:hover {
+.table tbody td.action .wrapper > a:hover {
   text-decoration: none;
 }
-.table tbody tr:hover td.action > a, .table tbody td.action > a.active {
+.table tbody tr:hover td.action .wrapper > a, .table tbody td.action .wrapper > a.active {
   visibility: visible;
 }
-.table tbody td.action {
-  text-align: right;
+.table tbody td.action .wrapper {
   position: relative;
+  text-align: right;
+  height: 100%;
 }
 .table tbody td.action .btn-link {
   padding: 10px;
@@ -124,6 +160,9 @@ html, body, .container, .content { height: 100%; }
 .navbar .nav > li > a {
   padding: 15px 15px 9px;
 }
+.navbar .nav > li > a.dropdown-toggle {
+  padding-right: 0;
+}
 
 #deleter-body > form {
   text-align: center;
@@ -162,16 +201,4 @@ html, body, .container, .content { height: 100%; }
   white-space: nowrap;
   text-decoration: none;
 }
-footer {
-  margin: -70px 0 0 0 ;
-  height: 69px;
-  border-top: 1px solid #999;
-  text-align: center;
-  padding : 5px 20px 0;
-}
-footer p { margin-bottom: 0; color: #777; float: left; }
-footer p a { padding: 0 5px; }
-footer .footer-links { float: right; }
-footer .footer-links li { display: inline; }
-footer .footer-links li a { margin-right: 10px }
-footer .footer-links li  a:hover{ text-decoration: none; }
+

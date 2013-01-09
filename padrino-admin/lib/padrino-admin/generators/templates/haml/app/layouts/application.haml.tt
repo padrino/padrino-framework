@@ -6,6 +6,7 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
+    %meta{:name => :viewport, :content => 'width=device-width'}
     %title= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
     =stylesheet_link_tag 'bootstrap', 'admin'
 
@@ -28,20 +29,19 @@
               %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
                 =link_to project_module.human_name, project_module.path('/admin')
 
-    .container
-      .content
-        .wrapper
-          .proper-content
-            .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
-            .row=yield
-            .push
+    .container.main            
+      .main-wrapper            
+        .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+        .row=yield             
+        .main-push
 
     %footer
-      %p
-        Copyright &copy;
-        =Time.now.year
-        Your Site -
-        %b Powered by Padrino v.#{Padrino.version}
+      .footer-wrapper.container
+        %p
+          Copyright &copy;
+          =Time.now.year
+          Your Site -
+          %b Powered by Padrino v.#{Padrino.version}
         %ul.footer-links
           %li= link_to tag_icon(:home, "web"), "http://www.padrinorb.com", :target => :_blank
           %li= link_to tag_icon(:heart, "blog"), "http://www.padrinorb.com/blog", :target => :_blank

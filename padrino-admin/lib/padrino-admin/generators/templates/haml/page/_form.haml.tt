@@ -13,4 +13,4 @@
   &nbsp;
   =f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue'
   &nbsp;
-  =f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn'
+  =link_to url(:<%= @orm.name_plural %>, :index), 'Cancel', :class => 'btn'

@@ -6,7 +6,7 @@
   %table#list.table.table-striped.table-hover.table-condensed
     %thead
       %tr
-        %th.header
+        %th.header.selectable
           .dropdown
             %a#cogs.dropdown-toggle.btn.btn-mini.btn-link(href='#' data-toggle='dropdown')
               = tag_icon :cogs
@@ -16,12 +16,13 @@
               %li=link_to tag_icon(:'check-empty', 'Unselect all'), '#', :id => 'uncheck-all'
               %li.divider
               %li.disabled=link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected'
-              -#%li
-                .hide
-                  - form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f|
-                    %button#multiple_delete_button.to_submit.btn.btn-danger.pull-left{:type => 'submit'}= tag_icon(:trash,"Delete Checked")
-                    %h5 Are you sure to delete the select?
-                  =link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
+              .popover.popover-delete-selected.left
+                .arrow
+                %h3.popover-title Delete selected?
+                .popover-content
+                  -form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
+                    =submit_tag :Delete, :class =>'btn btn-danger btn-small'
+                    .btn.btn-small.cancel Cancel
         <%- @orm.columns.each_with_index do |column, i| -%>
         %th.header= :<%= column.name %>
         <%- end -%>
@@ -30,7 +31,7 @@
     %tbody
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr
-          %td=check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
+          %td.selectable=check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
           <%- @orm.columns.each_with_index do |column, i| -%>
           <%- if column.name == "created_at" || column.name == "updated_at" -%>
           %td=time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
@@ -41,12 +42,13 @@
           <%- end -%>
           <%- end -%>
           %td.action
-            =link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "Edit <%= @orm.name_singular %>"
-            =link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "Delete <%= @orm.name_singular %>"
-            .popover.popover-delete-one.left
-              .arrow
-              %h3.popover-title Delete <%= @orm.name_singular %>
-              .popover-content
-                -form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do
-                  =submit_tag :Delete, :class =>'btn btn-danger btn-small'
-                  .btn.btn-small.cancel Cancel
+            .wrapper
+              =link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "Edit <%= @orm.name_singular %>"
+              =link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "Delete <%= @orm.name_singular %>"
+              .popover.popover-delete-one.left
+                .arrow
+                %h3.popover-title Delete <%= @orm.name_singular %>?
+                .popover-content
+                  -form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do
+                    =submit_tag :Delete, :class =>'btn btn-danger btn-small'
+                    .btn.btn-small.cancel Cancel

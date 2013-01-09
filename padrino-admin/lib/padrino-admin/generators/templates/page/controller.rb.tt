@@ -40,8 +40,10 @@ Admin.controllers :<%= @orm.name_plural %> do
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
-        flash[:success] = '<%= @orm.name_singular %> was successfully updated.'
-        params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
+        flash[:success] = "<%= @orm.name_singular %> with ID #{params[:id]} was successfully updated."
+        params[:save_and_continue] ?
+          redirect(url(:<%= @orm.name_plural %>, :index)) :
+          redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       else
         flash[:error] = "Couldn't update the <%= @orm.name_singular %>."
         render '<%= @orm.name_plural %>/edit'
@@ -57,9 +59,9 @@ Admin.controllers :<%= @orm.name_plural %> do
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.name_singular %>
       if <%= @orm.destroy %>
-        flash[:success] = '<%= @orm.name_singular.capitalize %> was successfully destroyed.'
+        flash[:success] = "<%= @orm.name_singular.capitalize %> with ID #{params[:id]} was successfully deleted."
       else
-        flash[:error] = 'Unable to destroy <%= @orm.name_singular %>!'
+        flash[:error] = 'Unable to delete <%= @orm.name_singular %>!'
       end
       redirect url(:<%= @orm.name_plural %>, :index)
     else
@@ -68,15 +70,15 @@ Admin.controllers :<%= @orm.name_plural %> do
     end
   end
 
-  delete :delete_multiple do
+  delete :destroy_many do
     @title = "<%= @orm.name_plural.capitalize %>"
     unless params[:<%= @orm.name_singular %>_ids]
-      flash[:error] = "You must select at least one <%= @orm.name_singular %>"
+      flash[:error] = "You must select at least one <%= @orm.name_singular %> to delete."
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
     <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids]")) %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
-      flash[:success] = "<%= @orm.name_plural.capitalize %> were successfully destroyed."
+      flash[:success] = "<%= @orm.name_plural.capitalize %> #{params[:<%= @orm.name_singular %>_ids]} were successfully deleted."
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end

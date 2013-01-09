@@ -1,11 +1,12 @@
 !!! 5
-%html{:lang => 'en', :xmlns => 'http://www.w3.org/1999/xhtml'}
+%html{:lang => 'en'}
   %head
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
+    %meta{:name => :viewport, :content => 'width=device-width'}
     %title Login | Padrino Admin
     =stylesheet_link_tag 'bootstrap', 'admin'
   %body
@@ -19,7 +20,7 @@
 
           %fieldset.control-group
             %label.control-label{:for=>"email"} Login
-            .controls=text_field_tag :email, :value => params[:email], :autofocus => true
+            .controls=email_field_tag :email, :value => params[:email], :autofocus => true
           %fieldset.control-group
             %label.control-label{:for=>'password'} Password
             .controls=password_field_tag :password, :value => params[:password]
