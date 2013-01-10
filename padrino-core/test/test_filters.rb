@@ -294,4 +294,55 @@ describe "Filters" do
     assert_equal 'before', once
   end
 
+  should 'catch exceptions in before filters' do
+    doodle = nil
+    mock_app do
+      after do
+        doodle = 'Been after'
+      end
+      before do
+        raise StandardError, "before"
+      end
+      get :index do
+        doodle = 'Been now'
+      end
+      error 500 do
+        "We broke #{env['sinatra.error'].message}"
+      end
+    end
+
+    get '/'
+    assert_equal 'We broke before', body
+    assert_equal nil, doodle
+  end
+
+  should 'catch exceptions in after filters if no exceptions caught before' do
+    doodle = ''
+    mock_app do
+      after do
+        doodle += ' and after'
+        raise StandardError, "after"
+      end
+      get :foo do
+        doodle = 'Been now'
+        raise StandardError, "now"
+      end
+      get :index do
+        doodle = 'Been now'
+      end
+      error 500 do
+        "We broke #{env['sinatra.error'].message}"
+      end
+    end
+
+    get '/foo'
+    assert_equal 'We broke now', body
+    assert_equal 'Been now', doodle
+
+    doodle = ''
+    get '/'
+    assert_equal 'We broke after', body
+    assert_equal 'Been now and after', doodle
+  end
+
 end
