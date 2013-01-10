@@ -275,4 +275,23 @@ describe "Filters" do
     get '/foo'
     assert_equal 'before', test
   end
+
+  should "call before filters only once" do
+    once = ''
+    mock_app do
+      error 500 do
+        'error 500'
+      end
+      before do
+        once += 'before'
+      end
+      get :index do
+        raise Exception, 'Oops'
+      end
+    end
+
+    get '/'
+    assert_equal 'before', once
+  end
+
 end
