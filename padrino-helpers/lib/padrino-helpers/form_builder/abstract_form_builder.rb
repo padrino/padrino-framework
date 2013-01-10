@@ -102,7 +102,7 @@ module Padrino
           if options[:collection]
             fields = options[:fields] || [:name, :id]
             # don't use map!, it will break some orms
-            selected_values = selected_values.map{ |v| (v.respond_to?(fields[1]) ? v.send(fields[1]) : v).to_s }
+            selected_values = selected_values.map{ |v| (v.respond_to?(fields[0]) ? v.send(fields[1]) : v).to_s }
           end
           labeled_group( field, options ) do |variant|
             @template.check_box_tag( field_name(field)+'[]', :value => variant[1], :id => variant[2], :checked => selected_values.include?(variant[1]) )
@@ -114,7 +114,7 @@ module Padrino
         def radio_button_group(field, options={})
           fields = options[:fields] || [:name, :id]
           selected_value = options[:selected] || field_value(field)
-          selected_value = selected_value.send(fields[1])  if selected_value.respond_to?(fields[1])
+          selected_value = selected_value.send(fields[1])  if selected_value.respond_to?(fields[0])
           labeled_group( field, options ) do |variant|
             @template.radio_button_tag( field_name(field), :value => variant[1], :id => variant[2], :checked => variant[1] == selected_value.to_s )
           end
