@@ -22,7 +22,7 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 #   ]
 # end
 #
-# More installation and setup notes are on http://mongoid.org/docs/
+# More installation and setup notes are on http://mongoid.org/
 MONGO
 
 MONGOID3YML = (<<-MONGO) unless defined?(MONGOID3YML)
