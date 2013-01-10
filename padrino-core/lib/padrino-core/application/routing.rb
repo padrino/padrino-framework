@@ -907,8 +907,10 @@ module Padrino
         def dispatch!
           static! if settings.static? && (request.get? || request.head?)
           route!
-        rescue ::Exception => boom
+        rescue ::Sinatra::NotFound => boom
           filter! :before
+          handle_exception!(boom)
+        rescue ::Exception => boom
           handle_exception!(boom)
         ensure
           filter! :after unless env['sinatra.static_file']
