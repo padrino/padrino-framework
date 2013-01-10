@@ -90,7 +90,14 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      @_global_configuration = block if block_given?
+      return  unless block_given?
+      @@_global_configurations ||= []
+      @@_global_configurations << block
+      @_global_configuration = lambda do |app|
+        @@_global_configurations.each do |configuration|
+          app.class_eval(&configuration)
+        end
+      end
     end
 
     ##
