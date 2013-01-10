@@ -5,10 +5,9 @@ rescue LoadError
   require 'sinatra/tilt'
 end
 require 'padrino-core/support_lite' unless defined?(SupportLite)
-require 'mail'
+autoload :Mail, 'mail'
 
 # Require respecting order of our dependencies
-FileSet.glob_require('padrino-mailer/**/*.rb', __FILE__)
 
 module Padrino
   ##
@@ -45,6 +44,10 @@ module Padrino
       #
       # @api public
       def registered(app)
+        require 'padrino-mailer/base'
+        autoload :Mail, 'padrino-mailer/ext'
+        require 'padrino-mailer/helpers'
+        require 'padrino-mailer/mime'
         app.helpers Padrino::Mailer::Helpers
       end
       alias :included :registered
