@@ -907,13 +907,15 @@ module Padrino
         def dispatch!
           static! if settings.static? && (request.get? || request.head?)
           route!
-        rescue ::Sinatra::NotFound => boom
-          filter! :before
-          handle_exception!(boom)
         rescue ::Exception => boom
-          handle_exception!(boom)
+          filter! :before  if boom.kind_of? ::Sinatra::NotFound
+          @boom_handled = handle_exception!(boom)
         ensure
-          filter! :after unless env['sinatra.static_file']
+          @boom_handled  or begin
+            filter! :after  unless env['sinatra.static_file']
+          rescue ::Exception => boom
+            handle_exception!(boom)
+          end
         end
 
         ROUTE_NOT_FOUND_STATUS = 9404
