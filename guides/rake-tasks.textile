@@ -135,7 +135,7 @@ rake sq:down                   # Perform migration down (erase all data)
 h4. Mongomapper Tasks:
 
 pre[bash].
-rake mm:drop                   # Drops all the collections for the database for the current Rails.env
+rake mm:drop                   # Drops all the collections for the database for the current Padrino.env
 rake mm:translate              # Generates .yml files for I18n translations
 
 h4. Mongoid Tasks:
