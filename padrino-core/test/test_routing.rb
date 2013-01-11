@@ -1349,6 +1349,25 @@ describe "Routing" do
     assert_equal "1, 2", body
   end
 
+  should "replace name of named controller with mapping path" do
+    mock_app do
+      controller :ugly, :map => "/pretty/:id" do
+        get(:url3) { "#{params[:id]}" }
+        get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
+      end
+    end
+  
+    url = @app.url(:ugly, :url3, :id => 1)
+    assert_equal "/pretty/1/url3", url
+    get url
+    assert_equal "1", body
+  
+    url = @app.url(:ugly, :url4, 3, 5)
+    assert_equal "/pretty/3/test-5", url
+    get url
+    assert_equal "3, 5", body
+  end
+
   should 'use absolute and relative maps' do
     mock_app do
       controller :one do
