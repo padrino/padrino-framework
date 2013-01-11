@@ -56,6 +56,15 @@ describe "Application" do
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
 
+    should 'be able to configure_apps multiple times' do
+      Padrino.configure_apps { set :foo1, "bar" }
+      Padrino.configure_apps { set :foo1, "bam" }
+      Padrino.configure_apps { set :foo2, "baz" }
+      PadrinoTestApp.send(:default_configuration!)
+      assert_equal "bam", PadrinoTestApp.settings.foo1, "should have foo1 assigned to bam"
+      assert_equal "baz", PadrinoTestApp.settings.foo2, "should have foo2 assigned to baz"
+    end
+
     should "have shared sessions accessible in project" do
       Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
       Padrino.mount("PadrinoTestApp").to("/write")
