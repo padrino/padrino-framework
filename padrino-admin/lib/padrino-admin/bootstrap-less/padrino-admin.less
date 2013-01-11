@@ -1,2 +1,28 @@
 @import "bootstrap.less";
+
+// Custom Twitter Bootstrap v3.0.0
+// -------------------------------------------------------------
+
+// GRID
+// -------------------------------------------------------------
+
+// 1900px min
+@grid-column-width-1900:    70px;
+@grid-gutter-width-1900:    30px;
+@grid-row-width-1900:       (@grid-columns * @grid-column-width-1900) + (@grid-gutter-width-1900 * (@grid-columns - 1));
+
+// 1600px min
+@grid-column-width-1600:    70px;
+@grid-gutter-width-1600:    30px;
+@grid-row-width-1600:       (@grid-columns * @grid-column-width-1600) + (@grid-gutter-width-1600 * (@grid-columns - 1));
+
+// Components: common
+@import "font-awesome.less";
 @FontAwesomePath:   "../images/font";
+
+// Responsive
+// -------------------------------------------------------------
+
+// Large desktops
+@import "responsive-1600px-min.less";
+@import "responsive-1900px-min.less";
