@@ -657,7 +657,7 @@ module Padrino
               if map.blank? and !absolute_map
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
-                path = File.join(controller_path, path)
+                path = File.join(controller_path, path)  unless @_map
               end
               # Here we build the correct name route
             end
