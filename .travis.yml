@@ -1,8 +1,4 @@
 lang: ruby
-env:
-  - AS_VERSION=3.1.0
-  - AS_VERSION=3.2.0
-  - SINATRA_EDGE=true
 install:
   - gem update --system
   - bundle update
@@ -24,5 +20,12 @@ branches:
   only:
     - master
 services: mongodb
-allow_failures:
-    - env: SINATRA_EDGE=true
+matrix:
+  include:
+    - rvm: 1.9.3
+      env: SINATRA_EDGE=true
+    - rvm: 1.9.3
+      env: AS_VERSION=3.1.0
+  allow_failures:
+    - rvm: 1.9.3
+      env: SINATRA_EDGE=true
