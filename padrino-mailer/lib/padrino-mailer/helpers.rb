@@ -136,7 +136,7 @@ module Padrino
         #
         # @api public
         def email(mail_attributes={}, &block)
-          message = Mail::Message.new(self)
+          message = _padrino_mailer::Message.new(self)
           message.delivery_method(*delivery_settings)
           message.instance_eval(&block) if block_given?
           mail_attributes.reverse_merge(mailer_defaults) if respond_to?(:mailer_defaults)
