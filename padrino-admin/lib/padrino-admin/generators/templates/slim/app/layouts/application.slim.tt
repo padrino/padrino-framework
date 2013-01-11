@@ -25,19 +25,18 @@ html lang='en'
               li class={'active' if request.path_info =~ /^#{project_module.path}/}
                 == link_to project_module.human_name, project_module.path('/admin')
 
-    div class='container'
-      div class='content'
-        div class='wrapper'
-          div class='proper-content'
-            div class='flash' == [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
-            div class='row' == yield
-        div class='push'
-    footer
-      p
-        | Copyright &copy; #{Time.now.year} Your Site - 
-        b Powered by Padrino v.#{Padrino.version}
+    div class='container main'
+      div class='main-wrapper'
+        div class='flash' == [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+        div class='row' == yield
+        div class='main-push'
 
-        ul class='footer-links'
+    footer
+      div class='footer-wrapper container'
+        p class='pull-left'
+          | Copyright &copy; #{Time.now.year} Your Site -
+          b Powered by Padrino v.#{Padrino.version}
+        ul class='pull-right footer-links'
           li == link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank
           li == link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank
           li == link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank

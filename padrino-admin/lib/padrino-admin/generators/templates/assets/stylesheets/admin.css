@@ -23,17 +23,13 @@ body {
 }
 footer {
   margin-top: -70px;
-  height: 70px;
+  height: 59px;
   border-top: 1px solid #999;
   padding : 10px 10px 0;
 }
 footer p {
   margin-bottom: 0;
   color: #777;
-}
-footer .footer-links {
-  margin: 10px 0 0 0;
-  padding: 0;
 }
 footer .footer-links li {
   display: inline;
@@ -170,7 +166,8 @@ footer .footer-links li a:hover {
 
 .dropdown-menu li > a.disabled {
   /* @gray-light */
-  color: #999;
+  color:
+ #999;
   cursor: pointer;
 }
 .dropdown-menu li.disabled:hover, .dropdown-menu li:hover a.disabled:hover {
@@ -201,4 +198,3 @@ footer .footer-links li a:hover {
   white-space: nowrap;
   text-decoration: none;
 }
-
