@@ -1355,6 +1355,9 @@ describe "Routing" do
         get(:url3) { "#{params[:id]}" }
         get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
       end
+      controller :voldemort, :map => "" do
+        get(:url5) { "okay" }
+      end
     end
   
     url = @app.url(:ugly, :url3, :id => 1)
@@ -1366,6 +1369,11 @@ describe "Routing" do
     assert_equal "/pretty/3/test-5", url
     get url
     assert_equal "3, 5", body
+
+    url = @app.url(:voldemort, :url5)
+    assert_equal "/url5", url
+    get url
+    assert_equal 'okay', body
   end
 
   should 'use absolute and relative maps' do

@@ -669,7 +669,7 @@ module Padrino
             end
 
             # Add any controller level map to the front of the path
-            path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.nil?
+            path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
             path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
