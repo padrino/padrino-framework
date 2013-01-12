@@ -1736,4 +1736,12 @@ describe "Routing" do
     get @app.url(:index, :page => 10)
     assert_equal "/paginate/66", body
   end
+
+  should 'not route get :users, :with => :id to /users//' do
+    mock_app do
+      get(:users, :with => :id) { 'boo' }
+    end
+    get '/users//'
+    assert_equal 404, status
+  end
 end
