@@ -215,6 +215,21 @@ module Padrino
         results.empty? ? nil : results
       end
 
+      # Returns the class with an unacceptable name(if it matches any existent constant) else returns nil.
+      #
+      # @param [Array<String>] fields
+      #   Class names for generators
+      #
+      # @return [Array<String>] array of invalid classes 
+      #
+      # @example
+      #   invalid_classes ['Proc', 'String']
+      #
+      # @api semipublic
+      def invalid_class(klass)
+        Object.constants.include?(klass.capitalize.to_sym)
+      end
+
       # Apply default field types.
       #
       # @param [Array<String>] fields

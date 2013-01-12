@@ -22,6 +22,14 @@ describe "MigrationGenerator" do
       assert_raises(SystemExit) { capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") } }
     end
 
+    should "fail if migration name is not acceptable" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      out, err = capture_io { generate(:migration, 'Proc', "name:string") }
+      assert_match(/Invalid migration name:/, out)
+      assert_match(/Proc/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_proc.rb")
+    end
+
     should "generate migration inside app root" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       response_success = capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }

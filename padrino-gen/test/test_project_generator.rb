@@ -38,6 +38,12 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Padrino.mount\('WsDci2011'\).to\('\/ws_dci_2011'\)/, "#{@apptmp}/project.com/config/apps.rb")
     end
 
+    # FIXME Perhaps this should be merged with the test above? And that method valid_constant? used everwhere?
+    should "fail if app name is not acceptable" do
+      capture_io { generate(:project, 'proc', "--root=#{@apptmp}") }
+      assert_no_file_exists("#{@apptmp}/proc")
+    end
+
     should "raise an Error when given invalid constant names" do
       assert_raises(::NameError) { capture_io { generate(:project, "123asdf", "--root=#{@apptmp}") } }
       assert_raises(::NameError) { capture_io { generate(:project, "./sample_project", "--root=#{@apptmp}") } }

@@ -34,6 +34,11 @@ module Padrino
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
           if include_component_module_for(:orm)
+            if invalid_class(name)
+              say 'Invalid migration name:', :red
+              say name.capitalize
+              return
+            end
             create_migration_file(name, name, columns)
           else
             say '<= You need an ORM adapter for run this generator. Sorry!'
