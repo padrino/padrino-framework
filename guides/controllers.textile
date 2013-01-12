@@ -136,6 +136,11 @@ get :other, :with => [:id, :name]  do
 # url is generated as "/admin/other/#{params[:id]}/#{params[:name]}"
 # url_for(:admin, :other, :id => 5, :name => "hey") => "/admin/other/5/hey"
 end
+
+get [:more, :than, :words] do
+# url is generated as "/admin/more/#{params[:than]}/#{params[:words]}"
+# url_for(:admin, :more, :than => 5, :words => "hey") => "/admin/more/5/hey"
+end
 end
 </code></pre>
 
