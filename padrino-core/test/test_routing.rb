@@ -371,6 +371,21 @@ describe "Routing" do
     assert_equal "mini", body
   end
 
+  should "should inject the action name into the request" do
+    mock_app do
+      controller :posts do
+        get('/omnomnom(/:id)') { request.action.inspect }
+        controller :mini do
+          get([:a, :b, :c]) { request.action.inspect }
+        end
+      end
+    end
+    get "/posts/omnomnom"
+    assert_equal "\"/omnomnom(/:id)\"", body
+    get "/mini/a/b/c"
+    assert_equal ":a", body
+  end
+
   should "support not_found" do
     mock_app do
       not_found do
