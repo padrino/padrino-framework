@@ -48,6 +48,10 @@ module Padrino
             say "<= You need an ORM adapter for run this generator. Sorry!"
             raise SystemExit
           end
+          object_name = name.camelize.to_sym
+          if Object.constants.include? object_name
+            say " * WARNING! TOP SECRET! You are using kernel constant `#{object_name}` to name your model. This might break your app, use with extreme caution!"
+          end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
           apply_default_fields fields
