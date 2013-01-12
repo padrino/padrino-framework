@@ -294,6 +294,12 @@ The following are fields provided by AbstractFormBuilder that can be used within
 ** <tt>f.check_box :remember_me, :uncheck_value => 'false'</tt>
 * <tt>radio_button(field, options={})</tt>
 ** <tt>f.radio_button :gender, :value => 'male'</tt>
+* <tt>check_box_group(field, options={})</tt>
+** <tt>f.check_box_group :color, :options => ['red', 'green', 'blue'], :selected => ['red', 'blue']</tt>
+** <tt>f.check_box_group :color, :collection => @colors, :fields => [:name, :id]</tt>
+* <tt>radio_button_group(field, options={})</tt>
+** <tt>f.radio_button_group :color, :options => ['red', 'green']</tt>
+** <tt>f.radio_button_group :color, :collection => @colors, :fields => [:name, :id], :selected => @colors.first</tt>
 * <tt>hidden_field(field, options={})</tt>
 ** <tt>f.hidden_field :session_id, :class => 'hidden'</tt>
 * <tt>text_area(field, options={})</tt>
