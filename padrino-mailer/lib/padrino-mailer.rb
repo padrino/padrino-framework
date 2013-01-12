@@ -41,15 +41,15 @@ module Padrino
       #
       # @api public
       def registered(app)
-        # lazily autoload heavy mail and it's padrino extension if ruby is MRI19
-        if RUBY_VERSION =~ /^1\.9/ && RUBY_ENGINE == 'ruby'
-          autoload :Mail, 'padrino-mailer/ext'
-        else
-          require 'padrino-mailer/ext'
-        end
         require 'padrino-mailer/base'
         require 'padrino-mailer/helpers'
         require 'padrino-mailer/mime'
+        # This lazily loads the mail gem, due to its long require time.
+        app.set :_padrino_mailer, proc {
+          require 'mail'
+          require 'padrino-mailer/ext'
+          app._padrino_mailer = Mail
+        }
         app.helpers Padrino::Mailer::Helpers
       end
       alias :included :registered

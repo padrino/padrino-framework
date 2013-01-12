@@ -1,5 +1,3 @@
-require 'mail'
-
 module Mail # @private
   class Message # @private
     include Sinatra::Templates
