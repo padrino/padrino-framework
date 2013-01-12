@@ -23,6 +23,14 @@ describe "ModelGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/models/demo_item.rb")
     end
 
+    should "fail if model name is not acceptable" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
+      out, err = capture_io { generate(:model, 'Proc', "name:string", "age", "email:string", "-r=#{@apptmp}/sample_project") }
+      assert_match(/Invalid model name:/, out)
+      assert_match(/Proc/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/models/proc.rb")
+    end
+
     should "fail if field name is not acceptable" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
       out, err = capture_io { generate(:model, 'DemoItem', "re@l$ly:string","display-name:string", "age&year:datetime", "email_two:string", "-r=#{@apptmp}/sample_project") }

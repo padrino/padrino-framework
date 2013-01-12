@@ -51,6 +51,12 @@ module Padrino
       def setup_project
         valid_constant?(options[:app] || name)
         @app_name = (options[:app] || name).gsub(/\W/, '_').underscore.camelize
+
+        if invalid_class(@app_name)
+          say 'Invalid app name:', :red
+          say @app_name 
+          return
+        end
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
           execute_runner(:template, options[:template])

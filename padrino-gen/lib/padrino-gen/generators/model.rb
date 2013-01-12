@@ -39,6 +39,11 @@ module Padrino
           app = options[:app]
           check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
+          if invalid_class(name)
+            say 'Invalid model name:', :red
+            say name.capitalize
+            return
+          end
           if invalids = invalid_fields(fields)
             say 'Invalid field name:', :red
             say " #{invalids.join(", ")}"
