@@ -1,0 +1,19 @@
+# -*- encoding: utf-8 -*-
+require File.expand_path('../lib/<%=name%>/version', __FILE__)
+
+Gem::Specification.new do |gem|
+  gem.authors       = [<%=@author.inspect%>]
+  gem.email         = [<%=@email.inspect%>]
+  gem.description   = %q{TODO: Write a gem description}
+  gem.summary       = %q{TODO: Write a gem summary}
+  gem.homepage      = ""
+
+  gem.files         = `git ls-files`.split($\)
+  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.name          = <%=name.inspect%>
+  gem.require_paths = ["lib"]
+  gem.version       = <%=name.camelcase%>::VERSION
+
+  gem.add_dependency "padrino-core"
+end

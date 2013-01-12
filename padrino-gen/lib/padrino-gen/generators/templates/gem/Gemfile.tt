@@ -1,0 +1,25 @@
+source :rubygems
+
+gemspec
+
+# Server requirements
+# gem 'thin' # or mongrel
+# gem 'trinidad', :platform => 'jruby'
+
+# Project requirements
+gem 'rake'
+
+# Component requirements
+
+# Test requirements
+
+# Use Padrino as specified in gemspec
+gem 'padrino'
+
+# Or Padrino Edge
+# gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
+
+# Or Individual Gems
+<% unless options.dev? %># <% end %>%w(core gen helpers cache mailer admin).each do |g|
+<% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
+<% unless options.dev? %># <% end %>end
