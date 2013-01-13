@@ -15,7 +15,8 @@ describe "ProjectGenerator" do
     should "allow simple generator to run and create base_app with no options" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_project")
-      assert_match_in_file(/class SampleProject < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/module SampleProject/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/Padrino.mount\('SampleProject'\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/Rakefile")
@@ -30,11 +31,13 @@ describe "ProjectGenerator" do
     should "generate a valid name" do
       capture_io { generate(:project, 'project.com', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/project.com")
-      assert_match_in_file(/class ProjectCom < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
+      assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file(/Padrino.mount\('ProjectCom'\).to\('\/'\)/, "#{@apptmp}/project.com/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
       assert_file_exists("#{@apptmp}/project.com/ws_dci_2011")
-      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
+      assert_match_in_file(/module WsDci2011/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
       assert_match_in_file(/Padrino.mount\('WsDci2011'\).to\('\/ws_dci_2011'\)/, "#{@apptmp}/project.com/config/apps.rb")
     end
 
@@ -52,7 +55,8 @@ describe "ProjectGenerator" do
     should "allow specifying alternate application name" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') }
       assert_file_exists("#{@apptmp}/sample_project")
-      assert_match_in_file(/class BaseApp < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/module BaseApp/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/Padrino.mount\('BaseApp'\).to\('\/'\)/,"#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
@@ -85,7 +89,8 @@ describe "ProjectGenerator" do
 
     should "place app specific names into correct files" do
       capture_io { generate(:project, 'warepedia', "--root=#{@apptmp}", '--script=none') }
-      assert_match_in_file(/class Warepedia < Padrino::Application/m, "#{@apptmp}/warepedia/app/app.rb")
+      assert_match_in_file(/module Warepedia/m, "#{@apptmp}/warepedia/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/m, "#{@apptmp}/warepedia/app/app.rb")
       assert_match_in_file(/Padrino.mount\('Warepedia'\).to\('\/'\)/m, "#{@apptmp}/warepedia/config/apps.rb")
     end
 
