@@ -72,7 +72,7 @@ describe "AppGenerator" do
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'demo_items', "-r=#{@apptmp}/sample_project", '-a=demo') }
       assert_match_in_file(/Demo::App.controllers :demo_items do/m, "#{@apptmp}/sample_project/demo/controllers/demo_items.rb")
-      assert_match_in_file(/Demo.helpers do/m, "#{@apptmp}/sample_project/demo/helpers/demo_items_helper.rb")
+      assert_match_in_file(/Demo::App.helpers do/m, "#{@apptmp}/sample_project/demo/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/demo/views/demo_items")
     end
 

@@ -23,7 +23,7 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
-      assert_match_in_file(/SampleProject.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/SampleProject::App.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/views/demo_items")
       assert_file_exists(@controller_test_path)
     end
@@ -32,7 +32,7 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'warepedia', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/warepedia") }
       assert_match_in_file(/Warepedia::App.controllers :demo_items do/m, "#{@apptmp}/warepedia/app/controllers/demo_items.rb")
-      assert_match_in_file(/Warepedia.helpers do/m, "#{@apptmp}/warepedia/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/Warepedia::App.helpers do/m, "#{@apptmp}/warepedia/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/warepedia/app/views/demo_items")
     end
 
@@ -41,7 +41,7 @@ describe "ControllerGenerator" do
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/Subby::App.controllers :demo_items do/m, @controller_path.gsub('app','subby'))
-      assert_match_in_file(/Subby.helpers do/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
+      assert_match_in_file(/Subby::App.helpers do/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/subby/views/demo_items")
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
@@ -50,7 +50,7 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=none') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
-      assert_match_in_file(/SampleProject.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/SampleProject::App.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/views/demo_items")
       assert_no_file_exists("#{@apptmp}/sample_project/test")
     end
