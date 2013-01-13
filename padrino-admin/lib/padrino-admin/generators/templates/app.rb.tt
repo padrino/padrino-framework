@@ -33,9 +33,4 @@ class Admin < Padrino::Application
 
   access_control.roles_for :admin do |role|
   end
-
-  breadcrumbs = Padrino::Helpers::Breadcrumb.new
-  breadcrumbs.set_home '/admin', 'Admin'
-  set :breadcrumbs, breadcrumbs
-
 end
