@@ -232,7 +232,7 @@ module Padrino
       # @param [String] app
       #   folder name of application.
       #
-      # @return [String] class name for application.
+      # @return [String] module name for application.
       #
       # @example
       #   fetch_app_name('subapp')
@@ -240,7 +240,7 @@ module Padrino
       # @api public
       def fetch_app_name(app='app')
         app_path = destination_root(app, 'app.rb')
-        @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
+        @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
       end
 
       # Adds all the specified gems into the Gemfile for bundler.
