@@ -134,7 +134,7 @@ email :email_with_files do
 from 'admin@site.com'
 # ...
 body "Here are your files!"
-add_file :filename => 'somefile.png', :content => File.read('/somefile.png')
+add_file :filename => 'somefile.png', :content => File.open('/full/path/to/somefile.png', 'rb') { |f| f.read }
 add_file '/full/path/to/someotherfile.png'
 end
 end
