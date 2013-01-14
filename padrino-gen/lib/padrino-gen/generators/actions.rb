@@ -224,7 +224,7 @@ module Padrino
       #
       # @api semipublic
       def apply_default_fields(fields)
-        fields.each { |field| field << ":string" unless field =~ /:/ }
+        fields.map! { |field| field =~ /:/ ? field : "#{field}:string" }
       end
 
       # Returns the app_name for the application at root.
