@@ -138,12 +138,6 @@ module Padrino
           return
         end
       end
-      if Module == klass.class
-        klass = klass.constants.map{|const| klass.const_get(const)}.find do |obj|
-          obj.respond_to?(:ancestors) &&
-          obj.ancestors.include?(Padrino::Application)
-        end
-      end
       klass
     end
 
