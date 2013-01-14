@@ -164,7 +164,8 @@ module Padrino
         if defined?(Gem)
           _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name.sub(/padrino-/, "") == @gem }
           if spec
-            spec.require_paths.each do |path|
+            simple_name = name.split("::").last.downcase
+            if path = spec.require_paths.grep(%r|#{simple_name}/?$|)
               candidates << File.expand_path(File.join(spec.full_gem_path, path, "app.rb"))
             end
           end
