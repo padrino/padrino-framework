@@ -1,7 +1,7 @@
 source :rubygems
 
 # Distribute your app as a gem
-<% unless options.gem? %>#<% end %> gemspec
+<% unless options.gem? %># <% end %>gemspec
 
 # Server requirements
 # gem 'thin' # or mongrel

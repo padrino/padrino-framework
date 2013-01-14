@@ -73,6 +73,13 @@ describe "ProjectGenerator" do
       assert_no_file_exists("#{@apptmp}/sample_project/demo/controllers")
     end
 
+    should "generate gemspec and special files if gem is expected" do
+      capture_io { generate(:project,'sample_gem', '--gem', "--root=#{@apptmp}") }
+      assert_file_exists("#{@apptmp}/sample_gem/sample_gem.gemspec")
+      assert_match_in_file(/^gemspec/,"#{@apptmp}/sample_gem/Gemfile")
+      assert_file_exists("#{@apptmp}/sample_gem/README.md")
+    end
+
     should "not create models folder if no orm is chosen" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '--orm=none') }
       assert_no_dir_exists("#{@apptmp}/sample_project/models")
