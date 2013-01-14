@@ -2,8 +2,8 @@
 require File.expand_path('../lib/<%=name%>/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = [<%=@author.inspect%>]
-  gem.email         = [<%=@email.inspect%>]
+  gem.authors       = [<%=git_author_name.inspect%>]
+  gem.email         = [<%=git_author_email.inspect%>]
   gem.description   = %q{TODO: Write a gem description}
   gem.summary       = %q{TODO: Write a gem summary}
   gem.homepage      = ""
