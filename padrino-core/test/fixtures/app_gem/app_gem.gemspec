@@ -12,6 +12,6 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "app_gem"
-  gem.require_paths = ["lib"]
+  gem.require_paths = ["app", "lib"]
   gem.version       = AppGem::VERSION
 end

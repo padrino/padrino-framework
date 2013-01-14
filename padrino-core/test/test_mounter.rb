@@ -188,7 +188,7 @@ describe "Mounter" do
         Padrino.root("fixtures", "app_gem")
       end
 
-      Padrino.mount("AppGem").to("/from_gem")
+      Padrino.mount("AppGem::App").to("/from_gem")
       mounter = Padrino.mounted_apps[0]
       assert_equal AppGem::App, mounter.app_obj
       assert_equal Padrino.root('public'), mounter.app_obj.public_folder

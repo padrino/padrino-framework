@@ -162,8 +162,12 @@ module Padrino
         candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
         candidates << Padrino.mounted_root(name.downcase, "app.rb")
         if defined?(Gem)
-          _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name.sub(/padrino-/, "") == name.underscore }
-          candidates << File.expand_path(File.join(spec.full_gem_path, "app", "app.rb")) if spec
+          _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name.sub(/padrino-/, "") == @gem }
+          if spec
+            spec.require_paths.each do |path|
+              candidates << File.expand_path(File.join(spec.full_gem_path, path, "app.rb"))
+            end
+          end
         end
         candidates << Padrino.root("app", "app.rb")
         candidates.find { |candidate| File.exist?(candidate) }
