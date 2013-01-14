@@ -18,12 +18,12 @@ Padrino.mount("<%=name.camelcase%>::App").to("/<%=name%>")
 
 ## Development
 
-The app can be run as a standalone Padrino application as you would expect from a normal one:
+For development, this gem can be run as a standalone Padrino application
+as you would expect from a normal one:
 
 ```ruby
 $ bundle exec padrino start
-# Alternatively
-$ rackup #or thin or whatever
 ```
 
-The Rakefile also works like the normal Padrino one and supports all standard integrations.
+The Rakefile also works like the normal Padrino one and supports all standard
+components.
