@@ -22,10 +22,12 @@ module Padrino
     # @option options [Symbol] :app_file (Automatically detected)
     # @option options [Symbol] :app_obj (Detected)
     # @option options [Symbol] :app_root (Directory of :app_file)
+    # @option options [Symbol] :gem The gem to load the app from (Detected from name)
     #
     def initialize(name, options={})
       @name      = name.to_s
       @app_class = options[:app_class] || @name.camelize
+      @gem       = options[:gem]       || @app_class.split("::").first.underscore
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
