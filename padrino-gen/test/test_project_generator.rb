@@ -33,9 +33,9 @@ describe "ProjectGenerator" do
       assert_match_in_file(/class ProjectCom < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file(/Padrino.mount\('ProjectCom'\).to\('\/'\)/, "#{@apptmp}/project.com/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
-      assert_file_exists("#{@apptmp}/project.com/wsdci2011")
-      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/wsdci2011/app.rb")
-      assert_match_in_file(/Padrino.mount\('WsDci2011'\).to\('\/wsdci2011'\)/, "#{@apptmp}/project.com/config/apps.rb")
+      assert_file_exists("#{@apptmp}/project.com/ws_dci_2011")
+      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
+      assert_match_in_file(/Padrino.mount\('WsDci2011'\).to\('\/ws_dci_2011'\)/, "#{@apptmp}/project.com/config/apps.rb")
     end
 
     should "raise an Error when given invalid constant names" do

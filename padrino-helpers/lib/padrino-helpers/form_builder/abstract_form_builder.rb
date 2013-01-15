@@ -95,6 +95,31 @@ module Padrino
           @template.select_tag field_name(field), options
         end
 
+        # f.check_box_group :color, :options => ['red', 'green', 'blue'], :selected => ['red', 'blue']
+        # f.check_box_group :color, :collection => @colors, :fields => [:name, :id]
+        def check_box_group(field, options={})
+          selected_values = Array(options[:selected] || field_value(field))
+          if options[:collection]
+            fields = options[:fields] || [:name, :id]
+            # don't use map!, it will break some orms
+            selected_values = selected_values.map{ |v| (v.respond_to?(fields[0]) ? v.send(fields[1]) : v).to_s }
+          end
+          labeled_group( field, options ) do |variant|
+            @template.check_box_tag( field_name(field)+'[]', :value => variant[1], :id => variant[2], :checked => selected_values.include?(variant[1]) )
+          end
+        end
+
+        # f.radio_button_group :color, :options => ['red', 'green']
+        # f.radio_button_group :color, :collection => @colors, :fields => [:name, :id], :selected => @colors.first
+        def radio_button_group(field, options={})
+          fields = options[:fields] || [:name, :id]
+          selected_value = options[:selected] || field_value(field)
+          selected_value = selected_value.send(fields[1])  if selected_value.respond_to?(fields[0])
+          labeled_group( field, options ) do |variant|
+            @template.radio_button_tag( field_name(field), :value => variant[1], :id => variant[2], :checked => variant[1] == selected_value.to_s )
+          end
+        end
+
         # f.check_box :remember_me, :value => 'true', :uncheck_value => '0'
         def check_box(field, options={})
           html =""
@@ -246,6 +271,26 @@ module Padrino
           def root_form?
             !nested_form?
           end
+
+          # Builds a group of labels for radios or checkboxes
+          def labeled_group(field, options={})
+            options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
+            options.merge!(:class => field_error(field, options))
+            variants = case
+            when options[:options]
+              options[:options].map{ |caption, value| [caption.to_s, (value||caption).to_s] }
+            when options[:collection]
+              fields = options[:fields] || [:name, :id]
+              options[:collection].map{ |variant| [variant.send(fields.first).to_s, variant.send(fields.last).to_s] }
+            else
+              []
+            end
+            variants.inject('') do |html, variant|
+              variant[2] = "#{field_id(field)}_#{variant[1]}"
+              html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
+            end
+          end
+
       end # AbstractFormBuilder
     end # FormBuilder
   end # Helpers

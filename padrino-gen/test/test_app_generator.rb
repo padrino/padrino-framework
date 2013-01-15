@@ -34,6 +34,23 @@ describe "AppGenerator" do
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
+    should "create correctly a new padrino application with an underscore name" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo_app', "--root=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app/controllers")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app/helpers")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app/views")
+      assert_file_exists("#{@apptmp}/sample_project/demo_app/views/layouts")
+      assert_dir_exists("#{@apptmp}/sample_project/public/demo_app")
+      assert_match_in_file("Padrino.mount('DemoApp').to('/demo_app')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file('class DemoApp < Padrino::Application', "#{@apptmp}/sample_project/demo_app/app.rb")
+      assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
     should "generate tiny app skeleton" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo','--tiny',"--root=#{@apptmp}/sample_project") }
@@ -60,7 +77,7 @@ describe "AppGenerator" do
     should "correctly create a new mailer inside a padrino application" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'demo_app', "--root=#{@apptmp}/sample_project") }
-      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project", '-a=demoapp') }
+      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project", '-a=demo_app') }
     end
 
     # only destroys what it generated.

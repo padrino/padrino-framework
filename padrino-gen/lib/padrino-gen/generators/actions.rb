@@ -215,6 +215,18 @@ module Padrino
         results.empty? ? nil : results
       end
 
+      # Apply default field types.
+      #
+      # @param [Array<String>] fields
+      #   Field names for generators
+      #
+      # @return [Array<String>] fields with default types
+      #
+      # @api semipublic
+      def apply_default_fields(fields)
+        fields.map! { |field| field =~ /:/ ? field : "#{field}:string" }
+      end
+
       # Returns the app_name for the application at root.
       #
       # @param [String] app

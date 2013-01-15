@@ -60,7 +60,9 @@ module Padrino
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
           append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
-          insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
+          unless options[:destroy]
+            insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
+          end
 
           params = [
             @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
@@ -82,9 +84,11 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy])
-          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
-          admin_app.invoke_all
+          unless options[:destroy]
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy])
+            admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
+            admin_app.invoke_all
+          end
 
           template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{@model_singular}.rb"), :force => true
 
@@ -103,8 +107,10 @@ module Padrino
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
 
-          add_project_module @model_plural
-          require_dependencies('bcrypt-ruby', :require => 'bcrypt')
+          unless options[:destroy]
+            add_project_module @model_plural
+            require_dependencies('bcrypt-ruby', :require => 'bcrypt')
+          end
 
           # A nicer select box
           gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
