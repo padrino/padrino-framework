@@ -1,0 +1,26 @@
+cs:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "není v seznamu povolených hodnot"
+        exclusion: "je vyhrazeno pro jiný účel"
+        invalid: "není platná hodnota"
+        confirmation: "nebylo potvrzeno"
+        accepted: "musí být potvrzeno"
+        empty: "nesmí být prázdný/é"
+        blank: "je povinná položka"
+        too_long: "je příliš dlouhá/ý (max. %{count} znaků)"
+        too_short: "je příliš krátký/á (min. %{count} znaků)"
+        wrong_length: "nemá správnou délku (očekáváno %{count} znaků)"
+        taken: "již databáze obsahuje"
+        not_a_number: "není číslo"
+        greater_than: "musí být větší než %{count}"
+        greater_than_or_equal_to: "musí být větší nebo rovno %{count}"
+        equal_to: "musí být rovno %{count}"
+        less_than: "musí být méně než %{count}"
+        less_than_or_equal_to: "musí být méně nebo rovno %{count}"
+        odd: "musí být liché číslo"
+        even: "musí být sudé číslo"
+        record_invalid: "Následující pole obsahují chybně vyplněné údaje: %{errors}"
+        content_type: "nepodporovaný formát souboru"
+  #activerecord: *activemodel

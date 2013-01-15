@@ -1,0 +1,26 @@
+uk:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "не входить у список"
+        exclusion: "зарезервовано"
+        invalid: "недійсний"
+        confirmation: "не збігається з підтвердженням"
+        accepted: "повинно бути прийняте"
+        empty: "не може бути порожнім"
+        blank: "не може бути порожнім"
+        too_long: "занадто довгий (максимум %{count} символів)"
+        too_short: "занадто короткий(мінімум %{count} символів)"
+        wrong_length: "неправильної довжини (повинно бути %{count} символів)"
+        taken: "вже зайнятий"
+        not_a_number: "не число"
+        greater_than: "повинно бути більше %{count}"
+        greater_than_or_equal_to: "повинно бути не менше %{count}"
+        equal_to: "повинно дорівнювати %{count}"
+        less_than: "повинно бути менше %{count}"
+        less_than_or_equal_to: "повинно бути не більше %{count}"
+        odd: "повинно бути непарним"
+        even: "повинно бути парним"
+        record_invalid: "Перевірка не вдалася: %{errors}"
+        content_type: "формат файлу не підтримується"
+  activerecord: *activemodel

@@ -1,0 +1,26 @@
+ro:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "nu este inclus în listă"
+        exclusion: "este rezervat"
+        invalid: "nu este valid"
+        confirmation: "nu corespunde cu confirmarea"
+        accepted: "trebuie să fie acceptat"
+        empty: "nu poate fi gol"
+        blank: "nu poate fi gol"
+        too_long: "este prea lung (maximul este %{count} caractere)"
+        too_short: "este prea scurt (minimul este %{count} caractere)"
+        wrong_length: "are lungime necorespunzătoare (trebuie să fie de %{count} caractere)"
+        taken: "este deja utilizat"
+        not_a_number: "nu este un număr"
+        greater_than: "trebuie să fie mai mare de %{count}"
+        greater_than_or_equal_to: "trebuie să fie mai mare sau egal cu %{count}"
+        equal_to: "trebuie să fie egal cu %{count}"
+        less_than: "trebuie să fie mai mic de %{count}"
+        less_than_or_equal_to: "trebuie să fie mai mic sau egal cu %{count}"
+        odd: "trebuie să fie impar"
+        even: "trebuie să fie par"
+        record_invalid: "Eroare la validare: %{errors}"
+        content_type: "format de fișier neacceptat"
+  activerecord: *activemodel

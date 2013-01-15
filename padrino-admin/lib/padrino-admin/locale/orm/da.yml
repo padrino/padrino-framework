@@ -1,0 +1,26 @@
+da:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "findes ikke i listen"
+        exclusion: "er reserveret"
+        invalid: "er ikke gyldig"
+        confirmation: "matcher ikke gentagelse"
+        accepted: "skal accepteres"
+        empty: "må ikke være tom"
+        blank: "må ikke være blank"
+        too_long: "er for lang (maksimum er %{count} tegn)"
+        too_short: "er for kort (minimum er %{count} tegn)"
+        wrong_length: "har ikke den rigtige længde (skal være på %{count} tegn)"
+        taken: "er allerede i brug"
+        not_a_number: "er ikke et tal"
+        greater_than: "skal være større end %{count}"
+        greater_than_or_equal_to: "skal være større end eller lig %{count}"
+        equal_to: "skal være lig %{count}"
+        less_than: "skal være mindre end %{count}"
+        less_than_or_equal_to: "skal være mindre end eller lig %{count}"
+        odd: "skal være ulige"
+        even: "skal være lige"
+        record_invalid: "Valideringsfejl: %{errors}"
+        content_type: "fileformatet er ikke understøttet"
+  activerecord: *activemodel

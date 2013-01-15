@@ -1,0 +1,26 @@
+de:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "ist nicht in der Liste enthalten"
+        exclusion: "ist reserviert"
+        invalid: "ist ungültig"
+        confirmation: "entspricht nicht der Bestätigung"
+        accepted: "muss akzeptiert werden"
+        empty: "Darf nicht leer sein"
+        blank: "Darf nicht nur Leerzeichen enthalten"
+        too_long: "ist zu lang (Maximum ist %{count} Zeichen)"
+        too_short: "ist zu kurz (Minimum ist %{count} Zeichen)"
+        wrong_length: "hat eine ungültige Länge (soll %{count} Zeichen sein)"
+        taken: "ist schon vergeben"
+        not_a_number: "ist keine Nummer"
+        greater_than: "muss größer als %{count} sein"
+        greater_than_or_equal_to: "muss größer oder gleich %{count} sein"
+        equal_to: "muss gleich %{count} sein"
+        less_than: "muss weniger als %{count} sein"
+        less_than_or_equal_to: "muss weniger oder gleich %{count} sein"
+        odd: "muss ungerade sein"
+        even: "muss gerade sein"
+        record_invalid: "Validierung schlug fehl: %{errors}"
+        content_type: "Datei-Format wird nicht unterstützt"
+  activerecord: *activemodel
