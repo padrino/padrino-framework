@@ -29,6 +29,7 @@ end
 TEST
 
 RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
+begin
 require 'rspec/core/rake_task'
 
 spec_tasks = Dir['spec/*/'].map { |d| File.basename(d) }
@@ -42,6 +43,9 @@ end
 
 desc "Run complete application spec suite"
 task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
+rescue LoadError
+  puts "RSpec is not part of this bundle, skip specs."
+end
 TEST
 
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
