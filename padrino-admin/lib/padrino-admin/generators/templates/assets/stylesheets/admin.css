@@ -6,9 +6,6 @@ body {
   font-size: 13px;
   height: 100%;
 }
-.navbar.navbar-fixed-top .navbar-inner {
-  background-color: white;
-}
 .main {
   min-height: 100%;
   height: auto !important;
@@ -40,66 +37,22 @@ footer .footer-links li a:hover {
 }
 /* -- End Layout -- */
 
-#padrino-modal { margin-top: 60px; }
-
-.table th.action {
-  width: 110px;
-  text-align: center;
-}
-.table th.selectable, .table td.selectable {
-  width: 40px;
-  text-align: center;
-}
-.table th:first-child .dropdown-menu {
-  text-align: left;
-}
-.table td {
-  vertical-align: middle !important;
-}
-.table td:first-child > input[type="checkbox"] {
-  margin: 0 !important;
-}
-.table tbody td.action .wrapper > a {
-  font-size: 1.3em;
-  padding: 4px;
-  display: inline-block;
-  visibility: hidden;
-}
-.table tbody td.action .wrapper > a:hover {
-  text-decoration: none;
-}
-.table tbody tr:hover td.action .wrapper > a, .table tbody td.action .wrapper > a.active {
-  visibility: visible;
-}
-.table tbody td.action .wrapper {
-  position: relative;
-  text-align: right;
-  height: 100%;
-}
-.table tbody td.action .btn-link {
-  padding: 10px;
-}
-.table tbody td.action .popover {
-  left: -105px;
-  top: -20px;
-  width: 200px;
-  text-align: center;
-}
-.table tbody td.action .popover form {
-  margin: 0;
-}
-.form-horizontal .actions {
-  text-align :right;
-}
-
+/* -- Begin Login -- */
 .login {
   background-color: #fff;
-  border: 1px solid #08c;
-  box-shadow: 0px 0px 20px #555;
+  -webkit-box-shadow: 0px 0px 20px #777;
+  -moz-box-shadow: 0px 0px 20px #777;
+  -o-box-shadow: 0px 0px 20px #777;
+  -ms-box-shadow: 0px 0px 20px #777;
+  box-shadow: 0px 0px 20px #777;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -o-border-radius: 5px;
+  -ms-border-radius: 5px;
   border-radius: 5px;
   padding-top: 10px;
   width: 500px;
-  margin: 0px auto;
+  margin: 60px auto 0;
 }
 .login form, .login .actions {
   margin-bottom: 0px;
@@ -117,6 +70,9 @@ footer .footer-links li a:hover {
 .login .control-group > .controls {
   margin-left: 120px;
 }
+/* -- End Login -- */
+
+/* -- Begin Notifications -- */
 .flash {
   text-align: center;
 }
@@ -135,7 +91,6 @@ footer .footer-links li a:hover {
   /* @warning-text */
   border: 2px solid #c09853;
 }
-
 .alert-notice {
   /* @success-background */
   background-color: #dff0d8;
@@ -153,48 +108,110 @@ footer .footer-links li a:hover {
   color: #c09853;
 }
 
-.navbar .nav > li > a {
-  padding: 15px 15px 9px;
+/* -- End Notifications -- */
+
+/* -- Begin Application -- */
+.main-wrapper .tabs-content {
+  padding: 30px 0;
 }
-.navbar .nav > li > a.dropdown-toggle {
-  padding-right: 0;
+.main-wrapper .form-horizontal .actions {
+  text-align :right;
 }
 
-#deleter-body > form {
+/* --- Begin Application::TopBar --- */
+.navbar {
+  -webkit-box-shadow: 0px 1px 10px #777;
+  -moz-box-shadow: 0px 1px 10px #777;
+  -o-box-shadow: 0px 1px 10px #777;
+  -ms-box-shadow: 0px 1px 10px #777;
+  box-shadow: 0px 1px 10px #777;
+}
+.navbar .nav > li > a, .navbar .nav > li button[type=submit] {
+  padding: 17px 15px 13px;
+}
+.navbar .nav > li form {
+  margin: 0;
+}
+.navbar .nav > li button[type=submit] {
+  border: none;
+  background: none;
+  color: #777777;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #ffffff;
+  font-size: inherit;
+}
+.navbar .nav > li button[type=submit]:hover {
+  color: #333333;
+}
+/* --- End Application::TopBar --- */
+
+/* --- Begin Application::List --- */
+.main-wrapper .table th.action {
+  width: 110px;
   text-align: center;
 }
-
-.dropdown-menu li > a.disabled {
+.main-wrapper .table th.selectable, .main-wrapper .table td.selectable {
+  width: 40px;
+  text-align: center;
+}
+.main-wrapper .table th:first-child .dropdown-menu {
+  text-align: left;
+}
+.main-wrapper .table td {
+  vertical-align: middle !important;
+}
+.main-wrapper .table td:first-child > input[type=checkbox] {
+  margin: 0 !important;
+}
+.main-wrapper .table tbody td.action .wrapper > a {
+  font-size: 1.3em;
+  padding: 4px;
+  display: inline-block;
+  visibility: hidden;
+}
+.main-wrapper .table tbody td.action .wrapper > a:hover {
+  text-decoration: none;
+}
+.main-wrapper .table tbody tr:hover td.action .wrapper > a,
+.main-wrapper .table tbody td.action .wrapper > a.active {
+  visibility: visible;
+}
+.main-wrapper .table tbody td.action .wrapper {
+  position: relative;
+  text-align: right;
+  height: 100%;
+}
+.main-wrapper .table tbody td.action .btn-link {
+  padding: 10px;
+}
+.main-wrapper .table tbody td.action .popover {
+  left: -105px;
+  top: -20px;
+  width: 200px;
+  text-align: center;
+}
+.main-wrapper .table tbody td.action .popover form {
+  margin: 0;
+}
+.main-wrapper .dropdown-menu li > a.disabled {
   /* @gray-light */
-  color:
- #999;
+  color: #999;
   cursor: pointer;
 }
-.dropdown-menu li.disabled:hover, .dropdown-menu li:hover a.disabled:hover {
+.main-wrapper .dropdown-menu li.disabled:hover,
+.main-wrapper .dropdown-menu li:hover a.disabled:hover {
   background-color: #fff;
   cursor: pointer;
 }
-
-.dropdown-form form {
-  margin: 0;
+.main-wrapper .dropdown-menu li > a.disabled {
+  /* @gray-light */
+  color: #999;
+  cursor: pointer;
 }
-.dropdown-form a:hover, .dropdown-form a:hover form {
-  /* @dropdown-link-color-hover */
-  color: #fff;
-  text-decoration: none;
-  outline: 0;
-  /* @dropdown-link-background-active */
-  background-color: #08c;
+.main-wrapper .dropdown-menu li.disabled:hover,
+.main-wrapper .dropdown-menu li:hover a.disabled:hover {
+  background-color: #fff;
+  cursor: pointer;
 }
-.dropdown-form form a {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: normal;
-  /* @base-line-height */
-  line-height: 20px;
-  /* @dropdown-link-color */
-  color: #333;
-  white-space: nowrap;
-  text-decoration: none;
-}
+/* --- End Application::List --- */
+/* -- End Application -- */
