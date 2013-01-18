@@ -4,59 +4,38 @@
 
 
 // Base class
-// -------------------------
+// --------------------------------------------------
 
 .nav {
   margin-left: 0;
-  margin-bottom: @line-height-base;
+  margin-bottom: 0;
+  padding-left: 0; // Override default ul/ol
   list-style: none;
-  .clearfix();
+  .clear_float();
 }
 .nav > li {
-  float: left;
+  display: block;
 }
 .nav > li > a {
+  position: relative;
   display: block;
-  padding: 8px 12px;
+  padding: 10px 15px;
 }
 .nav > li > a:hover {
   text-decoration: none;
   background-color: @grayLighter;
 }
 
-// Prevent IE8 from misplacing imgs
-// See https://github.com/h5bp/html5-boilerplate/issues/984#issuecomment-3985989
-.nav > li > a > img {
-  max-width: none;
-}
-
 // Redeclare pull classes because of specifity
+// Todo: consider making these utilities !important to avoid this bullshit
 .nav > .pull-right {
   float: right;
 }
 
-// Nav headers (for dropdowns and lists)
-.nav-header {
-  display: block;
-  padding: 3px 15px;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: @line-height-base;
-  color: @grayLight;
-  text-shadow: 0 1px 0 rgba(255,255,255,.5);
-  text-transform: uppercase;
-}
-// Space them out when they follow another list item (link)
-.nav li + .nav-header {
-  margin-top: 9px;
-}
-
-// Dividers (basically an hr) within the dropdown
-.nav .divider {
-  .nav-divider();
-}
 
 
+// Nav variations
+// --------------------------------------------------
 
 // Tabs
 // -------------------------
@@ -65,8 +44,9 @@
 .nav-tabs {
   border-bottom: 1px solid #ddd;
 }
-// Make the list-items overlay the bottom border
 .nav-tabs > li {
+  float: left;
+  // Make the list-items overlay the bottom border
   margin-bottom: -1px;
 }
 // Actual tabs (as links)
@@ -89,10 +69,12 @@
   cursor: default;
 }
 
-
-
 // Pills
 // -------------------------
+
+.nav-pills > li {
+  float: left;
+}
 
 // Links rendered as pills
 .nav-pills > li > a {
@@ -115,17 +97,15 @@
 }
 .nav-stacked > li + li > a {
   margin-top: 2px;
-  margin-left: 0; // no need for the gap between nav items
+  margin-left: 0; // no need for this gap between nav items
 }
 
-
-
-// Justified navs
+// Justified nav links
 // -------------------------
 
 .nav-justified {
   // Negative margin doesn't work, so we hack it
-  max-height: 37px;
+  max-height: 40px;
 }
 .nav-justified > li {
   float: none;
@@ -134,45 +114,79 @@
   text-align: center;
 }
 
-
-
 // Lists
 // -------------------------
 
-.nav-list {
-  background-color: #fff;
-  border-radius: 6px;
-  .box-shadow(0 1px 4px rgba(0,0,0,.065))
-}
-.nav-list > li {
-  float: none;
-}
 .nav-list > li > a {
   margin-bottom: -1px; // pull up the following link for a 1px border between
   border: 1px solid #e5e5e5;
 }
-.nav-list > li > a:hover {
-  background-color: #f5f5f5;
-}
 .nav-list > li:first-child > a {
-  border-radius: 6px 6px 0 0;
+   border-top-left-radius: @border-radius-base;
+  border-top-right-radius: @border-radius-base;
 }
 .nav-list > li:last-child > a {
-  border-radius: 0 0 6px 6px;
+   border-bottom-left-radius: @border-radius-base;
+  border-bottom-right-radius: @border-radius-base;
 }
 .nav-list > .active > a,
 .nav-list > .active > a:hover {
-  position: relative;
-  z-index: 2;
-  padding: 9px 15px;
+  z-index: 2; // Bring active item forward so border sits on top of next element
   color: #fff;
-  text-shadow: 0 1px 0 rgba(0,0,0,.15);
   background-color: @link-color;
-  border-width: 0;
-  .box-shadow(~"inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1)")
+  border-color: @link-color;
 }
 
 
+
+// Nav states and addons
+// --------------------------------------------------
+
+// Disabled state
+// -------------------------
+
+// Gray out text
+.nav > .disabled > a {
+  color: @grayLight;
+}
+// Nuke hover effects
+.nav > .disabled > a:hover {
+  text-decoration: none;
+  background-color: transparent;
+  cursor: default;
+}
+
+// Nav headers (for dropdowns and lists)
+// -------------------------
+
+.nav-header {
+  display: block;
+  padding: 3px 15px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: @line-height-base;
+  color: @grayLight;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  text-transform: uppercase;
+}
+// Space them out when they follow another list item (link)
+.nav li + .nav-header {
+  margin-top: 9px;
+}
+
+// Dividers (basically an hr) within the dropdown
+.nav .divider {
+  .nav-divider();
+}
+
+
+
+/*
+// Prevent IE8 from misplacing imgs
+// See https://github.com/h5bp/html5-boilerplate/issues/984#issuecomment-3985989
+.nav > li > a > img {
+  max-width: none;
+}
 
 // Dropdowns
 // -------------------------
@@ -243,9 +257,6 @@
 .tabbable {
   .clearfix();
 }
-.tab-content {
-  overflow: auto; // prevent content from running below tabs
-}
 
 // Show/hide tabbable areas
 .tab-content > .tab-pane,
@@ -257,18 +268,4 @@
   display: block;
 }
 
-
-
-// Disabled state
-// -------------------------
-
-// Gray out text
-.nav > .disabled > a {
-  color: @grayLight;
-}
-// Nuke hover effects
-.nav > .disabled > a:hover {
-  text-decoration: none;
-  background-color: transparent;
-  cursor: default;
-}
+*/

@@ -6,9 +6,28 @@
 // Body reset
 // -------------------------
 
+html {
+  font-size: 62.5%;
+  // Touch the Mobile Magic™
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+// Disable iOS/WinMobile font size changes
+@media screen and (max-device-width: 480px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+  }
+}
+
 body {
   margin: 0;
   color: @text-color;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-size: 1.4rem;
+  line-height: 1.5;
   background-color: @body-background;
 }
 
@@ -58,14 +77,8 @@ img {
   border-radius: 6px;
 }
 
-// Add polaroid-esque trim
-.img-polaroid {
-  padding: 4px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0,0,0,.2);
-  .box-shadow(0 1px 3px rgba(0,0,0,.1));
-}
+// Image thumbnails
+// See thumbnails.less for `.img-thumbnail`
 
 // Perfect circle
 .img-circle {
