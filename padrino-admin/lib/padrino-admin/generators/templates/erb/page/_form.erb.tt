@@ -10,9 +10,9 @@
 <% end %>
 
 <div class="actions">
-  <%%= f.submit 'Save', :class => 'btn btn-primary' %>
+  <%%= f.submit pat(:save), :class => 'btn btn-primary' %>
   &nbsp;
-  <%%= f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue' %>
+  <%%= f.submit pat(:save_and_continue), :class => 'btn btn-info', :name => 'save_and_continue' %>
   &nbsp;
-  <%%= link_to 'Cancel', url(:<%= @orm.name_plural %>, :index), :class => 'btn' %>
+  <%%= link_to pat(:cancel), url(:<%= @orm.name_plural %>, :index), :class => 'btn' %>
 </div>

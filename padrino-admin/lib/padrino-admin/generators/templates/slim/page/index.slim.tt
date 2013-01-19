@@ -13,7 +13,7 @@ div class="tabs-content"
               b class='caret'
             ul class='dropdown-menu'
               li == link_to tag_icon(:check, pat(:select_all)), '#', :id => 'check_all'
-              li == link_to tag_icon('check-empty',pat(:unselect_all)), '#', :id => 'uncheck_all'
+              li == link_to tag_icon('check-empty', pat(:unselect_all)), '#', :id => 'uncheck_all'
               li class='divider'
               li class='disabled' == link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected'
               div class='popover popover-delete-selected left'

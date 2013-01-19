@@ -1,6 +1,6 @@
 %ul.nav.nav-tabs
-  %li.active=link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
-  %li=link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new), :id => 'new'
+  %li.active=link_to tag_icon(:list, pat(:list)), url(:<%= @orm.name_plural %>, :index)
+  %li=link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new), :id => 'new'
 
 .tabs-content
   %table#list.table.table-striped.table-hover.table-condensed
@@ -12,17 +12,18 @@
               = tag_icon :cogs
               %b.caret
             %ul.dropdown-menu
-              %li=link_to tag_icon(:check, 'Select all'), '#', :id => 'check-all'
-              %li=link_to tag_icon(:'check-empty', 'Unselect all'), '#', :id => 'uncheck-all'
+              %li=link_to tag_icon(:check, pat(:select_all)), '#', :id => 'check-all'
+              %li=link_to tag_icon(:'check-empty', pat(:unselect_all)), '#', :id => 'uncheck-all'
               %li.divider
-              %li.disabled=link_to tag_icon(:trash, 'Delete selected'), '#', :id => 'delete-selected'
+              %li.disabled=link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected'
               .popover.popover-delete-selected.left
                 .arrow
-                %h3.popover-title Delete selected?
+                %h3.popover-title=pat(:delete_selected_title)
                 .popover-content
                   -form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
-                    =submit_tag :Delete, :class =>'btn btn-danger btn-small'
-                    .btn.btn-small.cancel Cancel
+                    =submit_tag pat(:delete), :class =>'btn btn-danger btn-small'
+                    .btn.btn-small.cancel=pat(:cancel)
+                =link_to tag_icon(:trash, pat(:delete_selected)),'#', 'data-form' => '#multiple_delete_form', 'data-cancel' => "#{pat(:cancel)}",'data-title' => "#{pat(:delete_selected_title_multiple)}", 'data-type' => 'danger', :id => 'btn_multiple_delete'
         <%- @orm.columns.each_with_index do |column, i| -%>
         %th.header= :<%= column.name %>
         <%- end -%>
@@ -43,12 +44,12 @@
           <%- end -%>
           %td.action
             .wrapper
-              =link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "Edit <%= @orm.name_singular %>"
-              =link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "Delete <%= @orm.name_singular %>"
+              =link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>"
+              =link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>"
               .popover.popover-delete-one.left
                 .arrow
-                %h3.popover-title Delete <%= @orm.name_singular %>?
+                %h3.popover-title=pat(:delete, :model => "<%= @orm.name_singular %>")
                 .popover-content
                   -form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do
-                    =submit_tag :Delete, :class =>'btn btn-danger btn-small'
-                    .btn.btn-small.cancel Cancel
+                    =submit_tag pat(:delete), :class =>'btn btn-danger btn-small'
+                    .btn.btn-small.cancel=pat(:cancel)
