@@ -20,7 +20,7 @@ module Padrino
         #
         # @api public
         def initialize(*args, &block)
-          @moneta = block ? ::Moneta.build(&block) : ::Moneta.new(*args)
+          @backend = block ? ::Moneta.build(&block) : ::Moneta.new(*args)
         end
 
         ##
@@ -35,7 +35,7 @@ module Padrino
         #
         # @api public
         def get(key)
-          @moneta[key]
+          @backend[key]
         end
 
         ##
@@ -55,7 +55,7 @@ module Padrino
         def set(key, value, opts = nil)
           opts ||= {}
           opts[:expires] = opts.delete(:expires_in).to_i if opts[:expires_in]
-          @moneta.store(key, value, opts)
+          @backend.store(key, value, opts)
         end
 
         ##
@@ -70,7 +70,7 @@ module Padrino
         #
         # @api public
         def delete(key)
-          @moneta.delete(key)
+          @backend.delete(key)
         end
 
         ##
@@ -83,7 +83,7 @@ module Padrino
         #
         # @api public
         def flush
-          @moneta.clear
+          @backend.clear
         end
       end # Moneta
     end # Store
