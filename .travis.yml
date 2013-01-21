@@ -6,6 +6,7 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
+  - 2.0.0
   - ree
   - jruby
 notifications:
@@ -20,3 +21,6 @@ branches:
   only:
     - master
 services: mongodb
+matrix:
+  allow_failures:
+    - rvm: 2.0.0
