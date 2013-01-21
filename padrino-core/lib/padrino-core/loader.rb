@@ -200,7 +200,8 @@ module Padrino
         "#{root}/config/database.rb", "#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb",
         "#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb", "#{root}/config/apps.rb"
       ]
-      @_dependency_paths ||= @_dependency_paths_was
+      gem_paths = Padrino.gems.map { |mod,_| mod.dependency_paths }.flatten!
+      @_dependency_paths ||= (@_dependency_paths_was + Array(gem_paths))
     end
 
     ##

@@ -52,6 +52,17 @@ module Padrino
       def setup_project
         valid_constant?(options[:app] || name)
         @app_name = (options[:app] || name).gsub(/\W/, '_').underscore.camelize
+        if options.gem?
+          if !options[:app]
+            say "An app name must be given when generating a gem", :red
+            exit
+          end
+          if name == options[:app]
+            say "The app name and project name cannot be the same", :red
+            exit
+          end
+          @app_name = [name.camelcase, @app_name].join('::')
+        end
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
           execute_runner(:template, options[:template])

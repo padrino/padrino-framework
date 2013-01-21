@@ -188,6 +188,8 @@ describe "Mounter" do
         Padrino.root("fixtures", "app_gem")
       end
 
+      require Padrino.root("fixtures", "app_gem", "lib", "app_gem")
+
       Padrino.mount("AppGem::App").to("/from_gem")
       mounter = Padrino.mounted_apps[0]
       assert_equal AppGem::App, mounter.app_obj

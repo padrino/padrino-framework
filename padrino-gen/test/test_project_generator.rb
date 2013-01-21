@@ -77,6 +77,7 @@ describe "ProjectGenerator" do
       capture_io { generate(:project,'sample_gem', '--gem', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_gem/sample_gem.gemspec")
       assert_match_in_file(/^gemspec/,"#{@apptmp}/sample_gem/Gemfile")
+      assert_match_in_file(/^SampleGem::App/,"#{@apptmp}/sample_gem/app/app.rb")
       assert_file_exists("#{@apptmp}/sample_gem/README.md")
     end
 
