@@ -32,7 +32,6 @@ module Padrino
     def root(*args)
       File.expand_path(File.join(@root, *args))
     end
-
     
     ##
     # Returns the list of path globs to load as dependencies

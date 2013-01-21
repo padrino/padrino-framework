@@ -182,16 +182,25 @@ module Padrino
     # @returns The root path of the loaded gem
     def gem(name, main_module)
       _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name == name }
-      gems << [main_module, spec]
+      gems << spec
+      modules << main_module
       spec.full_gem_path
     end
 
     ##
     # Returns all currently known padrino gems.
     #
-    # @returns [Module, Gem::Specification]
+    # @returns [Gem::Specification]
     def gems
       @gems ||= []
+    end
+
+    ##
+    # All loaded Padrino modules.
+    #
+    # @returns [<Padrino::Module>]
+    def modules
+      @modules ||= []
     end
   end # self
 end # Padrino
