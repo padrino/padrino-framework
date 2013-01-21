@@ -2,6 +2,10 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 
 source :rubygems
 
+if ENV["AS_VERSION"]
+  gem 'activesupport', "~> #{ENV['AS_VERSION']}"
+end
+
 group :db do
   gem "dm-core",           ">=1.2"
   gem "dm-migrations",     ">=1.2"
