@@ -130,6 +130,26 @@ rescue LoadError, Mongo::ConnectionFailure
   warn "Skipping Mongo tests"
 end
 
+begin
+  require 'moneta'
+  describe "RedisStore" do
+    def setup
+      Padrino.cache = Padrino::Cache::Store::Moneta.new(:Memory, :expires => true)
+      Padrino.cache.flush
+      @test_key = "val_#{Time.now.to_i}"
+    end
+
+    def teardown
+      Padrino.cache.flush
+    end
+
+    eval COMMON_TESTS
+  end
+rescue LoadError
+  warn "Skipping moneta tests"
+end
+
+
 describe "FileStore" do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"

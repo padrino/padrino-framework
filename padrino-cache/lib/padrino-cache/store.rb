@@ -12,6 +12,7 @@ module Padrino
       autoload :Memory,   'padrino-cache/store/memory'
       autoload :Redis,    'padrino-cache/store/redis'
       autoload :Mongo,    'padrino-cache/store/mongo'
+      autoload :Moneta,   'padrino-cache/store/moneta'
     end # Store
   end # Cache
 end # Padrino

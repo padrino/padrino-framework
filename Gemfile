@@ -49,6 +49,7 @@ end
 group :cache do
   gem "redis", ">= 2.0.0"
   gem "mongo", ">= 1.3.1"
+  gem "moneta", ">= 0.7.0"
   platforms :mri do
     gem "bson_ext",  ">= 1.3.1"
     gem 'dalli',     ">= 1.0.2"
