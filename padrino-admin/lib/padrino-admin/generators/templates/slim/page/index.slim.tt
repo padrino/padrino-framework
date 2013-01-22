@@ -8,22 +8,23 @@ div class="tabs-content"
       tr
         th class='header selectable'
           div class='dropdown'
-            a href='#' class='dropdown-toggle btn btn-mini btn-link' data-toggle='dropdown' id='cogs'
+            a href='#' class='dropdown-toggle' data-toggle='dropdown'
               == tag_icon :cogs
               b class='caret'
-            ul class='dropdown-menu'
-              li == link_to tag_icon(:check, pat(:select_all)), '#', :id => 'check_all'
-              li == link_to tag_icon('check-empty', pat(:unselect_all)), '#', :id => 'uncheck_all'
+            ul class='dropdown-menu' role='dropdown'
+              li == link_to tag_icon(:check, pat(:select_all)), '#', :id => 'select-all'
+              li class='disabled' == link_to tag_icon('check-empty', pat(:deselect_all)), '#', :id => 'deselect-all'
               li class='divider'
-              li class='disabled' == link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected'
-              div class='popover popover-delete-selected left'
-                div class='arrow'
-                h3 class='popover-title' == pat(:delete_selected_title)
-                div class='popover-content'
-                  - form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
-                    == submit_tag  pat(:delete), :class =>'btn btn-danger btn-small'
-                    div class='btn btn-small cancel' == pat(:cancel)
-                == link_to tag_icon(:trash, pat(:delete_selected)),'#', 'data-form' => '#multiple_delete_form', 'data-cancel' => "#{pat(:cancel)}",'data-title' => "#{pat(:delete_selected_title_multiple)}", 'data-type' => 'danger', :id => 'btn_multiple_delete'
+              li class='disabled'
+                == link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected'
+                div class='popover popover-delete-selected right'
+                  div class='arrow'
+                  h3 class='popover-title' == pat(:delete_selected_title)
+                  div class='popover-content'
+                    - form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
+                      == hidden_field_tag :<%= @orm.name_singular %>_ids, :'data-delete-many-ids' => true
+                      == submit_tag  pat(:delete), :class =>'btn btn-danger btn-small'
+                      div class='btn btn-small cancel' == pat(:cancel)
         <%- @orm.columns.each_with_index do |column, i| -%>
         th class='header' == :<%= column.name %>
         <%- end -%>

@@ -1,5 +1,4 @@
-#encoding: utf-8
-en:
+es:
   padrino:
     admin:
       save: "Guardar"
@@ -18,10 +17,9 @@ en:
       logout: "Salir del administrador"
       login_error: "Tu email o password están equivocados."
       select_all: "Seleccionar todos"
-      unselect_all: "Deseleccionar todos"
+      deselect_all: "Deseleccionar todos"
       delete_selected: "Eliminar seleccionados"
       delete_selected_title: "¿Estás seguro de querer eliminar los ítems seleccionados?"
-      delete_selected_title_multiple: "Atención: ¡Eliminando múltiples registros!"
       example: "Ej.: texto de prueba"
       new_title: "Nuevo %{model}"
       create_title: "Modificar %{model}"

@@ -184,34 +184,30 @@ footer .footer-links li a:hover {
 .main-wrapper .table tbody td.action .btn-link {
   padding: 10px;
 }
-.main-wrapper .table tbody td.action .popover {
+.main-wrapper .table tbody td.action .popover-delete-one {
   left: -105px;
   top: -20px;
   width: 200px;
   text-align: center;
 }
-.main-wrapper .table tbody td.action .popover form {
+.main-wrapper .table th.selectable .popover-delete-selected {
+  left: 200px;
+  top: 30px;
+  width: 250px;
+  text-align: center;
+}
+.main-wrapper .table .popover form {
   margin: 0;
 }
 .main-wrapper .dropdown-menu li > a.disabled {
   /* @gray-light */
   color: #999;
-  cursor: pointer;
+  cursor: default !important;
 }
 .main-wrapper .dropdown-menu li.disabled:hover,
 .main-wrapper .dropdown-menu li:hover a.disabled:hover {
   background-color: #fff;
-  cursor: pointer;
-}
-.main-wrapper .dropdown-menu li > a.disabled {
-  /* @gray-light */
-  color: #999;
-  cursor: pointer;
-}
-.main-wrapper .dropdown-menu li.disabled:hover,
-.main-wrapper .dropdown-menu li:hover a.disabled:hover {
-  background-color: #fff;
-  cursor: pointer;
+  cursor: default !important;
 }
 /* --- End Application::List --- */
 /* -- End Application -- */
