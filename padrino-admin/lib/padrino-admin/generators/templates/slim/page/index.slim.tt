@@ -3,7 +3,7 @@ ul class="nav nav-tabs"
   li == link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new), :id => 'new'
 
 div class="tabs-content"
-  table class="table table-striped table-hover table-condensed" id="multiple_list"
+  table class="table table-striped table-hover table-condensed" id="list"
     thead
       tr
         th class='header selectable'
