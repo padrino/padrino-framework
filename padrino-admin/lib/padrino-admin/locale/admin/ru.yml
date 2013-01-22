@@ -15,7 +15,7 @@ ru:
       profile: "Редактировать профиль"
       settings: "Настройки"
       logout: "Выход администратора"
-      login_error: "Email или пароль неправильно".
+      login_error: "Email или пароль неправильно."
       select_all: "Выделить все"
       unselect_all: "Очистить все"
       delete_selected: "Удалить"
@@ -29,7 +29,7 @@ ru:
       edit_title: "Редактирование %{model}"
       edit_warning: "Не удалось найти %{model} с идентификатором %{id}."
       update_title: "Редактирование %{model}"
-      update_success: "%{model} с идентификатором %{id} был успешно обновлен".
+      update_success: "%{model} с идентификатором %{id} был успешно обновлен."
       update_error: "Не удалось обновить %{model}."
       update_warning: "Не удалось найти %{model} с идентификатором %{id}"
       delete_title: "Удалить %{model}?"

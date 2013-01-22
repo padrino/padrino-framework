@@ -15,7 +15,7 @@ uk:
       profile: "Редагувати профіль"
       settings: "Налаштування"
       logout: "Вихід адміністратора"
-      login_error: "Email або пароль неправильно".
+      login_error: "Email або пароль неправильно."
       select_all: "Виділити все"
       unselect_all: "Очистити все"
       delete_selected: "Видалити"
@@ -29,7 +29,7 @@ uk:
       edit_title: "Редагування %{model}"
       edit_warning: "Не вдалося знайти %{model} з ідентифікатором %{id}."
       update_title: "Редагування %{model}"
-      update_success: "%{model} з ідентифікатором %{id} був успішно оновлений".
+      update_success: "%{model} з ідентифікатором %{id} був успішно оновлений."
       update_error: "Не вдалося оновити %{model}."
       update_warning: "Не вдалося знайти %{model} з ідентифікатором %{id}"
       delete_title: "Видалити %{model}?"
