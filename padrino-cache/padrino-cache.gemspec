@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_runtime_dependency("padrino-core", Padrino.version)
+  s.add_runtime_dependency("padrino-helpers", Padrino.version)
 end
