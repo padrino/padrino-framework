@@ -4,11 +4,10 @@ install:
   - bundle update
 rvm:
   - 1.8.7
-  - 1.9.2
   - 1.9.3
   - 2.0.0
-  - ree
   - jruby
+  - rbx
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -31,3 +30,4 @@ matrix:
     - rvm: 1.9.3
       env: SINATRA_EDGE=true
     - rvm: 2.0.0
+    - rvm: rbx
