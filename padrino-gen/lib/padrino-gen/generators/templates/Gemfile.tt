@@ -10,8 +10,8 @@ gem 'rake'
 # Component requirements
 
 # Optional json codecs
-# gem 'yajl-ruby' # smaller memory footprint
-# gem 'oj'        # faster
+# gem 'yajl-ruby', :platform => 'mri'  # smaller memory footprint
+# gem 'oj'                             # faster
 
 # Test requirements
 
