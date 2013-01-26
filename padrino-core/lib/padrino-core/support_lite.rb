@@ -10,6 +10,7 @@ require 'active_support/core_ext/array/extract_options'     # extract_options
 require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
+require 'active_support/json'                               # load ActiveSupport json interface
 require 'yaml' unless defined?(YAML)                        # load yaml for i18n
 require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
 
