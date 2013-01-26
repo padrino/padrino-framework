@@ -7,7 +7,7 @@ rvm:
   - 1.9.3
   - 2.0.0
   - jruby
-  - rbx
+  - rbx-18mode
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -30,4 +30,4 @@ matrix:
     - rvm: 1.9.3
       env: SINATRA_EDGE=true
     - rvm: 2.0.0
-    - rvm: rbx
+    - rvm: rbx-18mode
