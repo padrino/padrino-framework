@@ -11,6 +11,7 @@ require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
 require 'active_support/inflections'                        # load default inflections
 require 'yaml' unless defined?(YAML)                        # load yaml for i18n
+require 'json'                                              # load json for rendering
 require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
 
 ##
