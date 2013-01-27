@@ -52,6 +52,26 @@ module Padrino
         alias :pat :padrino_admin_translate
 
         ##
+        # Translates attribute name for the given model.
+        #
+        # @param [Symbol] model
+        #  The model name for the translation.
+        # @param [Symbol] attribute
+        #  The attribute name in the model to translate.
+        #
+        # @return [String] The translated attribute name for the current locale.
+        #
+        # @example
+        #   # => t("models.account.attributes.email", :default => "Email")
+        #   mat(:account, :email)
+        #
+        def model_attribute_translate(model, attribute)
+          t("models.\#{model}.attributes.\#{attribute}", :default => attribute.to_s.humanize)
+        end
+        alias :t_attr :model_attribute_translate
+        alias :mat :t_attr
+
+        ##
         # Translates model name
         #
         # @param [Symbol] attribute
