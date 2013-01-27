@@ -153,6 +153,8 @@ module Padrino
           MTIMES[file] = File.mtime(file)
         rescue SyntaxError => e
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
+        rescue Exception => e
+          logger.error "Cannot require #{file} due to a load error: #{e.message}"
         ensure
           $-v = verbosity_was
           new_constants = ObjectSpace.new_classes(klasses)
