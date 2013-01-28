@@ -76,6 +76,11 @@ describe "AssetTagHelpers" do
       assert_match "&lt;&gt;", actual_link
     end
 
+    should "not escape image_tag" do
+      actual_link = link_to(image_tag("/my/fancy/image.png"), :class => 'first', :id => 'binky')
+      assert_has_tag('img', :src => "/my/fancy/image.png") { actual_link }
+    end
+
     should "display link block element in haml" do
       visit '/haml/link_to'
       assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
