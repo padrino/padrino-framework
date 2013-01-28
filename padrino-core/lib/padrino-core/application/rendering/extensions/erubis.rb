@@ -10,7 +10,7 @@ begin
       # @api private
       module SafeBufferEnhancer
         def add_expr_literal(src, code)
-          src << " #{@bufvar}.concat (" << code << ').to_s;'
+          src << " #{@bufvar}.concat((" << code << ').to_s);'
         end
 
         def add_expr_escaped(src, code)          
