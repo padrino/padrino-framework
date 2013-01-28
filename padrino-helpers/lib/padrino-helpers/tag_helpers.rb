@@ -13,6 +13,12 @@ module Padrino
         '"' => "&quot;"
       }
 
+      ##
+      # Cached Regexp for escaping values to avoid rebuilding one
+      # on every escape operation.
+      #
+      ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys)
+
       BOOLEAN_ATTRIBUTES = [
         :autoplay,
         :autofocus,
@@ -226,7 +232,7 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       ##
       def escape_value(string)
-        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)) { |c| ESCAPE_VALUES[c] }
+        string.to_s.gsub(ESCAPE_REGEXP) { |c| ESCAPE_VALUES[c] }
       end
 
       ##
