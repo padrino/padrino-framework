@@ -43,13 +43,16 @@ module Padrino
       # Main class that register this extension.
       #
       def registered(app)
-        app.send(:include, InstanceMethods)
-        app.extend(ClassMethods)
+        included(app)
         engine_configurations.each do |engine, configs|
           app.set engine, configs
         end
       end
-      alias :included :registered
+
+      def included(base)
+        base.send(:include, InstanceMethods)
+        base.extend(ClassMethods)
+      end
     end
 
     ##
