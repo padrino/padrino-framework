@@ -25,17 +25,29 @@ module Padrino
     ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
-    # Default rendering options used in the #render-method.
+    # Default options used in the #resolve_template-method.
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
     class << self
+      ##
+      # Default engine configurations for Padrino::Rendering
+      #
+      # @return {Hash<Symbol,Hash>}
+      #   The configurations, keyed by engine.
+      def engine_configurations
+        @engine_configurations ||= {}
+      end
+
       ##
       # Main class that register this extension.
       #
       def registered(app)
         app.send(:include, InstanceMethods)
         app.extend(ClassMethods)
+        engine_configurations.each do |engine, configs|
+          app.set engine, configs
+        end
       end
       alias :included :registered
     end
@@ -189,7 +201,7 @@ module Padrino
 
           # Cleanup the template
           @current_engine, engine_was = engine, @current_engine
-          @_out_buf,  _buf_was = "", @_out_buf
+          @_out_buf,  _buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
 
           # Pass arguments to Sinatra render method
           super(engine, data, options.dup, locals, &block)
@@ -290,3 +302,6 @@ module Padrino
     end # InstanceMethods
   end # Rendering
 end # Padrino
+
+require 'padrino-core/application/rendering/extensions/haml'
+require 'padrino-core/application/rendering/extensions/erubis'
