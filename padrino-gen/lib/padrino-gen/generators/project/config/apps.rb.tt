@@ -32,4 +32,3 @@ end
 
 # Mounts the core application for this project
 Padrino.mount('<%= @app_name.to_s %>::App', :app_file => File.expand_path('../../app/app.rb', __FILE__)).to('/')
-
