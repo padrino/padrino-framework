@@ -22,10 +22,12 @@ module Padrino
     # @option options [Symbol] :app_file (Automatically detected)
     # @option options [Symbol] :app_obj (Detected)
     # @option options [Symbol] :app_root (Directory of :app_file)
+    # @option options [Symbol] :gem The gem to load the app from (Detected from name)
     #
     def initialize(name, options={})
       @name      = name.to_s
       @app_class = options[:app_class] || @name.camelize
+      @gem       = options[:gem]       || @app_class.split("::").first.underscore
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
@@ -159,6 +161,13 @@ module Padrino
         candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
         candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
         candidates << Padrino.mounted_root(name.downcase, "app.rb")
+        simple_name = name.split("::").last.downcase
+        mod_name = name.split("::")[0..-2].join("::")
+        Padrino.modules.each do |mod|
+          if mod.name == mod_name
+            candidates << mod.root(simple_name, "app.rb")
+          end
+        end
         candidates << Padrino.root("app", "app.rb")
         candidates.find { |candidate| File.exist?(candidate) }
       end
