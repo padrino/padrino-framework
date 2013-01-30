@@ -225,3 +225,9 @@ Mail::Message.class_eval do
   include Padrino::Helpers::TranslationHelpers
 end
 </code></pre>
+
+Remember than you can still access Padrino, therefore you could use helpers like **url** to get a particular's url formatted for you:
+
+<pre lang=ruby><code>
+Padrino.url(:users, :do_something)
+</code></pre>
