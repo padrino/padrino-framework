@@ -139,7 +139,7 @@ module Padrino
         # @api private
         def insert_test_suite_setup(suite_text, options={})
           options.reverse_merge!(:path => "test/test_config.rb")
-          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @app_name))
+          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@app_name}::App"))
         end
 
         # For mocking components
