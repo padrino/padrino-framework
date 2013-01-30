@@ -33,6 +33,7 @@ module Padrino
       class_option :tiny,         :desc => 'Generate tiny app skeleton',                            :aliases => '-i', :default => false,    :type => :boolean
       class_option :adapter,      :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, postgres)', :aliases => '-a', :default => 'sqlite', :type => :string
       class_option :template,     :desc => 'Generate project from template',                        :aliases => '-p', :default => nil,      :type => :string
+      class_option :gem,          :desc => 'Generate project as a gem',                             :aliases => '-g', :default => false,    :type => :boolean
 
       # Definitions for the available customizable components
       component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :mini_record, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
@@ -64,6 +65,12 @@ module Padrino
           app_skeleton('app', options[:tiny])
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
+          if options.gem?
+            template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
+            template 'templates/gem/README.md.tt', destination_root('README.md')
+            template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
+            template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
+          end
         end
       end
 
@@ -101,6 +108,22 @@ module Padrino
         say "$ bundle" unless options[:bundle]
         say "="*65, :green
         say
+      end
+
+      # Returns the git author name config or a fill-in value
+      #
+      # @api private
+      def git_author_name
+        git_author_name = `git config user.name`.chomp
+        git_author_name.empty? ? "TODO: Write your name" : git_author_name
+      end
+
+      # Returns the git author email config or a fill-in value
+      #
+      # @api private
+      def git_author_email
+        git_author_email = `git config user.email`.chomp
+        git_author_email.empty? ? "TODO: Write your email address" : git_author_email
       end
     end # Project
   end # Generators

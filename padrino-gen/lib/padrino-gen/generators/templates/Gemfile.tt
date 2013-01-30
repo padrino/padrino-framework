@@ -1,5 +1,8 @@
 source :rubygems
 
+# Distribute your app as a gem
+<% unless options.gem? %># <% end %>gemspec
+
 # Server requirements
 # gem 'thin' # or mongrel
 # gem 'trinidad', :platform => 'jruby'
@@ -8,6 +11,10 @@ source :rubygems
 gem 'rake'
 
 # Component requirements
+
+# Optional json codecs
+# gem 'yajl-ruby', :platform => 'mri'  # smaller memory footprint
+# gem 'oj'                             # faster
 
 # Test requirements
 

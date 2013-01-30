@@ -32,12 +32,13 @@ module Padrino
       # @api private
       def create_app
         self.destination_root = options[:root]
-        @app_name = name.gsub(/\W/, '_').underscore.camelize
+        @app_folder = name.gsub(/\W/, '_').underscore
+        @app_name   = name.gsub(/\W/, '_').underscore.camelize
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
-          app_skeleton(@app_name.downcase, options[:tiny])
-          empty_directory destination_root("public/#{@app_name.downcase}")
-          append_file destination_root('config/apps.rb'),  "\nPadrino.mount('#{@app_name}').to('/#{@app_name.downcase}')"
+          app_skeleton(@app_folder.downcase, options[:tiny])
+          empty_directory destination_root("public/#{@app_folder.downcase}")
+          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@app_name}::App', :app_file => File.expand_path('../../#{@app_folder.downcase}/app.rb', __FILE__)).to('/#{@app_folder.downcase}')"
 
           return if self.behavior == :revoke
           say
@@ -46,8 +47,6 @@ module Padrino
           say '='*65, :green
           say "This application has been mounted to /#{@app_name.downcase}"
           say "You can configure a different path by editing 'config/apps.rb'"
-          say '=' * 65, :green
-          say
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end

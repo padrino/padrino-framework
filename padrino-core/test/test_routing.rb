@@ -371,6 +371,21 @@ describe "Routing" do
     assert_equal "mini", body
   end
 
+  should "should inject the action name into the request" do
+    mock_app do
+      controller :posts do
+        get('/omnomnom(/:id)') { request.action.inspect }
+        controller :mini do
+          get([:a, :b, :c]) { request.action.inspect }
+        end
+      end
+    end
+    get "/posts/omnomnom"
+    assert_equal "\"/omnomnom(/:id)\"", body
+    get "/mini/a/b/c"
+    assert_equal ":a", body
+  end
+
   should "support not_found" do
     mock_app do
       not_found do
@@ -1349,6 +1364,33 @@ describe "Routing" do
     assert_equal "1, 2", body
   end
 
+  should "replace name of named controller with mapping path" do
+    mock_app do
+      controller :ugly, :map => "/pretty/:id" do
+        get(:url3) { "#{params[:id]}" }
+        get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
+      end
+      controller :voldemort, :map => "" do
+        get(:url5) { "okay" }
+      end
+    end
+  
+    url = @app.url(:ugly, :url3, :id => 1)
+    assert_equal "/pretty/1/url3", url
+    get url
+    assert_equal "1", body
+  
+    url = @app.url(:ugly, :url4, 3, 5)
+    assert_equal "/pretty/3/test-5", url
+    get url
+    assert_equal "3, 5", body
+
+    url = @app.url(:voldemort, :url5)
+    assert_equal "/url5", url
+    get url
+    assert_equal 'okay', body
+  end
+
   should 'use absolute and relative maps' do
     mock_app do
       controller :one do
@@ -1693,5 +1735,13 @@ describe "Routing" do
     end
     get @app.url(:index, :page => 10)
     assert_equal "/paginate/66", body
+  end
+
+  should 'not route get :users, :with => :id to /users//' do
+    mock_app do
+      get(:users, :with => :id) { 'boo' }
+    end
+    get '/users//'
+    assert_equal 404, status
   end
 end

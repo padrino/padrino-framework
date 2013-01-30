@@ -86,7 +86,7 @@ module Padrino
       def email(name, &block)
         raise "The email '#{name}' is already defined" if self.messages[name].present?
         self.messages[name] = Proc.new { |*attrs|
-          message = Mail::Message.new(self.app)
+          message = app.settings._padrino_mailer::Message.new(self.app)
           message.defaults = self.defaults if self.defaults.any?
           message.delivery_method(*delivery_settings)
           message.instance_exec(*attrs, &block)

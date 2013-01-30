@@ -11,6 +11,9 @@ class Sinatra::Request
   def controller
     route_obj && route_obj.controller
   end
+  def action
+    route_obj && route_obj.action
+  end
 end
 
 ##
@@ -62,7 +65,7 @@ class HttpRouter
 
   # @private
   class Route
-    attr_accessor :use_layout, :controller, :cache, :cache_key, :cache_expires_in
+    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in
 
     def before_filters(&block)
       @_before_filters ||= []
@@ -557,6 +560,7 @@ module Padrino
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
           path, *route_options[:with] = path if path.is_a?(Array)
+          action = path
           path, name, options, route_options = *parse_route(path, route_options, verb)
           options.reverse_merge!(@_conditions) if @_conditions
 
@@ -573,6 +577,7 @@ module Padrino
           # HTTPRouter route construction
           route = router.add(path, route_options)
           route.name(name) if name
+          route.action = action
           priority_name = options.delete(:priority) || :normal
           priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
@@ -657,7 +662,7 @@ module Padrino
               if map.blank? and !absolute_map
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
-                path = File.join(controller_path, path)
+                path = File.join(controller_path, path)  unless @_map
               end
               # Here we build the correct name route
             end
@@ -908,10 +913,14 @@ module Padrino
           static! if settings.static? && (request.get? || request.head?)
           route!
         rescue ::Exception => boom
-          filter! :before
-          handle_exception!(boom)
+          filter! :before  if boom.kind_of? ::Sinatra::NotFound
+          @boom_handled = handle_exception!(boom)
         ensure
-          filter! :after unless env['sinatra.static_file']
+          @boom_handled  or begin
+            filter! :after  unless env['sinatra.static_file']
+          rescue ::Exception => boom
+            handle_exception!(boom)
+          end
         end
 
         ROUTE_NOT_FOUND_STATUS = 9404

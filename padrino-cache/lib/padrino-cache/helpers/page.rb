@@ -96,13 +96,13 @@ module Padrino
 
                 if value
                   content_type(value[:content_type]) if value[:content_type]
-                  halt 200, value[:response_buffer] if value[:response_buffer]
+                  halt 200, value[:response_buffer].to_s  if value[:response_buffer]
                 end
               end
             end
 
             route.after_filters do
-              if settings.caching?
+              if settings.caching? && @_response_buffer.kind_of?(String)
                 began_at = Time.now
 
                 content = {

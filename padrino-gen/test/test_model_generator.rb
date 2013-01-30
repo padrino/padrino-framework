@@ -76,6 +76,19 @@ describe "ModelGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_accounts.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/003_create_banks.rb")
     end
+
+    should "generate a default type value for fields" do
+      current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'person', "name", "age:integer", "email", "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
+      assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
+      assert_match_in_file(/create_table :people/m, migration_file_path)
+      assert_match_in_file(/t.string :name/m,   migration_file_path)
+      assert_match_in_file(/t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/t.string :email/m,  migration_file_path)
+      assert_match_in_file(/drop_table :people/m, migration_file_path)
+    end
   end
 
   # ACTIVERECORD
