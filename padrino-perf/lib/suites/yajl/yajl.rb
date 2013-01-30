@@ -1,1 +1,0 @@
-PadrinoPerf::JSON.loaded_lib!('yajl')
