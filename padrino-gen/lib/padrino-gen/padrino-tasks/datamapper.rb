@@ -96,4 +96,6 @@ if defined?(DataMapper)
     desc "Create the database migrate and initialize with the seed data"
     task :setup => [:create, :migrate, :seed]
   end
+
+  task 'db:migrate' => 'dm:migrate'
 end
