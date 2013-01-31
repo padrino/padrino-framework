@@ -114,10 +114,16 @@ begin
     module Helpers
       include XssMods
     end
+
+    module Util
+      def self.rails_xss_safe?
+        true
+      end
+    end
   end
 
   if defined? Padrino::Rendering
-    Padrino::Rendering.engine_configurations[:haml] = 
+    Padrino::Rendering.engine_configurations[:haml] =
       {:escape_html => true}
   end
 rescue LoadError
