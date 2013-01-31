@@ -210,4 +210,21 @@ footer .footer-links li a:hover {
   cursor: default !important;
 }
 /* --- End Application::List --- */
+/* --- Begin Application::Explanation --- */
+.the-icons a{
+  display:block;
+  float: left;
+  height: 80px;
+  width: 100px;
+}
+.the-icons [class^="icon-"] {
+  display: block;
+  margin: 5px auto;
+  vertical-align: middle;
+}
+#explanation{
+  display:block;
+  margin-top:20px;
+}
+/* --- End Application::Explanation --- */
 /* -- End Application -- */

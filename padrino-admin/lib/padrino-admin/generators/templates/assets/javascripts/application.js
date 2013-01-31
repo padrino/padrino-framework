@@ -9,7 +9,7 @@
       setTimeout(function() { $('.alert').alert('close'); }, alertTimeout);
     }
 
-    // Confirm before deleting one item 
+    // Confirm before deleting one item
     $('.delete-one').on('click', function(ev) {
       ev.preventDefault();
       $(this).addClass('active').siblings('.popover-delete-one')
@@ -76,5 +76,16 @@
       toggleAction('#select-all', checked === all.length);
     });
   });
+
+    // Explanation section :D
+    $('#explanation').hide();
+    $(".the-icons a").mouseenter(function(){
+        $('#explanation h3').text($(this).attr('title'));
+        $('#explanation').fadeIn('fast');
+    });
+    $(".the-icons a").mouseleave(function(){
+        $('#explanation h3').text('');
+         $('#explanation').hide();
+    });
 
 }(window.jQuery);
