@@ -335,6 +335,8 @@ if defined?(ActiveRecord)
     end
   end
 
+  task 'db:migrate' => 'ar:migrate'
+
   def drop_database(config)
     case config[:adapter]
     when 'mysql', 'mysql2', 'jdbcmysql'
