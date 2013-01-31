@@ -31,8 +31,8 @@ module Padrino
         args.map do |kind|
           flash_text = flash[kind]
           next if flash_text.blank?
-          flash_text << content_tag(:button, "&times;", {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
-          content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+          flash_text << safe_content_tag(:button, "&times;", {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
+          safe_content_tag(:div, flash_text, options.reverse_merge(:class => kind))
         end.compact * "\n"
       end
 
