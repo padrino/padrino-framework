@@ -11,6 +11,16 @@ module Padrino
       @_after_load << block if block_given?
       @_after_load
     end
+
+    def perf_memusage_command
+      if Performance::OS.mac?
+        "vmmap #{$$} | tail -5"
+      elsif Performance::OS.linux?
+        "pmap #{$$} | tail -1"
+      elsif Performance::OS.windows?
+        "tasklist /FI \"PID eq #{$$}\""
+      end
+    end
   end
   
   before_load do
@@ -19,15 +29,5 @@ module Padrino
 
   after_load do
     puts `#{perf_memusage_command}`
-  end
-
-  def perf_memusage_command
-    if Performance::OSmac?
-      "vmmap #{$$} | tail -5"
-    elsif Performance::OS.linux?
-      "pmap #{$$} | tail -1"
-    elsif Performance::OS.windows?
-      "tasklist /FI \"PID eq #{$$}\""
-    end
   end
 end

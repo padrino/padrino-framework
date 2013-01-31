@@ -26,11 +26,11 @@ module Padrino
 
         if loaded_libs.size >= 2
           warn <<-WARN
-  Concurring json libraries have been loaded. This incurs an
-  unneccessary memory overhead at should be avoided. Consult the
-  following call stacks to see who loaded the offending libraries
-  and contact the authors if necessary:"
-  WARN
+Concurring json libraries have been loaded. This incurs an
+unneccessary memory overhead at should be avoided. Consult the
+following call stacks to see who loaded the offending libraries
+and contact the authors if necessary:"
+WARN
           loaded_libs.each do |name, stack|
             $stderr.puts "============"
             $stderr.puts "libname: " + name
@@ -47,5 +47,7 @@ module Padrino
       infect_require!
       setup_captures!("json", "yajl")
     end # JSON
-  end # Performance
-end # Padrino
+  # Performance
+  end
+  # Padrino
+end
