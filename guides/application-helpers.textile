@@ -408,8 +408,13 @@ belongs_to :person
 end
 
 The model declarations are dependent on your chosen ORM. Check the documentation to understand how to declare
-nested attributes in your given ORM component. Given those models and enabling nested attributes for the
-association, the following view will allow nested form creation:
+nested attributes in your given ORM component.
+
+It's important to note that the outputed fields will be suffixed with ```_attributes```.
+In DataMapper you'll need to add [```dm-accepts_nested_attributes```](https://github.com/snusnu/dm-accepts_nested_attributes#readme)
+to be able to use it.
+
+Given those models and enabling nested attributes for the association, the following view will allow nested form creation:
 
 <pre lang="haml"><code># app/views/person/_form.html.haml
 - form_for @person, '/person/create'  do |f|
