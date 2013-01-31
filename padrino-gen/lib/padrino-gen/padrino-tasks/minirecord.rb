@@ -10,4 +10,6 @@ if defined?(MiniRecord)
       puts "<= mr:migrate executed"
     end
   end
+
+  task 'db:migrate' => 'mr:migrate'
 end

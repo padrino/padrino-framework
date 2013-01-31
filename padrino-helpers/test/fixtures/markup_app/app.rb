@@ -2,12 +2,16 @@ require 'sinatra/base'
 require 'haml'
 require 'erubis'
 require 'slim'
+require 'padrino-core/application/rendering/extensions/erubis'
+require 'padrino-core/application/rendering/extensions/haml'
 
 class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
 
   configure do
     set :root, File.dirname(__FILE__)
+    set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
+    set :haml, :escape_html => true
   end
 
   get '/:engine/:file' do
@@ -23,15 +27,15 @@ class MarkupDemo < Sinatra::Base
 
     def captured_content(&block)
       content_html = capture_html(&block)
-      "<p>#{content_html}</p>"
+      "<p>#{content_html}</p>".html_safe
     end
 
     def concat_in_p(content_html)
-      concat_content "<p>#{content_html}</p>"
+      concat_safe_content "<p>#{content_html}</p>"
     end
 
     def determine_block_is_template(name, &block)
-      concat_content "<p class='is_template'>The #{name} block passed in is a template</p>" if block_is_template?(block)
+      concat_safe_content "<p class='is_template'>The #{name} block passed in is a template</p>" if block_is_template?(block)
     end
 
     def ruby_not_template_block

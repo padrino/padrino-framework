@@ -1,28 +1,26 @@
 module PadrinoPerf
   module JSON
+    module InfectedRequire
+      def require(*args)
+        lib = args.first
+        JSON.loaded_lib!(lib) if JSON.registered_libs.include? lib
+        super
+      end
+    end
+
     def self.registered_libs
-      @registered_libs ||= {}
+      @registered_libs ||= []
     end
 
     def self.loaded_libs
       @loaded_libs ||= {}
     end
 
-    def self.setup_capture!(lib)
-      suite_path = File.dirname(__FILE__)
-      registered_libs[lib] = File.join(suite_path, lib)
-      $LOAD_PATH.unshift registered_libs[lib]
-    end
-
     def self.setup_captures!(*libs)
-      libs.map { |l| setup_capture!(l) }
+      @registered_libs = libs
     end
 
     def self.loaded_lib!(lib)
-      #remove our shim from the load_path before requiring again
-      $LOAD_PATH.delete(registered_libs[lib])
-      require lib
-
       loaded_libs[lib] = caller
 
       if loaded_libs.size >= 2
@@ -41,18 +39,11 @@ WARN
       end
     end
 
-    def self.infect_load_path!
-      def $LOAD_PATH.unshift(arg = nil, recurse = true)
-        return super(arg) unless recurse
-        return self unless arg
-        mine = self.grep(/padrino-perf/)
-        mine.each { |m| self.delete(m) }
-        super(arg)
-        mine.each { |m| self.unshift(m, false) }
-      end
+    def self.infect_require!
+      Object.send(:include, InfectedRequire)
     end
 
-    infect_load_path!
+    infect_require!
     setup_captures!("json", "yajl")
   end
 end
