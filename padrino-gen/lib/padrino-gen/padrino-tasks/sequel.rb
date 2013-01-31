@@ -37,4 +37,6 @@ if defined?(Sequel)
     desc "Perform migration up to latest migration available"
     task :migrate => 'sq:migrate:up'
   end
+
+  task 'db:migrate' => 'sq:migrate'
 end
