@@ -14,10 +14,20 @@ module Padrino
   end
   
   before_load do
-    puts `vmmap #{$$} | tail -5`
+    puts ``
   end
 
   after_load do
     puts `vmmap #{$$} | tail -5`
+  end
+
+  def perf_memusage_command
+    if Performance::OSmac?
+      "vmmap #{$$} | tail -5"
+    elsif Performance::OS.linux?
+      "pmap #{$$} | tail -1"
+    elsif Performance::OS.windows?
+      "tasklist /FI \"PID eq #{$$}\"
+    end
   end
 end
