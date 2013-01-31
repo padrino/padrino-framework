@@ -33,7 +33,8 @@ if defined?(Sequel)
         puts "<= sq:migrate:down executed"
       end
     end
-  end
 
-  task 'db:migrate' => 'sq:migrate'
+    desc "Perform migration up to latest migration available"
+    task :migrate => 'sq:migrate:up'
+  end
 end
