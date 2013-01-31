@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'i18n'
+require 'slim'
 
 describe "Rendering" do
   def setup
@@ -463,6 +464,39 @@ describe "Rendering" do
       get '/'
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body
+    end
+
+    should 'render erb to a SafeBuffer' do
+      mock_app do
+        get '/' do
+          render :erb, '<p><%= "<script lang=\"ronin\">alert(\"https://github.com/ronin-ruby/ronin\")</script>" %></p>'
+        end
+      end
+      get '/'
+      assert ok?
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body
+    end
+
+    should 'render haml to a SafeBuffer' do
+      mock_app do
+        get '/' do
+          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+        end
+      end
+      get '/'
+      assert ok?
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
+    end
+
+    should 'render slim to a SafeBuffer' do
+      mock_app do
+        get '/' do
+          render :slim, 'p = %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+        end
+      end
+      get '/'
+      assert ok?
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
     end
 
     should 'renders hashes and arrays as json' do

@@ -26,6 +26,8 @@ module Padrino
       ##
       # Captures the html from a block of template code for any available handler.
       #
+      # Be aware that trusting the html is up to the caller.
+      #
       # @param [Object] *args
       #   Objects yield to the captured block
       # @param [Proc] &block
@@ -36,6 +38,12 @@ module Padrino
       # @example
       #   capture_html(&block) => "...html..."
       #   capture_html(object_for_block, &block) => "...html..."
+      #
+      # @example
+      #   ActiveSupport::SafeBuffer.new + capture_html { "<foo>" }
+      #   # => "&lt;foo&gt;"
+      #   ActiveSupport::SafeBuffer.safe_concat + capture_html { "<foo>" }
+      #   # => "<foo>"
       #
       # @api semipublic
       def capture_html(*args, &block)
@@ -53,7 +61,9 @@ module Padrino
       ##
       # Outputs the given text to the templates buffer directly.
       #
-      # @param [String] text
+      # The output might be subject to escaping, if it is not marked as safe.
+      #
+      # @param [String,SafeBuffer] text
       #   Text to concatenate to the buffer.
       #
       # @example
@@ -69,6 +79,21 @@ module Padrino
         end
       end
       alias :concat :concat_content
+
+      ##
+      # Outputs the given text to the templates buffer directly,
+      # assuming that it is safe.
+      #
+      # @param [String] text
+      #   Text to concatenate to the buffer.
+      #
+      # @example
+      #   concat_safe_content("This will be output to the template buffer")
+      #
+      # @api semipublic
+      def concat_safe_content(text="")
+        concat_content text.html_safe
+      end
 
       ##
       # Returns true if the block is from a supported template type; false otherwise.
@@ -146,7 +171,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        blocks.map { |content| capture_html(*args, &content) }.join
+        mark_safe(blocks.map { |content| capture_html(*args, &content) }.join)
       end
 
       protected
@@ -169,6 +194,21 @@ module Padrino
         #
         def find_proper_handler
           OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.engines.include?(current_engine) && h.is_type? }
+        end
+
+        ##
+        # Marks a String or a collection of Strings as safe. `nil` is accepted
+        # but ignored.
+        #
+        # @param [String, Array<String>] the values to be marked safe.
+        #
+        # @return [ActiveSupport::SafeBuffer, Array<ActiveSupport::SafeBuffer>]
+        def mark_safe(value)
+          if value.respond_to? :map!
+            value.map!{|v| v.html_safe if v }
+          else
+            value.html_safe if value
+          end
         end
     end # OutputHelpers
   end # Helpers
