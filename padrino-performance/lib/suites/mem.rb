@@ -14,11 +14,11 @@ module Padrino
   end
   
   before_load do
-    puts ``
+    puts `#{perf_memusage_command}`
   end
 
   after_load do
-    puts `vmmap #{$$} | tail -5`
+    puts `#{perf_memusage_command}`
   end
 
   def perf_memusage_command
