@@ -166,7 +166,7 @@ module Padrino
           result = nested_objects.each_with_index.map do |child_instance, index|
             nested_options[:index] = include_index ? index : nil
             @template.fields_for(child_instance,  { :nested => nested_options }, &block)
-          end.join("\n")
+          end.join("\n").html_safe
         end
 
         protected
