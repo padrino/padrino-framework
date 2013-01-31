@@ -34,7 +34,7 @@ module Padrino
         # @api public
         def get(key)
           code = @backend.get(key)
-          Marshal.load(code) if code.present?
+          Parser.decode(code)
         end
 
         ##
@@ -52,7 +52,7 @@ module Padrino
         #
         # @api public
         def set(key, value, opts = nil)
-          value = Marshal.dump(value) if value
+          value = Parser.encode(value)
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
             expires_in = expires_in if expires_in < EXPIRES_EDGE
