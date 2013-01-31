@@ -343,7 +343,8 @@ module Padrino
     def flush
       return unless @buffer.size > 0
       @@mutex.synchronize do
-        @log.write(@buffer.slice!(0..-1).join(''))
+        @log.write(@buffer.join(''))
+        @buffer.clear
       end
     end
 
