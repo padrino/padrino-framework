@@ -4,6 +4,8 @@ module Padrino
     # Helpers related to producing assets (images,stylesheets,js,etc) within templates.
     #
     module AssetTagHelpers
+      FRAGMENT_HASH = "#".html_safe.freeze
+
       ##
       # Creates a div to display the flash of given type if it exists
       #
@@ -45,6 +47,8 @@ module Padrino
       #
       # @option options [String] :anchor
       #   The anchor for the link (i.e #something)
+      # @option options [String] :fragment
+      #   Synonym for anchor
       # @option options [Boolean] :if
       #   If true, the link will appear, otherwise not;
       # @option options [Boolean] :unless
@@ -70,17 +74,32 @@ module Padrino
       # @api public
       def link_to(*args, &block)
         options = args.extract_options!
-        anchor  = "##{CGI.escape options.delete(:anchor).to_s}" if options[:anchor]
+        fragment  = options.delete(:anchor).to_s if options[:anchor]
+        fragment  = options.delete(:fragment).to_s if options[:fragment]
 
+        url = ActiveSupport::SafeBuffer.new
         if block_given?
-          url = args[0] ? args[0] + anchor.to_s : anchor || '#'
+          if args[0]
+            url.concat(args[0])
+            url.concat(FRAGMENT_HASH).concat(fragment) if fragment
+          else
+            url.concat(FRAGMENT_HASH)
+            url.concat(fragment) if fragment
+          end
           options.reverse_merge!(:href => url)
           link_content = capture_html(&block)
           return '' unless parse_conditions(url, options)
           result_link = content_tag(:a, link_content, options)
           block_is_template?(block) ? concat_content(result_link) : result_link
         else
-          name, url = args[0], (args[1] ? args[1] + anchor.to_s : anchor || '#')
+          if args[1]
+            url.concat(args[1])
+            url.safe_concat(FRAGMENT_HASH).concat(fragment) if fragment
+          else
+            url = FRAGMENT_HASH
+            url.concat(fragment) if fragment
+          end
+          name = args[0]
           return name unless parse_conditions(url, options)
           options.reverse_merge!(:href => url)
           content_tag(:a, name, options)
