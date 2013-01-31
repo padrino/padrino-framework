@@ -27,7 +27,7 @@ module Padrino
     elsif Performance::OS.linux?
       "pmap #{$$} | tail -1"
     elsif Performance::OS.windows?
-      "tasklist /FI \"PID eq #{$$}\"
+      "tasklist /FI \"PID eq #{$$}\""
     end
   end
 end
