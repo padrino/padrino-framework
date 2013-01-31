@@ -211,8 +211,10 @@ describe "AssetTagHelpers" do
   context 'for #stylesheet_link_tag method' do
     should "display stylesheet link item" do
       time = stop_time_for_test
+      actual_html = stylesheet_link_tag('style')
       expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
-      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { stylesheet_link_tag('style') }
+      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { actual_html }
+      assert actual_html.html_safe?
     end
 
     should "display stylesheet link item for long relative path" do
@@ -259,6 +261,7 @@ describe "AssetTagHelpers" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+      assert actual_html.html_safe?
     end
 
     should "display javascript item for long relative path" do
