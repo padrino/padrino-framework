@@ -34,4 +34,6 @@ if defined?(Sequel)
       end
     end
   end
+
+  task 'db:migrate' => 'sq:migrate'
 end
