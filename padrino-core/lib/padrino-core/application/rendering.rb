@@ -308,3 +308,4 @@ end # Padrino
 
 require 'padrino-core/application/rendering/extensions/haml'
 require 'padrino-core/application/rendering/extensions/erubis'
+require 'padrino-core/application/rendering/extensions/slim'

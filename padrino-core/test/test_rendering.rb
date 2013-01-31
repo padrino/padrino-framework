@@ -469,7 +469,7 @@ describe "Rendering" do
     should 'render erb to a SafeBuffer' do
       mock_app do
         get '/' do
-          render :erb, '<p><%= "<script lang=\"ronin\">alert(\"https://github.com/ronin-ruby/ronin\")</script>" %></p>'
+          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>'
         end
       end
       get '/'
@@ -480,7 +480,7 @@ describe "Rendering" do
     should 'render haml to a SafeBuffer' do
       mock_app do
         get '/' do
-          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+          render :haml, '%p= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
         end
       end
       get '/'
@@ -491,12 +491,18 @@ describe "Rendering" do
     should 'render slim to a SafeBuffer' do
       mock_app do
         get '/' do
-          render :slim, 'p = %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+        end
+        get '/safe' do
+          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}.html_safe'
         end
       end
       get '/'
       assert ok?
       assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
+      get '/safe'
+      assert ok?
+      assert_equal '<p><script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script></p>', body.strip
     end
 
     should 'renders hashes and arrays as json' do
