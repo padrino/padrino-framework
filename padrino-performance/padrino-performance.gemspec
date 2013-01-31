@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://www.padrinorb.com"
   s.description = "A gem for finding performance problems in Padrino by tracking loads and memory consumption."
   s.required_rubygems_version = ">= 1.3.6"
-  s.version = PadrinoPerf.version
+  s.version = Padrino::Performance.version
   s.date = Time.now.strftime("%Y-%m-%d")
 
   s.extra_rdoc_files = Dir["*.rdoc"]
