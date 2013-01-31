@@ -19,7 +19,6 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git" # :path => "/Developer/src/Extras/sinatra"
   end
-  gem "haml",      :git => "git://github.com/Asquera/haml.git", :branch => 'standalone-xss-helpers'
   gem "json",      ">= 1.5.3"
   gem "nokogiri",  ">= 1.4.4"
   gem "rack",      ">= 1.3.0"
@@ -28,7 +27,7 @@ group :development do
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",   ">= 1.2.8"
   gem "webrat",    ">= 0.5.1"
-#  gem "haml",      ">= 2.2.22"
+  gem "haml",      ">= 2.2.22"
   gem "erubis",    ">= 2.7.0"
   gem "slim",      ">= 0.9.2"
   gem "uuid",      ">= 2.3.1"
