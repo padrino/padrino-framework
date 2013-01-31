@@ -706,9 +706,10 @@ module Padrino
         #
         def options_for_select(option_items, selected_value=nil)
           return [] if option_items.blank?
-          option_items.map do |caption, value|
+          option_items.map do |caption, value, disabled|
             value ||= caption
-            content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value))
+            disabled ||= false
+            content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value), :disabled => disabled)
           end
         end
 
@@ -718,13 +719,25 @@ module Padrino
         def grouped_options_for_select(collection, selected=nil, prompt=false)
           if collection.is_a?(Hash)
             collection.map do |key, value|
-              content_tag :optgroup, :label => key do
+              # Hash format:
+              # {:first => [1,2,3], :second => [4,5,6]}
+              # or:
+              # {:first => [[1,2,3], {:disabled => true}], :second => [4,5,6]}
+              attributes_hash = value.last.is_a?(Hash) ? value.pop : nil
+              disabled ||=  attributes_hash && attributes_hash.include?(:disabled) ? attributes_hash[:disabled] : false
+              content_tag :optgroup, :label => key, :disabled => disabled do
                 options_for_select(value, selected)
               end
             end
           elsif collection.is_a?(Array)
+            # Array format:
+            # ["Option Label", [:option1, :option2, ...]]
+            # or:
+            # ["Option Label", [:option1, :option2, ...], true]
+            # the last item tells if it is disabled or not. This is keeps it backwards compatible.
             collection.map do |optgroup|
-              content_tag :optgroup, :label => optgroup.first do
+              disabled ||= optgroup.count > 2 ? optgroup.pop : false
+              content_tag :optgroup, :label => optgroup.first, :disabled => disabled do
                 options_for_select(optgroup.last, selected)
               end
             end
