@@ -216,7 +216,7 @@ The list of defined helpers in the 'form helpers' category:
 * <tt>radio_button_tag(name, options={})</tt>
 ** Constructs a radio button input from the given options
 ** <tt>radio_button_tag :gender, :value => 'male'</tt>
-* <tt>select_tag(name, settings={})</tt>
+* <tt>select_tag(name, options={})</tt>
 ** Constructs a select tag with options from the given settings
 ** <tt>select_tag(:favorite_color, :options => ['1', '2', '3'], :selected => '1')</tt>
 ** <tt>select_tag(:more_color, :options => [['label', '1'], ['label2', '2']])</tt>
