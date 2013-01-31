@@ -46,12 +46,12 @@ module Padrino
             counter += 1
             options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
             render(explicit_engine, template_path, options.dup)
-          }.join("\n")
+          }.join("\n").html_safe
         else
           if member = options.delete(:object)
             options[:locals].merge!(object_name => member)
           end
-          render(explicit_engine, template_path, options.dup)
+          render(explicit_engine, template_path, options.dup).html_safe
         end
       end
       alias :render_partial :partial

@@ -54,7 +54,7 @@ module Padrino
         instance = builder_instance(object, settings)
         fields_html = capture_html(instance, &block)
         fields_html << instance.hidden_field(:id) if instance.send(:nested_object_id)
-        concat_content fields_html
+        concat_safe_content fields_html
       end
 
       ##
@@ -81,7 +81,7 @@ module Padrino
         options['accept-charset'] ||= 'UTF-8'
         inner_form_html  = hidden_form_method_field(desired_method)
         inner_form_html += capture_html(&block)
-        concat_content content_tag(:form, inner_form_html, options)
+        concat_content content_tag(:form, mark_safe(inner_form_html), options)
       end
 
       ##
@@ -125,8 +125,8 @@ module Padrino
       def field_set_tag(*args, &block)
         options = args.extract_options!
         legend_text = args[0].is_a?(String) ? args.first : nil
-        legend_html = legend_text.blank? ? '' : content_tag(:legend, legend_text)
-        field_set_content = legend_html + capture_html(&block)
+        legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
+        field_set_content = legend_html + mark_safe(capture_html(&block))
         concat_content content_tag(:fieldset, field_set_content, options)
       end
 
@@ -199,10 +199,10 @@ module Padrino
               }
             }.join
 
-            contents = ''
+            contents = ActiveSupport::SafeBuffer.new
             contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
             contents << content_tag(:p, message) unless message.blank?
-            contents << content_tag(:ul, error_messages)
+            contents << safe_content_tag(:ul, error_messages)
 
             content_tag(:div, contents, html)
           end
@@ -276,10 +276,11 @@ module Padrino
       # @api public
       def label_tag(name, options={}, &block)
         options.reverse_merge!(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = options.delete(:caption)
-        caption_text << "<span class='required'>*</span> " if options.delete(:required)
+        caption_text = options.delete(:caption).html_safe
+        caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
+
         if block_given? # label with inner content
-          label_content = caption_text + capture_html(&block)
+          label_content = caption_text.concat capture_html(&block)
           concat_content(content_tag(:label, label_content, options))
         else # regular label
           content_tag(:label, caption_text, options)
@@ -631,7 +632,7 @@ module Padrino
         end
         select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
-        content_tag(:select, select_options_html, options)
+        safe_content_tag(:select, select_options_html, options)
       end
 
       ##
