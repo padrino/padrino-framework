@@ -505,7 +505,7 @@ describe "Rendering" do
 
       get 'with_layout'
       assert ok?
-      assert_equal '<p><div>foo</div></p>', body.strip
+      assert_equal '<p><div>foo</div></p>', body.gsub(/\s+/, "")
     end
 
     should 'render slim to a SafeBuffer' do
