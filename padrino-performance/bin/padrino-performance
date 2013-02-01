@@ -6,7 +6,7 @@ padrino_perf_path = File.expand_path('../../lib', __FILE__)
 
 argv = []
 OptionParser.new do |opts|
-  opts.banner = "Usage: padrino-perf [options]"
+  opts.banner = "Usage: padrino-performance [options]"
 
   opts.on("-j", "--json", "Check for multiple loaded json libraries") do |v|
     argv << '-r' + File.expand_path(File.join(padrino_perf_path, "suites", "json"))
