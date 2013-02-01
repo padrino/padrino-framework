@@ -511,7 +511,7 @@ describe "Rendering" do
     should 'render slim to a SafeBuffer' do
       mock_app do
         layout do
-          "p= yield"
+          "p== yield"
         end
         get '/' do
           render :slim, 'p = %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
