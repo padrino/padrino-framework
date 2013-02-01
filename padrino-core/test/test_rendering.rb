@@ -468,41 +468,65 @@ describe "Rendering" do
 
     should 'render erb to a SafeBuffer' do
       mock_app do
+        layout do
+          "this is a <%= yield %>"
+        end
         get '/' do
-          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>'
+          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>', :layout => false
+        end
+        get '/with_layout' do
+          render :erb, '<span>span</span>'
         end
       end
       get '/'
       assert ok?
       assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body
+
+      get '/with_layout'
+      assert ok?
+      assert_equal 'this is a <span>span</span>', body
     end
 
     should 'render haml to a SafeBuffer' do
       mock_app do
+        layout do
+          "%p= yield"
+        end
         get '/' do
-          render :haml, '%p= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+        end
+        get '/with_layout' do
+          render :haml, "%div\n  foo"
         end
       end
       get '/'
       assert ok?
       assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
+
+      get 'with_layout'
+      assert ok?
+      assert_equal '<p><div>foo</div></p>', body.gsub(/\s+/, "")
     end
 
     should 'render slim to a SafeBuffer' do
       mock_app do
-        get '/' do
-          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}'
+        layout do
+          "p= yield"
         end
-        get '/safe' do
-          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}.html_safe'
+        get '/' do
+          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+        end
+        get "/with_layout" do
+          render :slim, 'div foo'
         end
       end
       get '/'
       assert ok?
       assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
-      get '/safe'
+
+      get '/with_layout'
       assert ok?
-      assert_equal '<p><script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script></p>', body.strip
+      assert_equal '<p><div>foo</div></p>', body.strip
     end
 
     should 'renders hashes and arrays as json' do

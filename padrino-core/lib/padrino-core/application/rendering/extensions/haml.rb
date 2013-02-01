@@ -125,6 +125,10 @@ begin
   if defined? Padrino::Rendering
     Padrino::Rendering.engine_configurations[:haml] =
       {:escape_html => true}
+
+    class Tilt::HamlTemplate
+      include Padrino::Rendering::SafeTemplate
+    end
   end
 rescue LoadError
 end
