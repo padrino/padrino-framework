@@ -142,8 +142,8 @@ module Padrino
           content << render_item(item, bootstrap)
         end
         last = link_to(breadcrumbs.items.last[:caption], breadcrumbs.items.last[:url])
-        content << content_tag(:li, last, :class => active)
-        content_tag(:ul, content, :class => "breadcrumb" )
+        content << safe_content_tag(:li, last, :class => active)
+        safe_content_tag(:ul, content, :class => "breadcrumb" )
       end
 
       private
@@ -162,8 +162,8 @@ module Padrino
       def render_item(item, bootstrap)
         content = ""
         content << link_to(item[:caption], item[:url])
-        content << content_tag(:span, "/", :class => "divider") if bootstrap
-        content_tag(:li, content )
+        content << safe_content_tag(:span, "/", :class => "divider") if bootstrap
+        safe_content_tag(:li, content )
       end
 
     end # Breadcrumb
