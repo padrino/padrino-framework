@@ -80,8 +80,8 @@ module Padrino
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
         options['accept-charset'] ||= 'UTF-8'
         inner_form_html  = hidden_form_method_field(desired_method)
-        inner_form_html += capture_html(&block).html_safe
-        concat_content content_tag(:form, mark_safe(inner_form_html), options)
+        inner_form_html += mark_safe(capture_html(&block))
+        concat_content content_tag(:form, inner_form_html, options)
       end
 
       ##
@@ -100,7 +100,7 @@ module Padrino
       #
       # @api semipublic
       def hidden_form_method_field(desired_method)
-        return '' if desired_method.blank? || desired_method.to_s =~ /get|post/i
+        return ActiveSupport::SafeBuffer.new if desired_method.blank? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
       end
 
