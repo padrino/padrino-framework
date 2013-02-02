@@ -8,6 +8,16 @@ module Padrino
   #
   module Rendering
     ##
+    # A SafeTemplate assumes that its output is safe.
+    #
+    # @api private
+    module SafeTemplate
+      def render(*)
+        super.html_safe
+      end
+    end
+
+    ##
     # Exception responsible for when an expected template did not exist.
     #
     class TemplateNotFound < RuntimeError
@@ -308,3 +318,4 @@ end # Padrino
 
 require 'padrino-core/application/rendering/extensions/haml'
 require 'padrino-core/application/rendering/extensions/erubis'
+require 'padrino-core/application/rendering/extensions/slim'

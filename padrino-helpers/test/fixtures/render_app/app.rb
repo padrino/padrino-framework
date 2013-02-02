@@ -18,6 +18,7 @@ class RenderDemo < Padrino::Application
     set :padrino_logging, false
     set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
     set :haml, :escape_html => true
+    set :slim, :generator => Temple::Generators::RailsOutputBuffer
   end
 
   # get current engines from partials
