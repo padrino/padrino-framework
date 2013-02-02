@@ -7,7 +7,7 @@
  *
  * Designed and built with all the love in the world by @mdo and @fat.
  */
-/*! normalize.css v2.0.1 | MIT License | git.io/normalize */
+/*! normalize.css v2.1.0 | MIT License | git.io/normalize */
 article,
 aside,
 details,
@@ -16,6 +16,7 @@ figure,
 footer,
 header,
 hgroup,
+main,
 nav,
 section,
 summary {
@@ -50,6 +51,7 @@ a:hover {
 }
 h1 {
   font-size: 2em;
+  margin: 0.67em 0;
 }
 abbr[title] {
   border-bottom: 1px dotted;
@@ -60,6 +62,11 @@ strong {
 }
 dfn {
   font-style: italic;
+}
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
 }
 mark {
   background: #ff0;
@@ -73,9 +80,7 @@ samp {
   font-size: 1em;
 }
 pre {
-  white-space: pre;
   white-space: pre-wrap;
-  word-wrap: break-word;
 }
 q {
   quotes: "\201C" "\201D" "\2018" "\2019";
@@ -125,6 +130,10 @@ textarea {
 button,
 input {
   line-height: normal;
+}
+button,
+select {
+  text-transform: none;
 }
 button,
 html input[type="button"],
@@ -2110,7 +2119,7 @@ fieldset[disabled] .btn-link :hover {
 }
 .dropdown-menu .divider {
   height: 1px;
-  margin: 9px 1px;
+  margin: 9px 0;
   overflow: hidden;
   background-color: #e5e5e5;
   border-bottom: 1px solid #ffffff;
@@ -2363,7 +2372,7 @@ button.close {
 }
 .nav .divider {
   height: 1px;
-  margin: 9px 1px;
+  margin: 9px 0;
   overflow: hidden;
   background-color: #e5e5e5;
   border-bottom: 1px solid #ffffff;
@@ -2541,15 +2550,16 @@ button.close {
 .btn-navbar .icon-bar + .icon-bar {
   margin-top: 3px;
 }
-.navbar .divider-vertical {
-  height: 30px;
-  margin: 10px 9px;
-  border-left: 1px solid #e1e1e1;
-  border-right: 1px solid #fbfbfb;
+.navbar .nav > .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e1e1e1;
+  border-bottom: 1px solid #fbfbfb;
 }
 .navbar-form {
-  margin-top: 9px;
-  margin-bottom: 9px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .navbar .nav > li > .dropdown-menu {
   margin-top: 0;
@@ -2615,9 +2625,9 @@ button.close {
 .navbar-inverse .btn-navbar {
   background-color: #444;
 }
-.navbar-inverse .divider-vertical {
-  border-left-color: #151515;
-  border-right-color: #2f2f2f;
+.navbar-inverse .nav > .divider {
+  background-color: #151515;
+  border-bottom-color: #2f2f2f;
 }
 .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
 .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
@@ -2671,6 +2681,16 @@ button.close {
   }
   .navbar .nav > li {
     float: left;
+  }
+  .navbar .nav > .divider {
+    width: 1px;
+    height: 30px;
+    margin: 10px 9px;
+    border-bottom: 0;
+    border-right: 1px solid #fbfbfb;
+  }
+  .navbar-inverse .nav > .divider {
+    border-right-color: #2f2f2f;
   }
   .navbar .btn-navbar {
     display: none;
@@ -3486,7 +3506,7 @@ a.counter:hover {
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-.progress .bar {
+.progress-bar {
   float: left;
   width: 0%;
   height: 100%;
@@ -3494,9 +3514,7 @@ a.counter:hover {
   color: #fff;
   text-align: center;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #149bdf;
-  /*#gradient > .vertical(#149bdf, #0480be);*/
-
+  background-color: #428bca;
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   -webkit-box-sizing: border-box;
@@ -3507,8 +3525,8 @@ a.counter:hover {
   -o-transition: width 0.6s ease;
   transition: width 0.6s ease;
 }
-.progress-striped .bar {
-  background-color: #149bdf;
+.progress-striped .progress-bar {
+  background-color: #428bca;
   background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -3519,67 +3537,51 @@ a.counter:hover {
   -o-background-size: 40px 40px;
   background-size: 40px 40px;
 }
-.progress.active .bar {
+.progress.active .progress-bar {
   -webkit-animation: progress-bar-stripes 2s linear infinite;
   -moz-animation: progress-bar-stripes 2s linear infinite;
   -ms-animation: progress-bar-stripes 2s linear infinite;
   -o-animation: progress-bar-stripes 2s linear infinite;
   animation: progress-bar-stripes 2s linear infinite;
 }
-.progress-danger .bar,
-.progress .bar-danger {
-  background-color: #ee5f5b;
-  /*#gradient > .vertical(#ee5f5b, #c43c35);*/
-
+.progress-bar-danger {
+  background-color: #d9534f;
 }
-.progress-danger.progress-striped .bar,
-.progress-striped .bar-danger {
-  background-color: #ee5f5b;
+.progress-striped .progress-bar-danger {
+  background-color: #d9534f;
   background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
-.progress-success .bar,
-.progress .bar-success {
-  background-color: #62c462;
-  /*#gradient > .vertical(#62c462, #57a957);*/
-
+.progress-bar-success {
+  background-color: #5cb85c;
 }
-.progress-success.progress-striped .bar,
-.progress-striped .bar-success {
-  background-color: #62c462;
+.progress-striped .progress-bar-success {
+  background-color: #5cb85c;
   background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
-.progress-info .bar,
-.progress .bar-info {
+.progress-bar-warning {
+  background-color: #f0ad4e;
+}
+.progress-striped .progress-bar-warning {
+  background-color: #f0ad4e;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+.progress-bar-info {
   background-color: #5bc0de;
-  /*#gradient > .vertical(#5bc0de, #339bb9);*/
-
 }
-.progress-info.progress-striped .bar,
-.progress-striped .bar-info {
+.progress-striped .progress-bar-info {
   background-color: #5bc0de;
-  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-.progress-warning .bar,
-.progress .bar-warning {
-  background-color: #fbb450;
-  /*#gradient > .vertical(lighten(#f89406, 15%), #f89406);*/
-
-}
-.progress-warning.progress-striped .bar,
-.progress-striped .bar-warning {
-  background-color: #fbb450;
   background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -3765,7 +3767,6 @@ a.counter:hover {
   line-height: 30px;
   color: inherit;
   background-color: #eeeeee;
-  border-radius: 6px;
 }
 .jumbotron h1 {
   line-height: 1;
@@ -3777,6 +3778,7 @@ a.counter:hover {
 @media screen and (min-width: 768px) {
   .jumbotron {
     padding: 50px 60px;
+    border-radius: 6px;
   }
   .jumbotron h1 {
     font-size: 60px;
@@ -3864,6 +3866,160 @@ a.counter:hover {
   }
   .hidden-phone {
     display: none !important;
+  }
+}
+@media screen and (min-width: 1600px) {
+  .container {
+    max-width: 1570px;
+  }
+  .span12 {
+    width: 100%;
+  }
+  .span11 {
+    width: 91.66666666666666%;
+  }
+  .span10 {
+    width: 83.33333333333334%;
+  }
+  .span9 {
+    width: 75%;
+  }
+  .span8 {
+    width: 66.66666666666666%;
+  }
+  .span7 {
+    width: 58.333333333333336%;
+  }
+  .span6 {
+    width: 50%;
+  }
+  .span5 {
+    width: 41.66666666666667%;
+  }
+  .span4 {
+    width: 33.33333333333333%;
+  }
+  .span3 {
+    width: 25%;
+  }
+  .span2 {
+    width: 16.666666666666664%;
+  }
+  .span1 {
+    width: 8.333333333333332%;
+  }
+  .offset12 {
+    margin-left: 100%;
+  }
+  .offset11 {
+    margin-left: 91.66666666666666%;
+  }
+  .offset10 {
+    margin-left: 83.33333333333334%;
+  }
+  .offset9 {
+    margin-left: 75%;
+  }
+  .offset8 {
+    margin-left: 66.66666666666666%;
+  }
+  .offset7 {
+    margin-left: 58.333333333333336%;
+  }
+  .offset6 {
+    margin-left: 50%;
+  }
+  .offset5 {
+    margin-left: 41.66666666666667%;
+  }
+  .offset4 {
+    margin-left: 33.33333333333333%;
+  }
+  .offset3 {
+    margin-left: 25%;
+  }
+  .offset2 {
+    margin-left: 16.666666666666664%;
+  }
+  .offset1 {
+    margin-left: 8.333333333333332%;
+  }
+}
+@media screen and (min-width: 1900px) {
+  .container {
+    max-width: 1870px;
+  }
+  .span12 {
+    width: 100%;
+  }
+  .span11 {
+    width: 91.66666666666666%;
+  }
+  .span10 {
+    width: 83.33333333333334%;
+  }
+  .span9 {
+    width: 75%;
+  }
+  .span8 {
+    width: 66.66666666666666%;
+  }
+  .span7 {
+    width: 58.333333333333336%;
+  }
+  .span6 {
+    width: 50%;
+  }
+  .span5 {
+    width: 41.66666666666667%;
+  }
+  .span4 {
+    width: 33.33333333333333%;
+  }
+  .span3 {
+    width: 25%;
+  }
+  .span2 {
+    width: 16.666666666666664%;
+  }
+  .span1 {
+    width: 8.333333333333332%;
+  }
+  .offset12 {
+    margin-left: 100%;
+  }
+  .offset11 {
+    margin-left: 91.66666666666666%;
+  }
+  .offset10 {
+    margin-left: 83.33333333333334%;
+  }
+  .offset9 {
+    margin-left: 75%;
+  }
+  .offset8 {
+    margin-left: 66.66666666666666%;
+  }
+  .offset7 {
+    margin-left: 58.333333333333336%;
+  }
+  .offset6 {
+    margin-left: 50%;
+  }
+  .offset5 {
+    margin-left: 41.66666666666667%;
+  }
+  .offset4 {
+    margin-left: 33.33333333333333%;
+  }
+  .offset3 {
+    margin-left: 25%;
+  }
+  .offset2 {
+    margin-left: 16.666666666666664%;
+  }
+  .offset1 {
+    margin-left: 8.333333333333332%;
   }
 }
 /*!
