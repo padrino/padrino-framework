@@ -1,5 +1,4 @@
 # Make slim works with sinatra/padrino
-Slim::Engine.set_default_options(:buffer => '@_out_buf', :generator => Temple::Generators::StringBuffer) if defined?(Slim)
 
 module Padrino
   module Helpers

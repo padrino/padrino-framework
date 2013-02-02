@@ -13,7 +13,8 @@ class MarkupDemo < Sinatra::Base
     set :root, File.dirname(__FILE__)
     set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
     set :haml, :escape_html => true
-    set :slim, :generator => Temple::Generators::RailsOutputBuffer
+    set :slim, :generator => Temple::Generators::RailsOutputBuffer,
+               :buffer => "out_buf"
   end
 
   get '/:engine/:file' do
