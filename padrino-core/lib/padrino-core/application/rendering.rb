@@ -183,7 +183,7 @@ module Padrino
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if is_primative?(engine) && !data
+          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if is_primitive?(engine) && !data
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
@@ -316,13 +316,13 @@ module Padrino
         end
 
         ##
-        # Return true if the argument is a primative printable variable
+        # Return true if the argument is a primitive printable variable
         #
         # @param [Fixnum, FalseClass, TrueClass, Array, Hash] variable
         #   The variable to check
         # @return Boolean
         #   Whether the variable is Fixnum, FalseClass, TrueClass, Array, Hash
-        def is_primative?(variable)
+        def is_primitive?(variable)
           %w(NilClass Fixnum FalseClass TrueClass Array Hash).include?(variable.class.to_s)
         end
     end # InstanceMethods
