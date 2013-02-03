@@ -178,10 +178,12 @@ module Padrino
         # * Use render 'path/to/template', :layout => false
         # * Use render 'path/to/template', :layout => false, :engine => 'haml'
         # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
+        # * Use render false # => return the string "false"
+        # * Use render 42 # => return the string "42"
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if engine.is_a?(Hash) || engine.is_a?(Array)
+          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if is_primative?(engine)
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
@@ -311,6 +313,17 @@ module Padrino
         #
         def locale
           I18n.locale if defined?(I18n)
+        end
+
+        ##
+        # Return true if the argument is a primative printable variable
+        #
+        # @param [Fixnum, FalseClass, TrueClass, Array, Hash] variable
+        #   The variable to check
+        # @return Boolean
+        #   Whether the variable is Fixnum, FalseClass, TrueClass, Array, Hash
+        def is_primative?(variable)
+          %w(Fixnum FalseClass TrueClass Array Hash).include?(variable.class.to_s)
         end
     end # InstanceMethods
   end # Rendering

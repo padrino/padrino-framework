@@ -546,5 +546,31 @@ describe "Rendering" do
       assert ok?
       assert_equal '["a",1,"b",2]', body
     end
+
+    should 'renders false, true and Fixnum as string' do
+      mock_app do
+        get('/false') { render(false && "template-path") }
+        get('/true')  { render(true)  }
+        get('/42')    { render(42) }
+        get('/55')    { render(55) }
+        get('/oth')   { render("oth-template") }
+      end
+
+      get '/false'
+      assert ok?
+      assert_equal 'false', body
+      get '/true'
+      assert ok?
+      assert_equal 'true', body
+      get '/42'
+      assert ok?
+      assert_equal '42', body
+      get '/55'
+      assert ok?
+      assert_equal '55', body
+      assert_raises Padrino::Rendering::TemplateNotFound do
+        get 'oth'
+      end      
+    end
   end
 end
