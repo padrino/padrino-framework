@@ -553,21 +553,30 @@ describe "Rendering" do
         get('/true')  { render(true)  }
         get('/42')    { render(42) }
         get('/55')    { render(55) }
+        get('/nil')    { render(nil) }
         get('/oth')   { render("oth-template") }
       end
 
       get '/false'
       assert ok?
       assert_equal 'false', body
+      
       get '/true'
       assert ok?
       assert_equal 'true', body
+      
       get '/42'
       assert ok?
       assert_equal '42', body
+
       get '/55'
       assert ok?
       assert_equal '55', body
+      
+      get '/nil'
+      assert ok?
+      assert_equal 'null', body
+
       assert_raises Padrino::Rendering::TemplateNotFound do
         get 'oth'
       end      

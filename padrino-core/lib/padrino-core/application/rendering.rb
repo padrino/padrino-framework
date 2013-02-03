@@ -183,7 +183,7 @@ module Padrino
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if is_primative?(engine)
+          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if is_primative?(engine) && !data
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
@@ -323,7 +323,7 @@ module Padrino
         # @return Boolean
         #   Whether the variable is Fixnum, FalseClass, TrueClass, Array, Hash
         def is_primative?(variable)
-          %w(Fixnum FalseClass TrueClass Array Hash).include?(variable.class.to_s)
+          %w(NilClass Fixnum FalseClass TrueClass Array Hash).include?(variable.class.to_s)
         end
     end # InstanceMethods
   end # Rendering
