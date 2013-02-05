@@ -617,7 +617,6 @@ describe "Rendering" do
       assert_not_nil body[/"first":1/]
       assert_not_nil body[/"second":"2"/]
       assert_not_nil body[/"third":3/]
-      assert_not_nil body[/{.*:.*,.*:.*,.*:.*}/]
     end
 
   end
