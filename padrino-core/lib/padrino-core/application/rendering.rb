@@ -186,8 +186,12 @@ module Padrino
           # If engine is a hash then render data converted to json
           if !data && is_primitive?(engine)
             content_type(:json, :charset => 'utf-8')
-            object_to_render = (engine.is_a?(Hash) && engine[:json]) ? engine[:json] : engine
-            logger.warn 'render(@object) is not recommended for JSON data, please use render(:json => @object)' if defined?(logger)
+            object_to_render = if engine.is_a?(Hash) && engine[:json]
+              engine[:json]
+            else
+              logger.warn 'render(@object) is not recommended for JSON data, please use render(:json => @object)' if defined?(logger)
+              engine
+            end
             return MultiJson.encode(object_to_render)
           end
 
