@@ -181,8 +181,11 @@ module Padrino
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if engine.is_a?(Hash) || engine.is_a?(Array)
-
+          if engine.is_a?(Hash) || engine.is_a?(Array)
+            content_type(:json, :charset => 'utf-8')
+            object_to_render = (!engine.is_a?(Array) && engine[:json] && engine.size <= 1) ? engine[:json] : engine
+            return MultiJson.encode(object_to_render)
+          end
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
           engine, data, options = data, options, locals if engine.nil? && data
@@ -312,6 +315,7 @@ module Padrino
         def locale
           I18n.locale if defined?(I18n)
         end
+
     end # InstanceMethods
   end # Rendering
 end # Padrino
