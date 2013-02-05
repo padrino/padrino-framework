@@ -187,6 +187,7 @@ module Padrino
           if !data && is_primitive?(engine)
             content_type(:json, :charset => 'utf-8')
             object_to_render = (engine.is_a?(Hash) && engine[:json]) ? engine[:json] : engine
+            logger.warn 'render(@object) is not recommended for JSON data, please use render(:json => @object)' if defined?(logger)
             return MultiJson.encode(object_to_render)
           end
 
