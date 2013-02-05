@@ -554,7 +554,7 @@ describe "Rendering" do
         end
 
         get '/extra_json_render' do
-          render(:xyz => 'test', :json => true)
+          render(:xyz => 'test', :json => {:first => 'item'})
         end
 
         get '/extra_example_array' do
@@ -571,7 +571,7 @@ describe "Rendering" do
 
       get '/extra_json_render'
       assert ok?
-      assert_equal "{\"xyz\":\"test\",\"json\":true}", body
+      assert_equal "{\"first\":\"item\"}", body
 
       get '/extra_example_array'
       assert ok?

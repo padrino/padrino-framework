@@ -183,7 +183,7 @@ module Padrino
           # If engine is a hash then render data converted to json
           if engine.is_a?(Hash) || engine.is_a?(Array)
             content_type(:json, :charset => 'utf-8')
-            object_to_render = (!engine.is_a?(Array) && engine[:json] && engine.size <= 1) ? engine[:json] : engine
+            object_to_render = (engine.is_a?(Hash) && engine[:json]) ? engine[:json] : engine
             return MultiJson.encode(object_to_render)
           end
           # If engine is nil, ignore engine parameter and shift up all arguments
