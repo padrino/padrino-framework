@@ -180,10 +180,15 @@ module Padrino
         # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
         # * Use render false # => return the string "false"
         # * Use render 42 # => return the string "42"
+        # * Use render :json => {first: 1} # => return the string {"first":1}
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return MultiJson.encode(engine) if !data && is_primitive?(engine)
+          if !data && is_primitive?(engine)
+            content_type(:json, :charset => 'utf-8')
+            object_to_render = (engine.is_a?(Hash) && engine[:json]) ? engine[:json] : engine
+            return MultiJson.encode(object_to_render)
+          end
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }

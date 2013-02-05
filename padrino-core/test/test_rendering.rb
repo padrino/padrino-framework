@@ -581,5 +581,41 @@ describe "Rendering" do
         get 'oth'
       end      
     end
+
+    should 'render json with :json hash' do
+      mock_app do 
+        get '/json_render' do
+          render(:json => true)
+        end
+
+        get '/extra_json_render' do
+          render(:xyz => 'test', :json => {:first => 'item'})
+        end
+
+        get '/extra_example_array' do
+          render :json => [1,2,3]
+        end
+
+        get '/extra_example_hash' do
+          render :json => {first: 1, second: "2", third: 3}
+        end
+      end
+      get '/json_render'
+      assert ok?
+      assert_equal "true", body
+
+      get '/extra_json_render'
+      assert ok?
+      assert_equal "{\"first\":\"item\"}", body
+
+      get '/extra_example_array'
+      assert ok?
+      assert_equal "[1,2,3]", body
+
+      get '/extra_example_hash'
+      assert ok?
+      assert_equal "{\"first\":1,\"second\":\"2\",\"third\":3}", body
+    end
+
   end
 end
