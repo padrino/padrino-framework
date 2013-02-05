@@ -614,7 +614,10 @@ describe "Rendering" do
 
       get '/extra_example_hash'
       assert ok?
-      assert_equal "{\"first\":1,\"second\":\"2\",\"third\":3}", body
+      assert_not_nil body[/"first":1/]
+      assert_not_nil body[/"second":"2"/]
+      assert_not_nil body[/"third":3/]
+      assert_not_nil body[/{.*:.*,.*:.*,.*:.*}/]
     end
 
   end
