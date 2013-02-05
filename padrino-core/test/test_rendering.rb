@@ -597,7 +597,7 @@ describe "Rendering" do
         end
 
         get '/extra_example_hash' do
-          render :json => {first: 1, second: "2", third: 3}
+          render :json => {:first => 1, :second => "2", :third => 3}
         end
       end
       get '/json_render'
