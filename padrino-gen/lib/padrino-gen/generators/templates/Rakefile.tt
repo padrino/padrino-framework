@@ -1,2 +1,5 @@
 require 'padrino-core/cli/rake'
+
+<% if options[:orm] %>PadrinoTasks.use(<%= options[:orm].to_sym.inspect %>)<% end %>
+PadrinoTasks.use(:seed)
 PadrinoTasks.init
