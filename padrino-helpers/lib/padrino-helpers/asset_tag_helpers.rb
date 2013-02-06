@@ -28,12 +28,12 @@ module Padrino
       def flash_tag(*args)
         options = args.extract_options!
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
-        args.map do |kind|
+        args.inject(''.html_safe) do |html,kind|
           flash_text = flash[kind]
           next if flash_text.blank?
           flash_text << safe_content_tag(:button, "&times;", {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
-          safe_content_tag(:div, flash_text, options.reverse_merge(:class => kind))
-        end.compact * "\n"
+          html << safe_content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+        end
       end
 
       ##
