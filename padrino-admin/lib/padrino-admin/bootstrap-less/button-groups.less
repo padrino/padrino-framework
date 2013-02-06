@@ -3,9 +3,11 @@
 // --------------------------------------------------
 
 // Button carets
-.caret {
-  border-top-color: #fff;
-  border-bottom-color: #fff;
+.btn .caret {
+  border-top-color: @btn-color;
+}
+.dropup .btn .caret {
+  border-bottom-color: @btn-color;
 }
 
 // Make the div behave like a button
@@ -21,6 +23,7 @@
 // Optional: Group multiple button groups together for a toolbar
 .btn-toolbar {
   .clear_float();
+
   .btn-group {
     float: left;
   }
@@ -105,14 +108,7 @@
 }
 // Carets in other button sizes
 .btn-large .caret {
-  margin-top: 6px;
-}
-.btn-large .caret {
   border-width: 5px;
-}
-.btn-mini .caret,
-.btn-small .caret {
-  margin-top: 8px;
 }
 // Upside down carets for .dropup
 .dropup .btn-large .caret {
@@ -146,4 +142,18 @@
 }
 .btn-group-vertical .btn-large:last-child {
   border-radius: 0 0 @border-radius-large @border-radius-large;
+}
+
+
+// Justified button groups
+// ----------------------
+
+.btn-group-justified {
+  display: table;
+  width: 100%;
+  .btn {
+    float: none;
+    display: table-cell;
+    width: 1%;
+  }
 }
