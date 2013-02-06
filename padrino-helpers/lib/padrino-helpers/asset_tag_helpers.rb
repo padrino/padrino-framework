@@ -26,11 +26,11 @@ module Padrino
       # @api public
       def flash_tag(*args)
         options = args.extract_options!
-        args.map do |kind|
+        args.inject(''.html_safe) do |html,kind|
           flash_text = flash[kind]
           next if flash_text.blank?
-          content_tag(:div, flash_text, options.reverse_merge(:class => kind))
-        end.compact * "\n"
+          html << content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+        end
       end
 
       ##
