@@ -1,4 +1,4 @@
-if defined?(MiniRecord)
+if PadrinoTasks.load?(:minirecord, defined?(MiniRecord))
   namespace :mr do
     desc "Auto migration of database"
     task :migrate => :environment do
