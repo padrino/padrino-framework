@@ -10,6 +10,8 @@ end
 # Loads the Padrino applications mounted within the project
 # setting up the required environment for Padrino
 task :environment do
+  require File.expand_path('../config/boot.rb', __FILE__)
+
   Padrino.mounted_apps.each do |app|
     app.app_obj.setup_application!
   end

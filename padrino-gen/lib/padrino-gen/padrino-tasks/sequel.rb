@@ -1,4 +1,4 @@
-if defined?(Sequel)
+if PadrinoTasks.load?(:sequel, defined?(Sequel))
   namespace :sq do
     namespace :migrate do
 

@@ -1,4 +1,4 @@
-if defined?(DataMapper)
+if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
   namespace :dm do
     namespace :auto do
       desc "Perform automigration (reset your db data)"
