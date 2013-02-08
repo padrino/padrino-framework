@@ -213,15 +213,19 @@ describe "FormatHelpers" do
   context 'for #js_escape_html method' do
     should "escape double quotes" do
       assert_equal "\\\"hello\\\"", js_escape_html('"hello"')
+      assert_equal "\\\"hello\\\"", js_escape_html(ActiveSupport::SafeBuffer.new('"hello"'))
     end
     should "escape single quotes" do
       assert_equal "\\'hello\\'", js_escape_html("'hello'")
+      assert_equal "\\'hello\\'", js_escape_html(ActiveSupport::SafeBuffer.new("'hello'"))
     end
     should "escape html tags and breaks" do
       assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html("\n\r<p>hello</p>\r\n")
+      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html(ActiveSupport::SafeBuffer.new("\n\r<p>hello</p>\r\n"))
     end
     should "escape data-confirm attribute" do
       assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html("<data-confirm=\"are you sure\">")
+      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(ActiveSupport::SafeBuffer.new("<data-confirm=\"are you sure\">"))
     end
   end
 end
