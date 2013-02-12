@@ -21,7 +21,7 @@ snippet to `apps.rb`:
 
 
 Adding this to the top of your `app.rb` will enable sessions in all applications within the project and use a secret
-session key to persist the session properly across all these apps. Make sure to run the ‘rake secret’ command and put
+session key to persist the session properly across all these apps. Make sure to run the 'rake secret' command and put
 the session key into the `:session_secret` setting. Not doing this can create session related issues in your project.
 
 
@@ -88,8 +88,8 @@ shortens a string by characters, this helper shortens a string by words:
 
 
 ```ruby
-truncate_words(“Once upon a time in a world far far away”,
-:length => 4) => “Once upon a time…”
+truncate_words("Once upon a time in a world far far away",
+:length => 4) => "Once upon a time…"
 ```
 
 
@@ -106,8 +106,8 @@ application.
 ```ruby
 # config/boot.rb
 Padrino.before_load
-MyApp.load_paths << Padrino.root(‘app’, ‘observers’)
-MyApp.dependencies << Padrino.root(‘other_app’, ‘controllers.rb’)
+MyApp.load_paths << Padrino.root('app', 'observers')
+MyApp.dependencies << Padrino.root('other_app', 'controllers.rb')
 end
 ```
 
