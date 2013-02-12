@@ -37,7 +37,7 @@ There will be a stronger performance push soon as we work to keep Padrino as lig
 Patrick Lef has been kind enough to point out multiple failing http specs in our core handling, so we
 [made](https://github.com/padrino/padrino-framework/commit/8f5d1b5104427482ffd16146fb22e30f5dc6ee60") a
 [few](https://github.com/padrino/padrino-framework/commit/25042a6c734bbfb97a893fa898d4c9d8924aa810)
-[[fixes](https://github.com/padrino/padrino-framework/commit/7127017840e8adaee85c345d8fa02655b0fff4f2]). Thanks to core
+[fixes](https://github.com/padrino/padrino-framework/commit/7127017840e8adaee85c345d8fa02655b0fff4f2). Thanks to core
 Padrino member Florian for putting those all together so quickly!
 
 

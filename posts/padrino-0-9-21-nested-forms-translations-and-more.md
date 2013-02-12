@@ -82,11 +82,11 @@ speak a language that Padrino doesn't yet support, please consider contributing!
 ## Other fixes
 
 - Major changes to output handling for padrino helpers allowing easier template integration
-  (gist)[https://gist.github.com/829030]
+  [gist](https://gist.github.com/829030)
 - Better project generation name validations
-- Fixes the select_tag to have better support for multiple options
+- Fixes the `select_tag` to have better support for multiple options
 - Cleans up bundler integration removing legacy support for 0.9
-- Fixed issue with error_message_on where incorrect object was being accessed
+- Fixed issue with `error_message_on` where incorrect object was being accessed
 - Layouts are properly found now with shorthand aliases `render “brochure/home”, :layout => :narrow`
 
 

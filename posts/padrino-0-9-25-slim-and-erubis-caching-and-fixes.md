@@ -22,14 +22,15 @@ solution you always hoped to have when using Sinatra.
 
 For more information, check out the
 [README](https://github.com/padrino/padrino-framework/blob/master/padrino-cache/README.rdoc) as well as the
-[Padrino Cache Guide](http://www.padrinorb.com/guides/padrino-cache) for a solid overview of this new addition to our framework.
+[Padrino Cache Guide](http://www.padrinorb.com/guides/padrino-cache) for a solid overview of this new addition to our
+framework.
 
 
 Thanks to core member Joshua Hull for the majority of the caching implementation and Joshua Morris , Arthur Chiu, and
 DAddYE for the Caching documentation.
 
 
-Here’s an example of the caching gem usage:
+Here's an example of the caching gem usage:
 
 
 ```ruby
@@ -43,7 +44,7 @@ end
 
 # lib/awesome.rb
 Padrino.cache.set # => this is shared between apps
-Sample.cache.set“).first) # => this is used only by Sample app
+Sample.cache.set").first) # => this is used only by Sample app
 
 # app/controllers.rb
 Sample.controllers do
@@ -71,13 +72,13 @@ You can start using this now in your Padrino and Sinatra applications.  Let us k
 
 ## UJS Adapters
 
-Padrino has been waiting on unobtrusive JavaScript handling for a while now as well. This enables support for ‘remote’
-links and forms as well as setting link ‘methods’ and having the unobtrusive JavaScript adapters make that ‘just work’.
+Padrino has been waiting on unobtrusive JavaScript handling for a while now as well. This enables support for 'remote'
+links and forms as well as setting link 'methods' and having the unobtrusive JavaScript adapters make that 'just work'.
 
 
 For more information on these unobtrusive JavaScript handlers, check out the
 [Helpers Guide](http://www.padrinorb.com/guides/application-helpers#unobtrusive-javascript-helpers)
-which will give you a good overview of what’s now available once the ujs adapter is included in your project.
+which will give you a good overview of what's now available once the ujs adapter is included in your project.
 
 
 Not all of the adapters are finished for each JavaScript framework yet, but we intend on getting them integrated soon.
@@ -101,7 +102,7 @@ An example code:
 # /app/views/users/new.html.haml
 - form_for :user, url(:create, :format => :js), :remote => true do
 |f|
-.content=partial”/users/form"
+.content=partial"/users/form"
 ```
 
 
@@ -109,9 +110,9 @@ which will generate the following unobtrusive markup:
 
 
 ```html
-<form data-remote=“true” action=“/items/create.js”
-method=“post”>
-<div class=“content”>
+<form data-remote="true" action="/items/create.js"
+method="post">
+<div class="content">
 <input type="text" id="post_title" name="post[title]">
 <input type="submit" value="Create">
 </div>
@@ -124,9 +125,9 @@ method=“post”>
 post :create, :provides => :js do
 `user = User.new(params[:user])
 if `user.save
-“$(‘form.content’).html(‘#{partial(“/users/form”)}’);”
+"$('form.content').html('#{partial("/users/form")}');"
 else
-“alert(‘User is not valid’);”
+"alert('User is not valid');"
 end
 end
 ```
@@ -149,7 +150,7 @@ The changes are mostly abstracted away from usage in Padrino, but the router is 
 
 
 Since it was designed to be more flexible, it also supports multiple named parameter captures and other things that
-weren’t support in the previous release of Padrino.
+weren't support in the previous release of Padrino.
 
 
 Some examples:
@@ -157,16 +158,16 @@ Some examples:
 
 ```ruby
 # app/controllers.rb
-get :show, :map => ‘/pictures/*path.html’ do
+get :show, :map => '/pictures/*path.html' do
 …
 end
 
 get :index do
-# Generates: “/?account[name]=foo&account[surname]=bar”
+# Generates: "/?account[name]=foo&account[surname]=bar"
 url
 end
 
-get “/email/:email”, :format => :json do |email|
+get "/email/:email", :format => :json do |email|
 # => [foo@bar.com](mailto:foo@bar.com)
 email
 end
@@ -204,7 +205,7 @@ For example:
 
 ```haml
 # views/yours.haml
-%p=partial ‘show/an/erb/partial.erb’
+%p=partial 'show/an/erb/partial.erb'
 ```
 
 
@@ -221,11 +222,11 @@ Sinatra team for his help.
 
 ## Sessions and Flash
 
-`Rack::Flash` is no longer dependent on rack’s default sessions, so you are able to use `Rack::Flash` with other session
+`Rack::Flash` is no longer dependent on rack's default sessions, so you are able to use `Rack::Flash` with other session
 engines such as memcached, datamapper, mongomapper etc…
 
 
-Unfortunately you’ll now need to update your projects to specifically enable sessions inside your `app.rb` to use
+Unfortunately you'll now need to update your projects to specifically enable sessions inside your `app.rb` to use
 `Rack::Flash`, otherwise an error will be returned.
 
 
@@ -273,7 +274,7 @@ Some code:
 # app/app.rb
 class Sample < Padrino::Application
 set :session_secret,
-“6ca7e9fd7b1eb5a447ae3ba55495621c9169e8ec236ef19829a7684cf86f2404”
+"6ca7e9fd7b1eb5a447ae3ba55495621c9169e8ec236ef19829a7684cf86f2404"
 …
 end
 ```
@@ -295,36 +296,36 @@ An example:
 
 
     # First request
-    DEBUG~~ “MONGODB
-    padrino_www_development[‘accounts’].find({:_id=>nil})”
-    DEBUG~~ [08/Apr/2011 22:02:17] “GET (0.0121ms) 127.0.0.1 - - /admin/
+    DEBUG~~ "MONGODB
+    padrino_www_development['accounts'].find({:_id=>nil})"
+    DEBUG~~ [08/Apr/2011 22:02:17] "GET (0.0121ms) 127.0.0.1 - - /admin/
     HTTP/1.1 - 302 ~~"
-    DEBUG~~ [08/Apr/2011 22:02:17]”MONGODB
-    padrino_www_development[‘accounts’].find({:_id=>nil})"
-    DEBUG - [08/Apr/2011 22:02:17] “GET (0.0269ms) 127.0.0.1 - -
-    /admin/sessions/new HTTP/1.1 - 200 1749”
-    DEBUG - [08/Apr/2011 22:02:17] “GET (0.0010ms) 127.0.0.1 - -
+    DEBUG~~ [08/Apr/2011 22:02:17]"MONGODB
+    padrino_www_development['accounts'].find({:_id=>nil})"
+    DEBUG - [08/Apr/2011 22:02:17] "GET (0.0269ms) 127.0.0.1 - -
+    /admin/sessions/new HTTP/1.1 - 200 1749"
+    DEBUG - [08/Apr/2011 22:02:17] "GET (0.0010ms) 127.0.0.1 - -
     /admin/stylesheets/themes/default/style.css?1268092944 HTTP/1.1 - 200
-    6741”
-    DEBUG - [08/Apr/2011 22:02:17] “MONGODB
-    padrino_www_development[‘accounts’].find({:_id=>nil})”
-    DEBUG - [08/Apr/2011 22:02:17] “GET (0.0023ms) 127.0.0.1 - -
+    6741"
+    DEBUG - [08/Apr/2011 22:02:17] "MONGODB
+    padrino_www_development['accounts'].find({:_id=>nil})"
+    DEBUG - [08/Apr/2011 22:02:17] "GET (0.0023ms) 127.0.0.1 - -
     /admin/stylesheets/override.css?1302292937
     HTTP/1.1 - 302 ~~"
-    DEBUG~~ [08/Apr/2011 22:02:17]”GET (0.0008ms) 127.0.0.1 - -
+    DEBUG~~ [08/Apr/2011 22:02:17]"GET (0.0008ms) 127.0.0.1 - -
     /admin/stylesheets/base.css?1269259073 HTTP/1.1 -
     200 4774"
-    DEBUG - [08/Apr/2011 22:02:17] “MONGODB
-    padrino_www_development[‘accounts’].find({:_id=>nil})”
-    DEBUG - [08/Apr/2011 22:02:17] “GET (0.0097ms) 127.0.0.1 - -
-    /admin/sessions/new HTTP/1.1 - 200 1749”
-    DEBUG - [08/Apr/2011 22:02:20] “Resolving layout
-    /src/padrino-web/app/views/layouts/application”
+    DEBUG - [08/Apr/2011 22:02:17] "MONGODB
+    padrino_www_development['accounts'].find({:_id=>nil})"
+    DEBUG - [08/Apr/2011 22:02:17] "GET (0.0097ms) 127.0.0.1 - -
+    /admin/sessions/new HTTP/1.1 - 200 1749"
+    DEBUG - [08/Apr/2011 22:02:20] "Resolving layout
+    /src/padrino-web/app/views/layouts/application"
 
     # Second request
-    DEBUG - [08/Apr/2011 22:03:10] “GET Cache (0.0002ms) /”
-    DEBUG - [08/Apr/2011 22:03:10] “GET (0.0083ms) 127.0.0.1 - - / HTTP/1.1
-    - 200 18475”
+    DEBUG - [08/Apr/2011 22:03:10] "GET Cache (0.0002ms) /"
+    DEBUG - [08/Apr/2011 22:03:10] "GET (0.0083ms) 127.0.0.1 - - / HTTP/1.1
+    - 200 18475"
 
 
 ## Other significant changes
