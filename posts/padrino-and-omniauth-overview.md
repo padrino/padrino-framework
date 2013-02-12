@@ -5,7 +5,7 @@ categories: Ruby, Faqs
 title: Padrino and OmniAuth Overview
 ---
 
-In this article we’ll cover two topics:
+In this article we'll cover two topics:
 
 1. Integrating Padrino Admin Authentication into all apps within your project
 2. Enabling custom authentication strategies within the authentication system
@@ -16,7 +16,7 @@ with other systems. The only files that need to be changed are `session.rb` and 
 custom code.
 
 
-So, let’s start by creating a project using activerecord:
+So, let's start by creating a project using activerecord:
 
 
     $ padrino g project foo -orm activerecord -tiny
@@ -48,7 +48,7 @@ Open your favorite editor and browse and edit `Gemfile` and add `omniauth`:
 
 
     # Gemfile
-    gem ‘omniauth’
+    gem 'omniauth'
 
 
 Now, run bundle install to install dependencies:
@@ -70,8 +70,8 @@ In our example, we need to edit simply `app/app.rb` and add:
 ```ruby
 # app/app.rb
 use OmniAuth::Builder do
-provider :twitter, ‘consumer_key’, ‘consumer_secret’
-provider :facebook, ‘app_id’, ‘app_secret’
+provider :twitter, 'consumer_key', 'consumer_secret'
+provider :facebook, 'app_id', 'app_secret'
 end
 ```
 
@@ -82,8 +82,8 @@ If you are in a multiapp scenario you need to edit `config/boot.rb`:
 ```ruby
 # config/boot.rb
 Padrino.use OmniAuth::Builder do
-provider :twitter, ‘consumer_key’, ‘consumer_secret’
-provider :facebook, ‘app_id’, ‘app_secret’
+provider :twitter, 'consumer_key', 'consumer_secret'
+provider :facebook, 'app_id', 'app_secret'
 end
 
 # before the line
@@ -126,16 +126,16 @@ Next, we can integrate our authentication system within in `app/app.rb`:
 # at the top before the class definition
 register Padrino::Admin::AccessControl
 
-set :login_page, “/” # determines the url login occurs
+set :login_page, "/" # determines the url login occurs
 
 access_control.roles_for :any do |role|
-role.protect “/profile”
-role.protect “/admin” # here a demo path
+role.protect "/profile"
+role.protect "/admin" # here a demo path
 end
 
 # now we add a role for users
 access_control.roles_for :users do |role|
-role.allow “/profile”
+role.allow "/profile"
 end
 ```
 
@@ -143,14 +143,14 @@ end
 And add a couple useful routes, edit `app/controllers.rb` with:
 
 
-```
+```ruby
 # app/controllers.rb
 get :index do
-haml <<-HAML.gsub(/^ {6}/, ‘’)
+haml <<-HAML.gsub(/^ {6}/, '')
 Login with
-=link_to(’Facebook’, ‘/auth/facebook’)
+=link_to('Facebook', '/auth/facebook')
 or
-=link_to(‘Twitter’, ‘/auth/twitter’)
+=link_to('Twitter', '/auth/twitter')
 HAML
 end
 
@@ -164,13 +164,13 @@ get :destroy do
   redirect url(:index)
 end
 
-get :auth, :map => ‘/auth/:provider/callback’ do
-  auth = request.env[“omniauth.auth”]
-  account = Account.find_by_provider_and_uid(auth[“provider”],
-  auth[“uid”]) ||
+get :auth, :map => '/auth/:provider/callback' do
+  auth = request.env["omniauth.auth"]
+  account = Account.find_by_provider_and_uid(auth["provider"],
+  auth["uid"]) ||
   Account.create_with_omniauth(auth)
   set_current_account(account)
-  redirect “[http://](http://)” + request.env[“HTTP_HOST”] +
+  redirect "[http://](http://)" + request.env["HTTP_HOST"] +
   url(:profile)
 end
 ```
@@ -183,18 +183,18 @@ We invoked a method `Account.create_with_omniauth` above, so edit `app/models/ac
 # app/models/account.rb
 def self.create_with_omniauth(auth)
   create! do |account|
-    account.provider = auth[“provider”]
-    account.uid = auth[“uid”]
-    account.email = auth[“name”]
-    account.email = auth[“user_info”][“email”] if auth[“user_info”] # we
+    account.provider = auth["provider"]
+    account.uid = auth["uid"]
+    account.email = auth["name"]
+    account.email = auth["user_info"]["email"] if auth["user_info"] # we
     get this only from FB
-    account.role = “users”
+    account.role = "users"
   end
 end
 ```
 
 
-That should just about do it! Let’s start the server:
+That should just about do it! Let's start the server:
 
 
     $ padrino start
@@ -213,7 +213,7 @@ Follow your login process and then if needed [http://localhost:3000/destroy](htt
 
 
 That is all you need to setup a barebones authentication system in Padrino. This post has gotten you started with a
-working “Account” and role based authentication solution with integrated omniauth support. From here, obviously there
+working "Account" and role based authentication solution with integrated omniauth support. From here, obviously there
 are a number of other features you might want to add on top to flesh out, and that is left for another post or as an
 exercise to the reader.
 
