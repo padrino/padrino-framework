@@ -126,7 +126,7 @@ spec/spec.rake
 h3. A safe server by default
 By default, when started with ```padrino start``` Padrino will set it's host to ```localhost```. This is generally fine
 in development mode for most situations and it is better to leave it like that to prevent [security issues](https://github.com/padrino/padrino-framework/pull/1052).
-Whenever you want to use another host, you will have to force it though. To use any host your system's interfaces have available, set it to ```0.0.0.0``` -this is quite useful if, e.g., you're debugging from another boxes on your LAN.
+Whenever you want to use another host, you will have to force it though. To use any host your system's interfaces have available, set it to ```0.0.0.0``` -this is quite useful if, e.g., you're debugging from other boxes on your LAN.
 
 In this way you can customize project tasks.
 
