@@ -21,11 +21,9 @@ module Padrino
 
     # Starts the application on the available server with specified options.
     def self.start(app, opts={})
-      default_host = Padrino.env == 'development' ? 'localhost' : '0.0.0.0'
-
       options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
       options.symbolize_keys!
-      options[:Host] = options.delete(:host) || default_host
+      options[:Host] = options.delete(:host) || 'localhost' 
       options[:Port] = options.delete(:port) || 3000
       options[:AccessLog] = []
       if options[:daemonize]
