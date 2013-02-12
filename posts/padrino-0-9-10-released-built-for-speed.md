@@ -13,19 +13,19 @@ our framework compared in terms of performance with the existing ruby web framew
 
 Personally, no one on our team is a big fan of benchmarks since they can often be misleading and real world usage is
 generally quite different. However, we thought that providing a set of simple benchmarking results would help people get
-at least a basic sense of Padrino’s speed.
+at least a basic sense of Padrino's speed.
 
 
-According to our [benchmarks](http://github.com/DAddYE/web-frameworks-benchmark]), **Padrino** is now about as fast as
+According to our [benchmarks](http://github.com/DAddYE/web-frameworks-benchmark), **Padrino** is now about as fast as
 Sinatra (and in some cases actually a bit faster!).
 
 
 For our benchmarks, we chose to test three different sample applications. The
-[first test](http://github.com/DAddYE/web-frameworks-benchmark/tree/text_render]) was a bare minimum app as a
+[first test](http://github.com/DAddYE/web-frameworks-benchmark/tree/text_render) was a bare minimum app as a
 baseline where a response is just rendered with a short inline string. The
-[second test](http://github.com/DAddYE/web-frameworks-benchmark/tree/template_render]) is a simple app where we render a
-small erb template. The [third test](http://github.com/DAddYE/web-frameworks-benchmark/tree/more_advanced]) was the
-most comprehensive with a more ‘full-stack’ application including sessions, haml, layouts, templates, flash, and
+[second test](http://github.com/DAddYE/web-frameworks-benchmark/tree/template_render) is a simple app where we render a
+small erb template. The [third test](http://github.com/DAddYE/web-frameworks-benchmark/tree/more_advanced) was the
+most comprehensive with a more 'full-stack' application including sessions, haml, layouts, templates, flash, and
 helpers.
 
 
@@ -63,10 +63,10 @@ improve them!
 
 We added four new languages to the admin, helpers and error message translations:
 
-- Danish [Thanks to [Molte](http://github.com/molte])
-- French [Thanks to [Mickey](http://github.com/mickey])
-- Russian [Thanks to [Imm](http://github.com/imm])
-- Brazilian [Thanks to [Deminew](http://github.com/deminew])
+- Danish [Thanks to Molte](http://github.com/molte)
+- French [Thanks to Mickey](http://github.com/mickey)
+- Russian [Thanks to Imm](http://github.com/imm)
+- Brazilian [Thanks to Deminew](http://github.com/deminew)
 
 
 If you want to contribute a translation for another language, please follow the
@@ -79,8 +79,8 @@ We are very very glad to announce that **Padrino** can now build the
 admin interface with these orm adapters:
 
 
-- Couchdb [Thanks to [Ghostm](http://github.com/ghostm])
-- Sequel [Thanks to [Aemadrid](http://github.com/aemadrid])
+- Couchdb [Thanks to Ghostm](http://github.com/ghostm)
+- Sequel [Thanks to Aemadrid](http://github.com/aemadrid)
 
 
 This means **Padrino** now fully supports the following persistence engines: MongoMapper, MongoId, CouchDb, ActiveRecord
@@ -91,9 +91,9 @@ In the future, we are also planning to integrate: [OHM](http://github.com/sovera
 [Friendly](http://github.com/jamesgolick/friendly) as well among others.
 
 
-If you want to contribute a component, be sure to checkout the [guide for adding
-components](http://www.padrinorb.com/guides/adding-new-components) which explains how to add a component to the
-generator and admin.
+If you want to contribute a component, be sure to checkout the
+[guide for adding components](http://www.padrinorb.com/guides/adding-new-components) which explains how to add a
+component to the generator and admin.
 
 
 ## Enhanced Router Capabilities
@@ -118,9 +118,9 @@ Padrino is principally designed to support [mountable applications](/pages/why#m
 
 
 ```ruby
-Padrino.mount_core(“Blog”).host(“blog.example.org”)
-Padrino.mount(“Admin”).host(“admin.example.org”)
-Padrino.mount(“WebSite”).host(/.**.?example.org/)
+Padrino.mount_core("Blog").host("blog.example.org")
+Padrino.mount("Admin").host("admin.example.org")
+Padrino.mount("WebSite").host(/.**.?example.org/)
 Padrino.mount.to.host
 ```
 
@@ -160,14 +160,14 @@ Remember that now you also can build your custom conditions (like in Sinatra):
 ```ruby
 def protect(**args)
   condition {
-    unless username  "foo" && password  “bar”
-    halt 403, “go away”
+    unless username  "foo" && password  "bar"
+    halt 403, "go away"
     end
   }
 end
 
-get “/”, :protect => true do
-  “Only foo can see this”
+get "/", :protect => true do
+  "Only foo can see this"
 end
 ```
 
@@ -181,7 +181,7 @@ defined in a `controller` do not interfere with those defined in the main applic
 ```ruby
 SimpleApp.controllers :posts do
   # Apply a layout for routes in this controller
-  # Layout file would be in ‘app/views/layouts/posts.haml’
+  # Layout file would be in 'app/views/layouts/posts.haml'
   layout :posts
   before { `foo = "bar" }
   get("/posts") { render :haml, "Uses posts layout and `foo = #{@foo}" }
@@ -189,7 +189,7 @@ end
 
 SimpleApp.controllers :accounts do
   # Padrino allows you to apply a different layout for this controller
-  # Layout file would be in ‘app/views/layouts/accounts.haml’
+  # Layout file would be in 'app/views/layouts/accounts.haml'
   layout :accounts
   before { `bar = "foo" }
   get("/accounts") { render :haml, "Uses accounts layout and `bar = #{@bar}" }
@@ -237,7 +237,7 @@ the route.
 
 Padrino 0.9.10 also features support for a host of minor improvements:
 
-- Added support for *ext-core* as javascript engine [Thanks to [Imm](http://github.com/imm])
+- Added support for *ext-core* as javascript engine [Thanks to Imm](http://github.com/imm)
 - Mailer now supports explicitly setting the template path to render for a mail method
 - Beautiful colorized logging support
 - Ruby 1.9.2-head compatibility
@@ -248,7 +248,7 @@ Padrino 0.9.10 also features support for a host of minor improvements:
 
 ## Bug Fixes
 
-- Removed always “index” from our routes name
+- Removed always "index" from our routes name
 - Fixes SASS reload plugin issue on 1.9.X
 - Fixes an issue with generator not casing controller / model names
 - Fixed `padrino g` and `padrino gen` aliases

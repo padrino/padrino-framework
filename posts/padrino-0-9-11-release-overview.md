@@ -4,7 +4,7 @@ categories: Update
 title: Padrino 0.9.11 Release Overview
 ---
 
-## What’s new in this version?
+## What's new in this version?
 
 ### Refactored Mailer
 
@@ -13,7 +13,7 @@ modified significantly. In addition, the underlying message delivery library has
 better [mail](http://github.com/mikel/mail) library.
 
 
-Mailer definitions now use a much more consistent ‘Sinatra’ syntax instead of the old `ActionMailer` syntax. We think
+Mailer definitions now use a much more consistent 'Sinatra' syntax instead of the old `ActionMailer` syntax. We think
 this makes the mailer much more intuitive and adherent to the Sinatra philosophy:
 
 
@@ -21,17 +21,17 @@ this makes the mailer much more intuitive and adherent to the Sinatra philosophy
 # app/mailers/sample_mailer.rb
 MyAppName.mailer :sample do
   email :registration_email do |name, email|
-    from ‘[admin@site.com](mailto:admin@site.com)’
+    from '[admin@site.com](mailto:admin@site.com)'
     to email
-    subject ‘Welcome to the site!’
+    subject 'Welcome to the site!'
     locals :name => name, :email => email
-    render ‘registration_email’
+    render 'registration_email'
   end
 end
 ```
 
 
-In addition, the mailer now has support for ‘quick’ email delivery within a controller. To deliver a ‘one-off’ email
+In addition, the mailer now has support for 'quick' email delivery within a controller. To deliver a 'one-off' email
 from the controller, simply use the `email` method:
 
 
@@ -72,7 +72,7 @@ creates a much flatter file structure. You can do a tiny project generation with
 
 
 In this version, instead of a `app/controller` folder, there is simply a `app/controllers.rb` file. Instead of an
-`app/mailers` folder, there is simply an `app/mailers.rb` file. This is for projects that do not require the ‘full’
+`app/mailers` folder, there is simply an `app/mailers.rb` file. This is for projects that do not require the 'full'
 padrino structure and require a more concise structure.
 
 
@@ -160,11 +160,11 @@ completely new mailer functionality. The old mailer syntax required your setting
 ```ruby
 # config/initializers/mailer_init.rb
 Padrino::Mailer::Base.smtp_settings = {
-  :host => ‘smtp.gmail.com’,
-  :port => ‘587’,
+  :host => 'smtp.gmail.com',
+  :port => '587',
   :tls => true,
-  :user => ‘user’,
-  :pass => ‘pass’,
+  :user => 'user',
+  :pass => 'pass',
   :auth => :plain
 }
 ```
@@ -176,12 +176,12 @@ this should be replaced with the updated syntax:
 ```ruby
 # app/app.rb
 set :delivery_method, :smtp => {
-  :address => “smtp.gmail.com”,
+  :address => "smtp.gmail.com",
   :port => 587,
-  :domain => ‘your.host.name’,
-  :user_name => ‘<username>’,
-  :password => ‘<password>’,
-  :authentication => ‘plain’,
+  :domain => 'your.host.name',
+  :user_name => '<username>',
+  :password => '<password>',
+  :authentication => 'plain',
   :enable_starttls_auto => true
 }
 ```
@@ -194,9 +194,9 @@ You also need to modify the older mailer definitions:
 # app/mailers/sample_mailer.rb
 class SampleMailer < Padrino::Mailer::Base
   def registration_email(name, email)
-    from ‘[admin@site.com](mailto:admin@site.com)’
+    from '[admin@site.com](mailto:admin@site.com)'
     to email
-    subject ‘Welcome to the site![]('
+    subject 'Welcome to the site![]('
     body :name => name, :email => email
   end
 end
@@ -212,11 +212,11 @@ MyAppName.mailer :sample do
   email :registration_email do |name, email|
     from 'admin@site.com'
     to email
-    subject 'Welcome to the site)’
+    subject 'Welcome to the site)'
     # now requires explicit render
     # template found in app/views/mailers/sample/registration.erb
-    # with access to ‘name’ and ‘email’ local vars
-    render ‘registration’
+    # with access to 'name' and 'email' local vars
+    render 'registration'
     locals :name => name, :email => email
   end
 end

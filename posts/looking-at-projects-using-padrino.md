@@ -9,7 +9,7 @@ title: Looking at Projects using Padrino
 
 There have been a great deal of Sinatra + Padrino applications released into the wild over the last 2 years.  Many of
 these have actually been [Lipsiasoft](http://www.lipsiasoft.com/portfolio) websites built in Padrino by Davide, one of
-our core team members. Padrino originally started in part because of Davide’s interest in using Sinatra at his own
+our core team members. Padrino originally started in part because of Davide's interest in using Sinatra at his own
 Italy-based consulting company.
 
 
@@ -19,7 +19,7 @@ applications built by others in the community. A few are highlighted below.
 
 ### Fikus
 
-[Fikus](https://github.com/bratta/fikus) is the “Simple Ruby CMS” created by [Tim Gourley](https://github.com/bratta) of
+[Fikus](https://github.com/bratta/fikus) is the "Simple Ruby CMS" created by [Tim Gourley](https://github.com/bratta) of
 the Engine Yard team. This simple content management features an admin interface, markdown for page contents, easy
 extensibility, mongodb-backed data store, and page caching.
 
@@ -31,7 +31,7 @@ In addition, you need to be running mongodb for persistence.
 
 ### Piccioto
 
-[Piccioto](https://github.com/apeacox/picciotto) is a “minimalistic website framework based on Padrino” created by
+[Piccioto](https://github.com/apeacox/picciotto) is a "minimalistic website framework based on Padrino" created by
 [Andrea Pavoni](https://github.com/apeacox) of digitalbricks in Italy. This simple website framework allows you to
 create simple hybrid web sites containing static and dynamic components. This framework is composed of many tools which
 can be used for easy web development and features Html5 Boilerplates, Haml Templates, Sass stylesheets, Rspec testing
@@ -59,7 +59,7 @@ as a sub-application in your Padrino project.
 
 ### Notable Mentions
 
-In addition to those projects, there are many others out there which we know about and many more which we don’t! Here is
+In addition to those projects, there are many others out there which we know about and many more which we don't! Here is
 a list of a few more we thought were worth checking out:
 
 
@@ -78,7 +78,7 @@ If you have a project built on Padrino that is not mentioned here, please let us
 
 ### Padrino Libraries
 
-There are also many libraries built to extend Padrino’s functionality.
+There are also many libraries built to extend Padrino's functionality.
 Many of these provide excellent
 features to make development even easier. We select three to feature
 below:
@@ -93,10 +93,10 @@ in a Padrino app:
 
 ```ruby
 # Gemfile
-gem “padrino-fields”
+gem "padrino-fields"
 # app.rb
 register PadrinoFields
-set :default_builder, ‘PadrinoFieldsBuilder’
+set :default_builder, 'PadrinoFieldsBuilder'
 ```
 
 You can begin using forms such as:
@@ -128,8 +128,8 @@ Simply install the application with:
 
 ```ruby
 # Gemfile
-gem ‘sinatra-simple-navigation’, :require =>
-‘sinatra/simple-navigation’
+gem 'sinatra-simple-navigation', :require =>
+'sinatra/simple-navigation'
 # app.rb
 register Sinatra::SimpleNavigation
 ```
@@ -142,7 +142,7 @@ and then run bundle install and begin defining your navigation structure. For ex
 ### padrino-warden
 
 [padrino-warden](https://github.com/jondot/padrino-warden) by [Dotan J.  Nahum](https://github.com/jondot) is a module
-that provides authentication for your Padrino application through [[Warden](https://github.com/hassox/warden]).
+that provides authentication for your Padrino application through [Warden](https://github.com/hassox/warden).
 
 
 ### Notable Mentions

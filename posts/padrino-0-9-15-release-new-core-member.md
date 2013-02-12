@@ -9,8 +9,8 @@ With the templates and plugins generator in Padrino we can now generate a projec
 
 
 ```ruby
-padrino-gen project my_project~~p
-path/to/my/template.rb~~r=path/to/your/project
+padrino-gen project my_project -p
+path/to/my/template.rb -r=path/to/your/project
 ```
 
 
@@ -60,6 +60,6 @@ To see the full list of changes, take a look at the [changelog](http://www.padri
 
 
 We are also excited to introduce our newest core member, lusis! He has contributed various components such as ohm and
-mongomatic, and has also generously setup a [hudson server](http://bit.ly/aIzvBE) for the Padrino community! We’re glad
+mongomatic, and has also generously setup a [hudson server](http://bit.ly/aIzvBE) for the Padrino community! We're glad
 to have him on board and look forward to his contributions to the project!
 

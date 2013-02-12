@@ -11,16 +11,16 @@ the localization file for Czech in admin.
 
 
 The second bug had to do with routing failures in which certain routes wouldn't behave as expected if the same path was
-defined twice with two different verbs (GET ‘/index’ and POST ‘/index’) as well as errors with the handling of provides
+defined twice with two different verbs (GET '/index' and POST '/index') as well as errors with the handling of provides
 and explicit formats. An updated `http_router` and changes to routing in Padrino has addressed these issues in 0.9.13.
 
 
-Finally, we have deprecated the mounting syntax related to ‘core’ applications. Prior to 0.9.13, the following code was
+Finally, we have deprecated the mounting syntax related to 'core' applications. Prior to 0.9.13, the following code was
 generated in a new project:
 
 
 ```ruby
-Padrino.mount_core(“BlogDemo”)
+Padrino.mount_core("BlogDemo")
 ```
 
 
@@ -29,12 +29,12 @@ deprecated and the following is used instead:
 
 
 ```ruby
-Padrino.mount(“BlogDemo”).to(“/”)
+Padrino.mount("BlogDemo").to("/")
 ```
 
 
 This is a minor change but important as this command is much more consistent and adheres to our philosophy of minimizing
-‘magical’ behavior in our framework.
+'magical' behavior in our framework.
 
 
 The quick version of these fixes is recapped below:

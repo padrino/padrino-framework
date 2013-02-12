@@ -45,7 +45,7 @@ This will generate the project to use those templates by default and properly in
 
 ## Namespaced Mounter Support
 
-Padrino’s project mounter now supports namespaced applications properly as follows:
+Padrino's project mounter now supports namespaced applications properly as follows:
 
 
 ```ruby
@@ -53,7 +53,7 @@ module ::SomeNamespace
 class AnApp < Padrino::Application; end
 end
 
-Padrino.mount(“some_namespace/an_app”).to(“/”)
+Padrino.mount("some_namespace/an_app").to("/")
 ```
 
 

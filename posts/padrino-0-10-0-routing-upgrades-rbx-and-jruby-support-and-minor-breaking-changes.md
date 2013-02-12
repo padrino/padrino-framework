@@ -8,8 +8,8 @@ title: Padrino 0.10.0 - Routing Upgrades, Rbx and JRuby Support, and Minor Break
 ## Rendering Module Changes
 
 In this release, we have introduced a breaking change to the way Padrino loads the `Padrino::Rendering` module. Working
-with [botanicus](https://github.com/botanicus) recently on [an
-issue](https://github.com/padrino/padrino-framework/issues/541), we uncovered a problem with the auto-loading of our
+with [botanicus](https://github.com/botanicus) recently on
+[an issue](https://github.com/padrino/padrino-framework/issues/541), we uncovered a problem with the auto-loading of our
 enhanced rendering module.
 
 
@@ -32,7 +32,7 @@ end
 ```
 
 on every application within a project. For those that are curious, the `Padrino::Rendering` module is the functionality
-that enhances “render” to auto-locate templates and adds support for I18n amongst a variety of other conveniences that
+that enhances "render" to auto-locate templates and adds support for I18n amongst a variety of other conveniences that
 makes template rendering much more powerful and convenient. If you are using `render "index"` in your code then you are
 using this module. Commit
 [here](https://github.com/padrino/padrino-framework/commit/981f481eee02d16ed206eedf801f831627a2ec37).
@@ -41,9 +41,9 @@ using this module. Commit
 ## Rubinius and JRuby Compatibility
 
 This release also marks full support for [Rubinius](http://rubini.us) and [JRuby](http://www.jruby.org), two of the
-upcoming stable ruby implementations gaining attention. As of [this
-tweet](http://twitter.com/#!/DAddYE/status/77857253406932992), we are now 100% compatible with Rubinius and have tested
-full support for JRuby. Uchio Kondo, the offical Japanese documentation maintainer for Padrino has also created an
+upcoming stable ruby implementations gaining attention. As of
+[this tweet](http://twitter.com/#!/DAddYE/status/77857253406932992), we are now 100% compatible with Rubinius and have
+tested full support for JRuby. Uchio Kondo, the offical Japanese documentation maintainer for Padrino has also created an
 excellent guide for [Running Padrino on JRuby](http://www.padrinorb.com/guides/running-padrino-on-jruby) which gets you
 started. Commits [here](https://github.com/padrino/padrino-framework/commit/ecf3968f216cbfb97008b487e34742c5b6f2f4ab),
 [here](https://github.com/padrino/padrino-framework/commit/4838791fe7a685179630ad4175a099a800f8626c), and
@@ -97,7 +97,7 @@ this:
 ```ruby
 # app/controllers/example_controller.rb
 DemoApp.controller :example do
-  before “/example/**" do
+  before "/example/**" do
   # Code here to be executed
 end
 
@@ -121,7 +121,7 @@ DemoApp.controller :example do
 end
 
 # Based on a symbol, regexp and string all in one
-before :index, /main/, ‘/example’ do
+before :index, /main/, '/example' do
   # Code here to be executed
 end
 
@@ -148,7 +148,7 @@ convenient way. Great to have this feature available as part of our routing enha
 This release has also added support for respecting route order in controllers and also allows the developer to specify
 certain routes as less or more "important" then others in the route recognition order. Consider two controllers, the
 first with a "catch-all" route that matches any URL and the second below in another controller that is very specific.
-This wouldn’t work by default because the second endpoint would be eclipsed by the catch-all route and as such would not
+This wouldn't work by default because the second endpoint would be eclipsed by the catch-all route and as such would not
 be accessible. To solve this, you can do the following:
 
 
@@ -156,7 +156,7 @@ be accessible. To solve this, you can do the following:
 # app/controllers/pages.rb
 MyApp.controller :pages do
   # NOTE that this route is now marked as low priority
-  get :show, :map => :map => ‘/*page’, :priority => :low do
+  get :show, :map => :map => '/*page', :priority => :low do
     "Catchall route"
   end
 end
@@ -185,11 +185,11 @@ again to be more robust in this release:
 
 
 - Better support for constant reloading
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/e6ee8d34da21291b5d136de29272b10f78bc883b](https://github.com/padrino/padrino-framework/commit/e6ee8d34da21291b5d136de29272b10f78bc883b)]
+  ["commit"](https://github.com/padrino/padrino-framework/commit/e6ee8d34da21291b5d136de29272b10f78bc883b)
 - Fix Padrino::Reloader reloading also `$LOADED_FEATURES` deps
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/fd1c439d99c574e788bbfcee8b5fb2b81af65928](https://github.com/padrino/padrino-framework/commit/fd1c439d99c574e788bbfcee8b5fb2b81af65928)]
+  ["commit"](https://github.com/padrino/padrino-framework/commit/fd1c439d99c574e788bbfcee8b5fb2b81af65928)
 - Remove incomplete constants when require fails (Thanks bernerdschaefer)
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/a2720b773d6c0dc957f906d4ec70e8b253c47644](https://github.com/padrino/padrino-framework/commit/a2720b773d6c0dc957f906d4ec70e8b253c47644)]
+  ["commit"](https://github.com/padrino/padrino-framework/commit/a2720b773d6c0dc957f906d4ec70e8b253c47644)
 
 
 There is also a new way to add files to the reloader manually using the `prerequisites` method:
@@ -197,7 +197,7 @@ There is also a new way to add files to the reloader manually using the `prerequ
 
 ```ruby
 # app/app.rb
-MyApp.prerequisites << Padrino.root(‘my_app’, ‘custom_model.rb’)
+MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
 ```
 
 
@@ -208,27 +208,27 @@ This will autoload those files and watch them for changes. Commit
 ## Other changes and fixes
 
 - Adds support for the Ripple ORM (Thanks pepe)
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/916f9502cfe0b2644fe7dac7516b2b36caf004d4](https://github.com/padrino/padrino-framework/commit/916f9502cfe0b2644fe7dac7516b2b36caf004d4)]
+  ["commit"](https://github.com/padrino/padrino-framework/commit/916f9502cfe0b2644fe7dac7516b2b36caf004d4)
 - Hungarian translations added (Thanks Kormány Zsolt)
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/e59c2e9899ec2aa55b59c4fa37d4eb20d4a3604d](https://github.com/padrino/padrino-framework/commit/e59c2e9899ec2aa55b59c4fa37d4eb20d4a3604d)]
+  ["commit"](https://github.com/padrino/padrino-framework/commit/e59c2e9899ec2aa55b59c4fa37d4eb20d4a3604d)
 - Controller now supports conditions at multiple levels (Thanks
-  ”bernerdschaefer“:[https://github.com/bernerdschaefer](https://github.com/bernerdschaefer))
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/6e30adf7788071bb1945f91aca034a9e5b3dc950](https://github.com/padrino/padrino-framework/commit/6e30adf7788071bb1945f91aca034a9e5b3dc950)]
+  "bernerdschaefer":[https://github.com/bernerdschaefer](https://github.com/bernerdschaefer))
+  ["commit":[https://github.com/padrino/padrino-framework/commit/6e30adf7788071bb1945f91aca034a9e5b3dc950](https://github.com/padrino/padrino-framework/commit/6e30adf7788071bb1945f91aca034a9e5b3dc950)]
 - Gemspecs and config.ru are now executable (Thanks botanicus):
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/ceb3d879db8819a030119f5b194056652d89b86a](https://github.com/padrino/padrino-framework/commit/ceb3d879db8819a030119f5b194056652d89b86a),
-  ”commit“:[https://github.com/padrino/padrino-framework/commit/07afbd745a8f58740b713b384fc859eed934f434](https://github.com/padrino/padrino-framework/commit/07afbd745a8f58740b713b384fc859eed934f434)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/ceb3d879db8819a030119f5b194056652d89b86a](https://github.com/padrino/padrino-framework/commit/ceb3d879db8819a030119f5b194056652d89b86a),
+  "commit":[https://github.com/padrino/padrino-framework/commit/07afbd745a8f58740b713b384fc859eed934f434](https://github.com/padrino/padrino-framework/commit/07afbd745a8f58740b713b384fc859eed934f434)]
 - Add support for `padrino s` for starting the padrino server
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/29d08e8550abffab586344e7557a4393fe4187ec](https://github.com/padrino/padrino-framework/commit/29d08e8550abffab586344e7557a4393fe4187ec)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/29d08e8550abffab586344e7557a4393fe4187ec](https://github.com/padrino/padrino-framework/commit/29d08e8550abffab586344e7557a4393fe4187ec)]
 - Fix field generation for DataMapper
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/b1c949a47266a5482cf1f06a214f4b26d32c28aa](https://github.com/padrino/padrino-framework/commit/b1c949a47266a5482cf1f06a214f4b26d32c28aa)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/b1c949a47266a5482cf1f06a214f4b26d32c28aa](https://github.com/padrino/padrino-framework/commit/b1c949a47266a5482cf1f06a214f4b26d32c28aa)]
 - Fixes issue with DM length for strings
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/1b79dca7ca51221c79020eff0942dc2c5a3d2077](https://github.com/padrino/padrino-framework/commit/1b79dca7ca51221c79020eff0942dc2c5a3d2077)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/1b79dca7ca51221c79020eff0942dc2c5a3d2077](https://github.com/padrino/padrino-framework/commit/1b79dca7ca51221c79020eff0942dc2c5a3d2077)]
 - Fixes double loading for boot.rb in rake tasks
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/0ff251405458500820c3a3e85720a88ea140265e](https://github.com/padrino/padrino-framework/commit/0ff251405458500820c3a3e85720a88ea140265e)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/0ff251405458500820c3a3e85720a88ea140265e](https://github.com/padrino/padrino-framework/commit/0ff251405458500820c3a3e85720a88ea140265e)]
 - Cleanup padrino-core dependencies in `support_lite`
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/dda2b77ca37b34cb7c1f5cbcc80d13d03fb81b3f](https://github.com/padrino/padrino-framework/commit/dda2b77ca37b34cb7c1f5cbcc80d13d03fb81b3f)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/dda2b77ca37b34cb7c1f5cbcc80d13d03fb81b3f](https://github.com/padrino/padrino-framework/commit/dda2b77ca37b34cb7c1f5cbcc80d13d03fb81b3f)]
 - Bundler is now auto-loaded in our binaries
-  [”commit“:[https://github.com/padrino/padrino-framework/commit/a8ef567a6d74d8df0c0e2da3fa5dccee58830e31](https://github.com/padrino/padrino-framework/commit/a8ef567a6d74d8df0c0e2da3fa5dccee58830e31)]
+  ["commit":[https://github.com/padrino/padrino-framework/commit/a8ef567a6d74d8df0c0e2da3fa5dccee58830e31](https://github.com/padrino/padrino-framework/commit/a8ef567a6d74d8df0c0e2da3fa5dccee58830e31)]
 - Adds access to `current_controller` as part of the public API
   [[commit](https://github.com/padrino/padrino-framework/commit/8f678af970c4d1fb1520da12786a968e02680e97])
 - Changes DM instructions to recommend `rake dm:auto:upgrade`
