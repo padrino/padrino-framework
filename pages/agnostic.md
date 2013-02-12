@@ -11,13 +11,14 @@ available libraries.
 The available components and their defaults are listed below:
 
 
-| Component | Default | Options |
-| orm       | none    | mongomapper, mongoid, activerecord, datamapper, sequel, couchrest |
-| script    | none    | prototype, rightjs, jquery, mootools, extcore |
-| renderer  | haml    | erb, haml |
-| test      | rspec   | bacon, shoulda, cucumber, testspec, riot, rspec |
-| stylesheet | none | less, sass |
-| mock      | none | rr, mocha |
+| Component      |  Default  | Options
+|----------------|-----------|------------------------------------------------------------------------------------|
+| orm            | none      | mongomapper, mongoid, activerecord, datamapper, sequel, couchrest                  |
+| script         | none      | prototype, rightjs, jquery, mootools, extcore                                      |
+| renderer       | haml      | erb, haml                                                                          |
+| test           | rspec     | bacon, shoulda, cucumber, testspec, riot, rspec                                    |
+| stylesheet     | none      | less, sass                                                                         |
+| mock           | none      | rr, mocha                                                                          |
 
 
 Just create the project with the usual generator command and pass in your preferred components!
