@@ -38,7 +38,7 @@ Bugs and feature requests that include patches are much more likely to get atten
 help ensure your patch can be applied as quickly as possible:
 
 
-- Use [[Git](http://git-scm.com/]) and [[GitHub](http://github.com/]): The easiest way to get setup is to fork the
+- Use [Git](http://git-scm.com/) and [GitHub](http://github.com/): The easiest way to get setup is to fork the
   [padrino repo](http://github.com/padrino/padrino-framework). Or, post a comment, if the patch is doc related.
 - Write unit tests: If you add or modify functionality, it must include unit tests. If you don't write tests, we have
   to, and this can hold up acceptance of the patch.
@@ -57,9 +57,8 @@ considerably.
 
 
 The process for contributing to Padrino's website or documentation is as simple as emailing us for access to modifying
-the pages and guides within our site. Simply email
-[[[padrinorb@gmail.com](mailto:padrinorb@gmail.com)](mailto:padrinorb@gmail.com]) if you would like to be able to
-contribute to improving our documentation.
+the pages and guides within our site. Simply email [padrinorb@gmail.com](mailto:padrinorb@gmail.com) if you would like
+to be able to contribute to improving our documentation.
 
 
 ## Looking for something to do?
