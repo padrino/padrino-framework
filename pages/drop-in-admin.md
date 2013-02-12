@@ -7,11 +7,13 @@ label: Home Feature
 Padrino ships with an Admin Interface that includes the following features:
 
 
-| Orm Agnostic | Adapters for datamapper, activerecord, sequel, mongomapper, mongoid |
-| Authentication | Account authentication support and permission management |
-| Template Agnostic | View support for Erb and Haml rendering engines |
-| Scaffold | Create a model “admin interface” by invoking a command |
-| MultiLanguage | Translated into 10 languages including English, Spanish, and Italian |
+| *Adapter*          | *Description*                                                                                 |
+|--------------------|-----------------------------------------------------------------------------------------------|
+| Orm Agnostic       | Adapters for datamapper, activerecord, sequel, mongomapper, mongoid                           |
+| Authentication     | Account authentication support and permission management                                      |
+| Template Agnostic  | View support for Erb and Haml rendering engines                                               |
+| Scaffold           | Create a model “admin interface” by invoking a command                                        |
+| Multilanguage      | Translated into 10 languages including English, Spanish, and Italian                          |
 
 
 Example:
