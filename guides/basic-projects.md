@@ -7,7 +7,7 @@ Be sure to read the ] instructions first. You might also want to check out the ]
 understanding of Padrino core features similarities with Sinatra.
 
 
-Generating a Project
+## Generating a Project
 
 To generate a new Padrino project using its defaults and no database adapter, simply invoke the following command:
 
@@ -25,7 +25,7 @@ and JavaScript components.
 This will generate a new padrino custom_project using rspec, activerecord, haml and prototype
 
 
-For a breakdown of all the available components options please refer to the [TBD](TBD) page.
+For a breakdown of all the available components options please refer to the [Generators](TBD) page.
 
 
 ### Persistence Engine
@@ -38,20 +38,20 @@ To add support for a persistence engine, specify a supported ORM (object-relatio
 flagging the `padrino g` command with the *-d* option followed by the name of your ORM (object-relational mapping):
 
 
-    $ padrino g project your_project~~d activerecord # Uses ActiveRecord
-    $ padrino g project your_project ~~d datamapper # Uses Datamapper
-    $ padrino g project your_project~~d mongomapper # Uses MongoMapper
-    $ padrino g project your_project ~~d sequel # Uses Sequel
-    $ padrino g project your_project~~d couchdb # Uses CouchDB
+    $ padrino g project your_project -d activerecord # Uses ActiveRecord
+    $ padrino g project your_project -d datamapper   # Uses Datamapper
+    $ padrino g project your_project -d mongomapper  # Uses MongoMapper
+    $ padrino g project your_project -d sequel       # Uses Sequel
+    $ padrino g project your_project -d couchdb      # Uses CouchDB
 
 
 For the SQL-based persistence engines, you can even specify the RDBMS adapter to use with the *-a* option followed by
 the name of the adapter:
 
 
-    $ padrino g project your_project ~~d datamapper~~a mysql # Uses Datamapper and MySQL
-    $ padrino g project your_project ~~d activerecord~~a postgres # Uses ActiveRecord and Postgres
-    $ padrino g project your_project ~~d sequel~~a sqlite # Uses Sequel and Sqlite3
+    $ padrino g project your_project -d datamapper -a mysql      # Uses Datamapper and MySQL
+    $ padrino g project your_project -d activerecord -a postgres # Uses ActiveRecord and Postgres
+    $ padrino g project your_project -d sequel -a sqlite         # Uses Sequel and Sqlite3
 
 
 The adapters currently supported are *sqlite*, *mysql*, and *postgres* for use with *datamapper*, *activerecord*, or
@@ -73,7 +73,7 @@ You can then add, if needed, sub-applications to your existing Padrino [project 
     my_project $ padrino g app gallery
 
 
-You can also generate your own controllers, mailers, models, etc… for your "gallery" app as well.
+You can also generate your own controllers, mailers, models, etc... for your "gallery" app as well.
 
 
     my_project $ padrino g controller get:index —app gallery

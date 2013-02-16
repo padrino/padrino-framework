@@ -198,11 +198,11 @@ In order to manage dependencies for a project, Padrino relies on another RubyGem
 source :rubygems
 
 # Project requirements
-gem ‘rake'
-gem ‘rack-flash'
+gem 'rake'
+gem 'rack-flash'
 # Component requirements
 # ...more gems...
-gem ‘padrino', ‘0.10.2'
+gem 'padrino', '0.10.2'
 ```
 
 

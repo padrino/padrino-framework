@@ -13,7 +13,7 @@ made it great.
 
 Here is a list of major functionality Padrino provides on top of Sinatra:
 
-
+|-------------------|------------------------------------------------------------------------------------------|
 |**Agnostic**       | Full support for many popular testing, templating, mocking, and database libraries.      |
 |**Generators**     | Create Padrino applications, models, controllers i.e: `padrino g project`.               |
 |**Mountable**      | Unlike other ruby frameworks, principally designed for mounting multiple apps.           |

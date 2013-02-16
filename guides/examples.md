@@ -11,10 +11,8 @@ examples of existing applications. Soon, we hope to compile a list of developed 
 
 Below is the current list of known open-source Padrino applications.
 
-    |*. Name |*. Description |*. In Production |*. Author |
-    | [test-app](http://github.com/padrino/test-app) | Sample padrino blog |
-    No |
-    Padrino Team |
+    |*. Name           |*. Description |*. In Production |*. Author |
+    | [test-app](http://github.com/padrino/test-app) | Sample padrino blog | No | Padrino Team |
 
 
 ## Closed-source Applications
