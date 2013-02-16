@@ -18,7 +18,6 @@ Padrino stores application mounting information by default within `config/apps.r
 information regarding what applications are mounted to which uri's. An `apps.rb` file has the following structure:
 
 
-
 ```ruby
 Padrino.mount("blog").to("/blog")
 Padrino.mount("website").to("/website")

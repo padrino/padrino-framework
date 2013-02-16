@@ -6,8 +6,6 @@
 Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
 
 
-|                 |                                                                                               |
-|-----------------|-----------------------------------------------------------------------------------------------|
 |Orm Agnostic     | Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest                |
 |Authentication   | User Authentication Support, User Authorization Management                                    |
 |Template Agnostic| Erb and Haml Rendering Support                                                                |
