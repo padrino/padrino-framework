@@ -6,13 +6,13 @@
 Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
 
 
-    ------------------- --------------------------------------------------------------------------------
-    Orm Agnostic        Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest
-    Authentication      User Authentication Support, User Authorization Management
-    Template Agnostic   Erb and Haml Rendering Support
-    Scaffold            You can create a new "admin interface" by providing a single Model
-    MultiLanguage       English, German, Russian, Danish, French, Brazilian and Italian localizations
-    ------------------- --------------------------------------------------------------------------------
+|                 |                                                                                               |
+|-----------------|-----------------------------------------------------------------------------------------------|
+|Orm Agnostic     | Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest                |
+|Authentication   | User Authentication Support, User Authorization Management                                    |
+|Template Agnostic| Erb and Haml Rendering Support                                                                |
+|Scaffold         | You can create a new "admin interface" by providing a single Model                            |
+|MultiLanguage    | English, German, Russian, Danish, French, Brazilian and Italian localizations                 |
 
 
 ## Admin Usage
@@ -86,7 +86,7 @@ end
 In the above example we are protecting those paths starting with `/customer/orders` and `/cart/checkout`. The result
 will be that an unauthenticated user will not be able to access those actions, and he will be asked to authenticate
 first by visiting our `:login_page # => "/login"` and by providing his login credentials (default authentication
-behaviour is email and password).
+behavior is email and password).
 
 
 When successfully logged in, he will be granted access to those two pages.
@@ -138,7 +138,7 @@ If we are logged in as an *editor* (account.role  'editor') we will have access 
 
 ## Contributing Persistence Adapters
 
-If you are planning to use padrino with other adapters rather than the currently supported ones, and you want to
+If you are planning to use Padrino with other adapters rather than the currently supported ones, and you want to
 contribute to the project by extending its support with additional adapters like ohm, cassandra and so on, be sure to
-check out the (Adding New Components|adding new components)[TBD] guide.
+check out the [Adding New Components|adding new components](TBD) guide.
 
