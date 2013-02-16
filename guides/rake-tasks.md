@@ -105,23 +105,17 @@ rake ar:create:all # Create all the local databases defined in config/database.y
 rake ar:drop # Drops the database for the current Padrino.env
 rake ar:drop:all # Drops all the local databases defined in config/database.yml
 rake ar:forward # Pushes the schema to the next version.
-rake ar:migrate # Migrate the database through scripts in db/migrate
-and update db/schema.rb by invoking ar:schema:dump. Target specific
-version with VERSION=x. Turn off output with VERBOSE=false.
+rake ar:migrate # Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false.
 rake ar:migrate:down # Runs the "down" for a given migration VERSION.
-rake ar:migrate:redo # Rollbacks the database one migration and re
-migrate up.
-rake ar:migrate:reset # Resets your database using your migrations for
-the current environment
+rake ar:migrate:redo # Rollbacks the database one migration and re migrate up.
+rake ar:migrate:reset # Resets your database using your migrations for the current environment
 rake ar:migrate:up # Runs the "up" for a given migration VERSION.
-rake ar:reset # Drops and recreates the database from db/schema.rb for
-the current environment and loads the seeds.
+rake ar:reset # Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.
 rake ar:rollback # Rolls the schema back to the previous version.
 rake ar:schema:dump # Create a db/schema.rb file that can be portably
 used against any DB supported by AR
 rake ar:schema:load # Load a schema.rb file into the database
-rake ar:setup # Create the database, load the schema, and initialize
-with the seed data
+rake ar:setup # Create the database, load the schema, and initialize with the seed data
 rake ar:structure:dump # Dump the database structure to a SQL file
 rake ar:translate # Generates .yml files for I18n translations
 rake ar:version # Retrieves the current schema version number
@@ -206,7 +200,7 @@ if account.valid?
   shell.say " password: #"
   shell.say ""
   shell.say "That's all![]("
-  else
+else
   shell.say "Sorry but some thing went wrong)"
   shell.say ""
   account.errors.full_messages.each { |m| shell.say "- #{m}" }

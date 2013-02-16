@@ -43,9 +43,10 @@ Delivering an email within your controller is simple:
 ```ruby
 # app/controllers/session.rb
 post :create do
-    email(:from => "tony`reyes.com", :to
-    =>"[john@smith.com](mailto:john@smith.com)", :subject
-    =>"Welcome![](", :body=>"Body")
+  email(:from => "tony`reyes.com",
+    :to =>"[john@smith.com](mailto:john@smith.com)",
+    :subject =>"Welcome![](",
+    :body=>"Body")
 end
 ```
 
@@ -138,7 +139,7 @@ The mailer supports multipart emails quite easily:
 mailer :sample do
   email :email_with_parts do
     from '[admin@site.com](mailto:admin@site.com)'
-    # …
+    # ...
     text_part { render('path/to/basic.text') }
     html_part render('path/to/basic.html') # shorter part syntax
   end
@@ -153,7 +154,7 @@ You can even specify multiple part types using the `provides` declaration:
 mailer :sample do
   email :email_with_parts do
     from '[admin@site.com](mailto:admin@site.com)'
-    # …
+    # ...
     # renders path/to/basic.html.erb and path/to/basic.plain.erb
     provides :plain, :html
     render 'path/to/basic'
@@ -175,7 +176,7 @@ Using the mailer attaching files to a message is easy:
 mailer :sample do
   email :email_with_files do
     from '[admin@site.com](mailto:admin@site.com)'
-    # …
+    # ...
     body "Here are your files!"
     add_file :filename => 'somefile.png', :content =>
     File.open('/full/path/to/somefile.png', 'rb') { |f| f.read }
@@ -225,7 +226,7 @@ To render a short body inline:
 # app/mailers/sample_mailer.rb
 mailer :sample do
   email :short_email do |name, user|
-    # …
+    # ...
     body "This is a short body defined right in the mailer itself"
   end
 end
@@ -239,7 +240,7 @@ To render a different template:
 # app/mailers/sample_mailer.rb
 mailer :sample do
   email :custom_email do |name, user|
-    # …
+    # ...
     render('path/to/template') # relative to views_path/mailers
   end
 end
