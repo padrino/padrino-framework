@@ -5,8 +5,8 @@ title: Running Padrino on JRuby
 
 You can run Padrino on JRuby 1.6.2.
 
-## Install on JRuby
 
+## Install on JRuby
 
 You can easily install Padrino on JRuby when you use [rvm](https://rvm.beginrescueend.com/):
 
@@ -26,7 +26,7 @@ Create Padrino project just as you do when using MRI or REE:
 
 ```ruby
 # JRuby deployment requirements
-# please add these lines…
+# please add these lines...
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'warbler'
@@ -82,6 +82,7 @@ Now you should have installed `warbler` gem, so you can:
 
     $ warble config
 
+
 Edit `config/warble.rb` if you want to apply some customizations. You can access
 [JRuby-Rack official README](https://github.com/nicksieger/jruby-rack/#readme) and
 [Warbler rdoc](http://caldersphere.rubyforge.org/warbler/).
@@ -133,7 +134,7 @@ gem 'activerecord', :require => "active_record"
 gem 'mysql'
 
 # JRuby deployment requirements
-# please add these lines…
+# please add these lines...
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'warbler'
@@ -161,7 +162,7 @@ gem 'activerecord', :require => "active_record"
 # gem 'mysql'
 
 # JRuby deployment requirements
-# please add these lines…
+# please add these lines...
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'warbler'
@@ -189,24 +190,24 @@ You should see something like this:
 
 ```ruby
 => Executing Rake ar:drop ar:create ar:migrate -trace.
-*** Invoke ar:drop
-*** Invoke environment (first_time)
-*** Execute environment
-*** Execute ar:drop
-*** Invoke ar:create
-*** Invoke environment
-*** Execute ar:create
-*** Invoke ar:migrate (first_time)
-*** Invoke environment
-*** Execute ar:migrate
-  CreatePosts: migrating =
+** Invoke ar:drop
+** Invoke environment (first_time)
+** Execute environment
+** Execute ar:drop
+** Invoke ar:create
+** Invoke environment
+** Execute ar:create
+** Invoke ar:migrate (first_time)
+** Invoke environment
+** Execute ar:migrate
+  CreatePosts: migrating =================================================
 -- create_table(:posts, {:id=>true, :force=>true, :options=>"ENGINE=MyISAM"})
    -> 0.0910s
    -> 0 rows
- CreatePosts: migrated (0.0920s)
+ CreatePosts: migrated (0.0920s) =========================================
 
-*** Invoke ar:schema:dump
-*** Invoke environment
+** Invoke ar:schema:dump
+** Invoke environment
 ** Execute ar:schema:dump
 ```
 
