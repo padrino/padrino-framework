@@ -61,8 +61,8 @@ end
 These routes can then be referenced anywhere in the application:
 
 
-```ruby
-# app/views/example.haml
+```erb
+# app/views/example.erb
 <%= link_to "Index", url_for(:index) %>
 <%= link_to "Account", url_for(:account, :id => 1) %>
 ```
@@ -94,7 +94,7 @@ Routes defined inline this way can be accessed and treated the same way as tradi
 
 
 ```erb
-# app/views/example.haml
+# app/views/example.erb
 <%= link_to "Index Page", url_for(:index)%>
 <%= link_to "Account Page", url_for(:account, :id => 1) %>
 ```
@@ -125,7 +125,7 @@ You can then reference these routes using the same `url_for` method:
 
 
 ```erb
-# app/views/admin.haml
+# app/views/admin.erb
 <%= link_to 'admin show page', url_for(:admin, :index) %>
 <%= link_to 'admin index page', url_for(:admin, :show, :id => 25) %>
 ```
@@ -177,7 +177,7 @@ end
 You can then reference the URLs using the same `url_for` method:
 
 
-```ern
+```erb
 <%= link_to 'admin show page', url_for(:admin_show, :id => 25) %>
 <%= link_to 'admin other page', url_for(:admin_other, :id => 25, :name => :foo) %>
 ```
@@ -211,10 +211,8 @@ If need be the parent resource can also be specified on inline routes in additio
 # app/controllers/example.rb
 SimpleApp.controllers :product, :parent => :user do
   get :index, :parent => :project do
-    # url is generated as
-    "/user/#{params[:user_id]}/project/#{params[:project_id]}/product"
-    # url_for(:product, :index, :user_id => 5, :project_id => 8) =>
-    "/user/5/project/8/product"
+    # url is generated as "/user/#{params[:user_id]}/project/#{params[:project_id]}/product"
+    # url_for(:product, :index, :user_id => 5, :project_id => 8) => "/user/5/project/8/product"
   end
 end
 ```
@@ -290,10 +288,10 @@ SimpleApp.controllers :admin do
   get :other, :with => [:id, :name], :provides => [:html, :json] do
     case content_type
       when :js then
-        …
+        ...
         end
       when :json then
-        …
+        ...
       end
     end
   end
@@ -319,7 +317,7 @@ response. Instance variables set in filters are accessible by routes and templat
 
 ```ruby
 before do
-  `note = 'Hi!'
+  @note = 'Hi!'
 end
 
 ```
@@ -331,7 +329,7 @@ response. Instance variables set in before filters and routes are accessible by 
 
 ```ruby
 after do
-  puts `note
+  puts @note
 end
 ```
 
@@ -342,13 +340,13 @@ unlike Sinatra in which a filter is global, in Padrino you can run different fil
 
 ```ruby
 SimpleApp.controllers :posts do
-  before { `foo = "bar" }
-  get("/posts") { render :haml, "Has access to `foo variable" }
+  before { @foo = "bar" }
+  get("/posts") { render :haml, "Has access to @foo variable" }
 end
 
 SimpleApp.controllers :accounts do
-  before { `bar = "foo" }
-  get("/accounts") { render :haml, "Has access to `bar variable" }
+  before { @bar = "foo" }
+  get("/accounts") { render :haml, "Has access to @bar variable" }
 end
 ```
 
@@ -376,7 +374,7 @@ DemoApp.controller :example do
   end
 
   get :index do
-    # …
+    # ...
   end
 end
 ```
