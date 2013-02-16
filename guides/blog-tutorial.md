@@ -72,8 +72,7 @@ For this sample application, we will use the ActiveRecord ORM, the Haml templati
 framework and the jQuery JavaScript library. With that in mind, let us generate our new project:
 
 
-    $ padrino g project sample_blog -t shoulda -e haml \
-      -c sass -s jquery -d activerecord -b
+    $ padrino g project sample_blog -t shoulda -e haml -c sass -s jquery -d activerecord -b
 
 
 This command will generate our basic Padrino project and the print out a nice report of the files generated.  The output
@@ -120,7 +119,7 @@ into the `app/app.rb` file and enter the following routes:
 ```ruby
 # app/app.rb
 class SampleBlog < Padrino::Application
-  # Add these routes below to the app file…
+  # Add these routes below to the app file...
   get "/" do
     "Hello World![]("
   end
@@ -220,7 +219,7 @@ posts and even add the ability to create new posts!
 
 
 Let's start off by generating the model into our app directory. As of version **0.10.0**, the models will default to
-generating at the top level 'models' directory in a project.  We can specify the location by appending the ~~a option
+generating at the top level 'models' directory in a project. We can specify the location by appending the `-a` option
 which will generate the models into the designated sub-app directory.
 
 
@@ -256,7 +255,7 @@ Go ahead and migrate the database now.
 
 
     sample_blog $ padrino rake ar:migrate
-    => Executing Rake ar:migrate …
+    => Executing Rake ar:migrate ...
       CreatePosts: migrating
     -- create_table("posts", {})
      CreatePosts: migrated (0.0016s) =
@@ -292,7 +291,7 @@ end
 ```
 
 
-This controller is defining routes that can be accessed via our application. The "http method" @get@ starts off the
+This controller is defining routes that can be accessed via our application. The "http method" `get` starts off the
 declaration followed by a symbol representing the "action". Inside a block we store an instance variable fetching the
 necessary objects and then render a view template. This should look familiar to those coming from Rails or Sinatra.
 
@@ -342,7 +341,7 @@ this command.
     inject  admin/app.rb
 
 
-Let's make sure the server is running (@padrino start@) and give this admin interface a try.
+Let's make sure the server is running (`padrino start`) and give this admin interface a try.
 
 
 Visit [http://localhost:3000/admin](http://localhost:3000/admin) and login using the credentials you had setup during
@@ -364,7 +363,7 @@ Now that you have added a few posts through the admin interface, check out
 "index" action!
 
 
-You can see all the routes that we now have defined using the @padrino rake routes@ command:
+You can see all the routes that we now have defined using the `padrino rake routes` command:
 
 
     $ padrino rake routes
@@ -410,7 +409,7 @@ class AddAccountToPost < ActiveRecord::Migration
 end
 ```
 
-Now, we'll return to the Post Model to setup the @account@ association and add a few validations.
+Now, we'll return to the Post Model to setup the `account` association and add a few validations.
 
 
 ```ruby
@@ -462,7 +461,6 @@ end
 We'll also update the post view to show the changes that we made and display the author:
 
 
-
 ```haml
 # app/views/posts/show.haml
 - @title = @post.title
@@ -492,7 +490,7 @@ tab. Now create a new Account record. Once you have a new account, try logging i
 the admin interface. There you have it, multiple users and posts!
 
 
-See the effects of our changes by visiting "http://localhost:3000/posts":http://localhost:3000/posts to see our newly
+See the effects of our changes by visiting [http://localhost:3000/posts](http://localhost:3000/posts) to see our newly
 created posts linked to the author that wrote them.
 
 
@@ -549,7 +547,7 @@ application. To create a layout, simply add a file to the `app/views/layouts` di
 ```
 
 
-This layout creates a basic structure for the blog and requires the necessary stylesheets and javascript files for
+This layout creates a basic structure for the blog and requires the necessary stylesheets and JavaScript files for
 controlling the behavior and presentation of our site. The layout also includes some dummy elements such as a fake
 search and stubs for list items left as an exercise for the reader.
 
@@ -594,7 +592,7 @@ end
 Note that this route also instructs the rendering engine to avoid rendering the layout when using RSS or atom formats.
 
 
-Back in the @index.haml@ file, we'll use the `auto_discovery_link_tag` helpers to generate the RSS feed using builder.
+Back in the `index.haml` file, we'll use the `auto_discovery_link_tag` helpers to generate the RSS feed using builder.
 
 
 ```haml
@@ -636,7 +634,7 @@ end
 ```
 
 
-and also the template for rss using builder:
+and also the template for RSS using builder:
 
 
 ```ruby
@@ -661,7 +659,7 @@ end
 ```
 
 Let's check out our changes. View the available feeds at [http://localhost:3000/posts](http://localhost:3000/posts).
-You now have rss and atom feeds available for your blog!
+You now have RSS and atom feeds available for your blog!
 
 
 ## Deploying our Application
@@ -716,7 +714,7 @@ Now you can run the following on your local machine to avoid the installation of
     sample-blog $ bundle install --without production
 
 
-It's also necessary to configure the @config/database.rb@ for production.
+It's also necessary to configure the `config/database.rb` for production.
 
 
 ```ruby
@@ -811,17 +809,17 @@ You'll see something like:
     (in /disk1/home/slugs/151491_a295681_03f1/mnt)
     => Located locked Gemfile for production
      CreateAccounts: migrating =
-    ~~- create_table
+    -- create_table
     ~~> 0.0185s
       CreateAccounts: migrated (0.0229s)
 
      CreatePosts: migrating
-    ~~- create_table
+    -- create_table
     ~~> 0.0178s
       CreatePosts: migrated (0.0218s) =
 
       AddAccountToPost: migrating =
-    ~~- change_table
+    -- change_table
     ~~> 0.0026s
       AddAccountToPost: migrated (0.0028s)
 
