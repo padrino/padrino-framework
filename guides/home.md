@@ -14,18 +14,18 @@ made it great.
 Here is a list of major functionality Padrino provides on top of Sinatra:
 
 
-|**Agnostic**       | Full support for many popular testing, templating, mocking, and database libraries.
-|**Generators**     | Create Padrino applications, models, controllers i.e: `padrino g project`.
-|**Mountable**      | Unlike other ruby frameworks, principally designed for mounting multiple apps.
-|**Routing**        | Full url named routes, named params, `respond_to` support, before/after filter support.
-|**Tag Helpers**    | View helpers such as: `tag`, `content_tag`, `input_tag`.
-|**Asset Helpers**  | View helpers such as: `link_to`, `image_tag`, `javascript_include_tag`.
-|**Form Helpers**   | Builder support such as: `form_tag`, `form_for`, `field_set_tag`, `text_field`.
-|**Text Helpers**   | Useful formatting like: `relative_time_ago`, `js_escape_html`, `sanitize_html`.
-|**Mailer**         | Fast and simple delivery support for sending emails (akin to ActionMailer).
-|**Admin**          | Builtin Admin interface (like Django).
-|**Logging**        | Provide a unified logger that can interact with your ORM or any library.
-|**Reloading**      | Automatically reloads server code during development.
+|**Agnostic**       | Full support for many popular testing, templating, mocking, and database libraries.      |
+|**Generators**     | Create Padrino applications, models, controllers i.e: `padrino g project`.               |
+|**Mountable**      | Unlike other ruby frameworks, principally designed for mounting multiple apps.           |
+|**Routing**        | Full url named routes, named params, `respond_to` support, before/after filter support.  |
+|**Tag Helpers**    | View helpers such as: `tag`, `content_tag`, `input_tag`.                                 |
+|**Asset Helpers**  | View helpers such as: `link_to`, `image_tag`, `javascript_include_tag`.                  |
+|**Form Helpers**   | Builder support such as: `form_tag`, `form_for`, `field_set_tag`, `text_field`.          |
+|**Text Helpers**   | Useful formatting like: `relative_time_ago`, `js_escape_html`, `sanitize_html`.          |
+|**Mailer**         | Fast and simple delivery support for sending emails (akin to ActionMailer).              |
+|**Admin**          | Builtin Admin interface (like Django).                                                   |
+|**Logging**        | Provide a unified logger that can interact with your ORM or any library.                 |
+|**Reloading**      | Automatically reloads server code during development.                                    |
 |**Localization**   | Full support of I18n.
 
 

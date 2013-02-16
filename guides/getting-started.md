@@ -6,6 +6,7 @@ title: Getting Started
 This is a guide intended for a developer that is just getting started with the Padrino web framework. This guide will
 give an overview the various other guides, resources and steps towards becoming a Sinatra + Padrino aficionado.
 
+
 You may want to skim through sections you already are familiar with. If you are already familiar with Padrino and just
 want to access reference materials, you may want to jump to [our api docs](http://www.padrinorb.com/api/index.html) or
 the [guides homepage](http://www.padrinorb.com/guides).
@@ -13,7 +14,7 @@ the [guides homepage](http://www.padrinorb.com/guides).
 
 If you have any questions be sure to contact us at: [padrinorb](http://twitter.com/#!/padrinorb), discuss things on
 [google groups](https://groups.google.com/forum/?hl=en#!forum/padrino), join us on IRC at "#padrinorb" on freenode or
-open an issue":https://github.com/padrino/padrino-framework/issues on GitHub.
+open an [issue](https://github.com/padrino/padrino-framework/issues) on GitHub.
 
 
 ## Getting to Know Ruby
@@ -115,9 +116,8 @@ There are several good Sinatra tutorials as well:
 
 
 Read through these tutorials to understand routes, helpers, and the request/response cycle that is exposed through
-Sinatra. The most comprehensive resource is probably the"Sinatra
-Book":[http://www.sinatrarb.com/book.html](http://www.sinatrarb.com/book.html) so make sure to skim through that and
-familiarize yourself with the concepts before continuing to Padrino.
+Sinatra. The most comprehensive resource is probably the [Sinatra Book](http://www.sinatrarb.com/book.html) so make sure
+to skim through that and familiarize yourself with the concepts before continuing to Padrino.
 
 
 ## Scalable Sinatra using Padrino
@@ -149,15 +149,15 @@ application. To make things simple, if you are new to the Ruby community and wan
 good default set of components, generate your project with this command:
 
 
-    $ padrino g project my_project -d datamapper -t riot\
-      -s jquery -e haml -m mocha
+    $ padrino g project my_project -d datamapper -t riot -s jquery -e haml -m mocha
 
 
 And then read up on these components:
 
+
 - [DataMapper](http://datamapper.org/docs/) - Great Object Relational Mapper for interacting with data
 - [Haml](http://haml-lang.com/docs.html) - Solid templating choice for views
-- [jQuery](http://jquery.com/) - Excellent JavaScript framework for frontend development
+- [jQuery](http://jquery.com/) - Excellent JavaScript framework for front end development
 - [Riot](https://github.com/thumblemonks/riot) - Popular unit testing framework for Ruby
 - [Mocha](http://mocha.rubyforge.org/) - Popular mocking and stubbing for tests
 
@@ -201,7 +201,7 @@ source :rubygems
 gem ‘rake'
 gem ‘rack-flash'
 # Component requirements
-# …more gems…
+# ...more gems...
 gem ‘padrino', ‘0.10.2'
 ```
 

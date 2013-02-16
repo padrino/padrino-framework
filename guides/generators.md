@@ -22,19 +22,20 @@ components you would like to use!
 The project generator has several available configuration options:
 
 
-    |*. Options |*. Default |*. Aliases |*. Description |
-    | bundle | false |~~b | execute bundler dependencies installation |
-    | root | . |~~r | the root destination path for the project |
-    | dev | false | none | use edge version from local git checkout |
-    | app | nil | ~~n | specify app name different from the project name |
-    | tiny | false |~~i | generate tiny project skeleton |
-    | adapter | sqlite | ~~a | specify orm db adapter |
+|**Options**   | **Default** | **Aliases** | **Description**                                             |
+|--------------|-------------|-------------|-------------------------------------------------------------|
+| bundle       | false       | -b          | execute bundler dependencies installation                   |
+| root         | .           | -r          | the root destination path for the project                   |
+| dev          | false       | none        | use edge version from local git checkout                    |
+| app          | nil         | -n          | specify app name different from the project name            |
+| tiny         | false       | -i          | generate tiny project skeleton                              |
+| adapter      | sqlite      | -a          | specify orm db adapter                                      |
 
 
 The usage for the project generator is quite simple:
 
 
-    $ padrino g project <the_app_name> </path/to/create/app>~~~~<component-name> <value>
+    $ padrino g project <the_app_name> </path/to/create/app> --<component-name> <value>
 
 
 The simplest possible command to generate a base application would be:
@@ -50,8 +51,7 @@ application there would be configuration and setup performed for the default com
 You can also define specific components to be used:
 
 
-    $ padrino g project demo_project -t rspec -e haml\
-      -m rr -s jquery -d datamapper -c sass
+    $ padrino g project demo_project -t rspec -e haml -m rr -s jquery -d datamapper -c sass
 
 
 You can also instruct the generator to skip a certain component to avoid using one at all:
@@ -63,14 +63,14 @@ You can also instruct the generator to skip a certain component to avoid using o
 You can also specify an alternate name for your core application using the `--app` option:
 
 
-    $ padrino g project demo_project -app alternate_app_name # alias -n
+    $ padrino g project demo_project --app alternate_app_name # alias -n
 
 
 The generator uses the `bundler` gem to resolve any application dependencies when the application is newly created. The
 necessary bundler command can be executed automatically through the generator with:
 
 
-    $ padrino g project demo_project -run_bundler # alias~~b
+    $ padrino g project demo_project --run_bundler # alias -b
 
 
 or this can be done manually through executing command `bundle install` in the terminal at the root of the generated
@@ -89,22 +89,15 @@ additional component types not originally included .
 
 The available components and their default options are listed below:
 
-    |*. Component |*. Default |*. Aliases |*. Options
-    |
-    | orm | none |~~d | mongoid, activerecord, datamapper, mongomapper,
-    couchrest, mongomatic, ohm, ripple
-    |
-    | test | none | ~~t | bacon, shoulda, cucumber, testspec, riot, rspec
-    |
-    | script | none |~~s | prototype, rightjs, jquery, mootools, extcore,
-    dojo
-    |
-    | renderer | haml | ~~e | erb, haml, slim, liquid
-    |
-    | stylesheet | none |~~c | sass, less, scss, compass
-    |
-    | mock | none | ~~m | rr, mocha
-    |
+
+|Component | Default | Aliases | Options                                                                      |
+|----------|---------|---------|------------------------------------------------------------------------------|
+|orm       | none    | -d      | mongoid, activerecord, datamapper, couchrest, mongomatic, ohm, ripple, sequel|
+|test      | none    | -t      | bacon, shoulda, cucumber, testspec, riot, rspec, minitest                    |
+|script    | none    | -s      | prototype, rightjs, jquery, mootools, extcore, dojo                          |
+|renderer  | haml    | -e      | erb, haml, slim, liquid                                                      |
+|stylesheet| none    | -c      | sass, less, scss, compass                                                    |
+|mock      | none    | -m      | rr, mocha                                                                    |
 
 
 Note: Be careful with your naming when using generators and do not have your project name, or any models or controllers
@@ -174,6 +167,7 @@ generator provides a simple DSL in addition with leveraging Thor to make generat
 
     $ padrino g project my_project -template path/to/my_template.rb
 
+
 This will generate a project based on the template file provided. You can also generate a project based on a remote url
 such as a [gist](http://gist.github.com/) for an additional level of convenience:
 
@@ -242,10 +236,12 @@ Keep in mind that the template file is pure Ruby and has full access to.
 
 ## Controller Generator
 
-|*. Options |*. Default |*. Aliases |*. Description |
-| app | nil |~~n | specify the application |
-| root | . | ~~r | specify the root destination |
-| destroy | false |~~d | removes all generated files |
+
+|**Options**   | **Default** | **Aliases** | **Description**                                             |
+|--------------|-------------|-------------|-------------------------------------------------------------|
+| app          | nil         | -n          | specify the application                                     |
+| root         | .           | -r          | specify the root destination                                |
+| destroy      | false       | -d          | removes all generated files                                 |
 
 
 Padrino provides generator support for quickly creating new controllers within your Padrino application. Note that the
@@ -257,6 +253,7 @@ Padrino application generator and that follow Padrino conventions.
 
 
 Using the controller generator is as simple as:
+
 
     $ padrino g controller Admin
 
@@ -281,7 +278,7 @@ default route will also be generated mapping to name of the controller and the r
     $ padrino g controller User get:index
 
 
-will create a url route for :index mapping to "/user/index"
+will create a URL route for :index mapping to "/user/index"
 
 
 You can destroy controllers that you created via the destroy option and setting it to true. Default is false.
@@ -295,11 +292,11 @@ This removes all created controller files.
 
 ## Model Generator
 
-    Options           Default   Aliases   Description
-    ----------------- --------- --------- -----------------------------------
-    root              .         -r        specify the root destination path
-    skip_migration   false     -s        skip migration generation
-    destroy           false     -d        removes all generated files
+|**Options**      | **Default** | **Aliases** | **Description**                                             |
+|-----------------|-------------|-------------|-------------------------------------------------------------|
+| root            | .           | -r          | specify the root destination                                |
+| skip_migration  | false       | -s          | skip migration generation                                   |
+| destroy         | false       | -d          | removes all generated files                                 |
 
 
 Padrino provides generator support for quickly creating new models within your Padrino application. Note that the models
@@ -347,9 +344,10 @@ This remove all created model files.
 
 ## Migration Generator
 
-    |*. Options |*. Default |*. Aliases |*. Description |
-    | root | . |~~r | specify the root destination path |
-    | destroy | false | ~~d | removes all generated files |
+|**Options**      | **Default** | **Aliases** | **Description**                                             |
+|-----------------|-------------|-------------|-------------------------------------------------------------|
+| root            | .           | -r          | specify the root destination path                           |
+| destroy         | false       | -d          | removes all generated files                                 |
 
 
 Padrino provides generator for quickly generating new migrations to change or manipulate the database schema. These
@@ -371,10 +369,8 @@ Using the migration generator is as simple as:
 You can also specify desired columns to be added to the migration file:
 
 
-    $ padrino g migration AddFieldsToUsers last_login:datetime \
-      crypted_password:string
-    $ padrino g migration RemoveFieldsFromUsers password:string \
-      ip_address:string
+    $ padrino g migration AddFieldsToUsers last_login:datetime crypted_password:string
+    $ padrino g migration RemoveFieldsFromUsers password:string ip_address:string
 
 
 The migration generator will then construct the migration file according to your ORM component chosen within
@@ -392,11 +388,11 @@ This removes the migration file.
 
 ## Mailer Generator
 
-    Options   Default   Aliases   Description
-    --------- --------- --------- -----------------------------------
-    app       nil       -n        specify the application
-    root      .         -r        specify the root destination path
-    destroy   false     -d        removes all generated files
+|**Options**      | **Default** | **Aliases** | **Description**                                             |
+|-----------------|-------------|-------------|-------------------------------------------------------------|
+| app             | nil         | -n          | specify the application                                     |
+| root            | .           | -r          | specify the root destination path                           |
+| destroy         | false       | -d          | removes all generated files                                 |
 
 
 Padrino provides generator support for quickly creating new mailers within your Padrino application. Very important to
@@ -436,11 +432,11 @@ This remove all created mailer files.
 
 ## Sub App Generator
 
-      Options   Default   Aliases   Description
-      --------- --------- --------- -----------------------------------
-      tiny      false     -i        generate tiny app skeleton
-      root      .         -r        specify the root destination path
-      destroy   false     -d        removes all generated files
+|**Options**      | **Default** | **Aliases** | **Description**                                             |
+|-----------------|-------------|-------------|-------------------------------------------------------------|
+| tiny            | false       | -i          | generate tiny app skeleton                                  |
+| root            | .           | -r          | specify the root destination path                           |
+| destroy         | false       | -d          | removes all generated files                                 |
 
 
 Unlike other Ruby frameworks Padrino is principally designed for mounting multiple apps at the same time.
@@ -506,12 +502,13 @@ To use the tiny skeleton generator for app run in your project:
 
 ## Admin Generator
 
-    |*. Options |*. Default |*. Aliases |*. Description |
-    | name | nil |~~a | allows you to specify the admin app's name |
-    | root | . | ~~r | specify the root destination path |
-    | theme | default | none | generate admin app with theme |
-    | skip_migration | false |~~s | skip migration generation |
-    | destroy | false | ~~d | removes all generated files |
+|**Options**      | **Default** | **Aliases** | **Description**                                             |
+|-----------------|-------------|-------------|-------------------------------------------------------------|
+| name            | nil         | -a          | allows you to specify the admin app's name                  |
+| root            | .           | -r          | specify the root destination path                           |
+| theme           | default     | none        | generate admin app with theme                               |
+| skip_migration  | false       | -s          | skip migration generation                                   |
+| destroy         | false       | -d          | removes all generated files                                 |
 
 
 Padrino also comes with a built-in admin dashboard. To generate the admin application in your project:
