@@ -18,14 +18,10 @@ If the extension is a gem put it in *Gemfile* otherwise create a file under your
 
 ## Extension List
 
-    |*. What |*. Description |_. Where |
-    | Exception Notifier | Sends an email when an exception is raised |
-    [gist](http://gist.github.com/308913#file_exception_notifier.rb) |
-    | Auto Locale | Sets for you I18n.locale parsing path_info |
-    [gist](http://gist.github.com/308919#file_auto_locale.rb) |
-    | Locale | Translates ActiveRecord attributes |
-    [gist](http://gist.github.com/308915#file_locale.rb) |
-    | Permalink | Generates ActiveRecord permalinks for your fields |
-    [gist](http://gist.github.com/308928#file_permalink.rb) |
-    | Flash | Helps setup cookie sessions with swfupload |
-    [gist](http://gist.github.com/313322#file_flashmiddleware.rb) |
+|**What**            | **Description**                                   | **Where** |
+|--------------------|---------------------------------------------------|-----------|------------------------------------------------------|
+| Exception Notifier | Sends an email when an exception is raised        | [gist](http://gist.github.com/308913#file_exception_notifier.rb) |
+| Auto Locale        | Sets for you I18n.locale parsing path_info        | [gist](http://gist.github.com/308919#file_auto_locale.rb)        |
+| Locale             | Translates ActiveRecord attributes                | [gist](http://gist.github.com/308915#file_locale.rb)             |
+| Permalink          | Generates ActiveRecord permalinks for your fields | [gist](http://gist.github.com/308928#file_permalink.rb)          |
+| Flash               | Helps setup cookie sessions with swfupload       | [gist](http://gist.github.com/313322#file_flashmiddleware.rb)    |
