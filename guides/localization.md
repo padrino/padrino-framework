@@ -80,7 +80,7 @@ I18n.t("foo")
 you will get:
 
 
-    => “Bar"
+    => "Bar"
 
 
 ## Translate Models (ActiveRecord)
