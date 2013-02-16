@@ -23,7 +23,7 @@ tags, forms, links, images, and more. Most of the basic methods should be very f
 view helpers.
 
 
-You can check out the details of these helpers in the [[Application Helpers]] guide. To register these helpers within
+You can check out the details of these helpers in the [Application Helpers](TBD) guide. To register these helpers within
 your Sinatra application:
 
 
@@ -114,7 +114,7 @@ class MyApp < Sinatra::Application
   end
 end # MyApp
 
-MyApp.run)(:port => 3000)
+MyApp.run!(:port => 3000)
 ```
 
 
