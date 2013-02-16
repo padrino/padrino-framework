@@ -44,13 +44,13 @@ you will use system wide gems. So for do that remember to run commands with `bun
     $ bundle exec padrino g model post
 
 
-You can find more info about bundler usage on their [site](http://gembundler.com/)
+You can find more info about bundler usage on their [site](http://gembundler.com/).
 
 
 ## System Gems from Repository
 
-If you want to install the padrino edge gems into your system rubygems, simply follow the following steps.  First, clone
-the padrino repository:
+If you want to install the Padrino edge gems into your system RubyGems, simply follow the following steps. First, clone
+the Padrino repository:
 
 
     $ cd /tmp
@@ -64,7 +64,7 @@ Next, we should mark the version as dev to get a fresh set of gems:
 /tmp/padrino-framework/padrino-core/lib/padrino-core/version.rb
 module Padrino
   VERSION = '0.9.11-dev' unless defined? # Change to bump version
-  #…
+  #...
 end
 ```
 
@@ -75,7 +75,7 @@ Finally, run the `fresh` rake command to install the latest version:
     padrino-framework$ sudo rake fresh
 
 
-his will install the latest 'edge' gems into rubygems. Be sure to verify your project's Gemfile depends on the edge
+this will install the latest 'edge' gems into RubyGems. Be sure to verify your project's Gemfile depends on the edge
 version you installed:
 
 
@@ -97,12 +97,14 @@ This should allow you to use the latest Padrino code from your system.
 
 ## Path in Gemfile
 
-    $ mkdir /src
-    # Remember to use your fork
-    $ git clone git://github.com/padrino/padrino-framework.git
-    # Edit your ~/.profile or~/.bash_profile or some and add
-    alias padrino-dev="/src/padrino-framework/padrino-core/bin/padrino"
-    alias padrino-dev-gen="/src/padrino-framework/padrino-gen/bin/padrino-gen" # you can omit this
+```bash
+$ mkdir /src
+# Remember to use your fork
+$ git clone git://github.com/padrino/padrino-framework.git
+# Edit your ~/.profile or~/.bash_profile or some and add
+alias padrino-dev="/src/padrino-framework/padrino-core/bin/padrino"
+alias padrino-dev-gen="/src/padrino-framework/padrino-gen/bin/padrino-gen" # you can omit this
+```
 
 
 Reload source or open a new terminal window and check if you have *padrino-dev* and *padrino-dev-gen* commands correctly
@@ -112,20 +114,20 @@ added to your path.
 Create a new Padrino project:
 
 
-    padrino-dev-gen project test-project -dev
+    padrino-dev-gen project test-project --dev
 
 
 or if you don't have `padrino-dev-gen`
 
 
-padrino-dev g project test-project -dev
+    padrino-dev g project test-project --dev
 
 
 This will append the following lines to your test-app/Gemfile:
 
 
 ```ruby
-pre[ruby]. # Vendored Padrino
+# Vendored Padrino
 %w(core gen helpers mailer admin).each do |gem|
   gem 'padrino-' + gem, :path => "/src/padrino-framework/padrino-" + gem
 end
