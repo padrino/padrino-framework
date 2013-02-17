@@ -207,7 +207,7 @@
 @navbar-inverse-link-color-hover:           #fff;
 @navbar-inverse-link-color-active:          @navbar-inverse-link-color-hover;
 @navbar-inverse-link-bg-hover:              transparent;
-@navbar-inverse-link-bg-active:             @navbar-inverse-bg;
+@navbar-inverse-link-bg-active:             darken(@navbar-inverse-bg, 10%);
 
 // Inverted navbar search
 // Normal navbar needs no special styles or vars
@@ -269,6 +269,12 @@
 // Special enhancement for popovers
 @popover-arrow-outer-width:   @popover-arrow-width + 1;
 @popover-arrow-outer-color:   rgba(0,0,0,.25);
+
+
+// Modals
+// -------------------------
+
+@modal-inner-padding:         20px;
 
 
 // Progress bars
