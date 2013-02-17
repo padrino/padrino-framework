@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 # Distribute your app as a gem
 <% unless options.gem? %># <% end %>gemspec
