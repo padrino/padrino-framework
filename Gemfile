@@ -1,6 +1,6 @@
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
-source :rubygems
+source 'https://rubygems.org'
 
 if ENV["AS_VERSION"]
   gem 'activesupport', "~> #{ENV['AS_VERSION']}"
