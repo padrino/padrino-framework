@@ -12,8 +12,6 @@ module Padrino
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
-      # Defines the theme names for admin based on available.
-      # def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
 
       # Include related modules
       include Thor::Actions
@@ -26,7 +24,6 @@ module Padrino
       class_option :app, :aliases => "-a", :desc => "The model destination path", :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      # class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 
@@ -120,7 +117,7 @@ module Padrino
           return if self.behavior == :revoke
 
           instructions = []
-          instructions << "Run 'bundle install'"
+          instructions << "Run 'bundle'"
           instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
           instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
           instructions << "Run 'ohm mani padme hum'" if orm == :ohm
