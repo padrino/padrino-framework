@@ -546,5 +546,78 @@ describe "Rendering" do
       assert ok?
       assert_equal '["a",1,"b",2]', body
     end
+
+    should 'renders false, true and Fixnum as string' do
+      mock_app do
+        get('/false') { render(false && "template-path") }
+        get('/true')  { render(true)  }
+        get('/42')    { render(42) }
+        get('/55')    { render(55) }
+        get('/nil')    { render(nil) }
+        get('/oth')   { render("oth-template") }
+      end
+
+      get '/false'
+      assert ok?
+      assert_equal 'false', body
+      
+      get '/true'
+      assert ok?
+      assert_equal 'true', body
+      
+      get '/42'
+      assert ok?
+      assert_equal '42', body
+
+      get '/55'
+      assert ok?
+      assert_equal '55', body
+      
+      get '/nil'
+      assert ok?
+      assert_equal 'null', body
+
+      assert_raises Padrino::Rendering::TemplateNotFound do
+        get 'oth'
+      end      
+    end
+
+    should 'render json with :json hash' do
+      mock_app do 
+        get '/json_render' do
+          render(:json => true)
+        end
+
+        get '/extra_json_render' do
+          render(:xyz => 'test', :json => {:first => 'item'})
+        end
+
+        get '/extra_example_array' do
+          render :json => [1,2,3]
+        end
+
+        get '/extra_example_hash' do
+          render :json => {:first => 1, :second => "2", :third => 3}
+        end
+      end
+      get '/json_render'
+      assert ok?
+      assert_equal "true", body
+
+      get '/extra_json_render'
+      assert ok?
+      assert_equal "{\"first\":\"item\"}", body
+
+      get '/extra_example_array'
+      assert ok?
+      assert_equal "[1,2,3]", body
+
+      get '/extra_example_hash'
+      assert ok?
+      assert_not_nil body[/"first":1/]
+      assert_not_nil body[/"second":"2"/]
+      assert_not_nil body[/"third":3/]
+    end
+
   end
 end
