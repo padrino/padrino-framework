@@ -1,10 +1,10 @@
 This is our repository that populate pages, blog posts and guides of http://www.padrinorb.com
 
-Feel free to fork it, apply your corrections or made an useful translation.
+Feel free to fork it, apply your corrections or make a useful translation.
 
 ## Writing documents
 
-* Word wrap must be setted to 110
+* Word wrap must be set to 110
 * Encoding UTF-8
 
 ## Internal Links
