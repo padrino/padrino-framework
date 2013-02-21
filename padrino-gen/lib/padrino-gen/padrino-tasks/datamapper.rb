@@ -53,11 +53,17 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
           system("createdb", "-E", charset, "-h", host, "-U", user, database)
           puts "<= dm:create executed"
         when 'mysql'
-          query = [
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
-            "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}".inspect
-          ]
-          system(query.compact.join(" "))
+          arguments = ["--user=#{user}"]
+          arguments << "--password=#{password}" unless password.blank?
+          
+          unless %w[127.0.0.1 localhost].include?(host)
+            arguments << "--host=#{host}"
+          end
+
+          arguments << '-e'
+          arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
+
+          system('mysql',*arguments)
           puts "<= dm:create executed"
         when 'sqlite3'
           DataMapper.setup(DataMapper.repository.name, config)
@@ -77,11 +83,17 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
           system("dropdb", "-h", host, "-U", user, database)
           puts "<= dm:drop executed"
         when 'mysql'
-          query = [
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
-            "DROP DATABASE IF EXISTS #{database}".inspect
-          ]
-          system(query.compact.join(" "))
+          arguments = ["--user=#{user}"]
+          arguments << "--password=#{password}" unless password.blank?
+          
+          unless %w[127.0.0.1 localhost].include?(host)
+            arguments << "--host=#{host}"
+          end
+
+          arguments << '-e'
+          arguments << "DROP DATABASE IF EXISTS #{database}"
+
+          system('mysql',*arguments)
           puts "<= dm:drop executed"
         when 'sqlite3'
           File.delete(config[:path]) if File.exist?(config[:path])
