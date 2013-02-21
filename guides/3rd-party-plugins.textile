@@ -2,7 +2,8 @@
 :author: Foo Bar
 :title: 3rd Party Plugins
 ---
-Padrino is a modular framework.  As such, you can leverage other libraries such as Sinatra libraries which complement Padrino quite well.
+Padrino is a modular framework.  As such, you can leverage other libraries such as Sinatra libraries which
+complement Padrino quite well.
 
 h2. Rendering JSON with sinatra-contrib
 
@@ -40,7 +41,7 @@ gem 'sinatra-contrib'
 </code></pre>
 
 
-Then you can use the #json method in your application:
+You may use the #json method after you have registered the sinatra helper:
 
 <pre lang="ruby"><code>
 class MyJsonApp < Padrino::Application
