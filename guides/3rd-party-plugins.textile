@@ -1,6 +1,6 @@
 ---
 :author: Foo Bar
-:title: Adding New Components
+:title: 3rd Party Plugins
 ---
 Padrino is a modular framework.  As such, you can leverage other libraries such as Sinatra libraries which complement Padrino quite well.
 
