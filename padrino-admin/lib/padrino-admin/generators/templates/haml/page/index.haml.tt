@@ -19,7 +19,7 @@
                   - form_for :<%= @orm.name_singular %>,  url(:<%= @orm.name_plural %>, :delete_multiple), :method => :delete, :id => 'multiple_delete_form' do |f|
                     %button#multiple_delete_button.to_submit.btn.btn-danger.pull-left{:type => 'submit'}= tag_icon(:trash,"Delete Checked")
                     %h5 Are you sure to delete the select?
-                  =link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
+                =link_to tag_icon(:trash, 'Delete Checked'),'#', 'data-form' =>'#multiple_delete_form', 'data-cancel' => 'Cancel','data-title' => 'Warning: Multiple delete !', 'data-type' => 'danger', :id => 'btn_multiple_delete'
         <%- @orm.columns.each_with_index do |column, i| -%>
         %th.header= :<%= column.name %>
         <%- end -%>
