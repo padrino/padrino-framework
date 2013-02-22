@@ -52,13 +52,8 @@ module Mail # @private
     #  text_part "Some text"
     #  text_part { render('multipart/basic.text') }
     #
-    def text_part(value=nil, &block)
-      if block_given? || value
-        @text_part = self.part(:content_type => "text/plain", :body => value, :part_block => block)
-        add_multipart_alternate_header unless html_part.blank?
-      else
-        @text_part || find_first_mime_type("text/plain")
-      end
+    def text_part(value = nil, &block)
+      set_part_variable(:text_part, value, 'text/plain', &block)
     end
 
     ##
@@ -70,12 +65,16 @@ module Mail # @private
     #  html_part "Some <b>Html</b> text"
     #  html_part { render('multipart/basic.html') }
     #
-    def html_part(value=nil, &block)
+    def html_part(value = nil, &block)
+      set_part_variable(:html_part, value, 'text/html', &block)
+    end
+
+    def add_resolved_part(variable, value = nil, content_type, &block)
       if block_given? || value
-        @html_part = self.part(:content_type => "text/html", :body => value, :part_block => block)
-        add_multipart_alternate_header unless text_part.blank?
+        instance_variable_set "@#{variable}", self.part(:content_type => content_type, :body => value, :part_block => block)
+        add_multipart_alternate_header unless self.send(variable).blank?
       else
-        @html_part || find_first_mime_type("text/html")
+        instance_variable_get("@#{variable}") || find_first_mime_type(content_type)
       end
     end
 
