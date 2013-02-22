@@ -53,7 +53,10 @@ module Mail # @private
     #  text_part { render('multipart/basic.text') }
     #
     def text_part(value = nil, &block)
-      set_part_variable(:text_part, value, 'text/plain', &block)
+      add_resolved_part(:variable     => :text_part, 
+                        :value        => value, 
+                        :content_type => 'text/plain',
+                        &block)
     end
 
     ##
@@ -66,10 +69,14 @@ module Mail # @private
     #  html_part { render('multipart/basic.html') }
     #
     def html_part(value = nil, &block)
-      set_part_variable(:html_part, value, 'text/html', &block)
+      add_resolved_part(:variable     => :html_part, 
+                        :value        => value, 
+                        :content_type => 'text/html', 
+                        &block)
     end
 
-    def add_resolved_part(variable, value = nil, content_type, &block)
+    def add_resolved_part(attributes = {}, &block)
+      variable, value, content_type = attributes.values_at(:variable, :value, :content_type)
       if block_given? || value
         instance_variable_set "@#{variable}", self.part(:content_type => content_type, :body => value, :part_block => block)
         add_multipart_alternate_header unless self.send(variable).blank?
