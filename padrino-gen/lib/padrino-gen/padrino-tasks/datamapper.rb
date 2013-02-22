@@ -38,7 +38,15 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc "Migrate the database to the latest version"
-    task :migrate => 'dm:migrate:up'
+    task :migrate do
+      migrate_task = if Dir['db/migrate/*.rb'].empty?
+                       'dm:auto:upgrade'
+                     else
+                       'dm:migrate:up'
+                     end
+
+      Rake::Task[migrate_task].invoke
+    end
 
     desc "Create the database"
     task :create => :environment do
