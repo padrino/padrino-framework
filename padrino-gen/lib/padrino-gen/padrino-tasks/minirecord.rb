@@ -12,4 +12,8 @@ if PadrinoTasks.load?(:minirecord, defined?(MiniRecord))
   end
 
   task 'db:migrate' => 'mr:migrate'
+  task 'db:create'  => 'mr:create'
+  task 'db:drop'    => 'mr:drop'
+  task 'db:reset'   => 'mr:reset'
+  task 'db:setup'   => 'mr:setup'
 end
