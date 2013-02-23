@@ -118,4 +118,8 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
   end
 
   task 'db:migrate' => 'dm:migrate'
+  task 'db:create'  => 'dm:create'
+  task 'db:drop'    => 'dm:drop'
+  task 'db:reset'   => 'dm:reset'
+  task 'db:setup'   => 'dm:setup'
 end
