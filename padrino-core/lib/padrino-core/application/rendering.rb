@@ -177,7 +177,6 @@ module Padrino
         # * Use render 'path/to/template.haml' (with explicit engine lookup)
         # * Use render 'path/to/template', :layout => false
         # * Use render 'path/to/template', :layout => false, :engine => 'haml'
-        # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
         #
         def render(engine, data=nil, options={}, locals={}, &block)
           
