@@ -66,7 +66,7 @@ module Padrino
       Padrino.set_encoding
       Padrino.set_load_paths(*load_paths) # We set the padrino load paths
       Padrino::Logger.setup! # Initialize our logger
-      Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to not remove constants from dbs.
+      Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
       Padrino.before_load.each(&:call) # Run before hooks
       Padrino.dependency_paths.each { |path| Padrino.require_dependencies(path) }
@@ -124,8 +124,8 @@ module Padrino
 
     ##
     # Attempts to require all dependency libs that we need.
-    # If you use this method we can perform a Padrino.reload! correctly.
-    # Another good thing that this method does dependency checks, for example:
+    # If you use this method we can perform correctly a Padrino.reload!
+    # Another good thing that this method are dependency check, for example:
     #
     #   # models
     #   #  \-- a.rb => require something of b.rb
@@ -166,11 +166,7 @@ module Padrino
           begin
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
-          rescue LoadError => e
-            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
-            errors << e
-            failed << file
-          rescue NameError => e
+          rescue NameError, LoadError => e
             Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
@@ -214,8 +210,5 @@ module Padrino
       $:.concat(paths); load_paths.concat(paths)
       $:.uniq!; load_paths.uniq!
     end
-
-    private
-
   end # self
 end # Padrino
