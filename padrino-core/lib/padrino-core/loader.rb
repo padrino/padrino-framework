@@ -166,11 +166,7 @@ module Padrino
           begin
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
-          rescue LoadError => e
-            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
-            errors << e
-            failed << file
-          rescue NameError => e
+          rescue NameError, LoadError => e
             Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
             errors << e
             failed << file
@@ -196,12 +192,7 @@ module Padrino
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
-      @_dependency_paths_was = [
-        "#{root}/config/database.rb", "#{root}/lib/**/*.rb", "#{root}/shared/lib/**/*.rb",
-        "#{root}/models/**/*.rb", "#{root}/shared/models/**/*.rb", "#{root}/config/apps.rb"
-      ]
-      module_paths = Padrino.modules.map(&:dependency_paths).flatten!
-      @_dependency_paths ||= (@_dependency_paths_was + Array(module_paths))
+      @_dependency_paths ||= (dependency_paths_was + Array(module_paths))
     end
 
     ##
@@ -213,6 +204,22 @@ module Padrino
     def set_load_paths(*paths)
       $:.concat(paths); load_paths.concat(paths)
       $:.uniq!; load_paths.uniq!
+    end
+
+    private 
+    def module_paths
+      Padrino.modules.map(&:dependency_paths).flatten!
+    end
+
+    def dependency_paths_was
+      [
+        "#{root}/config/database.rb", 
+        "#{root}/lib/**/*.rb", 
+        "#{root}/shared/lib/**/*.rb",
+        "#{root}/models/**/*.rb", 
+        "#{root}/shared/models/**/*.rb", 
+        "#{root}/config/apps.rb"
+      ]
     end
   end # self
 end # Padrino
