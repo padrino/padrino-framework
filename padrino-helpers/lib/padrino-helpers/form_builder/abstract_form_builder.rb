@@ -272,7 +272,7 @@ module Padrino
               html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
             end
           end
-          
+
         private
         def field_result
           result = []
@@ -281,20 +281,18 @@ module Padrino
         end
 
         def field_name_fragment
-          options  = field_result_options
-          fragment = [options[:parent_form].field_name, "[#{options[:attributes_name]}", "]"]
-          fragment.insert(2, "][#{options[:nested_index]}") if options[:nested_index]
+          fragment = [result_options[:parent_form].field_name, "[#{result_options[:attributes_name]}", "]"]
+          fragment.insert(2, "][#{result_options[:nested_index]}") if result_options[:nested_index]
           fragment
         end
 
         def field_id_fragment
-          options  = field_result_options
-          fragment = [options[:parent_form].field_id, "_#{options[:attributes_name]}"]
-          fragment.push("_#{options[:nested_index]}") if options[:nested_index]
+          fragment = [result_options[:parent_form].field_id, "_#{result_options[:attributes_name]}"]
+          fragment.push("_#{result_options[:nested_index]}") if result_options[:nested_index]
           fragment
         end
 
-        def field_result_options
+        def result_options
           {
             :parent_form  => @options[:nested][:parent],
             :nested_index => @options[:nested][:index],
