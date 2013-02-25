@@ -52,7 +52,7 @@ group :cache do
   platforms :mri do
     gem "bson_ext",  ">= 1.3.1"
     gem 'dalli',     ">= 1.0.2"
-    gem "memcached", "~> 1.3.7"
+    gem "memcached", ">= 0.20.1"
   end
   platform :rbx do
     gem 'dalli',  ">= 1.0.2"
