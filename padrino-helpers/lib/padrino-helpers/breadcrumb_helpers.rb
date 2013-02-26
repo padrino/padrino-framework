@@ -105,7 +105,7 @@ module Padrino
       #
       # @api public
       def del(name)
-        items.each{ |item| item.delete if item[:name] == name.to_sym }
+        items.delete_if { |item| item[:name] == name.to_sym }
       end
 
     end # Breadcrumb
