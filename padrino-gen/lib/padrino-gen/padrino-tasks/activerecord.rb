@@ -1,6 +1,6 @@
 if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   # Fixes for Yardoc YRI Building
-  class ActiveRecord; end unless defined?(ActiveRecord)
+  module ActiveRecord; end unless defined?(ActiveRecord)
   class ActiveRecord::Schema; end unless defined?(ActiveRecord::Schema)
 
   namespace :ar do
