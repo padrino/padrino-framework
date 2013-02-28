@@ -119,8 +119,9 @@ module Padrino
         force    = options[:force]
         file     = figure_path(file)
         reload   = should_reload?(file)
-        
-        return if !force && MTIMES[file] && !reload
+        m_time   = modification_time(m_time)
+
+        return if !force && m_time && !reload
 
         remove_loaded_file_classes(file)
         remove_loaded_file_features(file)
@@ -140,21 +141,19 @@ module Padrino
           loaded = false
           require(file)
           loaded = true
-          MTIMES[file] = File.mtime(file)
+          update_modification_time(file)
         rescue SyntaxError => e
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
           $-v = verbosity_was
           new_constants = ObjectSpace.new_classes(klasses)
           if loaded
-            # Store the file details
-            LOADED_CLASSES[file] = new_constants
-            LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
-            # Track only features in our Padrino.root
-            LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+            process_loaded_file(:file      => file, 
+                                :constants => new_constants, 
+                                :files     => files)
           else
             logger.devel "Failed to load #{file}; removing partially defined constants"
-            new_constants.each { |klass| remove_constant(klass) }
+            unload_constants(new_constants)
           end
         end
       end
@@ -189,6 +188,36 @@ module Padrino
       private
 
       ###
+      # Macro for mtime
+      #
+      def modification_time(file)
+        MTIMES[file]
+      end
+
+      def update_modification_time(file)
+        MTIMES[file] = File.mtime(file)
+      end
+      ###
+      # Tracks loaded file features/classes/constants
+      #
+      def process_loaded_file(*args)
+        options = args.extract_options!
+        new_constants, files, file  =  options[:constants], options[:files], options[:file]
+        # Store the file details
+        LOADED_CLASSES[file] = new_constants
+        LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
+        # Track only features in our Padrino.root
+        LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+      end
+
+      ###
+      # Unloads all constants in new_constants
+      #
+      def unload_constants(new_constants)
+        new_constants.each { |klass| remove_constant(klass) }
+      end
+
+      ###
       # Safe load dependencies of a file
       #
       def reload_deps_of_file(file)
@@ -196,7 +225,7 @@ module Padrino
           features.each { |feature| safe_load(feature, :force => true) }
         end
       end
-      
+
       ##
       # Check if file was changed or if force a reload
       #
