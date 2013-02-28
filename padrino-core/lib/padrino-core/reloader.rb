@@ -113,7 +113,7 @@ module Padrino
         force    = options[:force]
         file     = figure_path(file)
         reload   = should_reload?(file)
-        m_time   = modification_time(m_time)
+        m_time   = modification_time(file)
 
         return if !force && m_time && !reload
 
