@@ -115,31 +115,21 @@ module Padrino
       # A safe Kernel::require which issues the necessary hooks depending on results
       #
       def safe_load(file, options={})
-        began_at    = Time.now
-        force, file = options[:force], figure_path(file)
+        began_at = Time.now
+        force    = options[:force]
+        file     = figure_path(file)
+        reload   = should_reload?(file)
+        
+        return if !force && MTIMES[file] && !reload
 
-        # Check if file was changed or if force a reload
-        reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
-        return if !force && !reload && MTIMES[file]
-
-        # Removes all classes declared in the specified file
-        if klasses = LOADED_CLASSES.delete(file)
-          klasses.each { |klass| remove_constant(klass) }
-        end
-
-        # Remove all loaded fatures with our file
-        if features = LOADED_FILES[file]
-          features.each { |feature| $LOADED_FEATURES.delete(feature) }
-        end
+        remove_loaded_file_classes(file)
+        remove_loaded_file_features(file)
 
         # Duplicate objects and loaded features before load file
         klasses = ObjectSpace.classes
         files   = Set.new($LOADED_FEATURES.dup)
 
-        # Now we can reload dependencies of our file
-        if features = LOADED_FILES.delete(file)
-          features.each { |feature| safe_load(feature, :force => true) }
-        end
+        reload_deps_of_file(file)
 
         # And finally load the specified file
         begin
@@ -197,6 +187,41 @@ module Padrino
       end
 
       private
+
+      ###
+      # Safe load dependencies of a file
+      #
+      def reload_deps_of_file(file)
+        if features = LOADED_FILES.delete(file)
+          features.each { |feature| safe_load(feature, :force => true) }
+        end
+      end
+      
+      ##
+      # Check if file was changed or if force a reload
+      #
+      def should_reload?(file)
+        MTIMES[file] && File.mtime(file) > MTIMES[file]
+      end
+
+      ##
+      # Removes all classes declared in the specified file
+      #
+      def remove_loaded_file_classes(file)
+        if klasses = LOADED_CLASSES.delete(file)
+          klasses.each { |klass| remove_constant(klass) }
+        end 
+      end
+
+      ##
+      # Remove all loaded fatures with our file
+      #
+      def remove_loaded_file_features(file)
+        if features = LOADED_FILES[file]
+          features.each { |feature| $LOADED_FEATURES.delete(feature) }
+        end
+      end
+
       ##
       # Return the mounted_apps providing the app location
       # Can be an array because in one app.rb we can define multiple Padrino::Appplications
