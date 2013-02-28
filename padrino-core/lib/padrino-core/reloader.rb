@@ -51,7 +51,7 @@ module Padrino
         # Detect changed files
         rotation do |file, mtime|
           # Retrive the last modified time
-          new_file = MTIMES[file].nil?
+          new_file       = MTIMES[file].nil?
           previous_mtime = MTIMES[file] ||= mtime
           logger.devel "Detected a new file #{file}" if new_file
           # We skip to next file if it is not new and not modified
@@ -74,15 +74,9 @@ module Padrino
       # Remove files and classes loaded with stat
       #
       def clear!
-        MTIMES.clear
-        LOADED_CLASSES.each do |file, klasses|
-          klasses.each { |klass| remove_constant(klass) }
-          LOADED_CLASSES.delete(file)
-        end
-        LOADED_FILES.each do |file, dependencies|
-          dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
-          $LOADED_FEATURES.delete(file)
-        end
+        clear_modification_times
+        clear_loaded_classes
+        clear_loaded_files_and_features
       end
 
       ##
@@ -136,8 +130,9 @@ module Padrino
         begin
           logger.devel :loading, began_at, file if !reload
           logger.debug :reload,  began_at, file if  reload
+
           $LOADED_FEATURES.delete(file) if files.include?(file)
-          verbosity_was, $-v = $-v, nil
+          silence_output
           loaded = false
           require(file)
           loaded = true
@@ -145,7 +140,7 @@ module Padrino
         rescue SyntaxError => e
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
-          $-v = verbosity_was
+          unsilence_output
           new_constants = ObjectSpace.new_classes(klasses)
           if loaded
             process_loaded_file(:file      => file, 
@@ -188,24 +183,66 @@ module Padrino
       private
 
       ###
-      # Macro for mtime
+      # Clear instance variables that keep track of 
+      # loaded features/files/mtimes
+      #
+      def clear_modification_times
+        MTIMES.clear
+      end
+      
+      def clear_loaded_classes
+        LOADED_CLASSES.each do |file, klasses|
+          klasses.each { |klass| remove_constant(klass) }
+          LOADED_CLASSES.delete(file)
+        end
+      end
+
+      def clear_loaded_files_and_features
+        LOADED_FILES.each do |file, dependencies|
+          dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
+          $LOADED_FEATURES.delete(file)
+        end
+      end
+
+      ###
+      # Silences output verbosity level so load
+      # errors are not visible when safe_load(file)
+      #
+      def silence_output
+        @verbosity_level, $-v = $-v, nil
+      end
+
+      def unsilence_output
+        $-v = @verbosity_level
+      end
+
+      ###
+      # Macro for mtime query
       #
       def modification_time(file)
         MTIMES[file]
       end
 
+      ###
+      # Macro for mtime update
+      #
       def update_modification_time(file)
         MTIMES[file] = File.mtime(file)
       end
+
       ###
       # Tracks loaded file features/classes/constants
       #
       def process_loaded_file(*args)
-        options = args.extract_options!
-        new_constants, files, file  =  options[:constants], options[:files], options[:file]
+        options       = args.extract_options!
+        new_constants = options[:constants]
+        files         = options[:files]
+        file          = options[:file]
+
         # Store the file details
         LOADED_CLASSES[file] = new_constants
         LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
+
         # Track only features in our Padrino.root
         LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
       end
@@ -274,14 +311,20 @@ module Padrino
       # and monitors them for any changes.
       #
       def rotation
-        files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
-        files  = files | Padrino.mounted_apps.map { |app| app.app_file }
-        files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
-        files.uniq.map do |file|
+        files_for_rotation.uniq.map do |file|
           file = File.expand_path(file)
           next if Padrino::Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.exist?(file)
           yield file, File.mtime(file)
         end.compact
+      end
+
+      ##
+      # Creates an array of paths for use in #rotation
+      #
+      def files_for_rotation
+        files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
+        files  = files | Padrino.mounted_apps.map { |app| app.app_file }
+        files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
       end
     end # self
 
