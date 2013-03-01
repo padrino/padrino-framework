@@ -37,6 +37,12 @@
     color: @navbar-link-color-active;
     background-color: @navbar-link-bg-active;
   }
+  .nav > .disabled > a,
+  .nav > .disabled > a:hover,
+  .nav > .disabled > a:focus {
+    color: @navbar-link-color-disabled;
+    background-color: @navbar-link-bg-disabled;
+  }
 }
 
 
@@ -108,7 +114,7 @@
     display: block;
     width: 22px;
     height: 2px;
-    background-color: #fff;
+    background-color: #ccc;
     border-radius: 1px;
   }
   .icon-bar + .icon-bar {
@@ -210,6 +216,12 @@
     color: @navbar-inverse-link-color-active;
     background-color: @navbar-inverse-link-bg-active;
   }
+  .nav > .disabled > a,
+  .nav > .disabled > a:hover,
+  .nav > .disabled > a:focus {
+    color: @navbar-inverse-link-color-disabled;
+    background-color: @navbar-inverse-link-bg-disabled;
+  }
 
   // Darken the responsive nav toggle
   .navbar-toggle {
@@ -217,6 +229,9 @@
     &:hover,
     &:focus {
       background-color: #333;
+    }
+    .icon-bar {
+      background-color: #fff;
     }
   }
 
