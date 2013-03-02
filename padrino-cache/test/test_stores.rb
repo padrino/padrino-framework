@@ -88,6 +88,11 @@ end
 begin
   require 'redis'
   Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive'))
+rescue LoadError
+  warn "Skipping redis  with redis library tests"
+rescue Redis::CannotConnectError
+  warn "Skipping redis with redis server tests"
+else
   describe "RedisStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
@@ -108,8 +113,6 @@ end
 
     eval COMMON_TESTS
   end
-rescue LoadError
-  warn "Skipping redis tests"
 end
 
 begin
