@@ -40,13 +40,13 @@ end
 HERE_DOC
 
 begin
-  require 'memcache'
+  require 'Memcached'
   # we're just going to assume memcached is running on the default port
-  Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
+  Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
 
   describe "MemcacheStore" do
     def setup
-      Padrino.cache = Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1))
+      Padrino.cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
       Padrino.cache.flush
     end
 
