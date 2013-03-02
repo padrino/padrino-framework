@@ -118,6 +118,11 @@ end
 begin
   require 'mongo'
   Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+rescue LoadError
+  warn "Skipping Mongo tests with Mongo library tests"
+rescue Mongo::ConnectionFailure
+  warn "Skipping Mongo Mongo with Mongo server tests"
+else
   describe "MongoStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'), {:size => 10, :collection => 'cache'})
@@ -131,8 +136,6 @@ begin
 
     eval COMMON_TESTS
   end
-rescue LoadError, Mongo::ConnectionFailure
-  warn "Skipping Mongo tests"
 end
 
 describe "FileStore" do
