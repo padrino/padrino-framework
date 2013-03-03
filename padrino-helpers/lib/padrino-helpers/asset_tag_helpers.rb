@@ -366,8 +366,9 @@ module Padrino
         source = source.to_s.gsub(/\s/, '%20')
         ignore_extension = (asset_folder.to_s == kind.to_s) # don't append an extension
         source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
+        timestamp_path = is_absolute ? source : File.join(self.class.public_folder, asset_folder, source)
+        timestamp = asset_timestamp(timestamp_path, is_absolute)
         result_path = is_absolute ? source : uri_root_path(asset_folder, source)
-        timestamp = asset_timestamp(result_path, is_absolute)
         "#{result_path}#{timestamp}"
       end
 
@@ -393,8 +394,7 @@ module Padrino
       #
       def asset_timestamp(file_path, absolute=false)
         return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
-        public_file_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
-        stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
+        stamp = File.mtime(file_path).to_i if file_path && File.exist?(file_path)
         stamp ||= Time.now.to_i unless absolute
         "?#{stamp}" if stamp
       end
