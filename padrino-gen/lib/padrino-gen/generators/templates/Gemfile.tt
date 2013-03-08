@@ -22,7 +22,7 @@ gem 'rake'
 <% if options.dev? %># <% end %>gem 'padrino', '<%= Padrino.version %>'
 
 # Or Padrino Edge
-# gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
+# gem 'padrino', github: 'padrino/padrino-framework'
 
 # Or Individual Gems
 <% unless options.dev? %># <% end %>%w(core gen helpers cache mailer admin).each do |g|
