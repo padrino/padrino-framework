@@ -2,6 +2,7 @@
 
 == 0.10.8 (Not Yet Released)
 * FIX cleanup and refactoring of documentation (@matthias-guenther)
+* FIX padrino cache tests to not execute when cache server is not avaiable (@bash0C7)
 
 == 0.10.7
 

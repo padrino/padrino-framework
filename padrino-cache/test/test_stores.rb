@@ -40,13 +40,17 @@ end
 HERE_DOC
 
 begin
-  require 'memcache'
+  require 'Memcached'
   # we're just going to assume memcached is running on the default port
-  Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
-
+  Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
+rescue LoadError
+  warn "Skipping memcache with memcached library tests"
+rescue Memcached::SystemError
+  warn "Skipping memcache with memcached server tests"
+else
   describe "MemcacheStore" do
     def setup
-      Padrino.cache = Padrino::Cache::Store::Memcache.new(::MemCache.new('127.0.0.1:11211', :exception_retry_limit => 1))
+      Padrino.cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
       Padrino.cache.flush
     end
 
@@ -56,8 +60,6 @@ begin
 
     eval COMMON_TESTS
   end
-rescue LoadError
-  warn "Skipping memcache with memcached library tests"
 end
 
 begin
@@ -86,6 +88,11 @@ end
 begin
   require 'redis'
   Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0).set('ping','alive'))
+rescue LoadError
+  warn "Skipping redis  with redis library tests"
+rescue Redis::CannotConnectError
+  warn "Skipping redis with redis server tests"
+else
   describe "RedisStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
@@ -106,13 +113,16 @@ end
 
     eval COMMON_TESTS
   end
-rescue LoadError
-  warn "Skipping redis tests"
 end
 
 begin
   require 'mongo'
   Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
+rescue LoadError
+  warn "Skipping Mongo tests with Mongo library tests"
+rescue Mongo::ConnectionFailure
+  warn "Skipping Mongo Mongo with Mongo server tests"
+else
   describe "MongoStore" do
     def setup
       Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'), {:size => 10, :collection => 'cache'})
@@ -126,8 +136,6 @@ begin
 
     eval COMMON_TESTS
   end
-rescue LoadError, Mongo::ConnectionFailure
-  warn "Skipping Mongo tests"
 end
 
 describe "FileStore" do
