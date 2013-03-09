@@ -106,7 +106,7 @@ end
 
     eval COMMON_TESTS
   end
-rescue LoadError
+rescue LoadError, Redis::CannotConnectError
   warn "Skipping redis tests"
 end
 
