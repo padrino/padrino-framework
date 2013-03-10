@@ -65,7 +65,7 @@ class HttpRouter
 
   # @private
   class Route
-    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in
+    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in, :parent
 
     def before_filters(&block)
       @_before_filters ||= []
@@ -581,6 +581,7 @@ module Padrino
           priority_name = options.delete(:priority) || :normal
           priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
+          route.parent = @_parents
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.user_agent(options.delete(:agent)) if options.key?(:agent)
