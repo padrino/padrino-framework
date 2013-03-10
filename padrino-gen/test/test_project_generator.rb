@@ -224,7 +224,7 @@ describe "ProjectGenerator" do
       should "properly generate default" do
         out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
         assert_match(/applying.*?activerecord.*?orm/, out)
-        assert_match_in_file(/gem 'activerecord', :require => 'active_record'/, "#{@apptmp}/project.com/Gemfile")
+        assert_match_in_file(/gem 'activerecord', '>= 3.1', :require => 'active_record'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/project.com/Gemfile")
         assert_match_in_file(/ActiveRecord::Base.establish_connection/, "#{@apptmp}/project.com/config/database.rb")
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")

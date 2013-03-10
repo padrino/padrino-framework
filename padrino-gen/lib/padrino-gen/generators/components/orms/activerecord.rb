@@ -117,7 +117,7 @@ def setup_orm
     ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
-  require_dependencies 'activerecord', :require => 'active_record'
+  require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
   insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
 end
