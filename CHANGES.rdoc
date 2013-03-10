@@ -1,16 +1,35 @@
 = CHANGES
 
 == 0.11.0 (Not Yet Released)
+
+* NEW Load rake tasks manually but fallback to automatic for now (@skade)
 * FIX cleanup and refactoring of documentation (@matthias-guenther)
 * FIX padrino cache tests to not execute when cache server is not available (@bash0C7)
-* SEC #1083 Bump mail version dependency to CVE-2012-2139 and CVE-2012-2140. (@nequena)
+* SEC #1083 Bump mail version dependency to CVE-2012-2139 and CVE-2012-2140. (@nesquena)
 * FIX #1045 Load the environment only when needed in rake-Tasks (@skade)
 * NEW #1031 Render using SafeBuffer for XSS protection (@skade)
 * NEW #1007 Apps can now be shipped as gems (@skade)
-* FIX #966 Padrino:Reload.lock! tries to split java packages (@daddye)
-* REM #1063 Remove core JSON rendering in favour of sinatra-contrib (@Ortuna)
+* FIX #966  Padrino:Reload.lock! tries to split java packages (@daddye)
+* REM #1063 Remove core JSON rendering in favor of sinatra-contrib (@Ortuna)
+* NEW #1027 Padrino Performance for memory profiling and benchmarking (@skade, @dariocravero)
+* NEW #1011 Nest apps within the project module (@achiu, @tyabe)
+* NEW #904 Adds padrino-flash as core library (@lenzcom)
+* FIX #912 Use default layout when layout is set to true (@dcu)
+* NEW #927 Add CLI runner for executing code (@tyabe)
+* FIX #934 Rake routes when routes have regexes (@tyabe)
+* FIX #949 404 handling in later sinatra versions (@dayflower)
+* FIX #818 Filter and exceptions was running twice on error (@ujifgc)
+* FIX #812 Patch exception handling within filters (@ujifgc)
+* FIX #771 Padrino.configure_apps now supports multiple blocks (@ujifgc)
+* NEW #843 Request route now has access to the associated action (@ujifgc)
+* NEW #1097 Request route now has access to the parent (@dariocravero)
+* FIX French translation typos (@Fiaxhs)
+* FIX Optimize the reloader and objectspace traversal (@dcu)
+* FIX failing jruby compatibility issue with reloading (@udzura)
+* NEW #881 component support for Mongoid 3 (@WaYdotNET)
+* NEW #967 mongoid 3 compatible rake tasks (@dayflower)
 
-== 0.10.7
+== 0.10.7 (June 20 2012)
 
 * FIX #777 Improve slim template block capturing
 * FIX #807 Fixes reloader class name resolution
@@ -30,7 +49,6 @@
 * FIX #850 Prevent JRuby reloading bug (@dn2k)
 * FIX #846 Fix admin generator to understand model_name (@fnordfish)
 * NEW #845 Add CLI shortcut with just 'c' (@joslinm)
-
 
 == 0.10.6
 
