@@ -7,14 +7,13 @@ source 'https://rubygems.org'
 # gem 'thin' # or mongrel
 # gem 'trinidad', :platform => 'jruby'
 
+# Optional JSON codec (faster performance)
+# gem 'oj'
+
 # Project requirements
 gem 'rake'
 
 # Component requirements
-
-# Optional json codecs
-# gem 'yajl-ruby', :platform => 'mri'  # smaller memory footprint
-# gem 'oj'                             # faster
 
 # Test requirements
 
