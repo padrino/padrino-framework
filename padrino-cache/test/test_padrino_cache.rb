@@ -39,6 +39,33 @@ describe "PadrinoCache" do
     assert_not_equal false, called
   end
 
+  should 'cache should not hit with unique params' do
+    call_count = 0
+    mock_app do 
+      register Padrino::Cache
+      enable :caching
+      before do 
+        param = params[:test] || 'none'
+        cache_key "foo?#{param}"
+      end
+      get '/foo/:test', :cache => true do
+        param = params[:test] || 'none'
+        call_count += 1
+        "foo?#{param}"
+      end
+    end
+
+    get '/foo/none'
+    get '/foo/none'
+    assert_equal 200, status
+    assert_equal 'foo?none', body
+    assert_equal 1, call_count
+
+    get '/foo/yes'
+    assert_equal 'foo?yes', body
+    assert_equal 2, call_count
+  end
+
   should 'delete from the cache' do
     called = false
     mock_app do
