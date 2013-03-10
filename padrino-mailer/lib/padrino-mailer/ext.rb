@@ -16,6 +16,9 @@ module Mail # @private
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
+
+      initialize_template_settings!
+
       # Run the original initialize
       initialize_without_app(*args, &block)
     end
@@ -246,5 +249,11 @@ module Mail # @private
         self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
 
+      # register all special template configurations Padrino has to our fake settings object.
+      def initialize_template_settings!
+        Padrino::Rendering.engine_configurations.each do |name, value|
+          settings.class.instance_eval { define_method(name) { value } }
+        end
+      end
   end # Message
 end # Mail
