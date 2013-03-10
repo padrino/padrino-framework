@@ -1,8 +1,14 @@
 = CHANGES
 
-== 0.10.8 (Not Yet Released)
+== 0.11.0 (Not Yet Released)
 * FIX cleanup and refactoring of documentation (@matthias-guenther)
-* FIX padrino cache tests to not execute when cache server is not avaiable (@bash0C7)
+* FIX padrino cache tests to not execute when cache server is not available (@bash0C7)
+* SEC #1083 Bump mail version dependency to CVE-2012-2139 and CVE-2012-2140. (@nequena)
+* FIX #1045 Load the environment only when needed in rake-Tasks (@skade)
+* NEW #1031 Render using SafeBuffer for XSS protection (@skade)
+* NEW #1007 Apps can now be shipped as gems (@skade)
+* FIX #966 Padrino:Reload.lock! tries to split java packages (@daddye)
+* REM #1063 Remove core JSON rendering in favour of sinatra-contrib (@Ortuna)
 
 == 0.10.7
 
