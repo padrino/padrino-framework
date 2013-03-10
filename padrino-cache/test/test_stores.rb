@@ -40,7 +40,7 @@ end
 HERE_DOC
 
 begin
-  require 'Memcached'
+  require 'memcached'
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
 rescue LoadError
