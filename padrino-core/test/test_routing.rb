@@ -821,6 +821,26 @@ describe "Routing" do
     assert_equal "show 3 1 2", body
   end
 
+  should "respect parent precedence: controllers parents go before route parents" do
+    mock_app do
+      controllers :project do
+        get(:index, :parent => :user) { "index #{params[:user_id]}" }
+      end
+
+      controllers :bar, :parent => :foo do
+        get(:index) { "index on foo #{params[:foo_id]} @ bar" }
+        get(:index, :parent => :baz) { "index on foo #{params[:foo_id]} @ baz #{params[:baz_id]} @ bar" }
+      end
+    end
+
+    get "/user/1/project"
+    assert_equal "index 1", body
+    get "/foo/1/bar"
+    assert_equal "index on foo 1 @ bar", body
+    get "/foo/1/baz/2/bar"
+    assert_equal "index on foo 1 @ baz 2 @ bar", body
+  end
+
   should "keep a reference to the parent on the route" do
     mock_app do
       controllers :project do
@@ -831,7 +851,8 @@ describe "Routing" do
       end
 
       controllers :bar, :parent => :foo do
-        get(:index) { "index on bar" }
+        get(:index) { "index on foo/bar" }
+        get(:index, :parent => :baz) { "index on foo/baz/bar" }
       end
     end
 
@@ -845,6 +866,8 @@ describe "Routing" do
     assert_equal [:user, :product], @app.routes[6].parent
     # get "/foo/1/bar"
     assert_equal :foo, @app.routes[8].parent
+    # get "/foo/1/baz/2/bar"
+    assert_equal [:foo, :baz], @app.routes[10].parent
   end
 
   should "apply parent to controller" do
