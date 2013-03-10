@@ -232,7 +232,7 @@ describe "ProjectGenerator" do
 
       should "properly generate mysql" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord','--adapter=mysql') }
-        assert_match_in_file(/gem 'mysql', '~> 2.8'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'mysql', '~> 2.8.1'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter   => 'mysql'}, "#{@apptmp}/sample_project/config/database.rb")
       end
