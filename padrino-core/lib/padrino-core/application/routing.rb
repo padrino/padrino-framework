@@ -65,7 +65,7 @@ class HttpRouter
 
   # @private
   class Route
-    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in
+    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in, :parent
 
     def before_filters(&block)
       @_before_filters ||= []
@@ -561,7 +561,7 @@ module Padrino
           route_options[:provides] = @_provides if @_provides
           path, *route_options[:with] = path if path.is_a?(Array)
           action = path
-          path, name, options, route_options = *parse_route(path, route_options, verb)
+          path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
           options.reverse_merge!(@_conditions) if @_conditions
 
           # Sinatra defaults
@@ -581,6 +581,7 @@ module Padrino
           priority_name = options.delete(:priority) || :normal
           priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
+          route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
           route.send(verb.downcase.to_sym)
           route.host(options.delete(:host)) if options.key?(:host)
           route.user_agent(options.delete(:agent)) if options.key?(:agent)
@@ -669,7 +670,7 @@ module Padrino
 
             # Now we need to parse our 'parent' params and parent scope
             if !absolute_map and parent_params = options.delete(:parent) || @_parents
-              parent_params = Array(@_parents) + Array(parent_params)
+              parent_params = (Array(@_parents) + Array(parent_params)).uniq
               path = process_path_for_parent_params(path, parent_params)
             end
 
@@ -697,7 +698,7 @@ module Padrino
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
 
-          [path, name, options, route_options]
+          [path, name, parent_params, options, route_options]
         end
 
         ##
