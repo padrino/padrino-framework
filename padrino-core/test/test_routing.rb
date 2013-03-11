@@ -1414,12 +1414,12 @@ describe "Routing" do
         get(:url5) { "okay" }
       end
     end
-  
+
     url = @app.url(:ugly, :url3, :id => 1)
     assert_equal "/pretty/1/url3", url
     get url
     assert_equal "1", body
-  
+
     url = @app.url(:ugly, :url4, 3, 5)
     assert_equal "/pretty/3/test-5", url
     get url
@@ -1711,7 +1711,7 @@ describe "Routing" do
 
   should 'render a custom 404 page' do
     mock_app do
-      error(404) { "custom 404 not found" }
+      not_found { "custom 404 not found" }
     end
     get "/"
     assert_equal 404, status
