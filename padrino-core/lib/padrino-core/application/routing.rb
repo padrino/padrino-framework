@@ -772,7 +772,7 @@ module Padrino
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             url_format        = params[:format].to_sym if params[:format]
-            accepts           = request.accept.map { |a| a.to_str.split(";")[0].strip }
+            accepts           = request.accept.map { |a| a.to_str }
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
