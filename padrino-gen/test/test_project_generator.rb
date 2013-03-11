@@ -198,8 +198,22 @@ describe "ProjectGenerator" do
         assert_match_in_file(%r{project_com}, "#{@apptmp}/project.com/config/database.rb")
       end
 
-      should "properly generate mysql" do
+      should "properly generate mysql (default to mysql2)" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql') }
+        assert_match_in_file(/gem 'mysql2'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(%r{"mysql2://}, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
+      end
+
+      should "properly generate mysql2" do
+        out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql2') }
+        assert_match_in_file(/gem 'mysql2'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(%r{"mysql2://}, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
+      end
+
+      should "properly generate mysql-gem" do
+        out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql-gem') }
         assert_match_in_file(/gem 'mysql'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(%r{"mysql://}, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
@@ -230,11 +244,11 @@ describe "ProjectGenerator" do
         assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
       end
 
-      should "properly generate mysql" do
+      should "properly generate mysql (default to mysql2)" do
         out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord','--adapter=mysql') }
-        assert_match_in_file(/gem 'mysql', '~> 2.8.1'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'mysql2'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(%r{:adapter   => 'mysql'}, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(%r{:adapter   => 'mysql2'}, "#{@apptmp}/sample_project/config/database.rb")
       end
 
       should "properly generate mysql2" do
@@ -242,6 +256,13 @@ describe "ProjectGenerator" do
         assert_match_in_file(/gem 'mysql2'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(%r{:adapter   => 'mysql2'}, "#{@apptmp}/sample_project/config/database.rb")
+      end
+
+      should "properly generate mysql-gem" do
+        out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord','--adapter=mysql-gem') }
+        assert_match_in_file(/gem 'mysql', '~> 2.8.1'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(%r{:adapter   => 'mysql'}, "#{@apptmp}/sample_project/config/database.rb")
       end
 
       should "properly generate sqlite3" do
