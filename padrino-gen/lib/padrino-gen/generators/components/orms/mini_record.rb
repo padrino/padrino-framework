@@ -79,12 +79,12 @@ def setup_orm
   ar = MR
   db = @app_name.underscore
   case options[:adapter]
-  when 'mysql'
+  when 'mysql-gem'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
     ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql'
-  when 'mysql2'
+    require_dependencies 'mysql', :version => "~> 2.8.1"
+  when 'mysql', 'mysql2'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
     ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
