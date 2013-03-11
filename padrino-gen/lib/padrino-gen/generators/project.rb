@@ -1,9 +1,5 @@
 require 'padrino-core/version'
-begin
-  require 'securerandom' unless defined?(SecureRandom)
-rescue LoadError
-  # Fail silently
-end
+require 'securerandom' unless defined?(SecureRandom)
 
 module Padrino
   module Generators
