@@ -819,7 +819,7 @@ module Padrino
         #
         def csrf_protection(on = true)
           if on
-            condition { halt 403 if request.env['rack.protection.csrf.status'] == false }
+            condition { halt 403 if request.env['protection.csrf.failed'] }
           end
         end
     end
