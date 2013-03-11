@@ -2,7 +2,11 @@ require File.expand_path('../../tasks', __FILE__)
 require 'rake'
 require 'rake/dsl_definition'
 require 'thor'
-require 'securerandom' unless defined?(SecureRandom)
+begin
+  require 'securerandom' unless defined?(SecureRandom)
+rescue LoadError
+  # Fail silently
+end
 require 'padrino-gen'
 
 module PadrinoTasks
