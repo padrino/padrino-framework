@@ -1,6 +1,6 @@
 # Padrino Performance
 
-Perfomance tools for padrino
+Performance tools for Padrino.
 
 ## "Installation"
 

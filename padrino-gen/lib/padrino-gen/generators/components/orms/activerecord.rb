@@ -100,7 +100,7 @@ def setup_orm
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
     ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql', :version => "~> 2.8"
+    require_dependencies 'mysql', :version => "~> 2.8.1"
   when 'mysql2'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
@@ -117,7 +117,7 @@ def setup_orm
     ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
-  require_dependencies 'activerecord', :require => 'active_record'
+  require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
   insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
 end

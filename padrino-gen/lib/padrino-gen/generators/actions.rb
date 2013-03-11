@@ -299,7 +299,7 @@ module Padrino
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
-      # Inserts a middleware inside app.rb..
+      # Inserts a middleware inside app.rb.
       #
       # @param [String] include_text
       #   Text to include into hooks in boot.rb.
@@ -310,7 +310,7 @@ module Padrino
       # @api public
       def insert_middleware(include_text, app=nil)
         name = app || (options[:name].present? ? @app_name.downcase : 'app')
-        inject_into_file("#{name}/app.rb", "  use #{include_text}\n", :after => "Padrino::Application\n")
+        inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
       end
 
       # Registers and creates initializer.

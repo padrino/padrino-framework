@@ -821,6 +821,55 @@ describe "Routing" do
     assert_equal "show 3 1 2", body
   end
 
+  should "respect parent precedence: controllers parents go before route parents" do
+    mock_app do
+      controllers :project do
+        get(:index, :parent => :user) { "index #{params[:user_id]}" }
+      end
+
+      controllers :bar, :parent => :foo do
+        get(:index) { "index on foo #{params[:foo_id]} @ bar" }
+        get(:index, :parent => :baz) { "index on foo #{params[:foo_id]} @ baz #{params[:baz_id]} @ bar" }
+      end
+    end
+
+    get "/user/1/project"
+    assert_equal "index 1", body
+    get "/foo/1/bar"
+    assert_equal "index on foo 1 @ bar", body
+    get "/foo/1/baz/2/bar"
+    assert_equal "index on foo 1 @ baz 2 @ bar", body
+  end
+
+  should "keep a reference to the parent on the route" do
+    mock_app do
+      controllers :project do
+        get(:index, :parent => :user) { "index #{params[:user_id]}" }
+        get(:index, :parent => [:user, :section]) { "index #{params[:user_id]} #{params[:section_id]}" }
+        get(:edit, :with => :id, :parent => :user) { "edit #{params[:id]} #{params[:user_id]}"}
+        get(:show, :with => :id, :parent => [:user, :product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+      end
+
+      controllers :bar, :parent => :foo do
+        get(:index) { "index on foo/bar" }
+        get(:index, :parent => :baz) { "index on foo/baz/bar" }
+      end
+    end
+
+    # get "/user/1/project"
+    assert_equal :user, @app.routes[0].parent
+    # get "/user/1/section/3/project"
+    assert_equal [:user, :section], @app.routes[2].parent
+    # get "/user/1/project/edit/2"
+    assert_equal :user, @app.routes[4].parent
+    # get "/user/1/product/2/project/show/3"
+    assert_equal [:user, :product], @app.routes[6].parent
+    # get "/foo/1/bar"
+    assert_equal :foo, @app.routes[8].parent
+    # get "/foo/1/baz/2/bar"
+    assert_equal [:foo, :baz], @app.routes[10].parent
+  end
+
   should "apply parent to controller" do
     mock_app do
       controller :project, :parent => :user do
