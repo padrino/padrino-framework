@@ -1719,6 +1719,17 @@ describe "Routing" do
     assert_equal "custom 404 not found".length.to_s, headers['Content-Length']
   end
 
+  should 'render a custom 403 page' do
+    mock_app do
+      error(403) { "custom 403 not found" }
+      get("/") { status 403 }
+    end
+    get "/"
+    assert_equal 403, status
+    assert_equal "custom 403 not found", body
+    assert_equal "custom 403 not found".length.to_s, headers['Content-Length']
+  end
+
   should 'recognize paths' do
     mock_app do
       controller :foo do
