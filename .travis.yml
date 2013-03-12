@@ -39,4 +39,3 @@ matrix:
     - rvm: 2.0.0
       env: SINATRA_EDGE=true
     - rvm: rbx-18mode
-    - rvm: jruby-19mode
