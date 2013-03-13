@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Padrino
   module Helpers
     ##
@@ -28,7 +30,9 @@ module Padrino
       #
       # @api public
       def form_for(object, url, settings={}, &block)
-        form_html = capture_html(builder_instance(object, settings), &block)
+        instance = builder_instance(object, settings)
+        form_html = instance.csrf_token_field
+        form_html << capture_html(instance, &block)
         form_tag(url, settings) { form_html }
       end
 
@@ -689,6 +693,25 @@ module Padrino
       def image_submit_tag(source, options={})
         options.reverse_merge!(:src => image_path(source))
         input_tag(:image, options)
+      end
+
+      # Constructs a hidden field containing a CSRF token.
+      #
+      # @param [String] token
+      #   The token to use. Will be read from the session by default.
+      #
+      # @return [String] The hidden field with CSRF token as value.
+      #
+      # @example
+      #   csrf_token_field
+      #
+      # @api public
+      def csrf_token_field(token = nil)
+        if defined? session
+          token ||= (session[:csrf] ||= SecureRandom.hex(32))
+        end
+
+        hidden_field_tag :authenticity_token, :value => token
       end
 
       protected
