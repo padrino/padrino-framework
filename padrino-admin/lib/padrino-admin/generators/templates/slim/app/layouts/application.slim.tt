@@ -10,7 +10,7 @@ html lang='en'
     div class='navbar navbar-fixed-top'
       div class='navbar-inner'
         div class='container'
-          == link_to 'Padrino Admin', url(:base_index), :class => 'navbar-brand'
+          == link_to image_tag('padino-logo-mini.png', :title => 'Padrino Admin', :alt => 'Padrino Admin'), url(:base_index), :class => 'navbar-brand'
 
           ul class='nav pull-right'
             li == link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)
