@@ -103,6 +103,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct form in erb" do
@@ -110,6 +111,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct form in slim" do
@@ -117,6 +119,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "have a class of 'invalid' for fields with errors" do
