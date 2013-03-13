@@ -169,6 +169,10 @@ module Padrino
           end.join("\n").html_safe
         end
 
+        def csrf_token_field
+          @template.csrf_token_field
+        end
+
         protected
           # Returns the known field types for a formbuilder
           def self.field_types

@@ -559,6 +559,14 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
+
+          # CSRF protection is always active except when explicitly switched off
+          if allow_disabled_csrf
+            unless route_options[:csrf_protection] == false
+              route_options[:csrf_protection] = true
+            end
+          end
+
           path, *route_options[:with] = path if path.is_a?(Array)
           action = path
           path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
@@ -797,6 +805,21 @@ module Padrino
             end
 
             matched_format
+          end
+        end
+
+        ##
+        # Implements CSRF checking when `allow_disabled_csrf` is set to true.
+        #
+        # This condition is always on, except when it is explicitly switched
+        # off.
+        #
+        # @example
+        #   post("/", :csrf_protection => false)
+        #
+        def csrf_protection(on = true)
+          if on
+            condition { halt 403 if request.env['protection.csrf.failed'] }
           end
         end
     end
