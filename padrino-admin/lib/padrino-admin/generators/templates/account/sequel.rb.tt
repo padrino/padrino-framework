@@ -1,4 +1,4 @@
-class <%= @model_name %> < ::Sequel::Model
+class <%= @model_name %> < Sequel::Model
 
   plugin :validation_helpers
 

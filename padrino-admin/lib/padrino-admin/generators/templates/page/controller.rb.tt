@@ -1,4 +1,4 @@
-Admin.controllers :<%= @orm.name_plural %> do
+<%= @app_name %>::Admin.controllers :<%= @orm.name_plural %> do
   get :index do
     @title = "<%= @orm.name_plural.capitalize %>"
     @<%= @orm.name_plural %> = <%= @orm.all %>

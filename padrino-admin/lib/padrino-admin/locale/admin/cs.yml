@@ -7,7 +7,7 @@ cs:
       list: "List"
       edit: "Edit"
       new: "Nový"
-      show:: "Show"
+      show: "Show"
       delete: "Delete"
       confirm: "Jsi si jistý?"
       created_at: "Vytvořeno"

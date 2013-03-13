@@ -22,7 +22,7 @@ module Padrino
           @orm            = orm.to_sym
           @columns        = columns
           @column_fields  = column_fields
-          raise OrmError, "Model '#{klass_name}' could not be found!" if @columns.nil? && @klass.nil?
+          raise OrmError, "Model '#{klass_name}' could not be found!\nPerhaps you would like to run 'bundle exec padrino g model #{klass_name}' to create it first?" if @columns.nil? && @klass.nil?
         end
 
         def activerecord?
