@@ -772,7 +772,7 @@ module Padrino
           condition do
             mime_types        = types.map { |t| mime_type(t) }
             url_format        = params[:format].to_sym if params[:format]
-            accepts           = request.accept.map { |a| a.to_str.split(";")[0].strip }
+            accepts           = request.accept.map { |a| a.to_str }
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
@@ -934,16 +934,18 @@ module Padrino
         end
 
         def dispatch!
-          static! if settings.static? && (request.get? || request.head?)
-          route!
+          invoke do
+            static! if settings.static? && (request.get? || request.head?)
+            route!
+          end
         rescue ::Exception => boom
           filter! :before  if boom.kind_of? ::Sinatra::NotFound
-          @boom_handled = handle_exception!(boom)
+          invoke { @boom_handled = handle_exception!(boom) }
         ensure
           @boom_handled  or begin
             filter! :after  unless env['sinatra.static_file']
           rescue ::Exception => boom
-            handle_exception!(boom)
+            invoke { handle_exception!(boom) } unless @env['sinatra.error']
           end
         end
 

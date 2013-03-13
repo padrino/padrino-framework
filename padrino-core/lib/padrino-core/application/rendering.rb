@@ -179,7 +179,7 @@ module Padrino
         # * Use render 'path/to/template', :layout => false, :engine => 'haml'
         #
         def render(engine, data=nil, options={}, locals={}, &block)
-          
+
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
           engine, data, options = data, options, locals if engine.nil? && data
@@ -197,8 +197,8 @@ module Padrino
           root = settings.respond_to?(:root) ? settings.root : ""
 
           # Use @layout if it exists
+          layout_was = options[:layout]
           options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
-
           # Resolve layouts similar to in Rails
           if options[:layout].nil? && !settings.templates.has_key?(:layout)
             layout_path, layout_engine = *resolved_layout
@@ -208,6 +208,8 @@ module Padrino
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
           end
+          # Default to original layout value if none found
+          options[:layout] ||= layout_was
 
           # Cleanup the template
           @current_engine, engine_was = engine, @current_engine

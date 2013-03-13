@@ -29,7 +29,7 @@ describe "Rendering" do
           "this is a <%= yield %>"
         end
 
-        get("/"){ render :erb, "sinatra layout" }
+        get("/"){ render :erb, "sinatra layout", :layout => true }
       end
 
       get "/"
@@ -215,7 +215,7 @@ describe "Rendering" do
       create_view :index, "<%= foo %>"
       mock_app do
         enable :logging
-        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+        get("/") { render "index", { :layout => nil }, { :foo => "bar" } }
       end
       get "/"
       assert_equal "bar", body
@@ -475,7 +475,7 @@ describe "Rendering" do
           render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>', :layout => false
         end
         get '/with_layout' do
-          render :erb, '<span>span</span>'
+          render :erb, '<span>span</span>', :layout => true
         end
       end
       get '/'
@@ -496,7 +496,7 @@ describe "Rendering" do
           render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
         end
         get '/with_layout' do
-          render :haml, "%div\n  foo"
+          render :haml, "%div\n  foo", :layout => true
         end
       end
       get '/'
@@ -517,7 +517,7 @@ describe "Rendering" do
           render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
         end
         get "/with_layout" do
-          render :slim, 'div foo'
+          render :slim, 'div foo', :layout => true
         end
       end
       get '/'
