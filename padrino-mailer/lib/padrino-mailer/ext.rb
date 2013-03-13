@@ -16,6 +16,9 @@ module Mail # @private
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
+
+      initialize_template_settings!
+
       # Run the original initialize
       initialize_without_app(*args, &block)
     end
@@ -52,13 +55,11 @@ module Mail # @private
     #  text_part "Some text"
     #  text_part { render('multipart/basic.text') }
     #
-    def text_part(value=nil, &block)
-      if block_given? || value
-        @text_part = self.part(:content_type => "text/plain", :body => value, :part_block => block)
-        add_multipart_alternate_header unless html_part.blank?
-      else
-        @text_part || find_first_mime_type("text/plain")
-      end
+    def text_part(value = nil, &block)
+      add_resolved_part(:variable     => :text_part, 
+                        :value        => value, 
+                        :content_type => 'text/plain',
+                        &block)
     end
 
     ##
@@ -70,12 +71,20 @@ module Mail # @private
     #  html_part "Some <b>Html</b> text"
     #  html_part { render('multipart/basic.html') }
     #
-    def html_part(value=nil, &block)
+    def html_part(value = nil, &block)
+      add_resolved_part(:variable     => :html_part, 
+                        :value        => value, 
+                        :content_type => 'text/html', 
+                        &block)
+    end
+
+    def add_resolved_part(attributes = {}, &block)
+      variable, value, content_type = attributes.values_at(:variable, :value, :content_type)
       if block_given? || value
-        @html_part = self.part(:content_type => "text/html", :body => value, :part_block => block)
-        add_multipart_alternate_header unless text_part.blank?
+        instance_variable_set "@#{variable}", self.part(:content_type => content_type, :body => value, :part_block => block)
+        add_multipart_alternate_header unless self.send(variable).blank?
       else
-        @html_part || find_first_mime_type("text/html")
+        instance_variable_get("@#{variable}") || find_first_mime_type(content_type)
       end
     end
 
@@ -240,5 +249,11 @@ module Mail # @private
         self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
 
+      # register all special template configurations Padrino has to our fake settings object.
+      def initialize_template_settings!
+        Padrino::Rendering.engine_configurations.each do |name, value|
+          settings.class.instance_eval { define_method(name) { value } }
+        end
+      end
   end # Message
 end # Mail

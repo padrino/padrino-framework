@@ -38,7 +38,15 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc "Migrate the database to the latest version"
-    task :migrate => 'dm:migrate:up'
+    task :migrate do
+      migrate_task = if Dir['db/migrate/*.rb'].empty?
+                       'dm:auto:upgrade'
+                     else
+                       'dm:migrate:up'
+                     end
+
+      Rake::Task[migrate_task].invoke
+    end
 
     desc "Create the database"
     task :create => :environment do
@@ -53,11 +61,17 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
           system("createdb", "-E", charset, "-h", host, "-U", user, database)
           puts "<= dm:create executed"
         when 'mysql'
-          query = [
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
-            "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}".inspect
-          ]
-          system(query.compact.join(" "))
+          arguments = ["--user=#{user}"]
+          arguments << "--password=#{password}" unless password.blank?
+          
+          unless %w[127.0.0.1 localhost].include?(host)
+            arguments << "--host=#{host}"
+          end
+
+          arguments << '-e'
+          arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
+
+          system('mysql',*arguments)
           puts "<= dm:create executed"
         when 'sqlite3'
           DataMapper.setup(DataMapper.repository.name, config)
@@ -77,11 +91,17 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
           system("dropdb", "-h", host, "-U", user, database)
           puts "<= dm:drop executed"
         when 'mysql'
-          query = [
-            "mysql", "--user=#{user}", (password.blank? ? '' : "--password=#{password}"), (%w[127.0.0.1 localhost].include?(host) ? '-e' : "--host=#{host} -e"),
-            "DROP DATABASE IF EXISTS #{database}".inspect
-          ]
-          system(query.compact.join(" "))
+          arguments = ["--user=#{user}"]
+          arguments << "--password=#{password}" unless password.blank?
+          
+          unless %w[127.0.0.1 localhost].include?(host)
+            arguments << "--host=#{host}"
+          end
+
+          arguments << '-e'
+          arguments << "DROP DATABASE IF EXISTS #{database}"
+
+          system('mysql',*arguments)
           puts "<= dm:drop executed"
         when 'sqlite3'
           File.delete(config[:path]) if File.exist?(config[:path])
@@ -98,4 +118,8 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
   end
 
   task 'db:migrate' => 'dm:migrate'
+  task 'db:create'  => 'dm:create'
+  task 'db:drop'    => 'dm:drop'
+  task 'db:reset'   => 'dm:reset'
+  task 'db:setup'   => 'dm:setup'
 end

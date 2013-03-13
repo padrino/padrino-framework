@@ -3,7 +3,7 @@ AR = (<<-AR) unless defined?(AR)
 # You can use other adapters like:
 #
 #   ActiveRecord::Base.configurations[:development] = {
-#     :adapter   => 'mysql',
+#     :adapter   => 'mysql2',
 #     :encoding  => 'utf8',
 #     :reconnect => true,
 #     :database  => 'your_database',
@@ -95,13 +95,14 @@ SQLITE
 def setup_orm
   ar = AR
   db = @app_name.underscore
+  # We're now defaulting to mysql2 since mysql is deprecated
   case options[:adapter]
-  when 'mysql'
+  when 'mysql-gem'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
     ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql', :version => "~> 2.8"
-  when 'mysql2'
+    require_dependencies 'mysql', :version => "~> 2.8.1"
+  when 'mysql', 'mysql2'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
     ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
     ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
@@ -117,7 +118,7 @@ def setup_orm
     ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
-  require_dependencies 'activerecord', :require => 'active_record'
+  require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
   insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
 end

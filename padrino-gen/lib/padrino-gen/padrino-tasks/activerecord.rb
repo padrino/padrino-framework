@@ -1,6 +1,6 @@
 if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   # Fixes for Yardoc YRI Building
-  class ActiveRecord; end unless defined?(ActiveRecord)
+  module ActiveRecord; end unless defined?(ActiveRecord)
   class ActiveRecord::Schema; end unless defined?(ActiveRecord::Schema)
 
   namespace :ar do
@@ -336,6 +336,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   task 'db:migrate' => 'ar:migrate'
+  task 'db:create'  => 'ar:create'
+  task 'db:drop'    => 'ar:drop'
+  task 'db:reset'   => 'ar:reset'
+  task 'db:setup'   => 'ar:setup'
 
   def drop_database(config)
     case config[:adapter]
