@@ -9,7 +9,7 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <%%= link_to "Padrino Admin", url(:base_index), :class => "brand" %>
+          <%%= link_to "Padrino Admin", url(:base_index), :class => "navbar-brand" %>
           <ul class="nav pull-right">
             <li><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)%></li>
             <li><%%= button_to(:logout, url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) } %></li>

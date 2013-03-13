@@ -14,14 +14,14 @@
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          =link_to 'Padrino Admin', url(:base_index), :class => :brand
+          =link_to 'Padrino Admin', url(:base_index), :class => 'navbar-brand'
           %ul.nav.pull-right
             %li=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile)
             %li
               =button_to :logout, url(:sessions, :destroy), :method => :delete do
-                =content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) 
+                =content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout)
                 -#TODO Use button_tag once the PR is accepted.
-                -#=button_tag tag_icon(:off), :type => :submit, :title => pat(:logout) 
+                -#=button_tag tag_icon(:off), :type => :submit, :title => pat(:logout)
 
           %ul.nav.pull-left
             - project_modules.each do |project_module|
