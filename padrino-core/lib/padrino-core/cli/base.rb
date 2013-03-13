@@ -48,8 +48,10 @@ module Padrino
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
         load File.expand_path('../rake.rb', __FILE__)
-        require File.expand_path('config/boot.rb')
-        PadrinoTasks.init(true)
+        Rake.application.init
+        Rake.application.instance_variable_set(:@rakefile, __FILE__)
+        load File.expand_path('Rakefile')
+        Rake.application.top_level
       end
 
       desc "console", "Boots up the Padrino application irb console (alternatively use 'c')."
