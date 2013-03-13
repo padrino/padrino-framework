@@ -3,13 +3,14 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <title>Login Padrino Admin</title>
+    <%%= favicon_tag "favicon.png" %>
     <%%= stylesheet_link_tag "bootstrap", "admin" %>
   </head>
   <body>
     <%% form_tag url(:sessions, :create), :class=>"form-horizontal" do %>
       <div id="padrino-modal" class="login">
         <div class="modal-header">
-          <div class="logo"> <%%= image_tag("logo.jpg", :title => "Login Logo", :alt => "Login Logo") %> </div>
+          <div class="logo"> <%%= image_tag("padino-logo.png", :title => "Login Logo", :alt => "Login Logo") %> </div>
         </div>
         <div class="modal-body" id="padrino-modal-body">
 

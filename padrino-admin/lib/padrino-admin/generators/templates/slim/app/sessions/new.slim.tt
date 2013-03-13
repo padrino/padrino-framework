@@ -3,13 +3,14 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
   head
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Login Padrino Admin
+    == favicon_tag 'favicon.png'
     == stylesheet_link_tag 'bootstrap', 'admin'
 
   body
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       div id='padrino-modal' class='login'
         div class="modal-header"
-          div class="logo" == image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
+          div class="logo" == image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
         div class="modal-body" id='padrino-modal-body'
           div class="flash" == [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
 

@@ -8,12 +8,13 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %meta{:name => :viewport, :content => 'width=device-width'}
     %title Login | Padrino Admin
+    =favicon_tag 'favicon.png'
     =stylesheet_link_tag 'bootstrap', 'admin'
   %body
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       #padrino-modal.login
         .modal-header
-          .logo=image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo')
+          .logo=image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
         #padrino-modal-body.modal-body
           .flash
             = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join

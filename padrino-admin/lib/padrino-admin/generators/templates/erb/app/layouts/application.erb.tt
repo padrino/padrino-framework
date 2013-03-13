@@ -3,6 +3,7 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin" %></title>
+    <%%= favicon_tag "favicon.png" %>
     <%%= stylesheet_link_tag "bootstrap", "admin" %>
   </head>
   <body>

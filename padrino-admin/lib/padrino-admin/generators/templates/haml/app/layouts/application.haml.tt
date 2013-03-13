@@ -8,6 +8,7 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %meta{:name => :viewport, :content => 'width=device-width'}
     %title= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
+    =favicon_tag 'favicon.png'
     =stylesheet_link_tag 'bootstrap', 'admin'
 
   %body
