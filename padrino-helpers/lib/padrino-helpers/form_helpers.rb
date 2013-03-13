@@ -31,9 +31,7 @@ module Padrino
       # @api public
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
-        form_html = instance.csrf_token_field
-        form_html << capture_html(instance, &block)
-        form_tag(url, settings) { form_html }
+        form_tag(url, settings) { capture_html(instance, &block) }
       end
 
       ##
@@ -83,8 +81,9 @@ module Padrino
         options.reverse_merge!(:method => 'post', :action => url)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
         options['accept-charset'] ||= 'UTF-8'
-        inner_form_html  = hidden_form_method_field(desired_method)
-        inner_form_html += mark_safe(capture_html(&block))
+        inner_form_html = hidden_form_method_field(desired_method)
+        inner_form_html << csrf_token_field
+        inner_form_html << mark_safe(capture_html(&block))
         concat_content content_tag(:form, inner_form_html, options)
       end
 

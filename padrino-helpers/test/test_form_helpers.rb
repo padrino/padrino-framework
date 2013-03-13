@@ -58,18 +58,21 @@ describe "FormHelpers" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct forms in haml" do
       visit '/haml/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct forms in slim" do
       visit '/slim/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
   end
 
