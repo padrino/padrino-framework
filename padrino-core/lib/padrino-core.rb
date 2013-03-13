@@ -13,7 +13,6 @@ require 'padrino-core/router'
 require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
-require 'padrino-core/ext/rack-protection'
 
 
 # The Padrino environment (falls back to the rack env or finally develop)
