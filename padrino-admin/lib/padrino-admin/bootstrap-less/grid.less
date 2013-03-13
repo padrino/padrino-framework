@@ -10,14 +10,14 @@
 
 // Mobile-first defaults
 .row {
-  margin-left:  @grid-gutter-width / -2;
-  margin-right: @grid-gutter-width / -2;
+  margin-left:  (@grid-gutter-width / -2);
+  margin-right: (@grid-gutter-width / -2);
   .clear_float();
 }
 [class^="span"] {
   min-height: 1px;
-  padding-left:  @grid-gutter-width / 2;
-  padding-right: @grid-gutter-width / 2;
+  padding-left:  (@grid-gutter-width / 2);
+  padding-right: (@grid-gutter-width / 2);
   // Proper box-model (padding doesn't add to width)
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -47,6 +47,10 @@
 @media screen and (min-width: 1200px) {
   .container {
     max-width: 1170px;
+  }
+  .row {
+    margin-left: -15px;
+    margin-right: -15px;
   }
   [class^="span"] {
     padding-left: 15px;
