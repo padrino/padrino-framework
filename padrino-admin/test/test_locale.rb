@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 describe "Filters" do
   Dir[File.expand_path("../../lib/padrino-admin/locale/admin/*.yml", __FILE__)].each do |file|
     name = File.basename(file, '.yml')
-    should "have a vaild #{name} locale for admin" do
+    it "should have a vaild #{name} locale for admin" do
       base = YAML.load_file(file)
       base = base[name]['padrino']['admin']
       assert base.present?
@@ -25,7 +25,7 @@ describe "Filters" do
 
   Dir[File.expand_path("../../lib/padrino-admin/locale/orm/*.yml", __FILE__)].each do |file|
     name = File.basename(file, '.yml')
-    should "have a vaild #{name} locale for orm" do
+    it "should have a vaild #{name} locale for orm" do
       base = YAML.load_file(file)
       # TODO: some one can know why I can't parse YML aliases?
       %w(activemodel).each do |m|

@@ -21,7 +21,10 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      class_option :app, :aliases => "-a", :desc => "The model destination path", :default => '.', :type => :string
+      # TODO FIXME Review these and implement accordingly.
+      # See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
+      # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
+      # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
@@ -42,6 +45,9 @@ module Padrino
             raise SystemExit
           end
 
+          # Get the app's namespace
+          @app_name = fetch_app_name
+
           store_component_choice(:admin_renderer, tmp_ext)
 
           self.behavior = :revoke if options[:destroy]
@@ -56,14 +62,14 @@ module Padrino
           directory "templates/app",       destination_root("admin")
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}::Admin\", :app_file => File.expand_path('../../admin/app.rb', __FILE__)).to(\"/admin\")"
           unless options[:destroy]
             insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
           end
 
           params = [
             @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
-            "-a=#{options[:app]}",
+            "-a=#{options[:models_path]}",
             "-r=#{options[:root]}"
           ]
           params << "-s" if options[:skip_migration]
@@ -87,7 +93,8 @@ module Padrino
             admin_app.invoke_all
           end
 
-          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{@model_singular}.rb"), :force => true
+          # TODO See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
+          template "templates/account/#{orm}.rb.tt", destination_root("models", "#{@model_singular}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
@@ -110,7 +117,8 @@ module Padrino
           end
 
           # A nicer select box
-          gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          # TODO FIXME This doesn't make much sense in here. Review. 
+          # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           # Destroy account only if not logged in
           gsub_file destination_root("admin/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"

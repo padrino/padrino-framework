@@ -22,6 +22,9 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin_page model(s)"
       argument :models, :desc => "The name(s) of your model(s)", :type => :array
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
+      # TODO FIXME Review these and implement accordingly.
+      # See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
+      # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
@@ -31,8 +34,11 @@ module Padrino
       # Create controller for admin
       def create_controller
         self.destination_root = options[:root]
-        self.source_paths.unshift Padrino.root("vendor/padrino-admin/generators")
+        # TODO FIXME ??? Review
+        # self.source_paths.unshift Padrino.root("vendor/padrino-admin/generators")
         if in_app_root?
+          @app_name = fetch_app_name
+
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
             self.behavior = :revoke if options[:destroy]
