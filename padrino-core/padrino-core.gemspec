@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
-    s.add_dependency("sinatra", "~> 1.3.5")
+    s.add_dependency("sinatra", "~> 1.4.0.d")
   end
   s.add_dependency("http_router", "~> 0.10.2")
   s.add_dependency("thor", "~> 0.16.0")
