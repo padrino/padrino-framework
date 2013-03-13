@@ -934,16 +934,18 @@ module Padrino
         end
 
         def dispatch!
-          static! if settings.static? && (request.get? || request.head?)
-          route!
+          invoke do
+            static! if settings.static? && (request.get? || request.head?)
+            route!
+          end
         rescue ::Exception => boom
           filter! :before  if boom.kind_of? ::Sinatra::NotFound
-          @boom_handled = handle_exception!(boom)
+          invoke { @boom_handled = handle_exception!(boom) }
         ensure
           @boom_handled  or begin
             filter! :after  unless env['sinatra.static_file']
           rescue ::Exception => boom
-            handle_exception!(boom)
+            invoke { handle_exception!(boom) } unless @env['sinatra.error']
           end
         end
 
