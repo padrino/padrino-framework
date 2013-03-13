@@ -567,7 +567,7 @@ module Padrino
           # Sinatra defaults
           method_name = "#{verb} #{path}"
           unbound_method = generate_method(method_name, &block)
-          max_args = block.arity
+          max_args = block.arity < 0 ? 0 : block.arity
           block = block.arity != 0 ?
             proc { |a,p| unbound_method.bind(a).call(*p.first(max_args)) } :
             proc { |a,p| unbound_method.bind(a).call }
