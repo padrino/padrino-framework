@@ -949,23 +949,14 @@ module Padrino
           end
         end
 
-        ROUTE_NOT_FOUND_STATUS = 9404
-
         def route!(base=settings, pass_block=nil)
           Thread.current['padrino.instance'] = self
-          if base.compiled_router
-            base.compiled_router.default(proc{|env| ::Rack::Response.new('Route Not Found', ROUTE_NOT_FOUND_STATUS, {'X-Cascade' => 'pass'}).finish})
-          end
           if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
-                if match[0] == ROUTE_NOT_FOUND_STATUS
-                  status 404
-                  route_missing
-                else
-                  match[1].each {|k,v| response[k] = v}
-                  status match[0]
-                end
+                match[1].each { |k,v| response[k] = v }
+                status match[0]
+                route_missing if match[0] == 404
               end
             end
           else
