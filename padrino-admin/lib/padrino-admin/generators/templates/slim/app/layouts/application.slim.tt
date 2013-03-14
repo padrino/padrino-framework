@@ -2,29 +2,29 @@ doctype 5
 html lang='en'
   head
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
-    title == @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
-    == favicon_tag 'favicon.png'
-    == stylesheet_link_tag 'bootstrap', 'admin'
+    title = @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
+    = favicon_tag 'favicon.png'
+    = stylesheet_link_tag 'bootstrap', 'admin'
 
   body
     div class='navbar navbar-fixed-top'
       div class='navbar-inner'
         div class='container'
-          == link_to image_tag('padino-logo-mini.png', :title => 'Padrino Admin', :alt => 'Padrino Admin'), url(:base_index), :class => 'navbar-brand'
+          = link_to image_tag('padino-logo-mini.png', :title => 'Padrino Admin', :alt => 'Padrino Admin'), url(:base_index), :class => 'navbar-brand'
 
           ul class='nav pull-right'
-            li == link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)
-            li == button_to(pat(:logout), url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) }
+            li = link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)
+            li = button_to(pat(:logout), url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) }
 
           ul class='nav pull-left'
             - project_modules.each do |project_module|
               li class={'active' if request.path_info =~ /^#{project_module.path}/}
-                == link_to project_module.human_name, project_module.path('/admin')
+                = link_to project_module.human_name, project_module.path('/admin')
 
     div class='container main'
       div class='main-wrapper'
-        div class='flash' == [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
-        div class='row' == yield
+        div class='flash' = [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+        div class='row' = yield
         div class='main-push'
 
     footer
@@ -33,9 +33,9 @@ html lang='en'
           | Copyright &copy; #{Time.now.year} Your Site -
           b Powered by Padrino v.#{Padrino.version}
         ul class='pull-right footer-links'
-          li == link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank
-          li == link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank
-          li == link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank
-          li == link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank
+          li = link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank
+          li = link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank
+          li = link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank
+          li = link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank
 
-    ==javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
+    =javascript_include_tag 'jquery-1.9.0.min', (Padrino.env = :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application

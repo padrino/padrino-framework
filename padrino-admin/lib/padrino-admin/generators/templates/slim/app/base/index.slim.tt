@@ -10,11 +10,11 @@ hr
 
 div class="text-center the-icons"
   div class="btn-group"
-    == link_to tag_icon("cogs icon-2x", "Orm Agnostic"), "#", :title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest", :class => "btn btn-primary"
-    == link_to tag_icon("group icon-2x", "Authentication"), "#", :title => "User Authentication Support, User Authorization Management", :class => "btn btn-success"
-    == link_to tag_icon("tasks icon-2x", "Template Agnostic"), "#", :title => "Erb, Haml, Slim Rendering Support", :class => "btn btn-info"
-    == link_to tag_icon("flag icon-2x", "Multi Language"), "#", :title => "English, German, Russian, Danish, French, Brazilian and Italian localizations", :class => "btn btn-warning"
-    == link_to tag_icon("magic icon-2x", "Scaffold"), "#", :title => "You can create a new 'admin interface' by providing a single Model", :class => "btn btn-danger"
+    = link_to tag_icon("cogs icon-2x", "Orm Agnostic"), "#", :title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest", :class => "btn btn-primary"
+    = link_to tag_icon("group icon-2x", "Authentication"), "#", :title => "User Authentication Support, User Authorization Management", :class => "btn btn-success"
+    = link_to tag_icon("tasks icon-2x", "Template Agnostic"), "#", :title => "Erb, Haml, Slim Rendering Support", :class => "btn btn-info"
+    = link_to tag_icon("flag icon-2x", "Multi Language"), "#", :title => "English, German, Russian, Danish, French, Brazilian and Italian localizations", :class => "btn btn-warning"
+    = link_to tag_icon("magic icon-2x", "Scaffold"), "#", :title => "You can create a new 'admin interface' by providing a single Model", :class => "btn btn-danger"
 
 div id="explanation" class="well well-large text-center"
   h3
