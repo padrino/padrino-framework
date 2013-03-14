@@ -713,6 +713,49 @@ module Padrino
         hidden_field_tag :authenticity_token, :value => token
       end
 
+      ##
+      # Creates a form containing a single button that submits to the url.
+      #
+      # @overload button_to(name, url, options={})
+      #   @param [String]  caption  The text caption.
+      #   @param [String]  url      The url href.
+      #   @param [Hash]    options  The html options.
+      # @overload button_to(name, options={}, &block)
+      #   @param [String]  url      The url href.
+      #   @param [Hash]    options  The html options.
+      #   @param [Proc]    block    The button content.
+      #
+      # @option options [Boolean] :multipart
+      #   If true, this form will support multipart encoding.
+      # @option options [String] :remote
+      #   Instructs ujs handler to handle the submit as ajax.
+      # @option options [Symbol] :method
+      #   Instructs ujs handler to use different http method (i.e :post, :delete).
+      #
+      # @return [String] Form and button html with specified +options+.
+      #
+      # @example
+      #   button_to 'Delete', url(:accounts_destroy, :id => account), :method => :delete, :class => :form
+      #   # Generates:
+      #   # <form class="form" action="/admin/accounts/destroy/2" method="post">
+      #   #   <input type="hidden" value="delete" name="_method" />
+      #   #   <input type="submit" value="Delete" />
+      #   # </form>
+      #
+      # @api public
+      def button_to(*args, &block)
+        name, url = args[0], args[1]
+        options   = args.extract_options!
+        options['data-remote'] = 'true' if options.delete(:remote)
+        if block_given?
+          form_tag(url, options, &block)
+        else
+          form_tag(url, options) do
+            submit_tag(name)
+          end
+        end
+      end
+
       protected
 
         ##

@@ -781,4 +781,25 @@ describe "FormHelpers" do
       assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
     end
   end
+
+  context 'for #button_to method' do
+    should "have a form and set the method properly" do
+      actual_html = button_to('Delete', '/users/1', :method => :delete)
+      assert_has_tag('form', :action => '/users/1') { actual_html }
+      assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'delete') { actual_html }
+      assert_has_tag('form input', :type => 'hidden', :name => "authenticity_token") { actual_html }
+    end
+
+    should "add a submit button by default if no content is specified" do
+      actual_html = button_to('My Delete Button', '/users/1', :method => :delete)
+      assert_has_tag('form input', :type => 'submit', :value => 'My Delete Button') { actual_html }
+    end
+
+    should "set specific content inside the form if a block was sent" do
+      actual_html = button_to('My Delete Button', '/users/1', :method => :delete) do
+        content_tag :button, "My button's content", :type => :submit, :title => "My button"
+      end
+      assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
+    end
+  end
 end
