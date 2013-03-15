@@ -31,9 +31,9 @@ div class="tabs-content"
         tr
           td = check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
           <%- @orm.columns.each_with_index do |column, i| -%>
-          <%- if column.name = 'created_at' || column.name = 'updated_at' -%>
+          <%- if column.name == 'created_at' || column.name == 'updated_at' -%>
           td = time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
-          <%- elsif column.type = :boolean -%>
+          <%- elsif column.type == :boolean -%>
           td = <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove)
           <%- else -%>
           td = <%= @orm.name_singular %>.<%= column.name %>
