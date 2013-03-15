@@ -106,12 +106,12 @@ module Padrino
     #
     def named_routes
       app_obj.routes.map { |route|
-        name_array     = "(#{route.named.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
-        request_method = route.conditions[:request_method][0]
-        next if route.named.blank? || request_method == 'HEAD'
+        name_array     = "(#{route.name.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
+        request_method = route.request_methods.first
+        next if route.name.blank? || request_method == 'HEAD'
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
-        OpenStruct.new(:verb => request_method, :identifier => route.named, :name => name_array, :path => full_path)
+        OpenStruct.new(:verb => request_method, :identifier => route.name, :name => name_array, :path => full_path)
       }.compact
     end
 
