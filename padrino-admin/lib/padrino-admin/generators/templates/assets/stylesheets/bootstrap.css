@@ -225,6 +225,11 @@ table {
     page-break-after: avoid;
   }
 }
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 html {
   font-size: 62.5%;
   -webkit-overflow-scrolling: touch;
@@ -343,7 +348,13 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-family: inherit;
   font-weight: 500;
   line-height: 20px;
@@ -354,7 +365,13 @@ h2 small,
 h3 small,
 h4 small,
 h5 small,
-h6 small {
+h6 small,
+.h1 small,
+.h2 small,
+.h3 small,
+.h4 small,
+.h5 small,
+.h6 small {
   font-weight: normal;
   line-height: 1;
   color: #999999;
@@ -375,40 +392,50 @@ h6 {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-h1 {
+h1,
+.h1 {
   font-size: 38.5px;
   font-size: 4rem;
 }
-h2 {
+h2,
+.h2 {
   font-size: 31.5px;
   font-size: 3rem;
 }
-h3 {
+h3,
+.h3 {
   font-size: 24.5px;
   font-size: 2.5rem;
 }
-h4 {
+h4,
+.h4 {
   font-size: 17.5px;
   font-size: 2rem;
 }
-h5 {
+h5,
+.h5 {
   font-size: 14px;
   font-size: 1.6rem;
 }
-h6 {
+h6,
+.h6 {
   font-size: 11.9px;
   font-size: 1.2rem;
 }
-h1 small {
+h1 small,
+.h1 small {
   font-size: 24.5px;
 }
-h2 small {
+h2 small,
+.h2 small {
   font-size: 17.5px;
 }
-h3 small {
+h3 small,
+.h3 small {
   font-size: 14px;
 }
-h4 small {
+h4 small,
+.h4 small {
   font-size: 14px;
 }
 .page-header {
@@ -482,6 +509,7 @@ hr {
   border: 0;
   border-top: 1px solid #eeeeee;
   border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 abbr[title],
 abbr[data-original-title] {
@@ -621,9 +649,6 @@ pre code {
   min-height: 1px;
   padding-left: 10px;
   padding-right: 10px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
 }
 @media screen and (min-width: 768px) {
   .container {
@@ -830,12 +855,12 @@ th {
 .table-bordered colgroup + tbody tr:first-child td:last-child {
   border-top-right-radius: 4px;
 }
-.table-striped tbody > tr:nth-child(odd) > td,
-.table-striped tbody > tr:nth-child(odd) > th {
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
   background-color: #f9f9f9;
 }
-.table-hover tbody tr:hover > td,
-.table-hover tbody tr:hover > th {
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
   background-color: #f5f5f5;
 }
 table col[class^="span"] {
@@ -847,22 +872,22 @@ table th[class^="span"] {
   float: none;
   display: table-cell;
 }
-.table tbody tr.success > td {
+.table > tbody > tr.success > td {
   background-color: #dff0d8;
 }
-.table tbody tr.error > td {
+.table > tbody > tr.error > td {
   background-color: #f2dede;
 }
-.table tbody tr.warning > td {
+.table > tbody > tr.warning > td {
   background-color: #fcf8e3;
 }
-.table-hover tbody tr.success:hover > td {
+.table-hover > tbody > tr.success:hover > td {
   background-color: #d0e9c6;
 }
-.table-hover tbody tr.error:hover > td {
+.table-hover > tbody > tr.error:hover > td {
   background-color: #ebcccc;
 }
-.table-hover tbody tr.warning:hover > td {
+.table-hover > tbody > tr.warning:hover > td {
   background-color: #faf2cc;
 }
 form {
@@ -906,9 +931,6 @@ input[type="search"],
 input[type="tel"],
 input[type="color"] {
   display: inline-block;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
   min-height: 34px;
   padding: 6px 9px;
   font-size: 14px;
@@ -1442,9 +1464,6 @@ fieldset[disabled] .btn {
   width: 100%;
   padding-left: 0;
   padding-right: 0;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
 }
 .btn-block + .btn-block {
   margin-top: 5px;
@@ -3533,7 +3552,10 @@ button.close {
   margin-top: 0;
   color: inherit;
 }
-.alert .close {
+.alert hr {
+  border-top-color: #f8e5be;
+}
+.close {
   position: relative;
   top: -2px;
   right: -21px;
@@ -3545,16 +3567,26 @@ button.close {
   border-color: #d6e9c6;
   color: #468847;
 }
+.alert-success hr {
+  border-top-color: #c9e2b3;
+}
 .alert-danger,
 .alert-error {
   background-color: #f2dede;
   border-color: #eed3d7;
   color: #b94a48;
 }
+.alert-danger hr,
+.alert-error hr {
+  border-top-color: #e6c1c7;
+}
 .alert-info {
   background-color: #d9edf7;
   border-color: #bce8f1;
   color: #3a87ad;
+}
+.alert-info hr {
+  border-top-color: #a6e1ec;
 }
 .alert-block {
   padding-top: 14px;
@@ -3766,9 +3798,6 @@ a.badge:focus {
   background-color: #428bca;
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
   -webkit-transition: width 0.6s ease;
   -moz-transition: width 0.6s ease;
   -o-transition: width 0.6s ease;
