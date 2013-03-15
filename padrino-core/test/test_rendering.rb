@@ -404,7 +404,7 @@ describe "Rendering" do
       assert_equal "Im Italian Js", body
       I18n.locale = :en
       get "/foo.pk"
-      assert_equal 405, status
+      assert_equal 404, status
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -446,7 +446,7 @@ describe "Rendering" do
       get "/bar.json"
       assert_equal "Im a json", body
       get "/bar.pk"
-      assert_equal 405, status
+      assert_equal 404, status
     end
 
     should 'renders erb with blocks' do
