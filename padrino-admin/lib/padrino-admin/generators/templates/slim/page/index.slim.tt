@@ -25,7 +25,6 @@ div class="tabs-content"
                       = hidden_field_tag :<%= @orm.name_singular %>_ids, :'data-delete-many-ids' => true
                       = submit_tag  pat(:delete), :class =>'btn btn-danger btn-small'
                       div class='btn btn-small cancel' = pat(:cancel)
-
         <%- @orm.columns.each_with_index do |column, i| -%>
         th class='header' = :<%= column.name %>
         <%- end -%>
@@ -35,7 +34,15 @@ div class="tabs-content"
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         tr
           td class='selectable' = check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
-          td = check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
+          <%- @orm.columns.each_with_index do |column, i| -%>
+          <%- if column.name == 'created_at' || column.name == 'updated_at' -%>
+          td = time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
+          <%- elsif column.type == :boolean -%>
+          td = <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove)
+          <%- else -%>
+          td = <%= @orm.name_singular %>.<%= column.name %>
+          <%- end -%>
+          <%- end -%>
           td class='action'
             div class='wrapper'
               = link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>"
