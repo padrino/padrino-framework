@@ -23,7 +23,7 @@ html lang='en'
 
     div class='container main'
       div class='main-wrapper'
-        div class='flash' = [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+        div class='flash' = [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
         div class='row' = yield
         div class='main-push'
 

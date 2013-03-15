@@ -12,7 +12,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
         div class="modal-header"
           div class="logo" = image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
         div class="modal-body" id='padrino-modal-body'
-          div class="flash" = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+          div class="flash" = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
 
           fieldset class='control-group'
             label for="email" class='control-label' Login

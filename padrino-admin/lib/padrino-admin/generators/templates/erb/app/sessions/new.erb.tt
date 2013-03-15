@@ -14,11 +14,7 @@
         </div>
         <div class="modal-body" id="padrino-modal-body">
 
-          <%% [:error, :warning, :notice].map do |type|   %>
-            <div class="flash">
-              <%%= flash_tag(type, :class => "alert alert-#{type}", :boostrap => true) %>
-            </div>
-          <%% end %>
+          <div class='flash'><%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe %></div>
 
           <fieldset class="control-group">
             <label for="email" class="control-label">Login</label>

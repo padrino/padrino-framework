@@ -17,7 +17,7 @@
           .logo=image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
         #padrino-modal-body.modal-body
           .flash
-            = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+            = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
 
           %fieldset.control-group
             %label.control-label{:for=>"email"} Login

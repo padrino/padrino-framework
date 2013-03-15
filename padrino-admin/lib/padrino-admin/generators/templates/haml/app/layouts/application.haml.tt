@@ -31,7 +31,7 @@
 
     .container.main
       .main-wrapper
-        .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join
+        .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
         .row=yield
         .main-push
 
