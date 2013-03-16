@@ -485,7 +485,8 @@ module Padrino
       #   # => [:foo_bar, :id => :mine]
       #
       def recognize_path(path)
-        responses = *@router.recognize(Rack::MockRequest.env_for(path)).first
+        responses = @router.recognize(Rack::MockRequest.env_for(path))
+        responses = responses[0] if responses[0].is_a?(Array)
         [responses[0].path.route.name, responses[0].params]
       end
 
