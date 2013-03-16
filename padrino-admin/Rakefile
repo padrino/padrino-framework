@@ -15,7 +15,7 @@ namespace :bootstrap do
     require 'less'
     src = File.join(File.dirname(__FILE__), 'lib', 'padrino-admin', 'bootstrap-less', 'padrino-admin.less')
     out = File.join(File.dirname(__FILE__), 'lib', 'padrino-admin', 'generators', 'templates', 'assets', 'stylesheets', 'bootstrap.css')
-    css = Less::Parser.new(:paths => [File.dirname(src)]).parse(File.read(src)).to_css
+    css = Less::Parser.new(:paths => [File.dirname(src)]).parse(File.read(src)).to_css(:compress => true)
     File.open(out, 'w') { |file| file.write css }
     puts "Generated #{out}"
   end
