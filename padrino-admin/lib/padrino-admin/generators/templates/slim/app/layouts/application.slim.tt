@@ -14,7 +14,8 @@ html lang='en'
 
           ul class='nav pull-right'
             li = link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)
-            li = button_to(pat(:logout), url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) }
+            li = button_to(pat(:logout), url(:sessions, :destroy), :method => :delete) do
+              = content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout)
 
           ul class='nav pull-left'
             - project_modules.each do |project_module|
