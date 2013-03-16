@@ -5,6 +5,8 @@ module Padrino
     #
     module AssetTagHelpers
       FRAGMENT_HASH = "#".html_safe.freeze
+       # assets that require an appended extension
+      APPEND_ASSET_EXTENSIONS = ["js", "css"]
 
       ##
       # Creates a div to display the flash of given type if it exists
@@ -317,14 +319,11 @@ module Padrino
       #
       # @api semipublic
       def asset_path(kind, source)
-        return source if source =~ /^http/
-        is_absolute  = source =~ %r{^/}
+        source = URI.escape(asset_normalize_extension(kind, source))
+        return source if source =~ %r{^(/|http)} # absolute source
         asset_folder = asset_folder_name(kind)
-        source = source.to_s.gsub(/\s/, '%20')
-        ignore_extension = (asset_folder.to_s == kind.to_s) # don't append an extension
-        source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
-        result_path = is_absolute ? source : uri_root_path(asset_folder, source)
-        timestamp = asset_timestamp(result_path, is_absolute)
+        result_path = uri_root_path(asset_folder, source)
+        timestamp = asset_timestamp(result_path)
         "#{result_path}#{timestamp}"
       end
 
@@ -348,12 +347,13 @@ module Padrino
       #   asset_timestamp("some/path/to/file.png") => "?154543678"
       #   asset_timestamp("/some/absolute/path.png", true) => nil
       #
-      def asset_timestamp(file_path, absolute=false)
+      def asset_timestamp(file_path)
         return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
-        public_file_path = Padrino.root("public", file_path) if Padrino.respond_to?(:root)
+        public_file_path = self.class.public_folder if self.class.respond_to?(:public_folder)
+        public_file_path ||= Padrino.root("public", file_path) if Padrino.respond_to?(:root)
         stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
-        stamp ||= Time.now.to_i unless absolute
-        "?#{stamp}" if stamp
+        stamp ||= Time.now.to_i
+        "?#{stamp}"
       end
 
       ###
@@ -370,6 +370,19 @@ module Padrino
         when :js  then 'javascripts'
         else kind.to_s
         end
+      end
+
+      # Normalizes the extension for a given asset
+      #
+      #  @example
+      #
+      #    asset_normalize_extension(:images, "/foo/bar/baz.png") => "/foo/bar/baz.png"
+      #    asset_normalize_extension(:js, "/foo/bar/baz") => "/foo/bar/baz.js"
+      #
+      def asset_normalize_extension(kind, source)
+        ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
+        source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
+        source
       end
 
       ##

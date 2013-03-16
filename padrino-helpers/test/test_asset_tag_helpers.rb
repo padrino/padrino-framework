@@ -194,16 +194,15 @@ describe "AssetTagHelpers" do
     should "display image tag relative link with incorrect spacing" do
       time = stop_time_for_test
       assert_has_tag('img.photo', :src => "/images/%20relative/%20pic.gif%20%20?#{time.to_i}") {
-        image_tag(' relative/ pic.gif  ', :class => 'photo') }
+        image_tag(' relative/ pic.gif  ', :class => 'photo')
+      }
     end
 
     should "not use a timestamp if stamp setting is false" do
-      self.class.expects(:asset_stamp).returns(false)
       assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
     end
 
     should "have xhtml convention tag" do
-      self.class.expects(:asset_stamp).returns(false)
       assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" />'
     end
   end
