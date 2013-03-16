@@ -189,14 +189,14 @@ footer .footer-links li a:hover {
   padding: 10px;
 }
 .main-wrapper .table tbody td.action .popover-delete-one {
-  left: -105px;
-  top: -20px;
+  left: -120px;
+  top: -27px;
   width: 200px;
   text-align: center;
 }
 .main-wrapper .table th.selectable .popover-delete-selected {
-  left: 200px;
-  top: 30px;
+  left: 160px;
+  top: 37px;
   width: 250px;
   text-align: center;
 }
@@ -218,8 +218,8 @@ footer .footer-links li a:hover {
 .the-icons a{
   display:block;
   float: left;
-  height: 80px;
-  width: 100px;
+  width: 150px;
+  padding: 20px 0;
 }
 .the-icons [class^="icon-"] {
   display: block;

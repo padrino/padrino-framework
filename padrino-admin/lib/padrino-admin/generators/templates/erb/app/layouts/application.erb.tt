@@ -3,14 +3,14 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin" %></title>
-    <%%= favicon_tag "favicon.png" %>
+    <%%= favicon_tag "favicon.ico" %>
     <%%= stylesheet_link_tag "bootstrap", "admin" %>
   </head>
   <body>
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <%%= link_to image_tag('padino-logo-mini.png', :title => 'Padrino Admin', :alt => 'Padrino Admin'), url(:base_index), :class => 'navbar-brand' %>
+          <%%= link_to image_tag('padrino.png', :alt => 'Padrino Admin', :height => 35, :width => 200), url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
           <ul class="nav pull-right">
             <li><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)%></li>
             <li><%%= button_to(:logout, url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) } %></li>

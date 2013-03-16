@@ -8,13 +8,13 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %meta{:name => :viewport, :content => 'width=device-width'}
     %title Login | Padrino Admin
-    =favicon_tag 'favicon.png'
+    =favicon_tag 'favicon.ico'
     =stylesheet_link_tag 'bootstrap', 'admin'
   %body
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       #padrino-modal.login
         .modal-header
-          .logo=image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
+          .logo=image_tag('padrino-logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
         #padrino-modal-body.modal-body
           .flash
             = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
@@ -33,6 +33,6 @@
                 Bypass login?
 
         .modal-footer
-          =submit_tag('Sign In', :class => 'btn pull-right')
+          =submit_tag('Sign In', :class => 'btn btn-primary pull-right')
 
         =javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application

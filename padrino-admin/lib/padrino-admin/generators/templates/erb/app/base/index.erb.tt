@@ -1,30 +1,3 @@
-<p>
-  Padrino is a ruby framework built upon the Sinatra web  library. Sinatra is a DSL for creating simple web applications in Ruby. <br/>
-  Padrino was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
-</p>
-<hr/>
-<h3>Padrino Admin</h3>
-<p>
-  Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
-  <table class='table table-hover'>
-    <tr>
-      <td>Orm Agnostic</td>
-      <td>Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest</td>
-    </tr>
-    <tr>
-      <td>Authentication</td>
-      <td>User Authentication Support, User Authorization Management</td>
-    </tr>
-    <tr>
-      <td>Template Agnostic</td>
-      <td>Erb, Haml, Slim Rendering Support</td>
-     </tr>
-    <tr>
-      <td>Scaffold</td>
-      <td>You can create a new "admin interface" by providing a single Model</td>
-    </tr>
-</table>
-</p>
 <h1>Padrino Admin</h1>
 <p>
   Padrino is a ruby framework built upon the Sinatra web library.
@@ -34,7 +7,7 @@
 <b>Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:</b>
 <hr/>
 
-<div class="text-center the-icons"
+<div class="text-center the-icons">
   <div class="btn-group">
    <%%= link_to tag_icon("cogs icon-2x", "Orm Agnostic"), "#", :title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest", :class => "btn btn-primary" %>
     <%%= link_to tag_icon("group icon-2x", "Authentication"), "#", :title => "User Authentication Support, User Authorization Management", :class => "btn btn-success" %>

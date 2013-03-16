@@ -3,14 +3,14 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
   head
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     title Login Padrino Admin
-    = favicon_tag 'favicon.png'
+    = favicon_tag 'favicon.ico'
     = stylesheet_link_tag 'bootstrap', 'admin'
 
   body
     - form_tag url(:sessions, :create), :class=>'form-horizontal' do
       div id='padrino-modal' class='login'
         div class="modal-header"
-          div class="logo" = image_tag('padino-logo.png', :title => 'Login Logo', :alt => 'Login Logo')
+          div class="logo" = image_tag('padrino-logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
         div class="modal-body" id='padrino-modal-body'
           div class="flash" = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
 
@@ -28,5 +28,5 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
                 | Bypass login?
 
         div class="modal-footer"
-          = submit_tag('Sign In', :class => 'btn pull-right')
+          = submit_tag('Sign In', :class => 'btn btn-primary pull-right')
     = javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
