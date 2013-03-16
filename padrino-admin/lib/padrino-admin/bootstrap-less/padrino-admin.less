@@ -3,26 +3,13 @@
 // Custom Twitter Bootstrap v3.0.0
 // -------------------------------------------------------------
 
-// GRID
-// -------------------------------------------------------------
-
-// variables
-@grid-column-width-custom:    70px;
-@grid-gutter-width-custom:    30px;
-
 // Responsive
 // -------------------------------------------------------------
 
 // 1600px min
-@media screen and (min-width: 1600px) {
-  .container { max-width: 1570px; }
-   #grid > .core(@grid-column-width-custom, @grid-gutter-width-custom);
-}
+@media screen and (min-width: 1600px) { .container { max-width: 1570px; } }
 // 1900px min
-@media screen and (min-width: 1900px) {
-  .container { max-width: 1870px; }
-  #grid > .core(@grid-column-width-custom, @grid-gutter-width-custom);
-}
+@media screen and (min-width: 1900px) { .container { max-width: 1870px; } }
 
 // Components: common
 @import "font-awesome.less";
