@@ -322,8 +322,8 @@ module Padrino
         source = URI.escape(asset_normalize_extension(kind, source))
         return source if source =~ %r{^(/|https?://)} # absolute source
         source = File.join(asset_folder_name(kind), source)
+        timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
-        timestamp = asset_timestamp(result_path)
         "#{result_path}#{timestamp}"
       end
 
