@@ -50,7 +50,6 @@ class HttpRouter
         (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
         @layout = path.route.use_layout if path.route.use_layout
         @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
-        @block_params     = @block_params[0, @route.dest.arity] if @route.dest.arity > 0
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful        = true

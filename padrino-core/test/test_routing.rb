@@ -745,6 +745,25 @@ describe "Routing" do
     assert_equal 404, status
   end
 
+  should "match params and format" do
+    app = mock_app do
+      get '/:id', :provides => [:json, :html] do |id, _|
+        id
+      end
+
+      get 'format/:id', :provides => [:json, :html] do |id, format|
+        format
+      end
+    end
+
+    get '/123.html'
+    assert_equal '123', body
+
+    get 'format/123.html'
+    assert_equal 'html', body
+  end
+
+
   should 'respect priorities' do
     skip
     route_order = []
