@@ -17,7 +17,7 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/module SampleProject/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
-      assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => File.expand_path('../../app/app.rb', __FILE__)).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/Rakefile")
       assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
@@ -33,12 +33,12 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/project.com")
       assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
-      assert_match_in_file("Padrino.mount('ProjectCom::App', :app_file => File.expand_path('../../app/app.rb', __FILE__)).to('/')", "#{@apptmp}/project.com/config/apps.rb")
+      assert_match_in_file("Padrino.mount('ProjectCom::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/project.com/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
       assert_file_exists("#{@apptmp}/project.com/ws_dci_2011")
       assert_match_in_file(/module WsDci2011/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
-      assert_match_in_file("Padrino.mount('WsDci2011::App', :app_file => File.expand_path('../../ws_dci_2011/app.rb', __FILE__)).to('/ws_dci_2011')", "#{@apptmp}/project.com/config/apps.rb")
+      assert_match_in_file("Padrino.mount('WsDci2011::App', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/project.com/config/apps.rb")
     end
 
     should "raise an Error when given invalid constant names" do
@@ -57,7 +57,7 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/module BaseApp/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
-      assert_match_in_file("Padrino.mount('BaseApp::App', :app_file => File.expand_path('../../app/app.rb', __FILE__)).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file("Padrino.mount('BaseApp::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
     end
@@ -100,7 +100,7 @@ describe "ProjectGenerator" do
       capture_io { generate(:project, 'warepedia', "--root=#{@apptmp}", '--script=none') }
       assert_match_in_file(/module Warepedia/m, "#{@apptmp}/warepedia/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/m, "#{@apptmp}/warepedia/app/app.rb")
-      assert_match_in_file("Padrino.mount('Warepedia::App', :app_file => File.expand_path('../../app/app.rb', __FILE__)).to('/')", "#{@apptmp}/warepedia/config/apps.rb")
+      assert_match_in_file("Padrino.mount('Warepedia::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/warepedia/config/apps.rb")
     end
 
     should "store and apply session_secret" do
