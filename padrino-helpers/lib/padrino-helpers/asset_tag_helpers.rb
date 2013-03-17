@@ -322,7 +322,7 @@ module Padrino
       #
       # @api semipublic
       def asset_path(kind, source)
-        source = URI.escape(asset_normalize_extension(kind, source))
+        source = asset_normalize_extension(kind, URI.escape(source.to_s))
         return source if source =~ %r{^(/|https?://)} # absolute source
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
