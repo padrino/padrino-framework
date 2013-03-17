@@ -1,0 +1,26 @@
+hu:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: ": a lista nem tartalmazza"
+        exclusion: ": tilos"
+        invalid: ": érvénytelen"
+        confirmation: ": nem egyezik a megerősítéssel"
+        accepted: ": el kell fogadnod"
+        empty: ": nem lehet üres"
+        blank: ": nem lehet üres"
+        too_long: ": túl hosszú (a maximum %{count} karakter)"
+        too_short: ": túl rövid (a minimum %{count} karakter)"
+        wrong_length: ": nem megfelelő hosszúságú (%{count} karakternek kellene lennie)"
+        taken: ": már foglalt"
+        not_a_number: ": nem szám"
+        greater_than: ": nagyobbnak kell lennie, mint %{count}"
+        greater_than_or_equal_to: ": nem lehet kisebb, mint %{count}"
+        equal_to: ": egyenlőnek kell lennie %{count}"
+        less_than: ": kevesebbnek kell lennie, mint %{count}"
+        less_than_or_equal_to: ": nem lehet nagyobb, mint %{count}"
+        odd: ": páratlannak kell lennie"
+        even: ": párosnak kell lennie"
+        record_invalid: "Érvénytelen: %{errors}"
+        content_type: ": a fájl formátuma nem támogatott"
+  activerecord: *activemodel

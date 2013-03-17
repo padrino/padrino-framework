@@ -1,6 +1,6 @@
 %ul.nav.nav-tabs
-  %li=link_to tag_icon(:list, :list), url(:<%= @orm.name_plural %>, :index)
-  %li.active=link_to tag_icon(:plus, :new), url(:<%= @orm.name_plural %>, :new)
+  %li=link_to tag_icon(:list, pat(:list)), url(:<%= @orm.name_plural %>, :index)
+  %li.active=link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new)
 
 .tabs-content
   -form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create), :class => 'form-horizontal' do |f|

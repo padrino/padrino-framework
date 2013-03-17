@@ -1,0 +1,26 @@
+pt_br:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "não está incluído na lista"
+        exclusion: "está reservado"
+        invalid: "não é válido"
+        confirmation: "não coincide com a confirmação"
+        accepted: "deve ser aceita"
+        empty: "não pode estar vazio"
+        blank: "não pode ser deixado em branco"
+        too_long: "é longo demais (o máximo são %{count} letras)"
+        too_short: "é curto demais (o mínimo são %{count} letras)"
+        wrong_length: "o comprimento está errado (deve ser de %{count} letras)"
+        taken: "já está em uso"
+        not_a_number: "não é um número"
+        greater_than: "deve ser maior que %{count}"
+        greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+        equal_to: "deve ser igual a %{count}"
+        less_than: "deve ser menor que %{count}"
+        less_than_or_equal_to: "deve ser menor ou igual a %{count}"
+        odd: "deve ser ímpar"
+        even: "deve ser par"
+        record_invalid: "Falha na validação: %{errors}"
+        content_type: "o seguinte tipo de arquivo não é suportado"
+  activerecord: *activemodel

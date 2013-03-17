@@ -1,0 +1,80 @@
+//
+// Alerts
+// --------------------------------------------------
+
+
+// Base styles
+// -------------------------
+
+.alert {
+  padding: 8px 35px 8px 14px;
+  margin-bottom: @line-height-base;
+  color: @state-warning-text;
+  background-color: @state-warning-background;
+  border: 1px solid @state-warning-border;
+  border-radius: @border-radius-base;
+
+  // Headings for larger alerts
+  h4 {
+    margin-top: 0;
+    // Specified for the h4 to prevent conflicts of changing @headingsColor
+    color: inherit;
+  }
+  // Match the hr to the border of the alert
+  hr {
+    border-top-color: darken(@state-warning-border, 5%);
+  }
+}
+
+// Adjust close link position
+.close {
+  position: relative;
+  top: -2px;
+  right: -21px;
+  line-height: @line-height-base;
+  color: inherit;
+}
+
+// Alternate styles
+// -------------------------
+
+.alert-success {
+  background-color: @state-success-background;
+  border-color: @state-success-border;
+  color: @state-success-text;
+  hr {
+    border-top-color: darken(@state-success-border, 5%);
+  }
+}
+.alert-danger,
+.alert-error {
+  background-color: @state-error-background;
+  border-color: @state-error-border;
+  color: @state-error-text;
+  hr {
+    border-top-color: darken(@state-error-border, 5%);
+  }
+}
+.alert-info {
+  background-color: @state-info-background;
+  border-color: @state-info-border;
+  color: @state-info-text;
+  hr {
+    border-top-color: darken(@state-info-border, 5%);
+  }
+}
+
+// Block alerts
+// -------------------------
+
+.alert-block {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.alert-block > p,
+.alert-block > ul {
+  margin-bottom: 0;
+}
+.alert-block p + p {
+  margin-top: 5px;
+}

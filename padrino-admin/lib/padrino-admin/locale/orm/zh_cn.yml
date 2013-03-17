@@ -1,0 +1,26 @@
+zh_cn:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "没有包含在列表中"
+        exclusion: "是被保留的关键字"
+        invalid: "是无效的"
+        confirmation: "不符合确认值"
+        accepted: "必须是可被接受的"
+        empty: "不能留空"
+        blank: "不能是空白字元"
+        too_long: "过长（最长是 %{count} 个字）"
+        too_short: "过短（最短是%{count} 个字）"
+        wrong_length: "字数错误（必须是%{count} 个字）"
+        taken: "已经被使用"
+        not_a_number: "不是数字"
+        greater_than: "必须大于 %{count}"
+        greater_than_or_equal_to: "必须大于或等于%{count}"
+        equal_to: "必须等于 %{count}"
+        less_than: "必须小于 %{count}"
+        less_than_or_equal_to: "必须小于或等于%{count}"
+        odd: "必须是奇数"
+        even: "必须是偶数"
+        record_invalid: "校验失败: %{errors}"
+        content_type: "档案格式不支援"
+  activerecord: *activemodel

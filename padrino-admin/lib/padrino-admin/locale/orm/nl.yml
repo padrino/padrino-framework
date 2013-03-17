@@ -1,0 +1,26 @@
+nl:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: is niet in de lijst opgenomen
+        exclusion: is niet beschikbaar
+        invalid: is ongeldig
+        confirmation: komt niet met de bevestiging overeen
+        accepted: moet worden geaccepteerd
+        empty: moet opgegeven zijn
+        blank: moet opgegeven zijn
+        too_long: "is te lang (maximaal %{count} tekens)"
+        too_short: "is te kort (minimaal %{count} tekens)"
+        wrong_length: "heeft niet de juiste lengte (moet %{count} tekens lang zijn)"
+        taken: "is reeds in gebruik"
+        not_a_number: "is geen getal"
+        greater_than: "moet groter dan %{count} zijn"
+        greater_than_or_equal_to: "moet groter dan of gelijk aan %{count} zijn"
+        equal_to: "must gelijk aan %{count} zijn"
+        less_than: "moet minder dan %{count} zjn"
+        less_than_or_equal_to: "moet minder dan of gelijk aan %{count} zijn"
+        odd: "moet oneven zijn"
+        even: "moet even zijn"
+        record_invalid: "Validatie mislukt: %{errors}"
+        content_type: "bestandsformaat niet ondersteund"
+  activerecord: *activemodel

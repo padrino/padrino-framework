@@ -1,19 +1,18 @@
-<%%= error_messages_for :<%= @orm.name_singular %>, :header_tag => 'h4', :class =>'hide' %>
-
-<% @orm.column_fields.each do |column| -%>
-<fieldset class='control-group'>
+<% @orm.column_fields.each_with_index do |column, index| -%>
+<%% error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>) %>
+<fieldset class='control-group <%%= error ? 'has-error' : ''%>'>
   <%%= f.label :<%= column[:name] %>, :class => 'control-label' %>
   <div class='controls'>
-    <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xxlarge' %>
-    <span class='help-inline'> Ex: a simple text</span>
+    <%%= f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xlarge input-with-feedback'<%- if (index == 0) -%>, :autofocus => true<%- end -%> %>
+    <span class='help-inline'><%%= error ? f.error_message_on(:<%= column[:name] %>) : "Ex: a simple text" %></span>
   </div>
 </fieldset>
 <% end %>
 
 <div class="actions">
-  <%%= f.submit 'Save', :class => 'btn btn-primary' %>
+  <%%= f.submit pat(:save), :class => 'btn btn-primary' %>
   &nbsp;
-  <%%= f.submit 'Save and continue', :class => 'btn btn-info', :name => 'save_and_continue' %>
+  <%%= f.submit pat(:save_and_continue), :class => 'btn btn-info', :name => 'save_and_continue' %>
   &nbsp;
-  <%%= f.submit 'Cancel', :onclick => "window.location='#{url(:<%= @orm.name_plural %>, :index)}';return false", :class => 'btn' %>
+  <%%= link_to pat(:cancel), url(:<%= @orm.name_plural %>, :index), :class => 'btn' %>
 </div>

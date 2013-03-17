@@ -1,0 +1,234 @@
+/* -- Begin Layout -- */
+html {
+  height: 100%;
+}
+body {
+  font-size: 13px;
+  height: 100%;
+}
+.main {
+  min-height: 100%;
+  height: auto !important;
+  margin: 0 auto -70px; /* margin-bottom: minus footer's height */
+  padding: 0 10px;
+}
+.main-wrapper {
+  padding-top: 70px /* same as footer's height */
+}
+.main-wrapper > .main-push {
+  height: 70px; /* same as the footer */
+}
+footer {
+  margin-top: -70px;
+  height: 59px;
+  border-top: 1px solid #999;
+  padding : 10px 10px 0;
+}
+footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+footer .footer-links li {
+  display: inline;
+  margin-right: 10px;
+}
+footer .footer-links li a:hover {
+  text-decoration: none;
+}
+/* -- End Layout -- */
+
+/* -- Begin Login -- */
+.login {
+  background-color: #fff;
+  -webkit-box-shadow: 0px 0px 20px #777;
+  -moz-box-shadow: 0px 0px 20px #777;
+  -o-box-shadow: 0px 0px 20px #777;
+  -ms-box-shadow: 0px 0px 20px #777;
+  box-shadow: 0px 0px 20px #777;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -o-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  padding-top: 10px;
+  width: 500px;
+  margin: 60px auto 0;
+}
+.login form, .login .actions {
+  margin-bottom: 0px;
+}
+.login .label.error {
+  background-color: #c43c35;
+}
+.login .logo {
+  text-align: center;
+  padding: 5px 0;
+}
+.login .control-group > .control-label {
+  width: 100px;
+}
+.login .control-group > .controls {
+  margin-left: 120px;
+}
+/* -- End Login -- */
+
+/* -- Begin Notifications -- */
+.flash {
+  text-align: center;
+}
+.flash .alert {
+  display: inline-block;
+}
+.flash-error, .flash-danger {
+  /* @error-text */
+  border: 2px solid #b94a48;
+}
+.flash-success, .flash-notice {
+  /* @succcess-text */
+  border: 2px solid #468847;
+}
+.flash-warning {
+  /* @warning-text */
+  border: 2px solid #c09853;
+}
+.alert-notice {
+  /* @success-background */
+  background-color: #dff0d8;
+  /* @success-border */
+  border-color: #dbeccd;
+  /* @succcess-text */
+  color: #468847;
+}
+.alert-warning {
+  /* @warning-background */
+  background-color: #fcf8e3;
+  /* @warning-border */
+  border-color: #fbeed5;
+  /* @warning-text */
+  color: #c09853;
+}
+
+/* -- End Notifications -- */
+
+/* -- Begin Application -- */
+.main-wrapper .tabs-content {
+  padding: 30px 0;
+}
+.main-wrapper .form-horizontal .actions {
+  text-align :right;
+}
+
+/* --- Begin Application::TopBar --- */
+.navbar {
+  -webkit-box-shadow: 0px 1px 10px #777;
+  -moz-box-shadow: 0px 1px 10px #777;
+  -o-box-shadow: 0px 1px 10px #777;
+  -ms-box-shadow: 0px 1px 10px #777;
+  box-shadow: 0px 1px 10px #777;
+}
+.navbar .nav > li > a, .navbar .nav > li button[type=submit] {
+  padding: 17px 15px 13px;
+}
+.navbar .nav > li form {
+  margin: 0;
+}
+.navbar .nav > li button[type=submit] {
+  border: none;
+  background: none;
+  color: #777777;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #ffffff;
+  font-size: inherit;
+}
+.navbar .nav > li button[type=submit]:hover {
+  color: #333333;
+}
+.navbar-brand{
+  margin-top: 10px;
+  padding: 0px 15px;
+}
+/* --- End Application::TopBar --- */
+
+/* --- Begin Application::List --- */
+.main-wrapper .table th.action {
+  width: 110px;
+  text-align: center;
+}
+.main-wrapper .table th.selectable, .main-wrapper .table td.selectable {
+  width: 40px;
+  text-align: center;
+}
+.main-wrapper .table th:first-child .dropdown-menu {
+  text-align: left;
+}
+.main-wrapper .table td {
+  vertical-align: middle !important;
+}
+.main-wrapper .table td:first-child > input[type=checkbox] {
+  margin: 0 !important;
+}
+.main-wrapper .table tbody td.action .wrapper > a {
+  font-size: 1.3em;
+  padding: 4px;
+  display: inline-block;
+  visibility: hidden;
+}
+.main-wrapper .table tbody td.action .wrapper > a:hover {
+  text-decoration: none;
+}
+.main-wrapper .table tbody tr:hover td.action .wrapper > a,
+.main-wrapper .table tbody td.action .wrapper > a.active {
+  visibility: visible;
+}
+.main-wrapper .table tbody td.action .wrapper {
+  position: relative;
+  text-align: right;
+  height: 100%;
+}
+.main-wrapper .table tbody td.action .btn-link {
+  padding: 10px;
+}
+.main-wrapper .table tbody td.action .popover-delete-one {
+  left: -120px;
+  top: -27px;
+  width: 200px;
+  text-align: center;
+}
+.main-wrapper .table th.selectable .popover-delete-selected {
+  left: 160px;
+  top: 37px;
+  width: 250px;
+  text-align: center;
+}
+.main-wrapper .table .popover form {
+  margin: 0;
+}
+.main-wrapper .dropdown-menu li > a.disabled {
+  /* @gray-light */
+  color: #999;
+  cursor: default !important;
+}
+.main-wrapper .dropdown-menu li.disabled:hover,
+.main-wrapper .dropdown-menu li:hover a.disabled:hover {
+  background-color: #fff;
+  cursor: default !important;
+}
+/* --- End Application::List --- */
+/* --- Begin Application::Explanation --- */
+.the-icons a{
+  display:block;
+  float: left;
+  width: 150px;
+  padding: 20px 0;
+}
+.the-icons [class^="icon-"] {
+  display: block;
+  margin: 5px auto;
+  vertical-align: middle;
+}
+#explanation{
+  display:block;
+  margin-top:20px;
+}
+/* --- End Application::Explanation --- */
+/* -- End Application -- */
