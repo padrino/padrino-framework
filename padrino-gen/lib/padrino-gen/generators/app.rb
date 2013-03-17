@@ -38,7 +38,7 @@ module Padrino
           self.behavior = :revoke if options[:destroy]
           app_skeleton(@app_folder.downcase, options[:tiny])
           empty_directory destination_root("public/#{@app_folder.downcase}")
-          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@app_name}::App', :app_file => File.expand_path('../../#{@app_folder.downcase}/app.rb', __FILE__)).to('/#{@app_folder.downcase}')"
+          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@app_name}::App', :app_file => Padrino.root('#{@app_folder.downcase}/app.rb')).to('/#{@app_folder.downcase}')"
 
           return if self.behavior == :revoke
           say
