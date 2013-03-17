@@ -37,12 +37,12 @@ class MarkupDemo < Sinatra::Base
       concat_safe_content "<p>#{content_html}</p>"
     end
 
-    def determine_block_is_template(name, &block)
+    def concat_if_block_is_template(name, &block)
       concat_safe_content "<p class='is_template'>The #{name} block passed in is a template</p>" if block_is_template?(block)
     end
 
-    def ruby_not_template_block
-      determine_block_is_template('ruby') do
+    def concat_ruby_not_template_block
+      concat_if_block_is_template('ruby') do
         content_tag(:span, "This not a template block")
       end
     end

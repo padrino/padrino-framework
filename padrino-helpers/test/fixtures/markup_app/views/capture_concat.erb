@@ -6,9 +6,9 @@
 
 <% concat_in_p('Concat Line 3') %>
 
-<% determine_block_is_template('erb') do %>
+<% concat_if_block_is_template('erb') do %>
   <span>This is erb</span>
   <span>This is erb</span>
 <% end %>
 
-<% ruby_not_template_block %>
+<% concat_ruby_not_template_block %>
