@@ -29,7 +29,7 @@ MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
 # Connection.new takes host, port
 
 host = 'localhost'
-port = Mongo::Connection::DEFAULT_PORT
+port = 27017
 
 database_name = case Padrino.env
   when :development then '!NAME!_development'
@@ -38,11 +38,12 @@ database_name = case Padrino.env
 end
 
 # Use MONGO_URI if it's set as an environmental variable
-if ENV['MONGO_URI']
-  Mongoid::Config.sessions = {default: {uri: ENV['MONGO_URI'] }}
-else
-  {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
-end
+Mongoid::Config.sessions =
+  if ENV['MONGO_URI']
+    {default: {uri: ENV['MONGO_URI'] }}
+  else
+    {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
+  end
 
 # If you want to use a YML file for config, use this instead:
 #
