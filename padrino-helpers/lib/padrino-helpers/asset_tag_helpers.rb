@@ -384,6 +384,7 @@ module Padrino
       #
       def asset_normalize_extension(kind, source)
         ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
+        source = source.to_s.gsub(/\s/, '%20')
         source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
         source
       end
