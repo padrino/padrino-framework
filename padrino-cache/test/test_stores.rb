@@ -1,46 +1,9 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path('../helper', __FILE__)
 
-class Foo
-  def bar; "bar"; end
-end
-
-COMMON_TESTS = <<-HERE_DOC
-should "return nil trying to get a value that doesn't exist" do
-  assert_equal nil, Padrino.cache.get(@test_key)
-end
-
-should 'set and get an object' do
-  Padrino.cache.set(@test_key, Foo.new)
-  assert_equal "bar", Padrino.cache.get(@test_key).bar
-end
-
-should 'set and get a nil value' do
-  Padrino.cache.set(@test_key, nil)
-  assert_equal nil, Padrino.cache.get(@test_key)
-end
-
-should 'set and get a raw value' do
-  Padrino.cache.set(@test_key, 'foo')
-  assert_equal 'foo', Padrino.cache.get(@test_key)
-end
-
-should "set a value that expires" do
-  Padrino.cache.set(@test_key, 'test', :expires_in => 1)
-  # assert_equal 'test', Padrino.cache.get(@test_key) # Fails on race condition
-  sleep 2
-  assert_equal nil, Padrino.cache.get(@test_key)
-end
-
-should 'delete a value' do
-  Padrino.cache.set(@test_key, 'test')
-  assert_equal 'test', Padrino.cache.get(@test_key)
-  Padrino.cache.delete(@test_key)
-  assert_equal nil, Padrino.cache.get(@test_key)
-end
-HERE_DOC
+Shared = File.read File.expand_path('../shared.rb', __FILE__)
 
 begin
-  require 'Memcached'
+  require 'memcached'
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1)).set('ping','alive')
 rescue LoadError
@@ -59,7 +22,7 @@ else
       Padrino.cache.flush
     end
 
-    eval COMMON_TESTS
+    eval Shared
   end
 end
 
@@ -80,7 +43,7 @@ begin
       Padrino.cache.flush
     end
 
-    eval COMMON_TESTS
+    eval Shared
   end
 rescue LoadError
   warn "Skipping memcache with dalli library tests"
@@ -112,7 +75,7 @@ should 'add a value to a list' do
 end
     REDIS_TEST
 
-    eval COMMON_TESTS
+    eval Shared
   end
 end
 
@@ -135,7 +98,7 @@ else
       Padrino.cache.flush
     end
 
-    eval COMMON_TESTS
+    eval Shared
   end
 end
 
@@ -151,7 +114,7 @@ describe "FileStore" do
     Padrino.cache.flush
   end
 
-  eval COMMON_TESTS
+  eval Shared
 end
 
 describe "InMemoryStore" do
@@ -164,7 +127,7 @@ describe "InMemoryStore" do
     Padrino.cache.flush
   end
 
-  eval COMMON_TESTS
+  eval Shared
 
   should "only store 50 entries" do
     51.times { |i| Padrino.cache.set(i.to_s, i.to_s) }

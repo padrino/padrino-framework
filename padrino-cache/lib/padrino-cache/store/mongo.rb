@@ -4,7 +4,7 @@ module Padrino
       ##
       # MongoDB Cache Store
       #
-      class Mongo
+      class Mongo < Base
         ##
         # Initialize Mongo store with client connection and optional username and password.
         #
@@ -17,21 +17,24 @@ module Padrino
         #   Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
+        #   # you can provide a marshal parser (to store ruby objects)
+        #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :parser => :marshal)
         #
         # @api public
-        def initialize(client, opts={})
+        def initialize(client, options={})
           @client = client
           @options = {
             :capped => true,
             :collection => 'cache',
             :size => 64,
             :max => 100
-          }.merge(opts)
+          }.merge(options)
 
           if @options[:username] && @options[:password]
             @client.authenticate(@options[:username], @options[:password], true)
           end
           @backend = get_collection
+          super(options)
         end
 
         ##
@@ -47,7 +50,7 @@ module Padrino
         def get(key)
           doc = @backend.find_one(:_id => key, :expires_in => {'$gt' => Time.now.utc})
           return nil if doc.nil?
-          Marshal.load(doc['value'].to_s) if doc['value'].present?
+          parser.decode(doc['value'].to_s)
         end
 
         ##
@@ -66,7 +69,7 @@ module Padrino
         # @api public
         def set(key, value, opts = nil)
           key = key.to_s
-          value = BSON::Binary.new(Marshal.dump(value)) if value
+          value = BSON::Binary.new(parser.encode(value)) if value
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
             expires_in = Time.now.utc + expires_in if expires_in < EXPIRES_EDGE
@@ -76,7 +79,8 @@ module Padrino
           @backend.update(
             {:_id => key},
             {:_id => key, :value => value, :expires_in => expires_in },
-            {:upsert => true})
+            {:upsert => true}
+          )
         end
 
         ##
