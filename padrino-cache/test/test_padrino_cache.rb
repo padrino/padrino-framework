@@ -1,10 +1,13 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path('../helper', __FILE__)
 
 describe "PadrinoCache" do
 
-  def teardown
-    tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")
-    `rm -rf #{tmp}`
+  before do
+  end
+
+  after do
+    tmp = File.expand_path("../tmp", __FILE__)
+    %x[rm -rf #{tmp}]
   end
 
   should 'cache a fragment' do
@@ -87,14 +90,14 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
-    assert_equal 'foo', @app.cache.get(:foo)[:response_buffer]
+    assert_equal 'foo', @app.cache.get(:foo)
     get "/foo"
     assert_equal 'foo', body
 
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
-    assert_equal 'bar', @app.cache.get(:bar)[:response_buffer]
+    assert_equal 'bar', @app.cache.get(:bar)
     get "/bar"
     assert_equal 'bar', body
   end

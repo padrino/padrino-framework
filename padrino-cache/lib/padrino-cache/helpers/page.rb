@@ -95,8 +95,8 @@ module Padrino
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
-                  content_type(value[:content_type]) if value[:content_type]
-                  halt 200, value[:response_buffer].to_s  if value[:response_buffer]
+                  # content_type(value[:content_type]) if value[:content_type]
+                  halt 200, value
                 end
               end
             end
@@ -105,10 +105,11 @@ module Padrino
               if settings.caching? && @_response_buffer.kind_of?(String)
                 began_at = Time.now
 
-                content = {
-                  :response_buffer => @_response_buffer,
-                  :content_type    => @_content_type
-                }
+                # content = {
+                #   :response_buffer => @_response_buffer,
+                #   :content_type    => @_content_type
+                # }
+                content = @_response_buffer
 
                 if @_last_expires_in
                   settings.cache.set(@route.cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
@@ -116,6 +117,7 @@ module Padrino
                 else
                   settings.cache.set(@route.cache_key || env['PATH_INFO'], content)
                 end
+
                 logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
               end
             end

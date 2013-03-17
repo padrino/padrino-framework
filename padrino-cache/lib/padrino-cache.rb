@@ -43,7 +43,7 @@ module Padrino
     #
     # @api public
     def cache=(value)
-      @_cache = value
+      @_cache= value
     end
   end # self
 
@@ -54,7 +54,8 @@ module Padrino
   # of your choosing. Several common caching stores are supported out of the box.
   #
   module Cache
-    autoload :Store, 'padrino-cache/store'
+    autoload :Store,  'padrino-cache/store'
+    autoload :Parser, 'padrino-cache/parser'
 
     class << self
       ##
@@ -101,5 +102,7 @@ module Padrino
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)
       end
     end
+
+    Padrino.cache = Store::Memory.new(50)
   end # Cache
 end # Padrino
