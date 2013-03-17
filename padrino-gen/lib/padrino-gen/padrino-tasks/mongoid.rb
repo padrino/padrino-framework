@@ -1,4 +1,6 @@
 if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
+  require 'mongoid' # eagerly load mongoid for version check
+
   namespace :mi do
 
     if Mongoid::VERSION =~ /^[012]\./

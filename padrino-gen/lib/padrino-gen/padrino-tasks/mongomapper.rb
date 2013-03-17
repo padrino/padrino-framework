@@ -1,4 +1,10 @@
 if defined?(MongoMapper)
+  begin
+    require 'i18n'
+  rescue LoadError
+    # only do this for I18n check later
+  end
+
   namespace :mm do
     desc 'Drops all the collections for the database for the current Padrino.env'
     task :drop => :environment do
