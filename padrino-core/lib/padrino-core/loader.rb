@@ -72,8 +72,7 @@ module Padrino
       Padrino.dependency_paths.each { |path| Padrino.require_dependencies(path) }
       Padrino.after_load.each(&:call) # Run after hooks
       Padrino::Reloader.run!
-      Thread.current[:padrino_loaded] = true
-
+      Padrino.thread_variable_set(:loaded, true)
       Padrino.logger.devel "Loaded Padrino in #{Time.now - t} seconds"
     end
 
@@ -91,7 +90,7 @@ module Padrino
       Padrino.before_load.clear
       Padrino.after_load.clear
       Padrino::Reloader.clear!
-      Thread.current[:padrino_loaded] = nil
+      Padrino.thread_variable_set(:loaded, nil)
     end
 
     ##
@@ -119,7 +118,7 @@ module Padrino
     #   Specifies whether Padrino was loaded.
     #
     def loaded?
-      Thread.current[:padrino_loaded]
+      Padrino.thread_variable_get(:loaded)
     end
 
     ##

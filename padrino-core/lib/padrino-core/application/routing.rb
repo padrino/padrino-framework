@@ -25,7 +25,7 @@ class HttpRouter
   def rewrite_path_info(env, request); end
 
   def process_destination_path(path, env)
-    Thread.current['padrino.instance'].instance_eval do
+    Padrino.thread_variable_get(:instance).instance_eval do
       request.route_obj = path.route
       @_response_buffer = nil
       @route    = path.route
@@ -977,7 +977,7 @@ module Padrino
           filter! :before  if boom.kind_of? ::Sinatra::NotFound
           invoke { @boom_handled = handle_exception!(boom) }
         ensure
-          @boom_handled  or begin
+          @boom_handled or begin
             filter! :after  unless env['sinatra.static_file']
           rescue ::Exception => boom
             invoke { handle_exception!(boom) } unless @env['sinatra.error']
@@ -985,7 +985,7 @@ module Padrino
         end
 
         def route!(base=settings, pass_block=nil)
-          Thread.current['padrino.instance'] = self
+          Padrino.thread_variable_set(:instance, self)
           if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do

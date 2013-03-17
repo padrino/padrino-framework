@@ -181,7 +181,7 @@ module Padrino
     #
     # @returns The root path of the loaded gem
     def gem(name, main_module)
-      _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name == name }
+      _, spec = Gem.loaded_specs.find { |spec_name, spec| spec_name == name }
       gems << spec
       modules << main_module
       spec.full_gem_path
@@ -201,6 +201,20 @@ module Padrino
     # @returns [<Padrino::Module>]
     def modules
       @modules ||= []
+    end
+
+    ##
+    # Sets a local padrino thread variable
+    #
+    def thread_variable_set(key, value)
+      Thread.current[:"padrino.#{key}"] = value
+    end
+
+    ##
+    # Returns a local padrino thread variable
+    #
+    def thread_variable_get(key)
+      Thread.current[:"padrino.#{key}"]
     end
   end # self
 end # Padrino
