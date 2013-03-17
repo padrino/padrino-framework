@@ -1,0 +1,26 @@
+ru:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "не входит в список"
+        exclusion: "зарезервирован"
+        invalid: "неправильный"
+        confirmation: "не совпадает со своим подтверждением"
+        accepted: "должно быть принято"
+        empty: "не может быть пустым"
+        blank: "не может быть пустым"
+        too_long: "превышает длину (максимум %{count} символов)"
+        too_short: "недостаточной длины (минимум %{count} символов)"
+        wrong_length: "неправильной длины (должно быть %{count} символов)"
+        taken: "уже занят"
+        not_a_number: "не число"
+        greater_than: "должно быть больше %{count}"
+        greater_than_or_equal_to: "должно быть не менее %{count}"
+        equal_to: "должно быть равно %{count}"
+        less_than: "должно быть меньше %{count}"
+        less_than_or_equal_to: "должно быть не более %{count}"
+        odd: "должно быть нечетным"
+        even: "должно быть четным"
+        record_invalid: "Проверка не удалась: %{errors}"
+        content_type: "формат файла не поддерживается"
+  activerecord: *activemodel

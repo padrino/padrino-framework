@@ -1,0 +1,26 @@
+tr:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "listede yok"
+        exclusion: "ayrılmış"
+        invalid: "geçerli değil"
+        confirmation: "onaylananla uyuşmuyor"
+        accepted: "kabul edilmeli"
+        empty: "boş olamaz"
+        blank: "boş bırakılamaz"
+        too_long: "uzun (en fazla %{count} karakter)"
+        too_short: "kısa (en az %{count} karakter)"
+        wrong_length: "yanlış uzunluk (%{count} karakter olmalı)"
+        taken: "zaten alınmış"
+        not_a_number: "sayı değil"
+        greater_than: "%{count}'den büyük olmalı"
+        greater_than_or_equal_to: "%{count}'den büyük veya eşit olmalı"
+        equal_to: "%{count}'e eşit olmalı"
+        less_than: "%{count}'den küçük olmalı"
+        less_than_or_equal_to: "%{count}'den küçük veya eşit olmalı"
+        odd: "tek olmalı"
+        even: "çift olmalı"
+        record_invalid: "Doğrulama gerçekleşmedi: %{errors}"
+        content_type: "Dosya biçimi desteklenmiyor"
+  activerecord: *activemodel

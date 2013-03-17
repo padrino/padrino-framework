@@ -3,3 +3,24 @@ RAKE_ROOT = __FILE__
 
 require 'rubygems'
 require File.expand_path(File.dirname(__FILE__) + '/../gem_rake_helper')
+
+namespace :bootstrap do
+  desc 'Compile bootstrap assets'
+  task :compile do
+    puts "Implement"
+  end
+
+  desc 'Compile css'
+  task :css do
+    require 'less'
+    src = File.join(File.dirname(__FILE__), 'lib', 'padrino-admin', 'bootstrap-less', 'padrino-admin.less')
+    out = File.join(File.dirname(__FILE__), 'lib', 'padrino-admin', 'generators', 'templates', 'assets', 'stylesheets', 'bootstrap.css')
+    css = Less::Parser.new(:paths => [File.dirname(src)]).parse(File.read(src)).to_css(:compress => true)
+    File.open(out, 'w') { |file| file.write css }
+    puts "Generated #{out}"
+  end
+
+  desc 'Compile js'
+  task :js do
+  end
+end

@@ -15,6 +15,7 @@ module Padrino
       #   The type of flash to display in the tag.
       # @param [Hash] options
       #   The html options for this section.
+      #   use :bootstrap => true to support Twitter's bootstrap dismiss alert button
       #
       # @return [String] Flash tag html with specified +options+.
       #
@@ -28,10 +29,12 @@ module Padrino
       # @api public
       def flash_tag(*args)
         options = args.extract_options!
+        bootstrap = options.delete(:bootstrap) if options[:bootstrap]
         args.inject(''.html_safe) do |html,kind|
           flash_text = flash[kind]
           next if flash_text.blank?
-          html << content_tag(:div, flash_text, options.reverse_merge(:class => kind))
+          flash_text << safe_content_tag(:button, "&times;", {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
+          html << safe_content_tag(:div, flash_text, options.reverse_merge(:class => kind))
         end
       end
 

@@ -1,16 +1,12 @@
-Admin.controllers :<%= @orm.name_plural %> do
-  before do
-    settings.breadcrumbs.reset
-    settings.breadcrumbs.add :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :index), :<%= @orm.name_singular %>
-  end
-
+<%= @app_name %>::Admin.controllers :<%= @orm.name_plural %> do
   get :index do
+    @title = "<%= @orm.name_plural.capitalize %>"
     @<%= @orm.name_plural %> = <%= @orm.all %>
     render '<%= @orm.name_plural %>/index'
   end
 
   get :new do
-    settings.breadcrumbs.add :<%= @orm.name_singular %>_new , url(:<%= @orm.name_plural %>, :new), :new
+    @title = pat(:new_title, :model => '<%= @orm.name_singular.capitalize %>')
     @<%= @orm.name_singular %> = <%= @orm.build %>
     render '<%= @orm.name_plural %>/new'
   end
@@ -18,59 +14,71 @@ Admin.controllers :<%= @orm.name_plural %> do
   post :create do
     @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
     if <%= @orm.save %>
-      flash[:notice] = '<%= @orm.klass_name %> was successfully created.'
+      @title = pat(:create_title, :model => "<%= @orm.name_singular.capitalize %> #{@<%= @orm.name_singular %>.id}")
+      flash[:success] = pat(:create_success, :model => '<%= @orm.klass_name %>')
       params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
     else
+      @title = pat(:create_title, :model => '<%= @orm.name_singular.capitalize %>')
+      flash[:error] = pat(:create_error, :model => '<%= @orm.name_singular %>')
       render '<%= @orm.name_plural %>/new'
     end
   end
 
   get :edit, :with => :id do
-    settings.breadcrumbs.add :<%= @orm.name_singular %>_edit, params[:id],  :edit
+    @title = pat(:edit_title, :model => "<%= @orm.name_singular.capitalize %> #{params[:id]}")
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
     else
+      flash[:warning] = pat(:create_error, :model => '<%= @orm.name_singular %>', :id => "#{params[:id]}")
       halt 404
     end
   end
 
   put :update, :with => :id do
+    @title = pat(:update_title, :model => "<%= @orm.name_singular.capitalize %> #{params[:id]}")
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
       if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
-        flash[:notice] = '<%= @orm.klass_name %> was successfully updated.'
-        params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
+        flash[:success] = pat(:update_success, :model => '<%= @orm.name_singular %>', :id =>  "#{params[:id]}")
+        params[:save_and_continue] ?
+          redirect(url(:<%= @orm.name_plural %>, :index)) :
+          redirect(url(:<%= @orm.name_plural %>, :edit, :id => @<%= @orm.name_singular %>.id))
       else
+        flash[:error] = pat(:update_error, :model => '<%= @orm.name_singular %>')
         render '<%= @orm.name_plural %>/edit'
       end
     else
+      flash[:warning] = pat(:update_warning, :model => '<%= @orm.name_singular %>', :id => "#{params[:id]}")
       halt 404
     end
   end
 
   delete :destroy, :with => :id do
+    @title = "<%= @orm.name_plural.capitalize %>"
     <%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if <%= @orm.name_singular %>
       if <%= @orm.destroy %>
-        flash[:notice] = '<%= @orm.klass_name %> was successfully destroyed.'
+        flash[:success] = pat(:delete_success, :model => '<%= @orm.name_singular.capitalize %>', :id => "#{params[:id]}")
       else
-        flash[:error] = 'Unable to destroy <%= @orm.klass_name %>!'
+        flash[:error] = pat(:delete_error, :model => '<%= @orm.name_singular %>')
       end
       redirect url(:<%= @orm.name_plural %>, :index)
     else
+      flash[:warning] = pat(:delete_warning, :model => '<%= @orm.name_singular %>', :id => "#{params[:id]}")
       halt 404
     end
   end
 
-  delete :delete_multiple do
+  delete :destroy_many do
+    @title = "<%= @orm.name_plural.capitalize %>"
     unless params[:<%= @orm.name_singular %>_ids]
-      flash[:error] = 'You must select at least one <%= @orm.name_singular %> '
+      flash[:error] = pat(:destroy_many_error, :model => '<%= @orm.name_singular %>')
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
-    <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids]")) %>
+    <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids].split(',')")) %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
-      flash[:notice] = '<%= @orm.name_plural %> have been successfully destroyed.'
+      flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{params[:<%= @orm.name_singular %>_ids]}")
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end

@@ -1,0 +1,26 @@
+sv:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "är inte inkluderad i listan"
+        exclusion: "är reserverad"
+        invalid: "är ogiltig"
+        confirmation: "matchar inte konfirmeringen"
+        accepted: "måste accepteras"
+        empty: "kan inte vara tomt"
+        blank: "kan inte vara blankt"
+        too_long: "är för långt (max %{count} tecken)"
+        too_short: "är för kort (minst %{count} tecken)"
+        wrong_length: "är fel längd (borde vara %{count} tecken)"
+        taken: "är redan upptaget"
+        not_a_number: "är inte ett tal"
+        greater_than: "måste vara större än %{count}"
+        greater_than_or_equal_to: "måste vara större än eller lika med %{count}"
+        equal_to: "måste vara lika med %{count}"
+        less_than: "måste vara mindre än %{count}"
+        less_than_or_equal_to: "måste vara mindre än eller lika med %{count}"
+        odd: "måste vara udda"
+        even: "måste vara jämnt"
+        record_invalid: "Validering misslyckades: %{errors}"
+        content_type: "filformatet stöds ej"
+  activerecord: *activemodel
