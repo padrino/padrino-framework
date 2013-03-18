@@ -93,7 +93,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
         when 'mysql'
           arguments = ["--user=#{user}"]
           arguments << "--password=#{password}" unless password.blank?
-          
+
           unless %w[127.0.0.1 localhost].include?(host)
             arguments << "--host=#{host}"
           end

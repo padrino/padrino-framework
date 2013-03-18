@@ -53,4 +53,6 @@ if defined?(MongoMapper)
       end
     end
   end
+
+  task 'db:drop' => 'mm:drop'
 end

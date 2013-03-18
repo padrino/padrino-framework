@@ -335,12 +335,6 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
   end
 
-  task 'db:migrate' => 'ar:migrate'
-  task 'db:create'  => 'ar:create'
-  task 'db:drop'    => 'ar:drop'
-  task 'db:reset'   => 'ar:reset'
-  task 'db:setup'   => 'ar:setup'
-
   def drop_database(config)
     case config[:adapter]
     when 'mysql', 'mysql2', 'jdbcmysql'
@@ -366,4 +360,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   def firebird_db_string(config)
     FireRuby::Database.db_string_for(config.symbolize_keys)
   end
+
+  task 'db:migrate' => 'ar:migrate'
+  task 'db:create'  => 'ar:create'
+  task 'db:drop'    => 'ar:drop'
+  task 'db:reset'   => 'ar:reset'
+  task 'db:setup'   => 'ar:setup'
 end

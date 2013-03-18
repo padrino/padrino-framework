@@ -5,12 +5,6 @@ if PadrinoTasks.load?(:database, true)
       seed_file = Padrino.root('db', 'seeds.rb')
       load(seed_file) if File.exist?(seed_file)
     end
-
-    task :migrate
-    task :create
-    task :drop
-    task :reset
-    task :setup
   end
 
   task :seed => 'db:seed'

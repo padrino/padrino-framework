@@ -168,4 +168,6 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       end
     end
   end
+
+  task 'db:drop' => 'mi:drop'
 end
