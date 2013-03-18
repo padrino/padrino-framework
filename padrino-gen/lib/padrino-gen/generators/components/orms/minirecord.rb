@@ -77,7 +77,7 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
 SQLITE
 def setup_orm
   ar = MR
-  db = @app_name.underscore
+  db = @project_name.underscore
   case options[:adapter]
   when 'mysql-gem'
     ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
