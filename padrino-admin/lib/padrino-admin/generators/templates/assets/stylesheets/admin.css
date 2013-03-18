@@ -29,7 +29,7 @@ footer p {
   color: #777;
 }
 footer .footer-links li {
-  display: inline;
+  display: inline-block;
   margin-right: 10px;
 }
 footer .footer-links li a:hover {
