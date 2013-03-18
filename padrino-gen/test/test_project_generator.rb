@@ -115,7 +115,7 @@ describe "ProjectGenerator" do
       assert_equal 'none', components_chosen[:test]
       assert_equal 'none', components_chosen[:mock]
       assert_equal 'none', components_chosen[:script]
-      assert_equal 'haml', components_chosen[:renderer]
+      assert_equal 'slim', components_chosen[:renderer]
     end
 
     should "create components file containing options chosen" do
@@ -123,11 +123,11 @@ describe "ProjectGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'datamapper', components_chosen[:orm]
-      assert_equal 'riot',  components_chosen[:test]
-      assert_equal 'mocha',     components_chosen[:mock]
-      assert_equal 'prototype', components_chosen[:script]
-      assert_equal 'erb',   components_chosen[:renderer]
-      assert_equal 'less',  components_chosen[:stylesheet]
+      assert_equal 'riot',       components_chosen[:test]
+      assert_equal 'mocha',      components_chosen[:mock]
+      assert_equal 'prototype',  components_chosen[:script]
+      assert_equal 'erb',        components_chosen[:renderer]
+      assert_equal 'less',       components_chosen[:stylesheet]
     end
 
     should "output to log components being applied" do
