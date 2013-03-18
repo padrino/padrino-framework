@@ -165,8 +165,8 @@ describe "AdminAppGenerator" do
         assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
 
-      it 'should add it #mini_record' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=mini_record', '-e=haml') }
+      it 'should add it #minirecord' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
       end

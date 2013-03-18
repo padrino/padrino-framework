@@ -36,7 +36,7 @@ module Padrino
       class_option :gem,          :desc => 'Generate project as a gem',                             :aliases => '-g', :default => false,    :type => :boolean
 
       # Definitions for the available customizable components
-      component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :mini_record, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
+      component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :minirecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
       component_option :test,       'testing framework',  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot, :minitest], :default => :none
       component_option :mock,       'mocking library',    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     'javascript library', :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none

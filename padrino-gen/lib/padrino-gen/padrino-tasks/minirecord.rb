@@ -1,6 +1,5 @@
 if PadrinoTasks.load?(:minirecord, defined?(MiniRecord))
   namespace :mr do
-    desc "Auto migration of database"
     task :migrate => :environment do
       Dir["models/*.rb"].each do |file_path|
         basename = File.basename(file_path, File.extname(file_path))
@@ -11,9 +10,10 @@ if PadrinoTasks.load?(:minirecord, defined?(MiniRecord))
     end
   end
 
+  desc 'Auto migration of database'
   task 'db:migrate' => 'mr:migrate'
-  task 'db:create'  => 'mr:create'
-  task 'db:drop'    => 'mr:drop'
-  task 'db:reset'   => 'mr:reset'
-  task 'db:setup'   => 'mr:setup'
+  # task 'db:create'  => 'mr:create'
+  # task 'db:drop'    => 'mr:drop'
+  # task 'db:reset'   => 'mr:reset'
+  # task 'db:setup'   => 'mr:setup'
 end

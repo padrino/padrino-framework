@@ -22,19 +22,19 @@ module PadrinoTasks
 
   def self.load?(task, constant_present)
     if constant_present && !PadrinoTasks.tasks.include?(task)
-      warn <<-WARNING
-Loading #{task} tasks automatically.
-This functionality will be disabled in future versions. Please put
+      warn <<-WARNING.undent
+        Loading #{task} tasks automatically.
+        This functionality will be disabled in future versions. Please put
 
-   PadrinoTasks.use(#{task.inspect})
-   PadrinoTasks.init
+          PadrinoTasks.use(#{task.inspect})
+          PadrinoTasks.init
 
-and remove
+        and remove
 
-   require File.expand_path('../config/boot.rb', __FILE__)
+          require File.expand_path('../config/boot.rb', __FILE__)
 
-in you Rakefile instead.
-WARNING
+        in you Rakefile instead.
+      WARNING
     end
 
     constant_present || PadrinoTasks.tasks.include?(task)

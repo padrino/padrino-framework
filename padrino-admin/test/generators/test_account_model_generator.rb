@@ -25,9 +25,9 @@ describe "AccountModelGenerator" do
       skip "Expand and implement"
     end
   end
-  describe "mini_record" do
+  describe "minirecord" do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=mini_record') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=minirecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
