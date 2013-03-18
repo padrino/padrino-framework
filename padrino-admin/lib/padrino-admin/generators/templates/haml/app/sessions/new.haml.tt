@@ -6,7 +6,7 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
-    %meta{:name => :viewport, :content => 'width=device-width'}
+    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
     %title Login | Padrino Admin
     =favicon_tag 'favicon.ico'
     =stylesheet_link_tag 'bootstrap', 'admin'

@@ -6,16 +6,16 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
-    %meta{:name => :viewport, :content => 'width=device-width'}
+    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
     %title= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
     =favicon_tag 'favicon.ico'
-    =stylesheet_link_tag 'bootstrap', 'admin'
+    =stylesheet_link_tag 'http://fonts.googleapis.com/css?family=Varela', 'bootstrap', 'admin'
 
   %body
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          =link_to image_tag('padrino.png', :alt => 'Padrino Admin', :height => 35, :width => 200), url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
+          =link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
           %ul.nav.pull-right
             %li=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile)
             %li

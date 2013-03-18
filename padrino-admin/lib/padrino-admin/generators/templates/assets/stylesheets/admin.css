@@ -111,9 +111,13 @@ footer .footer-links li a:hover {
 .navbar .nav > li button[type=submit]:hover {
   color: #333333;
 }
-.navbar-brand{
+.navbar-brand {
   margin-top: 10px;
   padding: 0px 15px;
+  font-family: 'Varela', 'Georgia', sans-serif;
+  text-transform: uppercase;
+  font-size: 2.5em;
+  line-height: 1em;
 }
 /* --- End Application::TopBar --- */
 

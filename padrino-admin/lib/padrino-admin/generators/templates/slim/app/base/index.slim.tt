@@ -4,9 +4,8 @@ p
     Sinatra is a DSL for creating simple web applications in Ruby.
     Padrino was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
 
-b Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
-hr
-
+p
+  b Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
 
 div class="text-center the-icons"
   div class="btn-group"
