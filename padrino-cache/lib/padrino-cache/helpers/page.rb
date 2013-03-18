@@ -105,10 +105,6 @@ module Padrino
               if settings.caching? && @_response_buffer.kind_of?(String)
                 began_at = Time.now
 
-                # content = {
-                #   :response_buffer => @_response_buffer,
-                #   :content_type    => @_content_type
-                # }
                 content = @_response_buffer
 
                 if @_last_expires_in

@@ -27,7 +27,6 @@ else
 end
 
 begin
-  raise LoadError, 'Not working on Travis ...'
   require 'dalli'
   # we're just going to assume memcached is running on the default port
   Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1).set('ping','alive'))
@@ -85,7 +84,7 @@ begin
 rescue LoadError
   warn "Skipping Mongo tests with Mongo library tests"
 rescue Mongo::ConnectionFailure
-  warn "Skipping Mongo Mongo with Mongo server tests"
+  warn "Skipping Mongo with server tests"
 else
   describe "MongoStore" do
     def setup
