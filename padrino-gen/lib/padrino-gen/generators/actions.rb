@@ -227,12 +227,21 @@ module Padrino
         fields.map! { |field| field =~ /:/ ? field : "#{field}:string" }
       end
 
+      # Returns the project_name for the application at root.
+      #
+      # @return [String] module name for application.
+      #
+      # @api public
+      def fetch_project_name
+        @project_name ||= File.basename(destination_root('.')).gsub(/\W/, '_').camelize
+      end
+
       # Returns the app_name for the application at root.
       #
       # @param [String] app
       #   folder name of application.
       #
-      # @return [String] module name for application.
+      # @return [String] class name for application.
       #
       # @example
       #   fetch_app_name('subapp')
@@ -240,7 +249,7 @@ module Padrino
       # @api public
       def fetch_app_name(app='app')
         app_path = destination_root(app, 'app.rb')
-        @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
+        @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
       # Adds all the specified gems into the Gemfile for bundler.

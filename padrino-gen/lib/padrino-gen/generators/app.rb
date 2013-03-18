@@ -34,11 +34,12 @@ module Padrino
         self.destination_root = options[:root]
         @app_folder = name.gsub(/\W/, '_').underscore
         @app_name   = name.gsub(/\W/, '_').underscore.camelize
+        @project_name   = fetch_project_name
         if in_app_root?
           self.behavior = :revoke if options[:destroy]
           app_skeleton(@app_folder.downcase, options[:tiny])
           empty_directory destination_root("public/#{@app_folder.downcase}")
-          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@app_name}::App', :app_file => Padrino.root('#{@app_folder.downcase}/app.rb')).to('/#{@app_folder.downcase}')"
+          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{@app_folder.downcase}/app.rb')).to('/#{@app_folder.downcase}')"
 
           return if self.behavior == :revoke
           say

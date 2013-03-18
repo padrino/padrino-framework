@@ -35,7 +35,7 @@ RIAK
 
 def setup_orm
   require_dependencies 'ripple'
-  create_file("config/riak.yml", RIPPLE_DB.gsub(/!NAME!/, @app_name.underscore))
+  create_file("config/riak.yml", RIPPLE_DB.gsub(/!NAME!/, @project_name.underscore))
   create_file("config/database.rb", RIPPLE_CFG)
 end
 

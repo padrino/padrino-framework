@@ -50,8 +50,12 @@ module Padrino
       #
       # @api private
       def setup_project
-        valid_constant?(options[:app] || name)
-        @app_name = (options[:app] || name).gsub(/\W/, '_').underscore.camelize
+        valid_constant? name
+        app = (options[:app] || "App")
+        check_app_existence(app)
+
+        @project_name = name.gsub(/\W/, '_').underscore.camelize
+        @app_name = app.gsub(/\W/, '_').underscore.camelize
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
           execute_runner(:template, options[:template])

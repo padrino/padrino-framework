@@ -37,6 +37,7 @@ module Padrino
         if in_app_root?
           app = options[:app]
           check_app_existence(app)
+          @project_name   = fetch_project_name
           @app_name   = fetch_app_name(app)
           @actions    = controller_actions(fields)
           @controller = name.to_s.underscore

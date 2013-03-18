@@ -94,7 +94,7 @@ SQLITE
 
 def setup_orm
   ar = AR
-  db = @app_name.underscore
+  db = @project_name.underscore
   # We're now defaulting to mysql2 since mysql is deprecated
   case options[:adapter]
   when 'mysql-gem'

@@ -22,7 +22,7 @@ DM
 
 def setup_orm
   dm = DM
-  db = @app_name.underscore
+  db = @project_name.underscore
   %w(
     dm-core
     dm-types

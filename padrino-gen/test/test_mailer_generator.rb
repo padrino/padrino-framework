@@ -21,7 +21,7 @@ describe "MailerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:mailer, 'demo', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/Subby::App.mailer :demo/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
+      assert_match_in_file(/SampleProject::Subby.mailer :demo/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
       assert_dir_exists("#{@apptmp}/sample_project/subby/views/mailers/demo")
     end
 
@@ -29,7 +29,7 @@ describe "MailerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:mailer, 'demo', 'action1', 'action2', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/Subby::App.mailer :demo/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
+      assert_match_in_file(/SampleProject::Subby.mailer :demo/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
       assert_match_in_file(/email :action1 do.*?end/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
       assert_match_in_file(/email :action2 do.*?end/m, "#{@apptmp}/sample_project/subby/mailers/demo.rb")
       assert_dir_exists("#{@apptmp}/sample_project/subby/views/mailers/demo")
