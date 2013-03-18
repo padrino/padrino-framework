@@ -73,41 +73,9 @@ footer .footer-links li a:hover {
 /* -- End Login -- */
 
 /* -- Begin Notifications -- */
-.flash {
+.alert {
   text-align: center;
 }
-.flash .alert {
-  display: inline-block;
-}
-.flash-error, .flash-danger {
-  /* @error-text */
-  border: 2px solid #b94a48;
-}
-.flash-success, .flash-notice {
-  /* @succcess-text */
-  border: 2px solid #468847;
-}
-.flash-warning {
-  /* @warning-text */
-  border: 2px solid #c09853;
-}
-.alert-notice {
-  /* @success-background */
-  background-color: #dff0d8;
-  /* @success-border */
-  border-color: #dbeccd;
-  /* @succcess-text */
-  color: #468847;
-}
-.alert-warning {
-  /* @warning-background */
-  background-color: #fcf8e3;
-  /* @warning-border */
-  border-color: #fbeed5;
-  /* @warning-text */
-  color: #c09853;
-}
-
 /* -- End Notifications -- */
 
 /* -- Begin Application -- */
