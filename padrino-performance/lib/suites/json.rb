@@ -45,7 +45,7 @@ WARN
       end
 
       infect_require!
-      setup_captures!("json", "yajl")
+      setup_captures!("json", "json_pure", "yajl", "oj", "crack", "crack/json")
     end # JSON
   # Performance
   end
