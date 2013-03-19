@@ -38,7 +38,7 @@ module Padrino
           app = options[:app]
           check_app_existence(app)
           self.behavior = :revoke if options[:destroy]
-          @project_name = fetch_project_name
+          @project_name = fetch_project_name(app)
           @app_name = fetch_app_name(app)
           @actions = actions.map{|a| a.to_sym}
           @short_name = name.to_s.gsub(/_mailer/i, '').underscore.downcase
