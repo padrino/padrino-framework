@@ -3,7 +3,7 @@
 fieldset class='control-group#{error ? ' has-error' : ''}'
   = f.label :<%= column[:name] %>, :class => 'control-label'
   div class='controls'
-    = f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xlarge input-with-feedback'<%- if (index = 0) -%>, :autofocus => true<%- end -%>
+    = f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xlarge input-with-feedback'<%- if (index == 0) -%>, :autofocus => true<%- end -%>
 
     span class='help-inline' = error ? f.error_message_on(:<%= column[:name] %>, :class => 'text-error') : pat(:example)
 <%- end -%>
