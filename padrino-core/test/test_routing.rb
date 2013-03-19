@@ -1727,7 +1727,7 @@ describe "Routing" do
     assert_match /not found/, body
   end
 
-  should 'render a custom 404 page' do
+  should 'render a custom 404 page using not_found' do
     mock_app do
       not_found { "custom 404 not found" }
     end
@@ -1735,6 +1735,16 @@ describe "Routing" do
     assert_equal 404, status
     assert_equal "custom 404 not found", body
     assert_equal "custom 404 not found".length.to_s, headers['Content-Length']
+  end
+
+  should 'render a custom error page using error method' do
+    mock_app do
+      error(404) { "custom 404 error" }
+    end
+    get "/"
+    assert_equal 404, status
+    assert_equal "custom 404 error", body
+    assert_equal "custom 404 error".length.to_s, headers['Content-Length']
   end
 
   should 'render a custom 403 page' do
