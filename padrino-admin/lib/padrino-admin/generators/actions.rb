@@ -12,7 +12,7 @@ module Padrino
         # Tell us which orm we are using
         #
         def orm
-          @rom ||= fetch_component_choice(:orm).to_sym rescue :activerecord
+          @orm ||= fetch_component_choice(:orm).to_sym rescue :activerecord
         end
         alias :adapter :orm
 
