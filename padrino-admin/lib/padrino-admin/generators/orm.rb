@@ -80,7 +80,12 @@ module Padrino
         end
 
         def column_fields
-          excluded_columns = %w[id created_at updated_at]
+          excluded_columns = %w[created_at updated_at]
+          case orm
+            when :mongoid then excluded_columns << :_id
+            else excluded_columns << :id
+          end
+
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
