@@ -1,3 +1,12 @@
+<%- if @orm.orm == :mongoid -%>
+- error = @<%= @orm.name_singular %>.errors.include?('_id')
+fieldset class='control-group#{error ? ' has-error' : ''}'
+  = f.label :id, :class => 'control-label'
+  div class='controls'
+    = f.text_field '_id', :class => 'input-xlarge input-with-feedback'
+    span class='help-inline' = error ? f.error_message_on('_id', :class => 'text-error') : pat(:example)
+
+<%- end -%>
 <%- @orm.column_fields.each_with_index do |column, index| -%>
 - error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>)
 fieldset class='control-group#{error ? ' has-error' : ''}'
