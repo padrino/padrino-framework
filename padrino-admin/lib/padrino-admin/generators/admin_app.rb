@@ -127,7 +127,7 @@ module Padrino
           instructions = []
           instructions << "Run 'bundle'"
           instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper)
-          instructions << "Run 'ohm mani padme hum'" if orm == :ohm
+          instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
