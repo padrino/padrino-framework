@@ -229,11 +229,18 @@ module Padrino
 
       # Returns the project_name for the application at root.
       #
+      # @param [String] app
+      #   folder name of application.
+      #
       # @return [String] module name for application.
       #
-      # @api public
-      def fetch_project_name
-        @project_name ||= File.basename(destination_root('.')).gsub(/\W/, '_').camelize
+      # @example
+      #   fetch_project_name('subapp')
+      #
+       # @api public
+      def fetch_project_name(app='app')
+        app_path = destination_root(app, 'app.rb')
+        @project_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
       end
 
       # Returns the app_name for the application at root.

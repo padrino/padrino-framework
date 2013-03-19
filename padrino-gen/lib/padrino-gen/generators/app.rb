@@ -34,8 +34,8 @@ module Padrino
         self.destination_root = options[:root]
         @app_folder = name.gsub(/\W/, '_').underscore
         @app_name   = name.gsub(/\W/, '_').underscore.camelize
-        @project_name   = fetch_project_name
         if in_app_root?
+          @project_name   = fetch_project_name
           self.behavior = :revoke if options[:destroy]
           app_skeleton(@app_folder.downcase, options[:tiny])
           empty_directory destination_root("public/#{@app_folder.downcase}")
