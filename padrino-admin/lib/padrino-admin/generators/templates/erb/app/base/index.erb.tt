@@ -1,20 +1,16 @@
-<h1>Padrino Admin</h1>
-<p>
-  Padrino is a ruby framework built upon the Sinatra web library.
-  Sinatra is a DSL for creating simple web applications in Ruby.
-  Padrino was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
-</p>
-<p><b>Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:</b></p>
-
-<div class="text-center the-icons">
-  <div class="btn-group">
-   <%%= link_to tag_icon("cogs icon-2x", "Orm Agnostic"), "#", :title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest", :class => "btn btn-primary" %>
-    <%%= link_to tag_icon("group icon-2x", "Authentication"), "#", :title => "User Authentication Support, User Authorization Management", :class => "btn btn-success" %>
-    <%%= link_to tag_icon("tasks icon-2x", "Template Agnostic"), "#", :title => "Erb, Haml, Slim Rendering Support", :class => "btn btn-info" %>
-    <%%= link_to tag_icon("flag icon-2x", "Multi Language"), "#", :title => "English, German, Russian, Danish, French, Brazilian and Italian localizations", :class => "btn btn-warning" %>
-    <%%= link_to tag_icon("magic icon-2x", "Scaffold"), "#", :title => "You can create a new 'admin interface' by providing a single Model", :class => "btn btn-danger" %>
-  </div>
+<div class=base-text>
+  <p>Padrino is a ruby framework built upon the Sinatra web library.</p>
+  <p>Sinatra is a DSL for creating simple web applications in Ruby.</p>
+  <p>It was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!</p>
+  <p>Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:</p>
 </div>
-<div id="explanation" class="well well-large text-center">
-  <h3 />
+
+<div class=base-icons>
+  <div class=btn-group>
+    <div class="btn btn-primary" title="Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest"><%%= tag_icon("cogs icon-2x", "Orm Agnostic") %></div>
+    <div class="btn btn-success" title="User Authentication Support, User Authorization Management"><%%= tag_icon("group icon-2x", "Authentication") %></div>
+    <div class="btn btn-info" title="Erb, Haml, Slim Rendering Support"><%%= tag_icon("tasks icon-2x", "Template Agnostic") %></div>
+    <div class="btn btn-warning" title="English, German, Russian, Danish, French, Brazilian and Italian localizations and many more!.."><%%= tag_icon("flag icon-2x", "Multi Language") %></div>
+    <div class="btn btn-danger" title="You can create a new 'admin interface' by providing a single Model"><%%= tag_icon("magic icon-2x", "Scaffold") %></div>
+  </div>
 </div>

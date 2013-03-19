@@ -76,16 +76,4 @@
       toggleAction('#select-all', checked === all.length);
     });
   });
-
-    // Explanation section :D
-    $('#explanation').hide();
-    $(".the-icons a").mouseenter(function(){
-        $('#explanation h3').text($(this).attr('title'));
-        $('#explanation').fadeIn('fast');
-    });
-    $(".the-icons a").mouseleave(function(){
-        $('#explanation h3').text('');
-         $('#explanation').hide();
-    });
-
 }(window.jQuery);

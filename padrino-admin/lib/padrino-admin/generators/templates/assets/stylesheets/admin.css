@@ -1,10 +1,9 @@
 /* -- Begin Layout -- */
-html {
+html, body {
   height: 100%;
 }
 body {
   font-size: 13px;
-  height: 100%;
 }
 .main {
   min-height: 100%;
@@ -20,19 +19,33 @@ body {
 }
 footer {
   margin-top: -70px;
-  height: 59px;
-  border-top: 1px solid #999;
-  padding : 10px 10px 0;
+  height: 70px;
+  border-top: 1px solid #eee;
+  padding: 10px 10px 0;
+  -webkit-box-shadow: 0px 1px 22px #e5e5e5;
+  -moz-box-shadow: 0px 1px 22px #e5e5e5;
+  -o-box-shadow: 0px 1px 22px #e5e5e5;
+  -ms-box-shadow: 0px 1px 22px #e5e5e5;
+  box-shadow: 0px 1px 22px #e5e5e5;
+  background-image: -webkit-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -moz-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -o-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -ms-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
 }
 footer p {
   margin-bottom: 0;
   color: #777;
 }
-footer .footer-links li {
+.footer-links li {
   display: inline-block;
   margin-right: 10px;
 }
-footer .footer-links li a:hover {
+.footer-links a {
+  color: #878787;
+}
+.footer-links li a:hover {
+  color: #777;
   text-decoration: none;
 }
 /* -- End Layout -- */
@@ -186,21 +199,28 @@ footer .footer-links li a:hover {
   cursor: default !important;
 }
 /* --- End Application::List --- */
-/* --- Begin Application::Explanation --- */
-.the-icons a{
-  display:block;
+/* --- Begin Application::Base --- */
+.base-text {
+  font-family: 'Varela', 'Georgia', sans-serif;
+  width: 730px;
+  margin: 0 auto;
+  font-size: 1.5em;
+  line-height: 2em;
+}
+.base-icons {
+  text-align: center;
+  margin-top: 50px;
+}
+.base-icons .btn {
   float: left;
   width: 150px;
   padding: 20px 0;
+  cursor: default;
 }
-.the-icons [class^="icon-"] {
+.base-icons [class^="icon-"] {
   display: block;
   margin: 5px auto;
   vertical-align: middle;
 }
-#explanation{
-  display:block;
-  margin-top:20px;
-}
-/* --- End Application::Explanation --- */
+/* --- End Application::Base --- */
 /* -- End Application -- */

@@ -9,7 +9,8 @@
     <meta name=viewport content='width=device-width,initial-scale=1' />
     <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin" %></title>
     <%%= favicon_tag "favicon.ico" %>
-    <%%= stylesheet_link_tag'http://fonts.googleapis.com/css?family=Varela', 'bootstrap', 'admin' %>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel=stylesheet />
+    <%%= stylesheet_link_tag 'bootstrap', 'admin' %>
   </head>
   <body>
     <div class="navbar navbar-fixed-top">
@@ -46,7 +47,7 @@
 
     <footer>
       <div class='footer-wrapper container'>
-        <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - <b>Powered by Padrino v.<%= Padrino.version %></b></p>
+        <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - Powered by Padrino v.<%= Padrino.version %></p>
         <ul class='pull-right footer-links'>
           <li><%%= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank %></li>
           <li><%%= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank %></li>

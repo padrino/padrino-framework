@@ -9,7 +9,8 @@ html lang='en'
     meta name='viewport' content='width=device-width,initial-scale=1'
     title = @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
     = favicon_tag 'favicon.ico'
-    = stylesheet_link_tag 'http://fonts.googleapis.com/css?family=Varela', 'bootstrap', 'admin'
+    link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet'
+    = stylesheet_link_tag 'bootstrap', 'admin'
 
   body
     div class='navbar navbar-fixed-top'
