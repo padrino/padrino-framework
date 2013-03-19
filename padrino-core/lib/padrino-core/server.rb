@@ -5,7 +5,7 @@ module Padrino
   #
   # @example
   #   Padrino.run! # with these defaults => host: "127.0.0.1", port: "3000", adapter: the first found
-  #   Padrino.run!("127.0.0.1", "4000", "mongrel") # use => host: "127.0.0.1", port: "4000", adapter: "mongrel"
+  #   Padrino.run!("0.0.0.0", "4000", "mongrel") # use => host: "0.0.0.0", port: "4000", adapter: "mongrel"
   #
   def self.run!(options={})
     Padrino.load!
