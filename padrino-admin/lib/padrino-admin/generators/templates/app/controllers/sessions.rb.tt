@@ -8,7 +8,11 @@
       set_current_account(account)
       redirect url(:base, :index)
     elsif Padrino.env == :development && params[:bypass]
+      <%- if @orm == :ohm -%>
+      account = <%= @model_name %>.all.first
+      <%- else -%>
       account = <%= @model_name %>.first
+      <%- end -%>
       set_current_account(account)
       redirect url(:base, :index)
     else
