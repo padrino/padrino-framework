@@ -1,0 +1,22 @@
+!!! 5
+%html{:lang => 'en'}
+  %head
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
+    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
+    %title Error 404 | Padrino Admin
+    =favicon_tag 'favicon.ico'
+    =stylesheet_link_tag 'bootstrap', 'admin'
+  %body
+    .error.text-center
+      .error-body.muted
+        %p=tag_icon 'warning-sign icon-3x'
+        %h1 Error 404
+        %p File not found
+      .error-footer
+        =link_to tag_icon('arrow-left', "Go Back"),"#", :onclick => "history.go(-1);return false;", :class =>"btn pull-left"
+
+    =javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
