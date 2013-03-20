@@ -37,3 +37,14 @@ tr:
       delete_warning: "ID %{id} ile %{model} bulamadı."
       destroy_many_error: "Silmek için en az bir %{model} seçmelisiniz."
       destroy_many_success: " %{model} %{ids} başarıyla silindi."
+      custom_errors:
+        title: "Hata"
+        '403':
+          title: "Hata 403"
+          description: "yasak"
+        '404':
+          title: "Hata 404"
+          description: "Bulunamadı"
+        '500':
+          title: "Hata 500"
+          description: "Sunucu Hatası"

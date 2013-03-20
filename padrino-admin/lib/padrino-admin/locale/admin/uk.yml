@@ -37,3 +37,14 @@ uk:
       delete_warning: "Не вдалося знайти %{model} з ідентифікатором %{id}."
       destroy_many_error: "Ви повинні вибрати хоча б одне %{model} моделлю для видалення."
       destroy_many_success: "%{model} %{ids} ідентифікатори були успішно видалені."
+      custom_errors:
+        title: "помилка"
+        '403':
+          title: "помилка 403"
+          description: "Заборонений"
+        '404':
+          title: "помилка 404"
+          description: "не знайдено"
+        '500':
+          title: "помилка 500"
+          description: "помилка сервера"
