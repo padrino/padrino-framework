@@ -82,8 +82,8 @@ module Padrino
         def column_fields
           excluded_columns = %w[created_at updated_at]
           case orm
-            when :mongoid then excluded_columns << :_id
-            else excluded_columns << :id
+            when :mongoid then excluded_columns << '_id'
+            else excluded_columns << 'id'
           end
 
           column_fields    = columns.dup
