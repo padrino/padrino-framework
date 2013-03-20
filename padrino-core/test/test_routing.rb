@@ -810,7 +810,7 @@ describe "Routing" do
     assert_equal "wacky 1-2", body
   end
 
-  should 'apply maps when given path is kind of hash' do
+  should 'apply maps when given path is kind of string' do
     mock_app do
       controllers :admin do
         get(:foobar, "/foo/bar"){ "foobar" }
@@ -818,6 +818,25 @@ describe "Routing" do
     end
     get "/foo/bar"
     assert_equal "foobar", body
+  end
+
+  should 'pass route definition when 3 arguements given' do
+    mock_app do
+      controllers :admin do
+        get(:foobar, "/foo/bar", :provides => [:json]){ "GET it" }
+        post(:foobar2, "/foo/bar", :provides => [:json]){ "POST it" }
+        put(:foobar3, "/foo/bar", :provides => [:json]){ "PUT it" }
+        delete(:foobar4, "/foo/bar", :provides => [:json]){ "DELETE it" }
+      end
+    end
+    get "/foo/bar.json"
+    assert_equal "GET it", body
+    post "/foo/bar.json"
+    assert_equal "POST it", body
+    put "/foo/bar.json"
+    assert_equal "PUT it", body
+    delete "/foo/bar.json"
+    assert_equal "DELETE it", body
   end
 
   should "apply parent to route" do
