@@ -91,6 +91,7 @@ footer p {
   font-size: 1.5em;
   width: 500px;
   margin: 100px auto 0;
+  text-transform: lowercase; 
 }
 .custom-error-body {
   border-top: 1px solid #e5e5e5;
