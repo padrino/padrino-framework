@@ -80,5 +80,8 @@
       toggleAction('#deselect-all', checked === 0);
       toggleAction('#select-all', checked === all_length);
     });
+
+    // Autofocus first field with an error. (usability)
+    $('.has-error :input').first().focus();
   });
 }(window.jQuery);
