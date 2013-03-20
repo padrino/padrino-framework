@@ -97,6 +97,9 @@ footer p {
   border-bottom: 1px solid #e5e5e5;
   padding : 30px 0;
 }
+.custom-error-body i{
+  color: #c43c35;
+}
 .custom-error-go-back {
   font-size: 1.2em;
   padding: 6px 24px;
