@@ -37,3 +37,14 @@ pl:
       delete_warning: "Nie można znaleźć %{model} z ID %{id}."
       destroy_many_error: "Musisz wybrać przynajmniej jedną %{model} do usunięcia."
       destroy_many_success: "%{model} %{ids} zostały usunięte."
+      custom_errors:
+        title: "błąd"
+        '403':
+          title: "błąd 403"
+          description: "zabroniony"
+        '404':
+          title: "błąd 404"
+          description: "Not Found"
+        '500':
+          title: "błąd 500"
+          description: "Błąd serwera"

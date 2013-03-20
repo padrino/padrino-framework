@@ -37,3 +37,14 @@ fr:
       delete_warning: "Impossible de trouver le %{model} avec l'ID %{id}."
       destroy_many_error: "Vous devez sélectionner au moins un %{model} à supprimer."
       destroy_many_success: "%{model} %{ids} a été supprimé avec succès."
+      custom_errors:
+        title: "Erreur"
+        '403':
+          title: "Erreur 403"
+          description: "interdit"
+        '404':
+          title: "Erreur 404"
+          description: "Introuvable"
+        '500':
+          title: "Erreur 500"
+          description: "erreur du serveur"

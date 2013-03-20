@@ -37,3 +37,14 @@ es:
       delete_warning: "No se pudo encontrar %{model} con ID %{id}."
       destroy_many_error: "Tenés que seleccionar al menos un %{model} a eliminar."
       destroy_many_success: "%{model} %{ids} eliminados."
+      custom_errors:
+        title: "Error"
+        '403':
+          title: "Error 403"
+          description: "prohibido"
+        '404':
+          title: "Error 404"
+          description: "No se encuentra"
+        '500':
+          title: "Error 500"
+          description: "Error del servidor"

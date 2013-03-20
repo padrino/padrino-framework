@@ -37,3 +37,14 @@ da:
       delete_warning: "Kunne ikke finde %{model} med id %{id}."
       destroy_many_error: "Du skal vælge mindst én %{model} for at slette."
       destroy_many_success: "%{model} %{ids} blev slettet."
+      custom_errors:
+        title: "Error"
+        '403':
+          title: "Error 403"
+          description: "Forbidden"
+        '404':
+          title: "Error 404"
+          description: "Not Found"
+        '500':
+          title: "Error 500"
+          description: "Server Error"

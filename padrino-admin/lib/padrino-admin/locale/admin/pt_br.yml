@@ -37,3 +37,14 @@ pt_br:
       delete_warning: "Não foi possível encontrar o %{model} com ID %{id}."
       destroy_many_error: "Você deve selecionar pelo menos um %{model} excluir."
       destroy_many_success: "%{model} %{ids} foram apagados com sucesso."
+      custom_errors:
+        title: "Erro"
+        '403':
+          title: "Erro 403"
+          description: "proibido"
+        '404':
+          title: "Erro 404"
+          description: "não encontrado"
+        '500':
+          title: "Erro 500"
+          description: "Erro de servidor"

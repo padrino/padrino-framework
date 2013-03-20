@@ -37,3 +37,14 @@ cs:
       delete_warning: "Nelze najít %{model} s ID %{id}."
       destroy_many_error: "Musíte vybrat alespoň jeden %{model} odstranit."
       destroy_many_success: " %{model} %{ids} byly úspěšně smazány."
+      custom_errors:
+        title: "chyba"
+        '403':
+          title: "chyba 403"
+          description: "zakázaný"
+        '404':
+          title: "chyba 404"
+          description: "nebyl nalezen"
+        '500':
+          title: "chyba 500"
+          description: "Server Error"
