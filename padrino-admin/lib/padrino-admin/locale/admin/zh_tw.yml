@@ -37,6 +37,7 @@ zh_tw:
       delete_warning: "找不到ID％的 %{id} ％{model}"
       destroy_many_error: "您必須選擇至少1 ％{model} 刪除"
       destroy_many_success: "％{model} ％{ids} 已成功刪除。"
+      err_title: "錯誤"
       err_403: "錯誤 403"
       err_403_description: "被禁止"
       err_404: "錯誤 404"

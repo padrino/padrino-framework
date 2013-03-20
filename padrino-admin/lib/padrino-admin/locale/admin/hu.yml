@@ -37,6 +37,7 @@ hu:
       delete_warning: "Nem található a %{model} azonosító %{id}."
       destroy_many_error: "Ki kell választani legalább egy %{model} törölni."
       destroy_many_success: "%{model} %{ids} sikeresen törölve."
+      err_title: "Hiba"
       err_403: "hiba 403"
       err_403_description: "tiltott"
       err_404: "hiba 404"

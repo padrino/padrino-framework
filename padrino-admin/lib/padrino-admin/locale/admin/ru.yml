@@ -37,6 +37,7 @@ ru:
       delete_warning: "Не удалось найти %{model} с идентификатором %{id}."
       destroy_many_error: "Вы должны выбрать хотя бы одно %{model} ю для удаления."
       destroy_many_success: "%{model} %{ids} идентификаторы были успешно удалены."
+      err_title: "ошибка"
       err_403: "ошибка 403"
       err_403_description: "запретный"
       err_404: "ошибка 404"

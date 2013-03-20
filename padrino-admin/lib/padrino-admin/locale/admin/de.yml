@@ -37,6 +37,7 @@ de:
       delete_warning: "Konnte nicht finden %{model} mit der ID %{id}."
       destroy_many_error: "Sie müssen mindestens ein %{model} zu löschen."
       destroy_many_success: " %{model} %{ids} wurden erfolgreich gelöscht."
+      err_title: "Fehler"
       err_403: "Fehler 403"
       err_403_description: "verboten"
       err_404: "Fehler 404"

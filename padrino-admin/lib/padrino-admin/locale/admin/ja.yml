@@ -37,6 +37,7 @@ ja:
       delete_warning: "の ID ％{id} が付き %{model} が見つかりませんでした。"
       destroy_many_error: "あなたが削除するには、少なくとも1つの %{model} を選択する必要があります。"
       destroy_many_success: "%{model} ％{ids} は正常にIDが削除されました。"
+      err_title: "エラー"
       err_403: "エラー 403"
       err_403_description: "禁断の"
       err_404: "エラー 404"

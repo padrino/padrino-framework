@@ -37,6 +37,7 @@ ro:
       delete_warning: "Nu am putut găsi %{model} cu ID-ul %{id}."
       destroy_many_error: "Trebuie să selectați cel puțin un  de %{model} pentru a șterge."
       destroy_many_success: "%{model} de id-uri %{ids} au fost șterse cu succes."
+      err_title: "Eroare"
       err_403: "eroare 403"
       err_403_description: "interzis"
       err_404: "eroare 404"

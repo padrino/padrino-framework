@@ -37,6 +37,7 @@ it:
       delete_warning: "Non è stato possible trovare il %{model} con l'ID %{id}."
       destroy_many_error: "Devi seleziona più di un %{model} per eliminarli."
       destroy_many_success: "%{model} %{ids} eliminato con successo."
+      err_title: "Errore"
       err_403: "Errore 403"
       err_403_description: "Non autorizzato"
       err_404: "Errore 404"

@@ -37,6 +37,7 @@ lv:
       delete_warning: "Nevarēju atrast %{model} ar ID %{id}."
       destroy_many_error: "Jums ir jāizvēlas vismaz viens %{model} dzēst."
       destroy_many_success: "%{model} %{ids} tika veiksmīgi dzēsti."
+      err_title: "Klaida"
       err_403: "klaida 403"
       err_403_description: "draudžiamas"
       err_404: "klaida 404"

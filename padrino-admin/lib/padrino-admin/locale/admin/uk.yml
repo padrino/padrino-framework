@@ -37,6 +37,7 @@ uk:
       delete_warning: "Не вдалося знайти %{model} з ідентифікатором %{id}."
       destroy_many_error: "Ви повинні вибрати хоча б одне %{model} моделлю для видалення."
       destroy_many_success: "%{model} %{ids} ідентифікатори були успішно видалені."
+      err_title: "помилка"
       err_403: "помилка 403"
       err_403_description: "Заборонений"
       err_404: "помилка 404"
