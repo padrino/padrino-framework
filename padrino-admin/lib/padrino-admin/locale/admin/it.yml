@@ -1,6 +1,13 @@
 it:
   padrino:
     admin:
+      login:
+        title: "Accesso"
+        email: "Email"
+        password: "Password"
+        bypass: "Saltare l'accesso?"
+        sign_in: "Accedi"
+        error: "Email o password errate."
       save: "Salva"
       save_and_continue: "Salva e continua"
       cancel: "Annulla"
@@ -15,7 +22,6 @@ it:
       profile: "Profilo"
       settings: "Impostazioni"
       logout: "Esci"
-      login_error: "Email o password errate."
       select_all: "Seleziona tutti"
       deselect_all: "Deseleziona tutti"
       delete_selected: "Elimina selezionati"

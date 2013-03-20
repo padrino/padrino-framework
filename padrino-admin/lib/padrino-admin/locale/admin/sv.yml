@@ -1,6 +1,13 @@
 sv:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "E-post"
+        password: "lösenord"
+        bypass: "Bypass inloggning?"
+        sign_in: "Logga in"
+        error: "E-post eller lösenord fel."
       save: "Spara"
       save_and_continue: "Spara och fortsätt"
       cancel: "Avbryt"
@@ -15,7 +22,6 @@ sv:
       profile: "Redigera din profil"
       settings: "Inställningar"
       logout: "Avsluta admin"
-      login_error: "E-post eller lösenord fel."
       select_all: "Markera allt"
       deselect_all: "Avmarkera alla"
       delete_selected: "Ta bort markerade"

@@ -1,6 +1,13 @@
 uk:
   padrino:
     admin:
+      login:
+        title: "Увійти"
+        email: "Email"
+        password: "пароль"
+        bypass: "Обхід ім'я або пароль?"
+        sign_in: "Увійти"
+        error: "Email або пароль неправильно."
       save: "Зберегти"
       save_and_continue: "Зберегти та продовжити"
       cancel: "Скасування"
@@ -15,7 +22,6 @@ uk:
       profile: "Редагувати профіль"
       settings: "Налаштування"
       logout: "Вихід адміністратора"
-      login_error: "Email або пароль неправильно."
       select_all: "Виділити все"
       deselect_all: "Очистити все"
       delete_selected: "Видалити"

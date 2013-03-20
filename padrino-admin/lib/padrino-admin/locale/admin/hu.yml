@@ -1,6 +1,13 @@
 hu:
   padrino:
     admin:
+      login:
+        title: "bejelentkezés"
+        email: "Email"
+        password: "jelszó"
+        bypass: "Bypass bejelentkezés?"
+        sign_in: "Bejelentkezés"
+        error: "E-mail vagy jelszó helytelen."
       save: "Mentés"
       save_and_continue: "Mentés és folytatás"
       cancel: "Mégse"
@@ -15,7 +22,6 @@ hu:
       profile: "Profil szerkesztése"
       settings: "Settings"
       logout: "Kilépés a admin"
-      login_error: "E-mail vagy jelszó helytelen."
       select_all: "Select All"
       deselect_all: "Unselect All"
       delete_selected: "Törlés kiválasztott"
