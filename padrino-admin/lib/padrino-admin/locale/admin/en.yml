@@ -1,6 +1,13 @@
 en:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "Password"
+        bypass: "Bypass login?"
+        sign_in: "Sign In"
+        error: "Email or password wrong."
       save: "Save"
       save_and_continue: "Save and continue"
       cancel: "Cancel"
@@ -15,7 +22,6 @@ en:
       profile: "Edit your profile"
       settings: "Settings"
       logout: "Exit the admin"
-      login_error: "Email or password wrong."
       select_all: "Select all"
       deselect_all: "Deselect all"
       delete_selected: "Delete selected"

@@ -1,6 +1,13 @@
 zh_tw:
   padrino:
     admin:
+      login:
+        title: "註冊"
+        email: "電子郵件"
+        password: "密碼"
+        bypass: "旁路登錄?"
+        sign_in: "登錄"
+        error: "電子郵件或密碼錯誤."
       save: "保存"
       save_and_continue: "保存並繼續"
       cancel: "取消"
@@ -15,7 +22,6 @@ zh_tw:
       profile: "編輯個人資料"
       settings: "設置"
       logout: "退出管理"
-      login_error: "電子郵件或密碼錯誤。"
       select_all: "全選"
       deselect_all: "全選"
       delete_selected: "刪除所選"

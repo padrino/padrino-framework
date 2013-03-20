@@ -7,7 +7,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     <![endif]-->
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     meta name='viewport' content='width=device-width,initial-scale=1'
-    title Login | Padrino Admin
+    title = @title.present? ? "#{@title} | Padrino Admin" : "#{pat('login.title')} | Padrino Admin"
     = favicon_tag 'favicon.ico'
     = stylesheet_link_tag 'bootstrap', 'admin'
 
@@ -19,17 +19,17 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
           = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
 
           fieldset class='control-group'
-            label for="email" class='login-input-label control-label' Login
+            label for="email" class='login-input-label control-label' = pat('login.email')
             div class='login-controls controls' = email_field_tag :email, :value => params[:email], :autofocus => true
           fieldset class='control-group'
-            label for='password' class='login-input-label control-label' Password
+            label for='password' class='login-input-label control-label' = pat('login.password')
             div class='login-controls controls' = password_field_tag :password, :value => params[:password]
           fieldset class='login-control-group-last control-group'
             div class='login-controls controls'
               label class="login-bypass-label checkbox"
                 = check_box_tag :bypass
-                | Bypass login?
+                | #{pat('login.bypass')}
 
         div class="login-footer modal-footer"
-          = submit_tag('Sign In', :class => 'btn btn-primary pull-right')
+          = submit_tag(pat('login.sign_in'), :class => 'btn btn-primary pull-right')
     = javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application

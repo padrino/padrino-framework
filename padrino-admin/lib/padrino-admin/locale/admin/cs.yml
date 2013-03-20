@@ -1,6 +1,13 @@
 cs:
   padrino:
     admin:
+      login:
+        title: "přihlášení"
+        email: "Email"
+        password: "heslo"
+        bypass: "Bypass přihlašovací údaje?"
+        sign_in: "Přihlásit se"
+        error: "E-mail nebo heslo nesprávné."
       save: "Uložit"
       save_and_continue: "Uložit a pokračovat"
       cancel: "Zrušit"
@@ -15,7 +22,6 @@ cs:
       profile: "Upravit profil"
       settings: "Nastavení"
       logout: "Konec admin"
-      login_error: "E-mail nebo heslo nesprávné."
       select_all: "Vybrat vše"
       deselect_all: "Zrušit výběr všech"
       delete_selected: "Odstranit vybrané"

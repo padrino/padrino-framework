@@ -17,7 +17,7 @@
       redirect url(:base, :index)
     else
       params[:email], params[:password] = h(params[:email]), h(params[:password])
-      flash[:error] = pat(:login_error)
+      flash[:error] = pat('login.error')
       redirect url(:sessions, :new)
     end
   end

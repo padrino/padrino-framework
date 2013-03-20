@@ -1,6 +1,13 @@
 es:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "contraseña"
+        bypass: "Bypass de acceso?"
+        sign_in: "registrarse"
+        error: "Tu email o password están equivocados."
       save: "Guardar"
       save_and_continue: "Guardar y continuar"
       cancel: "Cancelar"
@@ -15,7 +22,6 @@ es:
       profile: "Modificá tu perfil"
       settings: "Configuración"
       logout: "Salir del administrador"
-      login_error: "Tu email o password están equivocados."
       select_all: "Seleccionar todos"
       deselect_all: "Deseleccionar todos"
       delete_selected: "Eliminar seleccionados"
