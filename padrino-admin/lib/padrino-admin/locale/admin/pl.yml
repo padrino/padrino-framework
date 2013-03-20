@@ -1,6 +1,13 @@
 pl:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "hasło"
+        bypass: "Obwodnica login?"
+        sign_in: "Zaloguj się"
+        error: "E-mail lub hasło złe."
       save: "Zapisz"
       save_and_continue: "Zapisz i kontynuuj"
       cancel: "Anuluj"
@@ -15,7 +22,6 @@ pl:
       profile: "Edytuj swój profil"
       settings: "Ustawienia"
       logout: "Wyjdź z administratorem"
-      login_error: "E-mail lub hasło złe."
       select_all: "Zaznacz wszystko"
       deselect_all: "Odznacz wszystko"
       delete_selected: "Usuń zaznaczone"

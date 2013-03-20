@@ -1,6 +1,13 @@
 nl:
   padrino:
     admin:
+      login:
+        title: "inloggen"
+        email: "Email"
+        password: "wachtwoord"
+        bypass: "Bypass login?"
+        sign_in: "Aanmelden"
+        error: "E-mail of wachtwoord verkeerd."
       save: "Opslaan"
       save_and_continue: "Opslaan en doorgaan"
       cancel: "Annuleren"
@@ -15,7 +22,6 @@ nl:
       profile: "Bewerk je profiel"
       settings: "Instellingen"
       logout: "Verlaat de admin"
-      login_error: "E-mail of wachtwoord verkeerd."
       select_all: "Alles selecteren"
       deselect_all: "Alles deselecteren"
       delete_selected: "Selectie verwijderen"

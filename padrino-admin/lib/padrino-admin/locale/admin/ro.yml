@@ -1,6 +1,13 @@
 ro:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "parolă"
+        bypass: "Bypass autentificare?"
+        sign_in: "Conectați-vă"
+        error: "E-mail sau parola gresita."
       save: "Save"
       save_and_continue: "Salvați și continuați"
       cancel: "Cancel"
@@ -15,7 +22,6 @@ ro:
       profile: "Editare profil"
       settings: "Settings"
       logout: "Ieșiți admin"
-      login_error: "E-mail sau parola gresita."
       select_all: "Select All"
       deselect_all: "Toate Deselectați"
       delete_selected: "Ștergeți cele selectate"

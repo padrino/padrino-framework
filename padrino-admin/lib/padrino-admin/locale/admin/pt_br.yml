@@ -1,6 +1,13 @@
 pt_br:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "senha"
+        bypass: "Ignorar login?"
+        sign_in: "Entre"
+        error: "E-mail ou senha errada."
       save: "Salvar"
       save_and_continue: "Salvar e continuar"
       cancel: "Cancelar"
@@ -15,7 +22,6 @@ pt_br:
       profile: "Editar seu perfil"
       settings: "Configurações"
       logout: "Sair do administrador"
-      login_error: "E-mail ou senha errada."
       select_all: "Selecionar Tudo"
       deselect_all: "Desmarcar Todos"
       delete_selected: "Excluir selecionados"

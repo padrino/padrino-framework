@@ -1,6 +1,13 @@
 lv:
   padrino:
     admin:
+      login:
+        title: "Jūs turite prisijungti"
+        email: "laišką"
+        password: "slaptažodis"
+        bypass: "Apeiti prisijungimo vardą?"
+        sign_in: "Prisijunkite"
+        error: "E-pasts vai parole nepareiza."
       save: "Saglabāt"
       save_and_continue: "Saglabāt un turpināt"
       cancel: "Atcelt"
@@ -15,7 +22,6 @@ lv:
       profile: "Labot savu profilu"
       settings: "Uzstādījumi"
       logout: "Iziet no admin"
-      login_error: "E-pasts vai parole nepareiza."
       select_all: "Select All"
       deselect_all: "Atcelt visu"
       delete_selected: "Dzēst atlasīto"

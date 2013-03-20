@@ -1,6 +1,13 @@
 ja:
   padrino:
     admin:
+      login:
+        title: "ログイン"
+        email: "メール"
+        password: "パスワード"
+        bypass: "ログインをバイパス?"
+        sign_in: "にサインイン"
+        error: "電子メールやパスワードが間違っています."
       save: "保存"
       save_and_continue: "保存して続行"
       cancel: "キャンセル"
@@ -15,7 +22,6 @@ ja:
       profile: "プロフィールの編集"
       settings: "設定"
       logout: "管理者を終了します"
-      login_error: "電子メールやパスワードが間違っています。"
       select_all: "すべて選択"
       deselect_all: "すべて選択解除"
       delete_selected: "選択削除"
