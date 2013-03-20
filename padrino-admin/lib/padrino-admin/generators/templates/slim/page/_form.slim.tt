@@ -1,5 +1,5 @@
 <%- @orm.column_fields.each_with_index do |column, index| -%>
-- error = @<%= @orm.name_singular %>.errors.include?(:<%= column[:name] %>)
+- error = <%= @orm.has_error(column[:name]) %>
 fieldset class='control-group#{error ? ' has-error' : ''}'
   = f.label :<%= column[:name] %>, :class => 'control-label'
   div class='controls'
