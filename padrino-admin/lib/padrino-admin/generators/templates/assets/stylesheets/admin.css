@@ -85,6 +85,21 @@ footer p {
 }
 /* -- End Login -- */
 
+/* -- Begin Errors -- */
+.error {
+  font-family: 'Varela', 'Georgia', sans-serif;
+  font-size: 1.5em;
+  width: 500px;
+  margin: 100px auto 0;
+}
+.error-body{
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  padding : 30px 0;
+}
+.error-footer{padding-top: 20px;}
+/* -- End Errors -- */
+
 /* -- Begin Notifications -- */
 .alert {
   text-align: center;
