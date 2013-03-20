@@ -12,26 +12,24 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     = stylesheet_link_tag 'bootstrap', 'admin'
 
   body
-    - form_tag url(:sessions, :create), :class=>'form-horizontal' do
-      div id='padrino-modal' class='login'
-        div class="modal-header"
-          div class="logo" = image_tag('padrino-logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
-        div class="modal-body" id='padrino-modal-body'
+    - form_tag url(:sessions, :create), :class=>'login form-horizontal' do
+        div class="login-header modal-header"
+          div class="login-logo" = image_tag('logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
+        div class="login-body modal-body"
           = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
 
           fieldset class='control-group'
-            label for="email" class='control-label' Login
-            div class='controls' = email_field_tag :email, :value => params[:email], :autofocus => true
+            label for="email" class='login-input-label control-label' Login
+            div class='login-controls controls' = email_field_tag :email, :value => params[:email], :autofocus => true
           fieldset class='control-group'
-            label for='password' class='control-label' Password
-            div class='controls' = password_field_tag :password, :value => params[:password]
-          fieldset class='control-group'
-            label class='control-label'
-            div class='controls'
-              label class="checkbox"
+            label for='password' class='login-input-label control-label' Password
+            div class='login-controls controls' = password_field_tag :password, :value => params[:password]
+          fieldset class='login-control-group-last control-group'
+            div class='login-controls controls'
+              label class="login-bypass-label checkbox"
                 = check_box_tag :bypass
                 | Bypass login?
 
-        div class="modal-footer"
+        div class="login-footer modal-footer"
           = submit_tag('Sign In', :class => 'btn btn-primary pull-right')
     = javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application
