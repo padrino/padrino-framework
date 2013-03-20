@@ -9,6 +9,10 @@ require 'uuid'
 require 'thor/group'
 require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
+require 'dm-core'
+require 'dm-migrations'
+require 'dm-validations'
+require 'dm-aggregates'
 
 Padrino::Generators.load_components!
 
