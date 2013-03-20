@@ -159,7 +159,7 @@ module Padrino
 
         def has_error(field)
           case orm
-            when :datamapper, :ohm then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
+            when :datamapper, :ohm, :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
             else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
