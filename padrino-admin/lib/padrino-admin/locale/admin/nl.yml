@@ -37,3 +37,14 @@ nl:
       delete_warning: "Kan niet vinden het %{model} met id %{id}."
       destroy_many_error: "U moet ten minste een %{model} om te verwijderen."
       destroy_many_success: "%{model} %{ids} werden met succes verwijderd."
+      custom_errors:
+        title: "Fout"
+        '403':
+          title: "Fout 403"
+          description: "verboden"
+        '404':
+          title: "Fout 404"
+          description: "niet gevonden"
+        '500':
+          title: "Fout 500"
+          description: "Server Fout"

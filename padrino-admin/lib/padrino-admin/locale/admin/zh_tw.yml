@@ -37,3 +37,14 @@ zh_tw:
       delete_warning: "找不到ID％的 %{id} ％{model}"
       destroy_many_error: "您必須選擇至少1 ％{model} 刪除"
       destroy_many_success: "％{model} ％{ids} 已成功刪除。"
+      custom_errors:
+        title: "錯誤"
+        '403':
+          title: "錯誤 403"
+          description: "被禁止"
+        '404':
+          title: "錯誤 404"
+          description: "未找到"
+        '500':
+          title: "錯誤 500"
+          description: "服務器錯誤"

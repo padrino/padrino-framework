@@ -37,3 +37,14 @@ sv:
       delete_warning: "Kunde inte hitta %{model} med ID %{id}."
       destroy_many_error: "Du måste välja minst ett %{model} för att radera."
       destroy_many_success: " %{model} %{ids} framgångsrikt bort."
+      custom_errors:
+        title: "Fel"
+        '403':
+          title: "Fel 403"
+          description: "förbjudna"
+        '404':
+          title: "Fel 404"
+          description: "Not Found"
+        '500':
+          title: "Fel 500"
+          description: "Serverfel"

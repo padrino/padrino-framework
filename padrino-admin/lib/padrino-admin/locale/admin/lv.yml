@@ -37,3 +37,14 @@ lv:
       delete_warning: "Nevarēju atrast %{model} ar ID %{id}."
       destroy_many_error: "Jums ir jāizvēlas vismaz viens %{model} dzēst."
       destroy_many_success: "%{model} %{ids} tika veiksmīgi dzēsti."
+      custom_errors:
+        title: "Klaida"
+        '403':
+          title: "Klaida 403"
+          description: "draudžiamas"
+        '404':
+          title: "Klaida 404"
+          description: "Not Found"
+        '500':
+          title: "Klaida 500"
+          description: "serverio klaida"

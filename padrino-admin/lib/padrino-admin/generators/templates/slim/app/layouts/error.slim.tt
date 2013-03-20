@@ -7,7 +7,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     <![endif]-->
     meta content='text/html; charset=utf-8' http-equiv='Content-Type'
     meta name='viewport' content='width=device-width,initial-scale=1'
-    title = @title.present? ? "#{@title} | Padrino Admin" : "Error | Padrino Admin"
+    title = @title.present? ? "#{@title} | Padrino Admin" : "#{path(:custom_errors.title)} | Padrino Admin"
     = favicon_tag 'favicon.ico'
     link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet'
     = stylesheet_link_tag 'bootstrap', 'admin'

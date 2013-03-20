@@ -126,6 +126,7 @@
 .btn-group-vertical > .btn {
   display: block;
   float: none;
+  width: 100%;
   max-width: 100%;
 }
 .btn-group-vertical .btn:first-child {
@@ -155,4 +156,11 @@
     display: table-cell;
     width: 1%;
   }
+}
+
+
+// Checkbox and radio options
+.btn-group[data-toggle="buttons-radio"] > .btn > input[type="radio"],
+.btn-group[data-toggle="buttons-checkbox"] > .btn > input[type="checkbox"] {
+  display: none;
 }
