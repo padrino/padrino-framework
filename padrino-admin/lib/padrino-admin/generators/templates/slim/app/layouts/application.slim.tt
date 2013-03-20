@@ -37,7 +37,7 @@ html lang='en'
     footer
       div class='footer-wrapper container'
         p class='pull-left'
-          | Copyright &copy; #{Time.now.year} Your Site -
+          ' Copyright &copy; #{Time.now.year} Your Site -
           b Powered by Padrino v.#{Padrino.version}
         ul class='pull-right footer-links'
           li = link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank

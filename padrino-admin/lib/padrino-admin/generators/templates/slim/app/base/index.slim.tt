@@ -1,6 +1,5 @@
 div class="base-text"
   p Padrino is a ruby framework built upon the Sinatra web library
-  p Sinatra is a DSL for creating simple web applications in Ruby
   p It was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
   p Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
 
