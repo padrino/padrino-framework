@@ -41,10 +41,10 @@ footer p {
   display: inline-block;
   margin-right: 10px;
 }
-.footer-links a {
+.footer-links-link {
   color: #878787;
 }
-.footer-links li a:hover {
+.footer-links-link:hover {
   color: #777;
   text-decoration: none;
 }
@@ -67,21 +67,60 @@ footer p {
   width: 500px;
   margin: 60px auto 0;
 }
-.login form, .login .actions {
-  margin-bottom: 0px;
-}
-.login .label.error {
-  background-color: #c43c35;
-}
-.login .logo {
+.login-logo {
   text-align: center;
-  padding: 5px 0;
+  padding: 20px 0;
 }
-.login .control-group > .control-label {
+.login-controls {
+  margin-left: 120px;
+}
+.login-input-label {
   width: 100px;
 }
-.login .control-group > .controls {
-  margin-left: 120px;
+.login-control-group-last, .login-bypass-label {
+  margin-bottom: 0 !important;
+}
+.login-body {
+  padding: 40px 20px !important;
+}
+.login-footer {
+  margin-top: 0 !important;
+}
+/* iPad */
+@media (max-device-height: 1024px) and (orientation:landscape) {
+  .login {
+    margin-top: 30px;
+  }
+}
+/* Android Google Galaxy Nexus, add others! */
+@media (-webkit-device-pixel-ratio: 2) and (orientation:landscape) {
+  .login {
+    margin-top: 10px;
+  }
+  .login-header {
+    display: none;
+  }
+  .login-body {
+    padding: 10px 20px !important;
+  }
+  .login-controls {
+    margin-left: 0px; 
+  }
+}
+@media (-webkit-device-pixel-ratio: 2) and (orientation:portrait) {
+  .login {
+    margin-top: 30px;
+    width: 320px;
+  }
+  .login-header {
+    display: none;
+  }
+  .login-body {
+    padding: 10px 20px !important;
+  }
+  .login-controls {
+    margin-left: 0px; 
+  }
 }
 /* -- End Login -- */
 
@@ -204,13 +243,16 @@ footer p {
   width: 200px;
   text-align: center;
 }
-.main-wrapper .table th.selectable .popover-delete-selected {
+.main-wrapper .popover-delete-selected {
   left: 160px;
   top: 37px;
   width: 250px;
   text-align: center;
 }
-.main-wrapper .table .popover form {
+.main-wrapper .popover-delete-do-delete {
+  margin-right: 10px;
+}
+.main-wrapper .popover-form {
   margin: 0;
 }
 .main-wrapper .dropdown-menu li > a.disabled {
@@ -228,9 +270,9 @@ footer p {
 .base-text {
   font-family: 'Varela', sans-serif;
   width: 730px;
-  margin: 0 auto;
-  font-size: 1.5em;
-  line-height: 2em;
+  margin: 40px auto 0;
+  font-size: 1.45em;
+  line-height: 1.8em;
 }
 .base-icons {
   text-align: center;
