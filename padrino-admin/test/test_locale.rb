@@ -28,7 +28,7 @@ describe "Filters" do
     it "should have a vaild #{name} locale for orm" do
       base = YAML.load_file(file)
       # TODO: some one can know why I can't parse YML aliases?
-      %w(activemodel).each do |m|
+      %w[activemodel].each do |m|
         base = base[name][m]['errors']['messages']
         assert base.present?
         assert base['inclusion'].present?

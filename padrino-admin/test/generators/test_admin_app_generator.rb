@@ -196,16 +196,5 @@ describe "AdminAppGenerator" do
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
     end
-
-    it "should navigate completely inside an app with activerecord" do
-      # TODO FIXME What's the use case here? That the default routes for the admin are listed?
-      # Shouldn't we test that then?
-      skip
-      # capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord", "-e=haml", "--dev") }
-      # capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      # skip "Check bundle install and rake"
-      # bundle(:install, :gemfile => "#{@apptmp}/sample_project/Gemfile", :path => "#{@apptmp}/bundle")
-      # cli(:rake, '-T', "-c=#{@apptmp}/sample_project")
-    end
   end
 end

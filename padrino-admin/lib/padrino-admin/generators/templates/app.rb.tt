@@ -22,14 +22,14 @@ module <%= @app_name %>
     #
 
     set :admin_model, '<%= @model_name %>'
-    set :login_page, "/admin/sessions/new"
+    set :login_page,  '/admin/sessions/new'
 
     enable  :sessions
     disable :store_location
 
     access_control.roles_for :any do |role|
       role.protect '/'
-      role.allow '/sessions'
+      role.allow   '/sessions'
     end
 
     access_control.roles_for :admin do |role|
