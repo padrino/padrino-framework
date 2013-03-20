@@ -1,0 +1,3 @@
+%p=tag_icon 'minus-sign icon-3x'
+%h1 Error 403
+%p Forbidden

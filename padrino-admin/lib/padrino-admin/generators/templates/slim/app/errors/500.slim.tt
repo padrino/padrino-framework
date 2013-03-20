@@ -1,0 +1,3 @@
+p = tag_icon 'beaker icon-3x'
+h1 Error 500
+p Internal error

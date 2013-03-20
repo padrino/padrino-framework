@@ -26,8 +26,12 @@
 
     // Select/deselect record on row's click
     $('#list tbody tr td').on('click', function(ev) {
+      var checkbox;
       ev.stopPropagation();
-      $(this).parent().find('.selectable :checkbox').click();
+      if (ev.currentTarget.tagName == "TD") { 
+        checkbox = $(this).parent().find('.selectable :checkbox');
+        checkbox.prop('checked', !checkbox.prop('checked'));
+      }
     });
     // Check/uncheck all functionality
     function checkAll(table, checked) {
@@ -68,24 +72,16 @@
     });
 
     // Catch checkboxes check/uncheck and enable/disable the delete selected functionality
-    $('#list ' + allCheckboxSelector).on('click', function() {
-      var all = $('#list ' + allCheckboxSelector), checked = all.filter(':checked').length;
+    $('#list ' + allCheckboxSelector).on('click', function(ev) {
+      var all = $('#list ' + allCheckboxSelector), checked = all.filter(':checked').length, all_length = all.length;
+      ev.stopPropagation();
 
       toggleAction('#delete-selected', checked === 0);
       toggleAction('#deselect-all', checked === 0);
-      toggleAction('#select-all', checked === all.length);
+      toggleAction('#select-all', checked === all_length);
     });
+
+    // Autofocus first field with an error. (usability)
+    $('.has-error :input').first().focus();
   });
-
-    // Explanation section :D
-    $('#explanation').hide();
-    $(".the-icons a").mouseenter(function(){
-        $('#explanation h3').text($(this).attr('title'));
-        $('#explanation').fadeIn('fast');
-    });
-    $(".the-icons a").mouseleave(function(){
-        $('#explanation h3').text('');
-         $('#explanation').hide();
-    });
-
 }(window.jQuery);

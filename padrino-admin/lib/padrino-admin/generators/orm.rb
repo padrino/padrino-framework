@@ -80,7 +80,12 @@ module Padrino
         end
 
         def column_fields
-          excluded_columns = %w[id created_at updated_at]
+          excluded_columns = %w[created_at updated_at]
+          case orm
+            when :mongoid then excluded_columns << '_id'
+            else excluded_columns << 'id'
+          end
+
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
@@ -95,7 +100,8 @@ module Padrino
         def find(params=nil)
           case orm
             when :activerecord, :minirecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
-            when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
+            when :datamapper then "#{klass_name}.get(#{params}.to_i)"
+            when :couchrest then "#{klass_name}.get(#{params})"
             when :sequel, :ohm then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
@@ -134,6 +140,7 @@ module Padrino
 
         def find_by_ids(params=nil)
           case orm
+            when :ohm then "#{klass_name}.fetch(#{params})"
             when :datamapper, :couchrest then "#{klass_name}.all(:id => #{params})"
             when :mongoid then "#{klass_name}.find(#{params})"
             else find(params)
@@ -142,11 +149,18 @@ module Padrino
 
         def multiple_destroy(params=nil)
           case orm
-            when :ohm then "#{params}.delete"
+            when :ohm then "#{params}.each(&:delete)"
             when :sequel then  "#{klass_name}.destroy"
             when :datamapper then "#{params}.destroy"
             when :couchrest, :mongoid, :mongomapper then "#{params}.each(&:destroy)"
             else "#{klass_name}.destroy #{params}"
+          end
+        end
+
+        def has_error(field)
+          case orm
+            when :datamapper, :ohm then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
+            else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
 
