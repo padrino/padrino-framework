@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module Padrino
   module Generators
     ##
@@ -106,10 +107,17 @@ module Padrino
           empty_directory destination_root("admin/views/base")
           empty_directory destination_root("admin/views/layouts")
           empty_directory destination_root("admin/views/sessions")
+          empty_directory destination_root("admin/views/errors")
 
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+          template "templates/#{ext}/app/layouts/error.#{ext}.tt", destination_root("admin/views/layouts/error.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
+          # custom error
+          template "templates/#{ext}/app/errors/403.#{ext}.tt",        destination_root("admin/views/errors/403.#{ext}")
+          template "templates/#{ext}/app/errors/404.#{ext}.tt",        destination_root("admin/views/errors/404.#{ext}")
+          template "templates/#{ext}/app/errors/500.#{ext}.tt",        destination_root("admin/views/errors/500.#{ext}")
+
 
           unless options[:destroy]
             add_project_module @model_plural
@@ -117,7 +125,7 @@ module Padrino
           end
 
           # A nicer select box
-          # TODO FIXME This doesn't make much sense in here. Review. 
+          # TODO FIXME This doesn't make much sense in here. Review.
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           # Destroy account only if not logged in
@@ -127,7 +135,7 @@ module Padrino
           instructions = []
           instructions << "Run 'bundle'"
           instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper)
-          instructions << "Run 'ohm mani padme hum'" if orm == :ohm
+          instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }

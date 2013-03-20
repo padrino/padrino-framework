@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta name=viewport content='width=device-width,initial-scale=1' />
     <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin" %></title>
     <%%= favicon_tag "favicon.ico" %>
-    <%%= stylesheet_link_tag "bootstrap", "admin" %>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel=stylesheet />
+    <%%= stylesheet_link_tag 'bootstrap', 'admin' %>
   </head>
   <body>
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <%%= link_to image_tag('padrino.png', :alt => 'Padrino Admin', :height => 35, :width => 200), url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
+          <%%= link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
           <ul class="nav pull-right">
             <li><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)%></li>
             <li><%%= button_to(:logout, url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) } %></li>
@@ -33,7 +39,7 @@
 
     <div class='container main'>
       <div class='main-wrapper'>
-        <div class='flash'><%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe %></div>
+        <%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe %>
         <div class='row'><%%= yield %></div>
         <div class='main-push'></div>
       </div>
@@ -41,7 +47,7 @@
 
     <footer>
       <div class='footer-wrapper container'>
-        <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - <b>Powered by Padrino v.<%= Padrino.version %></b></p>
+        <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - Powered by Padrino v.<%= Padrino.version %></p>
         <ul class='pull-right footer-links'>
           <li><%%= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank %></li>
           <li><%%= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank %></li>

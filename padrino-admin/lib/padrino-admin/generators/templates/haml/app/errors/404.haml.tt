@@ -1,0 +1,3 @@
+%p=tag_icon 'warning-sign icon-3x'
+%h1 Error 404
+%p Not found

@@ -6,16 +6,17 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
-    %meta{:name => :viewport, :content => 'width=device-width'}
+    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
     %title= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
     =favicon_tag 'favicon.ico'
+    %link{:href => 'http://fonts.googleapis.com/css?family=Varela', :rel => :stylesheet}
     =stylesheet_link_tag 'bootstrap', 'admin'
 
   %body
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          =link_to image_tag('padrino.png', :alt => 'Padrino Admin', :height => 35, :width => 200), url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
+          =link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
           %ul.nav.pull-right
             %li=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile)
             %li
@@ -31,7 +32,7 @@
 
     .container.main
       .main-wrapper
-        .flash=[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type}", :bootstrap => true) }.join.html_safe
+        =[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
         .row=yield
         .main-push
 
@@ -40,8 +41,7 @@
         %p.pull-left
           Copyright &copy;
           =Time.now.year
-          Your Site -
-          %b Powered by Padrino v.#{Padrino.version}
+          Your Site - Powered by Padrino v.#{Padrino.version}
         %ul.pull-right.footer-links
           %li= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank
           %li= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank
