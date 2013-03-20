@@ -37,10 +37,14 @@ ru:
       delete_warning: "Не удалось найти %{model} с идентификатором %{id}."
       destroy_many_error: "Вы должны выбрать хотя бы одно %{model} ю для удаления."
       destroy_many_success: "%{model} %{ids} идентификаторы были успешно удалены."
-      err_title: "ошибка"
-      err_403: "ошибка 403"
-      err_403_description: "запретный"
-      err_404: "ошибка 404"
-      err_404_description: "не найдено"
-      err_500: "ошибка 500"
-      err_500_description: "Ошибка сервера"
+      custom_errors:
+        title: "ошибка"
+        '403':
+          title: "ошибка 403"
+          description: "запретный"
+        '404':
+          title: "ошибка 404"
+          description: "не найдено"
+        '500':
+          title: "ошибка 500"
+          description: "Ошибка сервера"

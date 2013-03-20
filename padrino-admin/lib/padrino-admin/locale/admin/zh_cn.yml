@@ -37,10 +37,14 @@ zh_cn:
       delete_warning: "找不到 ID 的 %{id} ％{model}"
       destroy_many_error: "您必须选择至少1 ％{model} 删除"
       destroy_many_success: "％{model} ％{ids} 已成功删除。"
-      err_title: "错误"
-      err_403: "错误 403"
-      err_403_description: "被禁止"
-      err_404: "错误 404"
-      err_404_description: "未找到"
-      err_500: "错误 500"
-      err_500_description: "服务器错误"
+      custom_errors:
+        title: "错误"
+        '403':
+          title: "错误 403"
+          description: "被禁止"
+        '404':
+          title: "错误 404"
+          description: "未找到"
+        '500':
+          title: "错误 500"
+          description: "服务器错误"
