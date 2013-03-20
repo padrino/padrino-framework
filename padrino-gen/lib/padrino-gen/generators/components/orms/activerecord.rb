@@ -49,6 +49,13 @@ ActiveSupport.use_standard_json_time_format = true
 # if you're including raw JSON in an HTML page.
 ActiveSupport.escape_html_entities_in_json = false
 
+# By default, generating migrations that look like:
+# 20130108162227_your_migration_name.rb
+# The prefix is a generation timestamp (in UTC).
+# If you’d prefer to use numeric prefixes, you can turn timestamped migrations off by setting:
+# ActiveRecord::Base.timestamped_migrations = false
+ActiveRecord::Base.timestamped_migrations = true
+
 # Now we can establish connection with our db.
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
 AR
@@ -162,10 +169,11 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :up            => AR_MODEL_UP_MG,
-    :down          => AR_MODEL_DOWN_MG
+    :base                   => AR_MIGRATION,
+    :column_format          => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :up                     => AR_MODEL_UP_MG,
+    :down                   => AR_MODEL_DOWN_MG,
+    :timestamped_migrations => ::ActiveRecord::Base.timestamped_migrations
   )
 end
 
@@ -177,9 +185,10 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :change_format => AR_CHANGE_MG,
-    :add           => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove        => Proc.new { |field, kind| "t.remove :#{field}" }
+    :base                   => AR_MIGRATION,
+    :change_format          => AR_CHANGE_MG,
+    :add                    => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :remove                 => Proc.new { |field, kind| "t.remove :#{field}" },
+    :timestamped_migrations => ::ActiveRecord::Base.timestamped_migrations
   )
 end

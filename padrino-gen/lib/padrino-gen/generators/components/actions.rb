@@ -35,7 +35,12 @@ module Padrino
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             current_migration_number = return_last_migration_number
             contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            if options[:timestamped_migrations]
+              next_migration_number = Time.now.utc.strftime("%Y%m%d%H%M%S")
+            else
+              next_migration_number = current_migration_number + 1
+            end
+            migration_filename = "#{format("%03d", next_migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
@@ -80,7 +85,12 @@ module Padrino
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             current_migration_number = return_last_migration_number
             contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            if options[:timestamped_migrations]
+              next_migration_number = Time.now.utc.strftime("%Y%m%d%H%M%S")
+            else
+              next_migration_number = current_migration_number + 1
+            end
+            migration_filename = "#{format("%03d", next_migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
