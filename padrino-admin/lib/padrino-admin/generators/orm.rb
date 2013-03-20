@@ -100,7 +100,8 @@ module Padrino
         def find(params=nil)
           case orm
             when :activerecord, :minirecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
-            when :datamapper, :couchrest   then "#{klass_name}.get(#{params})"
+            when :datamapper then "#{klass_name}.get(#{params}.to_i)"
+            when :couchrest then "#{klass_name}.get(#{params})"
             when :sequel, :ohm then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
