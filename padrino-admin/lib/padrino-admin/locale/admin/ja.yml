@@ -1,6 +1,13 @@
 ja:
   padrino:
     admin:
+      login:
+        title: "ログイン"
+        email: "メール"
+        password: "パスワード"
+        bypass: "ログインをバイパス?"
+        sign_in: "にサインイン"
+        error: "電子メールやパスワードが間違っています."
       save: "保存"
       save_and_continue: "保存して続行"
       cancel: "キャンセル"

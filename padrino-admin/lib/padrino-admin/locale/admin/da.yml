@@ -1,6 +1,13 @@
 da:
   padrino:
     admin:
+      login:
+        title: "Login"
+        email: "Email"
+        password: "adgangskode"
+        bypass: "Bypass login?"
+        sign_in: "Log ind"
+        error: "E-mail eller adgangskode forkert."
       save: "Gem"
       save_and_continue: "Gem og fortsæt"
       cancel: "Cancel"
@@ -15,7 +22,6 @@ da:
       profile: "Rediger din profil"
       settings: "Indstillinger"
       logout: "Afslut admin"
-      login_error: "E-mail eller adgangskode forkert."
       select_all: "Vælg alt"
       deselect_all: "Fravælg alle"
       delete_selected: "Slet valgte"

@@ -1,6 +1,13 @@
 ru:
   padrino:
     admin:
+      login:
+        title: "Войти"
+        email: "Email"
+        password: "пароль"
+        bypass: "Обход имя или пароль?"
+        sign_in: "Войти"
+        error: "Email или пароль неправильно."
       save: "Сохранить"
       save_and_continue: "Сохранить и продолжить"
       cancel: "Отмена"

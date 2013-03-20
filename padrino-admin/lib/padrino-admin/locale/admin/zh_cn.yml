@@ -1,7 +1,14 @@
 zh_cn:
   padrino:
     admin:
-      save: "保存"
+      login:
+        title: "注册"
+        email: "电子邮件"
+        password: "密码"
+        bypass: "旁路登录?"
+        sign_in: "Sign In"
+        error: "电子邮件或密码错误."
+      save: "登录"
       save_and_continue: "保存并继续"
       cancel: "取消"
       list: "名单"
@@ -15,7 +22,6 @@ zh_cn:
       profile: "编辑个人资料"
       settings: "设置"
       logout: "退出管理"
-      login_error: "电子邮件或密码错误。"
       select_all: "全选"
       deselect_all: "全选"
       delete_selected: "删除所选"

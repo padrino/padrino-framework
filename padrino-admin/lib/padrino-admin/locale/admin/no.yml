@@ -1,6 +1,13 @@
 "no":
   padrino:
     admin:
+      login:
+        title: "logg"
+        email: "E-post"
+        password: "passord"
+        bypass: "Bypass innlogging?"
+        sign_in: "Logg inn"
+        error: "E-post eller passord feil."
       save: "Lagre"
       save_and_continue: "Lagre og fortsett"
       cancel: "Avbryt"
@@ -15,7 +22,6 @@
       profile: "Rediger profil"
       settings: "Innstillinger"
       logout: "Avslutt admin"
-      login_error: "E-post eller passord feil."
       select_all: "Select All"
       deselect_all: "Fjern all merking"
       delete_selected: "Slett valgte"
