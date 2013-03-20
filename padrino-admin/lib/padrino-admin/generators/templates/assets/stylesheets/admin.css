@@ -86,18 +86,24 @@ footer p {
 /* -- End Login -- */
 
 /* -- Begin Errors -- */
-.error {
-  font-family: 'Varela', 'Georgia', sans-serif;
+.custom-error {
+  font-family: 'Varela', sans-serif;
   font-size: 1.5em;
   width: 500px;
   margin: 100px auto 0;
 }
-.error-body{
+.custom-error-body {
   border-top: 1px solid #e5e5e5;
   border-bottom: 1px solid #e5e5e5;
   padding : 30px 0;
 }
-.error-footer{padding-top: 20px;}
+.custom-error-go-back {
+  font-size: 1.2em;
+  padding: 6px 24px;
+}
+.custom-error-footer {
+  padding-top: 20px;
+}
 /* -- End Errors -- */
 
 /* -- Begin Notifications -- */
@@ -142,7 +148,7 @@ footer p {
 .navbar-brand {
   margin-top: 10px;
   padding: 0px 15px;
-  font-family: 'Varela', 'Georgia', sans-serif;
+  font-family: 'Varela', sans-serif;
   text-transform: uppercase;
   font-size: 2.5em;
   line-height: 1em;
@@ -216,7 +222,7 @@ footer p {
 /* --- End Application::List --- */
 /* --- Begin Application::Base --- */
 .base-text {
-  font-family: 'Varela', 'Georgia', sans-serif;
+  font-family: 'Varela', sans-serif;
   width: 730px;
   margin: 0 auto;
   font-size: 1.5em;

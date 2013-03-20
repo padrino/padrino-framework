@@ -35,12 +35,9 @@ module <%= @app_name %>
     access_control.roles_for :admin do |role|
     end
 
-    ##
-    # You can manage errors like:
-    #
-    error(403) { render 'errors/403', :layout => false }
-    error(500) { render 'errors/500', :layout => false }
-    error(404) { render 'errors/404', :layout => false }
-
+    # Custom error management 
+    error(403) { @title = "Error 403"; render('errors/403', :layout => :error) }
+    error(404) { @title = "Error 404"; render('errors/404', :layout => :error) }
+    error(500) { @title = "Error 500"; render('errors/500', :layout => :error) }
   end
 end
