@@ -9,7 +9,7 @@
     <meta name=viewport content='width=device-width,initial-scale=1' />
     <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "#{pat('login.title')} | Padrino Admin" %></title>
     <%%= favicon_tag "favicon.ico" %>
-    <%%= stylesheet_link_tag "bootstrap", "admin" %>
+    <%%= stylesheet_link_tag "bootstrap", "application" %>
   </head>
   <body>
     <%% form_tag url(:sessions, :create), :class=>"login form-horizontal" do %>
