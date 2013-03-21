@@ -1,56 +1,56 @@
 ul class="nav nav-tabs"
   li class="active" = link_to tag_icon(:list, pat(:list)), url(:<%= @orm.name_plural %>, :index)
-  li = link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new), :id => 'new'
+  li = link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new)
 
 div class="tabs-content"
   table class="table table-striped table-hover table-condensed" id="list"
     thead
       tr
-        th class='header selectable'
+        th class='header list-menu'
           div class='dropdown'
-            a href='#' class='dropdown-toggle' data-toggle='dropdown'
-              = tag_icon :cogs
-              b class='caret'
-            ul class='dropdown-menu' role='dropdown'
-              li = link_to tag_icon(:check, pat(:select_all)), '#', :id => 'select-all'
-              li class='disabled' = link_to tag_icon('check-empty', pat(:deselect_all)), '#', :id => 'deselect-all'
-              li class='divider'
-              li class='disabled'
-                = link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected'
-                div class='popover popover-delete-selected right'
+            a href='#' class='list-menu-toggle.dropdown-toggle dropdown-toggle' data-toggle='dropdown'
+              = tag_icon :magic
+              span class='caret'
+            ul class='list-menu dropdown-menu' role='dropdown'
+              li class='list-menu-wrapper' = link_to tag_icon(:check, pat(:select_all)), '#', :id => 'select-all', :class => 'list-menu-link'
+              li class='list-menu-wrapper list-menu-wrapper-disabled' = link_to tag_icon('check-empty', pat(:deselect_all)), '#', :id => 'deselect-all', :class => 'list-menu-link list-menu-link-disabled'
+              li class='list-menu-divider divider'
+              li class='list-menu-wrapper list-menu-wrapper-disabled'
+                = link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected', :class => 'list-menu-link list-menu-link-disabled'
+                div class='list-menu-popover-delete-selected popover right'
                   div class='arrow'
                   h3 class='popover-title' = pat(:delete_selected_title)
                   div class='popover-content'
                     - form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
                       = hidden_field_tag :<%= @orm.name_singular %>_ids, :'data-delete-many-ids' => true
-                      = submit_tag  pat(:delete), :class =>'btn btn-danger btn-small'
+                      = submit_tag  pat(:delete), :class =>'list-menu-popover-delete-selected-btn btn btn-danger btn-small'
                       div class='btn btn-small cancel' = pat(:cancel)
         <%- @orm.columns.each_with_index do |column, i| -%>
         th class='header' = :<%= column.name %>
         <%- end -%>
-        th class='header action'
+        th class='header list-row-action-header'
 
     tbody
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
-        tr
-          td class='selectable' = check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id
+        tr class='list-row'
+          td class='list-column list-selectable' = check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id, :class => 'list-selectable-checkbox'
           <%- @orm.columns.each_with_index do |column, i| -%>
           <%- if column.name == 'created_at' || column.name == 'updated_at' -%>
-          td = time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
+          td class='list-column' = time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
           <%- elsif column.type == :boolean -%>
-          td = <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove)
+          td class='list-column' = <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:ok) : tag_icon(:remove)
           <%- else -%>
-          td = <%= @orm.name_singular %>.<%= column.name %>
+          td class='list-column' = <%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>
           <%- end -%>
-          td class='action'
-            div class='wrapper'
-              = link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>"
-              = link_to tag_icon(:trash), :class => 'delete-one', :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>"
-              div class='popover popover-delete-one left'
+          td class='list-column list-row-action'
+            div class='list-row-action-wrapper'
+              = link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>", :class => 'list-row-action-wrapper-link'
+              = link_to tag_icon(:trash), :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>", :class => 'list-row-action-delete-one list-row-action-wrapper-link'
+              div class='popover list-row-action-popover-delete-one left'
                 div class='arrow'
                 h3 class='popover-title' = pat(:delete, :model => "<%= @orm.name_singular %>")
                 div class='popover-content'
                   - form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do
-                    = submit_tag pat(:delete), :class =>'btn btn-danger btn-small'
+                    = submit_tag pat(:delete), :class =>'list-row-action-popover-delete-one-btn btn btn-danger btn-small'
                     div class='btn btn-small cancel' = pat(:cancel)
