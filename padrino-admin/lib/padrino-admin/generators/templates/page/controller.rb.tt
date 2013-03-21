@@ -81,10 +81,10 @@
     <% if @orm.name_singular == @admin_model %>
     if <%= @orm.name_plural %>.include? current_account
       flash[:error] = pat(:delete_error, :model => '<%= @orm.name_singular %>')
-      redirect url(:<%= @orm.name_plural %>, :index)
-    end
-    <% end %>
+    elsif <%= @orm.multiple_destroy(@orm.name_plural) %>
+    <% else %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
+    <% end %>
       flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{ids.to_sentence}")
     end
     redirect url(:<%= @orm.name_plural %>, :index)
