@@ -250,7 +250,7 @@ From v0.11.0 on, applications should have a `namespace` setting
 in their .components file. Please include a line like the following
 in your .components file:
 WARNING
-          say "\tnamespace: #{detected_namespace}", :yellow
+          say "\t:namespace: #{detected_namespace}", :yellow
           say ""
 
           detected_namespace
