@@ -147,6 +147,12 @@ footer p {
 .custom-error-footer {
   padding-top: 20px;
 }
+/* Android Google Galaxy Nexus, add others! */
+@media (-webkit-device-pixel-ratio: 2) and (orientation:landscape) {
+  .custom-error {
+    margin: 0 auto;
+  }
+}
 /* -- End Errors -- */
 
 /* -- Begin Notifications -- */
@@ -161,6 +167,12 @@ footer p {
 }
 .form-actions {
   text-align :right;
+}
+.form-controls-checkbox {
+  padding-top: 7px;
+}
+.form-controls-radio {
+  padding-top: 6px;
 }
 /* --- Begin Application::TopBar --- */
 .navbar {
