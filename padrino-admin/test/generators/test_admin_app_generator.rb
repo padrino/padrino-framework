@@ -40,7 +40,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/admin/views")
       assert_file_exists("#{@apptmp}/sample_project/public/admin")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
-      assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/admin.css")
+      assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/bootstrap.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/application.js")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/jquery-1.9.0.min.js")
