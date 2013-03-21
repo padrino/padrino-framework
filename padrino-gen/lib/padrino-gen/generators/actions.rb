@@ -438,7 +438,7 @@ WARNING
           say "Unable to locate '#{app.underscore.camelize}' application        "
           say "================================================================="
           say
-          # raise SystemExit
+          raise SystemExit
         end
       end
 

@@ -52,7 +52,6 @@ module Padrino
       def setup_project
         valid_constant? name
         app = (options[:app] || "App")
-        check_app_existence(app)
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
         @app_name = app.gsub(/\W/, '_').underscore.camelize
