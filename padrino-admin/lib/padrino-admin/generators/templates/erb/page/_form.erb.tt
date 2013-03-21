@@ -9,7 +9,7 @@
 </fieldset>
 <% end %>
 
-<div class="actions">
+<div class="form-actions">
   <%%= f.submit pat(:save), :class => 'btn btn-primary' %>
   &nbsp;
   <%%= f.submit pat(:save_and_continue), :class => 'btn btn-info', :name => 'save_and_continue' %>

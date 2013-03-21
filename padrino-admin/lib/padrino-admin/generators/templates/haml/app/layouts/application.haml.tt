@@ -18,23 +18,21 @@
         .container
           =link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
           %ul.nav.pull-right
-            %li=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile)
-            %li
-              =button_to :logout, url(:sessions, :destroy), :method => :delete do
-                =content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout)
-                -#TODO Use button_tag once the PR is accepted.
-                -#=button_tag tag_icon(:off), :type => :submit, :title => pat(:logout)
+            %li.navbar-edit-account=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
+            %li.navbar-logout
+              =button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form' do
+                =content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link'
 
           %ul.nav.pull-left
             - project_modules.each do |project_module|
-              %li{:class => ('active' if request.path_info =~ /^#{project_module.path}/)}
+              %li{:class => "navbar-module #{('active' if request.path_info =~ /^#{project_module.path}/)}"}
                 =link_to project_module.human_name, project_module.path('/admin')
 
     .container.main
       .main-wrapper
         =[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
         .row=yield
-        .main-push
+        .main-wrapper-push
 
     %footer
       .footer-wrapper.container

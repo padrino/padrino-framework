@@ -18,8 +18,8 @@
         <div class="container">
           <%%= link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
           <ul class="nav pull-right">
-            <li><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile)%></li>
-            <li><%%= button_to(:logout, url(:sessions, :destroy), :method => :delete) { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout) } %></li>
+            <li><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link' %></li>
+            <li><%%= button_to(:logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form') { content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } %></li>
           </ul>
 
           <ul class="nav pull-left">
@@ -41,7 +41,7 @@
       <div class='main-wrapper'>
         <%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe %>
         <div class='row'><%%= yield %></div>
-        <div class='main-push'></div>
+        <div class='main-wrapper-push'></div>
       </div>
     </div>
 
@@ -49,10 +49,10 @@
       <div class='footer-wrapper container'>
         <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - Powered by Padrino v.<%= Padrino.version %></p>
         <ul class='pull-right footer-links'>
-          <li><%%= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank %></li>
-          <li><%%= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank %></li>
-          <li><%%= link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank %></li>
-          <li><%%= link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank %></li>
+          <li><%%= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank, :class => 'footer-links-link' %></li>
+          <li><%%= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank, :class => 'footer-links-link' %></li>
+          <li><%%= link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank, :class => 'footer-links-link' %></li>
+          <li><%%= link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank, :class => 'footer-links-link' %></li>
         </ul>
       </div>
     </footer>
