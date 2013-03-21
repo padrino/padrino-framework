@@ -39,7 +39,7 @@ module Padrino
           app = options[:app]
           check_app_existence(app)
           @project_name = options[:namespace].underscore.camelize
-          @project_name = fetch_project_name if @project_name.empty?
+          @project_name = fetch_project_name(app) if @project_name.empty?
           @app_name     = fetch_app_name(app)
           @actions      = controller_actions(fields)
           @controller   = name.to_s.underscore
