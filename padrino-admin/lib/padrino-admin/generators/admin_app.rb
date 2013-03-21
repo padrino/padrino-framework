@@ -118,7 +118,6 @@ module Padrino
           template "templates/#{ext}/app/errors/404.#{ext}.tt",        destination_root("admin/views/errors/404.#{ext}")
           template "templates/#{ext}/app/errors/500.#{ext}.tt",        destination_root("admin/views/errors/500.#{ext}")
 
-
           unless options[:destroy]
             add_project_module @model_plural
             require_dependencies('bcrypt-ruby', :require => 'bcrypt')

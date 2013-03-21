@@ -76,9 +76,10 @@
       flash[:error] = pat(:destroy_many_error, :model => '<%= @orm.name_singular %>')
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
-    <%= @orm.name_plural %> = <%= @orm.find_by_ids(("params[:#{@orm.name_singular}_ids].split(',')")) %>
+    ids = params[:<%= @orm.name_singular %>_ids].split(',')
+    <%= @orm.name_plural %> = <%= @orm.find_by_ids("ids") %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
-      flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{params[:<%= @orm.name_singular %>_ids]}")
+      flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{ids.to_sentence}")
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end

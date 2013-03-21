@@ -1,5 +1,6 @@
 require 'padrino-core'
 require 'padrino-helpers'
+require 'active_support/core_ext/array/conversions'
 
 FileSet.glob_require('padrino-admin/*.rb', __FILE__)
 FileSet.glob_require('padrino-admin/{helpers,utils}/*.rb', __FILE__)
