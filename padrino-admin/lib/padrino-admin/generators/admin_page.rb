@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module Padrino
   module Generators
     ##
@@ -27,7 +28,6 @@ module Padrino
       # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-
       # Show help if no argv given
       require_arguments!
 
@@ -38,7 +38,7 @@ module Padrino
         # self.source_paths.unshift Padrino.root("vendor/padrino-admin/generators")
         if in_app_root?
           @app_name = fetch_app_name
-
+          @admin_model = options[:admin_model]
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
             self.behavior = :revoke if options[:destroy]
