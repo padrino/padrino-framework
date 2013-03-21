@@ -1,4 +1,4 @@
-<%= @app_name %>::App.controllers <%= ":#{@controller}" if @controller %> do
+<%= @project_name %>::<%= @app_name %>.controllers <%= ":#{@controller}" if @controller %> do
   # get :index, :map => '/foo/bar' do
   #   session[:foo] = 'bar'
   #   render 'index'

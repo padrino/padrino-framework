@@ -81,9 +81,9 @@ def setup_orm
   end
 
   if RUBY_VERSION >= '1.9'
-     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @app_name.underscore))
+     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @project_name.underscore))
   else
-    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @app_name.underscore))
+    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
   end
 end
 

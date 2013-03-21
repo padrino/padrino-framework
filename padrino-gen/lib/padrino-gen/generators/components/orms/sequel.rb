@@ -10,7 +10,7 @@ SEQUEL
 
 def setup_orm
   sequel = SEQUEL
-  db = @app_name.underscore
+  db = @project_name.underscore
   require_dependencies 'sequel'
   case options[:adapter]
   when 'mysql-gem'
