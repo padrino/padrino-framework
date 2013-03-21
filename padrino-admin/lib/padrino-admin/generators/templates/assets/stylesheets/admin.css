@@ -14,7 +14,7 @@ body {
 .main-wrapper {
   padding-top: 70px /* same as footer's height */
 }
-.main-wrapper > .main-push {
+.main-wrapper-push {
   height: 70px; /* same as the footer */
 }
 footer {
@@ -156,13 +156,12 @@ footer p {
 /* -- End Notifications -- */
 
 /* -- Begin Application -- */
-.main-wrapper .tabs-content {
+.tabs-content {
   padding: 30px 0;
 }
-.main-wrapper .form-horizontal .actions {
+.form-actions {
   text-align :right;
 }
-
 /* --- Begin Application::TopBar --- */
 .navbar {
   -webkit-box-shadow: 0px 1px 10px #777;
@@ -171,21 +170,22 @@ footer p {
   -ms-box-shadow: 0px 1px 10px #777;
   box-shadow: 0px 1px 10px #777;
 }
-.navbar .nav > li > a, .navbar .nav > li button[type=submit] {
-  padding: 17px 15px 13px;
+.navbar-nav-link {
+  padding: 17px 15px 13px !important;
 }
-.navbar .nav > li form {
+.navbar-nav-form {
   margin: 0;
 }
-.navbar .nav > li button[type=submit] {
+.navbar-nav-form-link {
   border: none;
   background: none;
   color: #777777;
   text-decoration: none;
   text-shadow: 0 1px 0 #ffffff;
   font-size: inherit;
+  padding: 17px 15px 13px;
 }
-.navbar .nav > li button[type=submit]:hover {
+.navbar-nav-form-link:hover {
   color: #333333;
 }
 .navbar-brand {
@@ -199,72 +199,89 @@ footer p {
 /* --- End Application::TopBar --- */
 
 /* --- Begin Application::List --- */
-.main-wrapper .table th.action {
-  width: 110px;
-  text-align: center;
+.list-column {
+  vertical-align: middle !important;
 }
-.main-wrapper .table th.selectable, .main-wrapper .table td.selectable {
+/* ---- Begin Application::List::Selectboxes ---- */
+.list-selectable {
   width: 40px;
   text-align: center;
 }
-.main-wrapper .table th:first-child .dropdown-menu {
-  text-align: left;
-}
-.main-wrapper .table td {
-  vertical-align: middle !important;
-}
-.main-wrapper .table td:first-child > input[type=checkbox] {
+.list-selectable-checkbox {
   margin: 0 !important;
 }
-.main-wrapper .table tbody td.action .wrapper > a {
+/* ---- End Application::List::Selectboxes ---- */
+/* ---- Begin Application::List::ActionsOnRow ---- */
+.list-row-selected .list-column {
+  background-color: #f5f5f5 !important;
+}
+.list-row-action-header {
+  width: 110px;
+  text-align: center;
+}
+.list-row-action-wrapper {
+  position: relative;
+  text-align: right;
+  height: 100%;
+}
+.list-row-action-wrapper-link {
   font-size: 1.3em;
   padding: 4px;
   display: inline-block;
   visibility: hidden;
 }
-.main-wrapper .table tbody td.action .wrapper > a:hover {
+.list-row-action-wrapper-link:hover {
   text-decoration: none;
 }
-.main-wrapper .table tbody tr:hover td.action .wrapper > a,
-.main-wrapper .table tbody td.action .wrapper > a.active {
+.list-row:hover .list-row-action-wrapper-link,
+.list-row:hover .list-row-action-wrapper-link-active {
   visibility: visible;
 }
-.main-wrapper .table tbody td.action .wrapper {
-  position: relative;
-  text-align: right;
-  height: 100%;
-}
-.main-wrapper .table tbody td.action .btn-link {
-  padding: 10px;
-}
-.main-wrapper .table tbody td.action .popover-delete-one {
+.list-row-action-popover-delete-one {
   left: -120px;
   top: -27px;
   width: 200px;
   text-align: center;
 }
-.main-wrapper .popover-delete-selected {
+.list-row-action-popover-delete-one-btn {
+  margin-right: 10px;
+}
+/* ---- End Application::List::ActionsOnRow ---- */
+/* ---- Begin Application::List::ActionsOnList ---- */
+.list-menu {
+  text-align: left;
+}
+.list-menu-toggle, .list-menu-toggle:hover {
+  outline: none;
+  text-decoration: none;
+}
+.list-menu-divider {
+  height: 2px !important;
+}
+.list-menu-link-disabled {
+  /* @gray-light */
+  color: #999 !important;
+  cursor: default !important;
+  background-color: #fff !important;
+  background-image: inherit;
+  cursor: default !important;
+}
+.list-menu-wrapper-disabled:hover .list-menu-link-disabled:hover {
+  background-color: #fff !important;
+  background-image: inherit;
+  cursor: default !important;
+}
+.list-menu-popover-delete-selected {
   left: 160px;
   top: 37px;
   width: 250px;
   text-align: center;
 }
-.main-wrapper .popover-delete-do-delete {
+.list-menu-popover-delete-selected-btn {
   margin-right: 10px;
 }
-.main-wrapper .popover-form {
-  margin: 0;
-}
-.main-wrapper .dropdown-menu li > a.disabled {
-  /* @gray-light */
-  color: #999;
-  cursor: default !important;
-}
-.main-wrapper .dropdown-menu li.disabled:hover,
-.main-wrapper .dropdown-menu li:hover a.disabled:hover {
-  background-color: #fff;
-  cursor: default !important;
-}
+/* ---- End Application::List::ActionsOnList ---- */
+
 /* --- End Application::List --- */
 /* --- Begin Application::Base --- */
 .base-text {
@@ -290,4 +307,28 @@ footer p {
   vertical-align: middle;
 }
 /* --- End Application::Base --- */
+/* Android Google Galaxy Nexus, add others! */
+@media (-webkit-device-pixel-ratio: 2) {
+  .navbar-fixed-top {
+    position: relative !important;
+    margin: 0 0 20px 0;
+    padding: 0;
+  }
+  .navbar-brand, .navbar-module, .navbar-edit-account, .navbar-logout {
+    float: left;
+  }
+  .navbar .nav {
+    margin: 0;
+    padding: 0;
+  }
+  .main-wrapper {
+    padding-top: 0;
+  }
+  .main-wrapper .row {
+    padding: 0 20px;
+  }
+  footer {
+    display: none;
+  }
+}
 /* -- End Application -- */
