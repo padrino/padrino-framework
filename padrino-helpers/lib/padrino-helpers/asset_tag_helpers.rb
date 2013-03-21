@@ -330,6 +330,27 @@ module Padrino
         "#{result_path}#{timestamp}"
       end
 
+      ##
+      # Icon's Font-Aweseome helper
+      #
+      # @param [Symbol] icon
+      #  The specified icon type
+      #
+      # @param [Symbol] tag
+      #   The HTML tag.
+      #
+      # @return [String] html tag with prepend icon
+      #
+      # @example
+      #   tag_icon(:edit, :list)
+      #
+      # @since 0.12.0
+      # @api public
+      def tag_icon(icon, tag = nil)
+        content = content_tag(:i, '', :class=> "icon-#{icon.to_s}")
+        content << " #{tag.to_s}"
+      end
+
       private
       ##
       # Returns the uri root of the application with optional paths appended.
