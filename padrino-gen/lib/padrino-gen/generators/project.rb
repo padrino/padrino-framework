@@ -89,6 +89,7 @@ module Padrino
           execute_component_setup(comp, choice)
         end
         store_component_config('.components')
+        store_component_choice(:namespace, @project_name)
       end
 
       # Bundle all required components using bundler and Gemfile
