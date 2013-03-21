@@ -448,13 +448,16 @@ WARNING
       #   Name of application.
       # @param [Boolean] tiny
       #   Boolean to generate a tiny structure.
+      # @param [Boolean] error
+      #  Boolean to generate a custom error view
       #
       # @example
       #   app_skeleton 'some_app'
       #   app_skeleton 'sub_app', true
+      #   app_skeleton 'sub_app', true, true
       #
       # @api private
-      def app_skeleton(app, tiny=false)
+      def app_skeleton(app, tiny=false, error=true)
         directory('app/', destination_root(app))
         if tiny # generate tiny structure
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
@@ -466,6 +469,26 @@ WARNING
           empty_directory destination_root(app, 'helpers')
           empty_directory destination_root(app, 'views')
           empty_directory destination_root(app, 'views', 'layouts')
+        end
+        if error
+          ext = fetch_component_choice(:renderer)
+          # common
+          template "templates/#{ext}/layouts/error.#{ext}.tt", destination_root("/#{@app_name.downcase}/views/layouts/error.#{ext}")
+          template "templates/app/controllers/errors.rb.tt",  destination_root("/#{@app_name.downcase}/controllers/errors.rb")
+          # sytle
+          copy_file "templates/assets/images/font/FontAwesome.otf", destination_root("/public/images/font/FontAwesome.otf")
+          copy_file "templates/assets/images/font/fontawesome-webfont.eot", destination_root("/public/images/font/fontawesome-webfont.eot")
+          copy_file "templates/assets/images/font/fontawesome-webfont.svg", destination_root("/public/images/font/fontawesome-webfont.svg")
+          copy_file "templates/assets/images/font/fontawesome-webfont.ttf", destination_root("/public/images/font/fontawesome-webfont.ttf")
+          copy_file "templates/assets/images/font/fontawesome-webfont.woff", destination_root("/public/images/font/fontawesome-webfont.woff")
+          copy_file "templates/assets/stylesheets/font-awesome.min.css", destination_root("/public/stylesheets/font-awesome.min.css")
+          copy_file "templates/assets/stylesheets/error.css", destination_root("/public/stylesheets/error.css")
+          # error response
+          template "templates/#{ext}/errors/400.#{ext}.tt",    destination_root("/#{@app_name.downcase}/views/errors/400.#{ext}")
+          template "templates/#{ext}/errors/401.#{ext}.tt",    destination_root("/#{@app_name.downcase}/views/errors/401.#{ext}")
+          template "templates/#{ext}/errors/403.#{ext}.tt",    destination_root("/#{@app_name.downcase}/views/errors/403.#{ext}")
+          template "templates/#{ext}/errors/404.#{ext}.tt",    destination_root("/#{@app_name.downcase}/views/errors/404.#{ext}")
+          template "templates/#{ext}/errors/500.#{ext}.tt",    destination_root("/#{@app_name.downcase}/views/errors/500.#{ext}")
         end
       end
 

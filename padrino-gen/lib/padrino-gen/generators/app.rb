@@ -24,6 +24,7 @@ module Padrino
       class_option :destroy,                                                      :aliases => '-d', :default => false, :type => :boolean
       class_option :tiny,      :desc => 'Generate tiny app skeleton',             :aliases => '-i', :default => false, :type => :boolean
       class_option :namespace, :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',    :type => :string
+      class_option :error,        :desc => 'Create common HTTP errors  error',    :aliases => '-r', :default => true,  :type => :boolean
 
       # Show help if no argv given
       require_arguments!
@@ -39,7 +40,7 @@ module Padrino
           @project_name = options[:namespace].underscore.camelize
           @project_name = fetch_project_name(@app_folder) if @project_name.empty?
           self.behavior = :revoke if options[:destroy]
-          app_skeleton(@app_folder.downcase, options[:tiny])
+          app_skeleton(@app_folder.downcase, options[:tiny], options[:error])
           empty_directory destination_root("public/#{@app_folder.downcase}")
           append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{@app_folder.downcase}/app.rb')).to('/#{@app_folder.downcase}')"
 
