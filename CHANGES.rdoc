@@ -2,6 +2,15 @@
 
 == 0.11.0 (Not Yet Released)
 
+* NEW #923 Total redesign of admin panel with bootstrap and jquery, custom error pages
+  Big thanks to the huge effort from (@WaYdotNET, @DAddYE, @dariocravero, @ujifgc, @tyabe)!
+* FIX #1135 Fix namespaced generators for app (@tyabe)
+* FIX #1139 Escape ampersands in mail_to helpers (@nybblr)
+* FIX #821 Added a cache parser with a default now to Plain. (@daddye)
+* FIX #1129 use Padrino.root for apps.rb
+* FIX #1125 Eagerly load libs if needed for tasks
+* FIX #1111 route arity (@daddye)
+* FIX #1090 Don't calculate asset timestamp using uri_root_path (@nesquena)
 * NEW Upgrades Sinatra support to 1.4.1 (@nesquena, @daddye)
 * NEW Upgrade to latest http_router 0.11 (@daddye)
 * NEW Load rake tasks manually but fallback to automatic for now (@skade)
@@ -49,7 +58,6 @@
 * NEW #947 Support symbols as keys when expiring cache (@dariocravero)
 * FIX #973 Refuse to cache integers, convert to a string (@ujifgc)
 * NEW Adds breadcrumb view helpers (@WaYdotNET)
-* NEW #923 Total redesign of admin panel with bootstrap and jquery (@WaYdotNET, @DAddYE)
 * NEW support for ohm persistence in admin (@ujifgc)
 * FIX #873 Get the first key passed for expire for admin (@gugat)
 * FIX #876 Model output in erb templates for admin (@sleepingstu)
