@@ -89,7 +89,7 @@ module Padrino
           ]
 
           unless options[:destroy]
-            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy])
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy], :admin_model => @model_singular)
             admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
             admin_app.invoke_all
           end
