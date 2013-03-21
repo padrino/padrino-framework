@@ -1,4 +1,4 @@
-# #!/usr/bin/env gem build
+#!/usr/bin/env gem build
 # encoding: utf-8
 
 require File.expand_path("../lib/padrino-performance/version.rb", __FILE__)
