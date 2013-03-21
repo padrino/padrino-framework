@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.11.0 (Not Yet Released)
+== 0.11.0 (March 21st 2013)
 
 * NEW #923 Total redesign of admin panel with bootstrap and jquery, custom error pages
   Big thanks to the huge effort from (@WaYdotNET, @DAddYE, @dariocravero, @ujifgc, @tyabe)!
@@ -77,7 +77,7 @@
 * FIX #1109 Move rake initialization into CLI to avoid double loading (@skade)
 * NEW #1100 Add csrf token handling with csrf_token_field helpers (@skade, @dariocravero)
 
-== 0.10.7 (June 20 2012)
+== 0.10.7 (June 20th 2012)
 
 * FIX #777 Improve slim template block capturing
 * FIX #807 Fixes reloader class name resolution
