@@ -100,7 +100,7 @@ class MiniTest::Spec
     path = File.join(options[:root],'lib',"#{name}_init.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
-    include_text = "  register #{name.to_s.camelize}Initializer\n"
+    include_text = "    register #{name.to_s.camelize}Initializer\n"
     Thor::Actions::InjectIntoFile.expects(:new).with(anything,anything, include_text, anything).returns(instance)
     Thor::Actions::CreateFile.expects(:new).with(anything, path, kind_of(Proc), anything).returns(instance)
   end

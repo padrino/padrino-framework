@@ -27,7 +27,7 @@ end
 COMPASS
 
 COMPASS_REGISTER = <<-COMPASSR unless defined?(COMPASS_REGISTER)
-  register CompassInitializer\n
+    register CompassInitializer\n
 COMPASSR
 
 def setup_stylesheet
