@@ -149,6 +149,14 @@ module Padrino
           end
         end
 
+        def parse_many_ids_on_params
+          base = "params[:#{@name_singular}_ids].strip.split(',')"
+          case orm
+            when :activerecord, :minirecord, :datamapper, :sequel then "#{base}.map(&:to_i)"
+            else base
+          end
+        end
+
         def multiple_destroy(params=nil)
           case orm
             when :ohm then "#{params}.each(&:delete)"
