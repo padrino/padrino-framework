@@ -1,0 +1,3 @@
+%p=tag_icon 'eye-open icon-3x'
+%h1=t('http_errors.401.title')
+%p=t('http_errors.401.description')
