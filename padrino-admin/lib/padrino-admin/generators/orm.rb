@@ -142,6 +142,7 @@ module Padrino
           case orm
             when :ohm then "#{klass_name}.fetch(#{params})"
             when :datamapper, :couchrest then "#{klass_name}.all(:id => #{params})"
+            when :sequel then "#{klass_name}.where(:id => #{params})"
             when :mongoid then "#{klass_name}.find(#{params})"
             else find(params)
           end
@@ -150,7 +151,7 @@ module Padrino
         def multiple_destroy(params=nil)
           case orm
             when :ohm then "#{params}.each(&:delete)"
-            when :sequel then  "#{klass_name}.destroy"
+            when :sequel then  "#{params}.destroy"
             when :datamapper then "#{params}.destroy"
             when :couchrest, :mongoid, :mongomapper then "#{params}.each(&:destroy)"
             else "#{klass_name}.destroy #{params}"
