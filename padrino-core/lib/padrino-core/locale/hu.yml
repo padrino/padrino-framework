@@ -13,7 +13,7 @@ hu:
     abbr_day_names: [vas, hét, kedd, sze, csüt, pén, szo]
     month_names: [~, január, február, március, április, május, június, július, augusztus, szeptember, oktober, november, december]
     abbr_month_names: [~, jan, febr, márc, ápr, máj, jún, júl, aug, szept, okt, nov, dec]
-    order: 
+    order:
       - year
       - month
       - day
@@ -32,3 +32,22 @@ hu:
       words_connector: ", "
       two_words_connector: " és "
       last_word_connector: " és "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Hiba"
+    '400':
+      title: "Hiba 400"
+      description: "Bad Request"
+    '401':
+      title: "Hiba 401"
+      description: "tiltott"
+    '403':
+      title: "Hiba 403"
+      description: "tiltott"
+    '404':
+      title: "Hiba 404"
+      description: "Not Found"
+    '500':
+      title: "Hiba 500"
+      description: "Szerverhiba"

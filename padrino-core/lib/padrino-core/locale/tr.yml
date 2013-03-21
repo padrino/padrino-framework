@@ -32,3 +32,22 @@ tr:
       words_connector: ", "
       two_words_connector: " ve "
       last_word_connector: " ve "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Hate"
+    '400':
+      title: "Hate 400"
+      description: "Bad Request"
+    '401':
+      title: "Hate 401"
+      description: "yetkisiz"
+    '403':
+      title: "Hate 403"
+      description: "yasak"
+    '404':
+      title: "Hate 404"
+      description: "Bulunamadı"
+    '500':
+      title: "Hate 500"
+      description: "Sunucu Hatası"

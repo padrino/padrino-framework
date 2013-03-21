@@ -32,3 +32,22 @@ ro:
       words_connector: ", "
       two_words_connector: " și "
       last_word_connector: " și "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Eroare"
+    '400':
+      title: "Eroare 400"
+      description: "Bad cerere"
+    '401':
+      title: "Eroare 401"
+      description: "neautorizat"
+    '403':
+      title: "Eroare 403"
+      description: "interzis"
+    '404':
+      title: "Eroare 404"
+      description: "nu a fost găsit"
+    '500':
+      title: "Eroare 500"
+      description: "Eroare de server"

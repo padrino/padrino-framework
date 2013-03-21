@@ -32,3 +32,22 @@ sv:
       words_connector: ", "
       two_words_connector: " och "
       last_word_connector: ", och "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Fel"
+    '400':
+      title: "Fel 400"
+      description: "Dålig förfrågan"
+    '401':
+      title: "Fel 401"
+      description: "obehörig"
+    '403':
+      title: "Fel 403"
+      description: "förbjudna"
+    '404':
+      title: "Fel 404"
+      description: "Not Found"
+    '500':
+      title: "Fel 500"
+      description: "Serverfel"

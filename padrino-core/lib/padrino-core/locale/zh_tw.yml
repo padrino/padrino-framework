@@ -32,3 +32,22 @@ zh_tw:
       words_connector: ", "
       two_words_connector: " 和 "
       last_word_connector: ", 和 "
+
+# custom http response status (only error)
+  http_errors:
+    title: "錯誤"
+    '400':
+      title: "錯誤 400"
+      description: "錯誤的請求"
+    '401':
+      title: "錯誤 401"
+      description: "擅自"
+    '403':
+      title: "錯誤 403"
+      description: "被禁止"
+    '404':
+      title: "錯誤 404"
+      description: "未找到"
+    '500':
+      title: "錯誤 500"
+      description: "服務器錯誤"

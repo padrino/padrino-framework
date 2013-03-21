@@ -32,3 +32,22 @@ de:
       words_connector: ", "
       two_words_connector: " und "
       last_word_connector: ", und "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Fehler"
+    '400':
+      title: "Fehler 400"
+      description: "Bad Request"
+    '401':
+      title: "Fehler 401"
+      description: "unbefugt"
+    '403':
+      title: "Fehler 403"
+      description: "verboten"
+    '404':
+      title: "Fehler 404"
+      description: "nicht gefunden"
+    '500':
+      title: "Fehler 500"
+      description: "Server Fehler"

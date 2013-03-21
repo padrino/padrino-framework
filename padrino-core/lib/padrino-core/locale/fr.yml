@@ -13,7 +13,7 @@ fr:
     abbr_day_names: [Lun, Mar, Mer, Jeu, Ven, Sam, Dim]
     month_names: [~, Janvier, Février, Mars, Avril, Mai, Juin, Juillet, Août, Septembre, Octobre, Novembre, Décembre]
     abbr_month_names: [~, Jan, Fev, Mar, Avr, Mai, Jun, Jul, Aou, Sep, Oct, Nov, Dec]
-    order: 
+    order:
       - day
       - month
       - year
@@ -32,3 +32,22 @@ fr:
       words_connector: ", "
       two_words_connector: " et "
       last_word_connector: ", et "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Erreur"
+    '400':
+      title: "Erreur 400"
+      description: "Bad Request"
+    '401':
+      title: "Erreur 401"
+      description: "non autorisé"
+    '403':
+      title: "Erreur 403"
+      description: "interdit"
+    '404':
+      title: "Erreur 404"
+      description: "Introuvable"
+    '500':
+      title: "Erreur 500"
+      description: "erreur du serveur"

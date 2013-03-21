@@ -38,3 +38,22 @@ it:
     array:
       sentence_connector: "e"
       skip_last_comma: false
+
+# custom http response status (only error)
+  http_errors:
+    title: "Errore"
+    '400':
+      title: "Errore 400"
+      description: "Richiesta non valida"
+    '401':
+      title: "Errore 401"
+      description: "Non autorizzato"
+    '403':
+      title: "Errore 403"
+      description: "Non autorizzato"
+    '404':
+      title: "Errore 404"
+      description: "Risorsa non trovata"
+    '500':
+      title: "Errore 500"
+      description: "Errore del server"

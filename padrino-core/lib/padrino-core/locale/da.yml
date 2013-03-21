@@ -32,3 +32,22 @@ da:
       words_connector: ", "
       two_words_connector: " og "
       last_word_connector: " og "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Error"
+    '400':
+      title: "Error 400"
+      description: "Bad Request"
+    '401':
+      title: "Error 401"
+      description: "Server Error"
+    '403':
+      title: "Error 403"
+      description: "Forbidden"
+    '404':
+      title: "Error 404"
+      description: "Not Found"
+    '500':
+      title: "Error 500"
+      description: "Server Error"

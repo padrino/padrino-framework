@@ -38,3 +38,22 @@ pt_br:
     array:
       sentence_connector: "e"
       skip_last_comma: false
+
+# custom http response status (only error)
+  http_errors:
+    title: "Erro"
+    '400':
+      title: "Erro 400"
+      description: "Bad Request"
+    '401':
+      title: "Erro 401"
+      description: "não autorizado"
+    '403':
+      title: "Erro 403"
+      description: "proibido"
+    '404':
+      title: "Erro 404"
+      description: "não encontrado"
+    '500':
+      title: "Erro 500"
+      description: "Erro de servidor"

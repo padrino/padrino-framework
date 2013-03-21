@@ -33,3 +33,21 @@ ru:
       two_words_connector: " и "
       last_word_connector: " и "
 
+# custom http response status (only error)
+  http_errors:
+    title: "ошибка"
+    '400':
+      title: "ошибка 400"
+      description: "Bad Request"
+    '401':
+      title: "ошибка 401"
+      description: "несанкционированный"
+    '403':
+      title: "ошибка 403"
+      description: "Доступ ограничен"
+    '404':
+      title: "ошибка 404"
+      description: "Страница не найдена"
+    '500':
+      title: "ошибка 500"
+      description: "Ошибка сервера"

@@ -33,3 +33,21 @@
       two_words_connector: " og "
       last_word_connector: " og "
 
+# custom http response status (only error)
+  http_errors:
+    title: "Feil"
+    '400':
+      title: "Feil 400"
+      description: "Bad Request"
+    '401':
+      title: "Feil 401"
+      description: "forbudt"
+    '403':
+      title: "Feil 403"
+      description: "forbudt"
+    '404':
+      title: "Feil 404"
+      description: "Finner ikke"
+    '500':
+      title: "Feil 500"
+      description: "Server Feil"
