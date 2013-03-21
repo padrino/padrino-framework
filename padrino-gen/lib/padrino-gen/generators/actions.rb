@@ -229,14 +229,19 @@ module Padrino
 
       # Returns the namespace for the project.
       #
+      # @param [String] app
+      #   folder name of application.
+      #
       # @return [String] namespace for application.
       #
       # @example
       #   fetch_project_name
       #
        # @api public
-      def fetch_project_name
+      def fetch_project_name(app='app')
+        app_path = destination_root(app, 'app.rb')
         @project_name = fetch_component_choice(:namespace) if @project_name.empty?
+        @project_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
       end
 
       # Returns the app_name for the application at root.

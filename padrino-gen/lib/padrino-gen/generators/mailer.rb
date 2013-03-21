@@ -40,7 +40,7 @@ module Padrino
           check_app_existence(app)
           self.behavior    = :revoke if options[:destroy]
           @project_name    = options[:namespace].underscore.camelize
-          @project_name    = fetch_project_name if @project_name.empty?
+          @project_name    = fetch_project_name(app) if @project_name.empty?
           @app_name        = fetch_app_name(app)
           @actions         = actions.map{|a| a.to_sym}
           @short_name      = name.to_s.gsub(/_mailer/i, '').underscore.downcase
