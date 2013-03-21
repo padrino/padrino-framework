@@ -24,7 +24,7 @@ module Padrino
       class_option :destroy,                                                      :aliases => '-d', :default => false, :type => :boolean
       class_option :tiny,      :desc => 'Generate tiny app skeleton',             :aliases => '-i', :default => false, :type => :boolean
       class_option :namespace, :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',    :type => :string
-      class_option :error,        :desc => 'Create common HTTP errors  error',    :aliases => '-r', :default => true,  :type => :boolean
+      class_option :error,    :desc => 'Create common HTTP errors',               :aliases => '-w', :default => true,  :type => :boolean
 
       # Show help if no argv given
       require_arguments!

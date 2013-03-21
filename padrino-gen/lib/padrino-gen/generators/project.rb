@@ -34,14 +34,14 @@ module Padrino
       class_option :adapter,      :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite', :type => :string
       class_option :template,     :desc => 'Generate project from template',                        :aliases => '-p', :default => nil,      :type => :string
       class_option :gem,          :desc => 'Generate project as a gem',                             :aliases => '-g', :default => false,    :type => :boolean
-      class_option :error,        :desc => 'Create common HTTP errors',                             :aliases => '-r', :default => true,     :type => :boolean
+      class_option :error,        :desc => 'Create common HTTP errors',                             :aliases => '-w', :default => true,     :type => :boolean
 
       # Definitions for the available customizable components
       component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :minirecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
       component_option :test,       'testing framework',  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot, :minitest], :default => :none
       component_option :mock,       'mocking library',    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     'javascript library', :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
-      component_option :renderer,   'template engine',    :aliases => '-e', :choices => [:haml, :erb, :liquid, :slim], :default => :slim
+      component_option :renderer,   'template engine',    :aliases => '-e', :choices => [:haml, :erb, :slim], :default => :slim
       component_option :stylesheet, 'stylesheet engine',  :aliases => '-c', :choices => [:less, :sass, :compass, :scss], :default => :none
 
       # Show help if no argv given
