@@ -132,7 +132,7 @@ module Padrino
           logger.debug :reload,  began_at, file if  reload
 
           $LOADED_FEATURES.delete(file) if files.include?(file)
-          silence_output
+          Padrino::Utils.silence_output
           loaded = false
           require(file)
           loaded = true
@@ -140,7 +140,7 @@ module Padrino
         rescue SyntaxError => e
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
-          unsilence_output
+          Padrino::Utils.unsilence_output
           new_constants = ObjectSpace.new_classes(klasses)
           if loaded
             process_loaded_file(:file      => file, 
@@ -202,18 +202,6 @@ module Padrino
           dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
           $LOADED_FEATURES.delete(file)
         end
-      end
-
-      ###
-      # Silences output verbosity level so load
-      # errors are not visible when safe_load(file)
-      #
-      def silence_output
-        @verbosity_level, $-v = $-v, nil
-      end
-
-      def unsilence_output
-        $-v = @verbosity_level
       end
 
       ###
