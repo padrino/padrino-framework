@@ -470,8 +470,8 @@ WARNING
           empty_directory destination_root(app, 'views')
           empty_directory destination_root(app, 'views', 'layouts')
         end
-        if error
-          ext = fetch_component_choice(:renderer)
+        ext = fetch_component_choice(:renderer)
+        if error && !ext == "liquid"
           # common
           template "templates/#{ext}/layouts/error.#{ext}.tt", destination_root("/#{@app_name.downcase}/views/layouts/error.#{ext}")
           template "templates/app/controllers/errors.rb.tt",  destination_root("/#{@app_name.downcase}/controllers/errors.rb")
