@@ -6,7 +6,8 @@ require 'yard'
 
 # Skip the releasing tag
 class Bundler::GemHelper
-  def release_gem
+  def release_gem(*args)
+    p args
     guard_clean
     guard_already_tagged
     built_gem_path = build_gem
