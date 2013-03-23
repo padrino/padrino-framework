@@ -25,7 +25,7 @@ html lang='en'
 
           ul class='nav pull-left'
             - project_modules.each do |project_module|
-              li class={"navbar-module #{'active' if request.path_info =~ /^#{project_module.path}/}"}
+              li class=("navbar-module #{'active' if request.path_info =~ /^#{project_module.path}/}")
                 = link_to project_module.human_name, project_module.path('/admin')
 
     div class='container main'
