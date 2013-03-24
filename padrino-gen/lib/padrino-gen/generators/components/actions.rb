@@ -187,7 +187,7 @@ module Padrino
           action_declarations = field_tuples.map do |request, name|
             "#{request} :#{name} do\n\nend\n"
           end
-          action_declarations.join("\n").gsub(/^/, " " * 2)
+          action_declarations.join("\n").gsub(/^/, " " * 2).gsub(/^\s*$/, "")
         end
       end # Actions
     end # Components
