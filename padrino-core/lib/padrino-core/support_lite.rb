@@ -242,3 +242,19 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n
 # Used to determine if this file has already been required
 #
 module SupportLite; end
+
+module Padrino
+  class Utils
+    ###
+    # Silences output verbosity level so load
+    # errors are not visible when safe_load(file)
+    #
+    def self.silence_output
+      @verbosity_level, $-v = $-v, nil
+    end
+
+    def self.unsilence_output
+      $-v = @verbosity_level
+    end
+  end
+end

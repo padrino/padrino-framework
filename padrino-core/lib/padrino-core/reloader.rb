@@ -51,7 +51,7 @@ module Padrino
         # Detect changed files
         rotation do |file, mtime|
           # Retrive the last modified time
-          new_file = MTIMES[file].nil?
+          new_file       = MTIMES[file].nil?
           previous_mtime = MTIMES[file] ||= mtime
           logger.devel "Detected a new file #{file}" if new_file
           # We skip to next file if it is not new and not modified
@@ -74,15 +74,9 @@ module Padrino
       # Remove files and classes loaded with stat
       #
       def clear!
-        MTIMES.clear
-        LOADED_CLASSES.each do |file, klasses|
-          klasses.each { |klass| remove_constant(klass) }
-          LOADED_CLASSES.delete(file)
-        end
-        LOADED_FILES.each do |file, dependencies|
-          dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
-          $LOADED_FEATURES.delete(file)
-        end
+        clear_modification_times
+        clear_loaded_classes
+        clear_loaded_files_and_features
       end
 
       ##
@@ -115,56 +109,46 @@ module Padrino
       # A safe Kernel::require which issues the necessary hooks depending on results
       #
       def safe_load(file, options={})
-        began_at    = Time.now
-        force, file = options[:force], figure_path(file)
+        began_at = Time.now
+        force    = options[:force]
+        file     = figure_path(file)
+        reload   = should_reload?(file)
+        m_time   = modification_time(file)
 
-        # Check if file was changed or if force a reload
-        reload = MTIMES[file] && File.mtime(file) > MTIMES[file]
-        return if !force && !reload && MTIMES[file]
+        return if !force && m_time && !reload
 
-        # Removes all classes declared in the specified file
-        if klasses = LOADED_CLASSES.delete(file)
-          klasses.each { |klass| remove_constant(klass) }
-        end
-
-        # Remove all loaded fatures with our file
-        if features = LOADED_FILES[file]
-          features.each { |feature| $LOADED_FEATURES.delete(feature) }
-        end
+        remove_loaded_file_classes(file)
+        remove_loaded_file_features(file)
 
         # Duplicate objects and loaded features before load file
         klasses = ObjectSpace.classes
         files   = Set.new($LOADED_FEATURES.dup)
 
-        # Now we can reload dependencies of our file
-        if features = LOADED_FILES.delete(file)
-          features.each { |feature| safe_load(feature, :force => true) }
-        end
+        reload_deps_of_file(file)
 
         # And finally load the specified file
         begin
           logger.devel :loading, began_at, file if !reload
           logger.debug :reload,  began_at, file if  reload
+
           $LOADED_FEATURES.delete(file) if files.include?(file)
-          verbosity_was, $-v = $-v, nil
+          Padrino::Utils.silence_output
           loaded = false
           require(file)
           loaded = true
-          MTIMES[file] = File.mtime(file)
+          update_modification_time(file)
         rescue SyntaxError => e
           logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
         ensure
-          $-v = verbosity_was
+          Padrino::Utils.unsilence_output
           new_constants = ObjectSpace.new_classes(klasses)
           if loaded
-            # Store the file details
-            LOADED_CLASSES[file] = new_constants
-            LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
-            # Track only features in our Padrino.root
-            LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+            process_loaded_file(:file      => file, 
+                                :constants => new_constants, 
+                                :files     => files)
           else
             logger.devel "Failed to load #{file}; removing partially defined constants"
-            new_constants.each { |klass| remove_constant(klass) }
+            unload_constants(new_constants)
           end
         end
       end
@@ -197,6 +181,101 @@ module Padrino
       end
 
       private
+
+      ###
+      # Clear instance variables that keep track of 
+      # loaded features/files/mtimes
+      #
+      def clear_modification_times
+        MTIMES.clear
+      end
+      
+      def clear_loaded_classes
+        LOADED_CLASSES.each do |file, klasses|
+          klasses.each { |klass| remove_constant(klass) }
+          LOADED_CLASSES.delete(file)
+        end
+      end
+
+      def clear_loaded_files_and_features
+        LOADED_FILES.each do |file, dependencies|
+          dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
+          $LOADED_FEATURES.delete(file)
+        end
+      end
+
+      ###
+      # Macro for mtime query
+      #
+      def modification_time(file)
+        MTIMES[file]
+      end
+
+      ###
+      # Macro for mtime update
+      #
+      def update_modification_time(file)
+        MTIMES[file] = File.mtime(file)
+      end
+
+      ###
+      # Tracks loaded file features/classes/constants
+      #
+      def process_loaded_file(*args)
+        options       = args.extract_options!
+        new_constants = options[:constants]
+        files         = options[:files]
+        file          = options[:file]
+
+        # Store the file details
+        LOADED_CLASSES[file] = new_constants
+        LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
+
+        # Track only features in our Padrino.root
+        LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+      end
+
+      ###
+      # Unloads all constants in new_constants
+      #
+      def unload_constants(new_constants)
+        new_constants.each { |klass| remove_constant(klass) }
+      end
+
+      ###
+      # Safe load dependencies of a file
+      #
+      def reload_deps_of_file(file)
+        if features = LOADED_FILES.delete(file)
+          features.each { |feature| safe_load(feature, :force => true) }
+        end
+      end
+
+      ##
+      # Check if file was changed or if force a reload
+      #
+      def should_reload?(file)
+        MTIMES[file] && File.mtime(file) > MTIMES[file]
+      end
+
+      ##
+      # Removes all classes declared in the specified file
+      #
+      def remove_loaded_file_classes(file)
+        if klasses = LOADED_CLASSES.delete(file)
+          klasses.each { |klass| remove_constant(klass) }
+        end 
+      end
+
+      ##
+      # Remove all loaded fatures with our file
+      #
+      def remove_loaded_file_features(file)
+        if features = LOADED_FILES[file]
+          features.each { |feature| $LOADED_FEATURES.delete(feature) }
+        end
+      end
+
       ##
       # Return the mounted_apps providing the app location
       # Can be an array because in one app.rb we can define multiple Padrino::Appplications
@@ -220,14 +299,20 @@ module Padrino
       # and monitors them for any changes.
       #
       def rotation
-        files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
-        files  = files | Padrino.mounted_apps.map { |app| app.app_file }
-        files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
-        files.uniq.map do |file|
+        files_for_rotation.uniq.map do |file|
           file = File.expand_path(file)
           next if Padrino::Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.exist?(file)
           yield file, File.mtime(file)
         end.compact
+      end
+
+      ##
+      # Creates an array of paths for use in #rotation
+      #
+      def files_for_rotation
+        files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
+        files  = files | Padrino.mounted_apps.map { |app| app.app_file }
+        files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
       end
     end # self
 
