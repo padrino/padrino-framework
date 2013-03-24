@@ -1,42 +1,40 @@
 ---
-author: Foo Bar
-tags: fikus, ruby, padrino, sinatra
+date: 2010-11-15
+author: DAddYE
+email: d.dagostino@lipsiasoft.com
 categories: Press, Ruby
+tags: fikus, ruby, padrino, sinatra
 title: Fikus CMS
 ---
 
-## Features
+This is Fikus, a simple content management system written in the Ruby programming language.
 
-- Simple admin interface
-- Markdown format for page contents
-- Easily extensible using the features of Padrino, Sinatra, and Rack
-- Data stored in MongoDB
-- Built-in page caching for performance
-- Ability to specify different layouts per page
-- Why Fikus?
+> Fikus dreamed a dream for me / It cost me nothing it was free / He dreamed of walking in the sand / Of blossoms forming in his hand" / — from Fikus, by Phish
 
+ 
 
-I was in need of a very simple content management system. I wanted to quickly author somewhat static pages together for
-the web, but I didn’t want to deal with deploying the site, uploading files, or dealing with fitting my content in
-templates. That ruled out a lot of existing content management systems that did too much for what I wanted.
+<break>
 
+### Features
 
-I also wanted a chance to play with the Padrino framework, which is a MVC architecture framework built on top of
-Sinatra.
+-   Simple admin interface
+-   Markdown format for page contents
+-   Easily extensible using the features of Padrino, Sinatra, and Rack
+-   Data stored in MongoDB
+-   Built-in page caching for performance
+-   Ability to specify different layouts per page
+-   Why Fikus?
 
+I was in need of a very simple content management system. I wanted to quickly author somewhat static pages together for the web, but I didn’t want to deal with deploying the site, uploading files, or dealing with fitting my content in templates. That ruled out a lot of existing content management systems that did too much for what I wanted.
 
-Initially I looked at a CMS like Nesta but decided I wanted my pages (or documents) stored in a document database and a
-simple admin interface for editing them. I liked the idea of using Markdown, so I decided to create something that fit
-my needs.
+I also wanted a chance to play with the Padrino framework, which is a MVC architecture framework built on top of Sinatra.
 
+Initially I looked at a CMS like Nesta but decided I wanted my pages (or documents) stored in a document database and a simple admin interface for editing them. I liked the idea of using Markdown, so I decided to create something that fit my needs.
 
 Fikus was born.
 
+### What does Fikus mean?
 
-## What does Fikus mean?
-
-Think of it as a tree, but I was listening to Phish when starting the project. That's all it is.
-
+Think of it as a tree, but I was listening to Phish when starting the project. That’s all it is.
 
 Check it out on [github](https://github.com/bratta/fikus)
-
