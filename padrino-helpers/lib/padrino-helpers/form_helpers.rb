@@ -31,7 +31,8 @@ module Padrino
       # @api public
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
-        form_tag(url, settings) { capture_html(instance, &block) }
+        html = capture_html(instance, &block)
+        form_tag(url, settings) { html }
       end
 
       ##
