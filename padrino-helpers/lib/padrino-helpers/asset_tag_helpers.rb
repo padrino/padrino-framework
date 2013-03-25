@@ -5,8 +5,8 @@ module Padrino
     #
     module AssetTagHelpers
       FRAGMENT_HASH = "#".html_safe.freeze
-       # assets that require an appended extension
-      APPEND_ASSET_EXTENSIONS = ["js", "css"]
+      APPEND_ASSET_EXTENSIONS = ["js", "css"]  # assets that require an appended extension
+      ABSOLUTE_URL_PATTERN = %r{^(https?://)} # absolute url regex
 
       ##
       # Creates a div to display the flash of given type if it exists
@@ -323,7 +323,7 @@ module Padrino
       # @api semipublic
       def asset_path(kind, source)
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
-        return source if source =~ %r{^(/|https?://)} # absolute source
+        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\// # absolute source
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
@@ -384,7 +384,7 @@ module Padrino
       #
       def asset_normalize_extension(kind, source)
         ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
-        source << ".#{kind}" unless ignore_extension or source =~ /\.#{kind}/
+        source << ".#{kind}" unless ignore_extension || source =~ /\.#{kind}/ || source =~ ABSOLUTE_URL_PATTERN
         source
       end
 
