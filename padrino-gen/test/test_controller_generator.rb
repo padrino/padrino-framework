@@ -125,8 +125,8 @@ describe "ControllerGenerator" do
     should "generate actions for get:test post:yada" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda') }
       capture_io { generate(:controller, 'demo_items', "get:test", "post:yada","-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/get :test do\n  end\n/m, @controller_path)
-      assert_match_in_file(/post :yada do\n  end\n/m, @controller_path)
+      assert_match_in_file(/get :test do\n\n  end\n/m, @controller_path)
+      assert_match_in_file(/post :yada do\n\n  end\n/m, @controller_path)
     end
   end
 
