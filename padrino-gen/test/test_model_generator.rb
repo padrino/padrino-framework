@@ -82,11 +82,11 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'person', "name", "age:integer", "email", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/t.string :name/m,   migration_file_path)
-      assert_match_in_file(/t.integer :age/m,   migration_file_path)
-      assert_match_in_file(/t.string :email/m,  migration_file_path)
-      assert_match_in_file(/drop_table :people/m, migration_file_path)
+      assert_match_in_file(/    create_table :people/m, migration_file_path)
+      assert_match_in_file(/      t.string :name/m,   migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/      t.string :email/m,  migration_file_path)
+      assert_match_in_file(/    drop_table :people/m, migration_file_path)
     end
   end
 
@@ -116,8 +116,8 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_users.rb"
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :users/m, migration_file_path)
-      assert_match_in_file(/drop_table :users/m, migration_file_path)
+      assert_match_in_file(/    create_table :users/m, migration_file_path)
+      assert_match_in_file(/    drop_table :users/m, migration_file_path)
     end
 
     should "generate migration file with given fields" do
@@ -126,11 +126,11 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/t.string :name/m,   migration_file_path)
-      assert_match_in_file(/t.integer :age/m,   migration_file_path)
-      assert_match_in_file(/t.string :email/m,  migration_file_path)
-      assert_match_in_file(/drop_table :people/m, migration_file_path)
+      assert_match_in_file(/    create_table :people/m, migration_file_path)
+      assert_match_in_file(/      t.string :name/m,   migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/      t.string :email/m,  migration_file_path)
+      assert_match_in_file(/    drop_table :people/m, migration_file_path)
     end
   end
 
