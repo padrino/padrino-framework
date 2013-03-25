@@ -139,6 +139,11 @@ describe "FormatHelpers" do
     should "return text escaped if not empty" do
       assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h!('<h1>hello</h1>')
     end
+    should "mark escaped text as safe" do
+      assert_equal false, '<h1>hello</h1>'.html_safe?
+      assert_equal true, h('<h1>hello</h1>').html_safe?
+      assert_equal true, h!("", "default").html_safe?
+    end
   end
 
   context 'for #time_ago_in_words method' do

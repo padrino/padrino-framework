@@ -19,7 +19,7 @@ module Padrino
       #
       # @api public
       def escape_html(text)
-        Rack::Utils.escape_html(text)
+        Rack::Utils.escape_html(text).html_safe
       end
       alias h escape_html
       alias sanitize_html escape_html
@@ -41,8 +41,8 @@ module Padrino
       #
       # @api public
       def h!(text, blank_text = '&nbsp;')
-        return blank_text if text.nil? || text.empty?
-        h text
+        return blank_text.html_safe if text.nil? || text.empty?
+        h(text)
       end
 
       ##
