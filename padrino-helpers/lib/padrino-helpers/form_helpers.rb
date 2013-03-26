@@ -170,7 +170,7 @@ module Padrino
         objects = objects.map { |object_name|
           object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name
         }.compact
-        count   = objects.inject(0) { |sum, object| sum + object.errors.size }
+        count   = objects.inject(0) { |sum, object| sum + object.errors.count }
 
         unless count.zero?
           html = {}
