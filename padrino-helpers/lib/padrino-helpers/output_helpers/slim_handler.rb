@@ -31,10 +31,10 @@ module Padrino
         #
         def capture_from_template(*args, &block)
           self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
-          block.call(*args)
+          captured_block = block.call(*args)
           ret = eval("@_out_buf", block.binding)
           self.output_buffer = _buf_was
-          ret
+          [ ret, captured_block ]
         end
 
         ##
