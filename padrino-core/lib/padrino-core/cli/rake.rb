@@ -7,8 +7,9 @@ require 'padrino-gen'
 
 module PadrinoTasks
   def self.init(init=false)
+    $LOAD_PATH.unshift(File.expand_path("lib")) # Adds "lib" to the load path
     Padrino::Tasks.files.flatten.uniq.each { |rakefile| Rake.application.add_import(rakefile) rescue puts "<= Failed load #{ext}" }
-    load(File.expand_path('../rake_tasks.rb', __FILE__))
+    load(File.expand_path('../rake_tasks.rb', __FILE__)) # Load default rake tasks
     Rake.application.load_imports
   end
 
