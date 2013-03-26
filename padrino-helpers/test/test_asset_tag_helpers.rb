@@ -294,6 +294,12 @@ describe "AssetTagHelpers" do
       assert_has_tag('script', :src => "/blog/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
     end
 
+    should "not append extension to absolute paths" do
+      time = stop_time_for_test
+      actual_html = javascript_include_tag('https://maps.googleapis.com/maps/api/js?key=value&sensor=false')
+      assert_has_tag('script', :src => "https://maps.googleapis.com/maps/api/js?key=value&sensor=false") { actual_html }
+    end
+
     should "display javascript items" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application', 'base.js', 'http://google.com/lib.js')

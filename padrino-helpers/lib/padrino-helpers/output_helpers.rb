@@ -48,12 +48,12 @@ module Padrino
       # @api semipublic
       def capture_html(*args, &block)
         handler = find_proper_handler
-        captured_html = ""
+        captured_block, captured_html = nil, ""
         if handler && handler.is_type? && handler.block_is_type?(block)
-          captured_html = handler.capture_from_template(*args, &block)
+          captured_html, captured_block = handler.capture_from_template(*args, &block)
         end
         # invoking the block directly if there was no template
-        captured_html = block_given? && block.call(*args) if captured_html.blank?
+        captured_html = block_given? && ( captured_block || block.call(*args) )  if captured_html.blank?
         captured_html
       end
       alias :capture :capture_html

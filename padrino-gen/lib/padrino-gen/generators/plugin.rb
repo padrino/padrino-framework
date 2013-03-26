@@ -39,9 +39,9 @@ module Padrino
         if options[:list] || plugin_file.nil? # list method ran here
           list_plugins
         else # executing the plugin instructions
+          self.destination_root = options[:root]
           if in_app_root?
             self.behavior = :revoke if options[:destroy]
-            self.destination_root = options[:root]
             execute_runner(:plugin, plugin_file)
           else
             say "You are not at the root of a Padrino application! (config/boot.rb not found)"
