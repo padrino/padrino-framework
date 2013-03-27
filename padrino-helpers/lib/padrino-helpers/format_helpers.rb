@@ -82,8 +82,8 @@ module Padrino
       # @api public
       def simple_format(text, options={})
         t = options.delete(:tag) || :p
-        start_tag = mark_safe(tag(t, options, true))
-        text = text.to_s.dup
+        start_tag = tag(t, options, true)
+        text = escape_html(text.to_s.dup)
         text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
         text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}")  # 2+ newline  -> paragraph
         text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
