@@ -15,6 +15,7 @@ describe "FormatHelpers" do
   context 'for #simple_format method' do
     should "format simple text into html format" do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
+      assert_equal true, actual_text.html_safe?
       assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
     end
 
