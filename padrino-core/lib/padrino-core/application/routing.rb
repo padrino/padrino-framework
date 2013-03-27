@@ -64,7 +64,7 @@ class HttpRouter
 
   # @private
   class Route
-    VALID_HTTP_VERBS = %w{GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK}
+    VALID_HTTP_VERBS.replace %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK]
 
     attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in, :parent
 
