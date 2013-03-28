@@ -1,7 +1,7 @@
 require 'bundler/setup'
 require 'padrino-core/cli/rake'
 
-<%- if options[:orm] -%>
+<%- if options[:orm] && options[:orm] != :none -%>
 PadrinoTasks.use(:database)
 PadrinoTasks.use(<%= options[:orm].to_sym.inspect %>)
 <%- end -%>
