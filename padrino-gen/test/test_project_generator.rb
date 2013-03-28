@@ -354,6 +354,7 @@ describe "ProjectGenerator" do
       assert_match(/applying.*?ohm.*?orm/, out)
       assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/Validations/, "#{@apptmp}/sample_project/lib/padrino_ohm_validations.rb")
     end
 
     should "properly generate for mongomatic" do
