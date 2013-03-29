@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.11.1 (Unreleased)
+
+* NEW Ability to set migration file format to use incrementing numbers or timestamps (@jacob-s-son, @hooopo)
+
 == 0.11.0 (March 21st 2013)
 
 * NEW #923 Total redesign of admin panel with bootstrap and jquery, custom error pages
