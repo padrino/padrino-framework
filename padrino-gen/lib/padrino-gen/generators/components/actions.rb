@@ -78,9 +78,9 @@ module Padrino
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
             contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
-            current_migration_number = return_last_migration_number
-            contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            migration_number = current_migration_number
+            contents.gsub!(/!VERSION!/, migration_number)
+            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
@@ -93,6 +93,18 @@ module Padrino
           Dir[destination_root('db/migrate/*.rb')].map { |f|
             File.basename(f).match(/^(\d+)/)[0].to_i
           }.max.to_i || 0
+        end
+
+        # For migration files
+        # returns the number of the migration that is being created
+        # returna timestamp instead if :migration_format: in .components is "timestamped"
+        # @api private
+        def current_migration_number
+          if fetch_component_choice(:migration_filename_format) == 'timestamped'
+            Time.now.utc.strftime("%Y%m%d%H%M%S")
+          else
+            return_last_migration_number + 1
+          end.to_s
         end
 
         # Return true if the migration already exist
