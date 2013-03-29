@@ -97,10 +97,11 @@ module Padrino
 
         # For migration files
         # returns the number of the migration that is being created
-        # returna timestamp instead if :migration_format: in .components is "timestamped"
+        # returna timestamp instead if :migration_format: in .components is "timestamp"
+				#
         # @api private
         def current_migration_number
-          if fetch_component_choice(:migration_filename_format) == 'timestamped'
+          if fetch_component_choice(:migration_format).to_s == 'timestamp'
             Time.now.utc.strftime("%Y%m%d%H%M%S")
           else
             return_last_migration_number + 1

@@ -26,14 +26,15 @@ module Padrino
 
       argument :name, :desc => 'The name of your padrino project'
 
-      class_option :app ,         :desc => 'The application name',                                  :aliases => '-n', :default => nil,      :type => :string
-      class_option :bundle,       :desc => 'Run bundle install',                                    :aliases => '-b', :default => false,    :type => :boolean
-      class_option :root,         :desc => 'The root destination',                                  :aliases => '-r', :default => '.',      :type => :string
-      class_option :dev,          :desc => 'Use padrino from a git checkout',                                         :default => false,    :type => :boolean
-      class_option :tiny,         :desc => 'Generate tiny app skeleton',                            :aliases => '-i', :default => false,    :type => :boolean
-      class_option :adapter,      :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite', :type => :string
-      class_option :template,     :desc => 'Generate project from template',                        :aliases => '-p', :default => nil,      :type => :string
-      class_option :gem,          :desc => 'Generate project as a gem',                             :aliases => '-g', :default => false,    :type => :boolean
+      class_option :app ,             :desc => 'The application name',                                             :aliases => '-n', :default => nil,         :type => :string
+      class_option :bundle,           :desc => 'Run bundle install',                                               :aliases => '-b', :default => false,       :type => :boolean
+      class_option :root,             :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
+      class_option :dev,              :desc => 'Use padrino from a git checkout',                                                    :default => false,       :type => :boolean
+      class_option :tiny,             :desc => 'Generate tiny app skeleton',                                       :aliases => '-i', :default => false,       :type => :boolean
+      class_option :adapter,          :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
+      class_option :template,         :desc => 'Generate project from template',                                   :aliases => '-p', :default => nil,         :type => :string
+      class_option :gem,              :desc => 'Generate project as a gem',                                        :aliases => '-g', :default => false,       :type => :boolean
+      class_option :migration_format, :desc => 'Filename format for migrations (number, timestamp)',                                 :default => 'number',    :type => :string
 
       # Definitions for the available customizable components
       component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :minirecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
@@ -89,6 +90,7 @@ module Padrino
         end
         store_component_config('.components')
         store_component_choice(:namespace, @project_name)
+        store_component_choice(:migration_format, options[:migration_format])
       end
 
       # Bundle all required components using bundler and Gemfile

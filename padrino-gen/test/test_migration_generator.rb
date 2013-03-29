@@ -47,7 +47,7 @@ describe "MigrationGenerator" do
 
     context "the default migration numbering" do
       should "properly calculate version number" do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
         capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
@@ -59,9 +59,8 @@ describe "MigrationGenerator" do
 
     context "the timestamped migration numbering" do
       should "properly calculate version number" do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', "--migration_format=timestamp", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
 
-        add_entry_to_component_file(@apptmp, 'migration_filename_format', 'timestamped')
         time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
 
         capture_io { generate(:migration, 'add_gender_to_person', "gender:string", "-r=#{@apptmp}/sample_project") }
