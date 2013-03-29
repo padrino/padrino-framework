@@ -110,6 +110,10 @@ class MiniTest::Spec
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
   end
+
+  def add_entry_to_component_file(project_root, component_name, value)
+    File.open("#{project_root}/sample_project/.components", 'a') {|f| f.puts ':migration_filename_format: timestamped' }
+  end
 end
 
 module Webrat
