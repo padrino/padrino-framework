@@ -15,6 +15,7 @@ padrino_gems = %w[
   padrino-mailer
   padrino-admin
   padrino-cache
+  padrino-performance
   padrino
 ]
 
