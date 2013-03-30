@@ -95,7 +95,7 @@ end
 VALIDATIONS
 
 def setup_orm
-  require_dependencies 'ohm'
+  require_dependencies 'ohm', :version => "~> 1.3.0"
   create_file("config/database.rb", OHM)
   create_file("lib/padrino_ohm_validations.rb", OHM_VALIDATIONS)
 end
