@@ -255,7 +255,7 @@ module Padrino
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
         sources.flatten.map { |source|
-          tag(:link, options.reverse_merge(:href => asset_path(:css, source)))
+          tag(:link, options.reverse_merge(:href => return_asset_path(:css, source)))
         }.join("\n").html_safe
       end
 
@@ -278,7 +278,7 @@ module Padrino
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:type => 'text/javascript')
         sources.flatten.map { |source|
-          content_tag(:script, nil, options.reverse_merge(:src => asset_path(:js, source)))
+          content_tag(:script, nil, options.reverse_merge(:src => return_asset_path(:js, source)))
         }.join("\n").html_safe
       end
 
@@ -297,7 +297,7 @@ module Padrino
       #
       # @api public
       def image_path(src)
-        asset_path(:images, src)
+        return_asset_path(:images, src)
       end
 
       ##
@@ -312,16 +312,16 @@ module Padrino
       #
       # @example
       #   # Generates: /javascripts/application.js?1269008689
-      #   asset_path :js, :application
+      #   return_asset_path :js, :application
       #
       #   # Generates: /stylesheets/application.css?1269008689
-      #   asset_path :css, :application
+      #   return_asset_path :css, :application
       #
       #   # Generates: /images/example.jpg?1269008689
-      #   asset_path :images, 'example.jpg'
+      #   return_asset_path :images, 'example.jpg'
       #
       # @api semipublic
-      def asset_path(kind, source)
+      def return_asset_path(kind, source)
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
         return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\// # absolute source
         source = File.join(asset_folder_name(kind), source)
