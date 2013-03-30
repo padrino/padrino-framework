@@ -26,6 +26,7 @@ module Padrino
       class_option :app,       :desc => 'The application destination path',       :aliases => '-a', :default => '/app', :type => :string
       class_option :destroy,                                                      :aliases => '-d', :default => false,  :type => :boolean
       class_option :namespace, :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',     :type => :string
+      class_option :layout,    :desc => 'The layout for the controller',          :aliases => '-l', :default => '',     :type => :string
 
       # Show help if no argv given
       require_arguments!
@@ -43,6 +44,7 @@ module Padrino
           @app_name     = fetch_app_name(app)
           @actions      = controller_actions(fields)
           @controller   = name.to_s.underscore
+          @layout       = options[:layout] if options[:layout] && !options[:layout].empty?
           self.behavior = :revoke if options[:destroy]
           template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")
           template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")

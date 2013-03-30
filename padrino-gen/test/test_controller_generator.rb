@@ -46,6 +46,18 @@ describe "ControllerGenerator" do
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
+    should "generate controller with specified layout" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-l=xyzlayout') }
+      assert_match_in_file(/layout :xyzlayout/m, @controller_path)
+    end
+
+    should "generate controller with-out specified layout if empty" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-l=') }
+      assert_no_match_in_file(/layout/m, @controller_path)
+    end
+
     should 'not fail if we don\'t have test component' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=none') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
