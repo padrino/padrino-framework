@@ -7,7 +7,7 @@ module Padrino
       include Thor::Actions
 
       class_option :chdir, :type => :string, :aliases => "-c", :desc => "Change to dir before starting."
-      class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => :development, :desc => "Padrino Environment."
+      class_option :environment, :type => :string,  :aliases => "-e", :required => true, :default => "development", :desc => "Padrino Environment."
       class_option :help, :type => :boolean, :desc => "Show help usage"
 
       desc "start", "Starts the Padrino application (alternatively use 's')."
