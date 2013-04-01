@@ -23,7 +23,7 @@ describe "AssetTagHelpers" do
     should "display multiple flash tags with given attributes" do
       flash[:error] = 'wrong'
       flash[:success] = 'okey'
-      actual_html = flash_tag(:success, :error, :id => 'area')
+      actual_html = flash_tag(:success, :warning, :error, :id => 'area')
       assert_has_tag('div.success#area', :content => flash[:success]) { actual_html }
       assert_has_tag('div.error#area', :content => flash[:error]) { actual_html }
       assert_has_no_tag('div.notice') { actual_html }
