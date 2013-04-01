@@ -8,6 +8,6 @@ def setup_mock
     when 'minitest'
       insert_mocking_include "RR::Adapters::MiniTest", :path => "test/test_config.rb"
     else # default include
-      insert_mocking_include "RR::Adapters::RRMethods", :path => "test/test_config.rb"
+      insert_mocking_include "RR::Adapters::TestUnit", :path => "test/test_config.rb"
   end
 end
