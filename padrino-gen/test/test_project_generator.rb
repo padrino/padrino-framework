@@ -176,7 +176,7 @@ describe "ProjectGenerator" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=bacon', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/include RR::Adapters::RRMethods/m, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/include RR::Adapters::TestUnit/m, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
     should "properly generate for rr and rspec" do
