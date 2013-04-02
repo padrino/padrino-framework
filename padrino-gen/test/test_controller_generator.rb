@@ -52,13 +52,37 @@ describe "ControllerGenerator" do
       assert_match_in_file(/layout :xyzlayout/m, @controller_path)
     end
 
-    should "generate controller with-out specified layout if empty" do
+    should "generate controller without specified layout if empty" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-l=') }
       assert_no_match_in_file(/layout/m, @controller_path)
     end
 
-    should 'not fail if we don\'t have test component' do
+    should "generate controller with specified parent" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=user') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, :parent => :user do/m, @controller_path)
+    end
+
+    should "generate controller without specified parent" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+    end
+
+    should "generate controller with specified providers" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-f=:html, :js') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, :provides => \[:html, :js\] do/m, @controller_path)
+    end
+
+    should "generate controller without specified providers" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-f=') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+    end
+
+    should "not fail if we don't have test component" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=none') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
