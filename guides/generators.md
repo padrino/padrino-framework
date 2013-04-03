@@ -171,6 +171,9 @@ Keep in mind that the template file is pure ruby and has full access to [all ava
 |:------|:------|:------|:----------|
 |app|nil|-n|specify the application|
 |root|.|-r|specify the root destination|
+|layout| |-l|specify the layout|
+|parent| |-p|specify the parent|
+|provides| |-f|specify the formats for this controller|
 |destroy|false|-d|removes all generated files|
 
 Padrino provides generator support for quickly creating new controllers within your Padrino application. Note that the controller tests are generated specifically tailored towards the testing framework chosen during application generation.
@@ -194,6 +197,12 @@ The controller generator will then construct the controller file within `app/con
     $ padrino g controller User get:index
 
 will create a url route for :index mapping to “/user/index”
+
+You may also specify layout, parent and provides respectively:
+
+    $ padrino g controller User -l global
+    $ padrino g controller User -p users
+    $ padrino g controller User -f :html,:json
 
 You can destroy controllers that you created via the destroy option and setting it to true. default is false.
 
