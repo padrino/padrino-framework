@@ -18,6 +18,11 @@ module Padrino
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
+      
+      # Look for custom template files in a generators folder under the project root
+      def source_paths
+        ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+      end
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 

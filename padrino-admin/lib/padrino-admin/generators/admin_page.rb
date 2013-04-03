@@ -20,6 +20,11 @@ module Padrino
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
 
+      # Look for custom template files in a generators folder under the project root
+      def source_paths
+        ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+      end
+
       desc "Description:\n\n\tpadrino-gen admin_page model(s)"
       argument :models, :desc => "The name(s) of your model(s)", :type => :array
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
