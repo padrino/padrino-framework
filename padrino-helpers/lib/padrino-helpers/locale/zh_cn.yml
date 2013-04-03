@@ -14,8 +14,8 @@ zh_cn:
     currency:
       format:
         # Where is the currency sign? %u is the currency unit, %n the number (default: $5.00)
-        format: "%u %n"
-        unit: "元"
+        format: "%u%n"
+        unit: "RMB"
         # These three are to override number.format and are optional
         separator: "."
         delimiter: ","
@@ -50,12 +50,12 @@ zh_cn:
         format: "%n %u"
         units:
           byte:
-            one:   "Byte"
-            other: "Bytes"
-          kb: "KB"
-          mb: "MB"
-          gb: "GB"
-          tb: "TB"
+            one:   "字节"
+            other: "字节"
+          kb: "K"
+          mb: "兆"
+          gb: "G"
+          tb: "T"
 
   # Used in distance_of_time_in_words(), distance_of_time_in_words_to_now(), time_ago_in_words()
   datetime:
@@ -92,13 +92,12 @@ zh_cn:
         one:   "一年多"
         other: "%{count} 年多"
       almost_x_years:
-        one:   "接近一年"
-        other: "接近 %{count} 年"
+        one:   "已经一年"
+        other: "已经 %{count} 年"
   models:
     errors:
       template:
         header:
-          one:   "有1 个错误发生使得「%{model}」无法被储存。 "
-          other: "有%{count} 个错误发生使得「%{model}」无法被储存。 "
-        body: "以下栏位发生问题："
-
+          one:    "%{model} 保存时产生错误"
+          other:  "%{model} 保存时产生了 %{count} 个错误"
+        body: "下列字段产生错误："
