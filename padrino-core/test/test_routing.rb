@@ -207,6 +207,14 @@ describe "Routing" do
     assert_equal 404, status
   end
 
+  should 'allow regex url with format' do
+    mock_app do
+      get(/.*/, :provides => :any) { "regexp" }
+    end
+    get "/anything"
+    assert_equal "regexp", body
+  end
+
   should 'use padrino url method' do
     mock_app do
     end
