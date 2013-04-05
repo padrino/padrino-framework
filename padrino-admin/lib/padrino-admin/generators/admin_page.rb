@@ -22,7 +22,11 @@ module Padrino
 
       # Look for custom template files in a generators folder under the project root
       def source_paths
-        ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+        if File.exists? destination_root('generators')
+          ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+        else
+          [File.expand_path(File.dirname(__FILE__))]
+        end
       end
 
       desc "Description:\n\n\tpadrino-gen admin_page model(s)"
