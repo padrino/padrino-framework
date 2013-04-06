@@ -318,13 +318,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/attribute :age/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :email/m, "#{@apptmp}/sample_project/models/user.rb")
     end
-
-    should "format errors the active model way" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ohm') }
-      capture_io { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < Ohm::Model/, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/attribute :name/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
   end
 
   # MONGOMATIC
