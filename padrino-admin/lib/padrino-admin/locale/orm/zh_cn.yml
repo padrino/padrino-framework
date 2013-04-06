@@ -24,3 +24,14 @@ zh_cn:
         record_invalid: "校验失败: %{errors}"
         content_type: "档案格式不支援"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "是无效的"
+        not_present: "不能是空白字元"
+        not_numeric: "不是数字"
+        not_url: "是无效的"
+        not_email: "是无效的"
+        not_valid: "没有包含在列表中"
+        not_in_range: "没有包含在列表中"
+        not_decimal: "是无效的"

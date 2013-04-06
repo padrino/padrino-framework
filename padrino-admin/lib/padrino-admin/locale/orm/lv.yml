@@ -24,3 +24,14 @@ lv:
         record_invalid: "Pārbaude neizdevās: %{errors}"
         content_type: "faila formāts netiek atblastīts"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "nav derīgs"
+        not_present: "ir jābūt aizpildītam"
+        not_numeric: "nav skaitlis"
+        not_url: "nav derīgs"
+        not_email: "nav derīgs"
+        not_valid: "nav iekļauts sarakstā"
+        not_in_range: "nav iekļauts sarakstā"
+        not_decimal: "nav derīgs"
