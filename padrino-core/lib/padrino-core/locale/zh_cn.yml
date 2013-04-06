@@ -4,9 +4,9 @@ zh_cn:
       # Use the strftime parameters for formats.
       # When no format has been given, it uses default.
       # You can provide other formats here if you like!
-      default: "%Y-%m-%d"
-      short: "%b %d"
-      long: "%B %d, %Y"
+      default: "%Y 年 %m 月 %d 日"
+      short: "%b 月 %d 日"
+      long: "公元 %Y 年 %B 月 %d 日"
       only_day: "%e"
 
     day_names: [星期日, 星期一, 星期二, 星期三, 星期四, 星期五, 星期六]
@@ -20,9 +20,9 @@ zh_cn:
 
   time:
     formats:
-      default: "%a, %d %b %Y %H:%M:%S %z"
-      short: "%d %b %H:%M"
-      long: "%B %d, %Y %H:%M"
+      default: "%Y 年 %b 月 %d 日 %H:%M:%S %z"
+      short: "%d 月 %b 日 %H:%M"
+      long: "%Y 年 %B 月 %d 日 %H 时 %M 分"
     am: "上午"
     pm: "下午"
 
