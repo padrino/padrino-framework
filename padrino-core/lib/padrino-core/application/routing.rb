@@ -90,7 +90,13 @@ class HttpRouter
     end
 
     def significant_variable_names
-      @significant_variable_names ||= @original_path.nil? ? [] : @original_path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
+      @significant_variable_names ||= if @original_path.is_a?(String)
+        @original_path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
+      elsif @original_path.is_a?(Regexp) and @original_path.respond_to?(:named_captures)
+        @original_path.named_captures.keys.map(&:to_sym)
+      else
+        []
+      end
     end
   end
 
