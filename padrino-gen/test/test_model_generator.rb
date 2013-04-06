@@ -308,7 +308,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/class Person < Ohm::Model/, "#{@apptmp}/sample_project/models/person.rb")
       assert_match_in_file(/# attribute :name/m, "#{@apptmp}/sample_project/models/person.rb")
       assert_match_in_file(/# reference :venue, Venue/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/include Padrino::Ohm::Validations/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     should "generate model file with given fields" do
@@ -318,7 +317,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/attribute :name/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :age/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :email/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/include Padrino::Ohm::Validations/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     should "format errors the active model way" do
@@ -326,19 +324,6 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < Ohm::Model/, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :name/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/include Padrino::Ohm::Validations/m, "#{@apptmp}/sample_project/models/user.rb")
-      File.open "#{@apptmp}/sample_project/models/user.rb", "a" do |file|
-        file << <<-VALIDATE
-          def validate
-            assert_present :name
-          end
-        VALIDATE
-      end
-      
-      script = 'u = User.new; u.save; puts u.errors'
-      argv = ['runner', script, '--chdir', "#{@tmpapp}/sample_project"]
-      out, err = capture_io { Padrino::Cli::Base.start(argv) }
-      assert_equal "{:name=>[:blank]}", out.chomp!
     end
   end
 
