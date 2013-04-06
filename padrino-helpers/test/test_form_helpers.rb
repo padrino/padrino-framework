@@ -200,6 +200,18 @@ describe "FormHelpers" do
       assert_has_tag('label[for=username] span.required', :content => "*") { actual_html }
     end
 
+    should "display label tag in ruby with a block" do
+      actual_html = label_tag(:admin, :class => 'long-label') { input_tag :checkbox }
+      assert_has_tag(:label, :for => 'admin', :class => 'long-label', :content => "Admin") { actual_html }
+      assert_has_tag('label input[type=checkbox]') { actual_html }
+    end
+
+    should "display label tag in ruby with required" do
+      actual_html = label_tag(:username, :caption => "Nickname", :required => true)
+      assert_has_tag(:label, :for => 'username', :content => 'Nickname') { actual_html }
+      assert_has_tag('label[for=username] span.required', :content => "*") { actual_html }
+    end
+
     should "display label tag in erb for simple form" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form label', :count => 9
@@ -207,6 +219,7 @@ describe "FormHelpers" do
       assert_have_selector 'form.simple-form label', :content => "Password", :for => 'password'
       assert_have_selector 'form.simple-form label', :content => "Gender", :for => 'gender'
     end
+
     should "display label tag in erb for advanced form" do
       visit '/erb/form_tag'
       assert_have_selector 'form.advanced-form label', :count => 11

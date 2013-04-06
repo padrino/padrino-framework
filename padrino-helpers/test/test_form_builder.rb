@@ -256,6 +256,12 @@ describe "FormBuilder" do
       assert_has_tag('label', :class => 'large', :for => 'user_first_name', :content => "F. Name: ") { actual_html }
     end
 
+    should "set specific content inside the label if a block was provided" do
+      actual_html = standard_builder.label(:admin, :class => 'large') { input_tag :checkbox }
+      assert_has_tag('label', :class => 'large', :for => 'user_admin', :content => "Admin: ") { actual_html }
+      assert_has_tag('label input[type=checkbox]') { actual_html }
+    end
+
     should "display correct label in haml" do
       visit '/haml/form_for'
       assert_have_selector '#demo label', :content => "Login: ", :class => 'user-label'

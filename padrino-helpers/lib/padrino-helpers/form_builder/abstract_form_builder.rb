@@ -24,9 +24,9 @@ module Padrino
         end
 
         # f.label :username, :caption => "Nickname"
-        def label(field, options={})
+        def label(field, options={}, &block)
           options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
-          @template.label_tag(field_id(field), options)
+          @template.label_tag(field_id(field), options, &block)
         end
 
         # f.hidden_field :session_id, :value => "45"
