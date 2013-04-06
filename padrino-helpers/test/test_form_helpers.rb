@@ -206,12 +206,6 @@ describe "FormHelpers" do
       assert_has_tag('label input[type=checkbox]') { actual_html }
     end
 
-    should "display label tag in ruby with required" do
-      actual_html = label_tag(:username, :caption => "Nickname", :required => true)
-      assert_has_tag(:label, :for => 'username', :content => 'Nickname') { actual_html }
-      assert_has_tag('label[for=username] span.required', :content => "*") { actual_html }
-    end
-
     should "display label tag in erb for simple form" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form label', :count => 9
