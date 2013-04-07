@@ -289,48 +289,46 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    if defined?(I18n)
-      desc "Generates .yml files for I18n translations"
-      task :translate => :environment do
-        models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+    desc "Generates .yml files for I18n translations"
+    task :translate => :environment do
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
-        models.each do |m|
-          # Get the model class
-          klass = m.camelize.constantize
+      models.each do |m|
+        # Get the model class
+        klass = m.camelize.constantize
 
-          # Avoid non ActiveRecord models
-          next unless klass.ancestors.include?(ActiveRecord::Base)
+        # Avoid non ActiveRecord models
+        next unless klass.ancestors.include?(ActiveRecord::Base)
 
-          # Init the processing
-          print "Processing #{m.humanize}: "
-          FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
-          langs = Array(I18n.locale) # for now we use only one
+        # Init the processing
+        print "Processing #{m.humanize}: "
+        FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
+        langs = Array(I18n.locale) # for now we use only one
 
-          # Create models for it and en locales
-          langs.each do |lang|
-            filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
-            columns    = klass.columns.map(&:name)
-            # If the lang file already exist we need to check it
-            if File.exist?(filename)
-              locale = File.open(filename).read
-              columns.each do |c|
-                locale += "\n        #{c}: #{klass.human_attribute_name(c)}" unless locale.include?("#{c}:")
-              end
-              print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
-              # Do some ere
-            else
-              locale     = "#{lang}:" + "\n" +
-                           "  models:" + "\n" +
-                           "    #{m}:" + "\n" +
-                           "      name: #{klass.model_name.human}" + "\n" +
-                           "      attributes:" + "\n" +
-                           columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
-              print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
+        # Create models for it and en locales
+        langs.each do |lang|
+          filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
+          columns    = klass.columns.map(&:name)
+          # If the lang file already exist we need to check it
+          if File.exist?(filename)
+            locale = File.open(filename).read
+            columns.each do |c|
+              locale += "\n        #{c}: #{klass.human_attribute_name(c)}" unless locale.include?("#{c}:")
             end
-            File.open(filename, "w") { |f| f.puts locale }
+            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
+            # Do some ere
+          else
+            locale     = "#{lang}:" + "\n" +
+                         "  models:" + "\n" +
+                         "    #{m}:" + "\n" +
+                         "      name: #{klass.model_name.human}" + "\n" +
+                         "      attributes:" + "\n" +
+                         columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
+            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
-          puts
+          File.open(filename, "w") { |f| f.puts locale }
         end
+        puts
       end
     end
   end
