@@ -233,5 +233,9 @@ describe "FormatHelpers" do
       assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html("<data-confirm=\"are you sure\">")
       assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(ActiveSupport::SafeBuffer.new("<data-confirm=\"are you sure\">"))
     end
+    should "keep html_safe content html_safe" do
+      assert_equal false, js_escape_html('"hello"').html_safe?
+      assert_equal true, js_escape_html(ActiveSupport::SafeBuffer.new('"hello"')).html_safe?
+    end
   end
 end

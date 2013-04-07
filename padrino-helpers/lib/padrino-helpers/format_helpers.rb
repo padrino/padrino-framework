@@ -375,7 +375,9 @@ module Padrino
       def js_escape_html(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/){|m| javascript_mapping[m]}
+        escaped_content = html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/){ |m| javascript_mapping[m] }
+        escaped_content = escaped_content.html_safe if html_content.html_safe?
+        escaped_content
       end
       alias :escape_javascript :js_escape_html
     end # FormatHelpers
