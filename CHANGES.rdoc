@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.11.1 (Unreleased)
+== 0.11.1 (April 7th 2013)
 
 * NEW Ability to set migration file format to use incrementing numbers or timestamps (@jacob-s-son, @hooopo)
 * FIX #1174 slim 2.0 Backward incompatible syntax change (@WaYdotNET)
