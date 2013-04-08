@@ -33,9 +33,9 @@ module Padrino
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
             contents = contents.gsub(/!NAME!/, model_name.underscore.camelize).gsub(/!TABLE!/, model_name.underscore)
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
-            current_migration_number = return_last_migration_number
-            contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            migration_number = current_migration_number
+            contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, migration_number)
+            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
@@ -98,7 +98,7 @@ module Padrino
         # For migration files
         # returns the number of the migration that is being created
         # returna timestamp instead if :migration_format: in .components is "timestamp"
-				#
+        #
         # @api private
         def current_migration_number
           if fetch_component_choice(:migration_format).to_s == 'timestamp'
