@@ -27,7 +27,7 @@ module Padrino
       options[:Port] = options.delete(:port) || 3000
       options[:AccessLog] = []
       if options[:daemonize]
-        options[:pid] = options[:pid].blank? ? File.expand_path('tmp/pids/server.pid') : opts[:pid]
+        options[:pid] = File.expand_path(options[:pid].blank? ? 'tmp/pids/server.pid' : opts[:pid])
         FileUtils.mkdir_p(File.dirname(options[:pid]))
       end
       options[:server] = detect_rack_handler if options[:server].blank?
