@@ -67,13 +67,22 @@ describe "ModelGenerator" do
     end
 
     should "generate migration file versions properly" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'account', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'bank', "-r=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_accounts.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/003_create_banks.rb")
+    end
+
+    should "generate migration file versions properly when timestamped" do
+      capture_io { generate(:project, 'sample_project', "--migration_format=timestamp", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+
+      time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
+
+      capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/#{time}_create_users.rb")
     end
 
     should "generate a default type value for fields" do
