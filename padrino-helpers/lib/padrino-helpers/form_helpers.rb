@@ -248,7 +248,14 @@ module Padrino
       def error_message_on(object, field, options={})
         object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
         error  = object.errors[field] rescue nil
-        # Array(error).first is necessary because some ORMs give us an array others directly a value
+        error = if defined?(Ohm::Model) && object.is_a?(Ohm::Model)
+          I18n.t("ohm.errors.messages.#{error[0]}", :default => error[0].to_s)
+        else
+          # Array(error).first is necessary because some ORMs 
+          # give us an array others directly a value
+          Array(error)[0]
+        end
+
         if error = Array(error)[0]
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)

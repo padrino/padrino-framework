@@ -46,6 +46,14 @@ class Account < Ohm::Model
     self[id]
   end
 
+  ##
+  # This method is used by Admin Sessions Controller for login bypass
+  #
+  def self.first
+    first_id = key[:all].sort(:order => "asc", :limit => [0,1]).first
+    self[first_id] if first_id
+  end
+
   def has_password?(password)
     ::BCrypt::Password.new(crypted_password) == password
   end

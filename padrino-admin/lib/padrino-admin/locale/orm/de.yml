@@ -24,3 +24,14 @@ de:
         record_invalid: "Validierung schlug fehl: %{errors}"
         content_type: "Datei-Format wird nicht unterstützt"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "ist ungültig"
+        not_present: "Darf nicht nur Leerzeichen enthalten"
+        not_numeric: "ist keine Nummer"
+        not_url: "ist ungültig"
+        not_email: "ist ungültig"
+        not_valid: "ist nicht in der Liste enthalten"
+        not_in_range: "ist nicht in der Liste enthalten"
+        not_decimal: "ist ungültig"

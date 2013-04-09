@@ -24,3 +24,14 @@ en:
         record_invalid: "Validation failed: %{errors}"
         content_type: "file format not supported"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "is invalid"
+        not_present: "can't be blank"
+        not_numeric: "is not a number"
+        not_url: "is invalid"
+        not_email: "is invalid"
+        not_valid: "is not included in the list"
+        not_in_range: "is not included in the list"
+        not_decimal: "is invalid"
