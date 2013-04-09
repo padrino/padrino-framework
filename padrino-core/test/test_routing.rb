@@ -1122,6 +1122,24 @@ describe "Routing" do
     assert_equal 'js', body
   end
 
+  should "set content_type to :html if Accept */* and provides of :any" do
+    mock_app do
+      get("/foo", :provides => :any) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => '*/*' }
+    assert_equal 'html', body
+  end
+
+  should "set content_type to :js if Accept includes both application/javascript, */*;q=0.5 and provides of :any" do
+    mock_app do
+      get("/foo", :provides => :any) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    assert_equal 'js', body
+  end
+
   should 'allows custom route-conditions to be set via route options and halt' do
     protector = Module.new do
       def protect(*args)
