@@ -813,7 +813,7 @@ module Padrino
         def provides(*types)
           @_use_format = true
           condition do
-            mime_types        = types.map { |t| mime_type(t) }
+            mime_types        = types.map { |t| mime_type(t) }.compact
             url_format        = params[:format].to_sym if params[:format]
             accepts           = request.accept.map { |a| a.to_str }
 
@@ -821,11 +821,14 @@ module Padrino
             # Assume */* if no ACCEPT header is given.
             catch_all = (accepts.delete "*/*" || accepts.empty?)
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+            if matching_types.empty? && types.include?(:any)
+              matching_types = accepts
+            end
 
             if !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
-            elsif catch_all
+            elsif catch_all && !types.include?(:any)
               type = types.first
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
