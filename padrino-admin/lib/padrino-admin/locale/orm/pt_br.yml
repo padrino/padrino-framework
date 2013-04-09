@@ -24,3 +24,14 @@ pt_br:
         record_invalid: "Falha na validação: %{errors}"
         content_type: "o seguinte tipo de arquivo não é suportado"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "não é válido"
+        not_present: "não pode ser deixado em branco"
+        not_numeric: "não é um número"
+        not_url: "não é válido"
+        not_email: "não é válido"
+        not_valid: "não está incluído na lista"
+        not_in_range: "não está incluído na lista"
+        not_decimal: "não é válido"

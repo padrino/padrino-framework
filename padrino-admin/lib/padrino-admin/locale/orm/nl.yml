@@ -24,3 +24,14 @@ nl:
         record_invalid: "Validatie mislukt: %{errors}"
         content_type: "bestandsformaat niet ondersteund"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "is ongeldig"
+        not_present: "moet opgegeven zijn"
+        not_numeric: "is geen getal"
+        not_url: "is ongeldig"
+        not_email: "is ongeldig"
+        not_valid: "is niet in de lijst opgenomen"
+        not_in_range: "is niet in de lijst opgenomen"
+        not_decimal: "is ongeldig"
