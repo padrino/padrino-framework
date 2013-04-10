@@ -280,9 +280,11 @@ ERROR
           if allow_disabled_csrf?
             builder.use Rack::Protection::AuthenticityToken,
                         :reaction => :report,
-                        :report_key => 'protection.csrf.failed'
+                        :report_key => 'protection.csrf.failed',
+                        :logger => logger
           else
-            builder.use Rack::Protection::AuthenticityToken
+            builder.use Rack::Protection::AuthenticityToken,
+                        :logger => logger
           end
         end
       end
