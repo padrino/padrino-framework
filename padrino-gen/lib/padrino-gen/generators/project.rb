@@ -54,7 +54,7 @@ module Padrino
         valid_constant? name
         app = (options[:app] || "App")
 
-        @project_name = name.gsub(/\W/, '_').underscore.camelize
+        @project_name = name.tr('-','/').gsub(/[^0-9A-Za-z_\/]/, '_').underscore.camelize
         @app_name = app.gsub(/\W/, '_').underscore.camelize
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
@@ -70,10 +70,11 @@ module Padrino
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
           if options.gem?
+            @namespaced_path = @project_name.underscore
             template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
             template 'templates/gem/README.md.tt', destination_root('README.md')
-            template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
-            template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
+            template 'templates/gem/lib/libname.tt', destination_root("lib/#{@namespaced_path}.rb")
+            template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{@namespaced_path}/version.rb")
           end
         end
       end
