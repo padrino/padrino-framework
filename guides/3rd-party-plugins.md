@@ -9,7 +9,7 @@ complement Padrino quite well.
 
 ##Rendering JSON with sinatra-contrib
 
-First you must reference ["sinatra-contrib":https://github.com/sinatra/sinatra-contrib] in your Gemfile:
+First you must reference [sinatra-contrib](https://github.com/sinatra/sinatra-contrib) in your Gemfile:
 
 ```ruby
 #Gemfile
