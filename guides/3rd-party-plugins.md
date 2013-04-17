@@ -1,11 +1,13 @@
 ---
-:author: Foo Bar
-:title: 3rd Party Plugins
+date: 2013-04-16
+author: Ortuna
+email: ortuna@gmail.com
+title: 3rd Party Plugins
 ---
 Padrino is a modular framework.  As such, you can leverage other libraries such as Sinatra libraries which
 complement Padrino quite well.
 
-h2. Rendering JSON with sinatra-contrib
+##Rendering JSON with sinatra-contrib
 
 First you must reference ["sinatra-contrib":https://github.com/sinatra/sinatra-contrib] in your Gemfile:
 
