@@ -6,11 +6,18 @@ RSpec.configure do |conf|
   conf.include Rack::Test::Methods
 end
 
-def app
-  ##
-  # You can handle all padrino applications using instead:
-  #   Padrino.application
-  CLASS_NAME.tap { |app|  }
+# You can use this method to custom specify a Rack app
+# you want rack-test to invoke:
+#
+#   app CLASS_NAME
+#   app CLASS_NAME.tap { |a| }
+#   app(CLASS_NAME) do
+#     set :foo, :bar
+#   end
+#
+def app(app = nil &blk)
+  @app ||= block_given? ? app.instance_eval(&blk) : app
+  @app ||= Padrino.application
 end
 TEST
 

@@ -9,28 +9,23 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 class Riot::Situation
   include Rack::Test::Methods
-  ##
-  # You can handle all padrino applications using instead:
-  #   Padrino.application
-  # Or just the Application itself like:
-  #   CLASS_NAME.tap { |app|  }
 
-  def app
-    @app || Padrino.application
+  # You can use this method to custom specify a Rack app
+  # you want rack-test to invoke:
+  #
+  #   app CLASS_NAME
+  #   app CLASS_NAME.tap { |a| }
+  #   app(CLASS_NAME) do
+  #     set :foo, :bar
+  #   end
+  #
+  def app(app = nil &blk)
+    @app ||= block_given? ? app.instance_eval(&blk) : app
+    @app ||= Padrino.application
   end
 end
 
 class Riot::Context
-  # Set the Rack app which is to be tested.
-  #
-  #   context "MyApp" do
-  #     app { [200, {}, "Hello!"] }
-  #     setup { get '/' }
-  #     asserts(:status).equals(200)
-  #   end
-  def app(app=nil, &block)
-    setup { @app = (app || block.call) }
-  end
 end
 
 TEST
