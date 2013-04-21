@@ -5,7 +5,7 @@ ja:
         title: "ログイン"
         email: "メール"
         password: "パスワード"
-        bypass: "ログイン状態を保持する"
+        bypass: "ログインを省略する"
         sign_in: "ログイン"
         error: "メールアドレスかパスワードが間違っています."
       save: "保存"
