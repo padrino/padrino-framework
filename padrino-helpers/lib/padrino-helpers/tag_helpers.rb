@@ -213,7 +213,7 @@ module Padrino
       #
       # @example
       #   tag :hr, :class => 'dotted'
-      #   # => <hr class="dotted">
+      #   # => <hr class="dotted" />
       #
       #   tag :input, :name => 'username', :type => :text
       #   # => <input name="username" type="text" />
