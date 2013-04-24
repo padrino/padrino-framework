@@ -785,6 +785,19 @@ describe "Routing" do
     assert_equal "hello", body
   end
 
+  should 'catch all after controllers' do
+    mock_app do
+      get(:index, :with => :slug, :priority => :low) { "catch all" }
+      controllers :contact do
+        get(:index) { "contact"}
+      end
+    end
+    get "/contact"
+    assert_equal "contact", body
+    get "/foo"
+    assert_equal "catch all", body
+  end
+
   should 'allow optionals' do
     mock_app do
       get(:show, :map => "/stories/:type(/:category)") do
