@@ -233,9 +233,9 @@ describe "ModelGenerator" do
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/migration 1, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table :people do/m, migration_file_path)
-      assert_match_in_file(/column :name, String/m, migration_file_path)
-      assert_match_in_file(/column :created_at, DateTime/m, migration_file_path)
-      assert_match_in_file(/column :email, String/m, migration_file_path)
+      assert_match_in_file(/column :name, DataMapper::Property::String/m, migration_file_path)
+      assert_match_in_file(/column :created_at, DataMapper::Property::DateTime/m, migration_file_path)
+      assert_match_in_file(/column :email, DataMapper::Property::String/m, migration_file_path)
       assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end
