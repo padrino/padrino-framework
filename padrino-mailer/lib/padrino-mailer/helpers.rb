@@ -8,11 +8,10 @@ module Padrino
         base.extend(ClassMethods)
       end
 
-      ##
       # Delivers an email with the given mail attributes.
       #
       # @param [Hash] mail_attributes
-      #   The attributes for this message (to, from, subject, cc, bcc, body, etc)
+      #   The attributes for this message (to, from, subject, cc, bcc, body, etc).
       # @param [Proc] block
       #   The block mail attributes for this message.
       #
@@ -31,7 +30,6 @@ module Padrino
         settings.email(mail_attributes, &block)
       end
 
-      ##
       # Delivers a mailer message email with the given attributes.
       #
       # @param [Symbol] mailer_name
@@ -51,7 +49,6 @@ module Padrino
         settings.deliver(mailer_name, message_name, *attributes)
       end
 
-      ##
       # Class methods responsible for registering mailers, configuring settings and delivering messages.
       #
       module ClassMethods
@@ -60,14 +57,13 @@ module Padrino
           super(subclass)
         end
 
-        ##
-        # Returns all registered mailers for this application
+        # Returns all registered mailers for this application.
+        #
         # @private
         def registered_mailers
           @_registered_mailers ||= {}
         end
 
-        ##
         # Defines a mailer object allowing the definition of various email messages that can be delivered.
         #
         # @param [Symbol] name
@@ -93,8 +89,7 @@ module Padrino
         end
         alias :mailers :mailer
 
-        ##
-        # Delivers a mailer message email with the given attributes
+        # Delivers a mailer message email with the given attributes.
         #
         # @param [Symbol] mailer_name
         #   The name of the mailer.
@@ -114,11 +109,10 @@ module Padrino
           message.deliver
         end
 
-        ##
         # Delivers an email with the given mail attributes with specified and default settings.
         #
         # @param [Hash] mail_attributes
-        #   The attributes for this message (to, from, subject, cc, bcc, body, etc)
+        #   The attributes for this message (to, from, subject, cc, bcc, body, etc).
         # @param [Proc] block
         #   The block mail attributes for this message.
         #
@@ -145,18 +139,17 @@ module Padrino
         end
 
         private
-          ##
-          # Returns the parsed delivery method options
-          #
-          def delivery_settings
-            @_delivery_setting ||= begin
-              raise "You must setup :delivery_method, see api for more details" if RUBY_PLATFORM =~ /win32/ && !respond_to?(:delivery_method)
-              return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
-              return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
-              return [delivery_method, {}] if delivery_method.is_a?(Symbol)
-              [nil, {}]
-            end
+        # Returns the parsed delivery method options.
+        #
+        def delivery_settings
+          @_delivery_setting ||= begin
+            raise "You must setup :delivery_method, see api for more details" if RUBY_PLATFORM =~ /win32/ && !respond_to?(:delivery_method)
+            return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
+            return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
+            return [delivery_method, {}] if delivery_method.is_a?(Symbol)
+            [nil, {}]
           end
+        end
       end
     end # Helpers
   end # Mailer

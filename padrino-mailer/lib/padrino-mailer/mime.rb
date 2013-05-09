@@ -1,12 +1,10 @@
 module Padrino
   module Mailer
 
-    ##
     # Handles MIME type declarations for mail delivery.
     #
     module Mime
 
-      ##
       # Returns Symbol with mime type if found, otherwise use +fallback+.
       # +mime+ should be the content type like "text/plain"
       # +fallback+ may be any symbol

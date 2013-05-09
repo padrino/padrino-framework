@@ -2,14 +2,15 @@
 
 === Overview
 
-This component creates an easy and intuitive interface for delivering email within a Sinatra application. The mail library is utilized
-to do the bulk of the work. There is full support for rendering email templates, using an html content type and for file attachments.
-The Padrino Mailer uses a familiar Sinatra syntax similar to that of defining routes for a controller.
+This component creates an easy and intuitive interface for delivering email within a Sinatra
+application. The mail library is utilized to do the bulk of the work. There is full support for
+rendering email templates, using an html content type and for file attachments. The Padrino Mailer
+uses a familiar Sinatra syntax similar to that of defining routes for a controller.
 
 === Usage
 
 Let's take a look at using the Mailer in an application. By default, the Mailer uses the built-in sendmail
-command on the server. However, smtp is also supported using the following configuration:
+command on the server. However, SMTP is also supported using the following configuration:
 
   # Example for configuring gmail smtp
   set :delivery_method, :smtp => {
@@ -22,7 +23,8 @@ command on the server. However, smtp is also supported using the following confi
     :enable_starttls_auto => true
   }
 
-Once the delivery settings have been defined, the default will become smtp delivery but can be overwritten in each message.
+Once the delivery settings have been defined, the default will become smtp delivery but can be
+overwritten in each message.
 
 Padrino supports sending quick emails (using either sendmail or smtp) right from your controllers.
 This is ideal for one-off emails where the full mailer declaration is simply unnecessary.
@@ -93,11 +95,11 @@ Once the mailer definition has been completed and the template has been defined,
 
   deliver(:sample, :registration, "Bob", "21")
 
-And that will then deliver the email according the the configured options. This is all you need to send basic emails.
+And that will then deliver the email according the configured options. This is all you need to send basic emails.
 
 The mailer also supports the attachment of files and various other options. Be sure to check out the
 {Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide for more details on usage.
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) Padrino. See LICENSE for details.
