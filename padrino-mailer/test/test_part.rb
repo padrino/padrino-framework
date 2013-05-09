@@ -7,8 +7,8 @@ describe "Part" do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
-        subject "nested multipart"
-        from    "test@example.com"
+        subject 'nested multipart'
+        from    'test@example.com'
 
         text_part do
           body 'plain text'
@@ -27,19 +27,19 @@ describe "Part" do
       assert_not_nil message.text_part
       assert_equal 4, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded
+      assert_equal 'plain text', message.parts[0].body.decoded
       assert_equal :html, message.parts[1].content_type
-      assert_equal "This is a foo message in mailers/sample dir", message.parts[1].body.decoded.chomp
+      assert_equal 'This is a foo message in mailers/sample dir', message.parts[1].body.decoded.chomp
       assert_equal :plain, message.parts[2].content_type
-      assert_equal "other", message.parts[2].body.decoded
+      assert_equal 'other', message.parts[2].body.decoded
     end
 
     should "works with multipart templates" do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
-        subject "nested multipart"
-        from    "test@example.com"
+        subject 'nested multipart'
+        from    'test@example.com'
 
         text_part do
           render  'multipart/basic.text'
@@ -54,17 +54,17 @@ describe "Part" do
       assert_not_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded.chomp
+      assert_equal 'plain text', message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded.chomp
+      assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
     should "works with less explict multipart templates" do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
-        subject "nested multipart"
-        from    "test@example.com"
+        subject 'nested multipart'
+        from    'test@example.com'
 
         text_part { render('multipart/basic.plain') }
         html_part { render('multipart/basic.html')  }
@@ -74,17 +74,17 @@ describe "Part" do
       assert_not_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded.chomp
+      assert_equal 'plain text', message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded.chomp
+      assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
     should "works with provides" do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
-        subject "nested multipart"
-        from    "test@example.com"
+        subject 'nested multipart'
+        from    'test@example.com'
         provides :plain, :html
         render  'multipart/basic'
       end
@@ -92,9 +92,9 @@ describe "Part" do
       assert_match /^multipart\/alternative/, message['content-type'].value
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
-      assert_equal "plain text", message.parts[0].body.decoded.chomp
+      assert_equal 'plain text', message.parts[0].body.decoded.chomp
       assert_equal :html, message.parts[1].content_type
-      assert_equal "text html", message.parts[1].body.decoded.chomp
+      assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
     # should "provide a way to instantiate a new part as you go down" do
