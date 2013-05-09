@@ -30,7 +30,6 @@ class MiniTest::Spec
   def assert_email_sent(mail_attributes, options={})
     mail_message = Mail::TestMailer.deliveries.last
     raise "No mail message has been sent!" unless mail_message.present?
-    smtp_settings = options.delete(:smtp) || mail_attributes.delete(:smtp)
     delivery_attributes = mail_attributes
     delivery_attributes = { :to => Array(mail_attributes[:to]), :from => Array(mail_attributes[:from]) }
     delivery_attributes.each_pair do |k, v|

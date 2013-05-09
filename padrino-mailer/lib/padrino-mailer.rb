@@ -1,4 +1,3 @@
-# requires tilt if available; falls back on bundled version.
 begin
   require 'tilt'
 rescue LoadError
