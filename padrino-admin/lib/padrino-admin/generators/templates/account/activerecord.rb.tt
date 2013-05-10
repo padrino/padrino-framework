@@ -14,13 +14,19 @@ class <%= @model_name %> < ActiveRecord::Base
 
   # Callbacks
   before_save :encrypt_password, :if => :password_required
+  before_save :downcase_email
 
   ##
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
+    email = email.downcase rescue nil
     account = first(:conditions => { :email => email }) if email.present?
     account && account.has_password?(password) ? account : nil
+  end
+
+  def downcase_email
+    self.email = self.email.downcase rescue nil
   end
 
   def has_password?(password)
