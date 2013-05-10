@@ -29,7 +29,7 @@ group :development do
   gem "webrat",    ">= 0.5.1"
   gem "haml",      ">= 2.2.22"
   gem "erubis",    ">= 2.7.0"
-  gem "slim",      ">= 1.3.0"
+  gem "slim",      ">= 2.0.0.pre"
   gem "uuid",      ">= 2.3.1"
   gem "builder",   ">= 2.1.2"
   gem "bcrypt-ruby", :require => "bcrypt"
