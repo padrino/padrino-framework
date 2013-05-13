@@ -30,17 +30,24 @@
 #
 #   set :delivery_method, :test
 #
+# or storing emails in localy:
+#
+#   set :delivery_method, :file => {
+#     :location => "emails",
+#   }
+#   => generated email will be stored in the folder "#{Padrino.root}/email" folder.
+#
 # and then all delivered mail will use these settings unless otherwise specified.
 #
 
 <%= @project_name %>::<%= @app_name %>.mailer :<%= @short_name %> do
   <%- if @actions.nil? || @actions.empty? -%>
-  # Message definitions here...
+  # Message definitions here ...
   <%- else -%>
     <%- @actions.each do |action| -%>
 
   email <%=action.inspect%> do
-    # Your mailer goes here
+    # Your mailer goes here ...
   end
 
     <%- end -%>
