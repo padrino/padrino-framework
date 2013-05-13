@@ -30,7 +30,7 @@
 #
 #   set :delivery_method, :test
 #
-# or storing emails in localy:
+# or storing emails locally:
 #
 #   set :delivery_method, :file => {
 #     :location => "emails",
