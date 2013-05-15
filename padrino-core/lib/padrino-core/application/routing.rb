@@ -100,6 +100,20 @@ class HttpRouter
     end
   end
 
+  #Monkey patching the Request class. Using Rack::Utils.unescape rather than
+  #URI.unescape which can't handle utf-8 chars
+  class Request
+    def initialize(path, rack_request)
+      @rack_request = rack_request
+      @path = Rack::Utils.unescape(path).split(/\//)
+      @path.shift if @path.first == ''
+      @path.push('') if path[-1] == ?/
+      @extra_env = {}
+      @params = []
+      @acceptable_methods = Set.new
+    end
+  end
+
   class Node::Path
     def to_code
       path_ivar = inject_root_ivar(self)
