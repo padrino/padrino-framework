@@ -102,10 +102,11 @@ describe "Routing" do
   end
 
   should 'parse routes that are encoded' do
+
     mock_app do 
       get('/щч') { 'success!' }
     end
-    get '/щч'
+    get URI.encode_www_form_component('/щч')
     assert_equal 'success!', body    
   end
 
