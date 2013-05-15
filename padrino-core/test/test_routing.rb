@@ -1,3 +1,4 @@
+#encoding: utf-8 
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
@@ -98,6 +99,14 @@ describe "Routing" do
     assert_equal "no access", body
     post "/unauthenticated/"
     assert_equal "no access", body
+  end
+
+  should 'parse routes that are encoded' do
+    mock_app do 
+      get('/щч') { 'success!' }
+    end
+    get '/щч'
+    assert_equal 'success', body    
   end
 
   should 'match correctly similar paths' do
