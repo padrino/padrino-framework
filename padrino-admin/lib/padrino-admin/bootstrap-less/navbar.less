@@ -20,11 +20,12 @@
 
 .navbar-nav {
   // Space out from .navbar .brand and .btn-navbar when stacked in mobile views
-  margin-top: 5px;
+  // and outdent nav links so text lines up with logo.
+  margin-top: 10px;
 
   > li > a {
-    padding-top: ((@navbar-height - @line-height-base) / 2);
-    padding-bottom: ((@navbar-height - @line-height-base) / 2);
+    padding-top: ((@navbar-height - @line-height-computed) / 2);
+    padding-bottom: ((@navbar-height - @line-height-computed) / 2);
     color: @navbar-link-color;
     line-height: 20px;
   }
@@ -67,8 +68,13 @@
   z-index: @zindex-navbar-fixed;
   border-radius: 0;
 }
-.navbar-fixed-top    { top: 0; }
-.navbar-fixed-bottom { bottom: 0; }
+.navbar-fixed-top {
+  top: 0;
+}
+.navbar-fixed-bottom {
+  bottom: 0;
+  margin-bottom: 0; // override .navbar defaults
+}
 
 
 
@@ -83,9 +89,9 @@
   margin-left: auto;
   margin-right: auto;
   padding: 15px;
-  font-size: 18px;
+  font-size: @font-size-large;
   font-weight: 500;
-  line-height: @line-height-base;
+  line-height: @line-height-computed;
   color: @navbar-brand-color;
   text-align: center;
   &:hover,
@@ -126,6 +132,7 @@
 
 // Navbar form
 .navbar-form {
+  .form-inline();
   .navbar-vertical-align(34px); // Vertically center in navbar
 }
 
@@ -146,26 +153,26 @@
 // Dropdown menu items and carets
 .navbar-nav {
   // Caret should match text color on hover
-  li.dropdown > a:hover .caret,
-  li.dropdown > a:focus .caret {
+  > .dropdown > a:hover .caret,
+  > .dropdown > a:focus .caret {
     border-top-color: @navbar-link-hover-color;
     border-bottom-color: @navbar-link-hover-color;
   }
 
   // Remove background color from open dropdown
-  li.dropdown.open > .dropdown-toggle,
-  li.dropdown.active > .dropdown-toggle,
-  li.dropdown.open.active > .dropdown-toggle {
+  > .open > a,
+  > .open > a:hover,
+  > .open > a:focus {
     background-color: @navbar-link-active-bg;
     color: @navbar-link-active-color;
   }
-  li.dropdown > .dropdown-toggle .caret {
+  > .dropdown > a .caret {
     border-top-color: @navbar-link-color;
     border-bottom-color: @navbar-link-color;
   }
-  li.dropdown.open > .dropdown-toggle .caret,
-  li.dropdown.active > .dropdown-toggle .caret,
-  li.dropdown.open.active > .dropdown-toggle .caret {
+  > .open > a .caret,
+  > .open > a:hover .caret,
+  > .open > a:focus .caret {
     border-top-color: @navbar-link-active-color;
     border-bottom-color: @navbar-link-active-color;
   }
@@ -196,7 +203,7 @@
   }
 
   .navbar-text {
-    color: @navbar-inverse-text;
+    color: @navbar-inverse-color;
   }
 
   .navbar-nav {
@@ -236,23 +243,23 @@
 
   // Dropdowns
   .navbar-nav {
-    li.dropdown.open > .dropdown-toggle,
-    li.dropdown.active > .dropdown-toggle,
-    li.dropdown.open.active > .dropdown-toggle {
+    > .open > a,
+    > .open > a:hover,
+    > .open > a:focus {
       background-color: @navbar-inverse-link-active-bg;
       color: @navbar-inverse-link-active-color;
     }
-    li.dropdown > a:hover .caret {
+    > .dropdown > a:hover .caret {
       border-top-color: @navbar-inverse-link-hover-color;
       border-bottom-color: @navbar-inverse-link-hover-color;
     }
-    li.dropdown > .dropdown-toggle .caret {
+    > .dropdown > a .caret {
       border-top-color: @navbar-inverse-link-color;
       border-bottom-color: @navbar-inverse-link-color;
     }
-    li.dropdown.open > .dropdown-toggle .caret,
-    li.dropdown.active > .dropdown-toggle .caret,
-    li.dropdown.open.active > .dropdown-toggle .caret {
+    > .open > a .caret,
+    > .open > a:hover .caret,
+    > .open > a:focus .caret {
       border-top-color: @navbar-inverse-link-active-color;
       border-bottom-color: @navbar-inverse-link-active-color;
     }
@@ -262,7 +269,7 @@
 
 
 
-// Inverse navbar
+// Responsive navbar
 // --------------------------------------------------
 
 @media screen and (min-width: @screen-tablet) {
@@ -285,20 +292,6 @@
     }
   }
 
-  // Dividers go vertical
-  // Change the height and height, disable bottom border, then add right border
-  .navbar .nav > .divider {
-    width: 1px;
-    height: (@navbar-height * .6);
-    margin: (@navbar-height * .2) 9px;
-    border-bottom: 0;
-    border-right: 1px solid lighten(@navbar-bg, 5%);
-  }
-  // Since we override the border, we need to specify it again for inverted navbars
-  .navbar-inverse .nav > .divider {
-    border-right-color: lighten(@navbar-inverse-bg, 5%);
-  }
-
   // Required to make the collapsing navbar work on regular desktops
   .navbar-toggle {
     position: relative;
@@ -313,10 +306,33 @@
 
 }
 
-/*
 
-// Janky solution for now to account for links outside the .nav
-// -------------------------
+
+// Buttons in navbars
+//
+// Vertically center a button within a navbar (when *not* in a form).
+
+.navbar-btn {
+  margin-top: ((@navbar-height - @input-height-base) / 2);
+}
+
+
+
+// Text in navbars
+//
+// Add a class to make any element properly align itself vertically within the navbars.
+
+.navbar-text {
+  .navbar-vertical-align(@line-height-computed);
+}
+
+
+
+// Links in navbars
+//
+// Add a class to ensure links outside the navbar nav are colored correctly.
+
+// Default navbar variables
 .navbar-link {
   color: @navbar-link-color;
   &:hover {
@@ -324,48 +340,10 @@
   }
 }
 
-// Buttons in navbar
-// -------------------------
-.navbar .btn,
-.navbar .btn-group {
-  .navbarVerticalAlign(30px); // Vertically center in navbar
-}
-.navbar .btn-group .btn,
-.navbar .input-prepend .btn,
-.navbar .input-append .btn {
-  margin-top: 0; // then undo the margin here so we don't accidentally double it
-}
-
-// Navbar forms
-// -------------------------
-.navbar-form {
-  margin-bottom: 0; // remove default bottom margin
-  .clearfix();
-  input,
-  select,
-  .radio,
-  .checkbox {
-    .navbarVerticalAlign(30px); // Vertically center in navbar
-  }
-  input,
-  select,
-  .btn {
-    display: inline-block;
-    margin-bottom: 0;
-  }
-  input[type="image"],
-  input[type="checkbox"],
-  input[type="radio"] {
-    margin-top: 3px;
-  }
-  .input-append,
-  .input-prepend {
-    margin-top: 5px;
-    white-space: nowrap; // preven two  items from separating within a .navbar-form that has .pull-left
-    input {
-      margin-top: 0; // remove the margin on top since it's on the parent
-    }
+// Use the inverse navbar variables
+.navbar-inverse .navbar-link {
+  color: @navbar-inverse-link-color;
+  &:hover {
+    color: @navbar-inverse-link-hover-color;
   }
 }
-
-*/

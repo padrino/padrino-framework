@@ -46,11 +46,13 @@
 @font-family-base:        @font-family-sans-serif;
 
 @font-size-base:          14px;
-@font-size-large:         (@font-size-base * 1.25); // ~18px
-@font-size-small:         (@font-size-base * 0.85); // ~12px
-@font-size-mini:          (@font-size-base * 0.75); // ~11px
+@font-size-large:         ceil(@font-size-base * 1.25); // ~18px
+@font-size-small:         ceil(@font-size-base * 0.85); // ~12px
+@font-size-mini:          ceil(@font-size-base * 0.75); // ~11px
 
-@line-height-base:        20px;
+@line-height-base:        1.428; // 20/14
+@line-height-computed:    ceil(@font-size-base * @line-height-base); // ~20px
+@line-height-headings:    1.1;
 
 @headings-font-family:    inherit; // empty to use BS default, @font-family-base
 @headings-font-weight:    500;
@@ -84,22 +86,27 @@
 // Buttons
 // -------------------------
 
-@btn-color:                      #fff;
-@btn-bg:                         #a7a9aa;
-@btn-border:                     @btn-bg;
+@btn-default-color:              #fff;
+@btn-default-bg:                 #a7a9aa;
+@btn-default-border:             @btn-default-bg;
 
+@btn-primary-color:              @btn-default-color;
 @btn-primary-bg:                 @brand-primary;
 @btn-primary-border:             @btn-primary-bg;
 
+@btn-success-color:              @btn-default-color;
 @btn-success-bg:                 @brand-success;
 @btn-success-border:             @btn-success-bg;
 
+@btn-warning-color:              @btn-default-color;
 @btn-warning-bg:                 @brand-warning;
 @btn-warning-border:             @btn-warning-bg;
 
+@btn-danger-color:               @btn-default-color;
 @btn-danger-bg:                  @brand-danger;
 @btn-danger-border:              @btn-danger-bg;
 
+@btn-info-color:                 @btn-default-color;
 @btn-info-bg:                    @brand-info;
 @btn-info-border:                @btn-info-bg;
 
@@ -116,9 +123,9 @@
 
 @input-color-placeholder:        @gray-light;
 
-@input-height-base:              (@line-height-base + 14px); // base line-height + 12px vertical padding + 2px top/bottom border
-@input-height-large:             (@line-height-base + 24px); // base line-height + 22px vertical padding + 2px top/bottom border
-@input-height-small:             (@line-height-base + 6px);  // base line-height + 4px vertical padding + 2px top/bottom border
+@input-height-base:              (@line-height-computed + 14px); // base line-height + 12px vertical padding + 2px top/bottom border
+@input-height-large:             (@line-height-computed + 24px); // base line-height + 22px vertical padding + 2px top/bottom border
+@input-height-small:             (@line-height-computed + 6px);  // base line-height + 4px vertical padding + 2px top/bottom border
 
 @form-actions-bg:                 #f5f5f5;
 
@@ -166,7 +173,7 @@
 
 // Basics of a navbar
 @navbar-height:                    50px;
-@navbar-text:                      #777;
+@navbar-color:                     #777;
 @navbar-bg:                        #eee;
 
 // Navbar links
@@ -184,7 +191,7 @@
 @navbar-brand-hover-bg:            transparent;
 
 // Inverted navbar
-@navbar-inverse-text:                       @gray-light;
+@navbar-inverse-color:                       @gray-light;
 @navbar-inverse-bg:                         #222;
 
 // Inverted navbar links
@@ -314,7 +321,7 @@
 @list-group-border-radius:    @border-radius-base;
 
 @list-group-hover-bg:         #f5f5f5;
-@list-group-active-text:      #fff;
+@list-group-active-color:     #fff;
 @list-group-active-bg:        @component-active-bg;
 @list-group-active-border:    @list-group-active-bg;
 
