@@ -271,7 +271,7 @@ module Padrino
             else
               []
             end
-            variants.inject('') do |html, variant|
+            variants.inject(''.html_safe) do |html, variant|
               variant[2] = "#{field_id(field)}_#{variant[1]}"
               html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
             end

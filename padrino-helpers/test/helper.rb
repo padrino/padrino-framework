@@ -27,6 +27,7 @@ class MiniTest::Spec
   # In this case, block is the html to evaluate
   def assert_has_tag(name, attributes = {}, &block)
     html = block && block.call
+    assert html.html_safe?, 'html_safe? failed'
     matcher = HaveSelector.new(name, attributes)
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
