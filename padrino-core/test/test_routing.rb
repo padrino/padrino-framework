@@ -106,7 +106,7 @@ describe "Routing" do
       get('/щч') { 'success!' }
     end
     get '/щч'
-    assert_equal 'success', body    
+    assert_equal 'success!', body    
   end
 
   should 'match correctly similar paths' do
