@@ -110,6 +110,8 @@ describe "Routing" do
   end
 
   should 'encode params using UTF-8' do
+    skip unless ''.respond_to?(:encoding) # for 1.8.7
+
     mock_app do 
       get('/:foo') { params[:foo].encoding.name }
     end
