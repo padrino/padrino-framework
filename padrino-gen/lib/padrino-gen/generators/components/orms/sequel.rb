@@ -32,9 +32,9 @@ def setup_orm
     require_dependencies 'pg'
     'pg'
   else
-    sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_development.db\")")
-    sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_production.db\")")
-    sequel.gsub!(/!DB_TEST!/,"\"sqlite://\" + Padrino.root('db', \"#{db}_test.db\")")
+    sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite:///\" + Padrino.root('db', \"#{db}_development.db\")")
+    sequel.gsub!(/!DB_PRODUCTION!/,"\"sqlite:///\" + Padrino.root('db', \"#{db}_production.db\")")
+    sequel.gsub!(/!DB_TEST!/,"\"sqlite:///\" + Padrino.root('db', \"#{db}_test.db\")")
     require_dependencies 'sqlite3'
     'sqlite3'
   end
