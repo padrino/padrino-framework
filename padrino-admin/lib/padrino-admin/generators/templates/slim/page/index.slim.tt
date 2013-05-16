@@ -26,7 +26,7 @@ div class="tabs-content"
                       = submit_tag  pat(:delete), :class =>'list-menu-popover-delete-selected-btn btn btn-danger btn-small'
                       div class='btn btn-small cancel' = pat(:cancel)
         <%- @orm.columns.each_with_index do |column, i| -%>
-        th class='header' = :<%= column.name %>
+        th class='header' = mat(:<%= @orm.name_singular %>, :<%= column.name %>)
         <%- end -%>
         th class='header list-row-action-header'
 
