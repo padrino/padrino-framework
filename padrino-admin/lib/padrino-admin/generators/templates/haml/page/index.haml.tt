@@ -27,7 +27,7 @@
                       =submit_tag pat(:delete), :class =>'list-menu-popover-delete-selected-btn btn btn-danger btn-small'
                       .btn.btn-small.cancel=pat(:cancel)
         <%- @orm.columns.each_with_index do |column, i| -%>
-        %th.header= :<%= column.name %>
+        %th.header= mat(:<%= @orm.name_singular %>, :<%= column.name %>)
         <%- end -%>
         %th.header.list-row-action-header
 
