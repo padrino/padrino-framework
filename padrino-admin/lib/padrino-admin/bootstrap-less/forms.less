@@ -22,7 +22,7 @@ legend {
   padding: 0;
   margin-bottom: @line-height-computed;
   font-size: (@font-size-base * 1.5);
-  line-height: @line-height-headings;
+  line-height: inherit;
   color: @gray-dark;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
@@ -56,7 +56,7 @@ input[type="tel"],
 input[type="color"] {
   display: block;
   min-height: @input-height-base; // Make inputs at least the height of their button counterpart (base line-height + padding + border)
-  padding: 6px 9px;
+  padding: @padding-base-vertical @padding-base-horizontal;
   font-size: @font-size-base;
   line-height: @line-height-base;
   color: @gray;
@@ -65,7 +65,13 @@ input[type="color"] {
   border: 1px solid @input-border;
   border-radius: @input-border-radius;
   .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-  .transition(~"border-color linear .2s, box-shadow linear .2s");
+  .transition(~"border-color ease-in-out .15s, box-shadow ease-in-out .15s");
+
+  &:focus {
+    border-color: rgba(82,168,236,.8);
+    outline: 0;
+    .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6)");
+  }
 }
 
 // Reset appearance properties for textual inputs and textarea
@@ -97,32 +103,6 @@ textarea {
   height: auto;
 }
 
-// Everything else
-textarea,
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"] {
-  // Focus state
-  &:focus {
-    border-color: rgba(82,168,236,.8);
-    outline: 0;
-    outline: thin dotted \9; /* IE6-9 */
-    //.box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6)");
-    .box-shadow(0 0 8px rgba(82,168,236,.6));
-  }
-}
-
 // Position radios and checkboxes better
 input[type="radio"],
 input[type="checkbox"] {
@@ -145,7 +125,6 @@ select[size] {
 }
 
 // Focus for select, file, radio, and checkbox
-select:focus,
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
@@ -241,13 +220,13 @@ input[type="search"],
 input[type="tel"],
 input[type="color"] {
   &.input-large {
-    padding: @padding-large;
+    padding: @padding-large-vertical @padding-large-horizontal;
     font-size: @font-size-large;
     border-radius: @border-radius-large;
   }
   &.input-small {
     min-height: @input-height-small;
-    padding: @padding-small;
+    padding: @padding-small-vertical @padding-small-horizontal;
     font-size: @font-size-small;
     border-radius: @border-radius-small;
   }
@@ -289,15 +268,15 @@ input[type="checkbox"] {
 
 // Warning
 .has-warning {
-  .formFieldState(@state-warning-text, @state-warning-text, @state-warning-bg);
+  .form-field-validation(@state-warning-text, @state-warning-text, @state-warning-bg);
 }
 // Error
 .has-error {
-  .formFieldState(@state-danger-text, @state-danger-text, @state-danger-bg);
+  .form-field-validation(@state-danger-text, @state-danger-text, @state-danger-bg);
 }
 // Success
 .has-success {
-  .formFieldState(@state-success-text, @state-success-text, @state-success-bg);
+  .form-field-validation(@state-success-text, @state-success-text, @state-success-bg);
 }
 
 // HTML5 invalid states
@@ -314,19 +293,6 @@ select:focus:invalid {
   }
 }
 
-
-
-// FORM ACTIONS
-// ------------
-
-.form-actions {
-  padding: @line-height-computed 20px;
-  margin-top: @line-height-computed;
-  margin-bottom: @line-height-computed;
-  background-color: @form-actions-bg;
-  border-top: 1px solid #e5e5e5;
-  .clearfix(); // Adding clearfix to allow for .pull-right button containers
-}
 
 
 
@@ -397,11 +363,12 @@ select:focus:invalid {
   border-radius: @border-radius-base;
 
   &.input-small {
-    padding: @padding-small;
+    padding: @padding-small-vertical @padding-small-horizontal;
     font-size: @font-size-small;
-    border-radius: @border-radius-small;  }
+    border-radius: @border-radius-small;
+  }
   &.input-large {
-    padding: @padding-large;
+    padding: @padding-large-vertical @padding-large-horizontal;
     font-size: @font-size-large;
     border-radius: @border-radius-large;
   }
@@ -476,8 +443,14 @@ select:focus:invalid {
   .row + .row {
     margin-top: 15px;
   }
-  .row-label {
+  .control-label {
     padding-top: 6px;
+  }
+}
+
+// Only right aline form labels here when the columns stop stacking
+@media (min-width: 768px) {
+  .form-horizontal .control-label {
     text-align: right;
   }
 }
