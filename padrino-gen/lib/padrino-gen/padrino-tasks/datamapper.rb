@@ -58,7 +58,12 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       puts "=> Creating database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("createdb", "-E", charset, "-h", host, "-U", user, database)
+          arguments = []
+          arguments << "--encoding=#{charset}" if charset
+          arguments << "--host=#{host}" if host
+          arguments << "--username=#{user}" if user
+          arguments << database
+          system("createdb", *arguments)
           puts "<= dm:create executed"
         when 'mysql'
           arguments = ["--user=#{user}"]
@@ -88,7 +93,11 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       puts "=> Dropping database '#{database}'"
       case config[:adapter]
         when 'postgres'
-          system("dropdb", "-h", host, "-U", user, database)
+          arguments = []
+          arguments << "--host=#{host}" if host
+          arguments << "--username=#{user}" if user
+          arguments << database
+          system("dropdb", *arguments)
           puts "<= dm:drop executed"
         when 'mysql'
           arguments = ["--user=#{user}"]

@@ -37,7 +37,7 @@
           </div>
         </th>
         <% @orm.columns.each_with_index do |column, i| -%>
-        <th class=header> <%%= :<%= column.name %> %></th>
+        <th class=header> <%%= mat(:<%= @orm.name_singular %>, :<%= column.name %>) %></th>
         <% end -%>
         <th class="header list-row-action-header"></th>
     </thead>
