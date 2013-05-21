@@ -1,5 +1,26 @@
 = CHANGES
 
+== 0.11.2 (May 20th 2013)
+
+* FIX #1232 Padrino::Server - call expand_path on PID file option (@sshaw)
+* FIX #1234 Create table migration should be also timestamped if configured (@udzura)
+* FIX #1228 Allow for block arg to StandardFormBuilder.label (@sshaw)
+* FIX #1235 error of routing when using provides :any and Accept contains */* (@tyabe)
+* FIX #1196 Remove Ohm monkey patch and include Padrino::Ohm::Validator (@lastcanal)
+* FIX #1236 Pass our logger to rack-protection for csrf (@dariocravero)
+* FIX #1246 missing translation for Russian (@silentvick)
+* NEW #1062 add configurable #app method for rack-test closes (@achiu)
+* FIX #1252 translations for japanese (@tyabe, @namusyaka)
+* FIX Specify full class name for migrations to fix failing migrations (@Ortuna)
+* FIX #1279 Datamapper rake task to pass arguments (@Ortuna)
+* FIX #1281 Documentation fixes to various areas (@matthias-guenther)
+* FIX #1269 issue with tilt version (@ujifgc)
+* FIX #1283 issue with html_safe and form builder (@ujifgc)
+* NEW #1285 Add :file option for delivering mail docs (@matthias-guenther)
+* FIX #1287 Lock minitest version from going to 5 (@QOrtuna)
+* FIX #1288 Http router fix unicode (@Ortuna)
+* FIX #698 Sqlite adding an extra "/" to the connection string for windows (@dariocravero)
+
 == 0.11.1 (April 7th 2013)
 
 * NEW Ability to set migration file format to use incrementing numbers or timestamps (@jacob-s-son, @hooopo)
