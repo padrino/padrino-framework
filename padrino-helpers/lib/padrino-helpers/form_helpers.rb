@@ -786,9 +786,8 @@ module Padrino
       # @api public
       def range_field_tag(name, options = {})
         options.reverse_merge!(:name => name)
-        if options[:range]
-          [:min, :max].each {|x| options[x] = options[:range].send(x) }
-          options.delete(:range)
+        if range = options.delete(:range)
+          options[:min], options[:max] = range.min, range.max
         end
         input_tag(:range, options)
       end
