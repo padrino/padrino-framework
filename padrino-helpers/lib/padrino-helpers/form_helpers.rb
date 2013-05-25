@@ -764,6 +764,35 @@ module Padrino
         end
       end
 
+      ##
+      # Constructs a range tag from the given options
+      #
+      # @example
+      #   range_field_tag('ranger_with_min_max', :min => 1, :max => 50)
+      #   range_field_tag('ranger_with_range', :range => 1..5)
+      #
+      # @param [String] name
+      #   The name of the range field.
+      # @param [Hash] options
+      #   The html options for the range field.
+      # @option options [Integer] :min
+      #  The min range of the range field
+      # @option options [Integer] :max
+      #  The max range of the range field
+      # @option options [range] :range
+      #  The range, in lieu of :min and :max.  See examples for details
+      # @return [String] The html range field
+      #
+      # @api public
+      def range_field_tag(name, options = {})
+        options.reverse_merge!(:name => name)
+        if options[:range]
+          [:min, :max].each {|x| options[x] = options[:range].send(x) }
+          options.delete(:range)
+        end
+        input_tag(:range, options)
+      end
+
       protected
 
         ##
