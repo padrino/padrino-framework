@@ -822,19 +822,19 @@ describe "FormHelpers" do
     end
 
     should "display correct range_field_tag in erb" do
-      visit '/erb/range_field_tag'
+      visit '/erb/form_tag'
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
     end
 
     should "display correct range_field_tag in haml" do
-      visit '/haml/range_field_tag'
+      visit '/haml/form_tag'
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
     end
 
     should "display correct range_field_tag in slim" do
-      visit '/slim/range_field_tag'
+      visit '/slim/form_tag'
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
     end
