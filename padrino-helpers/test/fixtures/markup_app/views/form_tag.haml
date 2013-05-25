@@ -64,6 +64,9 @@
       = select_tag :fav_color, :options => [ ['green', '1'], ['orange', '2'], ['purple', '3'] ], :selected => '2'
     %p
       = check_box_tag :remember_me, :value => "1", :checked => true
+    %p
+      = range_field_tag('ranger_with_min_max', :min => 1, :max => 50)
+      = range_field_tag('ranger_with_range', :range => 1..5)
   - field_set_tag(:class => 'buttons') do
     = submit_tag "Login"
     = button_tag "Cancel"
