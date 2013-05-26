@@ -3,13 +3,13 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     namespace :auto do
       desc "Perform automigration (reset your db data)"
       task :migrate => :environment do
-        ::DataMapper.auto_migrate!
+        ::DataMapper.repository.auto_migrate!
         puts "<= dm:auto:migrate executed"
       end
 
       desc "Perform non destructive automigration"
       task :upgrade => :environment do
-        ::DataMapper.auto_upgrade!
+        ::DataMapper.repository.auto_upgrade!
         puts "<= dm:auto:upgrade executed"
       end
     end
