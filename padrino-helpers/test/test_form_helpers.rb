@@ -809,4 +809,34 @@ describe "FormHelpers" do
       assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
     end
   end
+
+  context 'for #range_field_tag' do
+    should "create an input tag with min and max options" do
+      actual_html = range_field_tag('ranger', :min => 20, :max => 50)
+      assert_has_tag('input', :type => 'range', :name => 'ranger', :min => '20', :max => '50') { actual_html }
+    end
+
+    should "create an input tag with range" do
+      actual_html = range_field_tag('ranger', :range => 1..20)
+      assert_has_tag('input', :min => '1', :max => '20') { actual_html }
+    end
+
+    should "display correct range_field_tag in erb" do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
+    end
+
+    should "display correct range_field_tag in haml" do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
+    end
+
+    should "display correct range_field_tag in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
+    end
+  end
 end
