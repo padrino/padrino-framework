@@ -41,10 +41,14 @@ Now we need to create and migrate our database:
 
     $ padrino rake ar:create ar:migrate
 
-Open your favorite editor and browse and edit `Gemfile` and add `omniauth`:
+Open your favorite editor and browse and edit `Gemfile` and add `omniauth` gem and the providers for twitter and facebook. 
+We also add the `haml` gem as it's not included by default in the "tiny" padrino template:
 
     # Gemfile
     gem 'omniauth'
+    gem 'omniauth-twitter'
+    gem 'omniauth-facebook'
+    gem 'haml'
 
 Now, run bundle install to install dependencies:
 
