@@ -19,6 +19,7 @@ notifications:
     - florian.gilcher@asquera.de
     - dario@uxtemple.com
     - ujifgc@gmail.com
+    - ortuna@gmail.com
 branches:
   only:
     - master
