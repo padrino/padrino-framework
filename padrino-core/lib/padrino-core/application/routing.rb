@@ -394,7 +394,7 @@ module Padrino
       #
       # @example if filters based on a symbol or regexp
       #   before :index, /main/ do; ... end
-      #   # => match oly path that are  +/+ or contains +main+
+      #   # => match only path that are  +/+ or contains +main+
       #
       # @example filtering everything except an occurency
       #   before :except => :index do; ...; end
