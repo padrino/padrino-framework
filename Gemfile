@@ -19,8 +19,8 @@ group :development do
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git" # :path => "/Developer/src/Extras/sinatra"
   end
+  gem "nokogiri",  "~> 1.5.9"
   gem "json",      ">= 1.5.3"
-  gem "nokogiri",  ">= 1.4.4"
   gem "rack",      ">= 1.3.0"
   gem "rake",      ">= 0.8.7"
   gem "yard",      ">= 0.7.2"
