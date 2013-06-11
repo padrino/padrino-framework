@@ -1,10 +1,12 @@
 begin
   require 'haml'
   require 'haml/helpers/xss_mods'
+  require 'haml/helpers/action_view_extensions'
 
   module Haml
     module Helpers
       include XssMods
+      include ActionViewExtensions
     end
 
     module Util
