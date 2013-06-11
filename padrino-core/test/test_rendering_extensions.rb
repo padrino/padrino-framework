@@ -1,11 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Rendering Extensions" do
-  def setup
-    Padrino::Application.send(:register, Padrino::Rendering)
-    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
-  end
-
   context 'for haml' do
     should 'render haml_tag correctly' do
       mock_app do
