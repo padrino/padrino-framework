@@ -1,7 +1,7 @@
-/* ==========================================================
+/* ========================================================================
  * Bootstrap: carousel.js v3.0.0
  * http://twitter.github.com/bootstrap/javascript.html#carousel
- * ==========================================================
+ * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================== */
+ * ======================================================================== */
 
 
-!function ($) { "use strict";
++function ($) { "use strict";
 
   // CAROUSEL CLASS DEFINITION
   // =========================
@@ -185,8 +185,8 @@
   // CAROUSEL DATA-API
   // =================
 
-  $(document).on('click.carousel.data-api', '[data-slide], [data-slide-to]', function (e) {
-    var $this = $(this), href
+  $(document).on('click.bs.carousel.data-api', '[data-slide], [data-slide-to]', function (e) {
+    var $this   = $(this), href
     var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
     var options = $.extend({}, $target.data(), $this.data())
     var slideIndex
@@ -194,10 +194,17 @@
     $target.carousel(options)
 
     if (slideIndex = $this.attr('data-slide-to')) {
-      $target.data('bs-carousel').pause().to(slideIndex).cycle()
+      $target.data('bs.carousel').pause().to(slideIndex).cycle()
     }
 
     e.preventDefault()
+  })
+
+  $(window).on('load', function () {
+    $('[data-ride="carousel"]').each(function () {
+      var $carousel = $(this)
+      $carousel.carousel($carousel.data())
+    })
   })
 
 }(window.jQuery);

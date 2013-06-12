@@ -1,8 +1,8 @@
-/* ===========================================================
+/* ========================================================================
  * Bootstrap: tooltip.js v3.0.0
- * http://twitter.github.com/bootstrap/javascript.html#tooltips
+ * http://twitter.github.com/bootstrap/javascript.html#affix
  * Inspired by the original jQuery.tipsy by Jason Frame
- * ===========================================================
+ * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================== */
+ * ======================================================================== */
 
 
-!function ($) { "use strict";
++function ($) { "use strict";
 
   // TOOLTIP PUBLIC CLASS DEFINITION
   // ===============================
@@ -91,34 +91,37 @@
     return options
   }
 
-  Tooltip.prototype.enter = function (e) {
+  Tooltip.prototype.enter = function (obj) {
     var defaults = this.getDefaults()
     var options  = {}
 
     this._options && $.each(this._options, function (key, value) {
       if (defaults[key] != value) options[key] = value
-    }, this)
+    })
 
-    var self = $(e.currentTarget)[this.type](options).data('bs.' + this.type)
+    var self = obj instanceof this.constructor ?
+      obj : $(obj.currentTarget)[this.type](options).data('bs.' + this.type)
 
     if (!self.options.delay || !self.options.delay.show) return self.show()
 
     clearTimeout(this.timeout)
 
     self.hoverState = 'in'
-    this.timeout    = setTimeout(function() {
+    this.timeout    = setTimeout(function () {
       if (self.hoverState == 'in') self.show()
     }, self.options.delay.show)
   }
 
-  Tooltip.prototype.leave = function (e) {
-    var self = $(e.currentTarget)[this.type](this._options).data('bs.' + this.type)
+  Tooltip.prototype.leave = function (obj) {
+    var self = obj instanceof this.constructor ?
+      obj : $(obj.currentTarget)[this.type](this._options).data('bs.' + this.type)
 
-    if (this.timeout) clearTimeout(this.timeout)
+    clearTimeout(this.timeout)
+
     if (!self.options.delay || !self.options.delay.hide) return self.hide()
 
     self.hoverState = 'out'
-    this.timeout    = setTimeout(function() {
+    this.timeout    = setTimeout(function () {
       if (self.hoverState == 'out') self.hide()
     }, self.options.delay.hide)
   }
@@ -315,7 +318,7 @@
 
   Tooltip.prototype.toggle = function (e) {
     var self = e ? $(e.currentTarget)[this.type](this._options).data('bs.' + this.type) : this
-    self.tip().hasClass('in') ? self.hide() : self.show()
+    self.tip().hasClass('in') ? self.leave(self) : self.enter(self)
   }
 
   Tooltip.prototype.destroy = function () {

@@ -1,7 +1,7 @@
-/* =============================================================
+/* ========================================================================
  * Bootstrap: scrollspy.js v3.0.0
  * http://twitter.github.com/bootstrap/javascript.html#scrollspy
- * =============================================================
+ * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ============================================================== */
+ * ======================================================================== */
 
 
-!function ($) { "use strict";
++function ($) { "use strict";
 
   // SCROLLSPY CLASS DEFINITION
   // ==========================
@@ -29,7 +29,7 @@
     var $element = $(element).is('body') ? $(window) : $(element)
 
     this.$body          = $('body')
-    this.$scrollElement = $element.on('scroll.scroll-spy.data-api', process)
+    this.$scrollElement = $element.on('scroll.bs.scroll-spy.data-api', process)
     this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
     this.selector       = (this.options.target
       || ((href = $(element).attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7

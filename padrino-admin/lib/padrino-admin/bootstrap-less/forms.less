@@ -124,6 +124,13 @@ select[size] {
   height: auto;
 }
 
+// Fix optgroup Firefox bug per https://github.com/twitter/bootstrap/issues/7611
+select optgroup {
+  font-size: inherit;
+  font-style: inherit;
+  font-family: inherit;
+}
+
 // Focus for select, file, radio, and checkbox
 input[type="file"]:focus,
 input[type="radio"]:focus,
@@ -352,7 +359,7 @@ select:focus:invalid {
 // -------------------------
 .input-group-addon {
   .box-sizing(border-box);
-  padding: 6px 8px;
+  padding: @padding-base-vertical @padding-base-horizontal;
   font-size: @font-size-base;
   font-weight: normal;
   line-height: @line-height-base;

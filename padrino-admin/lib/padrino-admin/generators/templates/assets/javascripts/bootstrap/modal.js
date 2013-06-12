@@ -1,7 +1,7 @@
-/* =========================================================
+/* ========================================================================
  * Bootstrap: modal.js v3.0.0
  * http://twitter.github.com/bootstrap/javascript.html#modals
- * =========================================================
+ * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================= */
+ * ======================================================================== */
 
 
-!function ($) { "use strict";
++function ($) { "use strict";
 
   // MODAL CLASS DEFINITION
   // ======================
@@ -58,7 +58,7 @@
       var transition = $.support.transition && that.$element.hasClass('fade')
 
       if (!that.$element.parent().length) {
-        that.$element.appendTo(document.body) //don't move modals dom position
+        that.$element.appendTo(document.body) // don't move modals dom position
       }
 
       that.$element.show()
@@ -76,7 +76,6 @@
       transition ?
         that.$element.one($.support.transition.end, function () { that.$element.focus().trigger('shown.bs.modal') }) :
         that.$element.focus().trigger('shown.bs.modal')
-
     })
   }
 
@@ -105,18 +104,20 @@
   }
 
   Modal.prototype.enforceFocus = function () {
-    $(document).on('focusin.bs.modal', function (e) {
-      if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
-        this.$element.focus()
-      }
-    }, this)
+    $(document)
+      .off('focusin.bs.modal') // guard against infinite focus loop
+      .on('focusin.bs.modal', $.proxy(function (e) {
+        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+          this.$element.focus()
+        }
+      }, this))
   }
 
   Modal.prototype.escape = function () {
     if (this.isShown && this.options.keyboard) {
-      this.$element.on('keyup.dismiss.bs.modal', function ( e ) {
+      this.$element.on('keyup.dismiss.bs.modal', $.proxy(function (e) {
         e.which == 27 && this.hide()
-      }, this)
+      }, this))
     } else if (!this.isShown) {
       this.$element.off('keyup.dismiss.bs.modal')
     }
