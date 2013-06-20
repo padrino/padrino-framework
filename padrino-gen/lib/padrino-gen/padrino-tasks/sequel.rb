@@ -36,7 +36,44 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
     desc "Perform migration up to latest migration available"
     task :migrate => 'sq:migrate:up'
+
+    desc "Create the database"
+    task :create => :environment do
+      config = Sequel::Model.db.opts
+      user, password, host = config[:user], config[:password], config[:host]
+      database = config[:database]
+      charset = config[:charset] || ENV['CHARSET']   || 'utf8'
+      collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
+
+      puts "=> Creating database '#{database}'"
+      if config[:adapter] == 'sqlite3'
+        DataMapper.sqlite(database)
+      else
+        require 'padrino-gen/padrino-tasks/sql-helpers'
+        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation) 
+      end
+      puts "<= sq:create executed"
+    end
+
+    desc "Drop the database (postgres and mysql only)"
+    task :drop => :environment do
+      config = Sequel::Model.db.opts
+      user, password, host = config[:user], config[:password], config[:host]
+      database = config[:database] || config[:path].sub(/\//, "")
+
+      Sequel::Model.db.disconnect
+
+      puts "=> Dropping database '#{database}'"
+      if config[:adapter] == 'sqlite3'
+        File.delete(config[:path]) if File.exist?(config[:path])
+      else
+        Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database)
+      end
+      puts "<= sq:drop executed"
+    end
+
   end
 
   task 'db:migrate' => 'sq:migrate'
+  task 'db:reset' => ['sq:drop', 'sq:create', 'sq:migrate', 'seed']
 end
