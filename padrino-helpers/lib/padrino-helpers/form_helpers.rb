@@ -668,7 +668,7 @@ module Padrino
       ##
       # Constructs a submit button from the given options
       #
-      # @param [String] caption
+      # @param [String] caption (defaults to: +Submit+)
       #   The caption for the submit button.
       # @param [Hash] options
       #   The html options for the input field.
@@ -677,9 +677,12 @@ module Padrino
       #
       # @example
       #   submit_tag "Create", :class => 'success'
+      #   submit_tag :class => 'btn'
       #
       # @api public
-      def submit_tag(caption="Submit", options={})
+      def submit_tag(*args)
+        options = args[-1].is_a?(Hash) ? args.pop : {}
+        caption = args.length >= 1 ? args.shift : "Submit"
         options.reverse_merge!(:value => caption)
         input_tag(:submit, options)
       end
