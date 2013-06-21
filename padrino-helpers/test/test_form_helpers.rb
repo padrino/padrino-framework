@@ -54,6 +54,18 @@ describe "FormHelpers" do
       assert_has_tag(:form, :enctype => "multipart/form-data") { actual_html }
     end
 
+    should "have an authenticity_token for method :post, :put or :delete" do
+      %w(post put delete).each do |method|
+        actual_html = form_tag('/modify', :method => method) { "Demo" }
+        assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+      end
+    end
+
+    should "not have an authenticity_token if method: :get" do
+      actual_html = form_tag('/get', :method => :get) { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
     should "display correct forms in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'

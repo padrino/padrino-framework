@@ -83,7 +83,7 @@ module Padrino
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
         options['accept-charset'] ||= 'UTF-8'
         inner_form_html = hidden_form_method_field(desired_method)
-        inner_form_html << csrf_token_field
+        inner_form_html << csrf_token_field unless desired_method =~ /get/i
         inner_form_html << mark_safe(capture_html(&block))
         concat_content content_tag(:form, inner_form_html, options)
       end
