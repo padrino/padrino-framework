@@ -47,7 +47,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
       puts "=> Creating database '#{database}'"
       if config[:adapter] == 'sqlite3'
-        DataMapper.sqlite(database)
+        ::Sequel.sqlite(database)
       else
         require 'padrino-gen/padrino-tasks/sql-helpers'
         Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation) 
@@ -57,15 +57,14 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
     desc "Drop the database (postgres and mysql only)"
     task :drop => :environment do
-      config = Sequel::Model.db.opts
-      user, password, host = config[:user], config[:password], config[:host]
-      database = config[:database] || config[:path].sub(/\//, "")
+      config = ::Sequel::Model.db.opts
+      user, password, host, database = config[:user], config[:password], config[:host], config[:database]
 
-      Sequel::Model.db.disconnect
+      ::Sequel::Model.db.disconnect
 
       puts "=> Dropping database '#{database}'"
       if config[:adapter] == 'sqlite3'
-        File.delete(config[:path]) if File.exist?(config[:path])
+        File.delete(database) if File.exist?(database)
       else
         Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database)
       end
