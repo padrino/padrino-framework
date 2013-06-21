@@ -861,7 +861,7 @@ module Padrino
 
             if matched_format
               @_content_type = url_format || accept_format || :html
-              content_type(@_content_type, :charset => 'utf-8')
+              content_type(@_content_type, :charset => 'utf-8') rescue halt 404
             end
 
             matched_format
