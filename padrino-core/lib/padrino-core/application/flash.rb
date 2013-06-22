@@ -222,7 +222,7 @@ module Padrino
       # @since 0.10.8
       # @api public
       def flash
-        @_flash ||= Storage.new(settings.sessions ? session[:_flash] : {})
+        @_flash ||= Storage.new(env['rack.session'] ? session[:_flash] : {})
       end
     end # Helpers
   end # Flash

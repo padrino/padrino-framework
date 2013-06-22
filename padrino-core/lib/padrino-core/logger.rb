@@ -251,7 +251,7 @@ module Padrino
     #
     Config = {
       :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => ' ' },
+      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => '' },
       :test        => { :log_level => :debug, :stream => :null }
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
@@ -331,7 +331,7 @@ module Padrino
       @log             = options[:stream]  || $stdout
       @log.sync        = true
       @format_datetime = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message  = options[:format_message]  || "%s -%s%s"
+      @format_message  = options[:format_message]  || "%s - %s %s"
       @log_static      = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
       colorize! if @colorize_logging
@@ -343,7 +343,8 @@ module Padrino
     def flush
       return unless @buffer.size > 0
       @@mutex.synchronize do
-        @log.write(@buffer.slice!(0..-1).join(''))
+        @log.write(@buffer.join(''))
+        @buffer.clear
       end
     end
 

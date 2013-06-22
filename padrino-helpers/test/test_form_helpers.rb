@@ -54,22 +54,37 @@ describe "FormHelpers" do
       assert_has_tag(:form, :enctype => "multipart/form-data") { actual_html }
     end
 
+    should "have an authenticity_token for method :post, :put or :delete" do
+      %w(post put delete).each do |method|
+        actual_html = form_tag('/modify', :method => method) { "Demo" }
+        assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+      end
+    end
+
+    should "not have an authenticity_token if method: :get" do
+      actual_html = form_tag('/get', :method => :get) { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
     should "display correct forms in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct forms in haml" do
       visit '/haml/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct forms in slim" do
       visit '/slim/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
   end
 
@@ -197,6 +212,12 @@ describe "FormHelpers" do
       assert_has_tag('label[for=username] span.required', :content => "*") { actual_html }
     end
 
+    should "display label tag in ruby with a block" do
+      actual_html = label_tag(:admin, :class => 'long-label') { input_tag :checkbox }
+      assert_has_tag(:label, :for => 'admin', :class => 'long-label', :content => "Admin") { actual_html }
+      assert_has_tag('label input[type=checkbox]') { actual_html }
+    end
+
     should "display label tag in erb for simple form" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form label', :count => 9
@@ -204,6 +225,7 @@ describe "FormHelpers" do
       assert_have_selector 'form.simple-form label', :content => "Password", :for => 'password'
       assert_have_selector 'form.simple-form label', :content => "Gender", :for => 'gender'
     end
+
     should "display label tag in erb for advanced form" do
       visit '/erb/form_tag'
       assert_have_selector 'form.advanced-form label', :count => 11
@@ -482,6 +504,11 @@ describe "FormHelpers" do
     should "display file field in ruby" do
       actual_html = file_field_tag(:photo, :class => 'photo')
       assert_has_tag(:input, :type => 'file', :class => "photo", :name => 'photo') { actual_html }
+    end
+
+    should "have an array name with multiple option" do
+      actual_html = file_field_tag(:photos, :multiple => true)
+      assert_has_tag(:input, :name => 'photos[]') { actual_html }
     end
 
     should "display file field in erb" do
@@ -771,6 +798,57 @@ describe "FormHelpers" do
     should "display image submit tag in slim" do
       visit '/slim/form_tag'
       assert_have_selector 'form.advanced-form input[type=image]', :count => 1, :src => "/images/buttons/submit.png?#{@stamp}"
+    end
+  end
+
+  context 'for #button_to method' do
+    should "have a form and set the method properly" do
+      actual_html = button_to('Delete', '/users/1', :method => :delete)
+      assert_has_tag('form', :action => '/users/1') { actual_html }
+      assert_has_tag('form input', :type => 'hidden', :name => "_method", :value => 'delete') { actual_html }
+      assert_has_tag('form input', :type => 'hidden', :name => "authenticity_token") { actual_html }
+    end
+
+    should "add a submit button by default if no content is specified" do
+      actual_html = button_to('My Delete Button', '/users/1', :method => :delete)
+      assert_has_tag('form input', :type => 'submit', :value => 'My Delete Button') { actual_html }
+    end
+
+    should "set specific content inside the form if a block was sent" do
+      actual_html = button_to('My Delete Button', '/users/1', :method => :delete) do
+        content_tag :button, "My button's content", :type => :submit, :title => "My button"
+      end
+      assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
+    end
+  end
+
+  context 'for #range_field_tag' do
+    should "create an input tag with min and max options" do
+      actual_html = range_field_tag('ranger', :min => 20, :max => 50)
+      assert_has_tag('input', :type => 'range', :name => 'ranger', :min => '20', :max => '50') { actual_html }
+    end
+
+    should "create an input tag with range" do
+      actual_html = range_field_tag('ranger', :range => 1..20)
+      assert_has_tag('input', :min => '1', :max => '20') { actual_html }
+    end
+
+    should "display correct range_field_tag in erb" do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
+    end
+
+    should "display correct range_field_tag in haml" do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
+    end
+
+    should "display correct range_field_tag in slim" do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_min_max', :min => '1', :max => '50', :count => 1
+      assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
     end
   end
 end

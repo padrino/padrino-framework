@@ -24,4 +24,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("padrino-helpers", Padrino.version)
+  s.add_development_dependency("therubyracer", "~> 0.11.1")
+  s.add_development_dependency("less", "~> 2.2.2")
 end

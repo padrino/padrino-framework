@@ -1,0 +1,3 @@
+%p=tag_icon 'beaker icon-3x'
+%h1=pat('custom_errors.500.title')
+%p=pat('custom_errors.500.description')

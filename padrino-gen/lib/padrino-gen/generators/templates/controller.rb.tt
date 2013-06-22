@@ -1,4 +1,5 @@
-<%= @app_name %>.controllers <%= ":#{@controller}" if @controller %> do
+<%= @project_name %>::<%= @app_name %>.controllers <%= ":#{@controller}" if @controller %><%= ", #{@block_opts_string}" if @block_opts_string %> do
+  <%= "layout :#{@layout}" if @layout %>
   # get :index, :map => '/foo/bar' do
   #   session[:foo] = 'bar'
   #   render 'index'

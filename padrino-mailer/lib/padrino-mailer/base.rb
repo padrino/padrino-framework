@@ -1,7 +1,7 @@
 module Padrino
   module Mailer
     ##
-    # This is the abstract class that other mailers will inherit from in order to send mail
+    # This is the abstract class that other mailers will inherit from in order to send mail.
     #
     # You can set the default delivery settings from your app through:
     #
@@ -57,7 +57,7 @@ module Padrino
       #
       # @see Padrino::Mailer::Helpers::ClassMethods#mailer
       # @api private
-      def initialize(app, name, &block) # @private
+      def initialize(app, name, &block)
         @mailer_name = name
         @messages    = {}
         @defaults    = {}
@@ -65,8 +65,7 @@ module Padrino
         instance_eval(&block)
       end
 
-      ##
-      # Defines a mailer object allowing the definition of various email messages that can be delivered
+      # Defines a mailer object allowing the definition of various email messages that can be delivered.
       #
       # @param [Symbol] name
       #   The name of this email message.
@@ -86,7 +85,7 @@ module Padrino
       def email(name, &block)
         raise "The email '#{name}' is already defined" if self.messages[name].present?
         self.messages[name] = Proc.new { |*attrs|
-          message = Mail::Message.new(self.app)
+          message = app.settings._padrino_mailer::Message.new(self.app)
           message.defaults = self.defaults if self.defaults.any?
           message.delivery_method(*delivery_settings)
           message.instance_exec(*attrs, &block)
@@ -95,7 +94,7 @@ module Padrino
       end
       alias :message :email
 
-      # Defines the default attributes for a message in this mailer (including app-wide defaults)
+      # Defines the default attributes for a message in this mailer (including app-wide defaults).
       #
       # @param [Hash] attributes
       #   The hash of message options to use as default.

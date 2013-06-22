@@ -1,14 +1,9 @@
-# requires tilt if available; falls back on bundled version.
 begin
   require 'tilt'
 rescue LoadError
   require 'sinatra/tilt'
 end
 require 'padrino-core/support_lite' unless defined?(SupportLite)
-require 'mail'
-
-# Require respecting order of our dependencies
-FileSet.glob_require('padrino-mailer/**/*.rb', __FILE__)
 
 module Padrino
   ##
@@ -45,6 +40,15 @@ module Padrino
       #
       # @api public
       def registered(app)
+        require 'padrino-mailer/base'
+        require 'padrino-mailer/helpers'
+        require 'padrino-mailer/mime'
+        # This lazily loads the mail gem, due to its long require time.
+        app.set :_padrino_mailer, proc {
+          require 'mail'
+          require 'padrino-mailer/ext'
+          app._padrino_mailer = Mail
+        }
         app.helpers Padrino::Mailer::Helpers
       end
       alias :included :registered

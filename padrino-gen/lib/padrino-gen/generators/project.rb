@@ -26,20 +26,22 @@ module Padrino
 
       argument :name, :desc => 'The name of your padrino project'
 
-      class_option :app ,         :desc => 'The application name',                                  :aliases => '-n', :default => nil,      :type => :string
-      class_option :bundle,       :desc => 'Run bundle install',                                    :aliases => '-b', :default => false,    :type => :boolean
-      class_option :root,         :desc => 'The root destination',                                  :aliases => '-r', :default => '.',      :type => :string
-      class_option :dev,          :desc => 'Use padrino from a git checkout',                                         :default => false,    :type => :boolean
-      class_option :tiny,         :desc => 'Generate tiny app skeleton',                            :aliases => '-i', :default => false,    :type => :boolean
-      class_option :adapter,      :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, postgres)', :aliases => '-a', :default => 'sqlite', :type => :string
-      class_option :template,     :desc => 'Generate project from template',                        :aliases => '-p', :default => nil,      :type => :string
+      class_option :app ,             :desc => 'The application name',                                             :aliases => '-n', :default => nil,         :type => :string
+      class_option :bundle,           :desc => 'Run bundle install',                                               :aliases => '-b', :default => false,       :type => :boolean
+      class_option :root,             :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
+      class_option :dev,              :desc => 'Use padrino from a git checkout',                                                    :default => false,       :type => :boolean
+      class_option :tiny,             :desc => 'Generate tiny app skeleton',                                       :aliases => '-i', :default => false,       :type => :boolean
+      class_option :adapter,          :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
+      class_option :template,         :desc => 'Generate project from template',                                   :aliases => '-p', :default => nil,         :type => :string
+      class_option :gem,              :desc => 'Generate project as a gem',                                        :aliases => '-g', :default => false,       :type => :boolean
+      class_option :migration_format, :desc => 'Filename format for migrations (number, timestamp)',                                 :default => 'number',    :type => :string
 
       # Definitions for the available customizable components
-      component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :mini_record, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
+      component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :minirecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
       component_option :test,       'testing framework',  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot, :minitest], :default => :none
       component_option :mock,       'mocking library',    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
       component_option :script,     'javascript library', :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
-      component_option :renderer,   'template engine',    :aliases => '-e', :choices => [:haml, :erb, :liquid, :slim], :default => :haml
+      component_option :renderer,   'template engine',    :aliases => '-e', :choices => [:haml, :erb, :liquid, :slim], :default => :slim
       component_option :stylesheet, 'stylesheet engine',  :aliases => '-c', :choices => [:less, :sass, :compass, :scss], :default => :none
 
       # Show help if no argv given
@@ -49,8 +51,11 @@ module Padrino
       #
       # @api private
       def setup_project
-        valid_constant?(options[:app] || name)
-        @app_name = (options[:app] || name).gsub(/\W/, '_').underscore.camelize
+        valid_constant? name
+        app = (options[:app] || "App")
+
+        @project_name = name.gsub(/\W/, '_').underscore.camelize
+        @app_name = app.gsub(/\W/, '_').underscore.camelize
         self.destination_root = File.join(options[:root], name)
         if options[:template] # Run the template to create project
           execute_runner(:template, options[:template])
@@ -63,6 +68,13 @@ module Padrino
           store_component_config('.components')
           app_skeleton('app', options[:tiny])
           template 'templates/Gemfile.tt', destination_root('Gemfile')
+          template 'templates/Rakefile.tt', destination_root('Rakefile')
+          if options.gem?
+            template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
+            template 'templates/gem/README.md.tt', destination_root('README.md')
+            template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
+            template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
+          end
         end
       end
 
@@ -77,6 +89,8 @@ module Padrino
           execute_component_setup(comp, choice)
         end
         store_component_config('.components')
+        store_component_choice(:namespace, @project_name)
+        store_component_choice(:migration_format, options[:migration_format])
       end
 
       # Bundle all required components using bundler and Gemfile
@@ -100,6 +114,22 @@ module Padrino
         say "$ bundle" unless options[:bundle]
         say "="*65, :green
         say
+      end
+
+      # Returns the git author name config or a fill-in value
+      #
+      # @api private
+      def git_author_name
+        git_author_name = `git config user.name`.chomp
+        git_author_name.empty? ? "TODO: Write your name" : git_author_name
+      end
+
+      # Returns the git author email config or a fill-in value
+      #
+      # @api private
+      def git_author_email
+        git_author_email = `git config user.email`.chomp
+        git_author_email.empty? ? "TODO: Write your email address" : git_author_email
       end
     end # Project
   end # Generators

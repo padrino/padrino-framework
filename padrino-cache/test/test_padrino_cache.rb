@@ -1,10 +1,13 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path('../helper', __FILE__)
 
 describe "PadrinoCache" do
 
-  def teardown
-    tmp = File.expand_path(File.dirname(__FILE__) + "/tmp")
-    `rm -rf #{tmp}`
+  before do
+  end
+
+  after do
+    tmp = File.expand_path("../tmp", __FILE__)
+    %x[rm -rf #{tmp}]
   end
 
   should 'cache a fragment' do
@@ -87,14 +90,14 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
-    assert_equal 'foo', @app.cache.get(:foo)[:response_buffer]
+    assert_equal 'foo', @app.cache.get(:foo)
     get "/foo"
     assert_equal 'foo', body
 
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
-    assert_equal 'bar', @app.cache.get(:bar)[:response_buffer]
+    assert_equal 'bar', @app.cache.get(:bar)
     get "/bar"
     assert_equal 'bar', body
   end
@@ -214,5 +217,57 @@ describe "PadrinoCache" do
     assert_equal 'test', body
     get "/foo"
     assert_equal 500, status
+  end
+
+  should 'not cache integer statuses' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get( '/404', :cache => true ) { not_found }
+      get( '/503', :cache => true ) { error 503 }
+      not_found { 'fancy 404' }
+      error( 503 ) { 'fancy 503' }
+    end
+    get '/404'
+    assert_equal 'fancy 404', body
+    assert_equal 404, status
+    assert_equal nil, @app.cache.get('/404')
+    get '/404'
+    assert_equal 'fancy 404', body
+    assert_equal 404, status
+    get '/503'
+    assert_equal 'fancy 503', body
+    assert_equal 503, status
+    assert_equal nil, @app.cache.get('/503')
+    get '/503'
+    assert_equal 'fancy 503', body
+    assert_equal 503, status
+  end
+
+  should 'cache should not hit with unique params' do
+    call_count = 0
+    mock_app do 
+      register Padrino::Cache
+      enable :caching
+      before do 
+        param = params[:test] || 'none'
+        cache_key "foo?#{param}"
+      end
+      get '/foo/:test', :cache => true do
+        param = params[:test] || 'none'
+        call_count += 1
+        "foo?#{param}"
+      end
+    end
+
+    get '/foo/none'
+    get '/foo/none'
+    assert_equal 200, status
+    assert_equal 'foo?none', body
+    assert_equal 1, call_count
+
+    get '/foo/yes'
+    assert_equal 'foo?yes', body
+    assert_equal 2, call_count
   end
 end

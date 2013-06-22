@@ -1,49 +1,44 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
-    <title>Padrino Admin</title>
-    <%% unless PADRINO_ENV == 'production' %>
-      <%%= tag :link , :rel => 'stylesheet/less', :type => 'text/css', :href => asset_path('stylesheets', 'admin.less') %>
-      <%%= javascript_include_tag 'jquery-1.7.1.min', 'less-1.3.0.min' %>
-    <%% else %>
-      <%%= stylesheet_link_tag 'compiled/admin' %>
-    <%% end %>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta name=viewport content='width=device-width,initial-scale=1' />
+    <title><%%= @title.present? ? "#{@title} | Padrino Admin" : "#{pat('login.title')} | Padrino Admin" %></title>
+    <%%= favicon_tag "favicon.ico" %>
+    <%%= stylesheet_link_tag "bootstrap", "application" %>
   </head>
   <body>
-    <%% form_tag url(:sessions, :create), :class=>'form-horizontal' do %>
-      <div id='padrino-modal' class='login'>
-        <div class="modal-header">
-          <div class="logo"> <%%= image_tag('logo.jpg', :title => 'Login Logo', :alt => 'Login Logo') %> </div>
-        </div>
-        <div class="modal-body" id='padrino-modal-body'>
-
-          <%% [:error, :warning, :notice].map do |type|   %>
-            <div class="#{type}">
-              <%%= flash_tag(type, :class => "alert alert-#{type}") %>
-            </div>
-          <%% end %>
-
-          <fieldset class='control-group'>
-            <label for="email" class='control-label'>Login</label>
-            <div class='controls'> <%%= text_field_tag :email, :value => params[:email] %></div>
-          </fieldset>
-
-          <fieldset class='control-group'>
-            <label for='password' class='control-label'>Password</label>
-            <div class='controls'> <%%= password_field_tag :password, :value => params[:password] %></div>
-          </fieldset>
-
-          <fieldset class='control-group'>
-            <label class='control-label'></label>
-            <div class='controls'>
-              <label class="checkbox"> <%%= check_box_tag :bypass %> Bypass login? </label>
-            </div>
-          </fieldset>
-
-        </div>
-        <div class="modal-footer"> <%%= submit_tag('Sign In', :class => 'btn pull-right') %></div>
+    <%% form_tag url(:sessions, :create), :class=>"login form-horizontal" do %>
+      <div class="login-header modal-header">
+        <div class="login-logo"> <%%= image_tag("logo.png", :alt => "Padrino's logo", :height => 250, :width => 193) %> </div>
       </div>
-      <%% end %>
+      <div class="login-body modal-body">
+
+        <%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe %>
+
+        <fieldset class="control-group">
+          <label for="email" class="login-input-label control-label"><%%= pat('login.email') %></label>
+          <div class="login-controls controls"><%%= email_field_tag :email, :value => params[:email], :autofocus => true %></div>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <label for="password" class="login-input-label control-label"><%%= pat('login.password') %></label>
+          <div class="login-controls controls"><%%= password_field_tag :password, :value => params[:password] %></div>
+        </fieldset>
+
+        <fieldset class="login-control-group-last control-group">
+          <div class="login-controls controls">
+            <label class="login-bypass-label checkbox"><%%= check_box_tag :bypass %>  <%%= pat('login.bypass') %></label>
+          </div>
+        </fieldset>
+
+      </div>
+      <div class="login-footer modal-footer"><%%= submit_tag(pat('login.sign_in'), :class => "btn btn-primary pull-right") %></div>
+    <%% end %>
+    <%%= javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/bootstrap-affix bootstrap/bootstrap-alert bootstrap/bootstrap-button bootstrap/bootstrap-carousel bootstrap/bootstrap-collapse bootstrap/bootstrap-dropdown bootstrap/bootstrap-tooltip bootstrap/bootstrap-transition bootstrap/bootstrap-typeahead bootstrap/bootstrap-modal bootstrap/bootstrap-popover bootstrap/bootstrap-scrollspy bootstrap/bootstrap-tab]), :application %>
   </body>
 </html>

@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'rbconfig'
+
+padrino_perf_path = File.expand_path('../../lib', __FILE__)
+
+argv = []
+OptionParser.new do |opts|
+  opts.banner = "Usage: padrino-performance [options]"
+
+  opts.on("-j", "--json", "Check for multiple loaded json libraries") do |v|
+    argv << '-r' + File.expand_path(File.join(padrino_perf_path, "suites", "json"))
+  end
+
+  opts.on("-m", "--mem", "Print memory consumption") do |v|
+    argv << '-r' + File.expand_path(File.join(padrino_perf_path, "suites", "mem"))
+  end
+end.parse!
+
+# This little gem is stolen from Rake, thanks Jim!
+RUBY = File.join(
+  RbConfig::CONFIG['bindir'],
+  RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']).
+  sub(/.*\s.*/m, '"\&"')
+
+exec({"RUBYOPT" => argv.join("")}, *[RUBY, "-S", *ARGV])

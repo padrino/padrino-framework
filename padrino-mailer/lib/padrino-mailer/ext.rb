@@ -16,12 +16,14 @@ module Mail # @private
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
+
+      initialize_template_settings!
+
       # Run the original initialize
       initialize_without_app(*args, &block)
     end
     alias_method_chain :initialize, :app
 
-    ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
     #
     # @example
@@ -43,8 +45,7 @@ module Mail # @private
       end
     end
 
-    ##
-    # Helper to add a text part to a multipart/alternative email.  If this and
+    # Helper to add a text part to a multipart/alternative email. If this and
     # html_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
@@ -52,17 +53,14 @@ module Mail # @private
     #  text_part "Some text"
     #  text_part { render('multipart/basic.text') }
     #
-    def text_part(value=nil, &block)
-      if block_given? || value
-        @text_part = self.part(:content_type => "text/plain", :body => value, :part_block => block)
-        add_multipart_alternate_header unless html_part.blank?
-      else
-        @text_part || find_first_mime_type("text/plain")
-      end
+    def text_part(value = nil, &block)
+      add_resolved_part(:variable     => :text_part,
+                        :value        => value,
+                        :content_type => 'text/plain',
+                        &block)
     end
 
-    ##
-    # Helper to add a html part to a multipart/alternative email.  If this and
+    # Helper to add a html part to a multipart/alternative email. If this and
     # text_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
@@ -70,17 +68,26 @@ module Mail # @private
     #  html_part "Some <b>Html</b> text"
     #  html_part { render('multipart/basic.html') }
     #
-    def html_part(value=nil, &block)
+    def html_part(value = nil, &block)
+      add_resolved_part(:variable     => :html_part,
+                        :value        => value,
+                        :content_type => 'text/html',
+                        &block)
+    end
+
+    def add_resolved_part(attributes = {}, &block)
+      variable, value, content_type = attributes.values_at(:variable, :value, :content_type)
       if block_given? || value
-        @html_part = self.part(:content_type => "text/html", :body => value, :part_block => block)
-        add_multipart_alternate_header unless text_part.blank?
+        instance_variable_set "@#{variable}", self.part(:content_type => content_type,
+                                                        :body => value,
+                                                        :part_block => block)
+        add_multipart_alternate_header unless self.send(variable).blank?
       else
-        @html_part || find_first_mime_type("text/html")
+        instance_variable_get("@#{variable}") || find_first_mime_type(content_type)
       end
     end
 
-    ##
-    # Allows you to add a part in block form to an existing mail message object
+    # Allows you to add a part in block form to an existing mail message object.
     #
     # @example
     #  mail = Mail.new do
@@ -107,86 +114,75 @@ module Mail # @private
     end
     alias_method_chain :do_delivery, :logging if Padrino.respond_to?(:logger)
 
-    ##
-    # Sinatra and Padrino compatibility
+    # Sinatra and Padrino compatibility.
     #
     def settings
       self.class
     end
 
-    ##
-    # Sets the message defined template path to the given view path
+    # Sets the message defined template path to the given view path.
     #
     def views(value)
       settings.views = value
     end
 
     ##
-    # Sets the local variables available within the message template
+    # Sets the local variables available within the message template.
     #
     def locals(value)
       @_locals = value
     end
 
-    ##
-    # Returns the templates for this message
+    # Returns the templates for this message.
     #
     def self.templates
       @_templates ||= {}
     end
 
-    ##
-    # Sets the message defined template path to the given view path
+    # Sets the message defined template path to the given view path.
     #
     def self.views=(value)
       @_views = value
     end
 
-    ##
-    # Returns the template view path defined for this message
+    # Returns the template view path defined for this message.
     #
     def self.views
       @_views
     end
 
-    ##
-    # Modify whether templates should be reloaded (for development)
+    # Modify whether templates should be reloaded (for development).
     #
     def self.reload_templates=(value)
       @_reload_templates = value
     end
 
-    ##
     # Returns true if the templates will be reloaded; false otherwise.
     #
     def self.reload_templates?
       @_reload_templates
     end
 
-    ##
-    # Return the path of this file, only for compatiblity with sinatra rendering methods
+    # Return the path of this file, only for compatibility with Sinatra rendering methods.
     #
     def self.caller_locations
       [[File.dirname(__FILE__), 1]]
     end
 
-    ##
-    # Return the default encoding
+    # Return the default encoding.
     #
     def self.default_encoding
       "utf-8"
     end
 
-    ##
-    # Modify the default attributes for this message (if not explicitly specified)
+    # Modify the default attributes for this message (if not explicitly specified).
     #
     def defaults=(attributes)
       @_defaults = attributes
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
     end
 
-    ##
-    # Check if we can log
+    # Check if we can log.
     #
     def self.logging?
       @_logging
@@ -196,7 +192,7 @@ module Mail # @private
       @_logging = value
     end
 
-    # Shortcut for delivery_method with smarter smtp overwrites
+    # Shortcut for delivery_method with smarter SMTP overwrites
     def via(method = nil, settings = {})
       if method.nil?
         delivery_method
@@ -207,8 +203,7 @@ module Mail # @private
       end
     end
 
-    ##
-    # If the value is empty return a symbol that rappresent the content type so:
+    # If the value is empty return a symbol that represent the content type so:
     #
     #   "text/plain" => :plain
     #
@@ -223,22 +218,28 @@ module Mail # @private
 
     private
 
-      # Defines the render for the mailer utilizing the padrino 'rendering' module
-      def render(engine, data=nil, options={}, locals={}, &block)
-        locals = @_locals if options[:locals].blank? && locals.blank?
-        # Reload templates
-        @template_cache.clear if settings.reload_templates?
-        # Setup provides
-        provides.each do |format|
-          part do |p|
-            p.content_type(format)
-            p.send(:render, engine, data, options, locals, &block)
-            add_multipart_alternate_header if html_part.present? || provides.include?(:html)
-          end
+    # Defines the render for the mailer utilizing the padrino 'rendering' module
+    def render(engine, data=nil, options={}, locals={}, &block)
+      locals = @_locals if options[:locals].blank? && locals.blank?
+      # Reload templates
+      @template_cache.clear if settings.reload_templates?
+
+      provides.each do |format|
+        part do |p|
+          p.content_type(format)
+          p.send(:render, engine, data, options, locals, &block)
+          add_multipart_alternate_header if html_part.present? || provides.include?(:html)
         end
-        # Setup the body if we don't have provides
-        self.body = super(engine, data, options, locals, &block) if provides.empty?
       end
 
+      self.body = super(engine, data, options, locals, &block) if provides.empty?
+    end
+
+    # Register all special template configurations Padrino has to our fake settings object.
+    def initialize_template_settings!
+      Padrino::Rendering.engine_configurations.each do |name, value|
+        settings.class.instance_eval { define_method(name) { value } }
+      end
+    end
   end # Message
 end # Mail

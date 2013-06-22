@@ -1,0 +1,37 @@
+zh_cn:
+  activemodel: &activemodel
+    errors:
+      messages:
+        inclusion: "未在列表中"
+        exclusion: "被保留"
+        invalid: "无效"
+        confirmation: "没有匹配配置信息"
+        accepted: "必须接受"
+        empty: "不能为空"
+        blank: "必须填写"
+        too_long: "过长（最大值为 %{count} 个字符，一个中文占用两个字符）"
+        too_short: "太短了（最小值为 %{count} 个字符，一个中文占用两个字符）"
+        wrong_length: "长度错误（应为 %{count} 个字符，一个中文占用两个字符）"
+        taken: "已被占用"
+        not_a_number: "不是数字"
+        greater_than: "必须大于 %{count} 个字符，一个中文占用两个字符"
+        greater_than_or_equal_to: "必须大于等于 %{count} 个字符，一个中文占用两个字符"
+        equal_to: "必须等于 %{count} 个字符，一个中文占用两个字符"
+        less_than: "必须小于 %{count} 个字符，一个中文占用两个字符"
+        less_than_or_equal_to: "必须小于等于 %{count} 个字符，一个中文占用两个字符"
+        odd: "必须为奇数"
+        even: "必须为偶数"
+        record_invalid: "验证失败： %{errors}"
+        content_type: "文件格式不支持"
+  activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "是无效的"
+        not_present: "不能是空白字元"
+        not_numeric: "不是数字"
+        not_url: "是无效的"
+        not_email: "是无效的"
+        not_valid: "没有包含在列表中"
+        not_in_range: "没有包含在列表中"
+        not_decimal: "是无效的"

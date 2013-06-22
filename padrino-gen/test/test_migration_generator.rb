@@ -45,14 +45,27 @@ describe "MigrationGenerator" do
       assert_match_in_file(/t.remove :email/, migration_file_path)
     end
 
-    should "properly calculate version number" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/001_add_email_to_person.rb")
-      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/002_add_name_to_person.rb")
-      assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/003_add_age_to_user.rb")
+    context "the default migration numbering" do
+      should "properly calculate version number" do
+        capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
+        assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/001_add_email_to_person.rb")
+        assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/002_add_name_to_person.rb")
+        assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/003_add_age_to_user.rb")
+      end
+    end
+
+    context "the timestamped migration numbering" do
+      should "properly calculate version number" do
+        capture_io { generate(:project, 'sample_project', "--migration_format=timestamp", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+
+        time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
+
+        capture_io { generate(:migration, 'add_gender_to_person', "gender:string", "-r=#{@apptmp}/sample_project") }
+        assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/#{time}_add_gender_to_person.rb")
+      end
     end
   end
 

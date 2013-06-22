@@ -1,5 +1,4 @@
 # Make slim works with sinatra/padrino
-Slim::Engine.set_default_options(:buffer => '@_out_buf', :generator => Temple::Generators::StringBuffer) if defined?(Slim)
 
 module Padrino
   module Helpers
@@ -31,11 +30,11 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          self.output_buffer, _buf_was = "", self.output_buffer
-          block.call(*args)
+          self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
+          captured_block = block.call(*args)
           ret = eval("@_out_buf", block.binding)
           self.output_buffer = _buf_was
-          ret
+          [ ret, captured_block ]
         end
 
         ##
@@ -73,9 +72,9 @@ module Padrino
           def output_buffer=(val)
             template.instance_variable_set(:@_out_buf, val)
           end
-        end # SlimHandler
+      end # SlimHandler
 
-        OutputHelpers.register(SlimHandler)
+      OutputHelpers.register(SlimHandler)
     end # OutputHelpers
   end # Helpers
 end # Padrino

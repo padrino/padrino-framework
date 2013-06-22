@@ -15,6 +15,7 @@ padrino_gems = %w[
   padrino-mailer
   padrino-admin
   padrino-cache
+  padrino-performance
   padrino
 ]
 
@@ -45,7 +46,9 @@ end
 
 desc "Clean pkg and other stuff"
 task :uninstall do
-  sh "gem search --no-version padrino | grep padrino | xargs gem uninstall -a"
+  padrino_gems.each {|gem|
+    system("gem uninstall #{gem} --force -I -x 2>/dev/null")
+  }
 end
 
 desc "Displays the current version"

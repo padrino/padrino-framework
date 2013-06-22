@@ -5,11 +5,18 @@ require File.expand_path('../../config/boot', __FILE__)
 class MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
-  def app
-    ##
-    # You can handle all padrino applications using instead:
-    #   Padrino.application
-    CLASS_NAME.tap { |app|  }
+  # You can use this method to custom specify a Rack app
+  # you want rack-test to invoke:
+  #
+  #   app CLASS_NAME
+  #   app CLASS_NAME.tap { |a| }
+  #   app(CLASS_NAME) do
+  #     set :foo, :bar
+  #   end
+  #
+  def app(app = nil, &blk)
+    @app ||= block_given? ? app.instance_eval(&blk) : app
+    @app ||= Padrino.application
   end
 end
 TEST
@@ -62,7 +69,6 @@ def setup_test
   create_file destination_root("test/test.rake"), MINITEST_RAKE
 end
 
-# Generates a controller test given the controllers name
 def generate_controller_test(name)
   minitest_contents = MINITEST_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")

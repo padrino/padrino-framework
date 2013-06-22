@@ -28,7 +28,9 @@
 Padrino.configure_apps do
   # enable :sessions
   set :session_secret, '<%= SecureRandom.hex(32) %>'
+  set :protection, true
+  set :protect_from_csrf, true
 end
 
 # Mounts the core application for this project
-Padrino.mount('<%= @app_name.to_s %>').to('/')
+Padrino.mount('<%= @project_name.to_s %>::<%= @app_name.to_s %>', :app_file => Padrino.root('app/app.rb')).to('/')

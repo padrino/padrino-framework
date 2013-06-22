@@ -53,6 +53,17 @@ describe "TagHelpers" do
       assert_has_tag('p.large#star', :content => "Demo") { actual_html }
     end
 
+    should "escape non-html-safe content" do
+      actual_html = content_tag(:p, :class => 'large', :id => 'star') { "<>" }
+      assert_has_tag('p.large#star') { actual_html }
+      assert_match('&lt;&gt;', actual_html)
+    end
+
+    should "not escape html-safe content" do
+      actual_html = content_tag(:p, :class => 'large', :id => 'star') { "<>" }
+      assert_has_tag('p.large#star', :content => "<>") { actual_html }
+    end
+
     should "support tags with erb" do
       visit '/erb/content_tag'
       assert_have_selector :p, :content => "Test 1", :class => 'test', :id => 'test1'

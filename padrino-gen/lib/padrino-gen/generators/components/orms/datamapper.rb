@@ -22,7 +22,7 @@ DM
 
 def setup_orm
   dm = DM
-  db = @app_name.underscore
+  db = @project_name.underscore
   %w(
     dm-core
     dm-types
@@ -100,7 +100,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, #{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
+       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 

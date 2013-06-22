@@ -1,21 +1,12 @@
-%p
-  Padrino is a ruby framework built upon the Sinatra web library.
-  Sinatra is a DSL for creating simple web applications in Ruby.
-  Padrino was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
-%hr
-%h3 Padrino Admin
-%p
-  Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
-  %table.table.table-hover
-    %tr
-      %td Orm Agnostic
-      %td Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest
-    %tr
-      %td Authentication
-      %td User Authentication Support, User Authorization Management
-    %tr
-      %td Template Agnostic
-      %td Erb, Haml, Slim Rendering Support
-    %tr
-      %td Scaffold
-      %td You can create a new "admin interface" by providing a single Model
+.base-text
+  %p Padrino is a ruby framework built upon the Sinatra web library.
+  %p It was created to make it fun and easy to code more advanced web applications while still adhering to the spirit that makes Sinatra great!
+  %p Padrino comes shipped with a slick and beautiful Admin Interface, with the following features:
+
+.base-icons
+  .btn-group
+    .btn.btn-primary{:title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest"}=tag_icon("cogs icon-2x", "Orm Agnostic")
+    .btn.btn-success{:title => "User Authentication Support, User Authorization Management"}=tag_icon("group icon-2x", "Authentication")
+    .btn.btn-info{:title => "Erb, Haml, Slim Rendering Support"}=tag_icon("tasks icon-2x", "Template Agnostic")
+    .btn.btn-warning{:title => "English, German, Russian, Danish, French, Brazilian and Italian localizations and many more!.."}=tag_icon("flag icon-2x", "Multi Language")
+    .btn.btn-danger{:title => "You can create a new 'admin interface' by providing a single Model"}=tag_icon("magic icon-2x", "Scaffold")

@@ -1,5 +1,4 @@
-Admin.controllers :sessions do
-
+<%= @app_name %>::Admin.controllers :sessions do
   get :new do
     render "/sessions/new", nil, :layout => false
   end
@@ -9,12 +8,16 @@ Admin.controllers :sessions do
       set_current_account(account)
       redirect url(:base, :index)
     elsif Padrino.env == :development && params[:bypass]
+      <%- if @orm == :ohm -%>
+      account = <%= @model_name %>.all.first
+      <%- else -%>
       account = <%= @model_name %>.first
+      <%- end -%>
       set_current_account(account)
       redirect url(:base, :index)
     else
       params[:email], params[:password] = h(params[:email]), h(params[:password])
-      flash[:error] = "Login or password wrong."
+      flash[:error] = pat('login.error')
       redirect url(:sessions, :new)
     end
   end

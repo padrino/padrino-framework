@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Padrino
   module Helpers
     ##
@@ -28,8 +30,9 @@ module Padrino
       #
       # @api public
       def form_for(object, url, settings={}, &block)
-        form_html = capture_html(builder_instance(object, settings), &block)
-        form_tag(url, settings) { form_html }
+        instance = builder_instance(object, settings)
+        html = capture_html(instance, &block)
+        form_tag(url, settings) { html }
       end
 
       ##
@@ -54,7 +57,7 @@ module Padrino
         instance = builder_instance(object, settings)
         fields_html = capture_html(instance, &block)
         fields_html << instance.hidden_field(:id) if instance.send(:nested_object_id)
-        concat_content fields_html
+        concat_safe_content fields_html
       end
 
       ##
@@ -79,8 +82,9 @@ module Padrino
         options.reverse_merge!(:method => 'post', :action => url)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
         options['accept-charset'] ||= 'UTF-8'
-        inner_form_html  = hidden_form_method_field(desired_method)
-        inner_form_html += capture_html(&block)
+        inner_form_html = hidden_form_method_field(desired_method)
+        inner_form_html << csrf_token_field unless desired_method =~ /get/i
+        inner_form_html << mark_safe(capture_html(&block))
         concat_content content_tag(:form, inner_form_html, options)
       end
 
@@ -100,7 +104,7 @@ module Padrino
       #
       # @api semipublic
       def hidden_form_method_field(desired_method)
-        return '' if desired_method.blank? || desired_method.to_s =~ /get|post/i
+        return ActiveSupport::SafeBuffer.new if desired_method.blank? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
       end
 
@@ -125,8 +129,8 @@ module Padrino
       def field_set_tag(*args, &block)
         options = args.extract_options!
         legend_text = args[0].is_a?(String) ? args.first : nil
-        legend_html = legend_text.blank? ? '' : content_tag(:legend, legend_text)
-        field_set_content = legend_html + capture_html(&block)
+        legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
+        field_set_content = legend_html + mark_safe(capture_html(&block))
         concat_content content_tag(:fieldset, field_set_content, options)
       end
 
@@ -167,7 +171,7 @@ module Padrino
         objects = objects.map { |object_name|
           object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name
         }.compact
-        count   = objects.inject(0) { |sum, object| sum + object.errors.size }
+        count   = objects.inject(0) { |sum, object| sum + object.errors.count }
 
         unless count.zero?
           html = {}
@@ -199,10 +203,10 @@ module Padrino
               }
             }.join
 
-            contents = ''
+            contents = ActiveSupport::SafeBuffer.new
             contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
             contents << content_tag(:p, message) unless message.blank?
-            contents << content_tag(:ul, error_messages)
+            contents << safe_content_tag(:ul, error_messages)
 
             content_tag(:div, contents, html)
           end
@@ -244,7 +248,14 @@ module Padrino
       def error_message_on(object, field, options={})
         object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
         error  = object.errors[field] rescue nil
-        # Array(error).first is necessary because some ORMs give us an array others directly a value
+        error = if defined?(Ohm::Model) && object.is_a?(Ohm::Model)
+          I18n.t("ohm.errors.messages.#{error[0]}", :default => error[0].to_s)
+        else
+          # Array(error).first is necessary because some ORMs 
+          # give us an array others directly a value
+          Array(error)[0]
+        end
+
         if error = Array(error)[0]
           options.reverse_merge!(:tag => :span, :class => :error)
           tag   = options.delete(:tag)
@@ -276,10 +287,11 @@ module Padrino
       # @api public
       def label_tag(name, options={}, &block)
         options.reverse_merge!(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = options.delete(:caption)
-        caption_text << "<span class='required'>*</span> " if options.delete(:required)
+        caption_text = options.delete(:caption).html_safe
+        caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
+
         if block_given? # label with inner content
-          label_content = caption_text + capture_html(&block)
+          label_content = caption_text.concat capture_html(&block)
           concat_content(content_tag(:label, label_content, options))
         else # regular label
           content_tag(:label, caption_text, options)
@@ -573,6 +585,7 @@ module Padrino
       #
       # @api public
       def file_field_tag(name, options={})
+        name = "#{name}[]" if options[:multiple]
         options.reverse_merge!(:name => name)
         input_tag(:file, options)
       end
@@ -630,7 +643,7 @@ module Padrino
         end
         select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
-        content_tag(:select, select_options_html, options)
+        safe_content_tag(:select, select_options_html, options)
       end
 
       ##
@@ -687,6 +700,96 @@ module Padrino
       def image_submit_tag(source, options={})
         options.reverse_merge!(:src => image_path(source))
         input_tag(:image, options)
+      end
+
+      # Constructs a hidden field containing a CSRF token.
+      #
+      # @param [String] token
+      #   The token to use. Will be read from the session by default.
+      #
+      # @return [String] The hidden field with CSRF token as value.
+      #
+      # @example
+      #   csrf_token_field
+      #
+      # @api public
+      def csrf_token_field(token = nil)
+        if defined? session
+          token ||= (session[:csrf] ||= SecureRandom.hex(32))
+        end
+
+        hidden_field_tag :authenticity_token, :value => token
+      end
+
+      ##
+      # Creates a form containing a single button that submits to the url.
+      #
+      # @overload button_to(name, url, options={})
+      #   @param [String]  caption  The text caption.
+      #   @param [String]  url      The url href.
+      #   @param [Hash]    options  The html options.
+      # @overload button_to(name, options={}, &block)
+      #   @param [String]  url      The url href.
+      #   @param [Hash]    options  The html options.
+      #   @param [Proc]    block    The button content.
+      #
+      # @option options [Boolean] :multipart
+      #   If true, this form will support multipart encoding.
+      # @option options [String] :remote
+      #   Instructs ujs handler to handle the submit as ajax.
+      # @option options [Symbol] :method
+      #   Instructs ujs handler to use different http method (i.e :post, :delete).
+      #
+      # @return [String] Form and button html with specified +options+.
+      #
+      # @example
+      #   button_to 'Delete', url(:accounts_destroy, :id => account), :method => :delete, :class => :form
+      #   # Generates:
+      #   # <form class="form" action="/admin/accounts/destroy/2" method="post">
+      #   #   <input type="hidden" value="delete" name="_method" />
+      #   #   <input type="submit" value="Delete" />
+      #   # </form>
+      #
+      # @api public
+      def button_to(*args, &block)
+        name, url = args[0], args[1]
+        options   = args.extract_options!
+        options['data-remote'] = 'true' if options.delete(:remote)
+        if block_given?
+          form_tag(url, options, &block)
+        else
+          form_tag(url, options) do
+            submit_tag(name)
+          end
+        end
+      end
+
+      ##
+      # Constructs a range tag from the given options
+      #
+      # @example
+      #   range_field_tag('ranger_with_min_max', :min => 1, :max => 50)
+      #   range_field_tag('ranger_with_range', :range => 1..5)
+      #
+      # @param [String] name
+      #   The name of the range field.
+      # @param [Hash] options
+      #   The html options for the range field.
+      # @option options [Integer] :min
+      #  The min range of the range field
+      # @option options [Integer] :max
+      #  The max range of the range field
+      # @option options [range] :range
+      #  The range, in lieu of :min and :max.  See examples for details
+      # @return [String] The html range field
+      #
+      # @api public
+      def range_field_tag(name, options = {})
+        options.reverse_merge!(:name => name)
+        if range = options.delete(:range)
+          options[:min], options[:max] = range.min, range.max
+        end
+        input_tag(:range, options)
       end
 
       protected

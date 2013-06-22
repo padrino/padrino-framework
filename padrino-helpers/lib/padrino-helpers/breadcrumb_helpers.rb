@@ -37,7 +37,7 @@ module Padrino
       #
       # @api public
       def set_home(url, caption)
-        self.home = { :url => url, :caption => caption.to_s.humanize, :name => :home }
+        self.home = { :url => url, :caption => caption.to_s.humanize.html_safe, :name => :home }
         reset
       end
 
@@ -85,7 +85,7 @@ module Padrino
       #
       # @api public
       def add(name, url, caption)
-        items << { :name => name, :url => url.to_s, :caption => caption.to_s.humanize }
+        items << { :name => name, :url => url.to_s, :caption => caption.to_s.humanize.html_safe }
       end
 
       alias :<< :add
@@ -105,7 +105,7 @@ module Padrino
       #
       # @api public
       def del(name)
-        items.each{ |item| item.delete if item[:name] == name.to_sym }
+        items.delete_if { |item| item[:name] == name.to_sym }
       end
 
     end # Breadcrumb
@@ -142,8 +142,8 @@ module Padrino
           content << render_item(item, bootstrap)
         end
         last = link_to(breadcrumbs.items.last[:caption], breadcrumbs.items.last[:url])
-        content << content_tag(:li, last, :class => active)
-        content_tag(:ul, content, :class => "breadcrumb" )
+        content << safe_content_tag(:li, last, :class => active)
+        safe_content_tag(:ul, content, :class => "breadcrumb" )
       end
 
       private
@@ -162,8 +162,8 @@ module Padrino
       def render_item(item, bootstrap)
         content = ""
         content << link_to(item[:caption], item[:url])
-        content << content_tag(:span, "/", :class => "divider") if bootstrap
-        content_tag(:li, content )
+        content << safe_content_tag(:span, "/", :class => "divider") if bootstrap
+        safe_content_tag(:li, content )
       end
 
     end # Breadcrumb

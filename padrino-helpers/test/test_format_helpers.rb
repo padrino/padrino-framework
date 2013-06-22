@@ -15,6 +15,7 @@ describe "FormatHelpers" do
   context 'for #simple_format method' do
     should "format simple text into html format" do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
+      assert_equal true, actual_text.html_safe?
       assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
     end
 
@@ -139,6 +140,11 @@ describe "FormatHelpers" do
     should "return text escaped if not empty" do
       assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h!('<h1>hello</h1>')
     end
+    should "mark escaped text as safe" do
+      assert_equal false, '<h1>hello</h1>'.html_safe?
+      assert_equal true, h('<h1>hello</h1>').html_safe?
+      assert_equal true, h!("", "default").html_safe?
+    end
   end
 
   context 'for #time_ago_in_words method' do
@@ -213,15 +219,23 @@ describe "FormatHelpers" do
   context 'for #js_escape_html method' do
     should "escape double quotes" do
       assert_equal "\\\"hello\\\"", js_escape_html('"hello"')
+      assert_equal "\\\"hello\\\"", js_escape_html(ActiveSupport::SafeBuffer.new('"hello"'))
     end
     should "escape single quotes" do
       assert_equal "\\'hello\\'", js_escape_html("'hello'")
+      assert_equal "\\'hello\\'", js_escape_html(ActiveSupport::SafeBuffer.new("'hello'"))
     end
     should "escape html tags and breaks" do
       assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html("\n\r<p>hello</p>\r\n")
+      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html(ActiveSupport::SafeBuffer.new("\n\r<p>hello</p>\r\n"))
     end
     should "escape data-confirm attribute" do
       assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html("<data-confirm=\"are you sure\">")
+      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(ActiveSupport::SafeBuffer.new("<data-confirm=\"are you sure\">"))
+    end
+    should "keep html_safe content html_safe" do
+      assert_equal false, js_escape_html('"hello"').html_safe?
+      assert_equal true, js_escape_html(ActiveSupport::SafeBuffer.new('"hello"')).html_safe?
     end
   end
 end

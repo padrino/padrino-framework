@@ -180,7 +180,7 @@ module Padrino
         set :public_folder, Proc.new { Padrino.root('public', uri_root) }
         set :views, Proc.new { File.join(root, 'views') }
         set :images_path, Proc.new { File.join(public_folder, 'images') }
-        set :protection, false
+        set :protection, true
         # Haml specific
         set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
         # Padrino specific
@@ -190,6 +190,9 @@ module Padrino
         set :authentication, false
         # Padrino locale
         set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
+        # Authenticity token
+        set :protect_from_csrf, false
+        set :allow_disabled_csrf, false
         # Load the Global Configurations
         class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
       end
@@ -254,7 +257,36 @@ module Padrino
         builder.use Rack::Head
         register    Padrino::Flash
         setup_protection builder
+        setup_csrf_protection builder
         setup_application!
+      end
+
+      # sets up csrf protection for the app
+      def setup_csrf_protection(builder)
+        if protect_from_csrf? && !sessions?
+          raise(<<-ERROR)
+`protect_from_csrf` is activated, but `sessions` are not. To enable csrf
+protection, use:
+
+    enable :sessions
+
+or deactivate protect_from_csrf:
+
+    disable :protect_from_csrf
+ERROR
+        end
+
+        if protect_from_csrf?
+          if allow_disabled_csrf?
+            builder.use Rack::Protection::AuthenticityToken,
+                        :reaction => :report,
+                        :report_key => 'protection.csrf.failed',
+                        :logger => logger
+          else
+            builder.use Rack::Protection::AuthenticityToken,
+                        :logger => logger
+          end
+        end
       end
     end # self
   end # Application

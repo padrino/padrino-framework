@@ -2,14 +2,23 @@ SHOULDA_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
 PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
+require "test/unit"
+
 class Test::Unit::TestCase
   include Rack::Test::Methods
 
-  def app
-    ##
-    # You can handle all padrino applications using instead:
-    #   Padrino.application
-    CLASS_NAME.tap { |app|  }
+  # You can use this method to custom specify a Rack app
+  # you want rack-test to invoke:
+  #
+  #   app CLASS_NAME
+  #   app CLASS_NAME.tap { |a| }
+  #   app(CLASS_NAME) do
+  #     set :foo, :bar
+  #   end
+  #
+  def app(app = nil, &blk)
+    @app ||= block_given? ? app.instance_eval(&blk) : app
+    @app ||= Padrino.application
   end
 end
 TEST
@@ -63,13 +72,9 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'shoulda', :group => 'test'
   insert_test_suite_setup SHOULDA_SETUP
-  if options[:orm] == "activerecord"
-    inject_into_file destination_root("test/test_config.rb"), "require 'shoulda/active_record'\n\n", :before => /class.*?\n/
-  end
   create_file destination_root("test/test.rake"), SHOULDA_RAKE
 end
 
-# Generates a controller test given the controllers name
 def generate_controller_test(name)
   shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")

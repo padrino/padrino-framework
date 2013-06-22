@@ -12,6 +12,7 @@ require 'padrino-core/reloader'
 require 'padrino-core/router'
 require 'padrino-core/server'
 require 'padrino-core/tasks'
+require 'padrino-core/module'
 
 
 # The Padrino environment (falls back to the rack env or finally develop)
@@ -90,7 +91,14 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      @_global_configuration = block if block_given?
+      return  unless block_given?
+      @@_global_configurations ||= []
+      @@_global_configurations << block
+      @_global_configuration = lambda do |app|
+        @@_global_configurations.each do |configuration|
+          app.class_eval(&configuration)
+        end
+      end
     end
 
     ##
@@ -157,6 +165,42 @@ module Padrino
     #
     def use(m, *args, &block)
       middleware << [m, args, block]
+    end
+
+    ##
+    # Registers a gem with padrino. This relieves the caller from setting up
+    # loadpaths by himself and enables Padrino to look up apps in gem folder.
+    #
+    # The name given has to be the proper gem name as given in the gemspec.
+    #
+    # @param [String] name
+    #   The name of the gem being registered.
+    #
+    # @param [Module] main_module
+    #   The main module of the gem.
+    #
+    # @returns The root path of the loaded gem
+    def gem(name, main_module)
+      _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name == name }
+      gems << spec
+      modules << main_module
+      spec.full_gem_path
+    end
+
+    ##
+    # Returns all currently known padrino gems.
+    #
+    # @returns [Gem::Specification]
+    def gems
+      @gems ||= []
+    end
+
+    ##
+    # All loaded Padrino modules.
+    #
+    # @returns [<Padrino::Module>]
+    def modules
+      @modules ||= []
     end
   end # self
 end # Padrino

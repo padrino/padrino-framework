@@ -10,6 +10,8 @@ end
 # Loads the Padrino applications mounted within the project
 # setting up the required environment for Padrino
 task :environment do
+  require File.expand_path('config/boot.rb', Rake.application.original_dir)
+
   Padrino.mounted_apps.each do |app|
     app.app_obj.setup_application!
   end
@@ -48,16 +50,5 @@ namespace :routes do
   task :app, [:app] => :environment do |t, args|
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
-  end
-end
-
-desc "Generate the Rakefile"
-task :gen do
-  File.open(Padrino.root("Rakefile"), "w") do |file|
-    file.puts <<-RUBY.gsub(/^ {6}/, '')
-      require File.expand_path('../config/boot.rb', __FILE__)
-      require 'padrino-core/cli/rake'
-      PadrinoTasks.init
-    RUBY
   end
 end

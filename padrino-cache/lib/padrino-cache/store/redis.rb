@@ -4,7 +4,7 @@ module Padrino
       ##
       # Redis Cache Store
       #
-      class Redis
+      class Redis < Base
         ##
         # Initialize Redis store with client connection.
         #
@@ -15,10 +15,13 @@ module Padrino
         #   Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
+        #   # you can provide a marshal parser (to store ruby objects)
+        #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0), :parser => :marshal)
         #
         # @api public
-        def initialize(client)
+        def initialize(client, options={})
           @backend = client
+          super(options)
         end
 
         ##
@@ -34,7 +37,8 @@ module Padrino
         # @api public
         def get(key)
           code = @backend.get(key)
-          Marshal.load(code) if code.present?
+          return nil unless code
+          parser.decode(code)
         end
 
         ##
@@ -52,7 +56,7 @@ module Padrino
         #
         # @api public
         def set(key, value, opts = nil)
-          value = Marshal.dump(value) if value
+          value = parser.encode(value)
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
             expires_in = expires_in if expires_in < EXPIRES_EDGE

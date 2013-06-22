@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module Padrino
   module Generators
     ##
@@ -12,8 +13,6 @@ module Padrino
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
-      # Defines the theme names for admin based on available.
-      # def self.themes; Dir[File.dirname(__FILE__) + "/templates/assets/stylesheets/themes/*"].map { |t| File.basename(t) }.sort; end
 
       # Include related modules
       include Thor::Actions
@@ -23,10 +22,12 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      class_option :app, :aliases => "-a", :desc => "The model destination path", :default => '.', :type => :string
+      # TODO FIXME Review these and implement accordingly.
+      # See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
+      # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
+      # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      # class_option :theme, :desc => "Your admin theme: (#{self.themes.join(", ")})", :default => "default", :type => :string
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 
@@ -45,6 +46,9 @@ module Padrino
             raise SystemExit
           end
 
+          # Get the app's namespace
+          @app_name = fetch_app_name
+
           store_component_choice(:admin_renderer, tmp_ext)
 
           self.behavior = :revoke if options[:destroy]
@@ -59,12 +63,14 @@ module Padrino
           directory "templates/app",       destination_root("admin")
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"Admin\").to(\"/admin\")"
-          insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:mini_record, :activerecord].include?(orm)
+          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}::Admin\", :app_file => File.expand_path('../../admin/app.rb', __FILE__)).to(\"/admin\")"
+          unless options[:destroy]
+            insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:minirecord, :activerecord].include?(orm)
+          end
 
           params = [
             @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
-            "-a=#{options[:app]}",
+            "-a=#{options[:models_path]}",
             "-r=#{options[:root]}"
           ]
           params << "-s" if options[:skip_migration]
@@ -82,11 +88,14 @@ module Padrino
             { :name => :role,                  :field_type => :text_field }
           ]
 
-          admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy])
-          admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
-          admin_app.invoke_all
+          unless options[:destroy]
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy], :admin_model => @model_singular)
+            admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
+            admin_app.invoke_all
+          end
 
-          template "templates/account/#{orm}.rb.tt", destination_root(options[:app], "models", "#{@model_singular}.rb"), :force => true
+          # TODO See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
+          template "templates/account/#{orm}.rb.tt", destination_root("models", "#{@model_singular}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))
             run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
@@ -98,27 +107,35 @@ module Padrino
           empty_directory destination_root("admin/views/base")
           empty_directory destination_root("admin/views/layouts")
           empty_directory destination_root("admin/views/sessions")
+          empty_directory destination_root("admin/views/errors")
 
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
+          template "templates/#{ext}/app/layouts/error.#{ext}.tt", destination_root("admin/views/layouts/error.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
+          # custom error
+          template "templates/#{ext}/app/errors/403.#{ext}.tt",        destination_root("admin/views/errors/403.#{ext}")
+          template "templates/#{ext}/app/errors/404.#{ext}.tt",        destination_root("admin/views/errors/404.#{ext}")
+          template "templates/#{ext}/app/errors/500.#{ext}.tt",        destination_root("admin/views/errors/500.#{ext}")
 
-          add_project_module @model_plural
-          require_dependencies('bcrypt-ruby', :require => 'bcrypt')
+          unless options[:destroy]
+            add_project_module @model_plural
+            require_dependencies('bcrypt-ruby', :require => 'bcrypt')
+          end
 
           # A nicer select box
-          gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          # TODO FIXME This doesn't make much sense in here. Review.
+          # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           # Destroy account only if not logged in
           gsub_file destination_root("admin/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
           return if self.behavior == :revoke
 
           instructions = []
-          instructions << "Run 'bundle install'"
-          instructions << "Run 'padrino rake ar:migrate'" if orm == :activerecord
-          instructions << "Run 'padrino rake dm:auto:upgrade'" if orm == :datamapper
-          instructions << "Run 'ohm mani padme hum'" if orm == :ohm
-          instructions << "Run 'padrino rake seed'"
+          instructions << "Run 'bundle'"
+          instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper || orm == :sequel)
+          instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
+          instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/admin'"
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
 

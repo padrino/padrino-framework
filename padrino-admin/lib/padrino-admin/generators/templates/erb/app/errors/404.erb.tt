@@ -1,0 +1,3 @@
+<p><%%= tag_icon 'warning-sign icon-3x' %></p>
+<h1><%%= pat('custom_errors.404.title') %></h1>
+<p><%%= pat('custom_errors.404.description') %></p>

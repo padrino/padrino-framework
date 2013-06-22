@@ -4,7 +4,7 @@ module Padrino
       ##
       # File based Cache Store
       #
-      class File
+      class File < Base
         ##
         # Initialize File store with File root
         #
@@ -15,10 +15,13 @@ module Padrino
         #   Padrino.cache = Padrino::Cache::Store::File.new("path/to")
         #   # or from your app
         #   set :cache, Padrino::Cache::Store::File.new("path/to")
+        #   # you can provide a marshal parser (to store ruby objects)
+        #   set :cache, Padrino::Cache::Store::File.new("path/to", :parser => :marshal)
         #
         # @api public
-        def initialize(root)
+        def initialize(root, options={})
           @root = root
+          super(options)
         end
 
         ##
@@ -40,7 +43,7 @@ module Padrino
             expires_in, body = contents.split("\n", 2)
             expires_in = expires_in.to_i
             if expires_in == -1 or Time.new.to_i < expires_in
-              Marshal.load(body) if body
+              parser.decode(body) if body
             else # expire the key
               delete(key)
               nil
@@ -72,7 +75,7 @@ module Padrino
           else
             expires_in = -1
           end
-          value = Marshal.dump(value) if value
+          value = parser.encode(value) if value
           ::File.open(path_for_key(key), 'wb') { |f| f << expires_in.to_s << "\n" << value } if value
         end
 

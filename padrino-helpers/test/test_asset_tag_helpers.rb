@@ -23,7 +23,7 @@ describe "AssetTagHelpers" do
     should "display multiple flash tags with given attributes" do
       flash[:error] = 'wrong'
       flash[:success] = 'okey'
-      actual_html = flash_tag(:success, :error, :id => 'area')
+      actual_html = flash_tag(:success, :warning, :error, :id => 'area')
       assert_has_tag('div.success#area', :content => flash[:success]) { actual_html }
       assert_has_tag('div.error#area', :content => flash[:error]) { actual_html }
       assert_has_no_tag('div.notice') { actual_html }
@@ -68,6 +68,17 @@ describe "AssetTagHelpers" do
     should "display link element with ruby block" do
       actual_link = link_to('/register', :class => 'first', :id => 'binky') { "Sign up" }
       assert_has_tag('a#binky.first', :content => "Sign up", :href => '/register') { actual_link }
+    end
+
+    should "escape the link text" do
+      actual_link = link_to('/register', :class => 'first', :id => 'binky') { "<>" }
+      assert_has_tag('a#binky.first', :href => '/register') { actual_link }
+      assert_match "&lt;&gt;", actual_link
+    end
+
+    should "not escape image_tag" do
+      actual_link = link_to(image_tag("/my/fancy/image.png"), :class => 'first', :id => 'binky')
+      assert_has_tag('img', :src => "/my/fancy/image.png") { actual_link }
     end
 
     should "display link block element in haml" do
@@ -183,16 +194,15 @@ describe "AssetTagHelpers" do
     should "display image tag relative link with incorrect spacing" do
       time = stop_time_for_test
       assert_has_tag('img.photo', :src => "/images/%20relative/%20pic.gif%20%20?#{time.to_i}") {
-        image_tag(' relative/ pic.gif  ', :class => 'photo') }
+        image_tag(' relative/ pic.gif  ', :class => 'photo')
+      }
     end
 
     should "not use a timestamp if stamp setting is false" do
-      self.class.expects(:asset_stamp).returns(false)
       assert_has_tag('img', :src => "/absolute/pic.gif") { image_tag('/absolute/pic.gif') }
     end
 
     should "have xhtml convention tag" do
-      self.class.expects(:asset_stamp).returns(false)
       assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" />'
     end
   end
@@ -200,8 +210,10 @@ describe "AssetTagHelpers" do
   context 'for #stylesheet_link_tag method' do
     should "display stylesheet link item" do
       time = stop_time_for_test
+      actual_html = stylesheet_link_tag('style')
       expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
-      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { stylesheet_link_tag('style') }
+      assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { actual_html }
+      assert actual_html.html_safe?
     end
 
     should "display stylesheet link item for long relative path" do
@@ -248,6 +260,7 @@ describe "AssetTagHelpers" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
       assert_has_tag('script', :src => "/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+      assert actual_html.html_safe?
     end
 
     should "display javascript item for long relative path" do
@@ -279,6 +292,12 @@ describe "AssetTagHelpers" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
       assert_has_tag('script', :src => "/blog/javascripts/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+
+    should "not append extension to absolute paths" do
+      time = stop_time_for_test
+      actual_html = javascript_include_tag('https://maps.googleapis.com/maps/api/js?key=value&sensor=false')
+      assert_has_tag('script', :src => "https://maps.googleapis.com/maps/api/js?key=value&sensor=false") { actual_html }
     end
 
     should "display javascript items" do

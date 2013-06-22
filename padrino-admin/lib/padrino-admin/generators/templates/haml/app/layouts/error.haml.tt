@@ -1,0 +1,18 @@
+!!! 5
+%html{:lang => 'en'}
+  %head
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
+    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
+    %title= @title.present? ? "#{@title} | Padrino Admin" : "#{pat(:custom_errors.title)} | Padrino Admin"
+    =favicon_tag 'favicon.ico'
+    %link{:href => 'http://fonts.googleapis.com/css?family=Varela', :rel => :stylesheet}
+    =stylesheet_link_tag 'bootstrap', 'application'
+  %body
+    .custom-error.text-center
+      .custom-error-body.muted= yield
+      .custom-error-footer
+        =link_to tag_icon('arrow-left'), "#", :onclick => "history.go(-1);return false;", :class =>"custom-error-go-back btn pull-left", :title => "Go back"

@@ -1,0 +1,266 @@
+//
+// Navs
+// --------------------------------------------------
+
+
+// Base class
+// --------------------------------------------------
+
+.nav {
+  margin-left: 0;
+  margin-bottom: 0;
+  padding-left: 0; // Override default ul/ol
+  list-style: none;
+  .clearfix();
+}
+.nav > li {
+  display: block;
+}
+.nav > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+.nav > li > a:hover,
+.nav > li > a:focus {
+  text-decoration: none;
+  background-color: @grayLighter;
+}
+
+// Redeclare pull classes because of specifity
+// Todo: consider making these utilities !important to avoid this bullshit
+.nav > .pull-right {
+  float: right;
+}
+
+
+
+// Nav variations
+// --------------------------------------------------
+
+// Tabs
+// -------------------------
+
+// Give the tabs something to sit on
+.nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+.nav-tabs > li {
+  float: left;
+  // Make the list-items overlay the bottom border
+  margin-bottom: -1px;
+}
+// Actual tabs (as links)
+.nav-tabs > li > a {
+  margin-right: 2px;
+  line-height: @line-height-base;
+  border: 1px solid transparent;
+  border-radius: @border-radius-base @border-radius-base 0 0;
+  &:hover {
+    border-color: @grayLighter @grayLighter #ddd;
+  }
+}
+// Active state, and it's :hover to override normal :hover
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
+.nav-tabs > .active > a:focus {
+  color: @gray;
+  background-color: @body-bg;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+
+// Pills
+// -------------------------
+
+.nav-pills > li {
+  float: left;
+}
+
+// Links rendered as pills
+.nav-pills > li > a {
+  border-radius: 5px;
+}
+.nav-pills > li + li > a {
+  margin-left: 2px;
+}
+
+// Active state
+.nav-pills > .active > a,
+.nav-pills > .active > a:hover,
+.nav-pills > .active > a:focus {
+  color: #fff;
+  background-color: @component-active-bg;
+}
+
+// Stacked pills
+.nav-stacked > li {
+  float: none;
+}
+.nav-stacked > li + li > a {
+  margin-top: 2px;
+  margin-left: 0; // no need for this gap between nav items
+}
+
+// Justified nav links
+// -------------------------
+
+.nav-justified {
+  width: 100%;
+}
+.nav-justified > li {
+  float: none;
+  display: table-cell;
+  width: 1%;
+  text-align: center;
+}
+// Move borders to anchors instead of bottom of list
+.nav-justified.nav-tabs {
+  border-bottom: 0;
+  > li > a {
+    border-bottom: 1px solid #ddd;
+  }
+  > .active > a {
+    border-bottom-color: @body-bg;
+  }
+}
+// Override margin from .nav-tabs
+.nav-justified > li > a {
+  margin-right: 0;
+}
+
+
+
+// Nav states and addons
+// --------------------------------------------------
+
+// Disabled state
+// -------------------------
+
+// Gray out text
+.nav > .disabled > a {
+  color: @grayLight;
+}
+// Nuke hover effects
+.nav > .disabled > a:hover,
+.nav > .disabled > a:focus {
+  color: @grayLight;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: default;
+}
+
+// Nav headers (for dropdowns and lists)
+// -------------------------
+
+.nav-header {
+  display: block;
+  padding: 3px 15px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: @line-height-base;
+  color: @grayLight;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  text-transform: uppercase;
+}
+// Space them out when they follow another list item (link)
+.nav li + .nav-header {
+  margin-top: 9px;
+}
+
+// Dividers (basically an hr) within the dropdown
+.nav .divider {
+  .nav-divider();
+}
+
+
+
+// Tabbable tabs
+// -------------------------
+
+// Clear any floats
+.tabbable {
+  .clearfix();
+}
+
+// Show/hide tabbable areas
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: none;
+}
+.tab-content > .active,
+.pill-content > .active {
+  display: block;
+}
+
+
+
+/*
+// Prevent IE8 from misplacing imgs
+// See https://github.com/h5bp/html5-boilerplate/issues/984#issuecomment-3985989
+.nav > li > a > img {
+  max-width: none;
+}
+
+// Dropdowns
+// -------------------------
+
+.nav-tabs .dropdown-menu {
+  // Remove the top rounded corners here since there is a hard edge above the menu
+  .border-top-radius(0);
+}
+
+// Default dropdown links
+// -------------------------
+// Make carets use linkColor to start
+.nav .dropdown-toggle .caret {
+  border-top-color: @link-color;
+  border-bottom-color: @link-color;
+  margin-top: 8px;
+}
+.nav .dropdown-toggle:hover .caret {
+  border-top-color: @link-hover-color;
+  border-bottom-color: @link-hover-color;
+}
+
+// Active dropdown links
+// -------------------------
+.nav .active .dropdown-toggle .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+}
+.nav-tabs .active .dropdown-toggle .caret {
+  border-top-color: @gray;
+  border-bottom-color: @gray;
+}
+
+// Active:hover dropdown links
+// -------------------------
+.nav > .dropdown.active > a:hover {
+  cursor: pointer;
+}
+
+// Open dropdowns
+// -------------------------
+.nav-tabs .open .dropdown-toggle,
+.nav-pills .open .dropdown-toggle,
+.nav > li.dropdown.open.active > a:hover {
+  color: #fff;
+  background-color: @grayLight;
+  border-color: @grayLight;
+}
+.nav li.dropdown.open .caret,
+.nav li.dropdown.open.active .caret,
+.nav li.dropdown.open a:hover .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+  .opacity(1);
+}
+
+// Dropdowns in stacked tabs
+.tabs-stacked .open > a:hover {
+  border-color: @grayLight;
+}
+
+*/

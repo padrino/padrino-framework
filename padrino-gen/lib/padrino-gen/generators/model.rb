@@ -50,6 +50,7 @@ module Padrino
           end
           include_component_module_for(:test)
           migration_name = "create_#{name.pluralize.underscore}"
+          apply_default_fields fields
           create_model_file(name, :fields => fields, :app => app)
           generate_model_test(name) if test?
           create_model_migration(migration_name, name, fields) unless options[:skip_migration]

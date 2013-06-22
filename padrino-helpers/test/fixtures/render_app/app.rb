@@ -16,6 +16,9 @@ class RenderDemo < Padrino::Application
   configure do
     set :logging, false
     set :padrino_logging, false
+    set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
+    set :haml, :escape_html => true
+    set :slim, :generator => Temple::Generators::RailsOutputBuffer
   end
 
   # get current engines from partials
@@ -26,6 +29,10 @@ class RenderDemo < Padrino::Application
   # get current engines from explicit engine partials
   get '/explicit_engine' do
     render :explicit_engine
+  end
+
+  get '/double_capture_:ext' do
+    render "double_capture_#{params[:ext]}"
   end
 
   # partial with object

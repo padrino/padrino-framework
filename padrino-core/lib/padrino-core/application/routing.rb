@@ -11,6 +11,9 @@ class Sinatra::Request
   def controller
     route_obj && route_obj.controller
   end
+  def action
+    route_obj && route_obj.action
+  end
 end
 
 ##
@@ -28,8 +31,8 @@ class HttpRouter
       @route    = path.route
       @params ||= {}
       @params.update(env['router.params'])
-      @block_params = if path.route.is_a?(HttpRouter::RegexRoute)
-        params_list = env['router.request'].extra_env['router.regex_match'].to_a
+      @block_params = if match_data = env['router.request'].extra_env['router.regex_match']
+        params_list = match_data.to_a
         params_list.shift
         @params[:captures] = params_list
         params_list
@@ -47,7 +50,6 @@ class HttpRouter
         (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
         @layout = path.route.use_layout if path.route.use_layout
         @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
-        @block_params     = @block_params[0, @route.dest.arity] if @route.dest.arity > 0
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful        = true
@@ -62,7 +64,9 @@ class HttpRouter
 
   # @private
   class Route
-    attr_accessor :use_layout, :controller, :cache, :cache_key, :cache_expires_in
+    VALID_HTTP_VERBS.replace %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK]
+
+    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in, :parent
 
     def before_filters(&block)
       @_before_filters ||= []
@@ -84,6 +88,60 @@ class HttpRouter
 
       @_custom_conditions
     end
+
+    def significant_variable_names
+      @significant_variable_names ||= if @original_path.is_a?(String)
+        @original_path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
+      elsif @original_path.is_a?(Regexp) and @original_path.respond_to?(:named_captures)
+        @original_path.named_captures.keys.map(&:to_sym)
+      else
+        []
+      end
+    end
+  end
+
+  #Monkey patching the Request class. Using Rack::Utils.unescape rather than
+  #URI.unescape which can't handle utf-8 chars
+  class Request
+    def initialize(path, rack_request)
+      @rack_request = rack_request
+      @path = Rack::Utils.unescape(path).split(/\//)
+      @path.shift if @path.first == ''
+      @path.push('') if path[-1] == ?/
+      @extra_env = {}
+      @params = []
+      @acceptable_methods = Set.new
+    end
+  end
+
+  class Node::Path
+    def to_code
+      path_ivar = inject_root_ivar(self)
+      "#{"if !callback && request.path.size == 1 && request.path.first == '' && (request.rack_request.head? || request.rack_request.get?) && request.rack_request.path_info[-1] == ?/
+        catch(:pass) do
+          response = ::Rack::Response.new
+          response.redirect(request.rack_request.path_info[0, request.rack_request.path_info.size - 1], 302)
+          return response.finish
+        end
+      end" if router.redirect_trailing_slash?}
+
+      #{"if request.#{router.ignore_trailing_slash? ? 'path_finished?' : 'path.empty?'}" unless route.match_partially}
+        catch(:pass) do
+          if callback
+            request.called = true
+            callback.call(Response.new(request, #{path_ivar}))
+          else
+            env = request.rack_request.dup.env
+            env['router.request'] = request
+            env['router.params'] ||= {}
+            #{"env['router.params'].merge!(Hash[#{param_names.inspect}.zip(request.params)])" if dynamic?}
+            @router.rewrite#{"_partial" if route.match_partially}_path_info(env, request)
+            response = @router.process_destination_path(#{path_ivar}, env)
+            return response unless router.pass_on_response(response)
+          end
+        end
+      #{"end" unless route.match_partially}"
+    end
   end
 end
 
@@ -98,7 +156,7 @@ module Padrino
     def apply?(request)
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj && (request.route_obj.named == arg or request.route_obj.named == [@scoped_controller, arg].flatten.join("_").to_sym)
+        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [@scoped_controller, arg].flatten.join("_").to_sym)
         else             arg === request.path_info
         end
       end || @options.any? do |name, val|
@@ -336,7 +394,7 @@ module Padrino
       #
       # @example if filters based on a symbol or regexp
       #   before :index, /main/ do; ... end
-      #   # => match oly path that are  +/+ or contains +main+
+      #   # => match only path that are  +/+ or contains +main+
       #
       # @example filtering everything except an occurency
       #   before :except => :index do; ...; end
@@ -449,7 +507,8 @@ module Padrino
       #
       def recognize_path(path)
         responses = @router.recognize(Rack::MockRequest.env_for(path))
-        [responses[0].path.route.named, responses[0].params]
+        responses = responses[0] if responses[0].is_a?(Array)
+        [responses[0].path.route.name, responses[0].params]
       end
 
       ##
@@ -470,11 +529,12 @@ module Padrino
           params[:format] = params[:format].to_s unless params[:format].nil?
           params = value_to_param(params)
         end
-        url = if params_array.empty?
-          compiled_router.url(name, params)
-        else
-          compiled_router.url(name, *(params_array << params))
-        end
+        url =
+          if params_array.empty?
+            compiled_router.path(name, params)
+          else
+            compiled_router.path(name, *(params_array << params))
+          end
         url[0,0] = conform_uri(uri_root) if defined?(uri_root)
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
@@ -556,8 +616,17 @@ module Padrino
           # Do padrino parsing. We dup options so we can build HEAD request correctly
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
+
+          # CSRF protection is always active except when explicitly switched off
+          if allow_disabled_csrf
+            unless route_options[:csrf_protection] == false
+              route_options[:csrf_protection] = true
+            end
+          end
+
           path, *route_options[:with] = path if path.is_a?(Array)
-          path, name, options, route_options = *parse_route(path, route_options, verb)
+          action = path
+          path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
           options.reverse_merge!(@_conditions) if @_conditions
 
           # Sinatra defaults
@@ -572,20 +641,22 @@ module Padrino
 
           # HTTPRouter route construction
           route = router.add(path, route_options)
-          route.name(name) if name
+          route.name = name if name
+          route.action = action
           priority_name = options.delete(:priority) || :normal
           priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
           route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
-          route.send(verb.downcase.to_sym)
-          route.host(options.delete(:host)) if options.key?(:host)
-          route.user_agent(options.delete(:agent)) if options.key?(:agent)
+          route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
+          route.add_request_method(verb.downcase.to_sym)
+          route.host = options.delete(:host) if options.key?(:host)
+          route.user_agent = options.delete(:agent) if options.key?(:agent)
           if options.key?(:default_values)
             defaults = options.delete(:default_values)
-            route.default(defaults) if defaults
+            route.add_default_values(defaults) if defaults
           end
           options.delete_if do |option, args|
-            if route.send(:significant_variable_names).include?(option)
-              route.matching(option => Array(args).first)
+            if route.significant_variable_names.include?(option)
+              route.add_match_with(option => Array(args).first)
               true
             end
           end
@@ -646,8 +717,8 @@ module Padrino
 
             if @_use_format or format_params = options[:provides]
               process_path_for_provides(path, format_params)
-              options[:matching] ||= {}
-              options[:matching][:format] = /[^\.]+/
+              # options[:add_match_with] ||= {}
+              # options[:add_match_with][:format] = /[^\.]+/
             end
 
             absolute_map = map && map[0] == ?/
@@ -657,14 +728,14 @@ module Padrino
               if map.blank? and !absolute_map
                 controller_path = controller.join("/")
                 path.gsub!(%r{^\(/\)|/\?}, "")
-                path = File.join(controller_path, path)
+                path = File.join(controller_path, path)  unless @_map
               end
               # Here we build the correct name route
             end
 
             # Now we need to parse our 'parent' params and parent scope
             if !absolute_map and parent_params = options.delete(:parent) || @_parents
-              parent_params = Array(@_parents) + Array(parent_params)
+              parent_params = (Array(@_parents) + Array(parent_params)).uniq
               path = process_path_for_parent_params(path, parent_params)
             end
 
@@ -692,7 +763,7 @@ module Padrino
           # Merge in option defaults
           options.reverse_merge!(:default_values => @_defaults)
 
-          [path, name, options, route_options]
+          [path, name, parent_params, options, route_options]
         end
 
         ##
@@ -756,19 +827,22 @@ module Padrino
         def provides(*types)
           @_use_format = true
           condition do
-            mime_types        = types.map { |t| mime_type(t) }
+            mime_types        = types.map { |t| mime_type(t) }.compact
             url_format        = params[:format].to_sym if params[:format]
-            accepts           = request.accept.map { |a| a.split(";")[0].strip }
+            accepts           = request.accept.map { |a| a.to_str }
 
             # per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
             catch_all = (accepts.delete "*/*" || accepts.empty?)
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+            if matching_types.empty? && types.include?(:any)
+              matching_types = accepts
+            end
 
             if !url_format && matching_types.first
               type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
               accept_format = CONTENT_TYPE_ALIASES[type] || type
-            elsif catch_all
+            elsif catch_all && !types.include?(:any)
               type = types.first
               accept_format = CONTENT_TYPE_ALIASES[type] || type
             end
@@ -791,6 +865,21 @@ module Padrino
             end
 
             matched_format
+          end
+        end
+
+        ##
+        # Implements CSRF checking when `allow_disabled_csrf` is set to true.
+        #
+        # This condition is always on, except when it is explicitly switched
+        # off.
+        #
+        # @example
+        #   post("/", :csrf_protection => false)
+        #
+        def csrf_protection(on = true)
+          if on
+            condition { halt 403 if request.env['protection.csrf.failed'] }
           end
         end
     end
@@ -836,7 +925,7 @@ module Padrino
         else
           path_params << params
         end
-        @route.url(*path_params)
+        @route.path(*path_params)
       end
 
       ##
@@ -905,32 +994,30 @@ module Padrino
         end
 
         def dispatch!
-          static! if settings.static? && (request.get? || request.head?)
-          route!
+          invoke do
+            static! if settings.static? && (request.get? || request.head?)
+            route!
+          end
         rescue ::Exception => boom
-          filter! :before
-          handle_exception!(boom)
+          filter! :before  if boom.kind_of? ::Sinatra::NotFound
+          invoke { @boom_handled = handle_exception!(boom) }
         ensure
-          filter! :after unless env['sinatra.static_file']
+          @boom_handled  or begin
+            filter! :after  unless env['sinatra.static_file']
+          rescue ::Exception => boom
+            invoke { handle_exception!(boom) } unless @env['sinatra.error']
+          end
         end
-
-        ROUTE_NOT_FOUND_STATUS = 9404
 
         def route!(base=settings, pass_block=nil)
           Thread.current['padrino.instance'] = self
-          if base.compiled_router
-            base.compiled_router.default(proc{|env| ::Rack::Response.new('Route Not Found', ROUTE_NOT_FOUND_STATUS, {'X-Cascade' => 'pass'}).finish})
-          end
           if base.compiled_router and match = base.compiled_router.call(@request.env)
             if match.respond_to?(:each)
               route_eval do
-                if match[0] == ROUTE_NOT_FOUND_STATUS
-                  status 404
-                  route_missing
-                else
-                  match[1].each {|k,v| response[k] = v}
-                  status match[0]
-                end
+                match[1].each { |k,v| response[k] = v }
+                status match[0]
+                route_missing if match[0] == 404
+                route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
               end
             end
           else

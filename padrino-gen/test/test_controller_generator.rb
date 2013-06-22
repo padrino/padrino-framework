@@ -22,8 +22,8 @@ describe "ControllerGenerator" do
     should "generate controller within existing project" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
-      assert_match_in_file(/SampleProject.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+      assert_match_in_file(/SampleProject::App.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/views/demo_items")
       assert_file_exists(@controller_test_path)
     end
@@ -31,8 +31,8 @@ describe "ControllerGenerator" do
     should "generate controller within existing project with weird name" do
       capture_io { generate(:project, 'warepedia', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/warepedia") }
-      assert_match_in_file(/Warepedia.controllers :demo_items do/m, "#{@apptmp}/warepedia/app/controllers/demo_items.rb")
-      assert_match_in_file(/Warepedia.helpers do/m, "#{@apptmp}/warepedia/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/Warepedia::App.controllers :demo_items do/m, "#{@apptmp}/warepedia/app/controllers/demo_items.rb")
+      assert_match_in_file(/Warepedia::App.helpers do/m, "#{@apptmp}/warepedia/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/warepedia/app/views/demo_items")
     end
 
@@ -40,17 +40,53 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/Subby.controllers :demo_items do/m, @controller_path.gsub('app','subby'))
-      assert_match_in_file(/Subby.helpers do/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
+      assert_match_in_file(/SampleProject::Subby.controllers :demo_items do/m, @controller_path.gsub('app','subby'))
+      assert_match_in_file(/SampleProject::Subby.helpers do/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/subby/views/demo_items")
       assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
     end
 
-    should 'not fail if we don\'t have test component' do
+    should "generate controller with specified layout" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-l=xyzlayout') }
+      assert_match_in_file(/layout :xyzlayout/m, @controller_path)
+    end
+
+    should "generate controller without specified layout if empty" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-l=') }
+      assert_no_match_in_file(/layout/m, @controller_path)
+    end
+
+    should "generate controller with specified parent" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=user') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, :parent => :user do/m, @controller_path)
+    end
+
+    should "generate controller without specified parent" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+    end
+
+    should "generate controller with specified providers" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-f=:html, :js') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, :provides => \[:html, :js\] do/m, @controller_path)
+    end
+
+    should "generate controller without specified providers" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-f=') }
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+    end
+
+    should "not fail if we don't have test component" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=none') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/SampleProject.controllers :demo_items do/m, @controller_path)
-      assert_match_in_file(/SampleProject.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
+      assert_match_in_file(/SampleProject::App.controllers :demo_items do/m, @controller_path)
+      assert_match_in_file(/SampleProject::App.helpers do/m, "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/views/demo_items")
       assert_no_file_exists("#{@apptmp}/sample_project/test")
     end
@@ -125,8 +161,8 @@ describe "ControllerGenerator" do
     should "generate actions for get:test post:yada" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda') }
       capture_io { generate(:controller, 'demo_items', "get:test", "post:yada","-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/get :test do\n  end\n/m, @controller_path)
-      assert_match_in_file(/post :yada do\n  end\n/m, @controller_path)
+      assert_match_in_file(/get :test do\n\n  end\n/m, @controller_path)
+      assert_match_in_file(/post :yada do\n\n  end\n/m, @controller_path)
     end
   end
 

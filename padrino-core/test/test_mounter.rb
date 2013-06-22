@@ -179,5 +179,21 @@ describe "Mounter" do
       assert res.ok?
       assert_equal File.read(__FILE__), res.body
     end
+
+    should "load apps from gems" do
+      spec_file = Padrino.root("fixtures", "app_gem", "app_gem.gemspec")
+      spec = Gem::Specification.load(spec_file)
+      spec.activate
+      def spec.full_gem_path
+        Padrino.root("fixtures", "app_gem")
+      end
+
+      require Padrino.root("fixtures", "app_gem", "lib", "app_gem")
+
+      Padrino.mount("AppGem::App").to("/from_gem")
+      mounter = Padrino.mounted_apps[0]
+      assert_equal AppGem::App, mounter.app_obj
+      assert_equal Padrino.root('public'), mounter.app_obj.public_folder
+    end
   end
 end

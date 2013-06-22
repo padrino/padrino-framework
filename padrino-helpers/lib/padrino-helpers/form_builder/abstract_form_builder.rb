@@ -24,9 +24,9 @@ module Padrino
         end
 
         # f.label :username, :caption => "Nickname"
-        def label(field, options={})
+        def label(field, options={}, &block)
           options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
-          @template.label_tag(field_id(field), options)
+          @template.label_tag(field_id(field), options, &block)
         end
 
         # f.hidden_field :session_id, :value => "45"
@@ -95,9 +95,34 @@ module Padrino
           @template.select_tag field_name(field), options
         end
 
+        # f.check_box_group :color, :options => ['red', 'green', 'blue'], :selected => ['red', 'blue']
+        # f.check_box_group :color, :collection => @colors, :fields => [:name, :id]
+        def check_box_group(field, options={})
+          selected_values = Array(options[:selected] || field_value(field))
+          if options[:collection]
+            fields = options[:fields] || [:name, :id]
+            # don't use map!, it will break some orms
+            selected_values = selected_values.map{ |v| (v.respond_to?(fields[0]) ? v.send(fields[1]) : v).to_s }
+          end
+          labeled_group( field, options ) do |variant|
+            @template.check_box_tag( field_name(field)+'[]', :value => variant[1], :id => variant[2], :checked => selected_values.include?(variant[1]) )
+          end
+        end
+
+        # f.radio_button_group :color, :options => ['red', 'green']
+        # f.radio_button_group :color, :collection => @colors, :fields => [:name, :id], :selected => @colors.first
+        def radio_button_group(field, options={})
+          fields = options[:fields] || [:name, :id]
+          selected_value = options[:selected] || field_value(field)
+          selected_value = selected_value.send(fields[1])  if selected_value.respond_to?(fields[0])
+          labeled_group( field, options ) do |variant|
+            @template.radio_button_tag( field_name(field), :value => variant[1], :id => variant[2], :checked => variant[1] == selected_value.to_s )
+          end
+        end
+
         # f.check_box :remember_me, :value => 'true', :uncheck_value => '0'
         def check_box(field, options={})
-          html =""
+          html = ActiveSupport::SafeBuffer.new
           unchecked_value = options.delete(:uncheck_value) || '0'
           options.reverse_merge!(:id => field_id(field), :value => '1')
           options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
@@ -141,7 +166,11 @@ module Padrino
           result = nested_objects.each_with_index.map do |child_instance, index|
             nested_options[:index] = include_index ? index : nil
             @template.fields_for(child_instance,  { :nested => nested_options }, &block)
-          end.join("\n")
+          end.join("\n").html_safe
+        end
+
+        def csrf_token_field
+          @template.csrf_token_field
         end
 
         protected
@@ -172,17 +201,8 @@ module Padrino
           # field_name(:number) => "user[telephone_attributes][number]"
           # field_name(:street) => "user[addresses_attributes][0][street]"
           def field_name(field=nil)
-            result = []
-            if root_form?
-              result << object_model_name
-            elsif nested_form?
-              parent_form = @options[:nested][:parent]
-              attributes_name = "#{@options[:nested][:association]}_attributes"
-              nested_index = @options[:nested][:index]
-              fragment = [parent_form.field_name, "[#{attributes_name}", "]"]
-              fragment.insert(2, "][#{nested_index}") if nested_index
-              result << fragment
-            end
+            result = field_result
+            result << field_name_fragment if nested_form?
             result << "[#{field}]" unless field.blank?
             result.flatten.join
           end
@@ -193,17 +213,8 @@ module Padrino
           # field_name(:number) => "user_telephone_attributes_number"
           # field_name(:street) => "user_addresses_attributes_0_street"
           def field_id(field=nil, value=nil)
-            result = []
-            if root_form?
-              result << object_model_name
-            elsif nested_form?
-              parent_form = @options[:nested][:parent]
-              attributes_name = "#{@options[:nested][:association]}_attributes"
-              nested_index = @options[:nested][:index]
-              fragment = [parent_form.field_id, "_#{attributes_name}"]
-              fragment.push("_#{nested_index}") if nested_index
-              result << fragment
-            end
+            result = field_result
+            result << field_id_fragment if nested_form?
             result << "_#{field}" unless field.blank?
             result << "_#{value}" unless value.blank?
             result.flatten.join
@@ -246,6 +257,52 @@ module Padrino
           def root_form?
             !nested_form?
           end
+
+          # Builds a group of labels for radios or checkboxes
+          def labeled_group(field, options={})
+            options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
+            options.merge!(:class => field_error(field, options))
+            variants = case
+            when options[:options]
+              options[:options].map{ |caption, value| [caption.to_s, (value||caption).to_s] }
+            when options[:collection]
+              fields = options[:fields] || [:name, :id]
+              options[:collection].map{ |variant| [variant.send(fields.first).to_s, variant.send(fields.last).to_s] }
+            else
+              []
+            end
+            variants.inject(''.html_safe) do |html, variant|
+              variant[2] = "#{field_id(field)}_#{variant[1]}"
+              html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
+            end
+          end
+
+        private
+        def field_result
+          result = []
+          result << object_model_name if root_form?
+          result
+        end
+
+        def field_name_fragment
+          fragment = [result_options[:parent_form].field_name, "[#{result_options[:attributes_name]}", "]"]
+          fragment.insert(2, "][#{result_options[:nested_index]}") if result_options[:nested_index]
+          fragment
+        end
+
+        def field_id_fragment
+          fragment = [result_options[:parent_form].field_id, "_#{result_options[:attributes_name]}"]
+          fragment.push("_#{result_options[:nested_index]}") if result_options[:nested_index]
+          fragment
+        end
+
+        def result_options
+          {
+            :parent_form  => @options[:nested][:parent],
+            :nested_index => @options[:nested][:index],
+            :attributes_name => "#{@options[:nested][:association]}_attributes"
+          }
+        end
       end # AbstractFormBuilder
     end # FormBuilder
   end # Helpers

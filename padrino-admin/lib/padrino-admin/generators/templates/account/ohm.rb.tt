@@ -19,7 +19,7 @@ class Account < Ohm::Model
       assert_present :password
       assert_present :password_confirmation
       assert_length  :password, 4..40
-      assert self.password == self.password_confirmation, :password_not_confirmed
+      assert self.password == self.password_confirmation, [:password_not_confirmed]
     end
     assert_email :email
     assert_format :role, /[A-Za-z]/
@@ -44,6 +44,14 @@ class Account < Ohm::Model
   #
   def self.find_by_id(id)
     self[id]
+  end
+
+  ##
+  # This method is used by Admin Sessions Controller for login bypass
+  #
+  def self.first
+    first_id = key[:all].sort(:order => "asc", :limit => [0,1]).first
+    self[first_id] if first_id
   end
 
   def has_password?(password)

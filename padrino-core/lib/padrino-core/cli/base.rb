@@ -13,7 +13,7 @@ module Padrino
       desc "start", "Starts the Padrino application (alternatively use 's')."
       map "s" => :start
       method_option :server,    :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
-      method_option :host,      :type => :string,  :aliases => "-h", :required => true, :default => "0.0.0.0", :desc => "Bind to HOST address."
+      method_option :host,      :type => :string,  :aliases => "-h", :required => true, :default => '127.0.0.1', :desc => "Bind to HOST address."
       method_option :port,      :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT."
       method_option :daemonize, :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background."
       method_option :pid,       :type => :string,  :aliases => "-i", :desc => "File to store pid."
@@ -48,8 +48,10 @@ module Padrino
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
         load File.expand_path('../rake.rb', __FILE__)
-        require File.expand_path('config/boot.rb')
-        PadrinoTasks.init(true)
+        Rake.application.init
+        Rake.application.instance_variable_set(:@rakefile, __FILE__)
+        load File.expand_path('Rakefile')
+        Rake.application.top_level
       end
 
       desc "console", "Boots up the Padrino application irb console (alternatively use 'c')."

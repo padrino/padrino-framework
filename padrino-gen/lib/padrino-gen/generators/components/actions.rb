@@ -33,9 +33,9 @@ module Padrino
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
             contents = contents.gsub(/!NAME!/, model_name.underscore.camelize).gsub(/!TABLE!/, model_name.underscore)
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
-            current_migration_number = return_last_migration_number
-            contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            migration_number = current_migration_number
+            contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, migration_number)
+            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
@@ -78,9 +78,9 @@ module Padrino
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))
             contents.gsub!(/\s{4}!DOWN!\n/m, (direction == 'add' ? back_text.to_s : forward_text.to_s))
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
-            current_migration_number = return_last_migration_number
-            contents.gsub!(/!VERSION!/, (current_migration_number + 1).to_s)
-            migration_filename = "#{format("%03d", current_migration_number+1)}_#{filename.underscore}.rb"
+            migration_number = current_migration_number
+            contents.gsub!(/!VERSION!/, migration_number)
+            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
           end
         end
@@ -93,6 +93,19 @@ module Padrino
           Dir[destination_root('db/migrate/*.rb')].map { |f|
             File.basename(f).match(/^(\d+)/)[0].to_i
           }.max.to_i || 0
+        end
+
+        # For migration files
+        # returns the number of the migration that is being created
+        # returna timestamp instead if :migration_format: in .components is "timestamp"
+        #
+        # @api private
+        def current_migration_number
+          if fetch_component_choice(:migration_format).to_s == 'timestamp'
+            Time.now.utc.strftime("%Y%m%d%H%M%S")
+          else
+            return_last_migration_number + 1
+          end.to_s
         end
 
         # Return true if the migration already exist
@@ -139,7 +152,7 @@ module Padrino
         # @api private
         def insert_test_suite_setup(suite_text, options={})
           options.reverse_merge!(:path => "test/test_config.rb")
-          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, @app_name))
+          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"))
         end
 
         # For mocking components
@@ -185,9 +198,9 @@ module Padrino
         def controller_actions(fields)
           field_tuples = fields.map { |value| value.split(":") }
           action_declarations = field_tuples.map do |request, name|
-            "#{request} :#{name} do\n  end\n"
+            "#{request} :#{name} do\n\nend\n"
           end
-          action_declarations.join("\n  ")
+          action_declarations.join("\n").gsub(/^/, " " * 2).gsub(/^\s*$/, "")
         end
       end # Actions
     end # Components

@@ -1,4 +1,6 @@
-if defined?(Mongoid)
+if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
+  require 'mongoid' # eagerly load mongoid for version check
+
   namespace :mi do
 
     if Mongoid::VERSION =~ /^[012]\./
@@ -166,4 +168,6 @@ if defined?(Mongoid)
       end
     end
   end
+
+  task 'db:drop' => 'mi:drop'
 end

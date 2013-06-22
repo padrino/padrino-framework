@@ -1,0 +1,346 @@
+/* -- Begin Layout -- */
+html, body {
+  height: 100%;
+}
+body {
+  font-size: 13px;
+}
+.main {
+  min-height: 100%;
+  height: auto !important;
+  margin: 0 auto -70px; /* margin-bottom: minus footer's height */
+  padding: 0 10px;
+}
+.main-wrapper {
+  padding-top: 70px /* same as footer's height */
+}
+.main-wrapper-push {
+  height: 70px; /* same as the footer */
+}
+footer {
+  margin-top: -70px;
+  height: 70px;
+  border-top: 1px solid #eee;
+  padding: 10px 10px 0;
+  -webkit-box-shadow: 0px 1px 22px #e5e5e5;
+  -moz-box-shadow: 0px 1px 22px #e5e5e5;
+  -o-box-shadow: 0px 1px 22px #e5e5e5;
+  -ms-box-shadow: 0px 1px 22px #e5e5e5;
+  box-shadow: 0px 1px 22px #e5e5e5;
+  background-image: -webkit-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -moz-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -o-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: -ms-linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+  background-image: linear-gradient(#f5f5f5, #eee 30%, #f5f5f5);
+}
+footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+.footer-links li {
+  display: inline-block;
+  margin-right: 10px;
+}
+.footer-links-link {
+  color: #878787;
+}
+.footer-links-link:hover {
+  color: #777;
+  text-decoration: none;
+}
+/* -- End Layout -- */
+
+/* -- Begin Login -- */
+.login {
+  /* background-color: #fff; */
+  /* -webkit-box-shadow: 0px 0px 20px #777; */
+  /* -moz-box-shadow: 0px 0px 20px #777; */
+  /* -o-box-shadow: 0px 0px 20px #777; */
+  /* -ms-box-shadow: 0px 0px 20px #777; */
+  /* box-shadow: 0px 0px 20px #777; */
+  /* -webkit-border-radius: 5px; */
+  /* -moz-border-radius: 5px; */
+  /* -o-border-radius: 5px; */
+  /* -ms-border-radius: 5px; */
+  /* border-radius: 5px; */
+  padding-top: 10px;
+  width: 500px;
+  margin: 60px auto 0;
+}
+.login-logo {
+  text-align: center;
+  padding: 20px 0;
+}
+.login-controls {
+  margin-left: 120px;
+}
+.login-input-label {
+  width: 100px;
+}
+.login-control-group-last, .login-bypass-label {
+  margin-bottom: 0 !important;
+}
+.login-body {
+  padding: 40px 20px !important;
+}
+.login-footer {
+  margin-top: 0 !important;
+}
+/* iPad */
+@media (max-device-height: 1024px) and (orientation:landscape) {
+  .login {
+    margin-top: 30px;
+  }
+}
+/* Android Google Galaxy Nexus, add others! */
+/* @media (-webkit-device-pixel-ratio: 2) and (orientation:landscape) { */
+/*   .login { */
+/*     margin-top: 10px; */
+/*   } */
+/*   .login-header { */
+/*     display: none; */
+/*   } */
+/*   .login-body { */
+/*     padding: 10px 20px !important; */
+/*   } */
+/*   .login-controls { */
+/*     margin-left: 0px; */ 
+/*   } */
+/* } */
+@media (-webkit-device-pixel-ratio: 2) and (orientation:portrait) {
+  .login {
+    margin-top: 30px;
+    width: 320px;
+  }
+  .login-header {
+    display: none;
+  }
+  .login-body {
+    padding: 10px 20px !important;
+  }
+  .login-controls {
+    margin-left: 0px; 
+  }
+}
+/* -- End Login -- */
+
+/* -- Begin Errors -- */
+.custom-error {
+  font-family: 'Varela', sans-serif;
+  font-size: 1.5em;
+  width: 500px;
+  margin: 100px auto 0;
+  text-transform: lowercase; 
+}
+.custom-error-body {
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  padding : 30px 0;
+}
+.custom-error-body i{
+  color: #c43c35;
+}
+.custom-error-go-back {
+  font-size: 1.2em;
+  padding: 6px 24px;
+}
+.custom-error-footer {
+  padding-top: 20px;
+}
+/* Android Google Galaxy Nexus, add others! */
+@media (-webkit-device-pixel-ratio: 2) and (orientation:landscape) {
+  .custom-error {
+    margin: 0 auto;
+  }
+}
+/* -- End Errors -- */
+
+/* -- Begin Notifications -- */
+.alert {
+  text-align: center;
+}
+/* -- End Notifications -- */
+
+/* -- Begin Application -- */
+.tabs-content {
+  padding: 30px 0;
+}
+.form-actions {
+  text-align :right;
+}
+.form-controls-checkbox {
+  padding-top: 7px;
+}
+.form-controls-radio {
+  padding-top: 6px;
+}
+/* --- Begin Application::TopBar --- */
+.navbar {
+  -webkit-box-shadow: 0px 1px 10px #777;
+  -moz-box-shadow: 0px 1px 10px #777;
+  -o-box-shadow: 0px 1px 10px #777;
+  -ms-box-shadow: 0px 1px 10px #777;
+  box-shadow: 0px 1px 10px #777;
+}
+.navbar-nav-link {
+  padding: 17px 15px 13px !important;
+}
+.navbar-nav-form {
+  margin: 0;
+}
+.navbar-nav-form-link {
+  border: none;
+  background: none;
+  color: #777777;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #ffffff;
+  font-size: inherit;
+  padding: 17px 15px 13px;
+}
+.navbar-nav-form-link:hover {
+  color: #333333;
+}
+.navbar-brand {
+  margin-top: 10px;
+  padding: 0px 15px;
+  font-family: 'Varela', sans-serif;
+  text-transform: uppercase;
+  font-size: 2.5em;
+  line-height: 1em;
+}
+/* --- End Application::TopBar --- */
+
+/* --- Begin Application::List --- */
+.list-column {
+  vertical-align: middle !important;
+}
+/* ---- Begin Application::List::Selectboxes ---- */
+.list-selectable {
+  width: 40px;
+  text-align: center;
+}
+.list-selectable-checkbox {
+  margin: 0 !important;
+}
+/* ---- End Application::List::Selectboxes ---- */
+/* ---- Begin Application::List::ActionsOnRow ---- */
+.list-row-selected .list-column {
+  background-color: #f5f5f5 !important;
+}
+.list-row-action-header {
+  width: 110px;
+  text-align: center;
+}
+.list-row-action-wrapper {
+  position: relative;
+  text-align: right;
+  height: 100%;
+}
+.list-row-action-wrapper-link {
+  font-size: 1.3em;
+  padding: 4px;
+  display: inline-block;
+  visibility: hidden;
+}
+.list-row-action-wrapper-link:hover {
+  text-decoration: none;
+}
+.list-row:hover .list-row-action-wrapper-link,
+.list-row:hover .list-row-action-wrapper-link-active {
+  visibility: visible;
+}
+.list-row-action-popover-delete-one {
+  left: -120px;
+  top: -27px;
+  width: 200px;
+  text-align: center;
+}
+.list-row-action-popover-delete-one-btn {
+  margin-right: 10px;
+}
+/* ---- End Application::List::ActionsOnRow ---- */
+/* ---- Begin Application::List::ActionsOnList ---- */
+.list-menu {
+  text-align: left;
+}
+.list-menu-toggle, .list-menu-toggle:hover {
+  outline: none;
+  text-decoration: none;
+}
+.list-menu-divider {
+  height: 2px !important;
+}
+.list-menu-link-disabled {
+  /* @gray-light */
+  color: #999 !important;
+  cursor: default !important;
+  background-color: #fff !important;
+  background-image: inherit;
+  cursor: default !important;
+}
+.list-menu-wrapper-disabled:hover .list-menu-link-disabled:hover {
+  background-color: #fff !important;
+  background-image: inherit;
+  cursor: default !important;
+}
+.list-menu-popover-delete-selected {
+  left: 160px;
+  top: 37px;
+  width: 250px;
+  text-align: center;
+}
+.list-menu-popover-delete-selected-btn {
+  margin-right: 10px;
+}
+/* ---- End Application::List::ActionsOnList ---- */
+
+/* --- End Application::List --- */
+/* --- Begin Application::Base --- */
+.base-text {
+  font-family: 'Varela', sans-serif;
+  width: 730px;
+  margin: 40px auto 0;
+  font-size: 1.45em;
+  line-height: 1.8em;
+}
+.base-icons {
+  text-align: center;
+  margin-top: 50px;
+}
+.base-icons .btn {
+  float: left;
+  width: 150px;
+  padding: 20px 0;
+  cursor: default;
+}
+.base-icons [class^="icon-"] {
+  display: block;
+  margin: 5px auto;
+  vertical-align: middle;
+}
+/* --- End Application::Base --- */
+/* Android Google Galaxy Nexus, add others! */
+@media (-webkit-device-pixel-ratio: 2) {
+  .navbar-fixed-top {
+    position: relative !important;
+    margin: 0 0 20px 0;
+    padding: 0;
+  }
+  .navbar-brand, .navbar-module, .navbar-edit-account, .navbar-logout {
+    float: left;
+  }
+  .navbar .nav {
+    margin: 0;
+    padding: 0;
+  }
+  .main-wrapper {
+    padding-top: 0;
+  }
+  .main-wrapper .row {
+    padding: 0 20px;
+  }
+  footer {
+    display: none;
+  }
+}
+/* -- End Application -- */

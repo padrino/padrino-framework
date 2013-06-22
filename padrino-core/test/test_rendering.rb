@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'i18n'
+require 'slim'
 
 describe "Rendering" do
   def setup
@@ -28,7 +29,7 @@ describe "Rendering" do
           "this is a <%= yield %>"
         end
 
-        get("/"){ render :erb, "sinatra layout" }
+        get("/"){ render :erb, "sinatra layout", :layout => true }
       end
 
       get "/"
@@ -214,7 +215,7 @@ describe "Rendering" do
       create_view :index, "<%= foo %>"
       mock_app do
         enable :logging
-        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+        get("/") { render "index", { :layout => nil }, { :foo => "bar" } }
       end
       get "/"
       assert_equal "bar", body
@@ -403,7 +404,7 @@ describe "Rendering" do
       assert_equal "Im Italian Js", body
       I18n.locale = :en
       get "/foo.pk"
-      assert_equal 405, status
+      assert_equal 404, status
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -445,7 +446,7 @@ describe "Rendering" do
       get "/bar.json"
       assert_equal "Im a json", body
       get "/bar.pk"
-      assert_equal 405, status
+      assert_equal 404, status
     end
 
     should 'renders erb with blocks' do
@@ -465,22 +466,67 @@ describe "Rendering" do
       assert_equal 'THIS. IS. SPARTA!', body
     end
 
-    should 'renders hashes and arrays as json' do
+    should 'render erb to a SafeBuffer' do
       mock_app do
-        get '/hash' do
-          render({:a => 1})
+        layout do
+          "this is a <%= yield %>"
         end
-
-        get '/array' do
-          render [:a, 1, :b, 2]
+        get '/' do
+          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>', :layout => false
+        end
+        get '/with_layout' do
+          render :erb, '<span>span</span>', :layout => true
         end
       end
-      get '/hash'
+      get '/'
       assert ok?
-      assert_equal '{"a":1}', body
-      get '/array'
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body
+
+      get '/with_layout'
       assert ok?
-      assert_equal '["a",1,"b",2]', body
+      assert_equal 'this is a <span>span</span>', body
+    end
+
+    should 'render haml to a SafeBuffer' do
+      mock_app do
+        layout do
+          "%p= yield"
+        end
+        get '/' do
+          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+        end
+        get '/with_layout' do
+          render :haml, "%div\n  foo", :layout => true
+        end
+      end
+      get '/'
+      assert ok?
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
+
+      get 'with_layout'
+      assert ok?
+      assert_equal '<p><div>foo</div></p>', body.gsub(/\s+/, "")
+    end
+
+    should 'render slim to a SafeBuffer' do
+      mock_app do
+        layout do
+          "p= yield"
+        end
+        get '/' do
+          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+        end
+        get "/with_layout" do
+          render :slim, 'div foo', :layout => true
+        end
+      end
+      get '/'
+      assert ok?
+      assert_equal '<p>&lt;script lang=&quot;ronin&quot;&gt;alert(&quot;https://github.com/ronin-ruby/ronin&quot;)&lt;/script&gt;</p>', body.strip
+
+      get '/with_layout'
+      assert ok?
+      assert_equal '<p><div>foo</div></p>', body.strip
     end
   end
 end

@@ -13,6 +13,12 @@ module Padrino
         '"' => "&quot;"
       }
 
+      ##
+      # Cached Regexp for escaping values to avoid rebuilding one
+      # on every escape operation.
+      #
+      ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys)
+
       BOOLEAN_ATTRIBUTES = [
         :autoplay,
         :autofocus,
@@ -41,6 +47,12 @@ module Padrino
         :remote,
         :confirm
       ]
+
+      ##
+      # A html_safe newline string to avoid allocating a new on each
+      # concatenation.
+      #
+      NEWLINE = "\n".html_safe.freeze
 
       ##
       # Creates an HTML tag with given name, content, and options
@@ -104,12 +116,28 @@ module Padrino
           content = capture_html(&block)
         end
 
-        content = content.join("\n") if content.respond_to?(:join)
-
         options    = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        output = "<#{name}#{attributes}>#{content}</#{name}>"
+        output = ActiveSupport::SafeBuffer.new
+        output.safe_concat "<#{name}#{attributes}>"
+        if content.respond_to?(:each) && !content.is_a?(String)
+          content.each { |c| output.concat c; output.safe_concat NEWLINE }
+        else
+          output.concat content
+        end
+        output.safe_concat "</#{name}>"
+
         block_is_template?(block) ? concat_content(output) : output
+      end
+
+      ##
+      # Like #content_tag, but assumes its input to be safe and doesn't
+      # escape. It also returns safe html.
+      #
+      # @see #content_tag
+      #
+      def safe_content_tag(name, content = nil, options = nil, &block)
+        mark_safe(content_tag(name, mark_safe(content), options, &block))
       end
 
       ##
@@ -185,7 +213,7 @@ module Padrino
       #
       # @example
       #   tag :hr, :class => 'dotted'
-      #   # => <hr class="dotted">
+      #   # => <hr class="dotted" />
       #
       #   tag :input, :name => 'username', :type => :text
       #   # => <input name="username" type="text" />
@@ -200,7 +228,7 @@ module Padrino
       def tag(name, options = nil, open = false)
         options    = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        "<#{name}#{attributes}#{open ? '>' : ' />'}"
+        "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
       private
@@ -226,7 +254,7 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       ##
       def escape_value(string)
-        string.to_s.gsub(Regexp.union(*ESCAPE_VALUES.keys)) { |c| ESCAPE_VALUES[c] }
+        string.to_s.gsub(ESCAPE_REGEXP) { |c| ESCAPE_VALUES[c] }
       end
 
       ##

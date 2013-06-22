@@ -20,7 +20,7 @@ describe "FormBuilder" do
       mock_model('Role', :name => 'Moderate', :id => 2),  mock_model('Role', :name => 'Limited', :id => 3)]
     @user = mock_model("User", :first_name => "Joe", :email => '', :session_id => 54)
     @user.stubs(:errors => {:a => "must be present", :b => "must be valid", :email => "Must be valid", :first_name => []})
-    @user.stubs(:role_types => role_types, :role => "1")
+    @user.stubs(:role_types => role_types, :role => "1", :roles => [1,3])
     @user_none = mock_model("User")
   end
 
@@ -103,6 +103,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct form in erb" do
@@ -110,6 +111,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "display correct form in slim" do
@@ -117,6 +119,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/demo', :id => 'demo'
       assert_have_selector :form, :action => '/another_demo', :id => 'demo2', :method => 'get'
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
+      assert_have_selector :input, :name => 'authenticity_token'
     end
 
     should "have a class of 'invalid' for fields with errors" do
@@ -251,6 +254,12 @@ describe "FormBuilder" do
     should "display correct label html" do
       actual_html = standard_builder.label(:first_name, :class => 'large', :caption => "F. Name: ")
       assert_has_tag('label', :class => 'large', :for => 'user_first_name', :content => "F. Name: ") { actual_html }
+    end
+
+    should "set specific content inside the label if a block was provided" do
+      actual_html = standard_builder.label(:admin, :class => 'large') { input_tag :checkbox }
+      assert_has_tag('label', :class => 'large', :for => 'user_admin', :content => "Admin: ") { actual_html }
+      assert_has_tag('label input[type=checkbox]') { actual_html }
     end
 
     should "display correct label in haml" do
@@ -489,6 +498,37 @@ describe "FormBuilder" do
     should "display correct checkbox in slim" do
       visit '/slim/form_for'
       assert_have_selector '#demo input[type=checkbox]', :checked => 'checked', :id => 'markup_user_remember_me', :name => 'markup_user[remember_me]'
+    end
+  end
+
+  context 'for #check_box_group and #radio_button_group methods' do
+    should 'display checkbox group html' do
+      checkboxes = standard_builder.check_box_group(:role, :collection => @user.role_types, :fields => [:name, :id], :selected => [2,3])
+      assert_has_tag('input[type=checkbox]', :value => '1') { checkboxes }
+      assert_has_no_tag('input[type=checkbox][checked]', :value => '1') { checkboxes }
+      assert_has_tag('input[type=checkbox]', :checked => 'checked', :value => '2') { checkboxes }
+      assert_has_tag('label[for=user_role_3] input[name="user[role][]"][value="3"][checked]') { checkboxes }
+    end
+
+    should 'display checkbox group html and extract selected values from the object' do
+      checkboxes = standard_builder.check_box_group(:roles, :collection => @user.role_types, :fields => [:name, :id])
+      assert_has_tag('input[type=checkbox][name="user[roles][]"][value="1"][checked]') { checkboxes }
+      assert_has_tag('input[type=checkbox][name="user[roles][]"][value="3"][checked]') { checkboxes }
+      assert_has_no_tag('input[type=checkbox][name="user[roles][]"][value="2"][checked]') { checkboxes }
+    end
+
+    should 'display radio group html' do
+      radios = standard_builder.radio_button_group(:role, :options => %W(red yellow blue), :selected => 'yellow')
+      assert_has_tag('input[type=radio]', :value => 'red') { radios }
+      assert_has_no_tag('input[type=radio][checked]', :value => 'red') { radios }
+      assert_has_tag('input[type=radio]', :checked => 'checked', :value => 'yellow') { radios }
+      assert_has_tag('label[for=user_role_blue] input[name="user[role]"][value=blue]') { radios }
+    end
+
+    should 'display radio group html and extract selected value from the object' do
+      radios = standard_builder.radio_button_group(:role, :collection => @user.role_types)
+      assert_has_tag('input[type=radio][value="1"][checked]') { radios }
+      assert_has_no_tag('input[type=radio][value="2"][checked]') { radios }
     end
   end
 

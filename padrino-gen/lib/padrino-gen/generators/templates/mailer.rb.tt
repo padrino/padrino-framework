@@ -30,17 +30,23 @@
 #
 #   set :delivery_method, :test
 #
+# or storing emails locally:
+#
+#   set :delivery_method, :file => {
+#     :location => "#{Padrino.root}/tmp/emails",
+#   }
+#
 # and then all delivered mail will use these settings unless otherwise specified.
 #
 
-<%= @app_name %>.mailer :<%= @short_name %> do
+<%= @project_name %>::<%= @app_name %>.mailer :<%= @short_name %> do
   <%- if @actions.nil? || @actions.empty? -%>
-  # Message definitions here...
+  # Message definitions here ...
   <%- else -%>
     <%- @actions.each do |action| -%>
 
   email <%=action.inspect%> do
-    # Your mailer goes here
+    # Your mailer goes here ...
   end
 
     <%- end -%>

@@ -54,7 +54,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/class Post\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/property :body, String/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/migration 1, :create_posts do/m, "#{@apptmp}/sample_project/db/migrate/001_create_posts.rb")
-      assert_match_in_file(/gem 'dm-core'/m,"#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/DataMapper.finalize/m,"#{@apptmp}/sample_project/config/boot.rb")
     end
 
@@ -68,13 +67,35 @@ describe "ModelGenerator" do
     end
 
     should "generate migration file versions properly" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'account', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'bank', "-r=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_accounts.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/003_create_banks.rb")
+    end
+
+    should "generate migration file versions properly when timestamped" do
+      capture_io { generate(:project, 'sample_project', "--migration_format=timestamp", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+
+      time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
+
+      capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/db/migrate/#{time}_create_users.rb")
+    end
+
+    should "generate a default type value for fields" do
+      current_time = stop_time_for_test.strftime("%Y%m%d%H%M%S")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'person', "name", "age:integer", "email", "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
+      assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
+      assert_match_in_file(/    create_table :people/m, migration_file_path)
+      assert_match_in_file(/      t.string :name/m,   migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/      t.string :email/m,  migration_file_path)
+      assert_match_in_file(/    drop_table :people/m, migration_file_path)
     end
   end
 
@@ -104,8 +125,8 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_users.rb"
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :users/m, migration_file_path)
-      assert_match_in_file(/drop_table :users/m, migration_file_path)
+      assert_match_in_file(/    create_table :users/m, migration_file_path)
+      assert_match_in_file(/    drop_table :users/m, migration_file_path)
     end
 
     should "generate migration file with given fields" do
@@ -114,18 +135,18 @@ describe "ModelGenerator" do
       capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/class CreatePeople < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/create_table :people/m, migration_file_path)
-      assert_match_in_file(/t.string :name/m,   migration_file_path)
-      assert_match_in_file(/t.integer :age/m,   migration_file_path)
-      assert_match_in_file(/t.string :email/m,  migration_file_path)
-      assert_match_in_file(/drop_table :people/m, migration_file_path)
+      assert_match_in_file(/    create_table :people/m, migration_file_path)
+      assert_match_in_file(/      t.string :name/m,   migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
+      assert_match_in_file(/      t.string :email/m,  migration_file_path)
+      assert_match_in_file(/    drop_table :people/m, migration_file_path)
     end
   end
 
   # MINIRECORD
-  context "model generator using mini_record" do
+  context "model generator using minirecord" do
     should "generate hooks for auto upgrade" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
       assert_match_in_file(
         "Padrino.after_load do\n  ActiveRecord::Base.auto_upgrade!",
         "#{@apptmp}/sample_project/config/boot.rb"
@@ -138,7 +159,7 @@ describe "ModelGenerator" do
     end
 
     should "generate model file" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
       capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/field :name, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
@@ -147,7 +168,7 @@ describe "ModelGenerator" do
     end
 
     should "generate model file with camelized name" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=mini_record') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
       capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
       assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
@@ -175,13 +196,6 @@ describe "ModelGenerator" do
 
   # DATAMAPPER
   context "model generator using datamapper" do
-
-    should "generate gemfile gem" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
-      capture_io { generate(:model, 'user', "name:string", "age:integer", "created_at:datetime", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/gem 'dm-core'/m,"#{@apptmp}/sample_project/Gemfile")
-    end
-
     should "generate model file with camelized name" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
       capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
@@ -219,9 +233,9 @@ describe "ModelGenerator" do
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_people.rb"
       assert_match_in_file(/migration 1, :create_people do/m, migration_file_path)
       assert_match_in_file(/create_table :people do/m, migration_file_path)
-      assert_match_in_file(/column :name, String/m, migration_file_path)
-      assert_match_in_file(/column :created_at, DateTime/m, migration_file_path)
-      assert_match_in_file(/column :email, String/m, migration_file_path)
+      assert_match_in_file(/column :name, DataMapper::Property::String/m, migration_file_path)
+      assert_match_in_file(/column :created_at, DataMapper::Property::DateTime/m, migration_file_path)
+      assert_match_in_file(/column :email, DataMapper::Property::String/m, migration_file_path)
       assert_match_in_file(/drop_table :people/m, migration_file_path)
     end
   end

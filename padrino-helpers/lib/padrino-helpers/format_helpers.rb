@@ -19,7 +19,7 @@ module Padrino
       #
       # @api public
       def escape_html(text)
-        Rack::Utils.escape_html(text)
+        Rack::Utils.escape_html(text).html_safe
       end
       alias h escape_html
       alias sanitize_html escape_html
@@ -41,8 +41,8 @@ module Padrino
       #
       # @api public
       def h!(text, blank_text = '&nbsp;')
-        return blank_text if text.nil? || text.empty?
-        h text
+        return blank_text.html_safe if text.nil? || text.empty?
+        h(text)
       end
 
       ##
@@ -83,12 +83,13 @@ module Padrino
       def simple_format(text, options={})
         t = options.delete(:tag) || :p
         start_tag = tag(t, options, true)
-        text = text.to_s.dup
+        text = escape_html(text.to_s.dup)
         text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
         text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}")  # 2+ newline  -> paragraph
         text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
         text.insert 0, start_tag
         text << "</#{t}>"
+        text.html_safe
       end
 
       ##
@@ -374,7 +375,9 @@ module Padrino
       def js_escape_html(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { javascript_mapping[$1] }
+        escaped_content = html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/){ |m| javascript_mapping[m] }
+        escaped_content = escaped_content.html_safe if html_content.html_safe?
+        escaped_content
       end
       alias :escape_javascript :js_escape_html
     end # FormatHelpers

@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 describe "Email" do
 
   context 'the mailer in a app' do
-
     should 'send a basic inline email' do
       mock_app do
         register Padrino::Mailer
@@ -68,7 +67,7 @@ describe "Email" do
       assert_equal ['padrino@me.com'],    email.from
       assert_equal ['padrino@you.com'],   email.to
       assert_equal 'Hello there Padrino', email.subject
-      assert_equal 'This is a body of text from a template', email.body.to_s.chomp
+      assert_equal 'This is a body of text from a template with interpolated &lt;i&gt; and non-interpolated tags<br/>', email.body.to_s.chomp
     end
 
     should 'send emails with scoped mailer defaults' do

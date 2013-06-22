@@ -1,8 +1,15 @@
 require 'padrino-core'
 require 'padrino-helpers'
+require 'active_support/core_ext/array/conversions'
 
 FileSet.glob_require('padrino-admin/*.rb', __FILE__)
 FileSet.glob_require('padrino-admin/{helpers,utils}/*.rb', __FILE__)
+
+
+##
+# Load our Padrino::Admin locales
+#
+# I18n.load_path = Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/*.yml"]
 
 module Padrino
   ##
@@ -20,6 +27,11 @@ end
 # We need to apply Padrino::Admin::Utils::Extensions
 #
 String.send(:include, Padrino::Admin::Utils::Crypt)
+
+##
+# Load our Padrino::Admin locales
+#
+I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
 
 ##
 # Now we need to add admin generators to padrino-gen

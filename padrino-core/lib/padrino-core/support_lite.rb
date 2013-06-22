@@ -9,6 +9,7 @@ require 'active_support/core_ext/object/blank'              # present?
 require 'active_support/core_ext/array/extract_options'     # extract_options
 require 'active_support/inflector/methods'                  # constantize
 require 'active_support/inflector/inflections'              # pluralize
+require 'active_support/core_ext/string/output_safety'      # SafeBuffer and html_safe
 require 'active_support/inflections'                        # load default inflections
 require 'yaml' unless defined?(YAML)                        # load yaml for i18n
 require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
@@ -241,3 +242,19 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n
 # Used to determine if this file has already been required
 #
 module SupportLite; end
+
+module Padrino
+  class Utils
+    ###
+    # Silences output verbosity level so load
+    # errors are not visible when safe_load(file)
+    #
+    def self.silence_output
+      @verbosity_level, $-v = $-v, nil
+    end
+
+    def self.unsilence_output
+      $-v = @verbosity_level
+    end
+  end
+end

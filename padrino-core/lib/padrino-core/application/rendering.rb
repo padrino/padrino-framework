@@ -8,6 +8,16 @@ module Padrino
   #
   module Rendering
     ##
+    # A SafeTemplate assumes that its output is safe.
+    #
+    # @api private
+    module SafeTemplate
+      def render(*)
+        super.html_safe
+      end
+    end
+
+    ##
     # Exception responsible for when an expected template did not exist.
     #
     class TemplateNotFound < RuntimeError
@@ -25,19 +35,34 @@ module Padrino
     ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
-    # Default rendering options used in the #render-method.
+    # Default options used in the #resolve_template-method.
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
     class << self
       ##
+      # Default engine configurations for Padrino::Rendering
+      #
+      # @return {Hash<Symbol,Hash>}
+      #   The configurations, keyed by engine.
+      def engine_configurations
+        @engine_configurations ||= {}
+      end
+
+      ##
       # Main class that register this extension.
       #
       def registered(app)
-        app.send(:include, InstanceMethods)
-        app.extend(ClassMethods)
+        included(app)
+        engine_configurations.each do |engine, configs|
+          app.set engine, configs
+        end
       end
-      alias :included :registered
+
+      def included(base)
+        base.send(:include, InstanceMethods)
+        base.extend(ClassMethods)
+      end
     end
 
     ##
@@ -152,11 +177,8 @@ module Padrino
         # * Use render 'path/to/template.haml' (with explicit engine lookup)
         # * Use render 'path/to/template', :layout => false
         # * Use render 'path/to/template', :layout => false, :engine => 'haml'
-        # * Use render { :a => 1, :b => 2, :c => 3 } # => return a json string
         #
         def render(engine, data=nil, options={}, locals={}, &block)
-          # If engine is a hash then render data converted to json
-          content_type(:json, :charset => 'utf-8') and return engine.to_json if engine.is_a?(Hash) || engine.is_a?(Array)
 
           # If engine is nil, ignore engine parameter and shift up all arguments
           # render nil, "index", { :layout => true }, { :localvar => "foo" }
@@ -175,8 +197,8 @@ module Padrino
           root = settings.respond_to?(:root) ? settings.root : ""
 
           # Use @layout if it exists
+          layout_was = options[:layout]
           options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
-
           # Resolve layouts similar to in Rails
           if options[:layout].nil? && !settings.templates.has_key?(:layout)
             layout_path, layout_engine = *resolved_layout
@@ -186,10 +208,12 @@ module Padrino
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
           end
+          # Default to original layout value if none found
+          options[:layout] ||= layout_was
 
           # Cleanup the template
           @current_engine, engine_was = engine, @current_engine
-          @_out_buf,  _buf_was = "", @_out_buf
+          @_out_buf,  _buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
 
           # Pass arguments to Sinatra render method
           super(engine, data, options.dup, locals, &block)
@@ -290,3 +314,7 @@ module Padrino
     end # InstanceMethods
   end # Rendering
 end # Padrino
+
+require 'padrino-core/application/rendering/extensions/haml'
+require 'padrino-core/application/rendering/extensions/erubis'
+require 'padrino-core/application/rendering/extensions/slim'
