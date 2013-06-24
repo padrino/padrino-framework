@@ -79,11 +79,13 @@ module Padrino
       def form_tag(url, options={}, &block)
         desired_method = options[:method].to_s
         options.delete(:method) unless desired_method =~ /get|post/i
-        options.reverse_merge!(:method => 'post', :action => url)
+        options.reverse_merge!(:method => 'post', 
+                               :action => url,
+                               :protect_from_csrf => is_protected_from_csrf? )
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
-        options['accept-charset'] ||= 'UTF-8'
+        options['accept-charset']   ||= 'UTF-8'
         inner_form_html = hidden_form_method_field(desired_method)       
-        inner_form_html << csrf_token_field unless options[:protect_from_csrf] == false
+        inner_form_html << csrf_token_field if options[:protect_from_csrf] == true
         inner_form_html << mark_safe(capture_html(&block))
         concat_content content_tag(:form, inner_form_html, options)
       end
@@ -856,6 +858,16 @@ module Padrino
           Array(selected_values).any? do |selected|
             [value.to_s, caption.to_s].include?(selected.to_s)
           end
+        end
+
+        ##
+        # Returns whether the application is being protected from csrf
+        #
+        def is_protected_from_csrf?
+          return true unless defined? app
+          return true unless app.respond_to?(:protect_from_csrf)
+          return true if app.protect_from_csrf == nil
+          app.protect_from_csrf
         end
     end # FormHelpers
   end # Helpers
