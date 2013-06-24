@@ -72,3 +72,6 @@
     = submit_tag "Login"
     = button_tag "Cancel"
     = image_submit_tag "buttons/submit.png"
+    
+= form_tag '/dontprotect', :class => 'no-protection', :protect_from_csrf => false do
+  = submit_tag "Login"
