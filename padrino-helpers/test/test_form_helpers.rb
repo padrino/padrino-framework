@@ -9,6 +9,8 @@ describe "FormHelpers" do
   end
 
   context 'for #form_tag method' do
+    after(:each) { app.set :protect_from_csrf, true }
+    
     should "display correct forms in ruby" do
       actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test', :method => "post") { "Demo" }
       assert_has_tag(:form, :"accept-charset" => "UTF-8", :class => "test") { actual_html }
@@ -66,25 +68,50 @@ describe "FormHelpers" do
       assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
     end
 
+    should "have an authenticity_token by default" do
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "not have an authenticity_token if passing protect_from_csrf: false" do
+      actual_html = form_tag('/superadmindelete', :protect_from_csrf => false) { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "have an authenticity_token if protect_from_csrf is not set on app settings" do
+      app.set :protect_from_csrf, nil
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "not have an authenticity_token if protect_from_csrf is false on app settings" do
+      app.set :protect_from_csrf, false
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
     should "display correct forms in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
 
     should "display correct forms in haml" do
       visit '/haml/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
 
     should "display correct forms in slim" do
       visit '/slim/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
   end
 
