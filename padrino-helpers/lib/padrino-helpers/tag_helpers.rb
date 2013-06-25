@@ -8,6 +8,7 @@ module Padrino
       # Tag values escaped to html entities
       #
       ESCAPE_VALUES = {
+        "&" => "&amp;",
         "<" => "&lt;",
         ">" => "&gt;",
         '"' => "&quot;"
