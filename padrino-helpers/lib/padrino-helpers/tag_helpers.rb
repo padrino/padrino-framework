@@ -32,7 +32,13 @@ module Padrino
         :muted,
         :readonly,
         :required,
-        :selected
+        :selected,
+        :declare,
+        :defer,
+        :ismap,
+        :itemscope,
+        :noresize,
+        :novalidate
       ]
 
       ##
