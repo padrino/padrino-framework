@@ -37,8 +37,8 @@ describe "TagHelpers" do
     end
 
     should "escape html" do
-      actual_html = tag(:br, :class => 'Example "bar"')
-      assert_equal "<br class=\"Example &quot;bar&quot;\" />", actual_html
+      actual_html = tag(:br, :class => 'Example <foo> & "bar"')
+      assert_equal "<br class=\"Example &lt;foo&gt; &amp; &quot;bar&quot;\" />", actual_html
     end
   end
 

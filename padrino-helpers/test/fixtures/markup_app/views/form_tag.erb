@@ -88,3 +88,6 @@
     <%= image_submit_tag "buttons/submit.png" %>
   <% end %>
 <% end %>
+
+<% form_tag '/dontprotect', :class => 'no-protection', :protect_from_csrf => false do %>
+<% end %>
