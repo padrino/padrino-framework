@@ -81,8 +81,8 @@ module Padrino
         #   end
         #
         # @api public
-        def cache_key(name)
-          @route.cache_key = name
+        def cache_key(name = nil, &block)
+          @route.cache_key = block_given? ? block : name
         end
 
         # @private
@@ -90,8 +90,10 @@ module Padrino
           if route.cache and %w(GET HEAD).include?(verb)
             route.before_filters do
               if settings.caching?
-                began_at = Time.now
-                value = settings.cache.get(@route.cache_key || env['PATH_INFO'])
+                began_at     = Time.now
+                resolved_key = @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
+
+                value = settings.cache.get(resolved_key || env['PATH_INFO'])
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
@@ -103,15 +105,15 @@ module Padrino
 
             route.after_filters do
               if settings.caching? && @_response_buffer.kind_of?(String)
-                began_at = Time.now
-
-                content = @_response_buffer
+                began_at     = Time.now
+                content      = @_response_buffer
+                resolved_key = @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
 
                 if @_last_expires_in
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
+                  settings.cache.set(resolved_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content)
+                  settings.cache.set(resolved_key || env['PATH_INFO'], content)
                 end
 
                 logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
