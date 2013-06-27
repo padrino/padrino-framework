@@ -70,6 +70,8 @@ module Padrino
         #
         # @param [Symbol] name
         #   cache key
+        # @param [Proc] block
+        #   block to be evaluated to cache key
         #
         # @example
         #   controller '/blog', :cache => true do
@@ -80,8 +82,16 @@ module Padrino
         #     end
         #   end
         #
+        # @example
+        #     get '/foo', :cache => true do
+        #       cache_key { param[:id] }
+        #       "my id is #{param[:id}"
+        #     end
+        #   end
+        #
         # @api public
         def cache_key(name = nil, &block)
+          raise "Can not provide both cache_key and a block"
           @route.cache_key = block_given? ? block : name
         end
 
