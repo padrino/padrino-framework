@@ -121,7 +121,7 @@ module Padrino
                   settings.cache.set(resolve_cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
-                  settings.cache.set(resolved_key || env['PATH_INFO'], content)
+                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content)
                 end
 
                 logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
