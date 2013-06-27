@@ -91,7 +91,7 @@ module Padrino
         #
         # @api public
         def cache_key(name = nil, &block)
-          raise "Can not provide both cache_key and a block"
+          raise "Can not provide both cache_key and a block" if name && block
           @route.cache_key = block_given? ? block : name
         end
 
@@ -101,9 +101,8 @@ module Padrino
             route.before_filters do
               if settings.caching?
                 began_at     = Time.now
-                resolved_key = @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
 
-                value = settings.cache.get(resolved_key || env['PATH_INFO'])
+                value = settings.cache.get(resolve_cache_key || env['PATH_INFO'])
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
@@ -117,10 +116,9 @@ module Padrino
               if settings.caching? && @_response_buffer.kind_of?(String)
                 began_at     = Time.now
                 content      = @_response_buffer
-                resolved_key = @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
 
                 if @_last_expires_in
-                  settings.cache.set(resolved_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
+                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
                   settings.cache.set(resolved_key || env['PATH_INFO'], content)
@@ -131,6 +129,15 @@ module Padrino
             end
           end
         end
+
+        private
+        ##
+        # Resolve the cache_key when it's a block in the correct context
+        #@api private
+        def resolve_cache_key
+          @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
+        end
+
       end # Page
     end # Helpers
   end # Cache
