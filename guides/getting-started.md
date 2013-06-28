@@ -71,7 +71,7 @@ Thankfully, Sinatra is probably the easiest to learn tool for making web apps yo
 
 and then you can start the application with this in your terminal:
 
-    $ ruby -rubygems hi.rb
+    $ ruby -rubygems app.rb
     == Sinatra has taken the stage ...
     >> Listening on 0.0.0.0:4567
 
