@@ -403,7 +403,7 @@ module Padrino
         env['rack.logger'] = Padrino.logger
         began_at = Time.now
         status, header, body = @app.call(env)
-        log(env, status, header, began_at)
+        log(env, status, header, began_at) if logger.debug?
         [status, header, body]
       end
 
