@@ -32,3 +32,22 @@ nl:
       words_connector: ", "
       two_words_connector: " en "
       last_word_connector: " en "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Fout"
+    '400':
+      title: "Fout 400"
+      description: "Bad Request"
+    '401':
+      title: "Fout 401"
+      description: "onbevoegd"
+    '403':
+      title: "Fout 403"
+      description: "verboden"
+    '404':
+      title: "Fout 404"
+      description: "niet gevonden"
+    '500':
+      title: "Fout 500"
+      description: "Server Fout"

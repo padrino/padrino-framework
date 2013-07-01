@@ -32,3 +32,22 @@ cs:
       words_connector: ", "
       two_words_connector: " a "
       last_word_connector: " a "
+
+# custom http response status (only error)
+  http_errors:
+    title: "chyba"
+    '400':
+      title: "chyba 400"
+      description: "Bad Request"
+    '401':
+      title: "chyba 401"
+      description: "neoprávněný"
+    '403':
+      title: "chyba 403"
+      description: "zakázaný"
+    '404':
+      title: "chyba 404"
+      description: "nebyl nalezen"
+    '500':
+      title: "chyba 500"
+      description: "Server Error"

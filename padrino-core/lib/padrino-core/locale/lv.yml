@@ -32,3 +32,22 @@ lv:
       words_connector: ", "
       two_words_connector: " un "
       last_word_connector: ", un "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Klaida"
+    '400':
+      title: "Klaida 400"
+      description: "bloga užklausa"
+    '401':
+      title: "Klaida 401"
+      description: "neteisėtas"
+    '403':
+      title: "Klaida 403"
+      description: "draudžiamas"
+    '404':
+      title: "Klaida 404"
+      description: "Not Found"
+    '500':
+      title: "Klaida 500"
+      description: "serverio klaida"

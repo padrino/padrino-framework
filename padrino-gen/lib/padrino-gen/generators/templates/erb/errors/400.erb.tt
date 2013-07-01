@@ -1,0 +1,3 @@
+<p><%%= tag_icon 'question-sign icon-3x' %></p>
+<h1><%%= pat('http_errors.400.title') %></h1>
+<p><%%= pat('http_errors.400.description') %></p>

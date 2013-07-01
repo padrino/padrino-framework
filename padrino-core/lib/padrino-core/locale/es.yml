@@ -13,7 +13,7 @@ es:
     abbr_day_names: [Dom, Lun, Mar, Mie, Jue, Vie, Sab]
     month_names: [~, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre]
     abbr_month_names: [~, Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic]
-    order: 
+    order:
       - day
       - month
       - year
@@ -32,3 +32,22 @@ es:
       words_connector: ", "
       two_words_connector: " y "
       last_word_connector: ", y "
+
+# custom http response status (only error)
+  http_errors:
+    title: "Error"
+    '400':
+      title: "Error 400"
+      description: "Solicitud incorrecta"
+    '401':
+      title: "Error 401"
+      description: "no autorizado"
+    '403':
+      title: "Error 403"
+      description: "prohibido"
+    '404':
+      title: "Error 404"
+      description: "No se encuentra"
+    '500':
+      title: "Error 500"
+      description: "Error del servidor"

@@ -32,3 +32,22 @@ uk:
       words_connector: ", "
       two_words_connector: " і "
       last_word_connector: ", і "
+
+# custom http response status (only error)
+  http_errors:
+    title: "помилка"
+    '400':
+      title: "помилка 400"
+      description: "Bad Request"
+    '401':
+      title: "помилка 401"
+      description: "несанкціонований"
+    '403':
+      title: "помилка 403"
+      description: "Заборонений"
+    '404':
+      title: "помилка 404"
+      description: "не знайдено"
+    '500':
+      title: "помилка 500"
+      description: "помилка сервера"

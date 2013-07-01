@@ -1,0 +1,3 @@
+%p=tag_icon 'warning-sign icon-3x'
+%h1=t('http_errors.404.title')
+%p=t('http_errors.404.description')
