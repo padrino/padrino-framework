@@ -208,6 +208,8 @@ describe "Routing" do
     end
     get "/a.js"
     assert_equal "/a.json", body
+    get "/a.unknown"
+    assert_equal 404, status
     get "/b.js"
     assert_equal "/b.js", body
     get "/b.ru"
