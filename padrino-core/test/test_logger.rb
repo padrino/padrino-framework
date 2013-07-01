@@ -98,6 +98,35 @@ describe "PadrinoLogger" do
         Padrino.logger.instance_eval{ @log_static = false }
       end
     end
+
+    context "health-check requests logging" do
+      def access_to_mock_app
+        mock_app do
+          enable :logging
+          get("/"){ "Foo" }
+        end
+        get "/"
+      end
+
+      should 'output under debug level' do
+        Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:debug] }
+        access_to_mock_app
+        assert_match /\e\[36m  DEBUG\e\[0m/, Padrino.logger.log.string
+
+        Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:devel] }
+        access_to_mock_app
+        assert_match /\e\[36m  DEBUG\e\[0m/, Padrino.logger.log.string
+      end
+      should 'not output over debug level' do
+        Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:info] }
+        access_to_mock_app
+        assert_equal '', Padrino.logger.log.string
+
+        Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:error] }
+        access_to_mock_app
+        assert_equal '', Padrino.logger.log.string
+      end
+    end
   end
 end
 
