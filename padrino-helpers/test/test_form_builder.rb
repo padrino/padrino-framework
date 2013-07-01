@@ -742,6 +742,18 @@ describe "FormBuilder" do
       assert_has_tag('input[type=submit]', :value => "Submit") { actual_html }
     end
 
+
+    should "display correct submit button html with no caption" do
+      actual_html = standard_builder.submit(:class => 'btn')
+      assert_has_tag('input.btn[type=submit]', :value => "Submit") { actual_html }
+    end
+
+    should "display correct submit button html with nil caption" do
+      actual_html = standard_builder.submit(nil, :class => 'btn')
+      assert_has_tag('input.btn[type=submit]') { actual_html }
+      assert actual_html !~ %r{ value \* = }x
+    end
+
     should "display correct submit button html" do
       actual_html = standard_builder.submit("Commit", :class => 'large')
       assert_has_tag('input.large[type=submit]', :value => "Commit") { actual_html }

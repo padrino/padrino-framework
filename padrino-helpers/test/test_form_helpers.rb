@@ -773,6 +773,26 @@ describe "FormHelpers" do
       assert_have_selector 'form.simple-form input[type=submit]', :count => 1, :value => "Submit"
       assert_have_selector 'form.advanced-form input[type=submit]', :count => 1, :value => "Login"
     end
+
+    context 'for omitted args' do
+      should "display submit tag with default caption" do
+        actual_html = submit_tag()
+        assert_has_tag(:input, :type => 'submit', :value => 'Submit') { actual_html }
+      end
+    end
+
+    context 'for omitted caption arg' do
+      should "display submit tag with default caption" do
+        actual_html = submit_tag(:class => 'success')
+        assert_has_tag(:input, :type => 'submit', :class => 'success', :value => 'Submit') { actual_html }
+      end
+
+      should "display submit tag without caption value when nil" do
+        actual_html = submit_tag(nil, :class => 'success')
+        assert_has_tag(:input, :type => 'submit', :class => 'success') { actual_html }
+        assert_has_no_tag(:input, :type => 'submit', :class => 'success', :value => 'Submit') { actual_html }
+      end
+    end
   end
 
   context 'for #button_tag method' do

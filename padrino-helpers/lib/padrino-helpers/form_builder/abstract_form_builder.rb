@@ -145,7 +145,9 @@ module Padrino
         end
 
         # f.submit "Update", :class => 'large'
-        def submit(caption="Submit", options={})
+        def submit(*args)
+          options = args[-1].is_a?(Hash) ? args.pop : {}
+          caption = args.length >= 1 ? args.shift : "Submit"
           @template.submit_tag caption, options
         end
 
