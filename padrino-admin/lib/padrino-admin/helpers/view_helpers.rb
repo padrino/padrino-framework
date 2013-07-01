@@ -66,7 +66,7 @@ module Padrino
         #   mat(:account, :email)
         #
         def model_attribute_translate(model, attribute)
-          t("models.\#{model}.attributes.\#{attribute}", :default => attribute.to_s.humanize)
+          t("models.#{model}.attributes.#{attribute}", :default => attribute.to_s.humanize)
         end
         alias :t_attr :model_attribute_translate
         alias :mat :t_attr
