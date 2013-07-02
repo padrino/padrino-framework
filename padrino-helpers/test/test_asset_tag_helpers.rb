@@ -71,9 +71,9 @@ describe "AssetTagHelpers" do
     end
 
     should "escape the link text" do
-      actual_link = link_to('/register', :class => 'first', :id => 'binky') { "<>" }
+      actual_link = link_to('/register', :class => 'first', :id => 'binky') { "<&>" }
       assert_has_tag('a#binky.first', :href => '/register') { actual_link }
-      assert_match "&lt;&gt;", actual_link
+      assert_match "&lt;&amp;&gt;", actual_link
     end
 
     should "not escape image_tag" do
@@ -117,6 +117,12 @@ describe "AssetTagHelpers" do
       assert_match %r{mailto\:test\@demo.com\?}, actual_html
       assert_match %r{cc=foo\@test\.com}, actual_html
       assert_match %r{subject\=demo\%20test}, actual_html
+    end
+
+    should "escape & with encoded string and &amp; in HTML" do
+      actual_html = mail_to('test@demo.com', "My&Email", :subject => "this&that")
+      assert_match 'this%26that', actual_html
+      assert_match 'My&amp;Email', actual_html
     end
 
     should "display mail link element in haml" do
