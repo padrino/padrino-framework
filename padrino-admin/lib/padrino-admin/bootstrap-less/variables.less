@@ -10,11 +10,11 @@
 // Grays
 // -------------------------
 
-@grayDarker:            #222;
-@grayDark:              #333;
-@gray:                  #555;
-@grayLight:             #999;
-@grayLighter:           #eee;
+@gray-darker:            lighten(#000, 13.5%); // #222
+@gray-dark:              lighten(#000, 20%);   // #333
+@gray:                   lighten(#000, 33.5%); // #555
+@gray-light:             lighten(#000, 60%);   // #999
+@gray-lighter:           lighten(#000, 93.5%); // #eee
 
 // Brand colors
 // -------------------------
@@ -29,7 +29,7 @@
 // -------------------------
 
 @body-bg:               #fff;
-@text-color:            @grayDark;
+@text-color:            @gray-dark;
 
 // Links
 // -------------------------
@@ -46,27 +46,34 @@
 @font-family-base:        @font-family-sans-serif;
 
 @font-size-base:          14px;
-@font-size-large:         (@font-size-base * 1.25); // ~18px
-@font-size-small:         (@font-size-base * 0.85); // ~12px
-@font-size-mini:          (@font-size-base * 0.75); // ~11px
+@font-size-large:         ceil(@font-size-base * 1.25); // ~18px
+@font-size-small:         ceil(@font-size-base * 0.85); // ~12px
+@font-size-mini:          ceil(@font-size-base * 0.75); // ~11px
 
-@line-height-base:        20px;
+@line-height-base:        1.428571429; // 20/14
+@line-height-computed:    floor(@font-size-base * @line-height-base); // ~20px
 
-@headings-font-family:    inherit; // empty to use BS default, @font-family-base
+@headings-font-family:    @font-family-base;
 @headings-font-weight:    500;
+@headings-line-height:    1.1;
 
 
 // Components
 // -------------------------
-// Based on 14px font-size and 1.5 line-height
+// Based on 14px font-size and 1.428 line-height (~20px to start)
 
-@padding-large:           11px 14px; // 44px
-@padding-small:           2px 10px;  // 26px
-@padding-mini:            0 6px;   // 22px
+@padding-base-vertical:          8px;
+@padding-base-horizontal:        12px;
 
-@border-radius-base:      4px;
-@border-radius-large:     6px;
-@border-radius-small:     3px;
+@padding-large-vertical:         14px;
+@padding-large-horizontal:       16px;
+
+@padding-small-vertical:         5px;
+@padding-small-horizontal:       10px;
+
+@border-radius-base:             4px;
+@border-radius-large:            6px;
+@border-radius-small:            3px;
 
 @component-active-bg:            @brand-primary;
 
@@ -78,30 +85,35 @@
 @table-bg-accent:                    #f9f9f9; // for striping
 @table-bg-hover:                     #f5f5f5; // for hover
 
-@table-border:                       #ddd; // table and cell border
+@table-border-color:                 #ddd; // table and cell border
 
 
 // Buttons
 // -------------------------
 
-@btn-color:                      #fff;
-@btn-bg:                         #a7a9aa;
-@btn-border:                     @btn-bg;
+@btn-default-color:              #fff;
+@btn-default-bg:                 #474949;
+@btn-default-border:             @btn-default-bg;
 
+@btn-primary-color:              @btn-default-color;
 @btn-primary-bg:                 @brand-primary;
 @btn-primary-border:             @btn-primary-bg;
 
-@btn-bg-success:                 @brand-success;
-@btn-success-border:             @btn-bg-success;
+@btn-success-color:              @btn-default-color;
+@btn-success-bg:                 @brand-success;
+@btn-success-border:             @btn-success-bg;
 
-@btn-bg-warning:                 @brand-warning;
-@btn-warning-border:             @btn-bg-warning;
+@btn-warning-color:              @btn-default-color;
+@btn-warning-bg:                 @brand-warning;
+@btn-warning-border:             @btn-warning-bg;
 
-@btn-bg-danger:                  @brand-danger;
-@btn-danger-border:              @btn-bg-danger;
+@btn-danger-color:               @btn-default-color;
+@btn-danger-bg:                  @brand-danger;
+@btn-danger-border:              @btn-danger-bg;
 
-@btn-bg-info:                    @brand-info;
-@btn-info-border:                @btn-bg-info;
+@btn-info-color:                 @btn-default-color;
+@btn-info-bg:                    @brand-info;
+@btn-info-border:                @btn-info-bg;
 
 
 
@@ -109,18 +121,16 @@
 // -------------------------
 
 @input-bg:                       #fff;
-@input-bg-disabled:              @grayLighter;
+@input-bg-disabled:              @gray-lighter;
 
 @input-border:                   #ccc;
 @input-border-radius:            @border-radius-base;
 
-@input-color-placeholder:        @grayLight;
+@input-color-placeholder:        @gray-light;
 
-@input-height-base:              (@line-height-base + 14px); // base line-height + 12px vertical padding + 2px top/bottom border
-@input-height-large:             (@line-height-base + 24px); // base line-height + 22px vertical padding + 2px top/bottom border
-@input-height-small:             (@line-height-base + 6px);  // base line-height + 4px vertical padding + 2px top/bottom border
-
-@form-actions-bg:                 #f5f5f5;
+@input-height-base:              (@line-height-computed + (@padding-base-vertical * 2) + 2);
+@input-height-large:             (ceil(@font-size-large * @line-height-base) + (@padding-large-vertical * 2) + 2);
+@input-height-small:             (ceil(@font-size-small * @line-height-base) + (@padding-small-vertical * 2) + 2);
 
 
 // Dropdowns
@@ -131,13 +141,12 @@
 @dropdown-divider-top:           #e5e5e5;
 @dropdown-divider-bottom:        #fff;
 
-@dropdown-link-color:            @grayDark;
-@dropdown-link-hover-color:      #fff;
-@dropdown-link-hover-bg:         @dropdown-link-active-bg;
-
 @dropdown-link-active-color:     #fff;
 @dropdown-link-active-bg:        @component-active-bg;
 
+@dropdown-link-color:            @gray-dark;
+@dropdown-link-hover-color:      #fff;
+@dropdown-link-hover-bg:         @dropdown-link-active-bg;
 
 
 // COMPONENT VARIABLES
@@ -157,23 +166,14 @@
 @zindex-modal:             1050;
 
 
-// Glyphicons font path
-// -------------------------
-@glyphicons-font-path:          "../fonts";
-
-
 // Navbar
 // -------------------------
 
 // Basics of a navbar
 @navbar-height:                    50px;
-@navbar-text:                      #777;
+@navbar-color:                     #777;
 @navbar-bg:                        #eee;
-
-// Navbar brand label
-@navbar-brand-color:               @navbar-link-color;
-@navbar-brand-hover-color:         darken(@navbar-link-color, 10%);
-@navbar-brand-hover-bg:            transparent;
+@navbar-padding:                   floor(@grid-gutter-width / 2);  // ~15px
 
 // Navbar links
 @navbar-link-color:                #777;
@@ -184,23 +184,28 @@
 @navbar-link-disabled-color:       #ccc;
 @navbar-link-disabled-bg:          transparent;
 
+// Navbar brand label
+@navbar-brand-color:               @navbar-link-color;
+@navbar-brand-hover-color:         darken(@navbar-link-color, 10%);
+@navbar-brand-hover-bg:            transparent;
+
 // Inverted navbar
-@navbar-inverse-text:                       @grayLight;
+@navbar-inverse-color:                       @gray-light;
 @navbar-inverse-bg:                         #222;
 
-// Inverted navbar brand label
-@navbar-inverse-brand-color:                @navbar-inverse-link-color;
-@navbar-inverse-brand-color-hover:          #fff;
-@navbar-inverse-brand-bg-hover:             transparent;
-
 // Inverted navbar links
-@navbar-inverse-link-color:                 @grayLight;
+@navbar-inverse-link-color:                 @gray-light;
 @navbar-inverse-link-hover-color:           #fff;
 @navbar-inverse-link-hover-bg:              transparent;
 @navbar-inverse-link-active-color:          @navbar-inverse-link-hover-color;
 @navbar-inverse-link-active-bg:             darken(@navbar-inverse-bg, 10%);
 @navbar-inverse-link-disabled-color:        #444;
 @navbar-inverse-link-disabled-bg:           transparent;
+
+// Inverted navbar brand label
+@navbar-inverse-brand-color:                @navbar-inverse-link-color;
+@navbar-inverse-brand-hover-color:          #fff;
+@navbar-inverse-brand-hover-bg:             transparent;
 
 // Inverted navbar search
 // Normal navbar needs no special styles or vars
@@ -221,7 +226,7 @@
 // Jumbotron
 // -------------------------
 
-@jumbotron-bg:                   @grayLighter;
+@jumbotron-bg:                   @gray-lighter;
 @jumbotron-heading-color:        inherit;
 @jumbotron-lead-color:           inherit;
 
@@ -275,6 +280,28 @@
 // -------------------------
 @modal-inner-padding:         20px;
 
+@modal-title-padding:         15px;
+@modal-title-line-height:     @line-height-base;
+
+// Alerts
+// -------------------------
+@alert-bg:                    @state-warning-bg;
+@alert-text:                  @state-warning-text;
+@alert-border:                @state-warning-border;
+@alert-border-radius:         @border-radius-base;
+
+@alert-success-bg:            @state-success-bg;
+@alert-success-text:          @state-success-text;
+@alert-success-border:        @state-success-border;
+
+@alert-danger-bg:             @state-danger-bg;
+@alert-danger-text:           @state-danger-text;
+@alert-danger-border:         @state-danger-border;
+
+@alert-info-bg:               @state-info-bg;
+@alert-info-text:             @state-info-text;
+@alert-info-border:           @state-info-border;
+
 
 // Progress bars
 // -------------------------
@@ -293,7 +320,7 @@
 @list-group-border-radius:    @border-radius-base;
 
 @list-group-hover-bg:         #f5f5f5;
-@list-group-active-text:      #fff;
+@list-group-active-color:     #fff;
 @list-group-active-bg:        @component-active-bg;
 @list-group-active-border:    @list-group-active-bg;
 
@@ -303,6 +330,7 @@
 @panel-border:                #ddd;
 @panel-border-radius:         @border-radius-base;
 @panel-heading-bg:            #f5f5f5;
+@panel-footer-bg:             #f5f5f5;
 
 @panel-primary-text:          #fff;
 @panel-primary-border:        @brand-primary;
@@ -325,6 +353,14 @@
 @panel-info-heading-bg:       @state-info-bg;
 
 
+// Thumbnails
+// -------------------------
+@thumbnail-caption-color:     @text-color;
+@thumbnail-bg:                @body-bg;
+@thumbnail-border:            #ddd;
+@thumbnail-border-radius:     @border-radius-base;
+
+
 // Wells
 // -------------------------
 @well-bg:                     #f5f5f5;
@@ -334,11 +370,47 @@
 // -------------------------
 
 // Hr border color
-@hr-border:                   @grayLighter;
+@hr-border:                   @gray-lighter;
 
 // Horizontal forms & lists
 @component-offset-horizontal: 180px;
 
+
+// Media queries breakpoints
+// --------------------------------------------------
+
+// Tiny screen / phone
+@screen-tiny:                480px;
+@screen-phone:               @screen-tiny;
+
+// Small screen / tablet
+@screen-small:               768px;
+@screen-tablet:              @screen-small;
+
+// Medium screen / desktop
+@screen-medium:              992px;
+@screen-desktop:             @screen-medium;
+
+// So media queries don't overlap when required, provide a maximum
+@screen-small-max:           (@screen-medium - 1);
+@screen-tablet-max:          @screen-small-max;
+
+// Large screen / wide desktop
+@screen-large:               1200px;
+@screen-large-desktop:       @screen-large;
+
+
+// Container sizes
+// --------------------------------------------------
+
+// Small screen / tablet
+@container-tablet:          728px;
+
+// Medium screen / desktop
+@container-desktop:         940px;
+
+// Large screen / wide desktop
+@container-large-desktop:   1170px;
 
 
 // Grid system
@@ -349,4 +421,4 @@
 // Padding, to be divided by two and applied to the left and right of all columns
 @grid-gutter-width:         30px;
 // Point at which the navbar stops collapsing
-@grid-float-breakpoint:     768px;
+@grid-float-breakpoint:     @screen-tablet;
