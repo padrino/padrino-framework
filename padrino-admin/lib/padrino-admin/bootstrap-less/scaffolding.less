@@ -16,28 +16,18 @@
 
 html {
   font-size: 62.5%;
-  // Touch the Mobile Magic™
-  -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-// Disable iOS/WinMobile font size changes
-@media screen and (max-device-width: 480px) {
-  html {
-    -webkit-text-size-adjust: 100%;
-        -ms-text-size-adjust: 100%;
-  }
 }
 
 body {
   font-family: @font-family-base;
-  font-size: 14px;
+  font-size: @font-size-base;
   line-height: @line-height-base;
   color: @text-color;
   background-color: @body-bg;
 }
 
-// Reset fonts for revelant elements
+// Reset fonts for relevant elements
 input,
 button,
 select,
@@ -69,13 +59,14 @@ a:focus {
 // -------------------------
 
 img {
-  // Responsive images (ensure images don't scale beyond their parents)
-  max-width: 100%; // Part 1: Set a maxium relative to the parent
-  width: auto\9; // IE8 need help adjusting responsive images
-  height: auto; // Part 2: Scale the height according to the width, otherwise you get stretching
-
-  // Match vertical alignment with other comment elements
   vertical-align: middle;
+}
+
+// Responsive images (ensure images don't scale beyond their parents)
+.img-responsive {
+  display: inline-block;
+  max-width: 100%; // Part 1: Set a maximum relative to the parent
+  height: auto; // Part 2: Scale the height according to the width, otherwise you get stretching
 }
 
 // Rounded corners
