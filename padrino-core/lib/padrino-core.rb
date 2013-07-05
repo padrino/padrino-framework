@@ -169,7 +169,7 @@ module Padrino
 
     ##
     # Registers a gem with padrino. This relieves the caller from setting up
-    # loadpaths by himself and enables Padrino to look up apps in gem folder.
+    # loadpaths by itself and enables Padrino to look up apps in gem folder.
     #
     # The name given has to be the proper gem name as given in the gemspec.
     #
