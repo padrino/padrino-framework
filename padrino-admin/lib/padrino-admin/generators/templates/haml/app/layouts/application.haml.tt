@@ -17,13 +17,13 @@
       .navbar-inner
         .container
           =link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
-          %ul.nav.pull-right
+          %ul.nav.navbar-nav.pull-right
             %li.navbar-edit-account=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
             %li.navbar-logout
               =button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form' do
                 =content_tag :button, tag_icon(:off), :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link'
 
-          %ul.nav.pull-left
+          %ul.nav.navbar-nav.pull-left
             - project_modules.each do |project_module|
               %li{:class => "navbar-module #{('active' if request.path_info =~ /^#{project_module.path}/)}"}
                 =link_to project_module.human_name, project_module.path('/admin')
