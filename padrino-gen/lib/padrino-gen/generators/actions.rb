@@ -45,7 +45,7 @@ module Padrino
         path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
-        instance_eval(open(path).read)
+        instance_eval(File.read(path))
         shell.padding -= 1
       end
 
