@@ -62,7 +62,7 @@ describe "FormBuilder" do
     end
 
     should "display correct form html with namespace option" do
-      actual_html = form_for(@user, '/update', :namespace => 'foo') do |f| 
+      actual_html = form_for(@user, '/update', :namespace => 'foo') do |f|
         f.text_field(:first_name) << f.fields_for(:role_types) { |role| role.text_field(:name) }
       end
 
@@ -131,7 +131,7 @@ describe "FormBuilder" do
       assert_have_selector :form, :action => '/third_demo', :id => 'demo3', :method => 'get'
       assert_have_selector :input, :name => 'authenticity_token'
     end
-    
+
     should "have a class of 'invalid' for fields with errors" do
       actual_html = form_for(@user, '/register') {|f| f.text_field(:email) }
       assert_has_tag(:input, :type => 'text', :name => 'user[email]', :id => 'user_email', :class => 'invalid') {actual_html }
@@ -906,7 +906,7 @@ describe "FormBuilder" do
       assert_has_tag('label', :for => 'user_addresses_attributes_1_businesses_attributes_0_name', :content => 'Name') { actual_html }
       assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_businesses_attributes_0_name', :name => 'user[addresses_attributes][1][businesses_attributes][0][name]') { actual_html }
     end
-    
+
     should "display nested children fields in erb" do
       visit '/erb/fields_for'
       # Telephone
