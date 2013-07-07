@@ -19,6 +19,7 @@
     <%= label_tag :gender %>
     <%= label_tag :color %>
     <%= select_tag :color, :options => ['green', 'orange', 'purple'] %>
+    <%= select_tag :type, :grouped_options => { 'foo' => ['foo', 'bar'], 'bar' => ['foo', 'bar'] } %>
     <%= radio_button_tag :gender, :value => 'male' %>
     <%= radio_button_tag :gender, :value => 'female' %>
     <%= submit_tag %>
