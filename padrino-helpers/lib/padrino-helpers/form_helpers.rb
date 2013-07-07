@@ -833,9 +833,7 @@ module Padrino
               # {:first => [[1,2,3], {:disabled => true}], :second => [4,5,6]}
               attributes_hash = value.last.is_a?(Hash) ? value.pop : nil
               disabled ||=  attributes_hash && attributes_hash.include?(:disabled) ? attributes_hash[:disabled] : false
-              content_tag :optgroup, :label => key, :disabled => disabled do
-                options_for_select(value, selected)
-              end
+              content_tag :optgroup, options_for_select(value, selected), :label => key, :disabled => disabled
             end
           elsif collection.is_a?(Array)
             # Array format:
@@ -845,9 +843,7 @@ module Padrino
             # the last item tells if it is disabled or not. This is keeps it backwards compatible.
             collection.map do |optgroup|
               disabled ||= optgroup.count > 2 ? optgroup.pop : false
-              content_tag :optgroup, :label => optgroup.first, :disabled => disabled do
-                options_for_select(optgroup.last, selected)
-              end
+              content_tag :optgroup, options_for_select(optgroup.last, selected), :label => optgroup.first, :disabled => disabled
             end
           end
         end

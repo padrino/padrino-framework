@@ -787,6 +787,7 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
     end
 
     should "display select tag in haml" do
@@ -799,6 +800,7 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
     end
 
     should "display select tag in slim" do
@@ -811,6 +813,7 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
     end
   end
 
