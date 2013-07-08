@@ -61,6 +61,16 @@ describe "FormBuilder" do
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/update', :method => 'post', "data-remote" => 'true') { actual_html }
     end
 
+    should "display correct form html with namespace option" do
+      actual_html = form_for(@user, '/update', :namespace => 'foo') do |f|
+        f.text_field(:first_name) << f.fields_for(:role_types) { |role| role.text_field(:name) }
+      end
+
+      assert_has_no_tag(:form, :namespace => 'foo') { actual_html }
+      assert_has_tag(:input, :type => 'text', :name => 'user[first_name]', :id => 'foo_user_first_name') { actual_html }
+      assert_has_tag(:input, :type => 'text', :name => 'user[role_types_attributes][0][name]', :id => 'foo_user_role_types_attributes_0_name') { actual_html }
+    end
+
     should "display correct form html with remote option and method put" do
       actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :remote => true, :method => 'put') { "Demo" }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :method => 'post', "data-remote" => 'true') { actual_html }
