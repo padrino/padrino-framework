@@ -226,6 +226,28 @@ describe "Routing" do
     assert_equal 404, status
   end
 
+  should 'generate absolute urls' do
+    mock_app do
+      get(:hash, :with => :id){ absolute_url(:hash, :id => 1) }
+    end
+    get "/hash/2"
+    assert_equal "http://example.org/hash/1", body
+    get "https://example.org/hash/2"
+    assert_equal "https://example.org/hash/1", body
+  end
+
+  should 'generate proper absolute urls for mounted apps' do
+    class Test < Padrino::Application
+      get :foo do
+        absolute_url(:foo, :id => 1)
+      end
+    end
+    Padrino.mount("Test").to("/test")
+    @app = Padrino.application
+    get('/test/foo')
+    assert_equal 'http://example.org/test/foo?id=1', body
+  end
+
   should 'allow regex url with format' do
     mock_app do
       get(/.*/, :provides => :any) { "regexp" }
