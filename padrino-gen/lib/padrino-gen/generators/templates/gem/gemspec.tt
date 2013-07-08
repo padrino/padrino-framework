@@ -11,9 +11,9 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.name          = <%=name.underscore.inspect%>
+  gem.name          = <%= name.downcase.inspect %>
   gem.require_paths = ["lib", "app"]
-  gem.version       = <%=name.camelcase%>::VERSION
+  gem.version       = <%= @project_name %>::VERSION
 
   gem.add_dependency "padrino-core"
 end
