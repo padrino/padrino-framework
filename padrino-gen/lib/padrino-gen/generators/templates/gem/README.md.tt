@@ -1,4 +1,4 @@
-# <%=name.camelcase%>
+# <%= @project_name %>
 
 A padrino gem
 
@@ -13,7 +13,7 @@ gem '<%=name%>'
 and mount the app in your `apps.rb`:
 
 ```ruby
-Padrino.mount("<%=name.camelcase%>::App").to("/<%=name%>")
+Padrino.mount("<%= @project_name %>::App").to("/<%=name%>")
 ```
 
 ## Development
