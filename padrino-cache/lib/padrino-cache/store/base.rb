@@ -60,7 +60,7 @@ module Padrino
         private
 
         def get_expiry( opts )
-          if opts && opts[:expires_in]
+          if opts && opts[:expires_in] && opts[:expires_in] != -1
             expires_in = opts[:expires_in].to_i
             expires_in = EXPIRES_EDGE  if expires_in > EXPIRES_EDGE
             Time.now.to_i + expires_in
