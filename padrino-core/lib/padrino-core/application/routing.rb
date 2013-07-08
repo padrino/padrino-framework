@@ -910,6 +910,17 @@ module Padrino
       alias :url_for :url
 
       ##
+      # Returns absolute url. Calls Sinatra::Helpers#uri to generate protocol version, hostname and port.
+      #
+      # @example
+      #   absolute_url(:show, :id => 1)  # => http://example.com/show?id=1
+      #   absolute_url(:show, 24)        # => https://example.com/admin/show/24
+      #
+      def absolute_url( *args )
+        uri url(*args), true, false
+      end
+
+      ##
       # Returns the recognized path for a route.
       #
       def recognize_path(path)
