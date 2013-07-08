@@ -215,7 +215,9 @@ module Padrino
           # field_name(:number) => "user_telephone_attributes_number"
           # field_name(:street) => "user_addresses_attributes_0_street"
           def field_id(field=nil, value=nil)
-            result = field_result
+            result = []
+            result << "#{@options[:namespace]}_" if @options[:namespace] && root_form?
+            result << field_result
             result << field_id_fragment if nested_form?
             result << "_#{field}" unless field.blank?
             result << "_#{value}" unless value.blank?

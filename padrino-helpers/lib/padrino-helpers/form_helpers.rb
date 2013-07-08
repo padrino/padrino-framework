@@ -14,7 +14,9 @@ module Padrino
       # @param [String] url
       #   The url this form will submit to.
       # @param [Hash] settings
-      #   The settings associated with this form. Accepts html options.
+      #   The settings associated with this form.
+      #   Accepts a :namespace option that will be prepended to the id attributes of the form's elements.
+      #   Also accepts html options.
       # @option settings [String] :builder ("StandardFormBuilder")
       #   The FormBuilder class to use such as StandardFormBuilder.
       # @param [Proc] block
@@ -32,6 +34,7 @@ module Padrino
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
         html = capture_html(instance, &block)
+        settings.delete(:namespace)
         form_tag(url, settings) { html }
       end
 
@@ -79,7 +82,7 @@ module Padrino
       def form_tag(url, options={}, &block)
         desired_method = options[:method].to_s
         options.delete(:method) unless desired_method =~ /get|post/i
-        options.reverse_merge!(:method => 'post', 
+        options.reverse_merge!(:method => 'post',
                                :action => url,
                                :protect_from_csrf => is_protected_from_csrf? )
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
@@ -255,7 +258,7 @@ module Padrino
         error = if defined?(Ohm::Model) && object.is_a?(Ohm::Model)
           I18n.t("ohm.errors.messages.#{error[0]}", :default => error[0].to_s)
         else
-          # Array(error).first is necessary because some ORMs 
+          # Array(error).first is necessary because some ORMs
           # give us an array others directly a value
           Array(error)[0]
         end
