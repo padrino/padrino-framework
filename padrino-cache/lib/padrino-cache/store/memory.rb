@@ -35,9 +35,8 @@ module Padrino
         # @api public
         def get(key)
           if @index.key?(key) and value = @index[key]
-            expires_in, body = value
-            if expires_in == -1 or Time.new.to_i < expires_in
-              set(key, body, :expires_in => expires_in)
+            expiry, body = value
+            if now_before? expiry
               body
             else
               delete(key)
@@ -63,16 +62,9 @@ module Padrino
         #
         # @api public
         def set(key, value, opts = nil)
-          delete(key) if @index.key?(key)
-          if opts && opts[:expires_in]
-            expires_in = opts[:expires_in].to_i
-            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
-          else
-            expires_in = -1
-          end
+          delete(key)
           @entries.push(key)
-          @index[key] = [expires_in, value]
-
+          @index[key] = [get_expiry(opts), value]
           while @entries.size > @size
             delete(@entries.shift)
           end

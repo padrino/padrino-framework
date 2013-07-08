@@ -40,9 +40,8 @@ module Padrino
           if ::File.exist?(path_for_key(key))
             read_method = ::File.respond_to?(:binread) ? :binread : :read
             contents    = ::File.send(read_method, path_for_key(key))
-            expires_in, body = contents.split("\n", 2)
-            expires_in = expires_in.to_i
-            if expires_in == -1 or Time.new.to_i < expires_in
+            expiry, body = contents.split("\n", 2)
+            if now_before? expiry
               parser.decode(body) if body
             else # expire the key
               delete(key)
@@ -69,14 +68,8 @@ module Padrino
         # @api public
         def set(key, value, opts = nil)
           init
-          if opts && opts[:expires_in]
-            expires_in = opts[:expires_in].to_i
-            expires_in = Time.new.to_i + expires_in if expires_in < EXPIRES_EDGE
-          else
-            expires_in = -1
-          end
           value = parser.encode(value) if value
-          ::File.open(path_for_key(key), 'wb') { |f| f << expires_in.to_s << "\n" << value } if value
+          ::File.open(path_for_key(key), 'wb') { |f| f << get_expiry(opts).to_s << "\n" << value } if value
         end
 
         ##

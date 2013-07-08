@@ -59,7 +59,7 @@ module Padrino
           value = parser.encode(value)
           if opts && opts[:expires_in]
             expires_in = opts[:expires_in].to_i
-            expires_in = expires_in if expires_in < EXPIRES_EDGE
+            expires_in = EXPIRES_EDGE  if expires_in > EXPIRES_EDGE
             @backend.setex(key, expires_in, value)
           else
             @backend.set(key, value)

@@ -22,6 +22,7 @@ module Padrino
         def initialize(client, options={})
           @backend = client
           super(options)
+          @never = 0  # never TTL in Memcache is 0
         end
 
         ##
@@ -56,13 +57,7 @@ module Padrino
         #
         # @api public
         def set(key, value, opts = nil)
-          if opts && opts[:expires_in]
-            expires_in = opts[:expires_in].to_i
-            expires_in = (@backend.class.name == "MemCache" ? expires_in : Time.new.to_i + expires_in) if expires_in < EXPIRES_EDGE
-            @backend.set(key, value, expires_in)
-          else
-            @backend.set(key, value)
-          end
+          @backend.set(key, value, get_expiry(opts))
         end
 
         ##
