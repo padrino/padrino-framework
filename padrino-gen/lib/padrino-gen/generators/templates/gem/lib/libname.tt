@@ -1,6 +1,6 @@
 require 'padrino-core'
 
-module <%=name.camelcase%>
+module <%= @project_name %>
   extend Padrino::Module
-  gem! <%=name.downcase.inspect%>
+  gem! <%= name.downcase.inspect %>
 end

@@ -41,6 +41,19 @@ describe "ProjectGenerator" do
       assert_match_in_file("Padrino.mount('ProjectCom::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/project.com/config/apps.rb")
     end
 
+    should "generate nested path with dashes in name" do
+      capture_io { generate(:project, 'sample-project', "--root=#{@apptmp}") }
+      assert_file_exists("#{@apptmp}/sample-project")
+      assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/sample-project/app/app.rb")
+      assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample-project/config/apps.rb")
+      capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/sample-project") }
+      assert_file_exists("#{@apptmp}/sample-project/ws_dci_2011")
+      assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
+      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
+      assert_match_in_file("Padrino.mount('SampleProject::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/sample-project/config/apps.rb")
+    end
+
     should "raise an Error when given invalid constant names" do
       assert_raises(::NameError) { capture_io { generate(:project, "123asdf", "--root=#{@apptmp}") } }
       assert_raises(::NameError) { capture_io { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
@@ -94,6 +107,22 @@ describe "ProjectGenerator" do
       assert_match_in_file(/^module SampleGem/,"#{@apptmp}/sample_gem/app/app.rb")
       assert_match_in_file(/class App/,"#{@apptmp}/sample_gem/app/app.rb")
       assert_file_exists("#{@apptmp}/sample_gem/README.md")
+    end
+
+    should "generate gemspec and special files with dashes in name" do
+      capture_io { generate(:project,'sample-gem', '--gem', "--root=#{@apptmp}") }
+      assert_file_exists("#{@apptmp}/sample-gem/sample-gem.gemspec")
+      assert_file_exists("#{@apptmp}/sample-gem/README.md")
+      assert_match_in_file(/\/lib\/sample-gem\/version/,"#{@apptmp}/sample-gem/sample-gem.gemspec")
+      assert_match_in_file(/"sample-gem"/,"#{@apptmp}/sample-gem/sample-gem.gemspec")
+      assert_match_in_file(/SampleGem::VERSION/,"#{@apptmp}/sample-gem/sample-gem.gemspec")
+      assert_match_in_file(/^# SampleGem/,"#{@apptmp}/sample-gem/README.md")
+      assert_match_in_file(/SampleGem::App/,"#{@apptmp}/sample-gem/README.md")
+      assert_match_in_file(/^module SampleGem/,"#{@apptmp}/sample-gem/lib/sample-gem.rb")
+      assert_match_in_file(/gem! "sample-gem"/,"#{@apptmp}/sample-gem/lib/sample-gem.rb")
+      assert_match_in_file(/^module SampleGem/,"#{@apptmp}/sample-gem/lib/sample-gem/version.rb")
+      assert_match_in_file(/^module SampleGem/,"#{@apptmp}/sample-gem/app/app.rb")
+      assert_match_in_file(/class App/,"#{@apptmp}/sample-gem/app/app.rb")
     end
 
     should "not create models folder if no orm is chosen" do
