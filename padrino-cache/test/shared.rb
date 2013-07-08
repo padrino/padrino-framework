@@ -29,6 +29,11 @@ should "set a value that expires" do
   assert_equal nil, Padrino.cache.get(@test_key)
 end
 
+should "be able to cache forever" do
+  Padrino.cache.set('forever', 'cached', :expires_in => -1)
+  2.times { |i| assert_equal 'cached', Padrino.cache.get('forever') }
+end
+
 should 'delete a value' do
   Padrino.cache.set(@test_key, 'test')
   assert_equal 'test', Padrino.cache.get(@test_key)

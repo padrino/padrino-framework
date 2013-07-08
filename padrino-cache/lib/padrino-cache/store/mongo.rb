@@ -48,9 +48,15 @@ module Padrino
         #   MyApp.cache.get('records')
         #
         def get(key)
-          doc = @backend.find_one(:_id => key, :expires_in => {'$gt' => Time.now.utc})
+          doc = @backend.find_one( :_id => key, '$or' => [ { :expires_at => { '$gt' => Time.now.to_i } }, { :expires_at => -1 } ] )
           return nil if doc.nil?
-          parser.decode(doc['value'].to_s)
+          expiry = doc['expires_at']
+          if now_before? expiry
+            parser.decode(doc['value'].to_s)
+          else
+            delete(key)
+            nil
+          end
         end
 
         ##
@@ -70,15 +76,9 @@ module Padrino
         def set(key, value, opts = nil)
           key = key.to_s
           value = BSON::Binary.new(parser.encode(value)) if value
-          if opts && opts[:expires_in]
-            expires_in = opts[:expires_in].to_i
-            expires_in = Time.now.utc + expires_in if expires_in < EXPIRES_EDGE
-          else
-            expires_in = Time.now.utc + EXPIRES_EDGE
-          end
           @backend.update(
             {:_id => key},
-            {:_id => key, :value => value, :expires_in => expires_in },
+            {:_id => key, :value => value, :expires_at => get_expiry(opts) },
             {:upsert => true}
           )
         end
