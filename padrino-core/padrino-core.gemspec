@@ -38,6 +38,6 @@ Gem::Specification.new do |s|
   end
   s.add_dependency("http_router", "~> 0.11.0")
   s.add_dependency("thor", "~> 0.17.0")
-  s.add_dependency("activesupport", ">= 3.1", "<= 4.0")
+  s.add_dependency("activesupport", ">= 3.1", "< 4.0")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end
