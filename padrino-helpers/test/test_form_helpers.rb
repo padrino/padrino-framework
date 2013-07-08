@@ -712,7 +712,6 @@ describe "FormHelpers" do
         "Enemies" => ["Palpatine",['Darth Vader',3], {:disabled => true}]
       }
       actual_html = select_tag( 'name', :grouped_options => opts )
-      puts actual_html
       assert_has_tag(:select,   :name => "name") { actual_html }
       assert_has_tag(:option,   :disabled => 'disabled', :count => 0) { actual_html }
       assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
