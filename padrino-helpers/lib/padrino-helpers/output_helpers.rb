@@ -42,7 +42,7 @@ module Padrino
       # @example
       #   ActiveSupport::SafeBuffer.new + capture_html { "<foo>" }
       #   # => "&lt;foo&gt;"
-      #   ActiveSupport::SafeBuffer.safe_concat + capture_html { "<foo>" }
+      #   ActiveSupport::SafeBuffer.new.safe_concat(capture_html { "<foo>" })
       #   # => "<foo>"
       #
       # @api semipublic
