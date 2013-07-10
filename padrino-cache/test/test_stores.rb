@@ -80,11 +80,14 @@ end
 
 begin
   require 'mongo'
+  fail NotImplementedError, "Skipping mongo test for rbx"  if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
   Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino-cache_test'))
 rescue LoadError
   warn "Skipping Mongo tests with Mongo library tests"
 rescue Mongo::ConnectionFailure
   warn "Skipping Mongo with server tests"
+rescue NotImplementedError => e
+  warn e.to_s
 else
   describe "MongoStore" do
     def setup
