@@ -26,7 +26,7 @@ class <%= @model_name %> < Sequel::Model
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
-    account = filter(:email => email).first
+    account = filter(Sequel.function(:lower, :email) => Sequel.function(:lower, email)).first
     account && account.has_password?(password) ? account : nil
   end
 

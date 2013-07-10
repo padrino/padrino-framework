@@ -27,7 +27,7 @@ class <%= @model_name %>
   # This method is for authentication purpose
   #
   def self.authenticate(email, password)
-    account = first(:email => email) if email.present?
+    account = first(:email => /#{Regexp.escape(email)}/i) if email.present?
     account && account.has_password?(password) ? account : nil
   end
 
