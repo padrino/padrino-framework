@@ -259,7 +259,8 @@ The list of defined helpers in the ‘form helpers’ category:
     -   Constructs a select tag with options from the given settings
     -   `select_tag(:favorite_color, :options => [‘1’, ‘2’, ‘3’], :selected => ‘1’)`
     -   `select_tag(:more_color, :options => [[‘label’, ‘1’], [‘label2’, ‘2’]])`
-    -   `select_tag(:multiple_color, :options => […], :multiple => true)`
+    -   `select_tag(:multiple_color, :options => [‘1’, ‘2’, ‘3’], :multiple => true,
+        :selected => [‘1’, ‘3’])`
 
 -   `file_field_tag(name, options={})`
     -   Constructs a file field input from the given options
