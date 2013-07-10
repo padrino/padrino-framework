@@ -12,7 +12,7 @@
   end
 
   post :create do
-    @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_singular}]") %>
+    @<%= @orm.name_singular %> = <%= @orm.build("params[:#{@orm.name_param}]") %>
     if <%= @orm.save %>
       @title = pat(:create_title, :model => "<%= @orm.name_singular %> #{@<%= @orm.name_singular %>.id}")
       flash[:success] = pat(:create_success, :model => '<%= @orm.klass_name %>')
@@ -39,7 +39,7 @@
     @title = pat(:update_title, :model => "<%= @orm.name_singular %> #{params[:id]}")
     @<%= @orm.name_singular %> = <%= @orm.find("params[:id]") %>
     if @<%= @orm.name_singular %>
-      if <%= @orm.update_attributes("params[:#{@orm.name_singular}]") %>
+      if <%= @orm.update_attributes("params[:#{@orm.name_param}]") %>
         flash[:success] = pat(:update_success, :model => '<%= @orm.name_singular.capitalize %>', :id =>  "#{params[:id]}")
         params[:save_and_continue] ?
           redirect(url(:<%= @orm.name_plural %>, :index)) :
@@ -76,7 +76,7 @@
       flash[:error] = pat(:destroy_many_error, :model => '<%= @orm.name_singular %>')
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
-    ids = params[:<%= @orm.name_singular %>_ids].split(',').map(&:strip)
+    ids = params[:<%= @orm.name_param %>_ids].split(',').map(&:strip)
     <%= @orm.name_plural %> = <%= @orm.find_by_ids("ids") %>
     <% if @orm.name_singular == @admin_model %>
     if <%= @orm.name_plural %>.include? current_account

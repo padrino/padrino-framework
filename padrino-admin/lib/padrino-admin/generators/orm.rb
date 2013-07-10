@@ -11,12 +11,13 @@ module Padrino
       # Defines the generic ORM management functions used to manipulate data for admin.
       # @private
       class Orm
-        attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm
+        attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
         def initialize(name, orm, columns=nil, column_fields=nil)
           name            = name.to_s
           @klass_name     = name.underscore.camelize
           @klass          = @klass_name.constantize rescue nil
+          @name_param     = name.underscore.gsub(/\//, '_')
           @name_singular  = name.underscore.gsub(/^.*\//, '') # convert submodules i.e. FooBar::Jank.all # => jank
           @name_plural    = @name_singular.pluralize
           @orm            = orm.to_sym
