@@ -44,7 +44,7 @@ begin
 
     eval Shared
   end
-rescue LoadError
+rescue LoadError, Dalli::RingError
   warn "Skipping memcache with dalli library tests"
 end
 
