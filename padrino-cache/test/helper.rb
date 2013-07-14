@@ -42,9 +42,3 @@ module MiniTest::Spec::SharedExamples
 end
  
 Object.class_eval { include(MiniTest::Spec::SharedExamples) }
-
-# Asserts that a file matches the pattern
-def assert_match_in_file(pattern, file)
-  assert File.exist?(file), "File '#{file}' does not exist!"
-  assert_match pattern, File.read(file)
-end
