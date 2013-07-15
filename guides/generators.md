@@ -235,9 +235,8 @@ You can also specify desired fields to be contained within your User model:
 The model generator will create multiple files within your application and based on your ORM component.
  Usually the model file will generate files similar to the following:
 
--   model definition file [app/models/user.rb]
+-   model definition file [models/user.rb]
 -   migration declaration [db/migrate/xxx\_create\_users.rb]
--   model unit test file [test/models/user\_test.rb]
 
 You can define as many models as you would like in a Padrino application using this generator.
 
