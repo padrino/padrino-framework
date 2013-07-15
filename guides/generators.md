@@ -237,7 +237,6 @@ The model generator will create multiple files within your application and based
 
 -   model definition file [models/user.rb]
 -   migration declaration [db/migrate/xxx\_create\_users.rb]
--   model unit test file [test/models/user\_test.rb]
 
 You can define as many models as you would like in a Padrino application using this generator.
 
