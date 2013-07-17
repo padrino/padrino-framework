@@ -10,7 +10,7 @@ describe "FormHelpers" do
 
   context 'for #form_tag method' do
     after(:each) { app.set :protect_from_csrf, true }
-    
+
     should "display correct forms in ruby" do
       actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test', :method => "post") { "Demo" }
       assert_has_tag(:form, :"accept-charset" => "UTF-8", :class => "test") { actual_html }
