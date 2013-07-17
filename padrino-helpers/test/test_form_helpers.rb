@@ -782,11 +782,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
       assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
 
     should "display select tag in haml" do
@@ -795,11 +804,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
       assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
 
     should "display select tag in slim" do
@@ -808,11 +826,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
       assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
   end
 
