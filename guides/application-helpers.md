@@ -504,7 +504,7 @@ Format helpers are several useful utilities for manipulating the format of text 
 The escape\_html and js\_escape\_html function are for taking an html string and escaping certain characters.
  `escape_html` will escape ampersands, brackets and quotes to their HTML/XML entities. This is useful to sanitize user content before displaying this on a template. `js_escape_html` is used for passing javascript information from a js template to a javascript function.
 
-    escape_html('<hello>&<goodbye>') # => <hello>&<goodbye>
+    escape_html('<hello>&<goodbye>') # => &lt;hello&gt;&amp;&lt;goodbye&gt;
 
 There is also an alias for escape\_html called `h` for even easier usage within templates.
 
