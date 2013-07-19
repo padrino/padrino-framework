@@ -58,7 +58,7 @@ module Padrino
       :info  =>  3,
       :debug =>  0,
       :devel => -1,
-    } unless const_defined?(:Levels)
+    } unless defined?(Levels)
 
     module Extensions
       ##
