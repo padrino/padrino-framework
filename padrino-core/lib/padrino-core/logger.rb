@@ -207,13 +207,8 @@ module Padrino
 
     include Extensions
 
-    attr_accessor :level
-    attr_accessor :auto_flush
-    attr_reader   :buffer
-    attr_reader   :log
-    attr_reader   :init_args
-    attr_accessor :log_static
-    attr_reader   :colorize_logging
+    attr_accessor :auto_flush, :level, :log_static
+    attr_reader   :buffer, :colorize_logging, :init_args, :log
 
     ##
     # Configuration for a given environment, possible options are:
