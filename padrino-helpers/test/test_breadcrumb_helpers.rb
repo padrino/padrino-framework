@@ -1,12 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
 describe "BreadcrumbHelpers" do
   include Padrino::Helpers::Breadcrumbs
-
-  def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
-  end
 
   def breadcrumb
     @breadcrumb ||= Padrino::Helpers::Breadcrumb.new
