@@ -673,7 +673,7 @@ describe "FormBuilder" do
 
     should "display correct form html without multipart, if 'multipart' option is specified 'false'" do
       actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8", :multipart => false) { |f| f.file_field :photo }
-      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register') { actual_html }
+      assert_has_no_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
     end
 
   end
