@@ -85,7 +85,7 @@ module Padrino
       #
       # @api public
       def add(name, url, caption)
-        items << { :name => name, :url => url.to_s, :caption => caption.to_s.humanize.html_safe }
+        items << { :name => name.to_sym, :url => url.to_s, :caption => caption.to_s.humanize.html_safe }
       end
 
       alias :<< :add
