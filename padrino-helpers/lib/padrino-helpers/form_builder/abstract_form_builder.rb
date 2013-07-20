@@ -2,7 +2,7 @@ module Padrino
   module Helpers
     module FormBuilder # @private
       class AbstractFormBuilder # @private
-        attr_accessor :template, :object
+        attr_accessor :template, :object, :multipart
 
         def initialize(template, object, options={})
           @template = template
@@ -139,6 +139,7 @@ module Padrino
 
         # f.file_field :photo, :class => 'avatar'
         def file_field(field, options={})
+          self.multipart = true
           options.reverse_merge!(:id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.file_field_tag field_name(field), options

@@ -665,6 +665,17 @@ describe "FormBuilder" do
       assert_have_selector '#demo  input.user-photo', :type => 'file', :name => 'markup_user[photo]', :id => 'markup_user_photo'
       assert_have_selector '#demo2 input.upload', :type => 'file', :name => 'markup_user[photo]', :id => 'markup_user_photo'
     end
+
+    should "display correct form html with multipart, even if no 'multipart' option is specified" do
+      actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8") { |f| f.file_field :photo }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
+    end
+
+    should "display correct form html without multipart, if 'multipart' option is specified 'false'" do
+      actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8", :multipart => false) { |f| f.file_field :photo }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register') { actual_html }
+    end
+
   end
 
   context 'for #select method' do

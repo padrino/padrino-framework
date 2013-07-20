@@ -34,6 +34,7 @@ module Padrino
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
         html = capture_html(instance, &block)
+        settings[:multipart] ||= instance.multipart
         settings.delete(:namespace)
         form_tag(url, settings) { html }
       end
