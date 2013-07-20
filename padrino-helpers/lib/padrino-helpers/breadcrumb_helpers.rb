@@ -2,8 +2,7 @@ module Padrino
   module Helpers
     class Breadcrumb
 
-      attr_accessor :home
-      attr_accessor :items
+      attr_accessor :home, :items
 
       DEFAULT_URL = "/"
       DEFAULT_CAPTION ="Home Page"
@@ -49,7 +48,7 @@ module Padrino
       #
       # @api public
       def reset
-        self.items=[]
+        self.items = []
         self.items << home
       end
 
@@ -141,9 +140,10 @@ module Padrino
         breadcrumbs.items[0..-2].each do |item|
           content << render_item(item, bootstrap)
         end
-        last = link_to(breadcrumbs.items.last[:caption], breadcrumbs.items.last[:url])
+        last = breadcrumbs.items.last
+        last = link_to(last[:caption], last[:url])
         content << safe_content_tag(:li, last, :class => active)
-        safe_content_tag(:ul, content, :class => "breadcrumb" )
+        safe_content_tag(:ul, content, :class => "breadcrumb")
       end
 
       private
@@ -163,7 +163,7 @@ module Padrino
         content = ""
         content << link_to(item[:caption], item[:url])
         content << safe_content_tag(:span, "/", :class => "divider") if bootstrap
-        safe_content_tag(:li, content )
+        safe_content_tag(:li, content)
       end
 
     end # Breadcrumb
