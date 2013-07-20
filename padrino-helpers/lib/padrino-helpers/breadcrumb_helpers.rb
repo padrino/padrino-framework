@@ -130,8 +130,8 @@ module Padrino
       #  = breadcrumbs @breacrumbs
       #  # Generates:
       #  # <ul>
-      #  #   <li><a herf="/foo" >Foo Link</a></li>
-      #  #   <li class="active" ><a herf="/bar">Bar Link</a></li>
+      #  #   <li><a href="/foo">Foo Link</a></li>
+      #  #   <li class="active"><a href="/bar">Bar Link</a></li>
       #  # </ul>
       #
       #
