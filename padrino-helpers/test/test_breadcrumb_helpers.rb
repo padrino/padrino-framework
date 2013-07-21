@@ -24,6 +24,12 @@ describe "BreadcrumbHelpers" do
       breadcrumb.add "foo", "/foo", "foo link"
       assert_has_tag(:li, :class => "custom-active") { breadcrumbs(breadcrumb, nil, "custom-active") }
     end
+
+    should "support options" do
+      assert_has_tag(:ul, :class => "breadcrumbs-class breadcrumb", :id => "breadcrumbs-id") do
+        breadcrumbs(breadcrumb, nil, nil, :id => "breadcrumbs-id", :class => "breadcrumbs-class")
+      end
+    end
   end
 
   context "for #add method" do
@@ -44,6 +50,15 @@ describe "BreadcrumbHelpers" do
     should "support caption" do
       breadcrumb.add :foo, "/foo", "Foo Link"
       assert_has_tag(:a, :content => "Foo link") { breadcrumbs(breadcrumb) }
+    end
+
+    should "support options" do
+      breadcrumb.add :foo, "/foo", "Foo Link", :id => "foo-id", :class => "foo-class"
+      breadcrumb.add :bar, "/bar", "Bar Link", :id => "bar-id", :class => "bar-class"
+
+      actual_html = breadcrumbs(breadcrumb)
+      assert_has_tag(:li, :class => "foo-class", :id => "foo-id") { actual_html }
+      assert_has_tag(:li, :class => "bar-class active", :id => "bar-id") { actual_html }
     end
   end
 
@@ -77,6 +92,14 @@ describe "BreadcrumbHelpers" do
     should "modified home item elements." do
       breadcrumb.set_home("/custom", "Custom Home Page")
       assert_has_tag(:a, :content => "Custom home page", :href => "/custom") { breadcrumbs(breadcrumb) }
+    end
+
+    should "support options" do
+      breadcrumb.set_home("/custom", "Custom Home Page", :id => "home-id")
+
+      actual_html = breadcrumbs(breadcrumb)
+      assert_has_tag(:li, :id => "home-id") { actual_html }
+      assert_has_tag(:a, :content => "Custom home page", :href => "/custom") { actual_html }
     end
   end
 
