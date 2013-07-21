@@ -17,8 +17,7 @@ module Padrino
       #
       # @api public
       def initialize
-        self.home = { :url => DEFAULT_URL, :caption => DEFAULT_CAPTION, :name => :home }
-        reset
+        reset!
       end
 
       ##
@@ -30,13 +29,21 @@ module Padrino
       # @param [String] caption
       #   The  text caption.
       #
+      # @param [Hash] options
+      #   The HTML options to include in li.
+      #
       # @example
-      #   breadcrumbs.set_home "/HomeFoo", "Foo Home"
+      #   breadcrumbs.set_home "/HomeFoo", "Foo Home", :id => "home-breadcrumb"
       #
       #
       # @api public
-      def set_home(url, caption)
-        self.home = { :url => url, :caption => caption.to_s.humanize.html_safe, :name => :home }
+      def set_home(url, caption, options = {})
+        self.home = {
+          :url     => url.to_s,
+          :caption => caption.to_s.humanize.html_safe,
+          :name    => :home,
+          :options => options
+        }
         reset
       end
 
@@ -60,7 +67,12 @@ module Padrino
       #
       # @api public
       def reset!
-        self.home = { :url => DEFAULT_URL, :caption => DEFAULT_CAPTION, :name => :home }
+        self.home = {
+          :name    => :home,
+          :url     => DEFAULT_URL,
+          :caption => DEFAULT_CAPTION,
+          :options => {}
+        }
         reset
       end
 
@@ -68,23 +80,31 @@ module Padrino
       # Add a new  breadcrumbs
       #
       # @param [String] name
-      #   The name of resource
+      #   The name of resource.
       # @param [Symbol] name
-      #   The name of resource
+      #   The name of resource.
       #
       # @param [String] url
       #   The url href.
       #
       # @param [String] caption
-      #   The text caption
+      #   The text caption.
+      #
+      # @param [Hash] options
+      #   The HTML options to include in li.
       #
       # @example
-      #   breadcrumbs.add "foo", "/foo", "Foo Link"
-      #   breadcrumbs.add :foo, "/foo", "Foo Link"
+      #   breadcrumbs.add "foo", "/foo", "Foo Link", :id => "foo-id"
+      #   breadcrumbs.add :foo, "/foo", "Foo Link", :class => "foo-class"
       #
       # @api public
-      def add(name, url, caption)
-        items << { :name => name.to_sym, :url => url.to_s, :caption => caption.to_s.humanize.html_safe }
+      def add(name, url, caption, options = {})
+        items << {
+          :name    => name.to_sym,
+          :url     => url.to_s,
+          :caption => caption.to_s.humanize.html_safe,
+          :options => options
+        }
       end
 
       alias :<< :add
@@ -135,15 +155,22 @@ module Padrino
       #
       #
       # @api public
-      def breadcrumbs(breadcrumbs, bootstrap=false, active="active")
-        content=""
+      def breadcrumbs(breadcrumbs, bootstrap = false, active = "active", options = {})
+        content = ""
         breadcrumbs.items[0..-2].each do |item|
           content << render_item(item, bootstrap)
         end
         last = breadcrumbs.items.last
+        last_options = last[:options]
         last = link_to(last[:caption], last[:url])
-        content << safe_content_tag(:li, last, :class => active)
-        safe_content_tag(:ul, content, :class => "breadcrumb")
+
+        classes = [options[:class], last_options[:class]].map { |class_name| class_name.to_s.split(/\s/) }
+        classes[0] << "breadcrumb"
+        classes[1] << active if active
+        options[:class], last_options[:class] = classes.map { |class_name| class_name * " " }
+
+        content << safe_content_tag(:li, last, last_options)
+        safe_content_tag(:ul, content, options)
       end
 
       private
@@ -163,7 +190,7 @@ module Padrino
         content = ""
         content << link_to(item[:caption], item[:url])
         content << safe_content_tag(:span, "/", :class => "divider") if bootstrap
-        safe_content_tag(:li, content)
+        safe_content_tag(:li, content, item[:options])
       end
 
     end # Breadcrumb
