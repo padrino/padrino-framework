@@ -143,6 +143,9 @@ module Padrino
       # @param [String] active
       #  Css class style set to active breadcrumb
       #
+      # @param [Hash] options
+      #   The HTML options to include in ul.
+      #
       # @return [String] Unordered list with breadcrumbs
       #
       # @example
