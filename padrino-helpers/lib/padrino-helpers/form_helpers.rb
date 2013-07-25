@@ -355,13 +355,13 @@ module Padrino
       #
       # @example
       #   text_field_tag :first_name, :maxlength => 40, :required => true
-      #   # => <input name="first_name" maxlength="40" required type="text">
+      #   # => <input name="first_name" maxlength="40" required type="text" />
       #
       #   text_field_tag :last_name, :class => 'string', :size => 40
-      #   # => <input name="last_name" class="string" size="40" type="text">
+      #   # => <input name="last_name" class="string" size="40" type="text" />
       #
       #   text_field_tag :username, :placeholder => 'Your Username'
-      #   # => <input name="username" placeholder="Your Username" type="text">
+      #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       # @api public
       def text_field_tag(name, options={})
@@ -417,16 +417,16 @@ module Padrino
       #
       # @example
       #   number_field_tag :quanity, :class => 'numeric'
-      #   # => <input name="quanity" class="numeric" type="number">
+      #   # => <input name="quanity" class="numeric" type="number" />
       #
       #   number_field_tag :zip_code, :pattern => /[0-9]{5}/
-      #   # => <input name="zip_code" pattern="[0-9]{5}" type="number">
+      #   # => <input name="zip_code" pattern="[0-9]{5}" type="number" />
       #
       #   number_field_tag :credit_card, :autocomplete => :off
-      #   # => <input name="credit_card" autocomplete="off" type="number">
+      #   # => <input name="credit_card" autocomplete="off" type="number" />
       #
       #   number_field_tag :age, :min => 18, :max => 120, :step => 1
-      #   # => <input name="age" min="18" max="120" step="1" type="number">
+      #   # => <input name="age" min="18" max="120" step="1" type="number" />
       #
       # @api public
       def number_field_tag(name, options={})
@@ -440,15 +440,15 @@ module Padrino
       #
       # @example
       #   telephone_field_tag :phone_number, :class => 'string'
-      #   # => <input name="phone_number" class="string" type="tel">
+      #   # => <input name="phone_number" class="string" type="tel" />
       #
       #  telephone_field_tag :cell_phone, :tabindex => 1
       #  telephone_field_tag :work_phone, :tabindex => 2
       #  telephone_field_tag :home_phone, :tabindex => 3
       #
-      #  # => <input name="cell_phone" tabindex="1" type="tel">
-      #  # => <input name="work_phone" tabindex="2" type="tel">
-      #  # => <input name="home_phone" tabindex="3" type="tel">
+      #  # => <input name="cell_phone" tabindex="1" type="tel" />
+      #  # => <input name="work_phone" tabindex="2" type="tel" />
+      #  # => <input name="home_phone" tabindex="3" type="tel" />
       #
       # @api public
       def telephone_field_tag(name, options={})
@@ -463,10 +463,10 @@ module Padrino
       #
       # @example
       #   email_field_tag :email, :placeholder => 'you@example.com'
-      #   # => <input name="email" placeholder="you@example.com" type="email">
+      #   # => <input name="email" placeholder="you@example.com" type="email" />
       #
       #   email_field_tag :email, :value => 'padrinorb@gmail.com', :readonly => true
-      #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email">
+      #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
       # @api public
       def email_field_tag(name, options={})
@@ -480,16 +480,16 @@ module Padrino
       #
       # @example
       #  search_field_tag :search, :placeholder => 'Search this website...'
-      #  # => <input name="search" placeholder="Search this website..." type="search">
+      #  # => <input name="search" placeholder="Search this website..." type="search" />
       #
       #  search_field_tag :search, :maxlength => 15, :class => ['search', 'string']
-      #  # => <input name="search" maxlength="15" class="search string">
+      #  # => <input name="search" maxlength="15" class="search string" />
       #
       #  search_field_tag :search, :id => 'search'
-      #  # => <input name="search" id="search" type="search">
+      #  # => <input name="search" id="search" type="search" />
       #
       #  search_field_tag :search, :autofocus => true
-      #  # => <input name="search" autofocus type="search">
+      #  # => <input name="search" autofocus type="search" />
       #
       # @api public
       def search_field_tag(name, options={})
@@ -503,10 +503,10 @@ module Padrino
       #
       # @example
       #  url_field_tag :favorite_website, :placeholder => 'http://padrinorb.com'
-      #  <input name="favorite_website" placeholder="http://padrinorb.com." type="url">
+      #  <input name="favorite_website" placeholder="http://padrinorb.com." type="url" />
       #
       #  url_field_tag :home_page, :class => 'string url'
-      #  <input name="home_page" class="string url", type="url">
+      #  <input name="home_page" class="string url", type="url" />
       #
       # @api public
       def url_field_tag(name, options={})
