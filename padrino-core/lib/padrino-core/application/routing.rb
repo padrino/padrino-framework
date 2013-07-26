@@ -98,6 +98,30 @@ class HttpRouter
         []
       end
     end
+
+    def to(dest = nil, &dest_block)
+      @dest = dest || dest_block || raise("you didn't specify a destination")
+
+      @router.current_order ||= 0
+      @order = @router.current_order
+      @router.current_order += 1
+
+      if @dest.respond_to?(:url_mount=)
+        urlmount = UrlMount.new(@path_for_generation, @default_values || {}) # TODO url mount should accept nil here.
+        urlmount.url_mount = @router.url_mount if @router.url_mount
+        @dest.url_mount = urlmount
+      end
+      self
+    end
+
+    attr_accessor :order
+
+  end
+
+  attr_accessor :current_order
+
+  def sort!
+    @routes = @routes.sort{ |a, b| a.order <=> b.order }
   end
 
   #Monkey patching the Request class. Using Rack::Utils.unescape rather than
@@ -466,6 +490,7 @@ module Padrino
         else
           deferred_routes.each { |_, routes| routes.each { |(route, dest)| route.to(dest) } }
           @deferred_routes = nil
+          router.sort!
           router
         end
       end
