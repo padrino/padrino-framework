@@ -121,7 +121,7 @@ class HttpRouter
   attr_accessor :current_order
 
   def sort!
-    @routes = @routes.sort{ |a, b| a.order <=> b.order }
+    @routes.sort!{ |a, b| a.order <=> b.order }
   end
 
   #Monkey patching the Request class. Using Rack::Utils.unescape rather than
