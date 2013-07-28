@@ -814,7 +814,6 @@ describe "Routing" do
 
 
   should 'respect priorities' do
-    skip
     route_order = []
     mock_app do
       get(:index, :priority => :normal) { route_order << :normal; pass }
