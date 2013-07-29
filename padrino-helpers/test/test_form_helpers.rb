@@ -960,6 +960,30 @@ describe "FormHelpers" do
       end
       assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
     end
+
+    should 'display correct button_to in erb' do
+      visit '/erb/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+    end
+
+    should 'display correct button_to in haml' do
+      visit '/haml/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+    end
+
+    should 'display correct button_to in slim' do
+      visit '/slim/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+    end
   end
 
   context 'for #range_field_tag' do
