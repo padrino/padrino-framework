@@ -44,6 +44,7 @@
 * NEW #1358 Add test file for breadcrumbs. (@namusyaka)
 * FIX #1361 prioritized routes are working again (@namusyaka)
 * FIX #1257 Add a test to show use case for routing priority (@jeffutter)
+* FIX #1365 padrino rake mi:create_indexes task looks at subdirs (@natsumesou)
 
 == 0.11.2 (May 20th 2013)
 
