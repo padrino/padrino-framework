@@ -45,6 +45,7 @@
 * FIX #1361 prioritized routes are working again (@namusyaka)
 * FIX #1257 Add a test to show use case for routing priority (@jeffutter)
 * FIX #1365 padrino rake mi:create_indexes task looks at subdirs (@natsumesou)
+* FIX #1367 bad placement output of button_to (@namusyaka)
 
 == 0.11.2 (May 20th 2013)
 
