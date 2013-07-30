@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.11.3 (Unreleased)
+== 0.11.3 (July 29th 2013)
 
 * FIX #1297 Added missing comma to spec_helper.rb generation (@lmorduch)
 * FIX #1298 DataMapper auto_migrate/auto_upgrade the default repository (@Ortuna)
