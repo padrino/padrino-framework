@@ -488,7 +488,7 @@ module Padrino
         if deferred_routes.empty?
           router
         else
-          deferred_routes.each { |_, routes| routes.each { |(route, dest)| route.to(dest) } }
+          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
           @deferred_routes = nil
           router.sort!
           router
@@ -497,7 +497,7 @@ module Padrino
 
       # Returns all routes that were deferred based on their priority.
       def deferred_routes
-        @deferred_routes ||= Hash[ROUTE_PRIORITY.values.sort.map{|p| [p, []]}]
+        @deferred_routes ||= ROUTE_PRIORITY.map{[]}
       end
 
       ##
