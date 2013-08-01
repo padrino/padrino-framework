@@ -497,7 +497,7 @@ module Padrino
 
       # Returns all routes that were deferred based on their priority.
       def deferred_routes
-        @deferred_routes ||= ROUTE_PRIORITY.keys.map{[]}
+        @deferred_routes ||= ROUTE_PRIORITY.map{[]}
       end
 
       ##
