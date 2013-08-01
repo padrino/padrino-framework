@@ -263,7 +263,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         case abcs[Padrino.env][:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
           ActiveRecord::Base.establish_connection(abcs[Padrino.env])
-          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
+          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << "SET FOREIGN_KEY_CHECKS = 0;\n\n" << ActiveRecord::Base.connection.structure_dump << "\n\n SET FOREIGN_KEY_CHECKS = 1; \n"}
         when "postgresql"
           ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
           ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
