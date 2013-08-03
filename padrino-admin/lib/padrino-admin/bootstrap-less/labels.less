@@ -8,10 +8,10 @@
   font-size: 75%;
   font-weight: 500;
   line-height: 1;
-  color: #fff;
+  color: @label-color;
   text-align: center;
   white-space: nowrap;
-  vertical-align: middle;
+  vertical-align: baseline;
   background-color: @gray-light;
   border-radius: .25em;
 
@@ -19,7 +19,7 @@
   &[href] {
     &:hover,
     &:focus {
-      color: #fff;
+      color: @label-link-hover-color;
       text-decoration: none;
       cursor: pointer;
       background-color: darken(@gray-light, 10%);
@@ -30,41 +30,17 @@
 // Colors
 // Contextual variations (linked labels get darker on :hover)
 .label-danger {
-  background-color: @label-danger-bg;
-  &[href] {
-    &:hover,
-    &:focus {
-      background-color: darken(@label-danger-bg, 10%);
-    }
-  }
+  .label-variant(@label-danger-bg);
 }
 
 .label-success {
-  background-color: @label-success-bg;
-  &[href] {
-    &:hover,
-    &:focus {
-      background-color: darken(@label-success-bg, 10%);
-    }
-  }
+  .label-variant(@label-success-bg);
 }
 
 .label-warning {
-  background-color: @label-warning-bg;
-  &[href] {
-    &:hover,
-    &:focus {
-      background-color: darken(@label-warning-bg, 10%);
-    }
-  }
+  .label-variant(@label-warning-bg);
 }
 
 .label-info {
-  background-color: @label-info-bg;
-  &[href] {
-    &:hover,
-    &:focus {
-      background-color: darken(@label-info-bg, 10%);
-    }
-  }
+  .label-variant(@label-info-bg);
 }
