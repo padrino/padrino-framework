@@ -1,3 +1,4 @@
+# encoding: utf-8
 DM = (<<-DM) unless defined?(DM)
 ##
 # A MySQL connection:

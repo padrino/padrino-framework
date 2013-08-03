@@ -1,3 +1,4 @@
+# encoding: utf-8
 AR = (<<-AR) unless defined?(AR)
 ##
 # You can use other adapters like:

@@ -1,3 +1,4 @@
+# encoding: utf-8
 MONGOMATIC = (<<-MONGO) unless defined?(MONGOMATIC)
 
 case Padrino.env

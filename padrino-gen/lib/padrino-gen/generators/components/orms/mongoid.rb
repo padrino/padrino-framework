@@ -1,3 +1,4 @@
+# encoding: utf-8
 MONGOID = (<<-MONGO) unless defined?(MONGOID)
 # Connection.new takes host, port
 host = 'localhost'
