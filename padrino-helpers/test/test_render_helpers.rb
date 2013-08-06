@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/render_app/app')
 
 describe "RenderHelpers" do
   def app
-    RenderDemo.tap { |app| app.set :environment, :test }
+    RenderDemo
   end
 
   context 'for #partial method and object' do

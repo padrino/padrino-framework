@@ -4,6 +4,10 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 describe "NumberHelpers" do
   include Padrino::Helpers::NumberHelpers
 
+  def app
+    MarkupDemo
+  end
+
   def kilobytes(number)
     number * 1024
   end

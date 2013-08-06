@@ -4,15 +4,15 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 describe "FormBuilder" do
   include Padrino::Helpers::FormHelpers
 
+  def app
+    MarkupDemo
+  end
+
   # Dummy form builder for testing
   module Padrino::Helpers::FormBuilder
     class FakeFormBuilder < AbstractFormBuilder
       def foo_field; @template.content_tag(:span, "bar"); end
     end
-  end
-
-  def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
   end
 
   def setup
@@ -49,8 +49,7 @@ describe "FormBuilder" do
     end
 
     should "display form specifying default builder setting" do
-      self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder')).once
-      actual_html = ""
+      self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder', :protect_from_csrf => false)).at_least_once
       actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('span', :content => "bar") { actual_html }
