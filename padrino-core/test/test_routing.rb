@@ -151,6 +151,20 @@ describe "Routing" do
     assert_equal 404, status
   end
 
+  should "parse params when use regex for parts of a route" do
+    mock_app do
+      post :index, :with => [:foo, :bar], :bar => /.+/ do
+        "show #{params[:foo]}"
+      end
+
+      get :index, :map => '/mystuff/:a_id/boing/:boing_id' do
+        "show #{params[:a_id]} and #{params[:boing_id]}"
+      end
+    end
+    get "/mystuff/5/boing/2"
+    assert_equal "show 5 and 2", body
+  end
+
   should "not generate overlapping head urls" do
     app = mock_app do
       get("/main"){ "hello" }
