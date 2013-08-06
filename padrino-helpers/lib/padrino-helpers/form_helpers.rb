@@ -715,6 +715,7 @@ module Padrino
         input_tag(:image, options)
       end
 
+      ##
       # Constructs a hidden field containing a CSRF token.
       #
       # @param [String] token
@@ -727,11 +728,24 @@ module Padrino
       #
       # @api public
       def csrf_token_field(token = nil)
-        if defined? session
-          token ||= (session[:csrf] ||= SecureRandom.hex(32))
-        end
+        hidden_field_tag csrf_param, :value => csrf_token
+      end
 
-        hidden_field_tag :authenticity_token, :value => token
+      ##
+      # Constructs meta tags `csrf-param` and `csrf-token` with the name of the
+      # cross-site request forgery protection parameter and token, respectively.
+      #
+      # @return [String] The meta tags with the CSRF token and the param your app expects it in.
+      #
+      # @example
+      #   csrf_meta_tags
+      #
+      # @api public
+      def csrf_meta_tags
+        if is_protected_from_csrf?
+          meta_tag(csrf_param, :name => 'csrf-param') <<
+          meta_tag(csrf_token, :name => 'csrf-token')
+        end
       end
 
       ##
@@ -866,6 +880,32 @@ module Padrino
           end
         end
 
+        ##
+        # Returns whether the application is being protected from CSRF. Defaults to true.
+        #
+        def is_protected_from_csrf?
+          defined?(settings) ? settings.protect_from_csrf : true
+        end
+
+        ##
+        # Returns the current CSRF token (based on the session). If it doesn't exist,
+        # it will create one and assign it to the session's `csrf` key.
+        #
+        def csrf_token
+          session[:csrf] ||= SecureRandom.hex(32) if defined?(session)
+        end
+
+        ##
+        # Returns the param/field name in which your CSRF token should be expected by your
+        # controllers. Defaults to `authenticity_token`.
+        #
+        # Set this in your application with `set :csrf_param, :something_else`.
+        #
+        def csrf_param
+          defined?(settings) && settings.respond_to?(:csrf_param) ?
+            settings.csrf_param : :authenticity_token
+        end
+
       private
         ##
         # Returns the FormBuilder class to use based on all available setting sources
@@ -906,16 +946,6 @@ module Padrino
           Array(selected_values).any? do |selected|
             [value.to_s, caption.to_s].include?(selected.to_s)
           end
-        end
-
-        ##
-        # Returns whether the application is being protected from csrf
-        #
-        def is_protected_from_csrf?
-          return true unless defined? app
-          return true unless app.respond_to?(:protect_from_csrf)
-          return true if app.protect_from_csrf == nil
-          app.protect_from_csrf
         end
     end # FormHelpers
   end # Helpers

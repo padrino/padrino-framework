@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
 describe "OutputHelpers" do
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
   end
 
   context 'for #content_for method' do
