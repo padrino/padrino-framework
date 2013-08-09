@@ -124,6 +124,24 @@ class HttpRouter
     @routes.sort!{ |a, b| a.order <=> b.order }
   end
 
+  class Node::SpanningRegex
+    def to_code
+      params_count = @ordered_indicies.size
+      whole_path_var = "whole_path#{root.next_counter}"
+      "#{whole_path_var} = request.joined_path
+      if match = #{@matcher.inspect}.match(#{whole_path_var}) and match.begin(0).zero?
+        _#{whole_path_var} = request.path.dup
+        " << param_capturing_code << "
+        remaining_path = #{whole_path_var}[match[0].size + (#{whole_path_var}[match[0].size] == ?/ ? 1 : 0), #{whole_path_var}.size]
+        request.path = remaining_path.split('/')
+        #{node_to_code}
+        request.path = _#{whole_path_var}
+        request.params.slice!(#{-params_count}, #{params_count})
+      end
+      "
+    end
+  end
+
   #Monkey patching the Request class. Using Rack::Utils.unescape rather than
   #URI.unescape which can't handle utf-8 chars
   class Request
