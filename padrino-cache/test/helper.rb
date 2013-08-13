@@ -5,7 +5,6 @@ require File.expand_path('../../../load_paths', __FILE__)
 require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'helper')
 require 'uuid'
 require 'padrino-cache'
-require 'fileutils'
 
 class MiniTest::Spec
 
