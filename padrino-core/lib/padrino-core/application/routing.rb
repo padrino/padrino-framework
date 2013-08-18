@@ -503,14 +503,12 @@ module Padrino
 
       # Compiles the routes including deferred routes.
       def compiled_router
-        if deferred_routes.empty?
-          router
-        else
+        if @deferred_routes
           deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
           @deferred_routes = nil
           router.sort!
-          router
         end
+        router
       end
 
       # Returns all routes that were deferred based on their priority.
