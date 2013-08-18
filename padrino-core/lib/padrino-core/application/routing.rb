@@ -503,7 +503,7 @@ module Padrino
 
       # Compiles the routes including deferred routes.
       def compiled_router
-        if deferred_routes.empty?
+        if deferred_routes.all?(&:empty?)
           router
         else
           deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
