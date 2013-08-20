@@ -335,7 +335,7 @@ describe "FormHelpers" do
   context 'for #text_field_tag method' do
     should "display text field in ruby" do
       actual_html = text_field_tag(:username, :class => 'long')
-      assert_has_tag(:input, :type => 'text', :class => "long", :name => 'username') { actual_html }
+      assert_has_tag(:input, :type => 'text', :class => "long", :name => 'username', :id => 'username') { actual_html }
     end
 
     should "display text field in erb" do
@@ -360,7 +360,7 @@ describe "FormHelpers" do
   context 'for #number_field_tag method' do
     should "display number field in ruby" do
       actual_html = number_field_tag(:age, :class => 'numeric')
-      assert_has_tag(:input, :type => 'number', :class => 'numeric', :name => 'age') { actual_html }
+      assert_has_tag(:input, :type => 'number', :class => 'numeric', :name => 'age', :id => 'age') { actual_html }
     end
 
     should "display number field in erb" do
@@ -385,7 +385,7 @@ describe "FormHelpers" do
   context 'for #telephone_field_tag method' do
     should "display number field in ruby" do
       actual_html = telephone_field_tag(:telephone, :class => 'numeric')
-      assert_has_tag(:input, :type => 'tel', :class => 'numeric', :name => 'telephone') { actual_html }
+      assert_has_tag(:input, :type => 'tel', :class => 'numeric', :name => 'telephone', :id => 'telephone') { actual_html }
     end
 
     should "display telephone field in erb" do
@@ -410,7 +410,7 @@ describe "FormHelpers" do
   context 'for #search_field_tag method' do
     should "display search field in ruby" do
       actual_html = search_field_tag(:search, :class => 'string')
-      assert_has_tag(:input, :type => 'search', :class => 'string', :name => 'search') { actual_html }
+      assert_has_tag(:input, :type => 'search', :class => 'string', :name => 'search', :id => 'search') { actual_html }
     end
 
     should "display search field in erb" do
@@ -435,7 +435,7 @@ describe "FormHelpers" do
   context 'for #email_field_tag method' do
     should "display email field in ruby" do
       actual_html = email_field_tag(:email, :class => 'string')
-      assert_has_tag(:input, :type => 'email', :class => 'string', :name => 'email') { actual_html }
+      assert_has_tag(:input, :type => 'email', :class => 'string', :name => 'email', :id => 'email') { actual_html }
     end
 
     should "display email field in erb" do
@@ -460,7 +460,7 @@ describe "FormHelpers" do
   context 'for #url_field_tag method' do
     should "display url field in ruby" do
       actual_html = url_field_tag(:webpage, :class => 'string')
-      assert_has_tag(:input, :type => 'url', :class => 'string', :name => 'webpage') { actual_html }
+      assert_has_tag(:input, :type => 'url', :class => 'string', :name => 'webpage', :id => 'webpage') { actual_html }
     end
 
     should "display url field in erb" do
@@ -485,7 +485,7 @@ describe "FormHelpers" do
   context 'for #text_area_tag method' do
     should "display text area in ruby" do
       actual_html = text_area_tag(:about, :class => 'long')
-      assert_has_tag(:textarea, :class => "long", :name => 'about') { actual_html }
+      assert_has_tag(:textarea, :class => "long", :name => 'about', :id => 'about') { actual_html }
     end
 
     should "display text area in ruby with specified content" do
@@ -512,7 +512,7 @@ describe "FormHelpers" do
   context 'for #password_field_tag method' do
     should "display password field in ruby" do
       actual_html = password_field_tag(:password, :class => 'long')
-      assert_has_tag(:input, :type => 'password', :class => "long", :name => 'password') { actual_html }
+      assert_has_tag(:input, :type => 'password', :class => "long", :name => 'password', :id => 'password') { actual_html }
     end
 
     should "display password field in erb" do
@@ -537,7 +537,7 @@ describe "FormHelpers" do
   context 'for #file_field_tag method' do
     should "display file field in ruby" do
       actual_html = file_field_tag(:photo, :class => 'photo')
-      assert_has_tag(:input, :type => 'file', :class => "photo", :name => 'photo') { actual_html }
+      assert_has_tag(:input, :type => 'file', :class => "photo", :name => 'photo', :id => 'photo') { actual_html }
     end
 
     should "have an array name with multiple option" do
@@ -564,7 +564,7 @@ describe "FormHelpers" do
   context "for #check_box_tag method" do
     should "display check_box tag in ruby" do
       actual_html = check_box_tag("clear_session")
-      assert_has_tag(:input, :type => 'checkbox', :value => '1', :name => 'clear_session') { actual_html }
+      assert_has_tag(:input, :type => 'checkbox', :value => '1', :name => 'clear_session', :id => 'clear_session') { actual_html }
       assert_has_no_tag(:input, :type => 'hidden') { actual_html }
     end
 
@@ -593,9 +593,15 @@ describe "FormHelpers" do
   end
 
   context "for #radio_button_tag method" do
+
+    should "display radio_button tag without a value in ruby" do
+      actual_html = radio_button_tag("gender")
+      assert_has_tag(:input, :type => 'radio', :name => 'gender', :id => 'gender') { actual_html }
+    end
+
     should "display radio_button tag in ruby" do
       actual_html = radio_button_tag("gender", :value => 'male')
-      assert_has_tag(:input, :type => 'radio', :value => 'male', :name => 'gender') { actual_html }
+      assert_has_tag(:input, :type => 'radio', :value => 'male', :name => 'gender', :id => 'gender_male') { actual_html }
     end
 
     should "display radio_button tag in ruby with extended attributes" do
@@ -631,7 +637,7 @@ describe "FormHelpers" do
   context "for #select_tag method" do
     should "display select tag in ruby" do
       actual_html = select_tag(:favorite_color, :options => ['green', 'blue', 'black'], :include_blank => true)
-      assert_has_tag(:select, :name => 'favorite_color') { actual_html }
+      assert_has_tag(:select, :name => 'favorite_color', :id => 'favorite_color') { actual_html }
       assert_has_tag('select option:first-child', :content => '') { actual_html }
       assert_has_tag('select option', :content => 'green', :value => 'green') { actual_html }
       assert_has_tag('select option', :content => 'blue',  :value => 'blue')  { actual_html }

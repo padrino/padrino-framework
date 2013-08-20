@@ -357,17 +357,17 @@ module Padrino
       #
       # @example
       #   text_field_tag :first_name, :maxlength => 40, :required => true
-      #   # => <input name="first_name" maxlength="40" required type="text" />
+      #   # => <input id="first_name" name="first_name" maxlength="40" required type="text" />
       #
       #   text_field_tag :last_name, :class => 'string', :size => 40
-      #   # => <input name="last_name" class="string" size="40" type="text" />
+      #   # => <input id="last_name" name="last_name" class="string" size="40" type="text" />
       #
       #   text_field_tag :username, :placeholder => 'Your Username'
-      #   # => <input name="username" placeholder="Your Username" type="text" />
+      #   # => <input id="username" name="username" placeholder="Your Username" type="text" />
       #
       # @api public
       def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge!(:name => name))
+        input_tag(:text, options.reverse_merge!(:name => name, :id => name))
       end
 
       ##
@@ -419,20 +419,20 @@ module Padrino
       #
       # @example
       #   number_field_tag :quanity, :class => 'numeric'
-      #   # => <input name="quanity" class="numeric" type="number" />
+      #   # => <input id="quantity" name="quanity" class="numeric" type="number" />
       #
       #   number_field_tag :zip_code, :pattern => /[0-9]{5}/
-      #   # => <input name="zip_code" pattern="[0-9]{5}" type="number" />
+      #   # => <input id="zip_code" name="zip_code" pattern="[0-9]{5}" type="number" />
       #
       #   number_field_tag :credit_card, :autocomplete => :off
-      #   # => <input name="credit_card" autocomplete="off" type="number" />
+      #   # => <input id="credit_card" name="credit_card" autocomplete="off" type="number" />
       #
       #   number_field_tag :age, :min => 18, :max => 120, :step => 1
-      #   # => <input name="age" min="18" max="120" step="1" type="number" />
+      #   # => <input id="age" name="age" min="18" max="120" step="1" type="number" />
       #
       # @api public
       def number_field_tag(name, options={})
-        input_tag(:number, options.reverse_merge(:name => name))
+        input_tag(:number, options.reverse_merge(:name => name, :id => name))
       end
 
       ##
@@ -448,13 +448,13 @@ module Padrino
       #  telephone_field_tag :work_phone, :tabindex => 2
       #  telephone_field_tag :home_phone, :tabindex => 3
       #
-      #  # => <input name="cell_phone" tabindex="1" type="tel" />
-      #  # => <input name="work_phone" tabindex="2" type="tel" />
-      #  # => <input name="home_phone" tabindex="3" type="tel" />
+      #  # => <input id="cell_phone" name="cell_phone" tabindex="1" type="tel" />
+      #  # => <input id="work_phone" name="work_phone" tabindex="2" type="tel" />
+      #  # => <input id="home_phone" name="home_phone" tabindex="3" type="tel" />
       #
       # @api public
       def telephone_field_tag(name, options={})
-        input_tag(:tel, options.reverse_merge(:name => name))
+        input_tag(:tel, options.reverse_merge(:name => name, :id => name))
       end
       alias_method :phone_field_tag, :telephone_field_tag
 
@@ -465,14 +465,14 @@ module Padrino
       #
       # @example
       #   email_field_tag :email, :placeholder => 'you@example.com'
-      #   # => <input name="email" placeholder="you@example.com" type="email" />
+      #   # => <input id="email" name="email" placeholder="you@example.com" type="email" />
       #
       #   email_field_tag :email, :value => 'padrinorb@gmail.com', :readonly => true
-      #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
+      #   # => <input id="email" name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
       # @api public
       def email_field_tag(name, options={})
-        input_tag(:email, options.reverse_merge(:name => name))
+        input_tag(:email, options.reverse_merge(:name => name, :id => name))
       end
 
       ##
@@ -482,20 +482,20 @@ module Padrino
       #
       # @example
       #  search_field_tag :search, :placeholder => 'Search this website...'
-      #  # => <input name="search" placeholder="Search this website..." type="search" />
+      #  # => <input id="search" name="search" placeholder="Search this website..." type="search" />
       #
       #  search_field_tag :search, :maxlength => 15, :class => ['search', 'string']
-      #  # => <input name="search" maxlength="15" class="search string" />
+      #  # => <input id="search" name="search" maxlength="15" class="search string" />
       #
       #  search_field_tag :search, :id => 'search'
       #  # => <input name="search" id="search" type="search" />
       #
       #  search_field_tag :search, :autofocus => true
-      #  # => <input name="search" autofocus type="search" />
+      #  # => <input id="search" name="search" autofocus type="search" />
       #
       # @api public
       def search_field_tag(name, options={})
-        input_tag(:search, options.reverse_merge(:name => name))
+        input_tag(:search, options.reverse_merge(:name => name, :id => name))
       end
 
       ##
@@ -505,14 +505,14 @@ module Padrino
       #
       # @example
       #  url_field_tag :favorite_website, :placeholder => 'http://padrinorb.com'
-      #  <input name="favorite_website" placeholder="http://padrinorb.com." type="url" />
+      #  <input id="favorite_website" name="favorite_website" placeholder="http://padrinorb.com." type="url" />
       #
       #  url_field_tag :home_page, :class => 'string url'
-      #  <input name="home_page" class="string url", type="url" />
+      #  <input id="home_page" name="home_page" class="string url", type="url" />
       #
       # @api public
       def url_field_tag(name, options={})
-        input_tag(:url, options.reverse_merge(:name => name))
+        input_tag(:url, options.reverse_merge(:name => name, :id => name))
       end
 
       ##
@@ -525,7 +525,7 @@ module Padrino
       #
       # @api public
       def hidden_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :id => name)
         input_tag(:hidden, options)
       end
 
@@ -539,7 +539,7 @@ module Padrino
       #
       # @api public
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name, :rows => "", :cols => "")
+        options.reverse_merge!(:name => name, :rows => "", :cols => "", :id => name)
         content_tag(:textarea, options.delete(:value).to_s, options)
       end
 
@@ -553,7 +553,7 @@ module Padrino
       #
       # @api public
       def password_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :id => name)
         input_tag(:password, options)
       end
 
@@ -567,7 +567,7 @@ module Padrino
       #
       # @api public
       def check_box_tag(name, options={})
-        options.reverse_merge!(:name => name, :value => '1')
+        options.reverse_merge!(:name => name, :value => '1', :id => name)
         input_tag(:checkbox, options)
       end
 
@@ -581,7 +581,8 @@ module Padrino
       #
       # @api public
       def radio_button_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        id = options[:value] ? "#{name}_#{options[:value].parameterize.underscore}" : name
+        options.reverse_merge!(:name => name, :id => id)
         input_tag(:radio, options)
       end
 
@@ -596,7 +597,7 @@ module Padrino
       # @api public
       def file_field_tag(name, options={})
         name = "#{name}[]" if options[:multiple]
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :id => name)
         input_tag(:file, options)
       end
 
@@ -642,7 +643,7 @@ module Padrino
       #
       # @api public
       def select_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :id => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
         prompt = options.delete(:include_blank)
@@ -812,7 +813,7 @@ module Padrino
       #
       # @api public
       def range_field_tag(name, options = {})
-        options.reverse_merge!(:name => name)
+        options.reverse_merge!(:name => name, :id => name)
         if range = options.delete(:range)
           options[:min], options[:max] = range.min, range.max
         end
