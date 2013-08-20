@@ -5,7 +5,7 @@ describe "AssetTagHelpers" do
   include Padrino::Helpers::AssetTagHelpers
 
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
   end
 
   def flash
