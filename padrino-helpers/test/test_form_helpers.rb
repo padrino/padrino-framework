@@ -5,12 +5,14 @@ describe "FormHelpers" do
   include Padrino::Helpers::FormHelpers
 
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
+  end
+
+  class UnprotectedApp
+    def protect_from_csrf; false; end
   end
 
   context 'for #form_tag method' do
-    after(:each) { app.set :protect_from_csrf, true }
-
     should "display correct forms in ruby" do
       actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test', :method => "post") { "Demo" }
       assert_has_tag(:form, :"accept-charset" => "UTF-8", :class => "test") { actual_html }
@@ -73,19 +75,24 @@ describe "FormHelpers" do
       assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
     end
 
+    should "create csrf meta tags with token and param - #csrf_meta_tags" do
+      actual_html = csrf_meta_tags
+      assert_has_tag(:meta, :name => 'csrf-param') { actual_html }
+      assert_has_tag(:meta, :name => 'csrf-token') { actual_html }
+    end
+
+    should "have an authenticity_token by default" do
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
     should "not have an authenticity_token if passing protect_from_csrf: false" do
       actual_html = form_tag('/superadmindelete', :protect_from_csrf => false) { "Demo" }
       assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
     end
 
-    should "have an authenticity_token if protect_from_csrf is not set on app settings" do
-      app.set :protect_from_csrf, nil
-      actual_html = form_tag('/superadmindelete') { "Demo" }
-      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
-    end
-
     should "not have an authenticity_token if protect_from_csrf is false on app settings" do
-      app.set :protect_from_csrf, false
+      self.expects(:settings).returns(UnprotectedApp.new)
       actual_html = form_tag('/superadmindelete') { "Demo" }
       assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
     end

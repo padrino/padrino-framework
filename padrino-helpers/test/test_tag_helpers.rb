@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
 describe "TagHelpers" do
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
   end
 
   context 'for #tag method' do
