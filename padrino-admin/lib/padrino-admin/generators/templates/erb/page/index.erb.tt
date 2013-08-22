@@ -28,7 +28,7 @@
                     <%% form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do %>
                       <%%=hidden_field_tag :<%= @orm.name_singular %>_ids, :'data-delete-many-ids' => true %>
                       <%%=submit_tag pat(:delete), :class =>'list-menu-popover-delete-selected-btn btn btn-danger btn-small' %>
-                      <div class='btn btn-small cancel'><%%= pat(:cancel) %></div>
+                      <div class='btn btn-default btn-small cancel'><%%= pat(:cancel) %></div>
                     <%% end %>
                   </div>
                 </div>
@@ -67,7 +67,7 @@
                  <div class=popover-content>
                    <%%- form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do %>
                      <%%= submit_tag pat(:delete), :class =>'list-row-action-popover-delete-one-btn btn btn-danger btn-small' %>
-                     <div class="btn btn-small cancel"><%%= pat(:cancel) %></div>
+                     <div class="btn btn-default btn-small cancel"><%%= pat(:cancel) %></div>
                    <%% end %>
                </div>
              </div>
