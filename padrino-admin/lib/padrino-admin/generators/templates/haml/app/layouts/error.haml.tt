@@ -15,4 +15,4 @@
     .custom-error.text-center
       .custom-error-body.muted= yield
       .custom-error-footer
-        =link_to tag_icon('arrow-left'), "#", :onclick => "history.go(-1);return false;", :class =>"custom-error-go-back btn pull-left", :title => "Go back"
+        =link_to tag_icon('arrow-left'), "#", :onclick => "history.go(-1);return false;", :class =>"custom-error-go-back btn btn-default pull-left", :title => "Go back"
