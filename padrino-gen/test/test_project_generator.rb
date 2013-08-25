@@ -221,6 +221,13 @@ describe "ProjectGenerator" do
       assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
+
+    should "properly generate for mocha and riot" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=riot', '--mock=mocha', '--script=none') }
+      assert_match(/applying.*?mocha.*?mock/, out)
+      assert_match_in_file(/gem 'mocha'.*require => false/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/require 'mocha\/api'/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
   end
 
   context "the generator for orm components" do
