@@ -99,6 +99,13 @@ task :test do
   end
 end
 
+padrino_gems.each do |element|
+  desc "Run tests for #{element} component"
+  task element.to_s do
+    sh "cd #{element} && #{Gem.ruby} -S rake test"
+  end
+end
+
 desc "Run tests for all padrino stack gems"
 task :default => :test
 
