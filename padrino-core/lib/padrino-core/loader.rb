@@ -167,7 +167,7 @@ module Padrino
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
           rescue NameError, LoadError => e
-            Padrino.logger.devel "Problem while loading #{file}: #{e.to_s}"
+            Padrino.logger.devel "Problem while loading #{file}: #{e}"
             errors << e
             failed << file
           rescue Exception => e
