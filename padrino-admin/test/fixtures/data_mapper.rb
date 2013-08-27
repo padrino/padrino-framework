@@ -69,7 +69,7 @@ class Account
   private
     def generate_password
       return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--") if new?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{email}--") if new?
       self.crypted_password = password.encrypt(self.salt)
     end
 
