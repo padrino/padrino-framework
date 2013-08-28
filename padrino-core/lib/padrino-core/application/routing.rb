@@ -49,7 +49,7 @@ class HttpRouter
         filter! :before
         (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
         @layout = path.route.use_layout if path.route.use_layout
-        @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
+        @route.custom_conditions.each { |block| pass if block.bind(self).call == false }
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful        = true
