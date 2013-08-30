@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   # s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
   # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
 
-  s.add_dependency("tilt", "~> 1.3.7")
+  s.add_dependency("tilt", "~> 1.4.0")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
