@@ -13,16 +13,13 @@ require 'rack'
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
 
 class Sinatra::Base
-  # Allow assertions in request context
   include MiniTest::Assertions
 end
 
 class MiniTest::Spec
   include Rack::Test::Methods
 
-  # Sets up a Sinatra::Base subclass defined with the block
-  # given. Used in setup or individual spec methods to establish
-  # the application.
+  # Used in setup or individual spec methods to establish the application.
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
   end
@@ -31,20 +28,18 @@ class MiniTest::Spec
     Rack::Lint.new(@app)
   end
 
-  # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
     assert File.exist?(file), "File '#{file}' does not exist!"
     assert_match pattern, File.read(file)
   end
 
-  # Delegate other missing methods to response.
   def method_missing(name, *args, &block)
     if response && response.respond_to?(name)
       response.send(name, *args, &block)
     else
       super(name, *args, &block)
     end
-  rescue Rack::Test::Error # no response yet
+  rescue Rack::Test::Error
     super(name, *args, &block)
   end
 
