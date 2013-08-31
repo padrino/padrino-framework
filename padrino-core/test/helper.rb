@@ -8,10 +8,6 @@ require 'json'
 require 'rack/test'
 require 'rack'
 
-# Rubies < 1.9 don't handle hashes in the properly order so to prevent
-# this issue for now we remove extra values from mimetypes.
-Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
-
 class Sinatra::Base
   include MiniTest::Assertions
 end
@@ -65,11 +61,9 @@ class MiniTest::Spec
   end
 
   def with_template(name, content, options={})
-    # Build a temp layout
     template = create_template(name, content, options)
     yield
   ensure
-    # Remove temp layout
     File.unlink(template) rescue nil
     remove_views
   end
