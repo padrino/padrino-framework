@@ -4,7 +4,7 @@ require 'padrino-core/application/flash'
 require 'padrino-core/application/showexceptions'
 
 module Padrino
-  class ApplicationSetupError < RuntimeError # @private
+  class ApplicationSetupError < RuntimeError
   end
 
   ##
@@ -16,8 +16,6 @@ module Padrino
     register Padrino::Routing
 
     ##
-    # Returns the logger for this application.
-    #
     # @return [Padrino::Logger] Logger associated with this app.
     #
     def logger
@@ -25,8 +23,7 @@ module Padrino
     end
 
     class << self
-
-      def inherited(base) # @private
+      def inherited(base)
         begun_at = Time.now
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         base.default_configuration!
@@ -38,11 +35,11 @@ module Padrino
         ]).uniq!
         Padrino.require_dependencies(base.prerequisites)
         logger.devel :setup, begun_at, base
-        super(base) # Loading the subclass inherited method
+        super(base)
       end
 
       ##
-      # Reloads the application files from all defined load paths
+      # Reloads the application files from all defined load paths.
       #
       # This method is used from our Padrino Reloader during development mode
       # in order to reload the source files.
@@ -54,19 +51,19 @@ module Padrino
       #
       def reload!
         logger.devel "Reloading #{settings}"
-        reset! # Reset sinatra app
-        reset_router! # Reset all routes
+        reset!
+        reset_router!
         Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file
-        require_dependencies # Reload dependencies
-        default_filters!     # Reload filters
-        default_routes!      # Reload default routes
-        default_errors!      # Reload our errors
+        require_dependencies
+        default_filters!
+        default_routes!
+        default_errors!
         I18n.reload! if defined?(I18n) # Reload also our translations
         true
       end
 
       ##
-      # Resets application routes to only routes not defined by the user
+      # Resets application routes to only routes not defined by the user.
       #
       # @return [TrueClass]
       #
@@ -80,7 +77,7 @@ module Padrino
       end
 
       ##
-      # Returns the routes of our app.
+      # Returns the routes of the app.
       #
       # @example
       #   MyApp.routes
@@ -90,7 +87,7 @@ module Padrino
       end
 
       ##
-      # Setup the application by registering initializers, load paths and logger
+      # Setup the application by registering initializers, load paths and logger.
       # Invoked automatically when an application is first instantiated
       #
       # @return [TrueClass]
@@ -111,7 +108,7 @@ module Padrino
 
       ##
       # Run the Padrino app as a self-hosted server using
-      # Thin, Mongrel or WEBrick (in that order)
+      # Thin, Mongrel or WEBrick (in that order).
       #
       # @see Padrino::Server#start
       #
@@ -123,15 +120,15 @@ module Padrino
 
       ##
       # @return [Array]
-      #   directory that need to be added to +$LOAD_PATHS+ from this application
+      #   directory that need to be added to +$LOAD_PATHS+ from this application.
       #
       def load_paths
         @_load_paths ||= %w[models lib mailers controllers helpers].map { |path| File.join(settings.root, path) }
       end
 
       ##
-      # Returns default list of path globs to load as dependencies
-      # Appends custom dependency patterns to the be loaded for your Application
+      # Returns default list of path globs to load as dependencies.
+      # Appends custom dependency patterns to the be loaded for your Application.
       #
       # @return [Array]
       #   list of path globs to load as dependencies
@@ -148,7 +145,7 @@ module Padrino
       end
 
       ##
-      # An array of file to load before your app.rb, basically are files wich our app depends on.
+      # An array of file to load before your app.rb, basically are files which our app depends on.
       #
       # By default we look for files:
       #
@@ -158,7 +155,7 @@ module Padrino
       #   yourapp/lib.rb
       #   yourapp/lib/**/*.rb
       #
-      # @example Adding a custom perequisite
+      # @example Adding a custom prerequisite
       #   MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
       #
       def prerequisites
@@ -171,7 +168,7 @@ module Padrino
       #
       def default_configuration!
         # Overwriting Sinatra defaults
-        set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
+        set :app_file, File.expand_path(caller_files.first || $0)
         set :environment, Padrino.env
         set :reload, Proc.new { development? }
         set :logging, Proc.new { development? }
@@ -188,12 +185,9 @@ module Padrino
         set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
         set :authentication, false
-        # Padrino locale
         set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
-        # Authenticity token
         set :protect_from_csrf, false
         set :allow_disabled_csrf, false
-        # Load the Global Configurations
         class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
       end
 
@@ -211,7 +205,7 @@ module Padrino
       end
 
       ##
-      # This filter it's used for know the format of the request, and automatically set the content type.
+      # This filter is used for know the format of the request, and automatically set the content type.
       #
       def default_filters!
         before do
@@ -238,7 +232,7 @@ module Padrino
       end
 
       ##
-      # Requires all files within the application load paths
+      # Requires all files within the application load paths.
       #
       def require_dependencies
         Padrino.set_load_paths(*load_paths)
@@ -255,9 +249,9 @@ module Padrino
         builder.use Padrino::Reloader::Rack         if reload?
         builder.use Rack::MethodOverride            if method_override?
         builder.use Rack::Head
-        register    Padrino::Flash
-        setup_protection builder
-        setup_csrf_protection builder
+        register Padrino::Flash
+        setup_protection(builder)
+        setup_csrf_protection(builder)
         setup_application!
       end
 
@@ -279,15 +273,15 @@ ERROR
         if protect_from_csrf?
           if allow_disabled_csrf?
             builder.use Rack::Protection::AuthenticityToken,
-                        :reaction => :report,
+                        :reaction   => :report,
                         :report_key => 'protection.csrf.failed',
-                        :logger => logger
+                        :logger     => logger
           else
             builder.use Rack::Protection::AuthenticityToken,
                         :logger => logger
           end
         end
       end
-    end # self
-  end # Application
-end # Padrino
+    end
+  end
+end
