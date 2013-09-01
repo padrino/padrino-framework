@@ -64,8 +64,8 @@ module Padrino
 
       @called_from = first_caller
       Padrino.set_encoding
-      Padrino.set_load_paths(*load_paths) # We set the padrino load paths
-      Padrino::Logger.setup! # Initialize our logger
+      Padrino.set_load_paths(*load_paths)
+      Padrino::Logger.setup!
       Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
       Padrino.before_load.each(&:call) # Run before hooks
@@ -105,7 +105,7 @@ module Padrino
     end
 
     ##
-    # This adds the ablity to instantiate {Padrino.load!} after
+    # This adds the ability to instantiate {Padrino.load!} after
     # {Padrino::Application} definition.
     #
     def called_from
@@ -149,11 +149,8 @@ module Padrino
     def require_dependencies(*paths)
       options = paths.extract_options!
 
-      # Extract all files to load
       files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
-
       while files.present?
-        # List of errors and failed files
         errors, failed = [], []
 
         # We need a size to make sure things are loading
@@ -186,7 +183,7 @@ module Padrino
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
     # @return [Array<String>]
-    #   The dependencey paths.
+    #   The dependency paths.
     #
     # @example
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
