@@ -54,11 +54,8 @@ module Padrino
         reset!
         reset_router!
         Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file
-        require_dependencies
-        default_filters!
-        default_routes!
-        default_errors!
-        I18n.reload! if defined?(I18n) # Reload also our translations
+        reload_basic_components
+        reload_i18n
         true
       end
 
@@ -282,6 +279,17 @@ ERROR
           end
         end
       end
-    end
-  end
+
+      def reload_basic_components
+        require_dependencies
+        default_filters!
+        default_routes!
+        default_errors!
+      end
+
+      def reload_i18n
+        if defined?(I18n)
+          I18n.reload!
+        end
+      end
 end
