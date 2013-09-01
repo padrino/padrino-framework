@@ -147,6 +147,7 @@ module Padrino
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
     def require_dependencies(*paths)
+      options = paths.extract_options!
       files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
       while files.present?
         errors, failed = [], []
@@ -159,7 +160,6 @@ module Padrino
         # iteration, this prevent problems with rubinus
         files.dup.each do |file|
           begin
-            options = paths.extract_options!
             Padrino::Reloader.safe_load(file, options.dup)
             files.delete(file)
           rescue NameError, LoadError => e
