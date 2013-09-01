@@ -32,9 +32,9 @@ module Padrino
     def root(*args)
       File.expand_path(File.join(@root, *args))
     end
-    
+
     ##
-    # Returns the list of path globs to load as dependencies
+    # Returns the list of path globs to load as dependencies.
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
     # @return [Array<String>]
