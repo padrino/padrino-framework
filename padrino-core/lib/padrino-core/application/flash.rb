@@ -14,66 +14,66 @@ module Padrino
       include Enumerable
 
       def initialize(session=nil)
-        @_now  = session || {}
-        @_next = {}
+        @now  = session || {}
+        @next = {}
       end
 
       def now
-        @_now
+        @now
       end
 
       def next
-        @_next
+        @next
       end
 
       # @since 0.10.8
       # @api public
       def [](type)
-        @_now[type]
+        @now[type]
       end
 
       # @since 0.10.8
       # @api public
       def []=(type, message)
-        @_next[type] = message
+        @next[type] = message
       end
 
       # @since 0.10.8
       # @api public
       def delete(type)
-        @_now.delete(type)
+        @now.delete(type)
         self
       end
 
       # @since 0.10.8
       # @api public
       def keys
-        @_now.keys
+        @now.keys
       end
 
       # @since 0.10.8
       # @api public
       def key?(type)
-        @_now.key?(type)
+        @now.key?(type)
       end
 
       # @since 0.10.8
       # @api public
       def each(&block)
-        @_now.each(&block)
+        @now.each(&block)
       end
 
       # @since 0.10.8
       # @api public
       def replace(hash)
-        @_now.replace(hash)
+        @now.replace(hash)
         self
       end
 
       # @since 0.10.8
       # @api public
       def update(hash)
-        @_now.update(hash)
+        @now.update(hash)
         self
       end
       alias_method :merge!, :update
@@ -81,8 +81,8 @@ module Padrino
       # @since 0.10.8
       # @api public
       def sweep
-        @_now.replace(@_next)
-        @_next = {}
+        @now.replace(@next)
+        @next = {}
         self
       end
 
@@ -90,9 +90,9 @@ module Padrino
       # @api public
       def keep(key = nil)
         if key
-          @_next[key] = @_now[key]
+          @next[key] = @now[key]
         else
-          @_next.merge!(@_now)
+          @next.merge!(@now)
         end
         self
       end
@@ -101,9 +101,9 @@ module Padrino
       # @api public
       def discard(key = nil)
         if key
-          @_next.delete(key)
+          @next.delete(key)
         else
-          @_next = {}
+          @next = {}
         end
         self
       end
@@ -111,30 +111,30 @@ module Padrino
       # @since 0.10.8
       # @api public
       def clear
-        @_now.clear
+        @now.clear
       end
 
       # @since 0.10.8
       # @api public
       def empty?
-        @_now.empty?
+        @now.empty?
       end
 
       # @since 0.10.8
       # @api public
       def to_hash
-        @_now.dup
+        @now.dup
       end
 
       def length
-        @_now.length
+        @now.length
       end
       alias_method :size, :length
 
       # @since 0.10.8
       # @api public
       def to_s
-        @_now.to_s
+        @now.to_s
       end
 
       # @since 0.10.8
