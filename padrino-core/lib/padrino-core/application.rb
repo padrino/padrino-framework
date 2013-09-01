@@ -164,27 +164,9 @@ module Padrino
       # Defines default settings for Padrino application
       #
       def default_configuration!
-        # Overwriting Sinatra defaults
-        set :app_file, File.expand_path(caller_files.first || $0)
-        set :environment, Padrino.env
-        set :reload, Proc.new { development? }
-        set :logging, Proc.new { development? }
-        set :method_override, true
-        set :sessions, false
-        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
-        set :views, Proc.new { File.join(root, 'views') }
-        set :images_path, Proc.new { File.join(public_folder, 'images') }
-        set :protection, true
-        # Haml specific
-        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
-        # Padrino specific
-        set :uri_root, '/'
-        set :app_name, settings.to_s.underscore.to_sym
-        set :default_builder, 'StandardFormBuilder'
-        set :authentication, false
-        set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
-        set :protect_from_csrf, false
-        set :allow_disabled_csrf, false
+        settings_default
+        settings_haml
+        settings_padrino_specific
         class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
       end
 
@@ -292,4 +274,33 @@ ERROR
           I18n.reload!
         end
       end
+
+      def settings_default
+        set :app_file, File.expand_path(caller_files.first || $0)
+        set :environment, Padrino.env
+        set :reload, Proc.new { development? }
+        set :logging, Proc.new { development? }
+        set :method_override, true
+        set :sessions, false
+        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
+        set :views, Proc.new { File.join(root, 'views') }
+        set :images_path, Proc.new { File.join(public_folder, 'images') }
+        set :protection, true
+      end
+
+      def settings_haml
+        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
+      end
+
+      def settings_padrino_specific
+        set :uri_root, '/'
+        set :app_name, settings.to_s.underscore.to_sym
+        set :default_builder, 'StandardFormBuilder'
+        set :authentication, false
+        set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
+        set :protect_from_csrf, false
+        set :allow_disabled_csrf, false
+      end
+    end
+  end
 end
