@@ -9,7 +9,7 @@ module Padrino
   #
   # * Map a path to the specified App
   # * Ignore server names (this solve issues with vhost and domain aliases)
-  # * Use hosts instead of server name for mappings (this help us with our vhost and doman aliases)
+  # * Use hosts instead of server name for mappings (this help us with our vhost and domain aliases)
   #
   # @example
   #
@@ -27,7 +27,7 @@ module Padrino
   # @api semipublic
   class Router
 
-    # Constructs a new route mapper instance
+    # Constructs a new route mapper instance.
     def initialize(*mapping, &block)
       @mapping = []
       mapping.each { |m| map(m) }
@@ -94,5 +94,5 @@ module Padrino
     def sort!
       @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
     end
-  end # Router
-end # Padrino
+  end
+end
