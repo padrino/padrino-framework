@@ -31,7 +31,7 @@ module Padrino
     #   Padrino::Rendering::IGNORE_FILE_PATTERN << /~$/
     #
     IGNORE_FILE_PATTERN = [
-      /~$/ # This is for Gedit
+      /~$/
     ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
@@ -102,7 +102,7 @@ module Padrino
       end
 
       ##
-      # Caches the template file for the given rendering options
+      # Caches the template file for the given rendering options.
       #
       # @param [String] template_file
       #   The path of the template file.
@@ -136,7 +136,7 @@ module Padrino
       attr_reader :current_engine
 
       ##
-      # Get/Set the content_type
+      # Get/Set the content_type.
       #
       # @param [String, nil] type
       #   The Content-Type to use.
@@ -189,8 +189,8 @@ module Padrino
           # Data is options, and options is locals in this case
           data, options, locals = nil, data, options if data.is_a?(Hash)
 
-          # If data is unassigned then this is a likely a template to be resolved
-          # This means that no engine was explicitly defined
+          # If data is unassigned then this is a likely a template to be resolved.
+          # This means that no engine was explicitly defined.
           data, engine = *resolve_template(engine, options.dup) if data.nil?
 
           # Setup root
@@ -311,9 +311,9 @@ module Padrino
         def locale
           I18n.locale if defined?(I18n)
         end
-    end # InstanceMethods
-  end # Rendering
-end # Padrino
+    end
+  end
+end
 
 require 'padrino-core/application/rendering/extensions/haml'
 require 'padrino-core/application/rendering/extensions/erubis'
