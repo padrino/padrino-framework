@@ -1,22 +1,19 @@
 require 'sinatra/base'
-require 'padrino-core/version'
-require 'padrino-core/support_lite'
 require 'padrino-core/application'
-
 require 'padrino-core/caller'
 require 'padrino-core/command'
 require 'padrino-core/loader'
 require 'padrino-core/logger'
+require 'padrino-core/module'
 require 'padrino-core/mounter'
 require 'padrino-core/reloader'
 require 'padrino-core/router'
 require 'padrino-core/server'
+require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
-require 'padrino-core/module'
-
+require 'padrino-core/version'
 
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
-
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
