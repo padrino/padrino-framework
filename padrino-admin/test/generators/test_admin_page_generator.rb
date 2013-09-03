@@ -46,6 +46,17 @@ describe "AdminPageGenerator" do
       assert_match_in_file "elsif Padrino.env == :development && params[:bypass]", "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
     end
 
+    # users can override certain templates from a generators/templates folder in the destination_root
+    it "should use custom generator templates from the project root, if they exist" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      custom_template_path = "#{@apptmp}/sample_project/generators/templates/haml/page/"
+      `mkdir -p #{custom_template_path} && echo "%h1= 'Hello, custom generator' " > #{custom_template_path}index.haml.tt`
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/Hello, custom generator/, "#{@apptmp}/sample_project/admin/views/people/index.haml")
+    end
+
     describe "renderers" do
       it 'should correctly generate a new page with haml' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }

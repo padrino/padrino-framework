@@ -1,4 +1,4 @@
-require 'fileutils'
+require 'fileutils' unless defined?(FileUtils)
 require 'padrino-core'
 require 'padrino-helpers'
 FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)

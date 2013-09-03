@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
 describe "TagHelpers" do
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
   end
 
   context 'for #tag method' do
@@ -37,8 +37,8 @@ describe "TagHelpers" do
     end
 
     should "escape html" do
-      actual_html = tag(:br, :class => 'Example "bar"')
-      assert_equal "<br class=\"Example &quot;bar&quot;\" />", actual_html
+      actual_html = tag(:br, :class => 'Example <foo> & "bar"')
+      assert_equal "<br class=\"Example &lt;foo&gt; &amp; &quot;bar&quot;\" />", actual_html
     end
   end
 

@@ -182,10 +182,10 @@ module Padrino
       # @return [String] Meta html tag with specified +options+.
       #
       # @example
-      #   # Generates: <meta name="keywords" content="weblog,news">
+      #   # Generates: <meta name="keywords" content="weblog,news" />
       #   meta_tag "weblog,news", :name => "keywords"
       #
-      #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #
       # @api public

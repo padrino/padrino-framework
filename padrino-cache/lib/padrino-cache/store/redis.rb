@@ -57,10 +57,9 @@ module Padrino
         # @api public
         def set(key, value, opts = nil)
           value = parser.encode(value)
-          if opts && opts[:expires_in]
-            expires_in = opts[:expires_in].to_i
-            expires_in = expires_in if expires_in < EXPIRES_EDGE
-            @backend.setex(key, expires_in, value)
+          if opts && opts[:expires_in] && opts[:expires_in] >= 0
+            @backend.set(key, value)
+            @backend.expireat(key, get_expiry(opts))
           else
             @backend.set(key, value)
           end

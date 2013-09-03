@@ -76,7 +76,7 @@
       flash[:error] = pat(:destroy_many_error, :model => '<%= @orm.name_singular %>')
       redirect(url(:<%= @orm.name_plural %>, :index))
     end
-    ids = <%= @orm.parse_many_ids_on_params %>
+    ids = params[:<%= @orm.name_singular %>_ids].split(',').map(&:strip)
     <%= @orm.name_plural %> = <%= @orm.find_by_ids("ids") %>
     <% if @orm.name_singular == @admin_model %>
     if <%= @orm.name_plural %>.include? current_account

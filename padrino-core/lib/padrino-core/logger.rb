@@ -58,7 +58,7 @@ module Padrino
       :info  =>  3,
       :debug =>  0,
       :devel => -1,
-    } unless const_defined?(:Levels)
+    } unless defined?(Levels)
 
     module Extensions
       ##
@@ -207,13 +207,8 @@ module Padrino
 
     include Extensions
 
-    attr_accessor :level
-    attr_accessor :auto_flush
-    attr_reader   :buffer
-    attr_reader   :log
-    attr_reader   :init_args
-    attr_accessor :log_static
-    attr_reader   :colorize_logging
+    attr_accessor :auto_flush, :level, :log_static
+    attr_reader   :buffer, :colorize_logging, :init_args, :log
 
     ##
     # Configuration for a given environment, possible options are:
@@ -403,7 +398,7 @@ module Padrino
         env['rack.logger'] = Padrino.logger
         began_at = Time.now
         status, header, body = @app.call(env)
-        log(env, status, header, began_at)
+        log(env, status, header, began_at) if logger.debug?
         [status, header, body]
       end
 

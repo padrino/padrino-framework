@@ -70,6 +70,8 @@ module Padrino
         #
         # @param [Symbol] name
         #   cache key
+        # @param [Proc] block
+        #   block to be evaluated to cache key
         #
         # @example
         #   controller '/blog', :cache => true do
@@ -80,9 +82,17 @@ module Padrino
         #     end
         #   end
         #
+        # @example
+        #     get '/foo', :cache => true do
+        #       cache_key { param[:id] }
+        #       "my id is #{param[:id}"
+        #     end
+        #   end
+        #
         # @api public
-        def cache_key(name)
-          @route.cache_key = name
+        def cache_key(name = nil, &block)
+          raise "Can not provide both cache_key and a block" if name && block
+          @route.cache_key = block_given? ? block : name
         end
 
         # @private
@@ -90,8 +100,9 @@ module Padrino
           if route.cache and %w(GET HEAD).include?(verb)
             route.before_filters do
               if settings.caching?
-                began_at = Time.now
-                value = settings.cache.get(@route.cache_key || env['PATH_INFO'])
+                began_at     = Time.now
+
+                value = settings.cache.get(resolve_cache_key || env['PATH_INFO'])
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
@@ -103,15 +114,14 @@ module Padrino
 
             route.after_filters do
               if settings.caching? && @_response_buffer.kind_of?(String)
-                began_at = Time.now
-
-                content = @_response_buffer
+                began_at     = Time.now
+                content      = @_response_buffer
 
                 if @_last_expires_in
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
+                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
                   @_last_expires_in = nil
                 else
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content)
+                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content)
                 end
 
                 logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
@@ -119,6 +129,15 @@ module Padrino
             end
           end
         end
+
+        private
+        ##
+        # Resolve the cache_key when it's a block in the correct context
+        #@api private
+        def resolve_cache_key
+          @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
+        end
+
       end # Page
     end # Helpers
   end # Cache

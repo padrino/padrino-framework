@@ -2,15 +2,15 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
 describe "FormatHelpers" do
+  include Padrino::Helpers::FormatHelpers
+
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
   end
 
   def setup
     Time.stubs(:now).returns(Time.utc(1983, 11, 9, 5))
   end
-
-  include Padrino::Helpers::FormatHelpers
 
   context 'for #simple_format method' do
     should "format simple text into html format" do

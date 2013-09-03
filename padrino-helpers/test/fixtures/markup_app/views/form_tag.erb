@@ -19,6 +19,8 @@
     <%= label_tag :gender %>
     <%= label_tag :color %>
     <%= select_tag :color, :options => ['green', 'orange', 'purple'] %>
+    <%= select_tag :type, :grouped_options => { 'foo' => ['foo', 'bar'], 'bar' => ['foo', 'bar'] } %>
+    <%= select_tag :character, :grouped_options => [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]] %>
     <%= radio_button_tag :gender, :value => 'male' %>
     <%= radio_button_tag :gender, :value => 'female' %>
     <%= submit_tag %>
@@ -87,4 +89,7 @@
     <%= button_tag "Cancel" %>
     <%= image_submit_tag "buttons/submit.png" %>
   <% end %>
+<% end %>
+
+<% form_tag '/dontprotect', :class => 'no-protection', :protect_from_csrf => false do %>
 <% end %>

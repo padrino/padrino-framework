@@ -53,6 +53,15 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
     end
 
+    # users can override certain templates from a generators/templates folder in the destination_root
+    it "should use custom generator templates from the project root, if they exist" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      custom_template_path = "#{@apptmp}/sample_project/generators/templates/slim/app/layouts/"
+      `mkdir -p #{custom_template_path} && echo "h1 = 'Hello, custom generator' " > #{custom_template_path}application.slim.tt`
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/Hello, custom generator/, "#{@apptmp}/sample_project/admin/views/layouts/application.slim")
+    end
+
     it "should generate the admin app under a different folder" do
       # TODO FIXME Implement option --admin_root or something. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
       skip

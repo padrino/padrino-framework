@@ -5,7 +5,11 @@ describe "FormHelpers" do
   include Padrino::Helpers::FormHelpers
 
   def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
+    MarkupDemo
+  end
+
+  class UnprotectedApp
+    def protect_from_csrf; false; end
   end
 
   context 'for #form_tag method' do
@@ -66,25 +70,55 @@ describe "FormHelpers" do
       assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
     end
 
+    should "have an authenticity_token by default" do
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "create csrf meta tags with token and param - #csrf_meta_tags" do
+      actual_html = csrf_meta_tags
+      assert_has_tag(:meta, :name => 'csrf-param') { actual_html }
+      assert_has_tag(:meta, :name => 'csrf-token') { actual_html }
+    end
+
+    should "have an authenticity_token by default" do
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "not have an authenticity_token if passing protect_from_csrf: false" do
+      actual_html = form_tag('/superadmindelete', :protect_from_csrf => false) { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
+    should "not have an authenticity_token if protect_from_csrf is false on app settings" do
+      self.expects(:settings).returns(UnprotectedApp.new)
+      actual_html = form_tag('/superadmindelete') { "Demo" }
+      assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
+    end
+
     should "display correct forms in erb" do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
 
     should "display correct forms in haml" do
       visit '/haml/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
 
     should "display correct forms in slim" do
       visit '/slim/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
       assert_have_selector 'form.advanced-form', :action => '/advanced', :id => 'advanced', :method => 'get'
-      assert_have_selector :input, :name => 'authenticity_token'
+      assert_have_selector 'form.simple-form input', :name => 'authenticity_token'
+      assert_have_no_selector 'form.no-protection input', :name => 'authenticity_token'
     end
   end
 
@@ -623,7 +657,7 @@ describe "FormHelpers" do
       assert_has_tag('select option:first-child', :value => "", :content => "") { actual_html }
     end
 
-    should "return a select tag with grouped options for an nested array" do
+    should "display select tag with grouped options for a nested array" do
       opts = [
         ["Friends",["Yoda",["Obiwan",2]]],
         ["Enemies", ["Palpatine",['Darth Vader',3]]]
@@ -638,7 +672,33 @@ describe "FormHelpers" do
       assert_has_tag(:option,   :value => "3", :content => "Darth Vader") { actual_html }
     end
 
-    should "return a select tag with grouped options for a hash" do
+    should "display select tag with grouped options for a nested array and accept disabled groups" do
+      opts = [
+        ["Friends",["Yoda",["Obiwan",2]]],
+        ["Enemies", ["Palpatine",['Darth Vader',3]], true]
+      ]
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name => "name") { actual_html }
+      assert_has_tag(:option,   :disabled => 'disabled', :count => 0) { actual_html }
+      assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies", :disabled => 'disabled') { actual_html }
+    end
+
+    should "display select tag with grouped options for a nested array and accept disabled groups and/or with disabled options" do
+      opts = [
+        ["Friends",["Yoda",["Obiwan",2, true]]],
+        ["Enemies", [["Palpatine", "Palpatine", true],['Darth Vader',3]], true]
+      ]
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name => "name") { actual_html }
+      assert_has_tag(:option,   :disabled => 'disabled', :count => 2) { actual_html }
+      assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
+      assert_has_tag(:option,   :content => "Obiwan", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:option,   :value => "Palpatine", :content => "Palpatine", :disabled => 'disabled') { actual_html }
+    end
+
+    should "display select tag with grouped options for a hash" do
       opts = {
         "Friends" => ["Yoda",["Obiwan",2]],
         "Enemies" => ["Palpatine",['Darth Vader',3]]
@@ -653,6 +713,33 @@ describe "FormHelpers" do
       assert_has_tag(:option,   :value => "3", :content => "Darth Vader") { actual_html }
     end
 
+    should "display select tag with grouped options for a hash and accept disabled groups" do
+      opts = {
+        "Friends" => ["Yoda",["Obiwan",2]],
+        "Enemies" => ["Palpatine",['Darth Vader',3], {:disabled => true}]
+      }
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name => "name") { actual_html }
+      assert_has_tag(:option,   :disabled => 'disabled', :count => 0) { actual_html }
+      assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies", :disabled => 'disabled') { actual_html }
+    end
+
+    should "display select tag with grouped options for a hash and accept disabled groups and/or with disabled options" do
+      opts = {
+        "Friends" => ["Yoda",["Obiwan",2,true]],
+        "Enemies" => [["Palpatine","Palpatine",true],["Darth Vader",3], {:disabled => true}]
+      }
+      actual_html = select_tag( 'name', :grouped_options => opts )
+      assert_has_tag(:select,   :name => "name") { actual_html }
+      assert_has_tag(:option,   :disabled => 'disabled', :count => 2) { actual_html }
+      assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
+      assert_has_tag(:option,   :content => "Obiwan", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:optgroup, :label => "Enemies", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:option,   :value => "Palpatine", :content => "Palpatine", :disabled => 'disabled') { actual_html }
+    end
+
+
     should "display select tag in ruby with multiple attribute" do
       actual_html = select_tag(:favorite_color, :multiple => true, :options => ['only', 'option'])
       assert_has_tag(:select, :multiple => 'multiple', :name => 'favorite_color[]') { actual_html }
@@ -664,6 +751,16 @@ describe "FormHelpers" do
       assert_has_tag(:select, :name => 'favorite_color') { actual_html }
       assert_has_tag('select option', :selected => 'selected', :count => 1) { actual_html }
       assert_has_tag('select option', :content => 'Green', :value => 'green1', :selected => 'selected') { actual_html }
+      assert_has_tag('select option', :content => 'Blue', :value => 'blue1') { actual_html }
+      assert_has_tag('select option', :content => 'Black', :value => 'black1') { actual_html }
+    end
+
+    should "display options with values and accept disabled options" do
+      options = [['Green', 'green1', true], ['Blue', 'blue1'], ['Black', "black1"]]
+      actual_html = select_tag(:favorite_color, :options => options)
+      assert_has_tag(:select, :name => 'favorite_color') { actual_html }
+      assert_has_tag('select option', :disabled => 'disabled', :count => 1) { actual_html }
+      assert_has_tag('select option', :content => 'Green', :value => 'green1', :disabled => 'disabled') { actual_html }
       assert_has_tag('select option', :content => 'Blue', :value => 'blue1') { actual_html }
       assert_has_tag('select option', :content => 'Black', :value => 'black1') { actual_html }
     end
@@ -692,10 +789,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
 
     should "display select tag in haml" do
@@ -704,10 +811,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
 
     should "display select tag in slim" do
@@ -716,10 +833,20 @@ describe "FormHelpers" do
       assert_have_selector('select option', :content => 'green',  :value => 'green')
       assert_have_selector('select option', :content => 'orange', :value => 'orange')
       assert_have_selector('select option', :content => 'purple', :value => 'purple')
-      assert_have_selector 'form.advanced-form select', :name => 'fav_color'
+      assert_have_selector('form.advanced-form select', :name => 'fav_color')
       assert_have_selector('select option', :content => 'green',  :value => '1')
       assert_have_selector('select option', :content => 'orange', :value => '2', :selected => 'selected')
       assert_have_selector('select option', :content => 'purple', :value => '3')
+      assert_have_selector('select optgroup', :label => 'foo')
+      assert_have_selector('select optgroup', :label => 'bar')
+      assert_have_selector('select optgroup option', :content => 'foo', :value => 'foo')
+      assert_have_selector('select optgroup option', :content => 'bar', :value => 'bar')
+      assert_have_selector('select optgroup', :label => 'Friends')
+      assert_have_selector('select optgroup', :label => 'Enemies')
+      assert_have_selector('select optgroup option', :content => 'Yoda', :value => 'Yoda')
+      assert_have_selector('select optgroup option', :content => 'Obiwan', :value => '1')
+      assert_have_selector('select optgroup option', :content => 'Palpatine', :value => 'Palpatine')
+      assert_have_selector('select optgroup option', :content => 'Darth Vader', :value => '3')
     end
   end
 
@@ -745,6 +872,26 @@ describe "FormHelpers" do
       visit '/slim/form_tag'
       assert_have_selector 'form.simple-form input[type=submit]', :count => 1, :value => "Submit"
       assert_have_selector 'form.advanced-form input[type=submit]', :count => 1, :value => "Login"
+    end
+
+    context 'for omitted args' do
+      should "display submit tag with default caption" do
+        actual_html = submit_tag()
+        assert_has_tag(:input, :type => 'submit', :value => 'Submit') { actual_html }
+      end
+    end
+
+    context 'for omitted caption arg' do
+      should "display submit tag with default caption" do
+        actual_html = submit_tag(:class => 'success')
+        assert_has_tag(:input, :type => 'submit', :class => 'success', :value => 'Submit') { actual_html }
+      end
+
+      should "display submit tag without caption value when nil" do
+        actual_html = submit_tag(nil, :class => 'success')
+        assert_has_tag(:input, :type => 'submit', :class => 'success') { actual_html }
+        assert_has_no_tag(:input, :type => 'submit', :class => 'success', :value => 'Submit') { actual_html }
+      end
     end
   end
 
@@ -819,6 +966,30 @@ describe "FormHelpers" do
         content_tag :button, "My button's content", :type => :submit, :title => "My button"
       end
       assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
+    end
+
+    should 'display correct button_to in erb' do
+      visit '/erb/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+    end
+
+    should 'display correct button_to in haml' do
+      visit '/haml/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+    end
+
+    should 'display correct button_to in slim' do
+      visit '/slim/button_to'
+      assert_have_selector('form', :action => '/foo')
+      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form', :action => '/bar')
+      assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
     end
   end
 

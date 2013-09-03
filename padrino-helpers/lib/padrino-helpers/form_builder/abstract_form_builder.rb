@@ -2,7 +2,7 @@ module Padrino
   module Helpers
     module FormBuilder # @private
       class AbstractFormBuilder # @private
-        attr_accessor :template, :object
+        attr_accessor :template, :object, :multipart
 
         def initialize(template, object, options={})
           @template = template
@@ -139,13 +139,16 @@ module Padrino
 
         # f.file_field :photo, :class => 'avatar'
         def file_field(field, options={})
+          self.multipart = true
           options.reverse_merge!(:id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.file_field_tag field_name(field), options
         end
 
         # f.submit "Update", :class => 'large'
-        def submit(caption="Submit", options={})
+        def submit(*args)
+          options = args[-1].is_a?(Hash) ? args.pop : {}
+          caption = args.length >= 1 ? args.shift : "Submit"
           @template.submit_tag caption, options
         end
 
@@ -213,7 +216,9 @@ module Padrino
           # field_name(:number) => "user_telephone_attributes_number"
           # field_name(:street) => "user_addresses_attributes_0_street"
           def field_id(field=nil, value=nil)
-            result = field_result
+            result = []
+            result << "#{@options[:namespace]}_" if @options[:namespace] && root_form?
+            result << field_result
             result << field_id_fragment if nested_form?
             result << "_#{field}" unless field.blank?
             result << "_#{value}" unless value.blank?

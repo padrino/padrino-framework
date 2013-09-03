@@ -120,7 +120,7 @@ module Padrino
       #
       # @api private
       def git_author_name
-        git_author_name = `git config user.name`.chomp
+        git_author_name = `git config user.name`.chomp rescue ''
         git_author_name.empty? ? "TODO: Write your name" : git_author_name
       end
 
@@ -128,7 +128,7 @@ module Padrino
       #
       # @api private
       def git_author_email
-        git_author_email = `git config user.email`.chomp
+        git_author_email = `git config user.email`.chomp rescue ''
         git_author_email.empty? ? "TODO: Write your email address" : git_author_email
       end
     end # Project

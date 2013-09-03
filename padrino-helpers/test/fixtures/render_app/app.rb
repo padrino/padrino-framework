@@ -16,6 +16,7 @@ class RenderDemo < Padrino::Application
   configure do
     set :logging, false
     set :padrino_logging, false
+    set :environment, :test
     set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
     set :haml, :escape_html => true
     set :slim, :generator => Temple::Generators::RailsOutputBuffer

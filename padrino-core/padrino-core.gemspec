@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   # s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
   # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
 
-  s.add_dependency("tilt", "~> 1.3.7")
+  s.add_dependency("tilt", "~> 1.4.0")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
@@ -38,6 +38,6 @@ Gem::Specification.new do |s|
   end
   s.add_dependency("http_router", "~> 0.11.0")
   s.add_dependency("thor", "~> 0.17.0")
-  s.add_dependency("activesupport", ">= 3.1.0")
+  s.add_dependency("activesupport", ">= 3.1", "< 4.0")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end

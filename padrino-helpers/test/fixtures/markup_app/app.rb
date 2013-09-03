@@ -10,11 +10,15 @@ class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
 
   configure do
+    set :logging, false
+    set :padrino_logging, false
+    set :environment, :test
     set :root, File.dirname(__FILE__)
     set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
     set :haml, :escape_html => true
-    set :slim, :generator => Temple::Generators::RailsOutputBuffer,
-               :buffer => "out_buf"
+    set :slim, :generator => Temple::Generators::RailsOutputBuffer, :buffer => "out_buf"
+    set :sessions, true
+    set :protect_from_csrf, true
   end
 
   get '/:engine/:file' do

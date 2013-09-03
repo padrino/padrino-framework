@@ -270,4 +270,40 @@ describe "PadrinoCache" do
     assert_equal 'foo?yes', body
     assert_equal 2, call_count
   end
+
+  should 'resolve block cache keys' do
+    call_count = 0
+    mock_app do 
+      register Padrino::Cache
+      enable :caching
+
+      get '/foo', :cache => true do
+        cache_key { "key #{params[:id]}" }
+        call_count += 1
+        params[:id]
+      end
+    end
+
+    get '/foo?id=1'
+    get '/foo?id=2'
+    get '/foo?id=2'
+    get '/foo?id=1&something_else=42'
+    get '/foo?id=3&something_else=42'
+
+    assert_equal 3, call_count
+  end
+
+  should 'raise an error if providing both a cache_key and block' do
+    mock_app do 
+      register Padrino::Cache
+      enable :caching
+
+      get '/foo', :cache => true do
+        cache_key(:some_key) { "key #{params[:id]}" }
+      end
+    end
+
+    assert_raises(RuntimeError) { get '/foo' }
+  end
+
 end

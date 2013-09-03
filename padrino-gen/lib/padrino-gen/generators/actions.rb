@@ -45,7 +45,7 @@ module Padrino
         path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
-        instance_eval(open(path).read)
+        instance_eval(File.read(path))
         shell.padding -= 1
       end
 
@@ -307,9 +307,9 @@ WARNING
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| ":#{k} => '#{v.to_s}'" }.join(", ")
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
         write_option  = gem_options.present? ? ", #{gem_options}" : ''
-        write_version = version.present? ? ", '#{version.to_s}'" : ''
+        write_version = version.present? ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end

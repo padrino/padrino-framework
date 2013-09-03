@@ -4,15 +4,15 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 describe "FormBuilder" do
   include Padrino::Helpers::FormHelpers
 
+  def app
+    MarkupDemo
+  end
+
   # Dummy form builder for testing
   module Padrino::Helpers::FormBuilder
     class FakeFormBuilder < AbstractFormBuilder
       def foo_field; @template.content_tag(:span, "bar"); end
     end
-  end
-
-  def app
-    MarkupDemo.tap { |app| app.set :environment, :test }
   end
 
   def setup
@@ -49,8 +49,7 @@ describe "FormBuilder" do
     end
 
     should "display form specifying default builder setting" do
-      self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder')).once
-      actual_html = ""
+      self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder', :protect_from_csrf => false)).at_least_once
       actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post') { actual_html }
       assert_has_tag('span', :content => "bar") { actual_html }
@@ -59,6 +58,16 @@ describe "FormBuilder" do
     should "display correct form html with remote option" do
       actual_html = form_for(@user, '/update', :"accept-charset" => "UTF-8", :remote => true) { "Demo" }
       assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/update', :method => 'post', "data-remote" => 'true') { actual_html }
+    end
+
+    should "display correct form html with namespace option" do
+      actual_html = form_for(@user, '/update', :namespace => 'foo') do |f|
+        f.text_field(:first_name) << f.fields_for(:role_types) { |role| role.text_field(:name) }
+      end
+
+      assert_has_no_tag(:form, :namespace => 'foo') { actual_html }
+      assert_has_tag(:input, :type => 'text', :name => 'user[first_name]', :id => 'foo_user_first_name') { actual_html }
+      assert_has_tag(:input, :type => 'text', :name => 'user[role_types_attributes][0][name]', :id => 'foo_user_role_types_attributes_0_name') { actual_html }
     end
 
     should "display correct form html with remote option and method put" do
@@ -655,6 +664,17 @@ describe "FormBuilder" do
       assert_have_selector '#demo  input.user-photo', :type => 'file', :name => 'markup_user[photo]', :id => 'markup_user_photo'
       assert_have_selector '#demo2 input.upload', :type => 'file', :name => 'markup_user[photo]', :id => 'markup_user_photo'
     end
+
+    should "display correct form html with multipart, even if no 'multipart' option is specified" do
+      actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8") { |f| f.file_field :photo }
+      assert_has_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
+    end
+
+    should "display correct form html without multipart, if 'multipart' option is specified 'false'" do
+      actual_html = form_for(@user, '/register', :"accept-charset" => "UTF-8", :multipart => false) { |f| f.file_field :photo }
+      assert_has_no_tag('form', :"accept-charset" => "UTF-8", :action => '/register', :enctype => "multipart/form-data") { actual_html }
+    end
+
   end
 
   context 'for #select method' do
@@ -740,6 +760,18 @@ describe "FormBuilder" do
     should "display correct submit button html with no options" do
       actual_html = standard_builder.submit
       assert_has_tag('input[type=submit]', :value => "Submit") { actual_html }
+    end
+
+
+    should "display correct submit button html with no caption" do
+      actual_html = standard_builder.submit(:class => 'btn')
+      assert_has_tag('input.btn[type=submit]', :value => "Submit") { actual_html }
+    end
+
+    should "display correct submit button html with nil caption" do
+      actual_html = standard_builder.submit(nil, :class => 'btn')
+      assert_has_tag('input.btn[type=submit]') { actual_html }
+      assert actual_html !~ %r{ value \* = }x
     end
 
     should "display correct submit button html" do

@@ -49,7 +49,7 @@ class HttpRouter
         filter! :before
         (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
         @layout = path.route.use_layout if path.route.use_layout
-        @route.custom_conditions.each { |block| pass if block.bind(self).call == false } if @route.custom_conditions
+        @route.custom_conditions.each { |block| pass if block.bind(self).call == false }
         halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
         @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
         successful        = true
@@ -97,6 +97,48 @@ class HttpRouter
       else
         []
       end
+    end
+
+    def to(dest = nil, &dest_block)
+      @dest = dest || dest_block || raise("you didn't specify a destination")
+
+      @router.current_order ||= 0
+      @order = @router.current_order
+      @router.current_order += 1
+
+      if @dest.respond_to?(:url_mount=)
+        urlmount = UrlMount.new(@path_for_generation, @default_values || {}) # TODO url mount should accept nil here.
+        urlmount.url_mount = @router.url_mount if @router.url_mount
+        @dest.url_mount = urlmount
+      end
+      self
+    end
+
+    attr_accessor :order
+
+  end
+
+  attr_accessor :current_order
+
+  def sort!
+    @routes.sort!{ |a, b| a.order <=> b.order }
+  end
+
+  class Node::SpanningRegex
+    def to_code
+      params_count = @ordered_indicies.size
+      whole_path_var = "whole_path#{root.next_counter}"
+      "#{whole_path_var} = request.joined_path
+      if match = #{@matcher.inspect}.match(#{whole_path_var}) and match.begin(0).zero?
+        _#{whole_path_var} = request.path.dup
+        " << param_capturing_code << "
+        remaining_path = #{whole_path_var}[match[0].size + (#{whole_path_var}[match[0].size] == ?/ ? 1 : 0), #{whole_path_var}.size]
+        request.path = remaining_path.split('/')
+        #{node_to_code}
+        request.path = _#{whole_path_var}
+        request.params.slice!(#{-params_count}, #{params_count})
+      end
+      "
     end
   end
 
@@ -461,18 +503,17 @@ module Padrino
 
       # Compiles the routes including deferred routes.
       def compiled_router
-        if deferred_routes.empty?
-          router
-        else
-          deferred_routes.each { |_, routes| routes.each { |(route, dest)| route.to(dest) } }
+        if @deferred_routes
+          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
           @deferred_routes = nil
-          router
+          router.sort!
         end
+        router
       end
 
       # Returns all routes that were deferred based on their priority.
       def deferred_routes
-        @deferred_routes ||= Hash[ROUTE_PRIORITY.values.sort.map{|p| [p, []]}]
+        @deferred_routes ||= ROUTE_PRIORITY.map{[]}
       end
 
       ##
@@ -908,6 +949,17 @@ module Padrino
         settings.url(*args)
       end
       alias :url_for :url
+
+      ##
+      # Returns absolute url. Calls Sinatra::Helpers#uri to generate protocol version, hostname and port.
+      #
+      # @example
+      #   absolute_url(:show, :id => 1)  # => http://example.com/show?id=1
+      #   absolute_url(:show, 24)        # => https://example.com/admin/show/24
+      #
+      def absolute_url( *args )
+        uri url(*args), true, false
+      end
 
       ##
       # Returns the recognized path for a route.
