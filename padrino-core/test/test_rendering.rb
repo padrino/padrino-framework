@@ -67,7 +67,7 @@ describe "Rendering" do
             get("/without/layout"){ render :index, :layout => false }
           end
           get "/with/layout"
-          assert_equal "this is a index", body
+          assert_equal "this is an index", body
           get "/without/layout"
           assert_equal "index", body
         end
