@@ -32,7 +32,7 @@ module Padrino
       end
 
       ##
-      # Return a ordered list of task with their class
+      # Return an ordered list of task with their class
       #
       # @api semipublic
       def mappings

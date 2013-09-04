@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Email" do
 
-  context 'the mailer in a app' do
+  context 'the mailer in an app' do
     should 'send a basic inline email' do
       mock_app do
         register Padrino::Mailer
