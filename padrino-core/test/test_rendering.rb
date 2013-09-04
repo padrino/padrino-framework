@@ -60,7 +60,7 @@ describe "Rendering" do
     end
 
     should 'not use layout' do
-      with_layout :application, "this is a <%= yield %>" do
+      with_layout :application, "this is an <%= yield %>" do
         with_view :index, "index" do
           mock_app do
             get("/with/layout"){ render :index }
