@@ -59,7 +59,7 @@ module Padrino
       # @option options [Boolean] :unless
       #   If false, the link will appear, otherwise not;
       # @option options [Boolean] :remote
-      #   If true, this link should be handled by a ajax ujs handler.
+      #   If true, this link should be handled by an ajax ujs handler.
       # @option options [String] :confirm
       #   Instructs ujs handler to alert confirm message.
       # @option options [Symbol] :method
