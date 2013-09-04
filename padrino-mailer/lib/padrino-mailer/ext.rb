@@ -27,7 +27,7 @@ module Mail # @private
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
     #
     # @example
-    #   # This add a email plain part if a template called bar.plain.* is found
+    #   # This add an email plain part if a template called bar.plain.* is found
     #   # and a html part if a template called bar.html.* is found
     #   email do
     #     from     'from@email.com'
