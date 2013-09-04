@@ -194,19 +194,19 @@ module Padrino
             end
           end
 
-          options[:object_name] ||= objects.first.class
+          options[:object_name] ||= objects.first.class.to_s.underscore.gsub(/\//, ' ')
 
           I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
             header_message = if options.include?(:header_message)
               options[:header_message]
             else
-              object_name = options[:object_name].to_s.underscore.gsub(/\//, ' ')
+              object_name = options[:object_name]
               object_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
               locale.t :header, :count => count, :model => object_name
             end
             message = options.include?(:message) ? options[:message] : locale.t(:body)
             error_messages = objects.map { |object|
-              object_name = options[:object_name].to_s.underscore.gsub(/\//, ' ')
+              object_name = options[:object_name]
               object.errors.map { |f, msg|
                 field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
                 content_tag(:li, "%s %s" % [field, msg])
