@@ -265,9 +265,10 @@ module Padrino
         #
         def resolve_template(template_path, options={})
           began_at = Time.now
+          _content_type = content_type || :html
           # Fetch cached template for rendering options
           template_path = template_path.to_s[0] == ?/ ? template_path.to_s : "/#{template_path}"
-          rendering_options = [template_path, content_type, locale]
+          rendering_options = [template_path, _content_type, locale]
           cached_template = settings.fetch_template_file(rendering_options)
           if cached_template
             logger.debug :cached, began_at, cached_template[0] if settings.logging? && defined?(logger)
@@ -288,14 +289,14 @@ module Padrino
           end
 
           # Check if we have a simple content type
-          simple_content_type = [:html, :plain].include?(content_type)
+          simple_content_type = [:html, :plain].include?(_content_type)
 
           # Resolve final template to render
           located_template =
-            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{_content_type}" } ||
             templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
             templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
-            templates.find { |file, e| file.to_s == "#{template_path}.#{content_type}" } ||
+            templates.find { |file, e| file.to_s == "#{template_path}.#{_content_type}" } ||
             templates.find { |file, e| file.to_s == "#{template_path}" && simple_content_type } ||
             (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template
 

@@ -80,22 +80,22 @@ describe "Application" do
     end
 
     # compare to: test_routing: allow global provides
-    should "set content_type to :html if none can be determined" do
+    should "set content_type to nil if none can be determined" do
       mock_app do
         provides :xml
 
-        get("/foo"){ "Foo in #{content_type}" }
-        get("/bar"){ "Foo in #{content_type}" }
+        get("/foo"){ "Foo in #{content_type.inspect}" }
+        get("/bar"){ "Foo in #{content_type.inspect}" }
       end
 
       get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-      assert_equal 'Foo in xml', body
+      assert_equal 'Foo in :xml', body
       get '/foo'
-      assert_equal 'Foo in xml', body
+      assert_equal 'Foo in :xml', body
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-      assert_equal "Foo in html", body
-    end # content_type to :html
+      assert_equal "Foo in nil", body
+    end
 
     context "errors" do
       should "haven't mapped errors on development" do
