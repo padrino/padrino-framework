@@ -1110,17 +1110,17 @@ describe "Routing" do
     mock_app do
       provides :xml
 
-      get("/foo"){ "Foo in #{content_type}" }
-      get("/bar"){ "Bar in #{content_type}" }
+      get("/foo"){ "Foo in #{content_type.inspect}" }
+      get("/bar"){ "Bar in #{content_type.inspect}" }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert_equal 'Foo in xml', body
+    assert_equal 'Foo in :xml', body
     get '/foo'
-    assert_equal 'Foo in xml', body
+    assert_equal 'Foo in :xml', body
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert_equal 'Bar in html', body
+    assert_equal 'Bar in nil', body
   end
 
   should "does not allow global provides in controller" do
@@ -1128,18 +1128,18 @@ describe "Routing" do
       controller :base do
         provides :xml
 
-        get(:foo, "/foo"){ "Foo in #{content_type}" }
-        get(:bar, "/bar"){ "Bar in #{content_type}" }
+        get(:foo, "/foo"){ "Foo in #{content_type.inspect}" }
+        get(:bar, "/bar"){ "Bar in #{content_type.inspect}" }
       end
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert_equal 'Foo in xml', body
+    assert_equal 'Foo in :xml', body
     get '/foo'
-    assert_equal 'Foo in xml', body
+    assert_equal 'Foo in :xml', body
 
     get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-    assert_equal 'Bar in html', body
+    assert_equal 'Bar in nil', body
   end
 
   should "map non named routes in controllers" do
