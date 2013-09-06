@@ -531,5 +531,13 @@ describe "ModelGenerator" do
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_foos.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_bar_foos.rb")
     end
+
+    should "destroy foo's model migration" do 
+        silence_logger {generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
+        silence_logger { generate(:model, 'bar_foo', "-r=#{@apptmp}/sample_project") }
+        silence_logger { generate(:model, 'foo', "-r=#{@apptmp}/sample_project") }
+        silence_logger { generate(:model, 'foo', "-r=#{@apptmp}/sample_project", '-d') }
+        assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_foos.rb")
+    end
   end
 end
