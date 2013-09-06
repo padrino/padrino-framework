@@ -161,16 +161,13 @@ module Padrino
       # @example Adding a custom perequisite
       #   MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
       #
+
       def prerequisites
         @_prerequisites ||= []
       end
 
       protected
-      ##
-      # Defines default settings for Padrino application
-      #
-      def default_configuration!
-        # Overwriting Sinatra defaults
+      def overwritte_sinatra_defaults
         set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
         set :environment, Padrino.env
         set :reload, Proc.new { development? }
@@ -181,6 +178,13 @@ module Padrino
         set :views, Proc.new { File.join(root, 'views') }
         set :images_path, Proc.new { File.join(public_folder, 'images') }
         set :protection, true
+      end
+
+      ##
+      # Defines default settings for Padrino application
+      #
+      def default_configuration!
+        overwritte_sinatra_defaults
         # Haml specific
         set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
         # Padrino specific
