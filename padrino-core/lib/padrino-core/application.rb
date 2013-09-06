@@ -161,16 +161,13 @@ module Padrino
       # @example Adding a custom perequisite
       #   MyApp.prerequisites << Padrino.root('my_app', 'custom_model.rb')
       #
+
       def prerequisites
         @_prerequisites ||= []
       end
 
       protected
-      ##
-      # Defines default settings for Padrino application
-      #
-      def default_configuration!
-        # Overwriting Sinatra defaults
+      def overwrite_sinatra_defaults
         set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
         set :environment, Padrino.env
         set :reload, Proc.new { development? }
@@ -181,20 +178,42 @@ module Padrino
         set :views, Proc.new { File.join(root, 'views') }
         set :images_path, Proc.new { File.join(public_folder, 'images') }
         set :protection, true
-        # Haml specific
+      end
+
+      def default_haml_settings
         set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
-        # Padrino specific
+      end
+
+      def default_padrino_settings
         set :uri_root, '/'
         set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
         set :authentication, false
-        # Padrino locale
+      end
+
+      def default_padrino_locale
         set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
-        # Authenticity token
+      end
+
+      def default_authenticity_token
         set :protect_from_csrf, false
         set :allow_disabled_csrf, false
-        # Load the Global Configurations
+      end
+
+      def default_global_configuration
         class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
+      end
+
+      ##
+      # Defines default settings for Padrino application
+      #
+      def default_configuration!
+        overwrite_sinatra_defaults
+        default_haml_settings
+        default_padrino_settings
+        default_padrino_locale
+        default_authenticity_token
+        default_global_configuration
       end
 
       ##
@@ -272,18 +291,18 @@ protection, use:
 or deactivate protect_from_csrf:
 
     disable :protect_from_csrf
-ERROR
+          ERROR
         end
 
         if protect_from_csrf?
           if allow_disabled_csrf?
             builder.use Rack::Protection::AuthenticityToken,
-                        :reaction => :report,
-                        :report_key => 'protection.csrf.failed',
-                        :logger => logger
+              :reaction => :report,
+              :report_key => 'protection.csrf.failed',
+              :logger => logger
           else
             builder.use Rack::Protection::AuthenticityToken,
-                        :logger => logger
+              :logger => logger
           end
         end
       end
