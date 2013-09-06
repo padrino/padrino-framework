@@ -60,14 +60,14 @@ describe "Rendering" do
     end
 
     should 'not use layout' do
-      with_layout :application, "this is a <%= yield %>" do
+      with_layout :application, "this is an <%= yield %>" do
         with_view :index, "index" do
           mock_app do
             get("/with/layout"){ render :index }
             get("/without/layout"){ render :index, :layout => false }
           end
           get "/with/layout"
-          assert_equal "this is a index", body
+          assert_equal "this is an index", body
           get "/without/layout"
           assert_equal "index", body
         end
