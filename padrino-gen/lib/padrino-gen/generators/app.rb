@@ -34,20 +34,21 @@ module Padrino
       def create_app
         self.destination_root = options[:root]
         @app_folder = name.gsub(/\W/, '_').underscore
-        @app_name   = name.gsub(/\W/, '_').underscore.camelize
+        @app_name   = @app_folder.camelize
         if in_app_root?
           @project_name = options[:namespace].underscore.camelize
           @project_name = fetch_project_name(@app_folder) if @project_name.empty?
+          lowercase_app_folder = @app_folder.downcase
           self.behavior = :revoke if options[:destroy]
-          app_skeleton(@app_folder.downcase, options[:tiny])
-          empty_directory destination_root("public/#{@app_folder.downcase}")
-          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{@app_folder.downcase}/app.rb')).to('/#{@app_folder.downcase}')"
+          app_skeleton(lowercase_app_folder, options[:tiny])
+          empty_directory destination_root("public/#{lowercase_app_folder}")
+          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')"
 
           return if self.behavior == :revoke
           say
           say '=' * 65, :green
           say "Your #{@app_name} application has been installed."
-          say '='*65, :green
+          say '=' * 65, :green
           say "This application has been mounted to /#{@app_name.downcase}"
           say "You can configure a different path by editing 'config/apps.rb'"
         else
