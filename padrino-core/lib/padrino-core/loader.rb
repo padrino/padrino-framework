@@ -15,9 +15,9 @@ module Padrino
     #   end
     #
     def before_load(&block)
-      @_before_load ||= []
-      @_before_load << block if block_given?
-      @_before_load
+      @before_load ||= []
+      @before_load << block if block_given?
+      @before_load
     end
 
     ##
@@ -35,9 +35,9 @@ module Padrino
     #   end
     #
     def after_load(&block)
-      @_after_load ||= []
-      @_after_load << block if block_given?
-      @_after_load
+      @after_load ||= []
+      @after_load << block if block_given?
+      @after_load
     end
 
     ##
@@ -47,8 +47,8 @@ module Padrino
     #   The load paths used by Padrino.
     #
     def load_paths
-      @_load_paths_was = %w(lib models shared).map { |path| Padrino.root(path) }
-      @_load_paths ||= @_load_paths_was
+      @load_paths_was = %w(lib models shared).map { |path| Padrino.root(path) }
+      @load_paths ||= @load_paths_was
     end
 
     ##
@@ -62,10 +62,10 @@ module Padrino
       return false if loaded?
       t = Time.now
 
-      @_called_from = first_caller
+      @called_from = first_caller
       Padrino.set_encoding
-      Padrino.set_load_paths(*load_paths) # We set the padrino load paths
-      Padrino::Logger.setup! # Initialize our logger
+      Padrino.set_load_paths(*load_paths)
+      Padrino::Logger.setup!
       Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
       Padrino.before_load.each(&:call) # Run before hooks
@@ -85,9 +85,9 @@ module Padrino
     def clear!
       Padrino.clear_middleware!
       Padrino.mounted_apps.clear
-      @_load_paths = nil
-      @_dependency_paths = nil
-      @_global_configuration = nil
+      @load_paths = nil
+      @dependency_paths = nil
+      @global_configuration = nil
       Padrino.before_load.clear
       Padrino.after_load.clear
       Padrino::Reloader.clear!
@@ -105,11 +105,11 @@ module Padrino
     end
 
     ##
-    # This adds the ablity to instantiate {Padrino.load!} after
+    # This adds the ability to instantiate {Padrino.load!} after
     # {Padrino::Application} definition.
     #
     def called_from
-      @_called_from || first_caller
+      @called_from || first_caller
     end
 
     ##
@@ -148,12 +148,8 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!
-
-      # Extract all files to load
       files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
-
       while files.present?
-        # List of errors and failed files
         errors, failed = [], []
 
         # We need a size to make sure things are loading
@@ -186,13 +182,13 @@ module Padrino
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
     # @return [Array<String>]
-    #   The dependencey paths.
+    #   The dependency paths.
     #
     # @example
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
-      @_dependency_paths ||= (dependency_paths_was + Array(module_paths))
+      @dependency_paths ||= (dependency_paths_was + Array(module_paths))
     end
 
     ##
@@ -206,20 +202,20 @@ module Padrino
       $:.uniq!; load_paths.uniq!
     end
 
-    private 
-    def module_paths
-      Padrino.modules.map(&:dependency_paths).flatten!
-    end
+    private
+      def module_paths
+        Padrino.modules.map(&:dependency_paths).flatten!
+      end
 
-    def dependency_paths_was
-      [
-        "#{root}/config/database.rb", 
-        "#{root}/lib/**/*.rb", 
-        "#{root}/shared/lib/**/*.rb",
-        "#{root}/models/**/*.rb", 
-        "#{root}/shared/models/**/*.rb", 
-        "#{root}/config/apps.rb"
-      ]
-    end
-  end # self
-end # Padrino
+      def dependency_paths_was
+        [
+          "#{root}/config/database.rb",
+          "#{root}/lib/**/*.rb",
+          "#{root}/shared/lib/**/*.rb",
+          "#{root}/models/**/*.rb",
+          "#{root}/shared/models/**/*.rb",
+          "#{root}/config/apps.rb"
+        ]
+      end
+  end
+end

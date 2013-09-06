@@ -1,23 +1,19 @@
 require 'sinatra/base'
-require 'padrino-core/version'
-require 'padrino-core/support_lite'
 require 'padrino-core/application'
-
 require 'padrino-core/caller'
 require 'padrino-core/command'
 require 'padrino-core/loader'
 require 'padrino-core/logger'
+require 'padrino-core/module'
 require 'padrino-core/mounter'
 require 'padrino-core/reloader'
 require 'padrino-core/router'
 require 'padrino-core/server'
+require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
-require 'padrino-core/module'
+require 'padrino-core/version'
 
-
-# The Padrino environment (falls back to the rack env or finally develop)
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
-# The Padrino project root path (falls back to the first caller)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
@@ -91,7 +87,7 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      return  unless block_given?
+      return unless block_given?
       @@_global_configurations ||= []
       @@_global_configurations << block
       @_global_configuration = lambda do |app|
@@ -152,9 +148,9 @@ module Padrino
     end
 
     ##
-    # Convenience method for adding a Middleware to the whole padrino app.
+    # Convenience method for adding a middleware to the whole Padrino app.
     #
-    # @param [Class] m
+    # @param [Class] middleware_class
     #   The middleware class.
     #
     # @param [Array] args
@@ -163,12 +159,12 @@ module Padrino
     # @yield []
     #   The given block will be passed to the initialized middleware.
     #
-    def use(m, *args, &block)
-      middleware << [m, args, block]
+    def use(middleware_class, *args, &block)
+      middleware << [middleware_class, args, block]
     end
 
     ##
-    # Registers a gem with padrino. This relieves the caller from setting up
+    # Registers a gem with Padrino. This relieves the caller from setting up
     # loadpaths by itself and enables Padrino to look up apps in gem folder.
     #
     # The name given has to be the proper gem name as given in the gemspec.
@@ -188,7 +184,7 @@ module Padrino
     end
 
     ##
-    # Returns all currently known padrino gems.
+    # Returns all currently known Padrino gems.
     #
     # @returns [Gem::Specification]
     def gems
@@ -196,11 +192,11 @@ module Padrino
     end
 
     ##
-    # All loaded Padrino modules.
+    # Returns all loaded Padrino modules.
     #
     # @returns [<Padrino::Module>]
     def modules
       @modules ||= []
     end
-  end # self
-end # Padrino
+  end
+end

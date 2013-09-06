@@ -3,7 +3,7 @@ require 'rbconfig'
 module Padrino
   ##
   # This method return the correct location of padrino bin or
-  # exec it using Kernel#system with the given args
+  # exec it using Kernel#system with the given args.
   #
   # @param [Array] args
   #   command or commands to execute
@@ -14,8 +14,8 @@ module Padrino
   #   Padrino.bin('start', '-e production')
   #
   def self.bin(*args)
-    @_padrino_bin ||= [self.ruby_command, File.expand_path("../../../bin/padrino", __FILE__)]
-    args.empty? ? @_padrino_bin : system(args.unshift(@_padrino_bin).join(" "))
+    @padrino_bin ||= [self.ruby_command, File.expand_path("../../../bin/padrino", __FILE__)]
+    args.empty? ? @padrino_bin : system(args.unshift(@padrino_bin).join(" "))
   end
 
   ##
@@ -29,10 +29,12 @@ module Padrino
     @ruby_command ||= begin
       ruby = File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
       ruby << RbConfig::CONFIG['EXEEXT']
-
-      # escape string in case path to ruby executable contain spaces.
-      ruby.sub!(/.*\s.*/m, '"\&"')
-      ruby
+      escape_spaces_from_ruby_executable_path
     end
   end
-end # Padrino
+
+  private
+    def escape_spaces_from_ruby_executable_path
+      ruby.sub!(/.*\s.*/m, '"\&"')
+    end
+end
