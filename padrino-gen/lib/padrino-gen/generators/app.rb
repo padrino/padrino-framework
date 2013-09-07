@@ -12,7 +12,7 @@ module Padrino
       # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the banner for this CLI generator
-      def self.banner; "padrino-gen project [name]"; end
+      def self.banner; "padrino-gen app [name]"; end
 
       # Include related modules
       include Thor::Actions
