@@ -37,12 +37,7 @@ module Padrino
       class_option :migration_format, :desc => 'Filename format for migrations (number, timestamp)',                                 :default => 'number',    :type => :string
 
       # Definitions for the available customizable components
-      component_option :orm,        'database engine',    :aliases => '-d', :choices => [:activerecord, :minirecord, :datamapper, :mongomapper, :mongoid, :sequel, :couchrest, :ohm, :mongomatic, :ripple], :default => :none
-      component_option :test,       'testing framework',  :aliases => '-t', :choices => [:rspec, :shoulda, :cucumber, :bacon, :testspec, :riot, :minitest], :default => :none
-      component_option :mock,       'mocking library',    :aliases => '-m', :choices => [:mocha, :rr], :default => :none
-      component_option :script,     'javascript library', :aliases => '-s', :choices => [:jquery, :prototype, :rightjs, :mootools, :extcore, :dojo], :default => :none
-      component_option :renderer,   'template engine',    :aliases => '-e', :choices => [:haml, :erb, :liquid, :slim], :default => :slim
-      component_option :stylesheet, 'stylesheet engine',  :aliases => '-c', :choices => [:less, :sass, :compass, :scss], :default => :none
+      defines_component_options
 
       # Show help if no argv given
       require_arguments!
