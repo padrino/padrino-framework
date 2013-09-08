@@ -766,6 +766,8 @@ module Padrino
       #   Instructs ujs handler to handle the submit as ajax.
       # @option options [Symbol] :method
       #   Instructs ujs handler to use different http method (i.e :post, :delete).
+      # @option options [Hash] :submit_options
+      #   Hash of any options, that you want to pass to submit_tag (i.e :id, :class)
       #
       # @return [String] Form and button html with specified +options+.
       #
@@ -782,11 +784,12 @@ module Padrino
         name, url = args[0], args[1]
         options   = args.extract_options!
         options['data-remote'] = 'true' if options.delete(:remote)
+        submit_options = options.delete(:submit_options) || {}
         if block_given?
           form_tag(url, options, &block)
         else
           form_tag(url, options.merge!(:not_concat => true)) do
-            submit_tag(name)
+            submit_tag(name, submit_options)
           end
         end
       end

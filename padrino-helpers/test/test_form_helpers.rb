@@ -968,6 +968,11 @@ describe "FormHelpers" do
       assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
     end
 
+    should "pass options on submit button when submit_options are given" do
+      actual_html = button_to("Fancy button", '/users/1', :submit_options => { :class => :fancy })
+      assert_has_tag('form input', :type => 'submit', :value => 'Fancy button', :class => 'fancy') { actual_html }
+    end
+
     should 'display correct button_to in erb' do
       visit '/erb/button_to'
       assert_have_selector('form', :action => '/foo')
