@@ -20,6 +20,7 @@ notifications:
     - dario@uxtemple.com
     - ujifgc@gmail.com
     - ortuna@gmail.com
+    - namusyaka@gmail.com
 branches:
   only:
     - master
