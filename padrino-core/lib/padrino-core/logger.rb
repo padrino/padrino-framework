@@ -17,13 +17,13 @@ module Padrino
   end
 
   ##
-  # Set the padrino logger
+  # Set the padrino logger.
   #
   # @param [Object] value
   #   an object that respond to <<, write, puts, debug, warn etc..
   #
   # @return [Object]
-  #   the given value
+  #   The given value.
   #
   # @example using ruby default logger
   #   require 'logger'
@@ -44,7 +44,7 @@ module Padrino
     ##
     # Ruby (standard) logger levels:
     #
-    # :fatal:: An unhandleable error that results in a program crash
+    # :fatal:: An not handleable error that results in a program crash
     # :error:: A handleable error condition
     # :warn:: A warning
     # :info:: generic (useful) information about system operation
@@ -80,16 +80,16 @@ module Padrino
       end
 
       ##
-      # Append a to development logger a given action with time
+      # Append a to development logger a given action with time.
       #
       # @param [string] action
-      #   The action
+      #   The action.
       #
       # @param [float] time
-      #   Time duration for the given action
+      #   Time duration for the given action.
       #
       # @param [message] string
-      #   The message that you want to log
+      #   The message that you want to log.
       #
       # @example
       #   logger.bench 'GET', started_at, '/blog/categories'
@@ -110,10 +110,10 @@ module Padrino
       # the output of this block will be appended to the message.
       #
       # @param [String] message
-      #   The message that you want write to your stream
+      #   The message that you want write to your stream.
       #
       # @param [String] level
-      #   The level one of :debug, :warn etc...
+      #   The level one of :debug, :warn etc. ...
       #
       #
       def push(message = nil, level = nil)
@@ -125,10 +125,10 @@ module Padrino
       # logger components such as {Padrino::Logger}.
       #
       # @param [String] message
-      #   The message to format
+      #   The message to format.
       #
       # @param [String,Symbol] level
-      #   The log level, one of :debug, :warn...
+      #   The log level, one of :debug, :warn ...
       def format(message, level)
         message
       end
@@ -140,7 +140,7 @@ module Padrino
       #   stylized_level(:debug) => DEBUG
       #
       # @param [String,Symbol] level
-      #   The log level
+      #   The log level.
       #
       def stylized_level(level)
         level.to_s.upcase.rjust(7)
@@ -186,7 +186,7 @@ module Padrino
       } unless defined?(ColoredLevels)
 
       ##
-      # Colorize our level
+      # Colorize our level.
       #
       # @param [String, Symbol] level
       #
@@ -263,7 +263,7 @@ module Padrino
     end
 
     ##
-    # Setup a new logger
+    # Setup a new logger.
     #
     # @return [Padrino::Logger]
     #   A {Padrino::Logger} instance
@@ -308,16 +308,16 @@ module Padrino
     #   added. Defaults to true.
     #
     # @option options [Symbol] :format_datetime (" [%d/%b/%Y %H:%M:%S] ")
-    #   Format of datetime
+    #   Format of datetime.
     #
     # @option options [Symbol] :format_message ("%s -%s%s")
-    #    Format of message
+    #    Format of message.
     #
     # @option options [Symbol] :log_static (false)
     #   Whether or not to show log messages for static files.
     #
     # @option options [Symbol] :colorize_logging (true)
-    #   Whether or not to colorize log messages. Defaults to: true
+    #   Whether or not to colorize log messages. Defaults to: true.
     #
     def initialize(options={})
       @buffer          = []
@@ -357,7 +357,6 @@ module Padrino
     ##
     # Adds a message to the log - for compatibility with other loggers.
     #
-    # @private
     def add(level, message = nil)
       write(message)
     end
@@ -383,18 +382,17 @@ module Padrino
     end
 
     ##
-    # Padrino::Loggger::Rack forwards every request to an +app+ given, and
+    # Padrino::Logger::Rack forwards every request to an +app+ given, and
     # logs a line in the Apache common log format to the +logger+, or
     # rack.errors by default.
     #
     class Rack
-
-      def initialize(app, uri_root) # @private
+      def initialize(app, uri_root)
         @app = app
         @uri_root = uri_root.sub(/\/$/,"")
       end
 
-      def call(env) # @private
+      def call(env)
         env['rack.logger'] = Padrino.logger
         began_at = Time.now
         status, header, body = @app.call(env)
@@ -425,15 +423,15 @@ module Padrino
       def code_to_name(status)
         ::Rack::Utils::HTTP_STATUS_CODES[status.to_i] || ''
       end
-    end # Rack
-  end # Logger
-end # Padrino
+    end
+  end
+end
 
-module Kernel # @private
+module Kernel
   ##
   # Define a logger available every where in our app
   #
   def logger
     Padrino.logger
   end
-end # Kernel
+end
