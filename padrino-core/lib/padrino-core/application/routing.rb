@@ -4,7 +4,6 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 ##
 # Adds to Sinatra +controller+ informations
 #
-# @private
 class Sinatra::Request
   attr_accessor :route_obj
 
@@ -16,10 +15,7 @@ class Sinatra::Request
   end
 end
 
-##
-# HttpRouter adapter
-#
-# @private
+
 class HttpRouter
   def rewrite_partial_path_info(env, request); end
   def rewrite_path_info(env, request); end
@@ -62,7 +58,6 @@ class HttpRouter
     end
   end
 
-  # @private
   class Route
     VALID_HTTP_VERBS.replace %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK]
 
@@ -142,8 +137,8 @@ class HttpRouter
     end
   end
 
-  #Monkey patching the Request class. Using Rack::Utils.unescape rather than
-  #URI.unescape which can't handle utf-8 chars
+  # Monkey patching the Request class. Using Rack::Utils.unescape rather than
+  # URI.unescape which can't handle utf-8 chars
   class Request
     def initialize(path, rack_request)
       @rack_request = rack_request
@@ -188,7 +183,7 @@ class HttpRouter
 end
 
 module Padrino
-  class Filter # @private
+  class Filter
     attr_reader :block
 
     def initialize(mode, scoped_controller, options, args, &block)
@@ -229,7 +224,7 @@ module Padrino
   # which can be used to refer to the url throughout the application.
   #
   module Routing
-    # Defines common content-type alias mappings
+    # Defines common content-type alias mappings.
     CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
     ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
@@ -237,7 +232,7 @@ module Padrino
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
 
-    class Parent < String # @private
+    class Parent < String
       attr_reader :map
       attr_reader :optional
       attr_reader :options
@@ -337,8 +332,10 @@ module Padrino
       #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
       #   end
       #
-      # In a controller, before and after filters are scoped and don't affect other controllers or the main app.
-      # In a controller, layouts are scoped and don't affect other controllers or the main app.
+      # In a controller, before and after filters are scoped and don't
+      #   affect other controllers or the main app.
+      # In a controller, layouts are scoped and don't affect other
+      #   controllers or the main app.
       #
       # @example
       #   controller :posts do
@@ -351,7 +348,7 @@ module Padrino
         if block_given?
           options = args.extract_options!
 
-          # Controller defaults
+          # Controller defaults.
           @_controller, original_controller = args,                        @_controller
           @_parents,    original_parent     = options.delete(:parent),     @_parents
           @_provides,   original_provides   = options.delete(:provides),   @_provides
@@ -361,17 +358,17 @@ module Padrino
           @_conditions, original_conditions = options.delete(:conditions), @_conditions
           @_defaults,   original_defaults   = options,                     @_defaults
 
-          # Application defaults
+          # Application defaults.
           @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
           @layout,      original_layout     = nil, @layout
 
           instance_eval(&block)
 
-          # Application defaults
+          # Application defaults.
           @filters        = original_filters
           @layout         = original_layout
 
-          # Controller defaults
+          # Controller defaults.
           @_controller, @_parents,  @_cache = original_controller, original_parent,   original_cache
           @_defaults,   @_provides, @_map   = original_defaults,   original_provides, original_map
           @_conditions, @_use_format        = original_conditions, original_use_format
@@ -382,7 +379,7 @@ module Padrino
       alias :controllers :controller
 
       ##
-      # Add a before filter hook
+      # Add a before filter hook.
       #
       # @see #construct_filter
       #
@@ -391,7 +388,7 @@ module Padrino
       end
 
       ##
-      # Add an after filter hook
+      # Add an after filter hook.
       #
       # @see #construct_filter
       #
@@ -402,7 +399,7 @@ module Padrino
       ##
       # Adds a filter hook to a request.
       #
-      def  add_filter(type, &block)
+      def add_filter(type, &block)
         filters[type] << block
       end
 
@@ -438,7 +435,7 @@ module Padrino
       #   before :index, /main/ do; ... end
       #   # => match only path that are  +/+ or contains +main+
       #
-      # @example filtering everything except an occurency
+      # @example filtering everything except an occurrence
       #   before :except => :index do; ...; end
       #
       # @example you can also filter using a request param
@@ -487,7 +484,7 @@ module Padrino
       end
 
       ##
-      # Using {HttpRouter}, for features and configurations.
+      # Using HttpRouter, for features and configurations.
       #
       # @example
       #   router.add('/greedy/:greed')
@@ -501,7 +498,6 @@ module Padrino
       end
       alias :urls :router
 
-      # Compiles the routes including deferred routes.
       def compiled_router
         if @deferred_routes
           deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
@@ -511,21 +507,17 @@ module Padrino
         router
       end
 
-      # Returns all routes that were deferred based on their priority.
       def deferred_routes
         @deferred_routes ||= ROUTE_PRIORITY.map{[]}
       end
 
-      ##
-      # Resets the http router and all deferred routes.
-      #
       def reset_router!
         @deferred_routes = nil
         router.reset!
       end
 
       ##
-      # Recognize a given path
+      # Recognize a given path.
       #
       # @param [String] path
       #   Path+Query to parse
@@ -586,7 +578,7 @@ module Padrino
       end
       alias :url_for :url
 
-      def get(path, *args, &block) # @private
+      def get(path, *args, &block)
         conditions = @conditions.dup
         route('GET', path, *args, &block)
 
@@ -654,11 +646,11 @@ module Padrino
             else raise
           end
 
-          # Do padrino parsing. We dup options so we can build HEAD request correctly
+          # Do padrino parsing. We dup options so we can build HEAD request correctly.
           route_options = options.dup
           route_options[:provides] = @_provides if @_provides
 
-          # CSRF protection is always active except when explicitly switched off
+          # CSRF protection is always active except when explicitly switched off.
           if allow_disabled_csrf
             unless route_options[:csrf_protection] == false
               route_options[:csrf_protection] = true
@@ -702,14 +694,14 @@ module Padrino
             end
           end
 
-          # Add Sinatra conditions
+          # Add Sinatra conditions.
           options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
           conditions, @conditions = @conditions, []
           route.custom_conditions.concat(conditions)
 
           invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
-          # Add Application defaults
+          # Add Application defaults.
           route.before_filters.concat(@filters[:before])
           route.after_filters.concat(@filters[:after])
           if @_controller
@@ -731,16 +723,15 @@ module Padrino
         def parse_route(path, options, verb)
           # We need save our originals path/options so we can perform correctly cache.
           original = [path, options.dup]
-
-          # options for the route directly
           route_options = {}
 
-          # We need check if path is a symbol, if that it's a named route
+          # We need check if path is a symbol, if that it's a named route.
           map = options.delete(:map)
 
-          if path.kind_of?(Symbol) # path i.e :index or :show
-            name = path                                                # The route name
-            path = map ? map.dup : (path == :index ? '/' : path.to_s)  # The route path
+          # path i.e :index or :show
+          if path.kind_of?(Symbol)
+            name = path
+            path = map ? map.dup : (path == :index ? '/' : path.to_s)
           end
 
           # Build our controller
@@ -771,16 +762,15 @@ module Padrino
                 path.gsub!(%r{^\(/\)|/\?}, "")
                 path = File.join(controller_path, path)  unless @_map
               end
-              # Here we build the correct name route
             end
 
-            # Now we need to parse our 'parent' params and parent scope
+            # Now we need to parse our 'parent' params and parent scope.
             if !absolute_map and parent_params = options.delete(:parent) || @_parents
               parent_params = (Array(@_parents) + Array(parent_params)).uniq
               path = process_path_for_parent_params(path, parent_params)
             end
 
-            # Add any controller level map to the front of the path
+            # Add any controller level map to the front of the path.
             path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
 
             # Small reformats
@@ -801,7 +791,7 @@ module Padrino
             name = "#{controller_name}_#{name}".to_sym unless controller_name.blank?
           end
 
-          # Merge in option defaults
+          # Merge in option defaults.
           options.reverse_merge!(:default_values => @_defaults)
 
           [path, name, parent_params, options, route_options]
@@ -831,7 +821,7 @@ module Padrino
         end
 
         ##
-        # Processes the existing path and appends the 'format' suffix onto the route
+        # Processes the existing path and appends the 'format' suffix onto the route.
         # Used for calculating path in route method.
         #
         def process_path_for_provides(path, format_params)
@@ -872,7 +862,7 @@ module Padrino
             url_format        = params[:format].to_sym if params[:format]
             accepts           = request.accept.map { |a| a.to_str }
 
-            # per rfc2616-sec14:
+            # Per rfc2616-sec14:
             # Assume */* if no ACCEPT header is given.
             catch_all = (accepts.delete "*/*" || accepts.empty?)
             matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
@@ -893,9 +883,9 @@ module Padrino
                              types.include?(url_format)      ||
                              ((!url_format) && request.accept.empty? && types.include?(:html))
 
-            # per rfc2616-sec14:
-            # answer with 406 if accept is given but types to not match any
-            # provided type
+            # Per rfc2616-sec14:
+            # Answer with 406 if accept is given but types to not match any
+            # provided type.
             halt 406 if
               (!url_format && !accepts.empty? && !matched_format) ||
               (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
@@ -930,7 +920,7 @@ module Padrino
     #
     module InstanceMethods
       ##
-      # Instance method for url generation.
+      # Instance method for URL generation.
       #
       # @example
       #   url(:show, :id => 1)
@@ -945,7 +935,7 @@ module Padrino
         # http://www.sinatrarb.com/intro#Generating%20URLs
         return super if args.first.is_a?(String) && !args[1].is_a?(Hash)
 
-        # Delegate to Padrino named route url generation
+        # Delegate to Padrino named route URL generation.
         settings.url(*args)
       end
       alias :url_for :url
@@ -961,9 +951,6 @@ module Padrino
         uri url(*args), true, false
       end
 
-      ##
-      # Returns the recognized path for a route.
-      #
       def recognize_path(path)
         settings.recognize_path(path)
       end
@@ -1051,10 +1038,10 @@ module Padrino
             route!
           end
         rescue ::Exception => boom
-          filter! :before  if boom.kind_of? ::Sinatra::NotFound
+          filter! :before if boom.kind_of? ::Sinatra::NotFound
           invoke { @boom_handled = handle_exception!(boom) }
         ensure
-          @boom_handled  or begin
+          @boom_handled or begin
             filter! :after  unless env['sinatra.static_file']
           rescue ::Exception => boom
             invoke { handle_exception!(boom) } unless @env['sinatra.error']
@@ -1086,6 +1073,6 @@ module Padrino
 
           route_missing
         end
-    end # InstanceMethods
-  end # Routing
-end # Padrino
+    end
+  end
+end
