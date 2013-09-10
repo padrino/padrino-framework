@@ -71,7 +71,6 @@ module Padrino
       desc "generate", "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
       map ["gen", "g"] => :generate
       def generate(*args)
-        # Build Padrino g as an alias of padrino-gen
         begin
           # We try to load the vendored padrino-gen if exist
           padrino_gen_path = File.expand_path('../../../../../padrino-gen/lib', __FILE__)
@@ -153,6 +152,6 @@ module Padrino
           result
         end
         alias :silence :capture
-    end # Base
-  end # Cli
-end # Padrino
+    end
+  end
+end
