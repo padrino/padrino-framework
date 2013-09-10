@@ -1,6 +1,6 @@
 module Padrino
   ##
-  # This class is an extended version of Rack::URLMap
+  # This class is an extended version of Rack::URLMap.
   #
   # Padrino::Router like Rack::URLMap dispatches in such a way that the
   # longest paths are tried first, since they are most specific.
@@ -26,8 +26,6 @@ module Padrino
   #
   # @api semipublic
   class Router
-
-    # Constructs a new route mapper instance
     def initialize(*mapping, &block)
       @mapping = []
       mapping.each { |m| map(m) }
@@ -68,11 +66,11 @@ module Padrino
     end
 
     # The call handler setup to route a request given the mappings specified.
-    # @api private
     def call(env)
       rPath = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
       hHost, sName, sPort = env.values_at('HTTP_HOST','SERVER_NAME','SERVER_PORT')
+
       @mapping.each do |host, path, match, app|
         next unless host.nil? || hHost =~ host
         next unless rPath =~ match && rest = $1
@@ -89,10 +87,9 @@ module Padrino
     end
 
     private
-
-    # Sorts the mapped routes in consistent order
-    def sort!
-      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
-    end
-  end # Router
-end # Padrino
+      # Sorts the mapped routes in consistent order
+      def sort!
+        @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
+      end
+  end
+end
