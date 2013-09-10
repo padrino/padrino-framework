@@ -10,7 +10,6 @@ module Padrino
     ##
     # A SafeTemplate assumes that its output is safe.
     #
-    # @api private
     module SafeTemplate
       def render(*)
         super.html_safe
@@ -35,13 +34,13 @@ module Padrino
     ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
-    # Default options used in the #resolve_template-method.
+    # Default options used in the resolve_template-method.
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
     class << self
       ##
-      # Default engine configurations for Padrino::Rendering
+      # Default engine configurations for Padrino::Rendering.
       #
       # @return {Hash<Symbol,Hash>}
       #   The configurations, keyed by engine.
@@ -49,9 +48,6 @@ module Padrino
         @engine_configurations ||= {}
       end
 
-      ##
-      # Main class that register this extension.
-      #
       def registered(app)
         included(app)
         engine_configurations.each do |engine, configs|
@@ -93,7 +89,8 @@ module Padrino
       end
 
       ##
-      # Returns the cached template file to render for a given url, content_type and locale.
+      # Returns the cached template file to render for a given url,
+      # content_type and locale.
       #
       # @param [Array<template_path, content_type, locale>] render_options
       #
@@ -102,7 +99,7 @@ module Padrino
       end
 
       ##
-      # Caches the template file for the given rendering options
+      # Caches the template file for the given rendering options.
       #
       # @param [String] template_file
       #   The path of the template file.
@@ -202,20 +199,22 @@ module Padrino
           # Resolve layouts similar to in Rails
           if options[:layout].nil? && !settings.templates.has_key?(:layout)
             layout_path, layout_engine = *resolved_layout
-            options[:layout] = layout_path || false # We need to force layout false so sinatra don't try to render it
+
+            # We need to force layout false so sinatra don't try to render it
+            options[:layout] = layout_path || false
             options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
             options[:layout_engine] = layout_engine || engine if options[:layout]
           elsif options[:layout].present?
             options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
           end
-          # Default to original layout value if none found
+          # Default to original layout value if none found.
           options[:layout] ||= layout_was
 
-          # Cleanup the template
+          # Cleanup the template.
           @current_engine, engine_was = engine, @current_engine
           @_out_buf,  _buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
 
-          # Pass arguments to Sinatra render method
+          # Pass arguments to Sinatra render method.
           super(engine, data, options.dup, locals, &block)
         ensure
           @current_engine = engine_was
@@ -275,7 +274,7 @@ module Padrino
             return cached_template
           end
 
-          # Resolve view path and options
+          # Resolve view path and options.
           options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
           view_path = options.delete(:views) || settings.views || "./views"
           target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
@@ -283,7 +282,7 @@ module Padrino
 
           # Generate potential template candidates
           templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
-            template_engine = File.extname(file)[1..-1].to_sym # retrieves engine extension
+            template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
             template_file   = file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
             [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
           end
@@ -298,7 +297,7 @@ module Padrino
             templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
             templates.find { |file, e| file.to_s == "#{template_path}.#{_content_type}" } ||
             templates.find { |file, e| file.to_s == "#{template_path}" && simple_content_type } ||
-            (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template
+            (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template.
 
           raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
           settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
@@ -312,9 +311,9 @@ module Padrino
         def locale
           I18n.locale if defined?(I18n)
         end
-    end # InstanceMethods
-  end # Rendering
-end # Padrino
+    end
+  end
+end
 
 require 'padrino-core/application/rendering/extensions/haml'
 require 'padrino-core/application/rendering/extensions/erubis'
