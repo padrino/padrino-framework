@@ -18,7 +18,7 @@ module Padrino
             puts "=> #{options[:pid]} not found!"
           end
         end
-      end # self
-    end # Adapter
-  end # Cli
-end # Padrino
+      end
+    end
+  end
+end
