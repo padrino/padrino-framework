@@ -26,7 +26,6 @@ da:
     am: ""
     pm: ""
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

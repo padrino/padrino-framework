@@ -26,7 +26,6 @@ lv:
     am: "priekšpusdiena"
     pm: "pēcpusdiena"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

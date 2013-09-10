@@ -13,7 +13,7 @@ hu:
     abbr_day_names: [vas, hét, kedd, sze, csüt, pén, szo]
     month_names: [~, január, február, március, április, május, június, július, augusztus, szeptember, oktober, november, december]
     abbr_month_names: [~, jan, febr, márc, ápr, máj, jún, júl, aug, szept, okt, nov, dec]
-    order: 
+    order:
       - year
       - month
       - day
@@ -26,7 +26,6 @@ hu:
     am: "de"
     pm: "du"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

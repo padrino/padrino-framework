@@ -26,7 +26,6 @@ sv:
     am: "fm"
     pm: "em"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "
