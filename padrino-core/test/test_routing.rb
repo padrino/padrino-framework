@@ -109,6 +109,16 @@ describe "Routing" do
     assert_equal 'success!', body    
   end
 
+  should 'parse routes that include encoded slash' do
+    mock_app do
+      get('/:drive_alias/:path', :path => /.*/){
+        "Show #{params[:drive_alias]} and #{params[:path]}"
+      }
+    end
+    get("/drive%2Ffoo/some/path")
+    assert_equal "Show drive/foo and some/path", body
+  end
+
   should 'encode params using UTF-8' do
     skip unless ''.respond_to?(:encoding) # for 1.8.7
 
