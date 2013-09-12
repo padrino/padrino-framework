@@ -9,7 +9,7 @@ module Padrino
       #
       module Actions
         ##
-        # Tell us which orm we are using
+        # Tell us which orm we are using.
         #
         def orm
           fetch_component_choice(:orm).to_sym rescue :activerecord
@@ -17,28 +17,28 @@ module Padrino
         alias :adapter :orm
 
         ##
-        # Tell us which rendering engine you are using
+        # Tell us which rendering engine you are using.
         #
         def ext
           fetch_component_choice(:admin_renderer).to_sym rescue :haml
         end
 
         ##
-        # Tell us for now wich orm we support
+        # Tell us for now which orm we support
         #
         def supported_orm
           [:minirecord, :datamapper, :activerecord, :mongomapper, :mongoid, :couchrest, :sequel, :ohm]
         end
 
         ##
-        # Tell us for now wich rendering engine we support
+        # Tell us for now which rendering engine we support.
         #
         def supported_ext
           [:haml, :slim, :erb]
         end
 
         ##
-        # Add access_control permission in our app.rb
+        # Add access_control permission in our app.rb.
         #
         def add_project_module(controller)
           permission = "    role.project_module :#{controller}, '/#{controller}'\n"
@@ -46,7 +46,7 @@ module Padrino
         end
 
         ##
-        # Remove from access_control permissions
+        # Remove from access_control permissions.
         #
         def remove_project_module(controller)
           path = destination_root('/admin/app.rb')
@@ -56,6 +56,7 @@ module Padrino
           File.open(path, 'wb') { |f| f.write content }
         end
 
+        ##
         # Returns the app_name for the application at root.
         #
         # @param [String] app
@@ -71,7 +72,7 @@ module Padrino
           app_path = destination_root(app, 'app.rb')
           @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
         end
-      end # Actions
-    end # Admin
-  end # Generators
-end # Padrino
+      end
+    end
+  end
+end
