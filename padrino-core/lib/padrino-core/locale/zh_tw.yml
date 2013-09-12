@@ -26,7 +26,6 @@ zh_tw:
     am: "上午"
     pm: "下午"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

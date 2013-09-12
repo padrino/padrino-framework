@@ -26,10 +26,8 @@
     am: ""
     pm: ""
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "
       two_words_connector: " og "
       last_word_connector: " og "
-

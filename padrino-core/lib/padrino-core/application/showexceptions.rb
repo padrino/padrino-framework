@@ -16,5 +16,5 @@ module Padrino
           "app"
         end
       end
-  end # ShowExceptions
-end # Padrino
+  end
+end

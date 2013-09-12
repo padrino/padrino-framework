@@ -26,7 +26,6 @@ cs:
     am: "dop"
     pm: "odp"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

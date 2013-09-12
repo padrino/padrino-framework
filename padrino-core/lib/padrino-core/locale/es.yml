@@ -13,7 +13,7 @@ es:
     abbr_day_names: [Dom, Lun, Mar, Mie, Jue, Vie, Sab]
     month_names: [~, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre]
     abbr_month_names: [~, Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic]
-    order: 
+    order:
       - day
       - month
       - year
@@ -26,7 +26,6 @@ es:
     am: "am"
     pm: "pm"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

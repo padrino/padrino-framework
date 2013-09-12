@@ -15,9 +15,7 @@ require 'padrino-core/tasks'
 require 'padrino-core/module'
 
 
-# The Padrino environment (falls back to the rack env or finally develop)
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
-# The Padrino project root path (falls back to the first caller)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
@@ -188,19 +186,15 @@ module Padrino
     end
 
     ##
-    # Returns all currently known padrino gems.
-    #
     # @returns [Gem::Specification]
     def gems
       @gems ||= []
     end
 
     ##
-    # All loaded Padrino modules.
-    #
     # @returns [<Padrino::Module>]
     def modules
       @modules ||= []
     end
-  end # self
-end # Padrino
+  end
+end
