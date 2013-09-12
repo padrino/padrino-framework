@@ -143,8 +143,8 @@ module Padrino
           Padrino::Utils.unsilence_output
           new_constants = ObjectSpace.new_classes(klasses)
           if loaded
-            process_loaded_file(:file      => file, 
-                                :constants => new_constants, 
+            process_loaded_file(:file      => file,
+                                :constants => new_constants,
                                 :files     => files)
           else
             logger.devel "Failed to load #{file}; removing partially defined constants"
@@ -154,7 +154,7 @@ module Padrino
       end
 
       ##
-      # Returns true if the file is defined in our padrino root
+      # Returns true if the file is defined in our padrino root.
       #
       def figure_path(file)
         return file if Pathname.new(file).absolute?
@@ -183,13 +183,12 @@ module Padrino
       private
 
       ###
-      # Clear instance variables that keep track of 
-      # loaded features/files/mtimes
+      # Clear instance variables that keep track of # loaded features/files/mtimes.
       #
       def clear_modification_times
         MTIMES.clear
       end
-      
+
       def clear_loaded_classes
         LOADED_CLASSES.each do |file, klasses|
           klasses.each { |klass| remove_constant(klass) }
@@ -205,21 +204,21 @@ module Padrino
       end
 
       ###
-      # Macro for mtime query
+      # Macro for mtime query.
       #
       def modification_time(file)
         MTIMES[file]
       end
 
       ###
-      # Macro for mtime update
+      # Macro for mtime update.
       #
       def update_modification_time(file)
         MTIMES[file] = File.mtime(file)
       end
 
       ###
-      # Tracks loaded file features/classes/constants
+      # Tracks loaded file features/classes/constants:
       #
       def process_loaded_file(*args)
         options       = args.extract_options!
@@ -236,14 +235,14 @@ module Padrino
       end
 
       ###
-      # Unloads all constants in new_constants
+      # Unloads all constants in new_constants.
       #
       def unload_constants(new_constants)
         new_constants.each { |klass| remove_constant(klass) }
       end
 
       ###
-      # Safe load dependencies of a file
+      # Safe load dependencies of a file.
       #
       def reload_deps_of_file(file)
         if features = LOADED_FILES.delete(file)
@@ -252,23 +251,23 @@ module Padrino
       end
 
       ##
-      # Check if file was changed or if force a reload
+      # Check if file was changed or if force a reload.
       #
       def should_reload?(file)
         MTIMES[file] && File.mtime(file) > MTIMES[file]
       end
 
       ##
-      # Removes all classes declared in the specified file
+      # Removes all classes declared in the specified file.
       #
       def remove_loaded_file_classes(file)
         if klasses = LOADED_CLASSES.delete(file)
           klasses.each { |klass| remove_constant(klass) }
-        end 
+        end
       end
 
       ##
-      # Remove all loaded fatures with our file
+      # Remove all loaded fatures with our file.
       #
       def remove_loaded_file_features(file)
         if features = LOADED_FILES[file]
@@ -277,8 +276,8 @@ module Padrino
       end
 
       ##
-      # Return the mounted_apps providing the app location
-      # Can be an array because in one app.rb we can define multiple Padrino::Appplications
+      # Return the mounted_apps providing the app location.
+      # Can be an array because in one app.rb we can define multiple Padrino::Appplications.
       #
       def mounted_apps_of(file)
         file = figure_path(file)
@@ -286,7 +285,7 @@ module Padrino
       end
 
       ##
-      # Returns true if file is in our Padrino.root
+      # Returns true if file is in our Padrino.root.
       #
       def in_root?(file)
         # This is better but slow:
@@ -307,7 +306,7 @@ module Padrino
       end
 
       ##
-      # Creates an array of paths for use in #rotation
+      # Creates an array of paths for use in #rotation.
       #
       def files_for_rotation
         files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
@@ -317,8 +316,9 @@ module Padrino
     end # self
 
     ##
-    # This class acts as a Rack middleware to be added to the application stack. This middleware performs a
-    # check and reload for source files at the start of each request, but also respects a specified cool down time
+    # This class acts as a Rack middleware to be added to the application stack.
+    # This middleware performs a check and reload for source files at the start
+    # of each request, but also respects a specified cool down time
     # during which no further action will be taken.
     #
     class Rack
@@ -337,5 +337,5 @@ module Padrino
         @app.call(env)
       end
     end
-  end # Reloader
-end # Padrino
+  end
+end

@@ -13,7 +13,7 @@ begin
           src << " #{@bufvar}.concat((" << code << ').to_s);'
         end
 
-        def add_expr_escaped(src, code)          
+        def add_expr_escaped(src, code)
           src << " #{@bufvar}.safe_concat " << code << ';'
         end
 
@@ -44,11 +44,11 @@ begin
       end
     end
   end
-  
-  Tilt.prefer Padrino::Erubis::Template, :erb
+
+  Tilt.prefer(Padrino::Erubis::Template, :erb)
 
   if defined? Padrino::Rendering
-    Padrino::Rendering.engine_configurations[:erb] = 
+    Padrino::Rendering.engine_configurations[:erb] =
       {:engine_class => Padrino::Erubis::SafeBufferTemplate}
   end
 rescue LoadError

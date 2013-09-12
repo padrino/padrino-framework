@@ -64,7 +64,7 @@ module Padrino
 
       @_called_from = first_caller
       Padrino.set_encoding
-      Padrino.set_load_paths(*load_paths) # We set the padrino load paths
+      Padrino.set_load_paths(*load_paths)
       Padrino::Logger.setup! # Initialize our logger
       Padrino.require_dependencies("#{root}/config/database.rb", :nodeps => true) # Be sure to don't remove constants from dbs.
       Padrino::Reloader.lock! # Now we can remove constant from here to down
@@ -105,7 +105,7 @@ module Padrino
     end
 
     ##
-    # This adds the ablity to instantiate {Padrino.load!} after
+    # This adds the ability to instantiate {Padrino.load!} after
     # {Padrino::Application} definition.
     #
     def called_from
@@ -135,7 +135,7 @@ module Padrino
     #
     #   Dir["/models/*.rb"].each { |r| require r }
     #
-    # we get an error, because we try to require first +a.rb+ that need
+    # We get an error, because we try to require first +a.rb+ that need
     # _something_ of +b.rb+.
     #
     # With this method we don't have this problem.
@@ -153,15 +153,13 @@ module Padrino
       files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
 
       while files.present?
-        # List of errors and failed files
         errors, failed = [], []
 
-        # We need a size to make sure things are loading
         size_at_start = files.size
 
         # Now we try to require our dependencies, we dup files
         # so we don't perform delete on the original array during
-        # iteration, this prevent problems with rubinus
+        # iteration, this prevent problems with Rubinus
         files.dup.each do |file|
           begin
             Padrino::Reloader.safe_load(file, options.dup)
@@ -182,7 +180,7 @@ module Padrino
     end
 
     ##
-    # Returns default list of path globs to load as dependencies
+    # Returns default list of path globs to load as dependencies.
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
     # @return [Array<String>]
@@ -206,20 +204,20 @@ module Padrino
       $:.uniq!; load_paths.uniq!
     end
 
-    private 
-    def module_paths
-      Padrino.modules.map(&:dependency_paths).flatten!
-    end
+    private
+      def module_paths
+        Padrino.modules.map(&:dependency_paths).flatten!
+      end
 
-    def dependency_paths_was
-      [
-        "#{root}/config/database.rb", 
-        "#{root}/lib/**/*.rb", 
-        "#{root}/shared/lib/**/*.rb",
-        "#{root}/models/**/*.rb", 
-        "#{root}/shared/models/**/*.rb", 
-        "#{root}/config/apps.rb"
-      ]
-    end
-  end # self
-end # Padrino
+      def dependency_paths_was
+        [
+          "#{root}/config/database.rb",
+          "#{root}/lib/**/*.rb",
+          "#{root}/shared/lib/**/*.rb",
+          "#{root}/models/**/*.rb",
+          "#{root}/shared/models/**/*.rb",
+          "#{root}/config/apps.rb"
+        ]
+      end
+  end
+end

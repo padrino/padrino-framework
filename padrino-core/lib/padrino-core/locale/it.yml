@@ -33,7 +33,6 @@ it:
     am: 'am'
     pm: 'pm'
 
-# Used in array.to_sentence.
   support:
     array:
       sentence_connector: "e"

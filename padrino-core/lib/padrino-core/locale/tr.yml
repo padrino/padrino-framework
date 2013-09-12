@@ -26,7 +26,6 @@ tr:
     am: "öö"
     pm: "ös"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

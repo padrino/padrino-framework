@@ -26,7 +26,6 @@ pl:
     am: "przed południem"
     pm: "po południu"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "

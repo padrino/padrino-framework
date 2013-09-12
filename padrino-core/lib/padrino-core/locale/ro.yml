@@ -26,7 +26,6 @@ ro:
     am: "am"
     pm: "pm"
 
-# Used in array.to_sentence.
   support:
     array:
       words_connector: ", "
