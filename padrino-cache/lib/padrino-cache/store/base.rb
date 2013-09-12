@@ -5,9 +5,8 @@ module Padrino
       # Abstract Cache Store
       #
       class Base
-
         ##
-        # Get the cache parser strategy
+        # Get the cache parser strategy.
         #
         # By default is plain, otherwise you can set **Marshal** or write your own.
         #
@@ -16,15 +15,16 @@ module Padrino
         end
 
         ##
-        # Set the caching parser strategy
+        # Set the caching parser strategy.
         #
         # @param value
-        #   Module of Padrino::Cache::Parser or any that respond to encode/decode
+        #   Module of Padrino::Cache::Parser or any that respond to encode/decode.
         #
         # @example
+        #   # shorter version:
         #   Padrino.cache.parser = :plain
         #   Padrino.cache.parser = :marshal
-        #   # shortcuts for:
+        #   # longer version:
         #   Padrino.cache.parser = Padrino::Cache::Parser::Plain
         #   Padrino.cache.parser = Padrino::Cache::Parser::Marshal
         #
@@ -34,7 +34,7 @@ module Padrino
         #   require 'oj'
         #   module FastJSONParser
         #     def self.encode(value)
-        #       OJ.dump(value)
+        #       Oj.dump(value)
         #     end
         #
         #     def self.decode(value)
@@ -51,29 +51,26 @@ module Padrino
           @_parser=mod
         end
 
-        # @private
         def initialize(options={})
           @never = -1
           self.parser = options[:parser] || :plain
         end
 
         private
-
-        def get_expiry( opts )
-          if opts && opts[:expires_in] && opts[:expires_in] != -1
-            expires_in = opts[:expires_in].to_i
-            expires_in = EXPIRES_EDGE  if expires_in > EXPIRES_EDGE
-            Time.now.to_i + expires_in
-          else
-            @never
+          def get_expiry( opts )
+            if opts && opts[:expires_in] && opts[:expires_in] != -1
+              expires_in = opts[:expires_in].to_i
+              expires_in = EXPIRES_EDGE  if expires_in > EXPIRES_EDGE
+              Time.now.to_i + expires_in
+            else
+              @never
+            end
           end
-        end
 
-        def now_before?( expiry )
-          expiry.to_i == @never || expiry.to_i > Time.now.to_i
-        end
-      end # Base
-    end # Store
-  end # Cache
-end # Padrino
-
+          def now_before?( expiry )
+            expiry.to_i == @never || expiry.to_i > Time.now.to_i
+          end
+      end
+    end
+  end
+end
