@@ -8,10 +8,10 @@ module Padrino
       #
       # Possible uses for fragment caching might include:
       #
-      # * a 'feed' of some items on a page
-      # * output fetched (by proxy) from an API on a third-party site
-      # * parts of your page which are largely static/do not need re-rendering every request
-      # * any output which is expensive to render
+      # - a 'feed' of some items on a page
+      # - output fetched (by proxy) from an API on a third-party site
+      # - parts of your page which are largely static/do not need re-rendering every request
+      # - any output which is expensive to render
       #
       module Fragment
         include Padrino::Helpers::OutputHelpers
@@ -41,13 +41,12 @@ module Padrino
         #           render 'partials/feedcontent'
         #         end
         #
-        #         # Below outputs @feed somewhere in its markup
+        #         # Below outputs @feed somewhere in its markup.
         #         render 'feeds/show'
         #       end
         #     end
         #   end
         #
-        # @api public
         def cache(key, opts = nil, &block)
           if settings.caching?
             began_at = Time.now
@@ -62,10 +61,10 @@ module Padrino
             end
           else
             value = capture_html(&block)
-            concat_content(value)   
+            concat_content(value)
           end
         end
-      end # Fragment
-    end # Helpers
-  end # Cache
-end # Padrino
+      end
+    end
+  end
+end
