@@ -49,7 +49,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 TEST
 
 BACON_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+requirj File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 describe "!NAME! Model" do
   it 'can be created' do
