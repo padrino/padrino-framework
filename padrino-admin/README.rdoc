@@ -6,7 +6,7 @@ Padrino has a beautiful Admin management dashboard with these features:
 
 Orm Agnostic:: Data Adapters for Datamapper, Activerecord, Sequel, Mongomapper, Mongoid, Couchrest
 Template Agnostic:: Erb, Erubis and Haml Renderer
-Authentication:: Support for Account authentication, Account Permission managment
+Authentication:: Support for Account authentication, Account Permission management
 Scaffold:: You can simply create a new "admin interface" by providing a Model
 Access Control:: Supports authentication and role permissions for your application
 
@@ -59,7 +59,7 @@ by the admin access control features:
     end
   end
 
-In this example +if+ we visit urls that start with /+customer+/+orders+ or /+cart/checkout+ we will be redirected
+In this example +if+ we visit URLs that start with /+customer+/+orders+ or /+cart/checkout+ we will be redirected
 to our :+login_page+ "/login". Once we are correctly logged in we can visit these pages.
 
 For a more complete look at using the Admin panel functionality and access features, be sure to check out the
@@ -67,4 +67,4 @@ For a more complete look at using the Admin panel functionality and access featu
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2013 Padrino. See LICENSE for details.
