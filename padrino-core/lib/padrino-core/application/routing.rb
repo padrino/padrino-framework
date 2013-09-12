@@ -147,7 +147,7 @@ class HttpRouter
   class Request
     def initialize(path, rack_request)
       @rack_request = rack_request
-      @path = Rack::Utils.unescape(path).split(/\//)
+      @path = path.split(/\//).map{|part| Rack::Utils.unescape(part) }
       @path.shift if @path.first == ''
       @path.push('') if path[-1] == ?/
       @extra_env = {}
