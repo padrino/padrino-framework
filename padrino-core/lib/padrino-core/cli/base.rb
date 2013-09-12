@@ -110,48 +110,50 @@ module Padrino
       end
 
       private
-        def prepare(task)
-          if options.help?
-            help(task.to_s)
-            raise SystemExit
-          end
-          ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= options.environment.to_s
-          chdir(options.chdir)
-          unless File.exist?('config/boot.rb')
-            puts "=> Could not find boot file in: #{options.chdir}/config/boot.rb !!!"
-            raise SystemExit
-          end
+
+      def prepare(task)
+        if options.help?
+          help(task.to_s)
+          raise SystemExit
         end
+        ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= options.environment.to_s
+        chdir(options.chdir)
+        unless File.exist?('config/boot.rb')
+          puts "=> Could not find boot file in: #{options.chdir}/config/boot.rb !!!"
+          raise SystemExit
+        end
+      end
 
       protected
-        def self.banner(task=nil, *args)
-          "padrino #{task.name}"
+
+      def self.banner(task=nil, *args)
+        "padrino #{task.name}"
+      end
+
+      def chdir(dir)
+        return unless dir
+        begin
+          Dir.chdir(dir.to_s)
+        rescue Errno::ENOENT
+          puts "=> Specified Padrino root '#{dir}' does not appear to exist!"
+        rescue Errno::EACCES
+          puts "=> Specified Padrino root '#{dir}' cannot be accessed by the current user!"
+        end
+      end
+
+      def capture(stream)
+        begin
+          stream = stream.to_s
+          eval "$#{stream} = StringIO.new"
+          yield
+          result = eval("$#{stream}").string
+        ensure
+          eval("$#{stream} = #{stream.upcase}")
         end
 
-        def chdir(dir)
-          return unless dir
-          begin
-            Dir.chdir(dir.to_s)
-          rescue Errno::ENOENT
-            puts "=> Specified Padrino root '#{dir}' does not appear to exist!"
-          rescue Errno::EACCES
-            puts "=> Specified Padrino root '#{dir}' cannot be accessed by the current user!"
-          end
-        end
-
-        def capture(stream)
-          begin
-            stream = stream.to_s
-            eval "$#{stream} = StringIO.new"
-            yield
-            result = eval("$#{stream}").string
-          ensure
-            eval("$#{stream} = #{stream.upcase}")
-          end
-
-          result
-        end
-        alias :silence :capture
+        result
+      end
+      alias :silence :capture
     end
   end
 end

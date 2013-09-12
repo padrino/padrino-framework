@@ -58,20 +58,20 @@ module Padrino
     end
 
     private
-      # Detects the supported handler to use.
-      #
-      # @example
-      #   detect_rack_handler => <ThinHandler>
-      #
-      def self.detect_rack_handler
-        Handlers.each do |handler|
-          begin
-            return handler if Rack::Handler.get(handler.to_s.downcase)
-          rescue LoadError
-          rescue NameError
-          end
+    # Detects the supported handler to use.
+    #
+    # @example
+    #   detect_rack_handler => <ThinHandler>
+    #
+    def self.detect_rack_handler
+      Handlers.each do |handler|
+        begin
+          return handler if Rack::Handler.get(handler.to_s.downcase)
+        rescue LoadError
+        rescue NameError
         end
-        fail "Server handler (#{Handlers.join(', ')}) not found."
       end
+      fail "Server handler (#{Handlers.join(', ')}) not found."
+    end
   end
 end

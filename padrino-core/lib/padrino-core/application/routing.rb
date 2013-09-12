@@ -587,332 +587,332 @@ module Padrino
       end
 
       private
-        # Parse params from the url method
-        def value_to_param(value)
-          case value
-            when Array
-              value.map { |v| value_to_param(v) }.compact
-            when Hash
-              value.inject({}) do |memo, (k,v)|
-                v = value_to_param(v)
-                memo[k] = v unless v.nil?
-                memo
-              end
-            when nil then nil
-            else value.respond_to?(:to_param) ? value.to_param : value
+      # Parse params from the url method
+      def value_to_param(value)
+        case value
+          when Array
+            value.map { |v| value_to_param(v) }.compact
+          when Hash
+            value.inject({}) do |memo, (k,v)|
+              v = value_to_param(v)
+              memo[k] = v unless v.nil?
+              memo
+            end
+          when nil then nil
+          else value.respond_to?(:to_param) ? value.to_param : value
+        end
+      end
+
+      # Add prefix slash if its not present and remove trailing slashes.
+      def conform_uri(uri_string)
+        uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
+      end
+
+      ##
+      # Rewrite default routes.
+      #
+      # @example
+      #   get :index                                             # => "/"
+      #   get :index, "/"                                        # => "/"
+      #   get :index, :map => "/"                                # => "/"
+      #   get :show, "/show-me"                                  # => "/show-me"
+      #   get :show,  :map => "/show-me"                         # => "/show-me"
+      #   get "/foo/bar"                                         # => "/show"
+      #   get :index, :parent => :user                           # => "/user/:user_id/index"
+      #   get :show, :with => :id, :parent => :user              # => "/user/:user_id/show/:id"
+      #   get :show, :with => :id                                # => "/show/:id"
+      #   get [:show, :id]                                       # => "/show/:id"
+      #   get :show, :with => [:id, :name]                       # => "/show/:id/:name"
+      #   get [:show, :id, :name]                                # => "/show/:id/:name"
+      #   get :list, :provides => :js                            # => "/list.{:format,js)"
+      #   get :list, :provides => :any                           # => "/list(.:format)"
+      #   get :list, :provides => [:js, :json]                   # => "/list.{!format,js|json}"
+      #   get :list, :provides => [:html, :js, :json]            # => "/list(.{!format,js|json})"
+      #   get :list, :priority => :low                           # Defers route to be last
+      #   get /pattern/, :name => :foo, :generate_with => '/foo' # Generates :foo as /foo
+      def route(verb, path, *args, &block)
+        options = case args.size
+          when 2
+            args.last.merge(:map => args.first)
+          when 1
+            map = args.shift if args.first.is_a?(String)
+            if args.first.is_a?(Hash)
+              map ? args.first.merge(:map => map) : args.first
+            else
+              {:map => map || args.first}
+            end
+          when 0
+            {}
+          else raise
+        end
+
+        # Do padrino parsing. We dup options so we can build HEAD request correctly.
+        route_options = options.dup
+        route_options[:provides] = @_provides if @_provides
+
+        # CSRF protection is always active except when explicitly switched off.
+        if allow_disabled_csrf
+          unless route_options[:csrf_protection] == false
+            route_options[:csrf_protection] = true
           end
         end
 
-        # Add prefix slash if its not present and remove trailing slashes.
-        def conform_uri(uri_string)
-          uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
+        path, *route_options[:with] = path if path.is_a?(Array)
+        action = path
+        path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
+        options.reverse_merge!(@_conditions) if @_conditions
+
+        # Sinatra defaults
+        method_name = "#{verb} #{path}"
+        unbound_method = generate_method(method_name, &block)
+
+        block = block.arity != 0 ?
+          proc { |a,p| unbound_method.bind(a).call(*p) } :
+          proc { |a,p| unbound_method.bind(a).call }
+
+        invoke_hook(:route_added, verb, path, block)
+
+        # HTTPRouter route construction
+        route = router.add(path, route_options)
+        route.name = name if name
+        route.action = action
+        priority_name = options.delete(:priority) || :normal
+        priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
+        route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
+        route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
+        route.add_request_method(verb.downcase.to_sym)
+        route.host = options.delete(:host) if options.key?(:host)
+        route.user_agent = options.delete(:agent) if options.key?(:agent)
+        if options.key?(:default_values)
+          defaults = options.delete(:default_values)
+          route.add_default_values(defaults) if defaults
         end
-
-        ##
-        # Rewrite default routes.
-        #
-        # @example
-        #   get :index                                             # => "/"
-        #   get :index, "/"                                        # => "/"
-        #   get :index, :map => "/"                                # => "/"
-        #   get :show, "/show-me"                                  # => "/show-me"
-        #   get :show,  :map => "/show-me"                         # => "/show-me"
-        #   get "/foo/bar"                                         # => "/show"
-        #   get :index, :parent => :user                           # => "/user/:user_id/index"
-        #   get :show, :with => :id, :parent => :user              # => "/user/:user_id/show/:id"
-        #   get :show, :with => :id                                # => "/show/:id"
-        #   get [:show, :id]                                       # => "/show/:id"
-        #   get :show, :with => [:id, :name]                       # => "/show/:id/:name"
-        #   get [:show, :id, :name]                                # => "/show/:id/:name"
-        #   get :list, :provides => :js                            # => "/list.{:format,js)"
-        #   get :list, :provides => :any                           # => "/list(.:format)"
-        #   get :list, :provides => [:js, :json]                   # => "/list.{!format,js|json}"
-        #   get :list, :provides => [:html, :js, :json]            # => "/list(.{!format,js|json})"
-        #   get :list, :priority => :low                           # Defers route to be last
-        #   get /pattern/, :name => :foo, :generate_with => '/foo' # Generates :foo as /foo
-        def route(verb, path, *args, &block)
-          options = case args.size
-            when 2
-              args.last.merge(:map => args.first)
-            when 1
-              map = args.shift if args.first.is_a?(String)
-              if args.first.is_a?(Hash)
-                map ? args.first.merge(:map => map) : args.first
-              else
-                {:map => map || args.first}
-              end
-            when 0
-              {}
-            else raise
-          end
-
-          # Do padrino parsing. We dup options so we can build HEAD request correctly.
-          route_options = options.dup
-          route_options[:provides] = @_provides if @_provides
-
-          # CSRF protection is always active except when explicitly switched off.
-          if allow_disabled_csrf
-            unless route_options[:csrf_protection] == false
-              route_options[:csrf_protection] = true
-            end
-          end
-
-          path, *route_options[:with] = path if path.is_a?(Array)
-          action = path
-          path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
-          options.reverse_merge!(@_conditions) if @_conditions
-
-          # Sinatra defaults
-          method_name = "#{verb} #{path}"
-          unbound_method = generate_method(method_name, &block)
-
-          block = block.arity != 0 ?
-            proc { |a,p| unbound_method.bind(a).call(*p) } :
-            proc { |a,p| unbound_method.bind(a).call }
-
-          invoke_hook(:route_added, verb, path, block)
-
-          # HTTPRouter route construction
-          route = router.add(path, route_options)
-          route.name = name if name
-          route.action = action
-          priority_name = options.delete(:priority) || :normal
-          priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
-          route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
-          route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
-          route.add_request_method(verb.downcase.to_sym)
-          route.host = options.delete(:host) if options.key?(:host)
-          route.user_agent = options.delete(:agent) if options.key?(:agent)
-          if options.key?(:default_values)
-            defaults = options.delete(:default_values)
-            route.add_default_values(defaults) if defaults
-          end
-          options.delete_if do |option, args|
-            if route.significant_variable_names.include?(option)
-              route.add_match_with(option => Array(args).first)
-              true
-            end
-          end
-
-          # Add Sinatra conditions.
-          options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
-          conditions, @conditions = @conditions, []
-          route.custom_conditions.concat(conditions)
-
-          invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
-
-          # Add Application defaults.
-          route.before_filters.concat(@filters[:before])
-          route.after_filters.concat(@filters[:after])
-          if @_controller
-            route.use_layout = @layout
-            route.controller = Array(@_controller)[0].to_s
-          end
-
-          deferred_routes[priority] << [route, block]
-
-          route
-        end
-
-        ##
-        # Returns the final parsed route details (modified to reflect all
-        # Padrino options) given the raw route. Raw route passed in could be
-        # a named alias or a string and is parsed to reflect provides formats,
-        # controllers, parents, 'with' parameters, and other options.
-        #
-        def parse_route(path, options, verb)
-          # We need save our originals path/options so we can perform correctly cache.
-          original = [path, options.dup]
-          route_options = {}
-
-          # We need check if path is a symbol, if that it's a named route.
-          map = options.delete(:map)
-
-          # path i.e :index or :show
-          if path.kind_of?(Symbol)
-            name = path
-            path = map ? map.dup : (path == :index ? '/' : path.to_s)
-          end
-
-          # Build our controller
-          controller = Array(@_controller).map { |c| c.to_s }
-
-          case path
-          when String # path i.e "/index" or "/show"
-            # Now we need to parse our 'with' params
-            if with_params = options.delete(:with)
-              path = process_path_for_with_params(path, with_params)
-            end
-
-            # Now we need to parse our provides
-            options.delete(:provides) if options[:provides].nil?
-
-            if @_use_format or format_params = options[:provides]
-              process_path_for_provides(path, format_params)
-              # options[:add_match_with] ||= {}
-              # options[:add_match_with][:format] = /[^\.]+/
-            end
-
-            absolute_map = map && map[0] == ?/
-
-            unless controller.empty?
-              # Now we need to add our controller path only if not mapped directly
-              if map.blank? and !absolute_map
-                controller_path = controller.join("/")
-                path.gsub!(%r{^\(/\)|/\?}, "")
-                path = File.join(controller_path, path)  unless @_map
-              end
-            end
-
-            # Now we need to parse our 'parent' params and parent scope.
-            if !absolute_map and parent_params = options.delete(:parent) || @_parents
-              parent_params = (Array(@_parents) + Array(parent_params)).uniq
-              path = process_path_for_parent_params(path, parent_params)
-            end
-
-            # Add any controller level map to the front of the path.
-            path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
-
-            # Small reformats
-            path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
-            path.gsub!(%r{//$}, '/')                     # Remove index path
-            path[0,0] = "/" if path !~ %r{^\(?/}         # Paths must start with a /
-            path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
-            path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
-            path.squeeze!('/')
-          when Regexp
-            route_options[:path_for_generation] = options.delete(:generate_with) if options.key?(:generate_with)
-          end
-
-          name = options.delete(:route_name) if name.nil? && options.key?(:route_name)
-          name = options.delete(:name) if name.nil? && options.key?(:name)
-          if name
-            controller_name = controller.join("_")
-            name = "#{controller_name}_#{name}".to_sym unless controller_name.blank?
-          end
-
-          # Merge in option defaults.
-          options.reverse_merge!(:default_values => @_defaults)
-
-          [path, name, parent_params, options, route_options]
-        end
-
-        ##
-        # Processes the existing path and appends the 'with' parameters onto the route
-        # Used for calculating path in route method.
-        #
-        def process_path_for_with_params(path, with_params)
-          File.join(path, Array(with_params).map(&:inspect).join("/"))
-        end
-
-        ##
-        # Processes the existing path and prepends the 'parent' parameters onto the route
-        # Used for calculating path in route method.
-        #
-        def process_path_for_parent_params(path, parent_params)
-          parent_prefix = parent_params.flatten.compact.uniq.map do |param|
-            map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
-            part = "#{map}/:#{param.to_s.singularize}_id/"
-            part = "(#{part})" if param.respond_to?(:optional) && param.optional?
-            part
-          end
-
-          [parent_prefix, path].flatten.join("")
-        end
-
-        ##
-        # Processes the existing path and appends the 'format' suffix onto the route.
-        # Used for calculating path in route method.
-        #
-        def process_path_for_provides(path, format_params)
-          path << "(.:format)" unless path[-10, 10] == '(.:format)'
-        end
-
-        ##
-        # Allows routing by MIME-types specified in the URL or ACCEPT header.
-        #
-        # By default, if a non-provided mime-type is specified in a URL, the
-        # route will not match an thus return a 404.
-        #
-        # Setting the :treat_format_as_accept option to true allows treating
-        # missing mime types specified in the URL as if they were specified
-        # in the ACCEPT header and thus return 406.
-        #
-        # If no type is specified, the first in the provides-list will be
-        # returned.
-        #
-        # @example
-        #   get "/a", :provides => [:html, :js]
-        #   # => GET /a      => :html
-        #   # => GET /a.js   => :js
-        #   # => GET /a.xml  => 404
-        #
-        #   get "/b", :provides => [:html]
-        #   # => GET /b; ACCEPT: html => html
-        #   # => GET /b; ACCEPT: js   => 406
-        #
-        #   enable :treat_format_as_accept
-        #   get "/c", :provides => [:html, :js]
-        #   # => GET /c.xml => 406
-        #
-        def provides(*types)
-          @_use_format = true
-          condition do
-            mime_types        = types.map { |t| mime_type(t) }.compact
-            url_format        = params[:format].to_sym if params[:format]
-            accepts           = request.accept.map { |a| a.to_str }
-
-            # Per rfc2616-sec14:
-            # Assume */* if no ACCEPT header is given.
-            catch_all = (accepts.delete "*/*" || accepts.empty?)
-            matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
-            if matching_types.empty? && types.include?(:any)
-              matching_types = accepts
-            end
-
-            if !url_format && matching_types.first
-              type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
-              accept_format = CONTENT_TYPE_ALIASES[type] || type
-            elsif catch_all && !types.include?(:any)
-              type = types.first
-              accept_format = CONTENT_TYPE_ALIASES[type] || type
-            end
-
-            matched_format = types.include?(:any)            ||
-                             types.include?(accept_format)   ||
-                             types.include?(url_format)      ||
-                             ((!url_format) && request.accept.empty? && types.include?(:html))
-
-            # Per rfc2616-sec14:
-            # Answer with 406 if accept is given but types to not match any
-            # provided type.
-            halt 406 if
-              (!url_format && !accepts.empty? && !matched_format) ||
-              (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
-
-            if matched_format
-              @_content_type = url_format || accept_format || :html
-              content_type(@_content_type, :charset => 'utf-8')
-            end
-
-            matched_format
+        options.delete_if do |option, args|
+          if route.significant_variable_names.include?(option)
+            route.add_match_with(option => Array(args).first)
+            true
           end
         end
 
-        ##
-        # Implements CSRF checking when `allow_disabled_csrf` is set to true.
-        #
-        # This condition is always on, except when it is explicitly switched
-        # off.
-        #
-        # @example
-        #   post("/", :csrf_protection => false)
-        #
-        def csrf_protection(on = true)
-          if on
-            condition { halt 403 if request.env['protection.csrf.failed'] }
-          end
+        # Add Sinatra conditions.
+        options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
+        conditions, @conditions = @conditions, []
+        route.custom_conditions.concat(conditions)
+
+        invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
+
+        # Add Application defaults.
+        route.before_filters.concat(@filters[:before])
+        route.after_filters.concat(@filters[:after])
+        if @_controller
+          route.use_layout = @layout
+          route.controller = Array(@_controller)[0].to_s
         end
+
+        deferred_routes[priority] << [route, block]
+
+        route
+      end
+
+      ##
+      # Returns the final parsed route details (modified to reflect all
+      # Padrino options) given the raw route. Raw route passed in could be
+      # a named alias or a string and is parsed to reflect provides formats,
+      # controllers, parents, 'with' parameters, and other options.
+      #
+      def parse_route(path, options, verb)
+        # We need save our originals path/options so we can perform correctly cache.
+        original = [path, options.dup]
+        route_options = {}
+
+        # We need check if path is a symbol, if that it's a named route.
+        map = options.delete(:map)
+
+        # path i.e :index or :show
+        if path.kind_of?(Symbol)
+          name = path
+          path = map ? map.dup : (path == :index ? '/' : path.to_s)
+        end
+
+        # Build our controller
+        controller = Array(@_controller).map { |c| c.to_s }
+
+        case path
+        when String # path i.e "/index" or "/show"
+          # Now we need to parse our 'with' params
+          if with_params = options.delete(:with)
+            path = process_path_for_with_params(path, with_params)
+          end
+
+          # Now we need to parse our provides
+          options.delete(:provides) if options[:provides].nil?
+
+          if @_use_format or format_params = options[:provides]
+            process_path_for_provides(path, format_params)
+            # options[:add_match_with] ||= {}
+            # options[:add_match_with][:format] = /[^\.]+/
+          end
+
+          absolute_map = map && map[0] == ?/
+
+          unless controller.empty?
+            # Now we need to add our controller path only if not mapped directly
+            if map.blank? and !absolute_map
+              controller_path = controller.join("/")
+              path.gsub!(%r{^\(/\)|/\?}, "")
+              path = File.join(controller_path, path)  unless @_map
+            end
+          end
+
+          # Now we need to parse our 'parent' params and parent scope.
+          if !absolute_map and parent_params = options.delete(:parent) || @_parents
+            parent_params = (Array(@_parents) + Array(parent_params)).uniq
+            path = process_path_for_parent_params(path, parent_params)
+          end
+
+          # Add any controller level map to the front of the path.
+          path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
+
+          # Small reformats
+          path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
+          path.gsub!(%r{//$}, '/')                     # Remove index path
+          path[0,0] = "/" if path !~ %r{^\(?/}         # Paths must start with a /
+          path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
+          path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
+          path.squeeze!('/')
+        when Regexp
+          route_options[:path_for_generation] = options.delete(:generate_with) if options.key?(:generate_with)
+        end
+
+        name = options.delete(:route_name) if name.nil? && options.key?(:route_name)
+        name = options.delete(:name) if name.nil? && options.key?(:name)
+        if name
+          controller_name = controller.join("_")
+          name = "#{controller_name}_#{name}".to_sym unless controller_name.blank?
+        end
+
+        # Merge in option defaults.
+        options.reverse_merge!(:default_values => @_defaults)
+
+        [path, name, parent_params, options, route_options]
+      end
+
+      ##
+      # Processes the existing path and appends the 'with' parameters onto the route
+      # Used for calculating path in route method.
+      #
+      def process_path_for_with_params(path, with_params)
+        File.join(path, Array(with_params).map(&:inspect).join("/"))
+      end
+
+      ##
+      # Processes the existing path and prepends the 'parent' parameters onto the route
+      # Used for calculating path in route method.
+      #
+      def process_path_for_parent_params(path, parent_params)
+        parent_prefix = parent_params.flatten.compact.uniq.map do |param|
+          map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
+          part = "#{map}/:#{param.to_s.singularize}_id/"
+          part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+          part
+        end
+
+        [parent_prefix, path].flatten.join("")
+      end
+
+      ##
+      # Processes the existing path and appends the 'format' suffix onto the route.
+      # Used for calculating path in route method.
+      #
+      def process_path_for_provides(path, format_params)
+        path << "(.:format)" unless path[-10, 10] == '(.:format)'
+      end
+
+      ##
+      # Allows routing by MIME-types specified in the URL or ACCEPT header.
+      #
+      # By default, if a non-provided mime-type is specified in a URL, the
+      # route will not match an thus return a 404.
+      #
+      # Setting the :treat_format_as_accept option to true allows treating
+      # missing mime types specified in the URL as if they were specified
+      # in the ACCEPT header and thus return 406.
+      #
+      # If no type is specified, the first in the provides-list will be
+      # returned.
+      #
+      # @example
+      #   get "/a", :provides => [:html, :js]
+      #   # => GET /a      => :html
+      #   # => GET /a.js   => :js
+      #   # => GET /a.xml  => 404
+      #
+      #   get "/b", :provides => [:html]
+      #   # => GET /b; ACCEPT: html => html
+      #   # => GET /b; ACCEPT: js   => 406
+      #
+      #   enable :treat_format_as_accept
+      #   get "/c", :provides => [:html, :js]
+      #   # => GET /c.xml => 406
+      #
+      def provides(*types)
+        @_use_format = true
+        condition do
+          mime_types        = types.map { |t| mime_type(t) }.compact
+          url_format        = params[:format].to_sym if params[:format]
+          accepts           = request.accept.map { |a| a.to_str }
+
+          # Per rfc2616-sec14:
+          # Assume */* if no ACCEPT header is given.
+          catch_all = (accepts.delete "*/*" || accepts.empty?)
+          matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+          if matching_types.empty? && types.include?(:any)
+            matching_types = accepts
+          end
+
+          if !url_format && matching_types.first
+            type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+            accept_format = CONTENT_TYPE_ALIASES[type] || type
+          elsif catch_all && !types.include?(:any)
+            type = types.first
+            accept_format = CONTENT_TYPE_ALIASES[type] || type
+          end
+
+          matched_format = types.include?(:any)            ||
+                           types.include?(accept_format)   ||
+                           types.include?(url_format)      ||
+                           ((!url_format) && request.accept.empty? && types.include?(:html))
+
+          # Per rfc2616-sec14:
+          # Answer with 406 if accept is given but types to not match any
+          # provided type.
+          halt 406 if
+            (!url_format && !accepts.empty? && !matched_format) ||
+            (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
+
+          if matched_format
+            @_content_type = url_format || accept_format || :html
+            content_type(@_content_type, :charset => 'utf-8')
+          end
+
+          matched_format
+        end
+      end
+
+      ##
+      # Implements CSRF checking when `allow_disabled_csrf` is set to true.
+      #
+      # This condition is always on, except when it is explicitly switched
+      # off.
+      #
+      # @example
+      #   post("/", :csrf_protection => false)
+      #
+      def csrf_protection(on = true)
+        if on
+          condition { halt 403 if request.env['protection.csrf.failed'] }
+        end
+      end
     end
 
     ##
@@ -1028,51 +1028,52 @@ module Padrino
       end
 
       private
-        def filter!(type, base=settings)
-          base.filters[type].each { |block| instance_eval(&block) }
-        end
 
-        def dispatch!
-          invoke do
-            static! if settings.static? && (request.get? || request.head?)
-            route!
-          end
+      def filter!(type, base=settings)
+        base.filters[type].each { |block| instance_eval(&block) }
+      end
+
+      def dispatch!
+        invoke do
+          static! if settings.static? && (request.get? || request.head?)
+          route!
+        end
+      rescue ::Exception => boom
+        filter! :before if boom.kind_of? ::Sinatra::NotFound
+        invoke { @boom_handled = handle_exception!(boom) }
+      ensure
+        @boom_handled or begin
+          filter! :after  unless env['sinatra.static_file']
         rescue ::Exception => boom
-          filter! :before if boom.kind_of? ::Sinatra::NotFound
-          invoke { @boom_handled = handle_exception!(boom) }
-        ensure
-          @boom_handled or begin
-            filter! :after  unless env['sinatra.static_file']
-          rescue ::Exception => boom
-            invoke { handle_exception!(boom) } unless @env['sinatra.error']
-          end
+          invoke { handle_exception!(boom) } unless @env['sinatra.error']
         end
+      end
 
-        def route!(base=settings, pass_block=nil)
-          Thread.current['padrino.instance'] = self
-          if base.compiled_router and match = base.compiled_router.call(@request.env)
-            if match.respond_to?(:each)
-              route_eval do
-                match[1].each { |k,v| response[k] = v }
-                status match[0]
-                route_missing if match[0] == 404
-                route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
-              end
+      def route!(base=settings, pass_block=nil)
+        Thread.current['padrino.instance'] = self
+        if base.compiled_router and match = base.compiled_router.call(@request.env)
+          if match.respond_to?(:each)
+            route_eval do
+              match[1].each { |k,v| response[k] = v }
+              status match[0]
+              route_missing if match[0] == 404
+              route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
             end
-          else
-            filter! :before
           end
-
-          # Run routes defined in superclass.
-          if base.superclass.respond_to?(:router)
-            route!(base.superclass, pass_block)
-            return
-          end
-
-          route_eval(&pass_block) if pass_block
-
-          route_missing
+        else
+          filter! :before
         end
+
+        # Run routes defined in superclass.
+        if base.superclass.respond_to?(:router)
+          route!(base.superclass, pass_block)
+          return
+        end
+
+        route_eval(&pass_block) if pass_block
+
+        route_missing
+      end
     end
   end
 end

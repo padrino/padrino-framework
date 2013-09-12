@@ -401,6 +401,7 @@ module Padrino
       end
 
       private
+
       def log(env, status, header, began_at)
         return if env['sinatra.static_file'] && (!logger.respond_to?(:log_static) || !logger.log_static)
         logger.bench(

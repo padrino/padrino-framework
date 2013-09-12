@@ -87,8 +87,9 @@ module Padrino
     end
 
     private
-      def sort!
-        @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
-      end
+
+    def sort!
+      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
+    end
   end
 end

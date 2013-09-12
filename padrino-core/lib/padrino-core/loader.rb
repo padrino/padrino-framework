@@ -205,19 +205,20 @@ module Padrino
     end
 
     private
-      def module_paths
-        Padrino.modules.map(&:dependency_paths).flatten!
-      end
 
-      def dependency_paths_was
-        [
-          "#{root}/config/database.rb",
-          "#{root}/lib/**/*.rb",
-          "#{root}/shared/lib/**/*.rb",
-          "#{root}/models/**/*.rb",
-          "#{root}/shared/models/**/*.rb",
-          "#{root}/config/apps.rb"
-        ]
-      end
+    def module_paths
+      Padrino.modules.map(&:dependency_paths).flatten!
+    end
+
+    def dependency_paths_was
+      [
+        "#{root}/config/database.rb",
+        "#{root}/lib/**/*.rb",
+        "#{root}/shared/lib/**/*.rb",
+        "#{root}/models/**/*.rb",
+        "#{root}/shared/models/**/*.rb",
+        "#{root}/config/apps.rb"
+      ]
+    end
   end
 end

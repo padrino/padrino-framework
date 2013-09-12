@@ -76,36 +76,37 @@ module Padrino
         end
 
         private
-          def access_denied
-            # If we have a login_page we redirect the user
-            if login_page
-              redirect(login_page)
-            # If no match we halt with 401
-            else
-              halt 401, "You don't have permission for this resource"
-            end
-          end
 
-          def login_page
-            login_page ||= settings.login_page rescue nil
-            return unless login_page
-            login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
-            login_page
+        def access_denied
+          # If we have a login_page we redirect the user
+          if login_page
+            redirect(login_page)
+          # If no match we halt with 401
+          else
+            halt 401, "You don't have permission for this resource"
           end
+        end
 
-          def store_location
-            settings.store_location rescue nil
-          end
+        def login_page
+          login_page ||= settings.login_page rescue nil
+          return unless login_page
+          login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
+          login_page
+        end
 
-          def login_from_session
-            admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
-          end
+        def store_location
+          settings.store_location rescue nil
+        end
 
-          def admin_model_obj
-            @_admin_model_obj ||= settings.admin_model.constantize
-          rescue NameError => e
-            raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
-          end
+        def login_from_session
+          admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
+        end
+
+        def admin_model_obj
+          @_admin_model_obj ||= settings.admin_model.constantize
+        rescue NameError => e
+          raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
+        end
       end # AuthenticationHelpers
     end # Helpers
   end # Admin

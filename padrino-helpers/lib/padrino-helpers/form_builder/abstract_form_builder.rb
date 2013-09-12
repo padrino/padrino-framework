@@ -283,6 +283,7 @@ module Padrino
           end
 
         private
+
         def field_result
           result = []
           result << object_model_name if root_form?

@@ -5,16 +5,17 @@ module Padrino
   # @private
   class ShowExceptions < Sinatra::ShowExceptions
     private
-      def frame_class(frame)
-        if frame.filename =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/
-          "framework"
-        elsif (defined?(Gem) && frame.filename.include?(Gem.dir)) ||
-              frame.filename =~ /\/bin\/(\w+)$/ ||
-              frame.filename =~ /Ruby\/Gems/
-          "system"
-        else
-          "app"
-        end
+
+    def frame_class(frame)
+      if frame.filename =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/
+        "framework"
+      elsif (defined?(Gem) && frame.filename.include?(Gem.dir)) ||
+            frame.filename =~ /\/bin\/(\w+)$/ ||
+            frame.filename =~ /Ruby\/Gems/
+        "system"
+      else
+        "app"
       end
+    end
   end
 end

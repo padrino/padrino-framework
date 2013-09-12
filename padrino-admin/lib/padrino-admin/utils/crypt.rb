@@ -28,7 +28,8 @@ module Padrino
           [cipher.update(self) + cipher.final].pack('m').chomp
         end
 
-      private
+        private
+
         def build_cipher(type, password) # @private
           cipher = OpenSSL::Cipher::Cipher.new("DES-EDE3-CBC").send(type)
           cipher.pkcs5_keyivgen(password)

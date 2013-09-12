@@ -67,15 +67,16 @@ class Account
   end
 
   private
-    def generate_password
-      return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{email}--") if new?
-      self.crypted_password = password.encrypt(self.salt)
-    end
 
-    def password_required
-      crypted_password.blank? || !password.blank?
-    end
+  def generate_password
+    return if password.blank?
+    self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{email}--") if new?
+    self.crypted_password = password.encrypt(self.salt)
+  end
+
+  def password_required
+    crypted_password.blank? || !password.blank?
+  end
 end
 
 DataMapper.auto_migrate!

@@ -909,7 +909,7 @@ module Padrino
             settings.csrf_param : :authenticity_token
         end
 
-      private
+        private
         ##
         # Returns the FormBuilder class to use based on all available setting sources
         # If explicitly defined, returns that, otherwise returns defaults.
