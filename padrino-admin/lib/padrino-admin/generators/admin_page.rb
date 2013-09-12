@@ -7,20 +7,20 @@ module Padrino
     class AdminPage < Thor::Group
       attr_accessor :default_orm
 
-      # Add this generator to our padrino-gen
+      # Add this generator to our padrino-gen.
       Padrino::Generators.add_generator(:admin_page, self)
 
-      # Define the source template root
+      # Define the source template root.
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin_page [model]"; end
 
-      # Include related modules
+      # Include related modules.
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
 
-      # Look for custom template files in a generators folder under the project root
+      # Look for custom template files in a generators folder under the project root.
       def source_paths
         if File.exists? destination_root('generators')
           ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
@@ -37,10 +37,10 @@ module Padrino
       # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      # Show help if no argv given
+      # Show help if no argv given.
       require_arguments!
 
-      # Create controller for admin
+      # Create controller for admin.
       def create_controller
         self.destination_root = options[:root]
         # TODO FIXME ??? Review
@@ -65,6 +65,6 @@ module Padrino
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
-    end # AdminPage
-  end # Generators
-end # Padrino
+    end
+  end
+end
