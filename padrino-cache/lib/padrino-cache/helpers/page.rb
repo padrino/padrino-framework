@@ -103,7 +103,6 @@ module Padrino
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
-                  # content_type(value[:content_type]) if value[:content_type]
                   halt 200, value
                 end
               end
