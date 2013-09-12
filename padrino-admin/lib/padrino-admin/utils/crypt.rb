@@ -1,5 +1,4 @@
-require 'openssl'
-
+req
 module Padrino
   module Admin
     ##
@@ -7,13 +6,13 @@ module Padrino
     #
     module Utils
       ##
-      # This util it's used for encrypt/decrypt password.
+      # This Util it's used for encrypt/decrypt password.
       # We want password decryptable because generally for our sites we have: password_lost.
       # We prefer send original password instead reset them.
       #
       module Crypt
         ##
-        # Decrypts the current string using the current key specified
+        # Decrypts the current string using the current key specified.
         #
         def decrypt(password)
           cipher = build_cipher(:decrypt, password)
@@ -21,7 +20,7 @@ module Padrino
         end
 
         ##
-        # Encrypts the current string using the current key and algorithm specified
+        # Encrypts the current string using the current key and algorithm specified.
         #
         def encrypt(password)
           cipher = build_cipher(:encrypt, password)
@@ -29,12 +28,12 @@ module Padrino
         end
 
       private
-        def build_cipher(type, password) # @private
+        def build_cipher(type, password)
           cipher = OpenSSL::Cipher::Cipher.new("DES-EDE3-CBC").send(type)
           cipher.pkcs5_keyivgen(password)
           cipher
         end
-      end # Crypt
-    end # Utils
-  end # Admin
-end # Padrino
+      end
+    end
+  end
+end
