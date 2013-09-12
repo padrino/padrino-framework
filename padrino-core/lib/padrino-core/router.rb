@@ -9,7 +9,7 @@ module Padrino
   #
   # * Map a path to the specified App
   # * Ignore server names (this solve issues with vhost and domain aliases)
-  # * Use hosts instead of server name for mappings (this help us with our vhost and doman aliases)
+  # * Use hosts instead of server name for mappings (this help us with our vhost and domain aliases)
   #
   # @example
   #
@@ -87,7 +87,6 @@ module Padrino
     end
 
     private
-      # Sorts the mapped routes in consistent order
       def sort!
         @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
       end
