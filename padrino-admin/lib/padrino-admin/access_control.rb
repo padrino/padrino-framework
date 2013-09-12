@@ -62,7 +62,7 @@ module Padrino
         ##
         # Return true if the given account is allowed to see the given path.
         #
-        # @example Hiding a disallowed link from a user
+        # @example Hiding a disallowed link from a user.
         #
         #  # File: config/apps.rb
         #  # [...]
