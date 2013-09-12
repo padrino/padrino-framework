@@ -9,7 +9,6 @@ module Padrino
 
       ##
       # Defines the generic ORM management functions used to manipulate data for admin.
-      # @private
       class Orm
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm
 
@@ -164,8 +163,7 @@ module Padrino
             else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
-
-      end # Orm
-    end # Generators
-  end # Admin
-end # Padrino
+      end
+    end
+  end
+end
