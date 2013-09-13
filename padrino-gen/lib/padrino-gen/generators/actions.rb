@@ -6,11 +6,11 @@ module Padrino
     # Common actions needed to support project and component generation.
     #
     module Actions
-
       def self.included(base)
         base.extend(ClassMethods)
       end
 
+      ##
       # Performs the necessary generator for a given component choice.
       #
       # @param [Symbol] component
@@ -21,7 +21,6 @@ module Padrino
       # @example
       #   execute_component_setup(:mock, 'rr')
       #
-      # @api private
       def execute_component_setup(component, choice)
         return true && say_status(:skipping, "#{component} component...") if choice.to_s == 'none'
         say_status(:applying, "#{choice} (#{component})...")
@@ -29,6 +28,7 @@ module Padrino
         send("setup_#{component}") if respond_to?("setup_#{component}")
       end
 
+      ##
       # Returns the related module for a given component and option.
       #
       # @param [String] choice
@@ -39,7 +39,6 @@ module Padrino
       # @example
       #   generator_module_for('rr', :mock)
       #
-      # @api private
       def apply_component_for(choice, component)
         # I need to override Thor#apply because for unknow reason :verbose => false break tasks.
         path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
@@ -49,6 +48,7 @@ module Padrino
         shell.padding -= 1
       end
 
+      ##
       # Includes the component module for the given component and choice.
       # It determines the choice using .components file.
       #
@@ -61,13 +61,13 @@ module Padrino
       #   include_component_module_for(:mock)
       #   include_component_module_for(:mock, 'rr')
       #
-      # @api private
       def include_component_module_for(component, choice=nil)
         choice = fetch_component_choice(component) unless choice
         return false if choice.to_s == 'none'
         apply_component_for(choice, component)
       end
 
+      ##
       # Returns the component choice stored within the .component file of an application.
       #
       # @param [Symbol] component
@@ -78,11 +78,11 @@ module Padrino
       # @example
       #   fetch_component_choice(:mock)
       #
-      # @api public
       def fetch_component_choice(component)
         retrieve_component_config(destination_root('.components'))[component]
       end
 
+      ##
       # Set the component choice in the .component file of the application.
       #
       # @param [Symbol] key
@@ -95,7 +95,6 @@ module Padrino
       # @example
       #   store_component_choice(:renderer, :haml)
       #
-      # @api semipublic
       def store_component_choice(key, value)
         path        = destination_root('.components')
         config      = retrieve_component_config(path)
@@ -104,6 +103,7 @@ module Padrino
         value
       end
 
+      ##
       # Loads the component config back into a hash.
       #
       # @param [String] target
@@ -115,11 +115,11 @@ module Padrino
       #   retrieve_component_config(...)
       #   # => { :mock => 'rr', :test => 'riot', ... }
       #
-      # @api private
       def retrieve_component_config(target)
         YAML.load_file(target)
       end
 
+      ##
       # Prompts the user if necessary until a valid choice is returned for the component.
       #
       # @param [Symbol] component
@@ -130,7 +130,6 @@ module Padrino
       # @example
       #   resolve_valid_choice(:mock)
       #
-      # @api private
       def resolve_valid_choice(component)
         available_string = self.class.available_choices_for(component).join(", ")
         choice = options[component]
@@ -141,6 +140,7 @@ module Padrino
         choice
       end
 
+      ##
       # Returns true if the option passed is a valid choice for component.
       #
       # @param [Symbol] component
@@ -153,11 +153,11 @@ module Padrino
       # @example
       #   valid_choice?(:mock, 'rr')
       #
-      # @api public
       def valid_choice?(component, choice)
         choice.present? && self.class.available_choices_for(component).include?(choice.to_sym)
       end
 
+      ##
       # Creates a component_config file at the destination containing all component options.
       # Content is a YAMLized version of a hash containing component name mapping to chosen value.
       #
@@ -167,7 +167,6 @@ module Padrino
       # @example
       #   store_component_config('/foo/bar')
       #
-      # @api private
       def store_component_config(destination)
         components = @_components || options
         create_file(destination) do
@@ -177,52 +176,56 @@ module Padrino
         end
       end
 
-      # Returns the root for this thor class (also aliased as destination root).
+      ##
+      # Returns the root for this Thor class (also aliased as destination root).
       #
       # @param [Array<String>] paths
+<<<<<<< HEAD
       #   The relative path from destination root
+=======
+      #   The relative path from destination root.
+>>>>>>> Cleanup of actions file
       #
       # @return [String] The full path
       #
       # @example
       #   destination_root('config/boot.rb')
       #
-      # @api public
       def destination_root(*paths)
         File.expand_path(File.join(@destination_stack.last, paths))
       end
 
+      ##
       # Returns true if inside a Padrino application.
       #
-      # @api public
       def in_app_root?
         File.exist?(destination_root('config/boot.rb'))
       end
 
+      ##
       # Returns the field with an unacceptable name(for symbol) else returns nil.
       #
       # @param [Array<String>] fields
-      #   Field names for generators
+      #   Field names for generators.
       #
       # @return [Array<String>] array of invalid fields
       #
       # @example
       #   invalid_fields ['foo:bar', 'hello:world']
       #
-      # @api semipublic
       def invalid_fields(fields)
         results = fields.select { |field| field.split(":").first =~ /\W/ }
         results.empty? ? nil : results
       end
 
+      ##
       # Apply default field types.
       #
       # @param [Array<String>] fields
-      #   Field names for generators
+      #   Field names for generators.
       #
       # @return [Array<String>] fields with default types
       #
-      # @api semipublic
       def apply_default_fields(fields)
         fields.map! { |field| field =~ /:/ ? field : "#{field}:string" }
       end
@@ -237,7 +240,6 @@ module Padrino
       # @example
       #   fetch_project_name
       #
-       # @api public
       def fetch_project_name(app='app')
         app_path = destination_root(app, 'app.rb')
         @project_name = fetch_component_choice(:namespace) if @project_name.empty?
@@ -257,6 +259,7 @@ WARNING
         end
       end
 
+      ##
       # Returns the app_name for the application at root.
       #
       # @param [String] app
@@ -267,12 +270,12 @@ WARNING
       # @example
       #   fetch_app_name('subapp')
       #
-      # @api public
       def fetch_app_name(app='app')
         app_path = destination_root(app, 'app.rb')
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
 
+      ##
       # Adds all the specified gems into the Gemfile for bundler.
       #
       # @param [Array<String>] gem_names
@@ -285,12 +288,12 @@ WARNING
       #   require_dependencies('mocha', 'bacon', :group => 'test')
       #   require_dependencies('json', :version => ">=1.2.3")
       #
-      # @api public
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
         gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
       end
 
+      ##
       # Inserts a required gem into the Gemfile to add the bundler dependency.
       #
       # @param [String] name
@@ -303,7 +306,6 @@ WARNING
       #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
       #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       #
-      # @api public
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
@@ -314,6 +316,7 @@ WARNING
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
 
+      ##
       # Inserts an hook before or after load in our boot.rb.
       #
       # @param [String] include_text
@@ -324,11 +327,11 @@ WARNING
       # @example
       #   insert_hook("DataMapper.finalize", :after_load)
       #
-      # @api public
       def insert_hook(include_text, where)
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
+        ##
       # Inserts a middleware inside app.rb.
       #
       # @param [String] include_text
@@ -337,12 +340,12 @@ WARNING
       # @example
       #   insert_middleware(ActiveRecord::ConnectionAdapters::ConnectionManagement)
       #
-      # @api public
       def insert_middleware(include_text, app=nil)
         name = app || (options[:name].present? ? @app_name.downcase : 'app')
         inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
       end
 
+      ##
       # Registers and creates initializer.
       #
       # @param [Symbol] name
@@ -354,7 +357,6 @@ WARNING
       #   initializer(:test, "some stuff here")
       #   #=> generates 'lib/test_init.rb'
       #
-      # @api public
       def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
         register = data.present? ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
@@ -362,6 +364,7 @@ WARNING
         template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
       end
 
+      ##
       # Insert the regired gem and add in boot.rb custom contribs.
       #
       # @param [String] contrib
@@ -370,35 +373,35 @@ WARNING
       # @example
       #   require_contrib('auto_locale')
       #
-      # @api public
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
         contrib = "require '" + File.join("padrino-contrib", contrib) + "'\n"
         inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino.load!"
       end
 
+      ##
       # Return true if our project has test component.
       #
-      # @api public
       def test?
         fetch_component_choice(:test).to_s != 'none'
       end
 
+      ##
       # Return true if we have a tiny skeleton.
       #
-      # @api public
       def tiny?
         File.exist?(destination_root('app/controllers.rb'))
       end
 
+      ##
       # Run the bundler.
       #
-      # @api semipublic
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
         in_root { run 'bundle install' }
       end
 
+      ##
       # Ask something to the user and receives a response.
       #
       # @param [String] statement
@@ -414,7 +417,6 @@ WARNING
       #   ask("What is your name?")
       #   ask("Path for ruby", "/usr/local/bin/ruby") => "Path for ruby (leave blank for /usr/local/bin/ruby):"
       #
-      # @api public
       def ask(statement, default=nil, color=nil)
         default_text = default ? " (leave blank for #{default}):" : nil
         say("#{statement}#{default_text} ", color)
@@ -422,6 +424,7 @@ WARNING
         result.blank? ? default : result
       end
 
+      ##
       # Raise SystemExit if the app does not exist.
       #
       # @param [String] app
@@ -430,7 +433,6 @@ WARNING
       # @example
       #   check_app_existence 'app'
       #
-      # @api semipublic
       def check_app_existence(app)
         unless File.exist?(destination_root(app))
           say
@@ -442,6 +444,7 @@ WARNING
         end
       end
 
+      ##
       # Generates standard and tiny applications within a project.
       #
       # @param [String] app
@@ -453,15 +456,14 @@ WARNING
       #   app_skeleton 'some_app'
       #   app_skeleton 'sub_app', true
       #
-      # @api private
       def app_skeleton(app, tiny=false)
         directory('app/', destination_root(app))
-        if tiny # generate tiny structure
+        if tiny
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
           template 'templates/helper.rb.tt', destination_root(app, 'helpers.rb')
           @short_name = 'notifier'
           template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')
-        else # generate standard folders
+        else
           empty_directory destination_root(app, 'controllers')
           empty_directory destination_root(app, 'helpers')
           empty_directory destination_root(app, 'views')
@@ -469,10 +471,11 @@ WARNING
         end
       end
 
+      ##
       # Ensure that project name is valid, else raise an NameError.
       #
       # @param [String] name
-      #   name of project
+      #   Name of project.
       #
       # @return [Exception] Exception with error message if not valid.
       #
@@ -480,7 +483,6 @@ WARNING
       #   valid_constant '1235Stuff'
       #   valid_constant '#Abc'
       #
-      # @api private
       def valid_constant?(name)
         if name =~ /^\d/
           raise ::NameError, "Project name #{name} cannot start with numbers"
@@ -491,6 +493,7 @@ WARNING
 
       # Class methods for Thor generators to support the generators and component choices.
       module ClassMethods
+        ##
         # Defines a class option to allow a component to be chosen and add to component type list.
         # Also builds the available_choices hash of which component choices are supported.
         #
@@ -504,7 +507,6 @@ WARNING
         # @example
         #   component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
         #
-        # @api private
         def component_option(name, caption, options = {})
           (@component_types   ||= []) << name # TODO use ordered hash and combine with choices below
           (@available_choices ||= Hash.new)[name] = options[:choices]
@@ -512,9 +514,9 @@ WARNING
           class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
         end
 
-        # Definitions for the available customizable components
+        ##
+        # Definitions for the available customizable components.
         #
-        # @api private
         def defines_component_options(options = {})
           [
             [ :orm,        'database engine',    { :aliases => '-d', :default => :none }],
@@ -529,27 +531,28 @@ WARNING
           end
         end
 
+        ##
         # Tell Padrino that for this Thor::Group it is a necessary task to run.
         #
-        # @api private
         def require_arguments!
           @require_arguments = true
         end
 
+        ##
         # Return true if we need an arguments for our Thor::Group.
         #
-        # @api private
         def require_arguments?
           @require_arguments
         end
 
+        ##
         # Returns the compiled list of component types which can be specified.
         #
-        # @api private
         def component_types
           @component_types
         end
 
+        ##
         # Returns the list of available choices for the given component (including none).
         #
         # @param [Symbol] component
@@ -561,11 +564,10 @@ WARNING
         #   available_choices_for :test
         #   => [:shoulda, :bacon, :riot, :minitest]
         #
-        # @api semipublic
         def available_choices_for(component)
           @available_choices[component] + [:none]
         end
-      end # ClassMethods
-    end # Actions
-  end # Generators
-end # Padrino
+      end
+    end
+  end
+end
