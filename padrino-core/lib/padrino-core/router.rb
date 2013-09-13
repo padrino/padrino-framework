@@ -67,13 +67,13 @@ module Padrino
 
     # The call handler setup to route a request given the mappings specified.
     def call(env)
-      rPath = env["PATH_INFO"].to_s
+      path_info = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
-      hHost, sName, sPort = env.values_at('HTTP_HOST','SERVER_NAME','SERVER_PORT')
+      http_host = env['HTTP_HOST']
 
       @mapping.each do |host, path, match, app|
-        next unless host.nil? || hHost =~ host
-        next unless rPath =~ match && rest = $1
+        next unless host.nil? || http_host =~ host
+        next unless path_info =~ match && rest = $1
         next unless rest.empty? || rest[0] == ?/
 
         rest = "/" if rest.empty?
@@ -83,7 +83,7 @@ module Padrino
             'SCRIPT_NAME' => (script_name + path),
             'PATH_INFO'   => rest))
       end
-      [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{rPath}"]]
+      [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
     end
 
     private

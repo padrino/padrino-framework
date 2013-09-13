@@ -190,9 +190,6 @@ module Padrino
         # This means that no engine was explicitly defined
         data, engine = *resolve_template(engine, options.dup) if data.nil?
 
-        # Setup root
-        root = settings.respond_to?(:root) ? settings.root : ""
-
         # Use @layout if it exists
         layout_was = options[:layout]
         options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
