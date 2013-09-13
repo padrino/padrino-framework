@@ -179,7 +179,7 @@ module Padrino
     #
     # @returns The root path of the loaded gem
     def gem(name, main_module)
-      _,spec = Gem.loaded_specs.find { |spec_name, spec| spec_name == name }
+      _, spec = Gem.loaded_specs.find{|spec_pair| spec_pair[0] == name }
       gems << spec
       modules << main_module
       spec.full_gem_path

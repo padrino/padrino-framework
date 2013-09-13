@@ -42,7 +42,7 @@ module Padrino
           @template.text_field_tag field_name(field), options
         end
 
-       def number_field(field, options={})
+        def number_field(field, options={})
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.number_field_tag field_name(field), options
@@ -166,7 +166,7 @@ module Padrino
           include_index = default_collection.respond_to?(:each)
           nested_options = { :parent => self, :association => child_association }
           nested_objects = instance_or_collection ? Array(instance_or_collection) : Array(default_collection)
-          result = nested_objects.each_with_index.map do |child_instance, index|
+          nested_objects.each_with_index.map do |child_instance, index|
             nested_options[:index] = include_index ? index : nil
             @template.fields_for(child_instance,  { :nested => nested_options }, &block)
           end.join("\n").html_safe
