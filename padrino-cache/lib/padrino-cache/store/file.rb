@@ -99,13 +99,13 @@ module Padrino
         end
 
         private
-          def path_for_key(key)
-            ::File.join(@root, Rack::Utils.escape(key.to_s))
-          end
+        def path_for_key(key)
+          ::File.join(@root, Rack::Utils.escape(key.to_s))
+        end
 
-          def init
-            FileUtils.mkdir_p(@root) unless ::File.exist?(@root)
-          end
+        def init
+          FileUtils.mkdir_p(@root) unless ::File.exist?(@root)
+        end
       end
     end
   end

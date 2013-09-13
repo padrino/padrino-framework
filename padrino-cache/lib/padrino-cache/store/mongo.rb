@@ -112,15 +112,15 @@ module Padrino
         end
 
         private
-          def get_collection
-            if @client.collection_names.include?(@options[:collection]) or !@options[:capped]
-              @client.collection @options[:collection]
-            else
-              @client.create_collection(@options[:collection], { :capped => @options[:capped],
-                                                                 :size => @options[:size]*1024**2,
-                                                                 :max => @options[:max] })
-            end
+        def get_collection
+          if @client.collection_names.include?(@options[:collection]) or !@options[:capped]
+            @client.collection @options[:collection]
+          else
+            @client.create_collection(@options[:collection], { :capped => @options[:capped],
+                                                               :size => @options[:size]*1024**2,
+                                                               :max => @options[:max] })
           end
+        end
       end
     end
   end

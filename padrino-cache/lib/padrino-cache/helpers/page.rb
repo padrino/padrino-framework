@@ -127,12 +127,12 @@ module Padrino
         end
 
         private
-          ##
-          # Resolve the cache_key when it's a block in the correct context.
-          #
-          def resolve_cache_key
-            @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
-          end
+        ##
+        # Resolve the cache_key when it's a block in the correct context.
+        #
+        def resolve_cache_key
+          @route.cache_key.is_a?(Proc) ? instance_eval(&@route.cache_key) : @route.cache_key
+        end
       end
     end
   end
