@@ -1,5 +1,5 @@
 if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
-  require 'mongoid' # eagerly load mongoid for version check
+  require 'mongoid'
 
   namespace :mi do
 
@@ -76,7 +76,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
             documents << klass
           end
         rescue => e
-          # Just for non-mongoid objects that dont have the embedded
+          # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end
       end
@@ -114,14 +114,14 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       collection_names.each do |collection_name|
         puts "Converting #{collection_name} to use ObjectIDs"
 
-        # get old collection
+        # Get old collection.
         collection = mongoid_collection(collection_name)
 
-        # get new collection (a clean one)
+        # Get new collection (a clean one).
         mongoid_collection("#{collection_name}_new").drop
         new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
-        # convert collection documents
+        # Convert collection documents.
         enum_mongoid_documents(collection) do |doc|
           new_doc = convert_ids(doc)
           new_collection.insert(new_doc, :safe => true)
@@ -130,12 +130,12 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         puts "Done! Converted collection is in #{new_collection.name}\n\n"
       end
 
-      # no errors. great! now rename _new to collection_name
+      # No errors. great! now rename _new to collection_name.
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
         new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
-        # swap collection to _old
+        # Swap collection to _old.
         puts "Moving #{collection.name} to #{collection_name}_old"
         mongoid_new_collection(collection, "#{collection_name}_old").drop
 
@@ -146,7 +146,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           puts "reason: #{e.message}\n\n"
         end
 
-        # swap _new to collection
+        # Swap _new to collection.
         puts "Moving #{new_collection.name} to #{collection_name}\n\n"
 
         begin
