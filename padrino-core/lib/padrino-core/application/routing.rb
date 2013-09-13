@@ -687,9 +687,9 @@ module Padrino
           defaults = options.delete(:default_values)
           route.add_default_values(defaults) if defaults
         end
-        options.delete_if do |option, args|
+        options.delete_if do |option, _args|
           if route.significant_variable_names.include?(option)
-            route.add_match_with(option => Array(args).first)
+            route.add_match_with(option => Array(_args).first)
             true
           end
         end
@@ -721,8 +721,6 @@ module Padrino
       # controllers, parents, 'with' parameters, and other options.
       #
       def parse_route(path, options, verb)
-        # We need save our originals path/options so we can perform correctly cache.
-        original = [path, options.dup]
         route_options = {}
 
         # We need check if path is a symbol, if that it's a named route.
@@ -997,7 +995,7 @@ module Padrino
       def static!
         if path = static_file?(request.path_info)
           env['sinatra.static_file'] = path
-          cache_control *settings.static_cache_control if settings.static_cache_control?
+          cache_control(*settings.static_cache_control) if settings.static_cache_control?
           send_file(path, :disposition => nil)
         end
       end
