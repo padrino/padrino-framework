@@ -1,13 +1,13 @@
 if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
   namespace :dm do
     namespace :auto do
-      desc "Perform automigration (reset your db data)"
+      desc "Perform auto migration (reset your db data)"
       task :migrate => :environment do
         ::DataMapper.repository.auto_migrate!
         puts "<= dm:auto:migrate executed"
       end
 
-      desc "Perform non destructive automigration"
+      desc "Perform non destructive auto migration"
       task :upgrade => :environment do
         ::DataMapper.repository.auto_upgrade!
         puts "<= dm:auto:upgrade executed"
@@ -61,7 +61,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
         DataMapper.setup(DataMapper.repository.name, config)
       else
         # require 'padrino-gen/padrino-tasks/sql-helpers'
-        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation) 
+        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation)
       end
       puts "<= dm:create executed"
     end
