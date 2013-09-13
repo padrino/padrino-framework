@@ -6,15 +6,11 @@ module Padrino
     #
     class Component < Thor::Group
 
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:component, self)
 
-      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen component [options]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Components::Actions
@@ -24,10 +20,11 @@ module Padrino
       class_option :root,    :desc => 'The root destination',                                             :aliases => '-r', :default => '.',    :type => :string
       class_option :adapter, :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
 
-      # Definitions for the available customizable components
       defines_component_options :default => false
 
-      # For each component, retrieve a valid choice and then execute the associated generator
+      ##
+      # For each component, retrieve a valid choice and then execute the associated generator.
+      #
       def setup_components
         self.destination_root = options[:root]
         if in_app_root?
@@ -60,7 +57,6 @@ module Padrino
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
-
-    end # Component
-  end # Generators
-end # Padrino
+    end
+  end
+end
