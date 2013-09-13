@@ -6,7 +6,7 @@ FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)
 module Padrino
   class << self
     ##
-    # Returns the caching engine
+    # Returns the caching engine.
     #
     # @example
     #   # with: Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
@@ -15,13 +15,12 @@ module Padrino
     #   Padrino.cache.delete('val')
     #   Padrino.cache.flush
     #
-    # @api public
     def cache
       @_cache
     end
 
     ##
-    # Set the caching engine
+    # Set the caching engine.
     #
     # @param value
     #   Instance of Padrino::Cache::Store
@@ -41,11 +40,10 @@ module Padrino
     #   Padrino.cache.delete('val')
     #   Padrino.cache.flush
     #
-    # @api public
     def cache=(value)
       @_cache= value
     end
-  end # self
+  end
 
   ##
   # This component enables caching of an application's response contents on
@@ -71,7 +69,7 @@ module Padrino
       #
       #   set :cache, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
       #
-      # However, you can also change the file store easiily in your app.rb:
+      # However, you can also change the file store easily in your app.rb:
       #
       #   set :cache, Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
       #   set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
@@ -87,7 +85,6 @@ module Padrino
       #   MyApp.cache.delete('val')
       #   MyApp.cache.flush
       #
-      # @api public
       def registered(app)
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
@@ -97,12 +94,11 @@ module Padrino
       end
       alias :included :registered
 
-      # @private
-      def padrino_route_added(route, verb, path, args, options, block) # @private
+      def padrino_route_added(route, verb, path, args, options, block)
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)
       end
     end
 
     Padrino.cache = Store::Memory.new(50)
-  end # Cache
-end # Padrino
+  end
+end

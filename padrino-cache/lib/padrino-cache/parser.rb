@@ -1,6 +1,5 @@
 module Padrino
   module Cache
-
     ##
     # Defines a padrino parser for our cache store.
     #
@@ -21,7 +20,7 @@ module Padrino
 
       ##
       # With Parser::Marshal we will store
-      # text and object in a marshalled format.
+      # text and object in a marshaled format.
       #
       module Marshal
         def self.decode(code)
@@ -32,6 +31,6 @@ module Padrino
           ::Marshal.dump(code)
         end
       end
-    end # Parser
-  end # Cache
-end # Padrino
+    end
+  end
+end
