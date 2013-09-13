@@ -1,7 +1,6 @@
 if PadrinoTasks.load?(:sequel, defined?(Sequel))
   namespace :sq do
     namespace :migrate do
-
       desc "Perform automigration (reset your db data)"
       task :auto => :environment do
         ::Sequel.extension :migration
@@ -50,7 +49,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
         ::Sequel.sqlite(database)
       else
         require 'padrino-gen/padrino-tasks/sql-helpers'
-        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation) 
+        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation)
       end
       puts "<= sq:create executed"
     end
