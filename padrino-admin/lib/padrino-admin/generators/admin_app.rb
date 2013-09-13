@@ -14,12 +14,12 @@ module Padrino
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
 
-      # Include related modules
+      # Include related modules.
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
-      
-      # Look for custom template files in a generators folder under the project root
+
+      # Look for custom template files in a generators folder under the project root.
       def source_paths
         if File.exists? destination_root('generators', 'templates')
           ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
@@ -40,7 +40,7 @@ module Padrino
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
 
-      # Copies over the Padrino base admin application
+      # Copies over the Padrino base admin application.
       def create_admin
         self.destination_root = options[:root]
         if in_app_root?
@@ -55,7 +55,7 @@ module Padrino
             raise SystemExit
           end
 
-          # Get the app's namespace
+          # Get the app's namespace.
           @app_name = fetch_app_name
 
           store_component_choice(:admin_renderer, tmp_ext)
@@ -122,7 +122,7 @@ module Padrino
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
           template "templates/#{ext}/app/layouts/error.#{ext}.tt", destination_root("admin/views/layouts/error.#{ext}")
           template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
-          # custom error
+          # Custom error.
           template "templates/#{ext}/app/errors/403.#{ext}.tt",        destination_root("admin/views/errors/403.#{ext}")
           template "templates/#{ext}/app/errors/404.#{ext}.tt",        destination_root("admin/views/errors/404.#{ext}")
           template "templates/#{ext}/app/errors/500.#{ext}.tt",        destination_root("admin/views/errors/500.#{ext}")
@@ -132,11 +132,11 @@ module Padrino
             require_dependencies('bcrypt-ruby', :require => 'bcrypt')
           end
 
-          # A nicer select box
+          # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
-          # Destroy account only if not logged in
+          # Destroy account only if not logged in.
           gsub_file destination_root("admin/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
           return if self.behavior == :revoke
 
@@ -159,6 +159,6 @@ module Padrino
           say "You are not at the root of a Padrino application! (config/boot.rb not found)"
         end
       end
-    end # AdminApp
-  end # Generators
-end # Padrino
+    end
+  end
+end

@@ -25,7 +25,7 @@ class <%= @model_name %> < CouchRest::Model::Base
   after_validation :encrypt_password, :if => :password_required
 
   ##
-  # This method is for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
     account = find_by_email(email)
@@ -37,30 +37,30 @@ class <%= @model_name %> < CouchRest::Model::Base
   end
 
   ##
-  # This method is used by AuthenticationHelper
+  # This method is used by AuthenticationHelper.
   #
   def self.find_by_id(id)
     get(id)
   end
 
   private
-  def encrypt_password
-    self.crypted_password = ::BCrypt::Password.create(password)
-  end
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password)
+    end
 
-  def password_required
-    crypted_password.blank? || password.present?
-  end
+    def password_required
+      crypted_password.blank? || password.present?
+    end
 
-  def unique_email_validator
-    account = self.class.find_by_email(email)
+    def unique_email_validator
+      account = self.class.find_by_email(email)
 
-    # didn't find email in the database
-    return if account.nil?
+      # Didn't find email in the database.
+      return if account.nil?
 
-    # account with same email in database is this account
-    return if has_key?('_id') && self['_id'] == account['_id']
+      # Account with same email in database is this account.
+      return if has_key?('_id') && self['_id'] == account['_id']
 
-    errors.add(:email, "is not unique")
-  end
+      errors.add(:email, "is not unique")
+    end
 end

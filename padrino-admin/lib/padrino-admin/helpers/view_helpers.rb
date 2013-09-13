@@ -1,23 +1,17 @@
 module Padrino
   module Admin
-    ##
-    # Contains all admin related helpers.
-    #
     module Helpers
-      ##
-      # Admin helpers
-      #
       module ViewHelpers
         ##
-        # Icon's Bootstrap helper
+        # Icon's Bootstrap helper.
         #
         # @param [Symbol] icon
-        #  The specified icon type
+        #  The specified icon type.
         #
         # @param [Symbol] tag
         #   The HTML tag.
         #
-        # @return [String] html tag with prepend icon
+        # @return [String] HTML tag with prepend icon
         #
         # @example
         #   tag_icon(:edit, :list)
@@ -28,7 +22,7 @@ module Padrino
         end
 
         ##
-        # Translates a given word for padrino admin
+        # Translates a given word for padrino admin.
         #
         # @param [String] word
         #  The specified word to admin translate.
@@ -44,7 +38,7 @@ module Padrino
         #   # => t("padrino.admin.profile",  :default => "My Profile")
         #   pat(:profile, "My Profile")
         #
-        def padrino_admin_translate(word,*args)
+        def padrino_admin_translate(word, *args)
           options = args.extract_options!
           options[:default] ||= word.to_s.humanize
           t("padrino.admin.#{word}", options)
@@ -72,7 +66,7 @@ module Padrino
         alias :mat :t_attr
 
         ##
-        # Translates model name
+        # Translates model name.
         #
         # @param [Symbol] attribute
         #  The attribute name in the model to translate.
@@ -87,8 +81,7 @@ module Padrino
           t("models.#{model}.name", :default => model.to_s.humanize)
         end
         alias :mt :model_translate
-
-      end # ViewHelpers
-    end # Helpers
-  end # Admin
-end # Padrino
+      end
+    end
+  end
+end

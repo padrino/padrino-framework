@@ -23,7 +23,7 @@ class <%= @model_name %> < Sequel::Model
   end
 
   ##
-  # This method is for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
     account = filter(Sequel.function(:lower, :email) => Sequel.function(:lower, email)).first
@@ -31,7 +31,7 @@ class <%= @model_name %> < Sequel::Model
   end
 
   ##
-  # Replace AR method
+  # Replace ActiveRecord method.
   #
   def self.find_by_id(id)
     self[id] rescue nil
@@ -42,11 +42,11 @@ class <%= @model_name %> < Sequel::Model
   end
 
   private
-  def encrypt_password
-    self.crypted_password = ::BCrypt::Password.create(password) if password.present?
-  end
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password) if password.present?
+    end
 
-  def password_required
-    self.crypted_password.blank? || password.present?
-  end
+    def password_required
+      self.crypted_password.blank? || password.present?
+    end
 end

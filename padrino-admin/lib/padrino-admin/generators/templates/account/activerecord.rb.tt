@@ -16,7 +16,7 @@ class <%= @model_name %> < ActiveRecord::Base
   before_save :encrypt_password, :if => :password_required
 
   ##
-  # This method is for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
     account = first(:conditions => ["lower(email) = lower(?)", email]) if email.present?
@@ -28,11 +28,11 @@ class <%= @model_name %> < ActiveRecord::Base
   end
 
   private
-  def encrypt_password
-    self.crypted_password = ::BCrypt::Password.create(password)
-  end
+    def encrypt_password
+      self.crypted_password = ::BCrypt::Password.create(password)
+    end
 
-  def password_required
-    crypted_password.blank? || password.present?
-  end
+    def password_required
+      crypted_password.blank? || password.present?
+    end
 end

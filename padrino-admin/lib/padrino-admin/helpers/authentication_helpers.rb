@@ -13,14 +13,14 @@ module Padrino
         end
 
         ##
-        # Returns the current_account, it's an instance of <tt>Account</tt> model
+        # Returns the current_account, it's an instance of Account model.
         #
         def current_account
           @current_account ||= login_from_session
         end
 
         ##
-        # Override the current_account, you must provide an instance of Account Model
+        # Override the current_account, you must provide an instance of Account model.
         #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
@@ -31,7 +31,7 @@ module Padrino
         end
 
         ##
-        # Returns true if the +current_account+ is allowed to see the requested path
+        # Returns true if the +current_account+ is allowed to see the requested path.
         #
         # For configure this role please refer to: +Padrino::Admin::AccessControl::Base+
         #
@@ -40,7 +40,7 @@ module Padrino
         end
 
         ##
-        # Returns project modules for the current account
+        # Returns project modules for the current account.
         #
         def project_modules
           access_control.project_modules(current_account)
@@ -60,7 +60,7 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the env['REQUEST_URI']
+        # Store in session[:return_to] the env['REQUEST_URI'].
         #
         def store_location!
           session[:return_to] = env['REQUEST_URI']
@@ -68,7 +68,7 @@ module Padrino
 
         ##
         # Redirect the account to the page that requested an authentication or
-        # if the account is not allowed/logged return it to a default page
+        # if the account is not allowed/logged return it to a default page.
         #
         def redirect_back_or_default(default)
           return_to = session.delete(:return_to)
@@ -81,7 +81,6 @@ module Padrino
           # If we have a login_page we redirect the user
           if login_page
             redirect(login_page)
-          # If no match we halt with 401
           else
             halt 401, "You don't have permission for this resource"
           end
@@ -107,7 +106,7 @@ module Padrino
         rescue NameError => e
           raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
         end
-      end # AuthenticationHelpers
-    end # Helpers
-  end # Admin
-end # Padrino
+      end
+    end
+  end
+end
