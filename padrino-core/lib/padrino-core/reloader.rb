@@ -277,7 +277,7 @@ module Padrino
 
       ##
       # Return the mounted_apps providing the app location.
-      # Can be an array because in one app.rb we can define multiple Padrino::Appplications.
+      # Can be an array because in one app.rb we can define multiple Padrino::Application.
       #
       def mounted_apps_of(file)
         file = figure_path(file)
