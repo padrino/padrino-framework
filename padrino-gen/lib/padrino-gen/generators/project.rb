@@ -7,16 +7,11 @@ module Padrino
     # Responsible for generating new Padrino projects based on the specified project components.
     #
     class Project < Thor::Group
-
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:project, self)
 
-      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen project [name] [options]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Runner
@@ -36,15 +31,15 @@ module Padrino
       class_option :gem,              :desc => 'Generate project as a gem',                                        :aliases => '-g', :default => false,       :type => :boolean
       class_option :migration_format, :desc => 'Filename format for migrations (number, timestamp)',                                 :default => 'number',    :type => :string
 
-      # Definitions for the available customizable components
+      # Definitions for the available customizable components.
       defines_component_options
 
-      # Show help if no argv given
+      # Show help if no ARGV given.
       require_arguments!
 
-      # Copies over the Padrino base application App
+      ##
+      # Copies over the Padrino base application app.
       #
-      # @api private
       def setup_project
         valid_constant? name
         app = (options[:app] || "App")
@@ -73,9 +68,9 @@ module Padrino
         end
       end
 
-      # For each component, retrieve a valid choice and then execute the associated generator
+      ##
+      # For each component, retrieve a valid choice and then execute the associated generator.
       #
-      # @api private
       def setup_components
         return if options[:template]
         @_components = options.dup.slice(*self.class.component_types)
@@ -88,18 +83,18 @@ module Padrino
         store_component_choice(:migration_format, options[:migration_format])
       end
 
-      # Bundle all required components using bundler and Gemfile
+      ##
+      # Bundle all required components using bundler and Gemfile.
       #
-      # @api private
       def bundle_dependencies
         if options[:bundle]
           run_bundler
         end
       end
 
-      # Finish message
+      ##
+      # Finish message.
       #
-      # @api private
       def finish_message
         say
         say '=' * 65, :green
@@ -111,21 +106,21 @@ module Padrino
         say
       end
 
-      # Returns the git author name config or a fill-in value
+      ##
+      # Returns the git author name config or a fill-in value.
       #
-      # @api private
       def git_author_name
         git_author_name = `git config user.name`.chomp rescue ''
         git_author_name.empty? ? "TODO: Write your name" : git_author_name
       end
 
-      # Returns the git author email config or a fill-in value
+      ##
+      # Returns the git author email config or a fill-in value.
       #
-      # @api private
       def git_author_email
         git_author_email = `git config user.email`.chomp rescue ''
         git_author_email.empty? ? "TODO: Write your email address" : git_author_email
       end
-    end # Project
-  end # Generators
-end # Padrino
+    end
+  end
+end

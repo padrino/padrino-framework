@@ -160,4 +160,4 @@ To learn more about the mailer generator, check out the guide to
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2013 Padrino. See LICENSE for details.

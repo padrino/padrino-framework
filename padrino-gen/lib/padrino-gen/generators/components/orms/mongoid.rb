@@ -1,5 +1,5 @@
 MONGOID = (<<-MONGO) unless defined?(MONGOID)
-# Connection.new takes host, port
+# Connection.new takes host and port
 host = 'localhost'
 port = Mongo::Connection::DEFAULT_PORT
 
@@ -11,7 +11,7 @@ end
 
 Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 
-# You can also configure Mongoid this way
+# You can also configure Mongoid this way:
 # Mongoid.configure do |config|
 #   name = @settings["database"]
 #   host = @settings["host"]
@@ -22,11 +22,11 @@ Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
 #   ]
 # end
 #
-# More installation and setup notes are on http://mongoid.org/
+# More installation and setup notes are on http://mongoid.org/.
 MONGO
 
 MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
-# Connection.new takes host, port
+# Connection.new takes host and port.
 
 host = 'localhost'
 port = 27017
@@ -37,7 +37,7 @@ database_name = case Padrino.env
   when :test        then '!NAME!_test'
 end
 
-# Use MONGO_URI if it's set as an environmental variable
+# Use MONGO_URI if it's set as an environmental variable.
 Mongoid::Config.sessions =
   if ENV['MONGO_URI']
     {default: {uri: ENV['MONGO_URI'] }}
@@ -55,7 +55,7 @@ Mongoid::Config.sessions =
 #       default:
 #         database: !NAME!_development
 #         hosts:
-#           - localhost:27017 
+#           - localhost:27017
 #   production:
 #     sessions:
 #       default:

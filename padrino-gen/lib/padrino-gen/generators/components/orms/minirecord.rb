@@ -11,7 +11,7 @@ ActiveRecord::Base.configurations[:test] = {
 !DB_TEST!
 }
 
-# Setup our logger
+# Setup our logger.
 ActiveRecord::Base.logger = logger
 
 # Raise exception on mass assignment protection for Active Record models.
@@ -30,7 +30,7 @@ ActiveRecord::Base.store_full_sti_class = true
 # Use ISO 8601 format for JSON serialized times and dates.
 ActiveSupport.use_standard_json_time_format = true
 
-# Don't escape HTML entities in JSON, leave that for the #json_escape helper
+# Don't escape HTML entities in JSON, leave that for the json_escape helper
 # if you're including raw JSON in an HTML page.
 ActiveSupport.escape_html_entities_in_json = false
 
