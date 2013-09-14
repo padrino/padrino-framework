@@ -22,7 +22,8 @@ module Padrino
           !self.output_buffer.nil?
         end
 
-        # Captures the html from a block of template code for this handler
+        ##
+        # Captures the html from a block of template code for this handler.
         #
         # @example
         #   @handler.capture_from_template(&block) => "...html..."
@@ -36,7 +37,7 @@ module Padrino
         end
 
         ##
-        # Outputs the given text to the templates buffer directly
+        # Outputs the given text to the templates buffer directly.
         #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
@@ -57,7 +58,7 @@ module Padrino
         end
 
         ##
-        # Returns an array of engines used for the template
+        # Returns an array of engines used for the template.
         #
         # @example
         #   @handler.engines => [:erb, :erubis]
@@ -67,13 +68,11 @@ module Padrino
         end
 
         protected
-
-          def output_buffer=(val)
-            template.instance_variable_set(:@_out_buf, val)
-          end
-      end # ErbHandler
-
+        def output_buffer=(val)
+          template.instance_variable_set(:@_out_buf, val)
+        end
+      end
       OutputHelpers.register(ErbHandler)
-    end # OutputHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end
