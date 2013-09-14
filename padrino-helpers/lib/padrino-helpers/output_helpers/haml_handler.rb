@@ -25,18 +25,19 @@ module Padrino
           template.block_is_haml?(block)
         end
 
-        # Captures the html from a block of template code for this handler
+        ##
+        # Captures the html from a block of template code for this handler.
         #
         # @example
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          eval("_hamlout ||= @haml_buffer", block.binding) # this is for rbx
+          eval("_hamlout ||= @haml_buffer", block.binding)
           template.capture_haml(*args, &block)
         end
 
         ##
-        # Outputs the given text to the templates buffer directly
+        # Outputs the given text to the templates buffer directly.
         #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
@@ -47,7 +48,7 @@ module Padrino
         end
 
         ##
-        # Returns an array of engines used for the template
+        # Returns an array of engines used for the template.
         #
         # @example
         #   @handler.engines => [:haml]
@@ -55,9 +56,8 @@ module Padrino
         def engines
           @_engines ||= [:haml]
         end
-      end # HamlHandler
-
+      end
       OutputHelpers.register(HamlHandler)
-    end # OutputHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end
