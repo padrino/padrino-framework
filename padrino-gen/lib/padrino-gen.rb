@@ -1,7 +1,7 @@
+require 'active_support/ordered_hash'
 require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
 require 'padrino-gen/command'
-require 'active_support/ordered_hash'
 
 module Padrino
   ##
@@ -19,12 +19,12 @@ module Padrino
   # Padrino::Generators.load_paths << "custom_generator.rb"
   #
   module Generators
-    # Defines the absolute path to the padrino source folder
+    # Defines the absolute path to the padrino source folder.
     DEV_PATH = File.expand_path("../../", File.dirname(__FILE__))
 
     class << self
       ##
-      # Here we store our generators paths.
+      # Store our generators paths.
       #
       def load_paths
         @_files ||= []
@@ -41,9 +41,9 @@ module Padrino
       # Global add a new generator class to +padrino-gen+.
       #
       # @param [Symbol] name
-      #   key name for generator mapping
+      #   Key name for generator mapping.
       # @param [Class] klass
-      #   class of generator
+      #   Class of generator.
       #
       # @return [Hash] generator mappings
       #
@@ -67,8 +67,8 @@ module Padrino
   end
 end
 
-# We add our generators to Padrino::Generators.
+# Add our generators to Padrino::Generators.
 Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{project,app,mailer,controller,model,migration,plugin,component}.rb']
 
-# We add our tasks to padrino-core.
+# Add our tasks to padrino-core.
 Padrino::Tasks.files << Dir[File.dirname(__FILE__) + "/padrino-gen/padrino-tasks/**/*.rb"]
