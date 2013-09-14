@@ -18,4 +18,4 @@ For the Padrino documentation overview, check out the
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2013 Padrino. See LICENSE for details.

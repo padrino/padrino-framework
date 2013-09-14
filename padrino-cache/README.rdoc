@@ -336,4 +336,4 @@ Page-level expiration works exactly like the example above--by using
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2013 Padrino. See LICENSE for details.

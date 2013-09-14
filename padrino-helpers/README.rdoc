@@ -236,4 +236,4 @@ For more information on using the render and partial helpers, check out the guid
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2013 Padrino. See LICENSE for details.
