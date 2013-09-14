@@ -5,15 +5,11 @@ module Padrino
     #
     class Controller < Thor::Group
 
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:controller, self)
 
-      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen controller [name]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Components::Actions
@@ -30,12 +26,12 @@ module Padrino
       class_option :parent,    :desc => 'The parent of the controller',           :aliases => '-p', :default => '',     :type => :string
       class_option :provides,  :desc => 'the formats provided by the controller', :aliases => '-f', :default => '',     :type => :string
 
-      # Show help if no argv given
+      # Show help if no ARGV given
       require_arguments!
 
+      ##
       # Execute controller generation
       #
-      # @api private
       def create_controller
         self.destination_root = options[:root]
         if in_app_root?
@@ -47,7 +43,7 @@ module Padrino
           @actions      = controller_actions(fields)
           @controller   = name.to_s.underscore
           @layout       = options[:layout] if options[:layout] && !options[:layout].empty?
-          
+
           block_opts = []
           block_opts << ":parent => :#{options[:parent]}" if options[:parent] && !options[:parent].empty?
           block_opts << ":provides => [#{options[:provides]}]" if options[:provides] && !options[:provides].empty?
@@ -63,6 +59,6 @@ module Padrino
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
-    end # Controller
-  end # Generators
-end # Padrino
+    end
+  end
+end

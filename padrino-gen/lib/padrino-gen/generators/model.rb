@@ -1,19 +1,14 @@
 module Padrino
   module Generators
     ##
-    # Responsible for generating new models for the specified ORM component within a project or application.
+    # Responsible for generating new models for the specified ORM component.
     #
     class Model < Thor::Group
-
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:model, self)
 
-      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen model [name] [fields]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Components::Actions
@@ -27,12 +22,11 @@ module Padrino
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :skip_migration, :aliases => '-s', :default => false, :type => :boolean
 
-      # Show help if no argv given
+      # Show help if no ARGV given.
       require_arguments!
 
-      # Execute the model generation
+      # Execute the model generation.
       #
-      # @api private
       def create_model
         self.destination_root = options[:root]
         if in_app_root?
@@ -58,6 +52,6 @@ module Padrino
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
-    end # Model
-  end # Generators
-end # Padrino
+    end
+  end
+end

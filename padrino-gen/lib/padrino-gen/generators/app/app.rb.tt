@@ -7,7 +7,7 @@ module <%= @project_name %>
     enable :sessions
 
     ##
-    # Caching support
+    # Caching support.
     #
     # register Padrino::Cache
     # enable :caching
@@ -22,7 +22,7 @@ module <%= @project_name %>
     #
 
     ##
-    # Application configuration options
+    # Application configuration options.
     #
     # set :raise_errors, true       # Raise exceptions (will stop application) (default for test)
     # set :dump_errors, true        # Exception backtraces are written to STDERR (default for production/development)
