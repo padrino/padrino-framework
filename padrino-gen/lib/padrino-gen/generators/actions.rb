@@ -180,11 +180,7 @@ module Padrino
       # Returns the root for this Thor class (also aliased as destination root).
       #
       # @param [Array<String>] paths
-<<<<<<< HEAD
-      #   The relative path from destination root
-=======
       #   The relative path from destination root.
->>>>>>> Cleanup of actions file
       #
       # @return [String] The full path
       #
