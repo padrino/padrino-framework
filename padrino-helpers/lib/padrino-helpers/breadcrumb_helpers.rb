@@ -1,30 +1,28 @@
 module Padrino
   module Helpers
     class Breadcrumb
-
       attr_accessor :home, :items
 
       DEFAULT_URL = "/"
       DEFAULT_CAPTION ="Home Page"
 
       ##
-      # initialize breadcrumbs with default value
+      # Initialize breadcrumbs with default value.
       #
       # @example
       #   before do
       #     @breadcrumbs = breadcrumbs.new
       #   end
       #
-      # @api public
       def initialize
         reset!
       end
 
       ##
-      # Set the custom home (Parent) link
+      # Set the custom home (Parent) link.
       #
       # @param [String] url
-      #  The url href
+      #  The url href.
       #
       # @param [String] caption
       #   The  text caption.
@@ -35,8 +33,6 @@ module Padrino
       # @example
       #   breadcrumbs.set_home "/HomeFoo", "Foo Home", :id => "home-breadcrumb"
       #
-      #
-      # @api public
       def set_home(url, caption, options = {})
         self.home = {
           :url     => url.to_s,
@@ -48,24 +44,22 @@ module Padrino
       end
 
       ##
-      # Reset breadcrumbs to default or personal  home
+      # Reset breadcrumbs to default or personal home.
       #
       # @example
       #   breadcrumbs.reset
       #
-      # @api public
       def reset
         self.items = []
         self.items << home
       end
 
       ##
-      # Reset breadcrumbs to default home
+      # Reset breadcrumbs to default home.
       #
       # @example
       #   breadcrumbs.reset!
       #
-      # @api public
       def reset!
         self.home = {
           :name    => :home,
@@ -77,7 +71,7 @@ module Padrino
       end
 
       ##
-      # Add a new  breadcrumbs
+      # Add a new breadcrumbs.
       #
       # @param [String] name
       #   The name of resource.
@@ -97,7 +91,6 @@ module Padrino
       #   breadcrumbs.add "foo", "/foo", "Foo Link", :id => "foo-id"
       #   breadcrumbs.add :foo, "/foo", "Foo Link", :class => "foo-class"
       #
-      # @api public
       def add(name, url, caption, options = {})
         items << {
           :name    => name.to_sym,
@@ -106,42 +99,35 @@ module Padrino
           :options => options
         }
       end
-
       alias :<< :add
 
       ##
-      # Remove a Breadcrumbs
+      # Remove a breadcrumb.
       #
       # @param [String] name
-      #  The name of resource to delete from breadcrumbs list
-      #
-      # @param [Symbol] name
-      #  The name of resource to delete from breadcrumbs list
+      #  The name of resource to delete from breadcrumbs list.
       #
       # @example
       #   breadcrumbs.del "foo"
       #   breadcrumbs.del :foo
       #
-      # @api public
       def del(name)
         items.delete_if { |item| item[:name] == name.to_sym }
       end
-
-    end # Breadcrumb
-
+    end
 
     module Breadcrumbs
-
-      # Render breadcrumbs to view
+      ##
+      # Render breadcrumbs to view.
       #
       # @param [Breadcrumbs] breadcrumbs
-      #   The breadcrumbs to render into view
+      #   The breadcrumbs to render into view.
       #
       # @param [Boolean] bootstrap
-      #  If true, render separation (usefull with Twitter Bootstrap)
+      #  If true, render separation (useful with Twitter Bootstrap).
       #
       # @param [String] active
-      #  Css class style set to active breadcrumb
+      #  CSS class style set to active breadcrumb.
       #
       # @param [Hash] options
       #   The HTML options to include in ul.
@@ -156,8 +142,6 @@ module Padrino
       #  #   <li class="active"><a href="/bar">Bar Link</a></li>
       #  # </ul>
       #
-      #
-      # @api public
       def breadcrumbs(breadcrumbs, bootstrap = false, active = "active", options = {})
         content = ""
         breadcrumbs.items[0..-2].each do |item|
@@ -178,24 +162,22 @@ module Padrino
 
       private
       ##
-      # Private method to return list item
+      # Private method to return list item.
       #
       # @param [Hash] item
-      #   The breadcrumb item
+      #   The breadcrumb item.
       #
       # @param [Boolean] bootstrap
-      #   If true, render separation (usefull with Twitter Bootstrap)
+      #   If true, render separation (useful with Twitter Bootstrap).
       #
-      # @return [String] List item with breacrumb
+      # @return [String] List item with breadcrumb
       #
-      # @api public
       def render_item(item, bootstrap)
         content = ""
         content << link_to(item[:caption], item[:url])
         content << safe_content_tag(:span, "/", :class => "divider") if bootstrap
         safe_content_tag(:li, content, item[:options])
       end
-
-    end # Breadcrumb
-  end # Helpers
-end # Padrino
+    end
+  end
+end
