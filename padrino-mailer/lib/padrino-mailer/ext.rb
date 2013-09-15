@@ -12,23 +12,22 @@ module Mail # @private
         settings.views            = File.join(app.views, 'mailers')
         settings.reload_templates = app.reload_templates?
       else
-        # Set a default view for this class
         settings.views = File.expand_path("./mailers")
         settings.reload_templates = true
       end
 
       initialize_template_settings!
 
-      # Run the original initialize
       initialize_without_app(*args, &block)
     end
     alias_method_chain :initialize, :app
 
+    ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
     #
     # @example
     #   # This add an email plain part if a template called bar.plain.* is found
-    #   # and a html part if a template called bar.html.* is found
+    #   # and a HTML part if a template called bar.html.* is found
     #   email do
     #     from     'from@email.com'
     #     to       'to@email.com'
@@ -45,6 +44,7 @@ module Mail # @private
       end
     end
 
+    ##
     # Helper to add a text part to a multipart/alternative email. If this and
     # html_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
@@ -60,7 +60,8 @@ module Mail # @private
                         &block)
     end
 
-    # Helper to add a html part to a multipart/alternative email. If this and
+    ##
+    # Helper to add a HTML part to a multipart/alternative email. If this and
     # text_part are both defined in a message, then it will be a multipart/alternative
     # message and set itself that way.
     #
@@ -87,6 +88,7 @@ module Mail # @private
       end
     end
 
+    ##
     # Allows you to add a part in block form to an existing mail message object.
     #
     # @example
@@ -114,12 +116,14 @@ module Mail # @private
     end
     alias_method_chain :do_delivery, :logging if Padrino.respond_to?(:logger)
 
+    ##
     # Sinatra and Padrino compatibility.
     #
     def settings
       self.class
     end
 
+    ##
     # Sets the message defined template path to the given view path.
     #
     def views(value)
@@ -133,48 +137,56 @@ module Mail # @private
       @_locals = value
     end
 
+    ##
     # Returns the templates for this message.
     #
     def self.templates
       @_templates ||= {}
     end
 
+    ##
     # Sets the message defined template path to the given view path.
     #
     def self.views=(value)
       @_views = value
     end
 
+    ##
     # Returns the template view path defined for this message.
     #
     def self.views
       @_views
     end
 
+    ##
     # Modify whether templates should be reloaded (for development).
     #
     def self.reload_templates=(value)
       @_reload_templates = value
     end
 
+    ##
     # Returns true if the templates will be reloaded; false otherwise.
     #
     def self.reload_templates?
       @_reload_templates
     end
 
+    ##
     # Return the path of this file, only for compatibility with Sinatra rendering methods.
     #
     def self.caller_locations
       [[File.dirname(__FILE__), 1]]
     end
 
+    ##
     # Return the default encoding.
     #
     def self.default_encoding
       "utf-8"
     end
 
+    ##
     # Modify the default attributes for this message (if not explicitly specified).
     #
     def defaults=(attributes)
@@ -182,6 +194,7 @@ module Mail # @private
       @_defaults.each_pair { |k, v| default(k.to_sym, v) } if @_defaults.is_a?(Hash)
     end
 
+    ##
     # Check if we can log.
     #
     def self.logging?
@@ -192,7 +205,9 @@ module Mail # @private
       @_logging = value
     end
 
-    # Shortcut for delivery_method with smarter SMTP overwrites
+    ##
+    # Shortcut for delivery_method with smarter SMTP overwrites.
+    #
     def via(method = nil, settings = {})
       if method.nil?
         delivery_method
@@ -203,6 +218,7 @@ module Mail # @private
       end
     end
 
+    ##
     # If the value is empty return a symbol that represent the content type so:
     #
     #   "text/plain" => :plain
@@ -218,10 +234,11 @@ module Mail # @private
 
     private
 
+    ##
     # Defines the render for the mailer utilizing the padrino 'rendering' module
+    #
     def render(engine, data=nil, options={}, locals={}, &block)
       locals = @_locals if options[:locals].blank? && locals.blank?
-      # Reload templates
       @template_cache.clear if settings.reload_templates?
 
       provides.each do |format|
@@ -235,11 +252,13 @@ module Mail # @private
       self.body = super(engine, data, options, locals, &block) if provides.empty?
     end
 
+    ##
     # Register all special template configurations Padrino has to our fake settings object.
+    #
     def initialize_template_settings!
       Padrino::Rendering.engine_configurations.each do |name, value|
         settings.class.instance_eval { define_method(name) { value } }
       end
     end
-  end # Message
-end # Mail
+  end
+end

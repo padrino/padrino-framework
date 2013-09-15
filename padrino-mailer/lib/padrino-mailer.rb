@@ -7,7 +7,8 @@ require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
   ##
-  # This component uses the +mail+ library to create a powerful but simple mailer within Padrino (and Sinatra).
+  # This component uses the +mail+ library to create a powerful but simple
+  # mailer within Padrino (and Sinatra).
   # There is full support for using plain or html content-types as well as for file attachments.
   #
   # Using the mailer in Padrino has two forms. The 'quick' method requires only use
@@ -23,8 +24,6 @@ module Padrino
   #    end
   #  end
   #
-  # For a more detailed guide, please read the {Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide.
-  #
   module Mailer
     class << self
       ##
@@ -38,7 +37,6 @@ module Padrino
       #     register Padrino::Mailer::Helpers
       #   end
       #
-      # @api public
       def registered(app)
         require 'padrino-mailer/base'
         require 'padrino-mailer/helpers'
@@ -53,5 +51,5 @@ module Padrino
       end
       alias :included :registered
     end
-  end # Mailer
-end # Padrino
+  end
+end
