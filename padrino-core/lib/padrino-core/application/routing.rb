@@ -1,5 +1,5 @@
-require 'http_router' unless defined?(HttpRouter)
 require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-core/path_router' unless defined?(PathRouter)
 
 ##
 # Adds to Sinatra +controller+ informations
@@ -12,173 +12,6 @@ class Sinatra::Request
   end
   def action
     route_obj && route_obj.action
-  end
-end
-
-
-class HttpRouter
-  def rewrite_partial_path_info(env, request); end
-  def rewrite_path_info(env, request); end
-
-  def process_destination_path(path, env)
-    Thread.current['padrino.instance'].instance_eval do
-      request.route_obj = path.route
-      @_response_buffer = nil
-      @route    = path.route
-      @params ||= {}
-      @params.update(env['router.params'])
-      @block_params = if match_data = env['router.request'].extra_env['router.regex_match']
-        params_list = match_data.to_a
-        params_list.shift
-        @params[:captures] = params_list
-        params_list
-      else
-        env['router.request'].params
-      end
-      # Provide access to the current controller to the request
-      # Now we can eval route, but because we have "throw halt" we need to be
-      # (en)sure to reset old layout and run controller after filters.
-      original_params = @params
-      parent_layout   = @layout
-      successful      = false
-      begin
-        filter! :before
-        (@route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
-        @layout = path.route.use_layout if path.route.use_layout
-        @route.custom_conditions.each { |block| pass if block.bind(self).call == false }
-        halt_response     = catch(:halt) { route_eval { @route.dest[self, @block_params] } }
-        @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
-        successful        = true
-        halt halt_response
-      ensure
-        (@route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) } if successful
-        @layout = parent_layout
-        @params = original_params
-      end
-    end
-  end
-
-  class Route
-    VALID_HTTP_VERBS.replace %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK]
-
-    attr_accessor :use_layout, :controller, :action, :cache, :cache_key, :cache_expires_in, :parent
-
-    def before_filters(&block)
-      @_before_filters ||= []
-      @_before_filters << block if block_given?
-
-      @_before_filters
-    end
-
-    def after_filters(&block)
-      @_after_filters ||= []
-      @_after_filters << block if block_given?
-
-      @_after_filters
-    end
-
-    def custom_conditions(&block)
-      @_custom_conditions ||= []
-      @_custom_conditions << block if block_given?
-
-      @_custom_conditions
-    end
-
-    def significant_variable_names
-      @significant_variable_names ||= if @original_path.is_a?(String)
-        @original_path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
-      elsif @original_path.is_a?(Regexp) and @original_path.respond_to?(:named_captures)
-        @original_path.named_captures.keys.map(&:to_sym)
-      else
-        []
-      end
-    end
-
-    def to(dest = nil, &dest_block)
-      @dest = dest || dest_block || raise("you didn't specify a destination")
-
-      @router.current_order ||= 0
-      @order = @router.current_order
-      @router.current_order += 1
-
-      if @dest.respond_to?(:url_mount=)
-        urlmount = UrlMount.new(@path_for_generation, @default_values || {}) # TODO url mount should accept nil here.
-        urlmount.url_mount = @router.url_mount if @router.url_mount
-        @dest.url_mount = urlmount
-      end
-      self
-    end
-
-    attr_accessor :order
-
-  end
-
-  attr_accessor :current_order
-
-  def sort!
-    @routes.sort!{ |a, b| a.order <=> b.order }
-  end
-
-  class Node::SpanningRegex
-    def to_code
-      params_count = @ordered_indicies.size
-      whole_path_var = "whole_path#{root.next_counter}"
-      "#{whole_path_var} = request.joined_path
-      if match = #{@matcher.inspect}.match(#{whole_path_var}) and match.begin(0).zero?
-        _#{whole_path_var} = request.path.dup
-        " << param_capturing_code << "
-        remaining_path = #{whole_path_var}[match[0].size + (#{whole_path_var}[match[0].size] == ?/ ? 1 : 0), #{whole_path_var}.size]
-        request.path = remaining_path.split('/')
-        #{node_to_code}
-        request.path = _#{whole_path_var}
-        request.params.slice!(#{-params_count}, #{params_count})
-      end
-      "
-    end
-  end
-
-  # Monkey patching the Request class. Using Rack::Utils.unescape rather than
-  # URI.unescape which can't handle utf-8 chars
-  class Request
-    def initialize(path, rack_request)
-      @rack_request = rack_request
-      @path = path.split(/\//).map{|part| Rack::Utils.unescape(part) }
-      @path.shift if @path.first == ''
-      @path.push('') if path[-1] == ?/
-      @extra_env = {}
-      @params = []
-      @acceptable_methods = Set.new
-    end
-  end
-
-  class Node::Path
-    def to_code
-      path_ivar = inject_root_ivar(self)
-      "#{"if !callback && request.path.size == 1 && request.path.first == '' && (request.rack_request.head? || request.rack_request.get?) && request.rack_request.path_info[-1] == ?/
-        catch(:pass) do
-          response = ::Rack::Response.new
-          response.redirect(request.rack_request.path_info[0, request.rack_request.path_info.size - 1], 302)
-          return response.finish
-        end
-      end" if router.redirect_trailing_slash?}
-
-      #{"if request.#{router.ignore_trailing_slash? ? 'path_finished?' : 'path.empty?'}" unless route.match_partially}
-        catch(:pass) do
-          if callback
-            request.called = true
-            callback.call(Response.new(request, #{path_ivar}))
-          else
-            env = request.rack_request.dup.env
-            env['router.request'] = request
-            env['router.params'] ||= {}
-            #{"env['router.params'].merge!(Hash[#{param_names.inspect}.zip(request.params)])" if dynamic?}
-            @router.rewrite#{"_partial" if route.match_partially}_path_info(env, request)
-            response = @router.process_destination_path(#{path_ivar}, env)
-            return response unless router.pass_on_response(response)
-          end
-        end
-      #{"end" unless route.match_partially}"
-    end
   end
 end
 
@@ -493,16 +326,15 @@ module Padrino
       # @see http://github.com/joshbuddy/http_router
       #
       def router
-        @router ||= HttpRouter.new
+        @router ||= PathRouter.new
         block_given? ? yield(@router) : @router
       end
       alias :urls :router
 
       def compiled_router
         if @deferred_routes
-          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
+          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(&dest) } }
           @deferred_routes = nil
-          router.sort!
         end
         router
       end
@@ -539,9 +371,8 @@ module Padrino
       #   # => [:foo_bar, :id => :mine]
       #
       def recognize_path(path)
-        responses = @router.recognize(Rack::MockRequest.env_for(path))
-        responses = responses[0] if responses[0].is_a?(Array)
-        [responses[0].path.route.name, responses[0].params]
+        responses = @router.recognize_path(path)
+        [responses[0], responses[1]]
       end
 
       ##
@@ -572,7 +403,7 @@ module Padrino
         url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
         url = "/" if url.blank?
         url
-      rescue HttpRouter::InvalidRouteException
+      rescue PathRouter::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise Padrino::Routing::UnrecognizedException.new(route_error)
       end
@@ -646,11 +477,9 @@ module Padrino
           else raise
         end
 
-        # Do padrino parsing. We dup options so we can build HEAD request correctly.
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
 
-        # CSRF protection is always active except when explicitly switched off.
         if allow_disabled_csrf
           unless route_options[:csrf_protection] == false
             route_options[:csrf_protection] = true
@@ -662,46 +491,42 @@ module Padrino
         path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
         options.reverse_merge!(@_conditions) if @_conditions
 
-        # Sinatra defaults
         method_name = "#{verb} #{path}"
         unbound_method = generate_method(method_name, &block)
 
         block = block.arity != 0 ?
-          proc { |a,p| unbound_method.bind(a).call(*p) } :
-          proc { |a,p| unbound_method.bind(a).call }
+          proc {|a,p| unbound_method.bind(a).call(*p) } :
+          proc {|a,p| unbound_method.bind(a).call }
 
         invoke_hook(:route_added, verb, path, block)
 
-        # HTTPRouter route construction
-        route = router.add(path, route_options)
+        path[0, 0] = "/" if path == "(.:format)"
+        route = router.add(verb.downcase.to_sym, path, route_options)
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
         priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
         route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
         route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
-        route.add_request_method(verb.downcase.to_sym)
         route.host = options.delete(:host) if options.key?(:host)
         route.user_agent = options.delete(:agent) if options.key?(:agent)
         if options.key?(:default_values)
           defaults = options.delete(:default_values)
-          route.add_default_values(defaults) if defaults
+          route.default_values = defaults if defaults
         end
-        options.delete_if do |option, _args|
+        options.delete_if do |option, captures|
           if route.significant_variable_names.include?(option)
-            route.add_match_with(option => Array(_args).first)
+            route.capture[option] = Array(captures).first
             true
           end
         end
 
-        # Add Sinatra conditions.
-        options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
+        options.each {|o, a| route.respond_to?("#{o}=") ? route.send("#{o}=", a) : send(o, *a) }
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
-        # Add Application defaults.
         route.before_filters.concat(@filters[:before])
         route.after_filters.concat(@filters[:after])
         if @_controller
@@ -1047,30 +872,60 @@ module Padrino
         end
       end
 
-      def route!(base=settings, pass_block=nil)
+      def route!(base = settings, pass_block = nil)
         Thread.current['padrino.instance'] = self
-        if base.compiled_router and match = base.compiled_router.call(@request.env)
-          if match.respond_to?(:each)
-            route_eval do
-              match[1].each { |k,v| response[k] = v }
-              status match[0]
-              route_missing if match[0] == 404
-              route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
-            end
+        code, headers, routes = base.compiled_router.call(@request.env)
+
+        status(code)
+        if code == 200
+          routes.each_with_index do |(route, howl_params), index|
+            next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+            invoke_route(route, howl_params, :first => index.zero?)
           end
         else
-          filter! :before
+          route_eval do
+            headers.each{|k, v| response[k] = v } unless headers.empty?
+            route_missing if code == 404
+            route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
+          end
         end
 
-        # Run routes defined in superclass.
         if base.superclass.respond_to?(:router)
           route!(base.superclass, pass_block)
           return
         end
 
         route_eval(&pass_block) if pass_block
-
         route_missing
+      end
+
+      def invoke_route(route, params, options = {})
+        original_params, parent_layout, successful = @params.dup, @layout, false
+        captured_params = params[:captures].is_a?(Array) ? params.delete(:captures) :
+                                                           params.values_at(*route.matcher.names.dup)
+
+        @_response_buffer = nil
+        @route = request.route_obj = route
+        @params.merge!(params) if params.is_a?(Hash)
+        @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
+        @block_params = params
+
+        filter! :before if options[:first]
+
+        catch(:pass) do
+          begin
+            (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
+            @layout = route.use_layout if route.use_layout
+            route.custom_conditions.each {|block| pass if block.bind(self).call == false }
+            halt_response = catch(:halt){ route_eval{ route.block[self, captured_params] }}
+            @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+            successful = true
+            halt(halt_response)
+          ensure
+            (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) } if successful
+            @layout, @params = parent_layout, original_params
+          end
+        end
       end
     end
   end
