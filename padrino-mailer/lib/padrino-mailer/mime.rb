@@ -1,13 +1,13 @@
 module Padrino
   module Mailer
-
+    ##
     # Handles MIME type declarations for mail delivery.
     #
     module Mime
-
+      ##
       # Returns Symbol with mime type if found, otherwise use +fallback+.
       # +mime+ should be the content type like "text/plain"
-      # +fallback+ may be any symbol
+      # +fallback+ may be any symbol.
       #
       # Also see the documentation for {MIME_TYPES}.
       #
@@ -30,6 +30,7 @@ module Padrino
         MIME_TYPES.fetch(mime.to_s.downcase, fallback)
       end
 
+      ##
       # List of common mime-types, selected from various sources
       # according to their usefulness for an email scope.
       #
@@ -42,6 +43,6 @@ module Padrino
         "text/plain" => :plain,
         "text/xml"   => :xml
       }
-    end # Mime
-  end # Mailer
-end # Padrino
+    end
+  end
+end
