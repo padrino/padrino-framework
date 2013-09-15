@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   else
     s.add_dependency("sinatra", "~> 1.4.2")
   end
-  s.add_dependency("http_router", "~> 0.11.0")
+  s.add_dependency("mustermann", ">= 0.2.0")
   s.add_dependency("thor", "~> 0.17.0")
   s.add_dependency("activesupport", ">= 3.1", "< 4.0")
   s.add_dependency("rack-protection", ">= 1.5.0")
