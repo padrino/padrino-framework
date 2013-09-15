@@ -367,7 +367,6 @@ describe "Routing" do
   end
 
   should "allow .'s in param values" do
-    skip
     mock_app do
       get('/id/:email', :provides => [:json]) { |email, format| [email, format] * '/' }
     end
