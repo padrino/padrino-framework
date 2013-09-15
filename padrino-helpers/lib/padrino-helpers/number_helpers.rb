@@ -29,7 +29,7 @@ module Padrino
       #     %u  The currency unit
       #     %n  The number
       #
-      # @return [String] The formatted representation of the currency
+      # @return [String] The formatted representation of the currency.
       #
       # @example
       #   number_to_currency(1234567890.50)                    # => $1,234,567,890.50
@@ -40,7 +40,6 @@ module Padrino
       #   number_to_currency(1234567890.50, :unit => "&pound;", :separator => ",", :delimiter => "", :format => "%n %u")
       #   # => 1234567890,50 &pound;
       #
-      # @api public
       def number_to_currency(number, options = {})
         options.symbolize_keys!
 
@@ -79,7 +78,7 @@ module Padrino
       # @option options [String] :separator (".")
       #   Sets the separator between the units.
       # @option options [String] :delimiter ("")
-      #   Sets the thousands delimiter
+      #   Sets the thousands delimiter.
       #
       # @return [String] The formatted representation of the percentage
       #
@@ -89,7 +88,6 @@ module Padrino
       #   number_to_percentage(1000, :delimiter => '.', :separator => ',') # => 1.000,000%
       #   number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
       #
-      # @api public
       def number_to_percentage(number, options = {})
         options.symbolize_keys!
 
@@ -121,11 +119,11 @@ module Padrino
       #   @param [Hash] options
       #     Options for formatter.
       #   @option options [String] :delimiter (", ")
-      #     Sets the thousands delimiter
+      #     Sets the thousands delimiter.
       #   @option options [String] :separator (".")
       #     Sets the separator between the units.
       #
-      # @return [String] The formatted representation of the number
+      # @return [String] The formatted representation of the number.
       #
       # @example
       #   number_with_delimiter(12345678)                        # => 12,345,678
@@ -135,7 +133,6 @@ module Padrino
       #   number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
       #   # => 98 765 432,98
       #
-      # @api public
       def number_with_delimiter(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -168,9 +165,9 @@ module Padrino
       #   @option options [String] :separator (".")
       #     Sets the separator between the units.
       #   @option options [String] :delimiter ("")
-      #     Sets the thousands delimiter
+      #     Sets the thousands delimiter.
       #
-      # @return [String] The formatted representation of the number
+      # @return [String] The formatted representation of the number.
       #
       # @example
       #   number_with_precision(111.2345)                    # => 111.235
@@ -180,7 +177,6 @@ module Padrino
       #   number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
       #   # => 1.111,23
       #
-      # @api public
       def number_with_precision(number, *args)
         options = args.extract_options!
         options.symbolize_keys!
@@ -225,7 +221,7 @@ module Padrino
       #   @option options [String] :separator (".")
       #     Sets the separator between the units.
       #   @option options [String] :delimiter ("")
-      #     Sets the thousands delimiter
+      #     Sets the thousands delimiter.
       #
       # @return [String] The formatted representation of bytes
       #
@@ -240,7 +236,6 @@ module Padrino
       #   number_to_human_size(483989, :precision => 0)                      # => 473 KB
       #   number_to_human_size(1234567, :precision => 2, :separator => ',')  # => 1,18 MB
       #
-      # @api public
       def number_to_human_size(number, *args)
         return nil if number.nil?
 
@@ -283,6 +278,6 @@ module Padrino
           end
         end
       end
-    end # NumberHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end
