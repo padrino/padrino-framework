@@ -1,21 +1,21 @@
 module Padrino
   module Helpers
     ###
-    # Helpers related to producing assets (images,stylesheets,js,etc) within templates.
+    # Helpers related to producing assets (images, stylesheets, js, etc) within templates.
     #
     module AssetTagHelpers
       FRAGMENT_HASH = "#".html_safe.freeze
-      APPEND_ASSET_EXTENSIONS = ["js", "css"]  # assets that require an appended extension
-      ABSOLUTE_URL_PATTERN = %r{^(https?://)} # absolute url regex
+      APPEND_ASSET_EXTENSIONS = ["js", "css"]
+      ABSOLUTE_URL_PATTERN = %r{^(https?://)}
 
       ##
-      # Creates a div to display the flash of given type if it exists
+      # Creates a div to display the flash of given type if it exists.
       #
       # @param [Symbol] kind
       #   The type of flash to display in the tag.
       # @param [Hash] options
       #   The html options for this section.
-      #   use :bootstrap => true to support Twitter's bootstrap dismiss alert button
+      #   use :bootstrap => true to support Twitter's bootstrap dismiss alert button.
       #
       # @return [String] Flash tag html with specified +options+.
       #
@@ -26,7 +26,6 @@ module Padrino
       #   # Generates: <div class="error">flash-error</div>
       #   # <div class="success">flash-success</div>
       #
-      # @api public
       def flash_tag(*args)
         options = args.extract_options!
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
@@ -39,7 +38,7 @@ module Padrino
       end
 
       ##
-      # Creates a link element with given name, url and options
+      # Creates a link element with given name, url and options.
       #
       # @overload link_to(caption, url, options={})
       #   @param [String]  caption  The text caption.
@@ -51,13 +50,13 @@ module Padrino
       #   @param [Proc]    block    The link content.
       #
       # @option options [String] :anchor
-      #   The anchor for the link (i.e #something)
+      #   The anchor for the link (i.e #something).
       # @option options [String] :fragment
-      #   Synonym for anchor
+      #   Synonym for anchor.
       # @option options [Boolean] :if
-      #   If true, the link will appear, otherwise not;
+      #   If true, the link will appear, otherwise not.
       # @option options [Boolean] :unless
-      #   If false, the link will appear, otherwise not;
+      #   If false, the link will appear, otherwise not.
       # @option options [Boolean] :remote
       #   If true, this link should be handled by an ajax ujs handler.
       # @option options [String] :confirm
@@ -74,13 +73,12 @@ module Padrino
       #   link_to('click me', :class => 'blocky') do; end
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
-      # condition padrino return true/false if the request.path_info match the given url
+      # condition padrino return true/false if the request.path_info match the given url.
       #
-      # @api public
       def link_to(*args, &block)
-        options = args.extract_options!
-        fragment  = options.delete(:anchor).to_s if options[:anchor]
-        fragment  = options.delete(:fragment).to_s if options[:fragment]
+        options  = args.extract_options!
+        fragment = options.delete(:anchor).to_s if options[:anchor]
+        fragment = options.delete(:fragment).to_s if options[:fragment]
 
         url = ActiveSupport::SafeBuffer.new
         if block_given?
@@ -121,11 +119,11 @@ module Padrino
       # @param[Hash] options
       #   The options for the feed tag.
       # @option options [String] :rel ("alternate")
-      #   Specify the relation of this link
+      #   Specify the relation of this link.
       # @option options [String] :type
-      #   Override the auto-generated mime type
+      #   Override the auto-generated mime type.
       # @option options [String] :title
-      #   Specify the title of the link, defaults to the type
+      #   Specify the title of the link, defaults to the type.
       #
       # @return [String] Feed link html tag with specified +options+.
       #
@@ -135,7 +133,6 @@ module Padrino
       #   feed_tag :rss, url(:blog, :posts, :format => :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
-      # @api public
       def feed_tag(mime, url, options={})
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
         tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
@@ -163,7 +160,6 @@ module Padrino
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #   mail_to "me@demo.com", "My Email"
       #
-      # @api public
       def mail_to(email, caption=nil, mail_options={})
         html_options = mail_options.slice!(:cc, :bcc, :subject, :body)
         mail_query = Rack::Utils.build_query(mail_options).gsub(/\+/, '%20').gsub('%40', '@').gsub('&', '&amp;')
@@ -188,14 +184,13 @@ module Padrino
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #
-      # @api public
       def meta_tag(content, options={})
         options.reverse_merge!("content" => content)
         tag(:meta, options)
       end
 
       ##
-      # Generates a favicon link. looks inside images folder
+      # Generates a favicon link. Looks inside images folder
       #
       # @param [String] source
       #   The source image path for the favicon link tag.
@@ -210,7 +205,6 @@ module Padrino
       #   # or override some options
       #   favicon_tag 'favicon.png', :type => 'image/ico'
       #
-      # @api public
       def favicon_tag(source, options={})
         type = File.extname(source).gsub('.','')
         options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
@@ -218,7 +212,7 @@ module Padrino
       end
 
       ##
-      # Creates an image element with given url and options
+      # Creates an image element with given url and options.
       #
       # @param [String] url
       #   The source path for the image tag.
@@ -230,7 +224,6 @@ module Padrino
       # @example
       #   image_tag('icons/avatar.png')
       #
-      # @api public
       def image_tag(url, options={})
         options.reverse_merge!(:src => image_path(url))
         tag(:img, options)
@@ -250,7 +243,7 @@ module Padrino
       # @example
       #   stylesheet_link_tag 'style', 'application', 'layout'
       #
-      # @api public
+      # @api public.
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
@@ -273,7 +266,6 @@ module Padrino
       # @example
       #   javascript_include_tag 'application', :extjs
       #
-      # @api public
       def javascript_include_tag(*sources)
         options = sources.extract_options!.symbolize_keys
         options.reverse_merge!(:type => 'text/javascript')
@@ -287,7 +279,7 @@ module Padrino
       # like app/public/images for inclusion. You can provide also a full path.
       #
       # @param [String] src
-      #   The path to the image file (relative or absolute)
+      #   The path to the image file (relative or absolute).
       #
       # @return [String] Path to an image given the +kind+ and +source+.
       #
@@ -301,10 +293,10 @@ module Padrino
       end
 
       ##
-      # Returns the path to the specified asset (css or javascript)
+      # Returns the path to the specified asset (css or javascript).
       #
       # @param [String] kind
-      #   The kind of asset (i.e :images, :js, :css)
+      #   The kind of asset (i.e :images, :js, :css).
       # @param [String] source
       #   The path to the asset (relative or absolute).
       #
@@ -320,7 +312,6 @@ module Padrino
       #   # Generates: /images/example.jpg?1269008689
       #   asset_path :images, 'example.jpg'
       #
-      # @api semipublic
       def asset_path(kind, source)
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
         return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\// # absolute source
@@ -332,7 +323,7 @@ module Padrino
 
       private
       ##
-      # Returns the uri root of the application with optional paths appended.
+      # Returns the URI root of the application with optional paths appended.
       #
       # @example
       #   uri_root_path("/some/path") => "/root/some/path"
@@ -344,7 +335,7 @@ module Padrino
       end
 
       ##
-      # Returns the timestamp mtime for an asset
+      # Returns the timestamp mtime for an asset.
       #
       # @example
       #   asset_timestamp("some/path/to/file.png") => "?154543678"
@@ -375,7 +366,8 @@ module Padrino
         end
       end
 
-      # Normalizes the extension for a given asset
+      ##
+      # Normalizes the extension for a given asset.
       #
       #  @example
       #
@@ -389,7 +381,7 @@ module Padrino
       end
 
       ##
-      # Parses link_to options for given correct conditions
+      # Parses link_to options for given correct conditions.
       #
       # @example
       #   parse_conditions("/some/url", :if => false) => true
@@ -404,6 +396,6 @@ module Padrino
           true
         end
       end
-    end # AssetTagHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end

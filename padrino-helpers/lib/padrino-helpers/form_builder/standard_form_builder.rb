@@ -2,9 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/abstract_form_builder') unle
 
 module Padrino
   module Helpers
-    module FormBuilder # @private
-      class StandardFormBuilder < AbstractFormBuilder # @private
-
+    module FormBuilder
+      class StandardFormBuilder < AbstractFormBuilder
         ##
         # StandardFormBuilder
         #
@@ -26,18 +25,16 @@ module Padrino
           EOF
         end
 
-        # submit_block("Update")
         def submit_block(caption, options={})
           submit_html = self.submit(caption, options)
           @template.content_tag(:p, submit_html)
         end
 
-        # image_submit_block("submit.png")
         def image_submit_block(source, options={})
           submit_html = self.image_submit(source, options)
           @template.content_tag(:p, submit_html)
         end
-      end # StandardFormBuilder
-    end # FormBuilder
-  end # Helpers
-end # Padrino
+      end
+    end
+  end
+end

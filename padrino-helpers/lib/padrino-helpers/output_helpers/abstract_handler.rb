@@ -2,28 +2,26 @@ module Padrino
   module Helpers
     module OutputHelpers
       ##
-      # Returns the list of all available template handlers
+      # Returns the list of all available template handlers.
       #
       # @example
       #   OutputHelpers.handlers => [<OutputHelpers::HamlHandler>, <OutputHelpers::ErbHandler>]
       #
-      # @private
       def self.handlers
         @_template_handlers ||= []
       end
 
       ##
-      # Registers a new handler as available to the output helpers
+      # Registers a new handler as available to the output helpers.
       #
       # @example
       #   OutputHelpers.register(OutputHelpers::HamlHandler)
       #
-      # @private
       def self.register(handler)
         handlers << handler
       end
 
-      # @abstract Extend this to create a template handler
+      # @abstract Extend this to create a template handler.
       class AbstractHandler
         attr_reader :template
 
@@ -32,7 +30,7 @@ module Padrino
         end
 
         ##
-        # Returns extension of the template
+        # Returns extension of the template.
         #
         # @example
         #   @handler.template_extension => "erb"
@@ -44,13 +42,13 @@ module Padrino
         end
 
         ##
-        # Returns an array of engines used for the template
+        # Returns an array of engines used for the template.
         #
         # @example
         #   @handler.engines => [:erb, :erubis]
         #
         def engines
-          # Implemented in subclass
+          # Implemented in subclass.
         end
 
         ##
@@ -60,7 +58,7 @@ module Padrino
         #   @handler.is_type? => true
         #
         def is_type?
-          # Implemented in subclass
+          # Implemented in subclass.
         end
 
         ##
@@ -70,29 +68,29 @@ module Padrino
         #   @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
-          # Implemented in subclass
+          # Implemented in subclass.
         end
 
         ##
-        # Captures the html from a block of template code for this handler
+        # Captures the html from a block of template code for this handler.
         #
         # @example
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          # Implemented in subclass
+          # Implemented in subclass.
         end
 
         ##
-        # Outputs the given text to the templates buffer directly
+        # Outputs the given text to the templates buffer directly.
         #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
-          # Implemented in subclass
+          # Implemented in subclass.
         end
-      end # AbstractHandler
-    end # OutputHelpers
-  end # Helpers
-end # Padrino
+      end
+    end
+  end
+end
