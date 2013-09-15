@@ -1,7 +1,7 @@
 module Padrino
   module Helpers
     ##
-    # Helpers related to locale1 i18n translation within templates.
+    # Helpers related to locale i18n translation within templates.
     #
     module TranslationHelpers
       ##
@@ -13,7 +13,6 @@ module Padrino
       # @return [String]
       #  The translation for the specified keys.
       #
-      # @api public
       def translate(*args)
         I18n.translate(*args)
       end
@@ -28,11 +27,10 @@ module Padrino
       # @return [String]
       #  The translation for the specified keys.
       #
-      # @api public
       def localize(*args)
         I18n.localize(*args)
       end
       alias :l :localize
-    end # TranslationHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end
