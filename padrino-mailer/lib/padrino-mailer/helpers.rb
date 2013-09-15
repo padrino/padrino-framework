@@ -8,6 +8,7 @@ module Padrino
         base.extend(ClassMethods)
       end
 
+      ##
       # Delivers an email with the given mail attributes.
       #
       # @param [Hash] mail_attributes
@@ -25,11 +26,11 @@ module Padrino
       #   end
       #
       # @see ClassMethods#email
-      # @api public
       def email(mail_attributes={}, &block)
         settings.email(mail_attributes, &block)
       end
 
+      ##
       # Delivers a mailer message email with the given attributes.
       #
       # @param [Symbol] mailer_name
@@ -44,27 +45,29 @@ module Padrino
       #   deliver(:example, :message, "John")
       #
       # @see ClassMethods#deliver
-      # @api public
       def deliver(mailer_name, message_name, *attributes)
         settings.deliver(mailer_name, message_name, *attributes)
       end
 
-      # Class methods responsible for registering mailers, configuring settings and delivering messages.
+      # Class methods responsible for registering mailers, configuring
+      # settings and delivering messages.
       #
       module ClassMethods
-        def inherited(subclass) # @private
+        def inherited(subclass)
           @_registered_mailers ||= {}
           super(subclass)
         end
 
+        ##
         # Returns all registered mailers for this application.
         #
-        # @private
         def registered_mailers
           @_registered_mailers ||= {}
         end
 
-        # Defines a mailer object allowing the definition of various email messages that can be delivered.
+        ##
+        # Defines a mailer object allowing the definition of various
+        # email messages that can be delivered.
         #
         # @param [Symbol] name
         #   The name of the mailer to initialize.
@@ -80,7 +83,6 @@ module Padrino
         #     end
         #   end
         #
-        # @api public
         def mailer(name, &block)
           mailer                   = Padrino::Mailer::Base.new(self, name, &block)
           mailer.delivery_settings = delivery_settings
@@ -89,6 +91,7 @@ module Padrino
         end
         alias :mailers :mailer
 
+        ##
         # Delivers a mailer message email with the given attributes.
         #
         # @param [Symbol] mailer_name
@@ -102,17 +105,17 @@ module Padrino
         #   deliver(:sample, :birthday, "Joey", 21)
         #   deliver(:example, :message, "John")
         #
-        # @api public
         def deliver(mailer_name, message_name, *attributes)
           message = registered_mailers[mailer_name].messages[message_name].call(*attributes)
           message.delivery_method(*delivery_settings)
           message.deliver
         end
 
+        ##
         # Delivers an email with the given mail attributes with specified and default settings.
         #
         # @param [Hash] mail_attributes
-        #   The attributes for this message (to, from, subject, cc, bcc, body, etc).
+        #   The attributes for this message (to, from, subject, cc, bcc, body, etc.).
         # @param [Proc] block
         #   The block mail attributes for this message.
         #
@@ -128,7 +131,6 @@ module Padrino
         #     body 'path/to/my/template', :locals => { :a => a, :b => b }
         #   end
         #
-        # @api public
         def email(mail_attributes={}, &block)
           message = _padrino_mailer::Message.new(self)
           message.delivery_method(*delivery_settings)
@@ -139,6 +141,7 @@ module Padrino
         end
 
         private
+        ##
         # Returns the parsed delivery method options.
         #
         def delivery_settings
@@ -151,6 +154,6 @@ module Padrino
           end
         end
       end
-    end # Helpers
-  end # Mailer
-end # Padrino
+    end
+  end
+end
