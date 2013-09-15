@@ -5,7 +5,7 @@ module Padrino
     #
     module RenderHelpers
       ##
-      # Render a partials with collections support
+      # Render a partials with collections support.
       #
       # @param [String] template
       #   Relative path to partial template.
@@ -18,7 +18,7 @@ module Padrino
       # @option options [Hash] :locals ({})
       #   Local variables accessible in the partial.
       # @option options [Symbol] :engine
-      #   Explicit rendering engine to use for this partial
+      #   Explicit rendering engine to use for this partial.
       #
       # @return [String] The html generated from this partial.
       #
@@ -30,7 +30,6 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      # @api public
       def partial(template, options={})
         options.reverse_merge!(:locals => {}, :layout => false)
         path            = template.to_s.split(File::SEPARATOR)
@@ -55,6 +54,6 @@ module Padrino
         end
       end
       alias :render_partial :partial
-    end # RenderHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end

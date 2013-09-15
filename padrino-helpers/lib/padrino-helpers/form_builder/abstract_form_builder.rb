@@ -1,7 +1,7 @@
 module Padrino
   module Helpers
-    module FormBuilder # @private
-      class AbstractFormBuilder # @private
+    module FormBuilder
+      class AbstractFormBuilder
         attr_accessor :template, :object, :multipart
 
         def initialize(template, object, options={})
@@ -12,30 +12,25 @@ module Padrino
           raise "FormBuilder object must not be a nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
         end
 
-        # f.error_messages
         def error_messages(*params)
           params.unshift object
           @template.error_messages_for(*params)
         end
 
-        # f.error_message_on(field)
         def error_message_on(field, options={})
           @template.error_message_on(object, field, options)
         end
 
-        # f.label :username, :caption => "Nickname"
         def label(field, options={}, &block)
           options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
           @template.label_tag(field_id(field), options, &block)
         end
 
-        # f.hidden_field :session_id, :value => "45"
         def hidden_field(field, options={})
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           @template.hidden_field_tag field_name(field), options
         end
 
-        # f.text_field :username, :value => "(blank)", :id => 'username'
         def text_field(field, options={})
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           options.merge!(:class => field_error(field, options))
@@ -73,35 +68,28 @@ module Padrino
           @template.url_field_tag field_name(field), options
         end
 
-        # f.text_area :summary, :value => "(enter summary)", :id => 'summary'
         def text_area(field, options={})
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.text_area_tag field_name(field), options
         end
 
-        # f.password_field :password, :id => 'password'
         def password_field(field, options={})
           options.reverse_merge!(:value => field_value(field), :id => field_id(field))
           options.merge!(:class => field_error(field, options))
           @template.password_field_tag field_name(field), options
         end
 
-        # f.select :color, :options => ['red', 'green'], :include_blank => true
-        # f.select :color, :collection => @colors, :fields => [:name, :id]
         def select(field, options={})
           options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
           options.merge!(:class => field_error(field, options))
           @template.select_tag field_name(field), options
         end
 
-        # f.check_box_group :color, :options => ['red', 'green', 'blue'], :selected => ['red', 'blue']
-        # f.check_box_group :color, :collection => @colors, :fields => [:name, :id]
         def check_box_group(field, options={})
           selected_values = Array(options[:selected] || field_value(field))
           if options[:collection]
             fields = options[:fields] || [:name, :id]
-            # don't use map!, it will break some orms
             selected_values = selected_values.map{ |v| (v.respond_to?(fields[0]) ? v.send(fields[1]) : v).to_s }
           end
           labeled_group( field, options ) do |variant|
@@ -109,8 +97,6 @@ module Padrino
           end
         end
 
-        # f.radio_button_group :color, :options => ['red', 'green']
-        # f.radio_button_group :color, :collection => @colors, :fields => [:name, :id], :selected => @colors.first
         def radio_button_group(field, options={})
           fields = options[:fields] || [:name, :id]
           selected_value = options[:selected] || field_value(field)
@@ -120,7 +106,6 @@ module Padrino
           end
         end
 
-        # f.check_box :remember_me, :value => 'true', :uncheck_value => '0'
         def check_box(field, options={})
           html = ActiveSupport::SafeBuffer.new
           unchecked_value = options.delete(:uncheck_value) || '0'
@@ -130,14 +115,12 @@ module Padrino
           html << @template.check_box_tag(field_name(field), options)
         end
 
-        # f.radio_button :gender, :value => 'male'
         def radio_button(field, options={})
           options.reverse_merge!(:id => field_id(field, options[:value]))
           options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
           @template.radio_button_tag field_name(field), options
         end
 
-        # f.file_field :photo, :class => 'avatar'
         def file_field(field, options={})
           self.multipart = true
           options.reverse_merge!(:id => field_id(field))
@@ -145,19 +128,18 @@ module Padrino
           @template.file_field_tag field_name(field), options
         end
 
-        # f.submit "Update", :class => 'large'
         def submit(*args)
           options = args[-1].is_a?(Hash) ? args.pop : {}
           caption = args.length >= 1 ? args.shift : "Submit"
           @template.submit_tag caption, options
         end
 
-        # f.image_submit "buttons/submit.png", :class => 'large'
         def image_submit(source, options={})
           @template.image_submit_tag source, options
         end
 
-        # Supports nested fields for a child model within a form
+        ##
+        # Supports nested fields for a child model within a form.
         # f.fields_for :addresses
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
@@ -177,29 +159,35 @@ module Padrino
         end
 
         protected
-          # Returns the known field types for a formbuilder
+          # Returns the known field types for a Formbuilder.
           def self.field_types
             [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
           end
 
-          # Returns true if the value matches the value in the field
+          ##
+          # Returns true if the value matches the value in the field.
           # field_has_value?(:gender, 'male')
           def values_matches_field?(field, value)
             value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
           end
 
-          # Add a :invalid css class to the field if it contain an error
+          ##
+          # Add a :invalid css class to the field if it contain an error.
+          #
           def field_error(field, options)
             error = @object.errors[field] rescue nil
             error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
           end
 
+          ##
           # Returns the human name of the field. Look that use builtin I18n.
+          #
           def field_human_name(field)
             I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
           end
 
-          # Returns the name for the given field
+          ##
+          # Returns the name for the given field.
           # field_name(:username) => "user[username]"
           # field_name(:number) => "user[telephone_attributes][number]"
           # field_name(:street) => "user[addresses_attributes][0][street]"
@@ -210,7 +198,8 @@ module Padrino
             result.flatten.join
           end
 
-          # Returns the id for the given field
+          ##
+          # Returns the id for the given field.
           # field_id(:username) => "user_username"
           # field_id(:gender, :male) => "user_gender_male"
           # field_name(:number) => "user_telephone_attributes_number"
@@ -225,45 +214,58 @@ module Padrino
             result.flatten.join
           end
 
-          # Returns the child object if it exists
+          ##
+          # Returns the child object if it exists.
+          #
           def nested_object_id
             nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id
           end
 
-          # Returns true if this form object is nested in a parent form
+          ##
+          # Returns true if this form object is nested in a parent form.
+          #
           def nested_form?
             @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
           end
 
-          # Returns the value for the object's field
-          # field_value(:username) => "Joey"
+          ##
+          # Returns the value for the object's field.
+          #
           def field_value(field)
             @object && @object.respond_to?(field) ? @object.send(field) : ""
           end
 
-          # explicit_object is either a symbol or a record
+          ##
           # Returns a new record of the type specified in the object
+          #
           def build_object(object_or_symbol)
             object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
           end
 
-           # Returns the object's models name
-          #   => user_assignment
+          ##
+          # Returns the object's models name.
+          #
           def object_model_name(explicit_object=object)
             explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
           end
 
-          # Returns the class type for the given object
+          ##
+          # Returns the class type for the given object.
+          #
           def object_class(explicit_object)
             explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
           end
 
-          # Returns true if this form is the top-level (not nested)
+          ##
+          # Returns true if this form is the top-level (not nested).
+          #
           def root_form?
             !nested_form?
           end
 
-          # Builds a group of labels for radios or checkboxes
+          ##
+          # Builds a group of labels for radios or checkboxes.
+          #
           def labeled_group(field, options={})
             options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
             options.merge!(:class => field_error(field, options))
@@ -309,7 +311,7 @@ module Padrino
             :attributes_name => "#{@options[:nested][:association]}_attributes"
           }
         end
-      end # AbstractFormBuilder
-    end # FormBuilder
-  end # Helpers
-end # Padrino
+      end
+    end
+  end
+end
