@@ -32,9 +32,9 @@ following call stacks to see who loaded the offending libraries
 and contact the authors if necessary:"
 WARN
           loaded_libs.each do |name, stack|
-            $stderr.puts "============"
+            $stderr.puts "=================="
             $stderr.puts "libname: " + name
-            $stderr.puts "============"
+            $stderr.puts "=================="
             $stderr.puts caller
           end
         end
