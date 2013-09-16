@@ -615,7 +615,7 @@ describe "ProjectGenerator" do
     should "properly generate for sass" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=sass') }
       assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/sass_init.rb")
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/sass_initializer.rb")
       assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
@@ -623,7 +623,7 @@ describe "ProjectGenerator" do
     should "properly generate for less" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=less') }
       assert_match_in_file(/gem 'rack-less'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/lib/less_init.rb")
+      assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/lib/less_initializer.rb")
       assert_match_in_file(/register LessInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
@@ -642,8 +642,8 @@ describe "ProjectGenerator" do
     should "properly generate for scss" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=scss') }
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/scss_init.rb")
-      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/lib/scss_init.rb")
+      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/scss_initializer.rb")
+      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/lib/scss_initializer.rb")
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end

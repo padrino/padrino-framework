@@ -25,7 +25,7 @@ describe "PluginGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project", '-d') }
-      assert_no_file_exists("#{@apptmp}/sample_project/lib/hoptoad_init.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/lib/hoptoad_initializer.rb")
       assert_no_match_in_file(/enable \:raise_errors/,"#{@apptmp}/sample_project/app/app.rb")
       assert_no_match_in_file(/rack\_hoptoad/, "#{@apptmp}/sample_project/Gemfile")
     end
