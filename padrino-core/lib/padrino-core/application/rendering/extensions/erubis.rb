@@ -38,8 +38,10 @@ begin
       # @api private
       class Template < Tilt::ErubisTemplate
         def render(*args)
-          app          = args.first
-          @padrino_app = !(app.respond_to?(:app) && app.app)
+          app       = args.first
+          app_class = app.class
+          @padrino_app = app.kind_of?(Padrino::Application) || 
+                         (app_class.respond_to?(:erb) && app_class.erb[:engine_class] == Padrino::Erubis::SafeBufferTemplate)
           super
         end
 
