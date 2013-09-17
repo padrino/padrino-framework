@@ -37,9 +37,16 @@ begin
       #
       # @api private
       class Template < Tilt::ErubisTemplate
+        def render(*args)
+          app          = args.first
+          @padrino_app = !(app.respond_to?(:app) && app.app)
+          super
+        end
+
         def precompiled_preamble(locals)
+          buf = @padrino_app ? "ActiveSupport::SafeBuffer.new" : "''"
           old_postamble = super.split("\n")[0..-2]
-          [old_postamble, "#{@outvar} = _buf = (#{@outvar} || ActiveSupport::SafeBuffer.new)"].join("\n")
+          [old_postamble, "#{@outvar} = _buf = (#{@outvar} || #{buf})"].join("\n")
         end
       end
     end
