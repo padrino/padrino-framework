@@ -528,5 +528,18 @@ describe "Rendering" do
       assert ok?
       assert_equal '<p><div>foo</div></p>', body.strip
     end
+
+    should "render correct erb when use sinatra as middleware" do
+      class Bar < Sinatra::Base
+        get "/" do
+          render :erb, "<&'>"
+        end
+      end
+      mock_app do
+        use Bar
+      end
+      get "/"
+      assert_equal "<&'>", body
+    end
   end
 end
