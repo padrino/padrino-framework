@@ -38,7 +38,7 @@ module Padrino
           @project_name    = options[:namespace].underscore.camelize
           @project_name    = fetch_project_name(app) if @project_name.empty?
           @app_name        = fetch_app_name(app)
-          @actions         = actions.map{|a| a.to_sym}
+          @actions         = actions.map(&:to_sym)
           @short_name      = name.to_s.gsub(/_mailer/i, '').underscore.downcase
           @mailer_basename = @short_name.underscore
           template "templates/mailer.rb.tt", destination_root(app, 'mailers', "#{@mailer_basename}.rb")
