@@ -558,7 +558,7 @@ module Padrino
         end
 
         # Build our controller
-        controller = Array(@_controller).map { |c| c.to_s }
+        controller = Array(@_controller).map(&:to_s)
 
         case path
         when String # path i.e "/index" or "/show"
@@ -683,7 +683,7 @@ module Padrino
         condition do
           mime_types        = types.map { |t| mime_type(t) }.compact
           url_format        = params[:format].to_sym if params[:format]
-          accepts           = request.accept.map { |a| a.to_str }
+          accepts           = request.accept.map(&:to_str)
 
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.

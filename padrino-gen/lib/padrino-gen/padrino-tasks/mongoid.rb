@@ -86,7 +86,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
 
     desc 'Create the indexes defined on your mongoid models'
     task :create_indexes => :environment do
-      get_mongoid_models.each { |model| model.create_indexes }
+      get_mongoid_models.each(&:create_indexes)
     end
 
     def convert_ids(obj)
