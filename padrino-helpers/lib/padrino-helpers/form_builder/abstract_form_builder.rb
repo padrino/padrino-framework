@@ -159,130 +159,130 @@ module Padrino
         end
 
         protected
-          # Returns the known field types for a Formbuilder.
-          def self.field_types
-            [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
-          end
+        # Returns the known field types for a Formbuilder.
+        def self.field_types
+          [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
+        end
 
-          ##
-          # Returns true if the value matches the value in the field.
-          # field_has_value?(:gender, 'male')
-          def values_matches_field?(field, value)
-            value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
-          end
+        ##
+        # Returns true if the value matches the value in the field.
+        # field_has_value?(:gender, 'male')
+        def values_matches_field?(field, value)
+          value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
+        end
 
-          ##
-          # Add a :invalid css class to the field if it contain an error.
-          #
-          def field_error(field, options)
-            error = @object.errors[field] rescue nil
-            error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
-          end
+        ##
+        # Add a :invalid css class to the field if it contain an error.
+        #
+        def field_error(field, options)
+          error = @object.errors[field] rescue nil
+          error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
+        end
 
-          ##
-          # Returns the human name of the field. Look that use builtin I18n.
-          #
-          def field_human_name(field)
-            I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
-          end
+        ##
+        # Returns the human name of the field. Look that use builtin I18n.
+        #
+        def field_human_name(field)
+          I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
+        end
 
-          ##
-          # Returns the name for the given field.
-          # field_name(:username) => "user[username]"
-          # field_name(:number) => "user[telephone_attributes][number]"
-          # field_name(:street) => "user[addresses_attributes][0][street]"
-          def field_name(field=nil)
-            result = field_result
-            result << field_name_fragment if nested_form?
-            result << "[#{field}]" unless field.blank?
-            result.flatten.join
-          end
+        ##
+        # Returns the name for the given field.
+        # field_name(:username) => "user[username]"
+        # field_name(:number) => "user[telephone_attributes][number]"
+        # field_name(:street) => "user[addresses_attributes][0][street]"
+        def field_name(field=nil)
+          result = field_result
+          result << field_name_fragment if nested_form?
+          result << "[#{field}]" unless field.blank?
+          result.flatten.join
+        end
 
-          ##
-          # Returns the id for the given field.
-          # field_id(:username) => "user_username"
-          # field_id(:gender, :male) => "user_gender_male"
-          # field_name(:number) => "user_telephone_attributes_number"
-          # field_name(:street) => "user_addresses_attributes_0_street"
-          def field_id(field=nil, value=nil)
-            result = []
-            result << "#{@options[:namespace]}_" if @options[:namespace] && root_form?
-            result << field_result
-            result << field_id_fragment if nested_form?
-            result << "_#{field}" unless field.blank?
-            result << "_#{value}" unless value.blank?
-            result.flatten.join
-          end
+        ##
+        # Returns the id for the given field.
+        # field_id(:username) => "user_username"
+        # field_id(:gender, :male) => "user_gender_male"
+        # field_name(:number) => "user_telephone_attributes_number"
+        # field_name(:street) => "user_addresses_attributes_0_street"
+        def field_id(field=nil, value=nil)
+          result = []
+          result << "#{@options[:namespace]}_" if @options[:namespace] && root_form?
+          result << field_result
+          result << field_id_fragment if nested_form?
+          result << "_#{field}" unless field.blank?
+          result << "_#{value}" unless value.blank?
+          result.flatten.join
+        end
 
-          ##
-          # Returns the child object if it exists.
-          #
-          def nested_object_id
-            nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id
-          end
+        ##
+        # Returns the child object if it exists.
+        #
+        def nested_object_id
+          nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id
+        end
 
-          ##
-          # Returns true if this form object is nested in a parent form.
-          #
-          def nested_form?
-            @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
-          end
+        ##
+        # Returns true if this form object is nested in a parent form.
+        #
+        def nested_form?
+          @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
+        end
 
-          ##
-          # Returns the value for the object's field.
-          #
-          def field_value(field)
-            @object && @object.respond_to?(field) ? @object.send(field) : ""
-          end
+        ##
+        # Returns the value for the object's field.
+        #
+        def field_value(field)
+          @object && @object.respond_to?(field) ? @object.send(field) : ""
+        end
 
-          ##
-          # Returns a new record of the type specified in the object
-          #
-          def build_object(object_or_symbol)
-            object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
-          end
+        ##
+        # Returns a new record of the type specified in the object
+        #
+        def build_object(object_or_symbol)
+          object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
+        end
 
-          ##
-          # Returns the object's models name.
-          #
-          def object_model_name(explicit_object=object)
-            explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
-          end
+        ##
+        # Returns the object's models name.
+        #
+        def object_model_name(explicit_object=object)
+          explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
+        end
 
-          ##
-          # Returns the class type for the given object.
-          #
-          def object_class(explicit_object)
-            explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
-          end
+        ##
+        # Returns the class type for the given object.
+        #
+        def object_class(explicit_object)
+          explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
+        end
 
-          ##
-          # Returns true if this form is the top-level (not nested).
-          #
-          def root_form?
-            !nested_form?
-          end
+        ##
+        # Returns true if this form is the top-level (not nested).
+        #
+        def root_form?
+          !nested_form?
+        end
 
-          ##
-          # Builds a group of labels for radios or checkboxes.
-          #
-          def labeled_group(field, options={})
-            options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
-            options.merge!(:class => field_error(field, options))
-            variants = case
-            when options[:options]
-              options[:options].map{ |caption, value| [caption.to_s, (value||caption).to_s] }
-            when options[:collection]
-              fields = options[:fields] || [:name, :id]
-              options[:collection].map{ |variant| [variant.send(fields.first).to_s, variant.send(fields.last).to_s] }
-            else
-              []
-            end
-            variants.inject(''.html_safe) do |html, variant|
-              variant[2] = "#{field_id(field)}_#{variant[1]}"
-              html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
-            end
+        ##
+        # Builds a group of labels for radios or checkboxes.
+        #
+        def labeled_group(field, options={})
+          options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
+          options.merge!(:class => field_error(field, options))
+          variants = case
+          when options[:options]
+            options[:options].map{ |caption, value| [caption.to_s, (value||caption).to_s] }
+          when options[:collection]
+            fields = options[:fields] || [:name, :id]
+            options[:collection].map{ |variant| [variant.send(fields.first).to_s, variant.send(fields.last).to_s] }
+          else
+            []
           end
+          variants.inject(''.html_safe) do |html, variant|
+            variant[2] = "#{field_id(field)}_#{variant[1]}"
+            html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
+          end
+        end
 
         private
 
