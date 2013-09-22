@@ -20,15 +20,15 @@
 
         <%%= [:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe %>
 
-        <fieldset class="control-group">
-          <label for="email" class="login-input-label control-label"><%%= pat('login.email') %></label>
-          <div class="login-controls controls"><%%= email_field_tag :email, :value => params[:email], :autofocus => true %></div>
-        </fieldset>
+        <div class="form-group">
+          <label for="email" class="col-lg-2 control-label"><%%= pat('login.email') %></label>
+          <div class="col-lg-10"><%%= email_field_tag :email, :value => params[:email], :autofocus => true, :class => 'form-control' %></div>
+        </div>
 
-        <fieldset class="control-group">
-          <label for="password" class="login-input-label control-label"><%%= pat('login.password') %></label>
-          <div class="login-controls controls"><%%= password_field_tag :password, :value => params[:password] %></div>
-        </fieldset>
+        <div class="form-group">
+          <label for="password" class="col-lg-2 control-label"><%%= pat('login.password') %></label>
+          <div class="col-lg-10"><%%= password_field_tag :password, :value => params[:password], :class => 'form-control' %></div>
+        </div>
 
         <fieldset class="login-control-group-last control-group">
           <div class="login-controls controls">

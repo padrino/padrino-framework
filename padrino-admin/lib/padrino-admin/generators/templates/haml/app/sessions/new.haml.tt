@@ -17,12 +17,14 @@
       .login-body.modal-body
         = [:error, :warning, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
 
-        %fieldset.control-group
-          %label.login-input-label.control-label{:for => :email}= pat('login.email')
-          .login-controls.controls=email_field_tag :email, :value => params[:email], :autofocus => true
-        %fieldset.control-group
-          %label.login-input-label.control-label{:for => :password}= pat('login.password')
-          .login-controls.controls=password_field_tag :password, :value => params[:password]
+        .form-group
+          %label.col-lg-2.control-label{:for => :email}= pat('login.email')
+          .col-lg-10=email_field_tag :email, :value => params[:email], :autofocus => true, :class =>'form-control'
+
+        .form-group
+          %label.col-lg-2.control-label{:for => :password}= pat('login.password')
+          .col-lg-10=password_field_tag :password, :value => params[:password], :class =>'form-control'
+
         %fieldset.login-control-group-last.control-group
           .login-controls.controls
             %label.login-bypass-label.checkbox
