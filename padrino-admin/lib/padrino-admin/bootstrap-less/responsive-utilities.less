@@ -35,70 +35,172 @@
 
 // Visibility utilities
 
-// For Phones
+.visible-xs {
+  .responsive-invisibility();
+  @media (max-width: @screen-xs-max) {
+    .responsive-visibility();
+  }
+  &.visible-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-visibility();
+    }
+  }
+  &.visible-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-visibility();
+    }    
+  }
+  &.visible-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-visibility();
+    }    
+  }
+}
 .visible-sm {
-  .responsive-visibility();
+  .responsive-invisibility();
+  &.visible-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-visibility();
+    }    
+  }
+  @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+    .responsive-visibility();
+  }
+  &.visible-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-visibility();
+    }    
+  }
+  &.visible-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-visibility();
+    }    
+  }
 }
 .visible-md {
   .responsive-invisibility();
+  &.visible-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-visibility();
+    }    
+  }
+  &.visible-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-visibility();
+    }
+  }
+  @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+    .responsive-visibility();
+  }
+  &.visible-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-visibility();
+    }    
+  }
 }
 .visible-lg {
   .responsive-invisibility();
+  &.visible-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-visibility();
+    }    
+  }
+  &.visible-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-visibility();
+    }
+  }
+  &.visible-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-visibility();
+    }    
+  }
+  @media (min-width: @screen-lg) {
+    .responsive-visibility();
+  }
 }
 
+.hidden-xs {
+  .responsive-visibility();
+  @media (max-width: @screen-xs-max) {
+    .responsive-invisibility();
+  }
+  &.hidden-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-invisibility();
+    }    
+  }
+  &.hidden-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-invisibility();
+    }    
+  }
+  &.hidden-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-invisibility();
+    }    
+  }
+}
 .hidden-sm {
-  .responsive-invisibility();
+  .responsive-visibility();
+  &.hidden-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-invisibility();
+    }
+  }
+  @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+    .responsive-invisibility();
+  }
+  &.hidden-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-invisibility();
+    }    
+  }
+  &.hidden-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-invisibility();
+    }    
+  }
 }
 .hidden-md {
   .responsive-visibility();
+  &.hidden-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-invisibility();
+    }    
+  }
+  &.hidden-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-invisibility();
+    }    
+  }
+  @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+    .responsive-invisibility();
+  }
+  &.hidden-lg {
+    @media (min-width: @screen-lg) {
+      .responsive-invisibility();
+    }    
+  }
 }
 .hidden-lg {
   .responsive-visibility();
-}
-
-
-// Tablets & small desktops only
-@media (min-width: @screen-tablet) and (max-width: @screen-tablet-max) {
-  .visible-sm {
-    .responsive-invisibility();
+  &.hidden-xs {
+    @media (max-width: @screen-xs-max) {
+      .responsive-invisibility();
+    }    
   }
-  .visible-md {
-    .responsive-visibility();
+  &.hidden-sm {
+    @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
+      .responsive-invisibility();
+    }    
   }
-  .visible-lg {
-    .responsive-invisibility();
+  &.hidden-md {
+    @media (min-width: @screen-md) and (max-width: @screen-md-max) {
+      .responsive-invisibility();
+    }    
   }
-
-  .hidden-sm {
-    .responsive-visibility();
-  }
-  .hidden-md {
-    .responsive-invisibility();
-  }
-  .hidden-lg {
-    .responsive-visibility();
-  }
-}
-
-// For desktops
-@media (min-width: @screen-desktop) {
-  .visible-sm {
-    .responsive-invisibility();
-  }
-  .visible-md {
-    .responsive-invisibility();
-  }
-  .visible-lg {
-    .responsive-visibility();
-  }
-
-  .hidden-sm {
-    .responsive-visibility();
-  }
-  .hidden-md {
-    .responsive-visibility();
-  }
-  .hidden-lg {
+  @media (min-width: @screen-lg) {
     .responsive-invisibility();
   }
 }
@@ -107,7 +209,6 @@
 .visible-print {
   .responsive-invisibility();
 }
-.hidden-print  { }
 
 @media print {
   .visible-print {
