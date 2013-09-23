@@ -1,5 +1,32 @@
 = CHANGES
 
+== 0.11.4 (Unreleased)
+
+* FIX #1275 Generate admin pages respecting model namespace (@ujifgc)
+* FIX #1368 French translation abbr_day_names day order (@wazeHQ)
+* FIX #1370 support for em_mysql2 adapter in AR rake tasks (@spariev)
+* FIX #1371 prioritized routes doesn't work in rbx. (@namusyaka)
+* FIX #1378 broken params in routing (@namusyaka)
+* NEW #1379 Implemented csrf_meta_tags for easy csrf requests (@dariocravero)
+* FIX #1381 #compiled_router not working well. (@namusyaka, @ujifgc)
+* FIX update Twitter Bootstrap V.3.0.0 (@WaYdotNET)
+* FIX #1384 mocha deprecation warnings (@kgfullerton)
+* NEW Use tilt 1.4.0+, fixes haml & UTF-8 issue #519 (@graudeejs)
+* FIX #1394 Remove code duplication in error_messages_for (@namusyaka)
+* FIX #1395 Change content_type's default value for compatibility with Sinatra (@namusyaka)
+* NEW #1400 Adds component generator for adjusting components (@tyabe)
+* FIX #1404 Make it possible to pass options to submit_tag when using button_to (@graudeejs)
+* FIX #1391 Fix incorrect params when path includes encoded slash (@namusyaka)
+* DOC #1407 Major Padrino core documentation cleanup! (@matthias-guenther)
+* DOC #1411 Major Padrino gen documentation cleanup! (@matthias-guenther)
+* DOC #1412 Major Padrino helpers documentation cleanup! (@matthias-guenther)
+* DOC #1413 Major Padrino mailers documentation cleanup! (@matthias-guenther)
+* DOC #1413 Major Padrino performance documentation cleanup! (@matthias-guenther)
+* FIX #1345 generate admin pages respecting model namespace (@ujifgc)
+* FIX Improve file naming for generated initializers (@ujifgc)
+* NEW #1419 Adds tests to padrino-performance gem (@matthias-guenther)
+* FIX #1256 Don't use the ActiveSupport::SafeBuffer when using erb and Sinatra
+
 == 0.11.3 (July 29th 2013)
 
 * FIX #1297 Added missing comma to spec_helper.rb generation (@lmorduch)
