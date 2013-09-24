@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.11.4 (Unreleased)
+== 0.11.4 (September 24th 2013)
 
 * FIX #1275 Generate admin pages respecting model namespace (@ujifgc)
 * FIX #1368 French translation abbr_day_names day order (@wazeHQ)
