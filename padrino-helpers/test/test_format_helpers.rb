@@ -29,6 +29,16 @@ describe "FormatHelpers" do
       assert_equal "<p class=\"description\">Look me! A class!</p>", actual_text
     end
 
+    should "escape html tags" do
+      actual_text = simple_format("Will you escape <b>that</b>?")
+      assert_equal "<p>Will you escape &lt;b&gt;that&lt;&#x2F;b&gt;?</p>", actual_text
+    end
+
+    should "support already sanitized text" do
+      actual_text = simple_format("Don't try to escape <b>me</b>!", :sanitize => false)
+      assert_equal "<p>Don't try to escape <b>me</b>!</p>", actual_text
+    end
+
     context 'wrapped in a custom tag' do
       should "format simple text into html format" do
         actual_text = simple_format("Here is some basic text...\n...with a line break.", :tag => :div)
