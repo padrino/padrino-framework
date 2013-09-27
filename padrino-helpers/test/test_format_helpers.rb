@@ -35,7 +35,7 @@ describe "FormatHelpers" do
     end
 
     should "support already sanitized text" do
-      actual_text = simple_format("Don't try to escape <b>me</b>!", :sanitize => false)
+      actual_text = simple_format("Don't try to escape <b>me</b>!".html_safe)
       assert_equal "<p>Don't try to escape <b>me</b>!</p>", actual_text
     end
 
