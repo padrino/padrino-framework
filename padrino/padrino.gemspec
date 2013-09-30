@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.version = Padrino.version
   s.platform = Gem::Platform::RUBY
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")
