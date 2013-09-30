@@ -1,0 +1,7 @@
+<%= "namespace :#{@namespace} do" if @namespace %>
+  <%= "desc \"#{@desc}\"" if @desc %>
+  task :<%= @task_name %> => :environment do
+    # This is a custom task.
+  end
+<%= "end" if @namespace %>
+
