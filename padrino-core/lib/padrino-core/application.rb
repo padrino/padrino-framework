@@ -54,7 +54,7 @@ module Padrino
       #   MyApp.reload!
       #
       def reload!
-        logger.devel "Reloading #{settings}"
+        logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
         Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file

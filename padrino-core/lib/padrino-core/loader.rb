@@ -71,7 +71,7 @@ module Padrino
       Padrino.before_load.each(&:call) # Run before hooks
       Padrino.dependency_paths.each { |path| Padrino.require_dependencies(path) }
       Padrino.after_load.each(&:call) # Run after hooks
-      Padrino::Reloader.run!
+      Padrino::Reloader.changed?
       Thread.current[:padrino_loaded] = true
 
       Padrino.logger.devel "Loaded Padrino in #{Time.now - t} seconds"

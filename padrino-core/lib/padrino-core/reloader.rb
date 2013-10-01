@@ -51,6 +51,7 @@ module Padrino
     def reload!
       rotation do |file|
         next unless file_changed?(file)
+        logger.devel "Detected a new file #{file}" if file_new?(file)
         apps = mounted_apps_of(file)
         if apps.present?
           apps.each { |app| app.app_obj.reload! }
@@ -77,13 +78,10 @@ module Padrino
     # Returns true if any file changes are detected and populates the MTIMES cache
     #
     def changed?
-      changed = false
       rotation do |file|
-        changed = true if file_changed?(file)
+        break true if file_changed?(file)
       end
-      changed
     end
-    alias :run! :changed?
 
     ##
     # We lock dependencies sets to prevent reloading of protected constants
@@ -252,9 +250,7 @@ module Padrino
     # Returns true if the file is new.
     #
     def file_new?(file)
-      new_file = MTIMES[file].nil?
-      logger.devel "Detected a new file #{file}" if new_file
-      new_file
+      MTIMES[file].nil?
     end
 
     ##
@@ -300,9 +296,10 @@ module Padrino
     def rotation
       files_for_rotation.uniq.map do |file|
         file = File.expand_path(file)
-        next if Padrino::Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.exist?(file)
+        next if Padrino::Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.file?(file)
         yield file
-      end.compact
+      end
+      nil
     end
 
     ##
