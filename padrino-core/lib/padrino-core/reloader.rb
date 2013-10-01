@@ -226,7 +226,7 @@ module Padrino
       LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - features - [file]
 
       # Track only features in our Padrino.root
-      LOADED_FILES[file].select! { |feature| in_root?(feature) }
+      LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
     end
 
     ###
