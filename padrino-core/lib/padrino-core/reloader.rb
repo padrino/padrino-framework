@@ -124,8 +124,6 @@ module Padrino
         $LOADED_FEATURES.delete(file) if features.include?(file)
         loaded = false
         with_silence{ require(file) }
-      rescue SyntaxError => e
-        logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
       else
         loaded = true
         update_modification_time(file)
