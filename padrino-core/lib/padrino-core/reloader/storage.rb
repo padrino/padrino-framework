@@ -19,13 +19,15 @@ module Padrino
       end
 
       def prepare(name)
-        remove(name)
+        file = remove(name)
         @old_entries ||= {}
         @old_entries[name] = {
           :constants => ObjectSpace.classes,
           :features  => old_features = Set.new($LOADED_FEATURES.dup)
         }
-        old_features.include? name
+        features = file && file[:features] || []
+        features.each{ |feature| Reloader.safe_load(feature, :force => true) }
+        $LOADED_FEATURES.delete(name) if old_features.include?(name)
       end
 
       def commit(name)
@@ -42,11 +44,6 @@ module Padrino
         new_constants = ObjectSpace.new_classes(@old_entries[name][:constants])
         new_constants.each{ |klass| Reloader.remove_constant(klass) }
         @old_entries.delete(name)
-      end
-
-      def each(name, type)
-        file = files[name] || return
-        file[type].each{ |entry| yield(entry) }
       end
 
       private

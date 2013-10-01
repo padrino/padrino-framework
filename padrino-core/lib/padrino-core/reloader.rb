@@ -97,14 +97,10 @@ module Padrino
     def safe_load(file, options={})
       began_at = Time.now
       file     = figure_path(file)
-
       return unless options[:force] || file_changed?(file)
-
-      is_loaded = Storage.prepare(file)
-      Storage.each(file, :features) { |feature| safe_load(feature, :force => true) }
-      $LOADED_FEATURES.delete(file) if is_loaded
-
       logger.debug(file_new?(file) ? :loading : :reload,  began_at, file)
+
+      Storage.prepare(file) # might call #safe_load recursively
       begin
         loaded = false
         with_silence{ require(file) }
