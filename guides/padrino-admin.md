@@ -52,21 +52,22 @@ Padrino Admin uses a single model Account for managing roles, memberships and pe
 
 ### Scenario Ecommerce (User Authentication)
 
-To make some practical example, let’s examine some common ecommerce application scenario, where we usually need to restrain some users to get access to some of our controllers actions; we can easily accomplish this by editing our *model* accordingly to our authentication needs:
+To make some practical example, let’s examine some common ecommerce application scenario, where we usually need to restrain some users to get access to some of our controllers actions; we can easily accomplish this by editing `app.rb` accordingly:
 
     class MyEcommerce < Padrino::Application
+      register Padrino::Admin::AccessControl
+
       enable :authentication
       enable :store_location
       set    :login_page, "/login"
 
       access_control.roles_for :any do |role|
-        role.project "/customer/orders"
-        role.project "/cart/checkout"
+        role.protect "/customer/orders"
+        role.protect "/cart/checkout"
       end
     end
 
-In the above example we are protecting those paths starting with `/customer/orders` and `/cart/checkout`. The result will be that an unauthenticated user will not be able to access those actions, and he will be asked to authenticate first by visiting our
- `:login_page # => “/login”` and by providing his login credentials (default authentication behaviour is email and password).
+In the above example we are protecting those paths starting with `/customer/orders` and `/cart/checkout`. The result will be that an unauthenticated user will not be able to access those actions, and he will be asked to authenticate first by visiting our `:login_page` defined as `/login` and by providing his login credentials (default authentication behaviour is email and password).
 
 When successfully logged in, he will be granted access to those two pages.
 
@@ -78,7 +79,7 @@ Padrino admin generator, will create for you a new `Account` model with a defaul
 
      class Admin < Padrino::Application
       register Padrino::Admin::AccessControl
-       
+
       enable :authentication
       disable :store_location
       set :login_page, "/admin/sessions/new"
@@ -89,12 +90,12 @@ Padrino admin generator, will create for you a new `Account` model with a defaul
       end
 
       access_control.roles_for :admin do |role|
-        role.project :settings, "/settings"
+        role.project_module :settings, "/settings"
       end
 
       access_control.roles_for :editor do |role|
-        role.project :posts, "/posts"
-        role.project :categories, "/categories"
+        role.project_module :posts, "/posts"
+        role.project_module :categories, "/categories"
       end
     end
 
@@ -104,7 +105,11 @@ If we are logged in as an **admin** (account.role == ‘admin’) we will have a
 
 If we are logged in as an **editor** (account.role == ‘editor’) we will have access **only** to the `/posts` and `/categories` paths instead.
 
+### Sharing Sessions Between Mounted Applications
+
+Sessions can be shared between mounted applications by setting a `:session_id` with the line `set :session_id, "your_session_id"` in each apps `app.rb`.
  
+
 
 ## Contributing Persistence Adapters
 
