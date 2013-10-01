@@ -46,24 +46,17 @@ module Padrino
     end
 
     ##
-    # Reload all files with changes detected.
+    # Reload apps and files with changes detected.
     #
     def reload!
-      # Detect changed files
-      rotation do |file, mtime|
-        # Retrive the last modified time
-        new_file       = MTIMES[file].nil?
-        previous_mtime = MTIMES[file] ||= mtime
-        logger.devel "Detected a new file #{file}" if new_file
-        # We skip to next file if it is not new and not modified
-        next unless new_file || mtime > previous_mtime
-        # Now we can reload our file
+      rotation do |file|
+        next unless file_changed?(file)
         apps = mounted_apps_of(file)
         if apps.present?
           apps.each { |app| app.app_obj.reload! }
+          update_modification_time(file)
         else
-          safe_load(file, :force => new_file)
-          # Reload also apps
+          safe_load(file)
           Padrino.mounted_apps.each do |app|
             app.app_obj.reload! if app.app_obj.dependencies.include?(file)
           end
@@ -85,10 +78,8 @@ module Padrino
     #
     def changed?
       changed = false
-      rotation do |file, mtime|
-        new_file = MTIMES[file].nil?
-        previous_mtime = MTIMES[file]
-        changed = true if new_file || mtime > previous_mtime
+      rotation do |file|
+        changed = true if file_changed?(file)
       end
       changed
     end
@@ -111,45 +102,44 @@ module Padrino
     #
     def safe_load(file, options={})
       began_at = Time.now
-      force    = options[:force]
       file     = figure_path(file)
-      reload   = should_reload?(file)
-      m_time   = modification_time(file)
 
-      return if !force && m_time && !reload
+      return unless options[:force] || file_changed?(file)
 
       remove_loaded_file_classes(file)
       remove_loaded_file_features(file)
 
       # Duplicate objects and loaded features before load file
-      klasses = ObjectSpace.classes
-      files   = Set.new($LOADED_FEATURES.dup)
+      klasses  = ObjectSpace.classes
+      features = Set.new($LOADED_FEATURES.dup)
 
       reload_deps_of_file(file)
 
       # And finally load the specified file
       begin
-        logger.devel :loading, began_at, file if !reload
-        logger.debug :reload,  began_at, file if  reload
+        if file_new?(file)
+          logger.devel :loading, began_at, file
+        else
+          logger.debug :reload,  began_at, file
+        end
 
-        $LOADED_FEATURES.delete(file) if files.include?(file)
-        Padrino::Utils.silence_output
+        $LOADED_FEATURES.delete(file) if features.include?(file)
         loaded = false
-        require(file)
-        loaded = true
-        update_modification_time(file)
+        with_silence{ require(file) }
       rescue SyntaxError => e
         logger.error "Cannot require #{file} due to a syntax error: #{e.message}"
+      else
+        loaded = true
+        update_modification_time(file)
       ensure
-        Padrino::Utils.unsilence_output
-        new_constants = ObjectSpace.new_classes(klasses)
+        new_classes = ObjectSpace.new_classes(klasses)
         if loaded
-          process_loaded_file(:file      => file,
-                              :constants => new_constants,
-                              :files     => files)
+          process_loaded_file(:file     => file,
+                              :classes  => new_classes,
+                              :features => features)
         else
           logger.devel "Failed to load #{file}; removing partially defined constants"
-          unload_constants(new_constants)
+          unload_constants(new_classes)
         end
       end
     end
@@ -159,9 +149,9 @@ module Padrino
     #
     def figure_path(file)
       return file if Pathname.new(file).absolute?
-      $:.each do |path|
+      $LOAD_PATH.each do |path|
         found = File.join(path, file)
-        return File.expand_path(found) if File.exist?(found)
+        return File.expand_path(found) if File.file?(found)
       end
       file
     end
@@ -222,17 +212,17 @@ module Padrino
     # Tracks loaded file features/classes/constants:
     #
     def process_loaded_file(*args)
-      options       = args.extract_options!
-      new_constants = options[:constants]
-      files         = options[:files]
-      file          = options[:file]
+      options  = args.extract_options!
+      file     = options[:file]
+      klasses  = options[:classes]
+      features = options[:features]
 
       # Store the file details
-      LOADED_CLASSES[file] = new_constants
-      LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - files - [file]
+      LOADED_CLASSES[file] = klasses
+      LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - features - [file]
 
       # Track only features in our Padrino.root
-      LOADED_FILES[file].delete_if { |feature| !in_root?(feature) }
+      LOADED_FILES[file].select! { |feature| in_root?(feature) }
     end
 
     ###
@@ -243,7 +233,7 @@ module Padrino
     end
 
     ###
-    # Safe load dependencies of a file.
+    # Safe load dependencies of the file.
     #
     def reload_deps_of_file(file)
       if features = LOADED_FILES.delete(file)
@@ -251,18 +241,27 @@ module Padrino
       end
     end
 
-    ##
-    # Check if file was changed or if force a reload.
+    ###
+    # Returns true if the file is new or it's modification time changed.
     #
-    def should_reload?(file)
-      MTIMES[file] && File.mtime(file) > MTIMES[file]
+    def file_changed?(file)
+      file_new?(file) || File.mtime(file) > MTIMES[file]
+    end
+
+    ###
+    # Returns true if the file is new.
+    #
+    def file_new?(file)
+      new_file = MTIMES[file].nil?
+      logger.devel "Detected a new file #{file}" if new_file
+      new_file
     end
 
     ##
     # Removes all classes declared in the specified file.
     #
     def remove_loaded_file_classes(file)
-      if klasses = LOADED_CLASSES.delete(file)
+      if klasses = LOADED_CLASSES[file]
         klasses.each { |klass| remove_constant(klass) }
       end
     end
@@ -282,7 +281,7 @@ module Padrino
     #
     def mounted_apps_of(file)
       file = figure_path(file)
-      Padrino.mounted_apps.find_all { |app| File.identical?(file, app.app_file) }
+      Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
     end
 
     ##
@@ -302,7 +301,7 @@ module Padrino
       files_for_rotation.uniq.map do |file|
         file = File.expand_path(file)
         next if Padrino::Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.exist?(file)
-        yield file, File.mtime(file)
+        yield file
       end.compact
     end
 
@@ -313,6 +312,15 @@ module Padrino
       files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
       files  = files | Padrino.mounted_apps.map { |app| app.app_file }
       files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
+    end
+
+    def with_silence
+      verbosity_level, $-v = $-v, nil
+      yield
+    rescue
+      raise
+    ensure
+      $-v = verbosity_level
     end
   end
 end
