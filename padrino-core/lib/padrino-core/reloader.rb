@@ -158,16 +158,28 @@ module Padrino
         base   = parts.empty? ? Object : Inflector.constantize(parts * '::')
         base.send :remove_const, object
         logger.devel "Removed constant: #{const} from #{base}"
-      rescue NameError; end
+      rescue NameError
+      end
     end
 
     private
 
-    ###
-    # Clear instance variables that keep track of # loaded features/files/mtimes.
+    ##
+    # Removes all classes declared in the specified file.
     #
-    def clear_modification_times
-      MTIMES.clear
+    def remove_loaded_file_classes(file)
+      if klasses = LOADED_CLASSES[file]
+        klasses.each { |klass| remove_constant(klass) }
+      end
+    end
+
+    ##
+    # Remove all loaded fatures with our file.
+    #
+    def remove_loaded_file_features(file)
+      if features = LOADED_FILES[file]
+        features.each { |feature| $LOADED_FEATURES.delete(feature) }
+      end
     end
 
     def clear_loaded_classes
@@ -178,10 +190,17 @@ module Padrino
     end
 
     def clear_loaded_files_and_features
-      LOADED_FILES.each do |file, dependencies|
-        dependencies.each { |dependency| $LOADED_FEATURES.delete(dependency) }
+      LOADED_FILES.each do |file, features|
+        features.each { |feature| $LOADED_FEATURES.delete(feature) }
         $LOADED_FEATURES.delete(file)
       end
+    end
+
+    ###
+    # Clear instance variables that keep track of # loaded features/files/mtimes.
+    #
+    def clear_modification_times
+      MTIMES.clear
     end
 
     ###
@@ -241,24 +260,6 @@ module Padrino
     end
 
     ##
-    # Removes all classes declared in the specified file.
-    #
-    def remove_loaded_file_classes(file)
-      if klasses = LOADED_CLASSES[file]
-        klasses.each { |klass| remove_constant(klass) }
-      end
-    end
-
-    ##
-    # Remove all loaded fatures with our file.
-    #
-    def remove_loaded_file_features(file)
-      if features = LOADED_FILES[file]
-        features.each { |feature| $LOADED_FEATURES.delete(feature) }
-      end
-    end
-
-    ##
     # Return the mounted_apps providing the app location.
     # Can be an array because in one app.rb we can define multiple Padrino::Application.
     #
@@ -304,8 +305,6 @@ module Padrino
     def with_silence
       verbosity_level, $-v = $-v, nil
       yield
-    rescue
-      raise
     ensure
       $-v = verbosity_level
     end
