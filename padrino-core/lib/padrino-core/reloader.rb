@@ -110,18 +110,11 @@ module Padrino
       # Duplicate objects and loaded features before load file
       klasses  = ObjectSpace.classes
       features = Set.new($LOADED_FEATURES.dup)
-
       reload_deps_of_file(file)
+      $LOADED_FEATURES.delete(file) if features.include?(file)
 
-      # And finally load the specified file
+      logger.debug(file_new?(file) ? :loading : :reload,  began_at, file)
       begin
-        if file_new?(file)
-          logger.devel :loading, began_at, file
-        else
-          logger.debug :reload,  began_at, file
-        end
-
-        $LOADED_FEATURES.delete(file) if features.include?(file)
         loaded = false
         with_silence{ require(file) }
       rescue Exception => e
