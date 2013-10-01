@@ -306,11 +306,14 @@ module Padrino
     # Creates an array of paths for use in #rotation.
     #
     def files_for_rotation
-      files  = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
-      files  = files | Padrino.mounted_apps.map { |app| app.app_file }
-      files  = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
+      files = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
+      files = files | Padrino.mounted_apps.map { |app| app.app_file }
+      files = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
     end
 
+    ##
+    # Disables output, yields block, switches output back.
+    #
     def with_silence
       verbosity_level, $-v = $-v, nil
       yield
