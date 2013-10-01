@@ -155,7 +155,7 @@ module Padrino
       begin
         parts  = const.to_s.sub(/^::(Object)?/, 'Object::').split('::')
         object = parts.pop
-        base   = parts.empty? ? Object : Inflector.constantize(parts * '::')
+        base   = parts.empty? ? Object : Inflector.constantize(parts.join('::'))
         base.send :remove_const, object
         logger.devel "Removed constant: #{const} from #{base}"
       rescue NameError
