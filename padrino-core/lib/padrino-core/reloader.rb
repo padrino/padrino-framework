@@ -124,17 +124,18 @@ module Padrino
         $LOADED_FEATURES.delete(file) if features.include?(file)
         loaded = false
         with_silence{ require(file) }
+      rescue Exception => e
+        logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+        logger.error "Failed to load #{file}; removing partially defined constants"
+        raise
       else
         loaded = true
         update_modification_time(file)
       ensure
         new_classes = ObjectSpace.new_classes(klasses)
         if loaded
-          process_loaded_file(:file     => file,
-                              :classes  => new_classes,
-                              :features => features)
+          process_loaded_file(file, new_classes, features)
         else
-          logger.devel "Failed to load #{file}; removing partially defined constants"
           unload_constants(new_classes)
         end
       end
@@ -207,12 +208,7 @@ module Padrino
     ###
     # Tracks loaded file features/classes/constants:
     #
-    def process_loaded_file(*args)
-      options  = args.extract_options!
-      file     = options[:file]
-      klasses  = options[:classes]
-      features = options[:features]
-
+    def process_loaded_file(file, klasses, features)
       # Store the file details
       LOADED_CLASSES[file] = klasses
       LOADED_FILES[file]   = Set.new($LOADED_FEATURES) - features - [file]
