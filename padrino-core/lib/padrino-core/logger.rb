@@ -52,10 +52,10 @@ module Padrino
     # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
-      :fatal =>  7,
-      :error =>  6,
-      :warn  =>  4,
-      :info  =>  3,
+      :fatal =>  4,
+      :error =>  3,
+      :warn  =>  2,
+      :info  =>  1,
       :debug =>  0,
       :devel => -1,
     } unless defined?(Levels)
