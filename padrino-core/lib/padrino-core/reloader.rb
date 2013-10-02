@@ -48,7 +48,7 @@ module Padrino
     def reload!
       rotation do |file|
         next unless file_changed?(file)
-        logger.devel "Detected a new file #{file}" if file_new?(file)
+        next reload_special(file) if file_special?(file)
         apps = mounted_apps_of(file)
         if apps.present?
           apps.each { |app| app.app_obj.reload! }
@@ -98,9 +98,9 @@ module Padrino
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
-      logger.debug(file_new?(file) ? :loading : :reload,  began_at, file)
 
       Storage.prepare(file) # might call #safe_load recursively
+      logger.debug(file_new?(file) ? :loading : :reload, began_at, file)
       begin
         with_silence{ require(file) }
         Storage.commit(file)
@@ -152,7 +152,34 @@ module Padrino
       figure_path(file).index(Padrino.root) == 0
     end
 
+    ##
+    # Returns the list of special tracked files for Reloader.
+    #
+    def special_files
+      @special_files ||= Set.new
+    end
+
+    ##
+    # Sets the list of special tracked files for Reloader.
+    #
+    def special_files=(files)
+      @special_files = Set.new(files)
+    end
+
     private
+
+    def file_special?(file)
+      special_files.any?{ |special| File.identical?(special, file) }
+    end
+
+    def reload_special(file)
+      if defined?(I18n)
+        began_at = Time.now
+        I18n.reload!
+        update_modification_time(file)
+        logger.debug :reload, Time.now, file
+      end
+    end
 
     ###
     # Macro for mtime update.
@@ -189,7 +216,7 @@ module Padrino
     # and monitors them for any changes.
     #
     def rotation
-      files_for_rotation.uniq.map do |file|
+      files_for_rotation.each do |file|
         file = File.expand_path(file)
         next if Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.file?(file)
         yield file
@@ -201,9 +228,13 @@ module Padrino
     # Creates an array of paths for use in #rotation.
     #
     def files_for_rotation
-      files = Padrino.load_paths.map { |path| Dir["#{path}/**/*.rb"] }.flatten
-      files = files | Padrino.mounted_apps.map { |app| app.app_file }
-      files = files | Padrino.mounted_apps.map { |app| app.app_obj.dependencies }.flatten
+      files = Set.new
+      Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
+      Padrino.mounted_apps.each do |app|
+        files << app.app_file
+        files += app.app_obj.dependencies
+      end
+      files + special_files
     end
 
     ##

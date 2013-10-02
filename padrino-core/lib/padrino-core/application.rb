@@ -103,6 +103,7 @@ module Padrino
         settings.default_routes!
         settings.default_errors!
         if defined?(I18n)
+          Reloader.special_files += settings.locale_path
           I18n.load_path << settings.locale_path
           I18n.reload!
         end

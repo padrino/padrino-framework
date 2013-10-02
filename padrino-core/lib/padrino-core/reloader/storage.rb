@@ -4,7 +4,7 @@ module Padrino
       extend self
 
       def clear!
-        files.each do |file, _|
+        files.each_key do |file|
           remove(file)
           $LOADED_FEATURES.delete(file)
         end
