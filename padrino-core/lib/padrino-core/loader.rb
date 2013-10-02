@@ -147,35 +147,35 @@ module Padrino
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
     def require_dependencies(*paths)
-      options = paths.extract_options!
+      options = paths.extract_options!.merge( :cyclic => true )
 
       # Extract all files to load
       files = paths.flatten.map { |path| Dir[path] }.flatten.uniq.sort
 
       while files.present?
-        errors, failed = [], []
-
+        errors, fatal = [], false
         size_at_start = files.size
 
-        # Now we try to require our dependencies, we dup files
-        # so we don't perform delete on the original array during
-        # iteration, this prevent problems with Rubinus
         files.dup.each do |file|
           begin
-            Padrino::Reloader.safe_load(file, options.dup)
+            Padrino::Reloader.safe_load(file, options)
             files.delete(file)
           rescue NameError, LoadError => e
-            Padrino.logger.devel "Problem while loading #{file}: #{e}"
+            logger.devel "Cyclic dependency reload for #{e.message}"
             errors << e
-            failed << file
           rescue Exception => e
-            raise e
+            errors << e
+            fatal = true
+            break
           end
         end
 
-        # Stop processing if nothing loads or if everything has loaded
-        raise errors.last if files.size == size_at_start && files.present?
-        break if files.empty?
+        # Stop processing if error is fatal or nothing loads in cycle
+        if fatal || files.size == size_at_start && files.present?
+          e = errors.last
+          logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+          raise e
+        end
       end
     end
 

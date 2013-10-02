@@ -102,17 +102,16 @@ module Padrino
 
       Storage.prepare(file) # might call #safe_load recursively
       begin
-        loaded = false
         with_silence{ require(file) }
-      rescue Exception => e
-        logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
-        logger.error "Failed to load #{file}; removing partially defined constants"
-        raise
-      else
-        loaded = true
+        Storage.commit(file)
         update_modification_time(file)
-      ensure
-        loaded ? Storage.commit(file) : Storage.rollback(file)
+      rescue Exception => e
+        unless options[:cyclic]
+          logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+          logger.error "Failed to load #{file}; removing partially defined constants"
+        end
+        Storage.rollback(file)
+        raise e
       end
     end
 
