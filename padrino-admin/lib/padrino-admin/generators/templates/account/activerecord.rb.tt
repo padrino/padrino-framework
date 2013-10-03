@@ -28,13 +28,14 @@ class <%= @model_name %> < ActiveRecord::Base
   end
 
   private
-    def encrypt_password
-      value = ::BCrypt::Password.create(password)
-      value = value.force_encoding(Encoding::UTF_8) if value.respond_to?(:encoding) && value.encoding == Encoding::ASCII_8BIT
-      self.crypted_password = value
-    end
 
-    def password_required
-      crypted_password.blank? || password.present?
-    end
+  def encrypt_password
+    value = ::BCrypt::Password.create(password)
+    value = value.force_encoding(Encoding::UTF_8) if value.respond_to?(:encoding) && value.encoding == Encoding::ASCII_8BIT
+    self.crypted_password = value
+  end
+
+  def password_required
+    crypted_password.blank? || password.present?
+  end
 end
