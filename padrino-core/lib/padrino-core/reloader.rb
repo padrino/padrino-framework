@@ -150,6 +150,9 @@ module Padrino
       file
     end
 
+    ##
+    # Reloads the file if it's special. For now it's only I18n locale files.
+    #
     def reload_special(file)
       return unless special_files.any?{ |f| File.identical?(f, file) }
       if defined?(I18n)
@@ -161,6 +164,9 @@ module Padrino
       true
     end
 
+    ##
+    # Reloads ruby file and applications dependent on it.
+    #
     def reload_regular(file)
       apps = mounted_apps_of(file)
       if apps.present?
@@ -210,7 +216,7 @@ module Padrino
     def rotation
       files_for_rotation.each do |file|
         file = File.expand_path(file)
-        next if Reloader.exclude.any? { |base| file.index(base) == 0 } || !File.file?(file)
+        next if Reloader.exclude.any? { |base| file.start_with?(base) } || !File.file?(file)
         yield file
       end
       nil

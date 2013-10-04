@@ -47,7 +47,7 @@ describe "ComplexReloader" do
       new_buffer.gsub!(/get\(:destroy\)/, 'get(:destroy, :with => :id)')
       begin
         File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
-        sleep 1.2 # We need at least a cooldown of 1 sec.
+        sleep 1.1 # We need at least a cooldown of 1 sec.
         get "/complex_2_demo"
         assert_equal new_phrase, body
 
