@@ -48,9 +48,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
               ActiveRecord::Base.establish_connection(config)
               ActiveRecord::Base.connection
             rescue StandardError => e
-              $stderr.puts *(e.backtrace)
-              $stderr.puts e.inspect
-              $stderr.puts "Couldn't create database for #{config.inspect}"
+              catch_error(:create, e, config)
             end
           end
           return # Skip the else clause of begin/rescue
@@ -81,9 +79,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             ActiveRecord::Base.connection.create_database(config[:database], config.merge(:encoding => @encoding))
             ActiveRecord::Base.establish_connection(config)
           rescue StandardError => e
-            $stderr.puts *(e.backtrace)
-            $stderr.puts e.inspect
-            $stderr.puts "Couldn't create database for #{config.inspect}"
+            catch_error(:create, e, config)
           end
         end
       else
@@ -101,9 +97,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             # Only connect to local databases
             local_database?(config) { drop_database(config) }
           rescue StandardError => e
-            $stderr.puts *(e.backtrace)
-            $stderr.puts e.inspect
-            $stderr.puts "Couldn't drop #{config[:database]}"
+            catch_error(:drop, e, config)
           end
         end
       end
@@ -115,9 +109,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       begin
         drop_database(config)
       rescue StandardError => e
-        $stderr.puts *(e.backtrace)
-        $stderr.puts e.inspect
-        $stderr.puts "Couldn't drop #{config[:database]}"
+        catch_error(:drop, e, config)
       end
     end
 
@@ -361,6 +353,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def firebird_db_string(config)
     FireRuby::Database.db_string_for(config.symbolize_keys)
+  end
+
+  def catch_error(type, error, config)
+    $stderr.puts *(error.backtrace)
+    $stderr.puts error.inspect
+    case type
+    when :create
+      $stderr.puts "Couldn't create database for #{config.inspect}"
+    when :drop
+      $stderr.puts "Couldn't drop #{config[:database]}"
+    end
   end
 
   task 'db:migrate' => 'ar:migrate'

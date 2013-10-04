@@ -32,51 +32,43 @@ module Padrino
         end
 
         def text_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.text_field_tag field_name(field), options
         end
 
         def number_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.number_field_tag field_name(field), options
         end
 
         def telephone_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.telephone_field_tag field_name(field), options
         end
         alias_method :phone_field, :telephone_field
 
         def email_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.email_field_tag field_name(field), options
         end
 
         def search_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.search_field_tag field_name(field), options
         end
 
         def url_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.url_field_tag field_name(field), options
         end
 
         def text_area(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.text_area_tag field_name(field), options
         end
 
         def password_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+          merge_default_options!(field, options)
           @template.password_field_tag field_name(field), options
         end
 
@@ -310,6 +302,11 @@ module Padrino
             :nested_index => @options[:nested][:index],
             :attributes_name => "#{@options[:nested][:association]}_attributes"
           }
+        end
+
+        def merge_default_options!(field, options)
+          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
+          options.merge!(:class => field_error(field, options))
         end
       end
     end
