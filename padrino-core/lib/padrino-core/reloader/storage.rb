@@ -35,7 +35,7 @@ module Padrino
           :constants => ObjectSpace.new_classes(@old_entries[name][:constants]),
           :features  => Set.new($LOADED_FEATURES) - @old_entries[name][:features] - [name]
         }
-        entry[:features].reject!{ |feature| !Reloader.in_root?(feature) }
+        entry[:features].reject!{ |feature| !feature.start_with?(Padrino.root) }
         files[name] = entry
         @old_entries.delete(name)
       end

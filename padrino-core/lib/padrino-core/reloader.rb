@@ -48,17 +48,7 @@ module Padrino
     def reload!
       rotation do |file|
         next unless file_changed?(file)
-        next reload_special(file) if file_special?(file)
-        apps = mounted_apps_of(file)
-        if apps.present?
-          apps.each { |app| app.app_obj.reload! }
-          update_modification_time(file)
-        else
-          safe_load(file)
-          Padrino.mounted_apps.each do |app|
-            app.app_obj.reload! if app.app_obj.dependencies.include?(file)
-          end
-        end
+        reload_special(file) || reload_regular(file)
       end
     end
 
@@ -71,7 +61,7 @@ module Padrino
     end
 
     ##
-    # Returns true if any file changes are detected and populates the MTIMES cache
+    # Returns true if any file changes are detected.
     #
     def changed?
       rotation do |file|
@@ -116,18 +106,6 @@ module Padrino
     end
 
     ##
-    # Returns true if the file is defined in our padrino root.
-    #
-    def figure_path(file)
-      return file if Pathname.new(file).absolute?
-      $LOAD_PATH.each do |path|
-        found = File.join(path, file)
-        return File.expand_path(found) if File.file?(found)
-      end
-      file
-    end
-
-    ##
     # Removes the specified class and constant.
     #
     def remove_constant(const)
@@ -143,14 +121,6 @@ module Padrino
       end
     end
 
-    ##
-    # Returns true if file is in our Padrino.root.
-    #
-    def in_root?(file)
-      # This is better but slow:
-      # Pathname.new(Padrino.root).find { |f| File.identical?(Padrino.root(f), figure_path(file)) }
-      figure_path(file).index(Padrino.root) == 0
-    end
 
     ##
     # Returns the list of special tracked files for Reloader.
@@ -168,16 +138,39 @@ module Padrino
 
     private
 
-    def file_special?(file)
-      special_files.any?{ |special| File.identical?(special, file) }
+    ##
+    # Returns absolute path of the file.
+    #
+    def figure_path(file)
+      return file if Pathname.new(file).absolute?
+      $LOAD_PATH.each do |path|
+        found = File.join(path, file)
+        return File.expand_path(found) if File.file?(found)
+      end
+      file
     end
 
     def reload_special(file)
+      return unless special_files.any?{ |f| File.identical?(f, file) }
       if defined?(I18n)
         began_at = Time.now
         I18n.reload!
         update_modification_time(file)
         logger.debug :reload, began_at, file
+      end
+      true
+    end
+
+    def reload_regular(file)
+      apps = mounted_apps_of(file)
+      if apps.present?
+        apps.each { |app| app.app_obj.reload! }
+        update_modification_time(file)
+      else
+        safe_load(file)
+        Padrino.mounted_apps.each do |app|
+          app.app_obj.reload! if app.app_obj.dependencies.include?(file)
+        end
       end
     end
 
@@ -207,7 +200,6 @@ module Padrino
     # Can be an array because in one app.rb we can define multiple Padrino::Application.
     #
     def mounted_apps_of(file)
-      file = figure_path(file)
       Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
     end
 
