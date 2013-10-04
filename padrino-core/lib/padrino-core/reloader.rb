@@ -24,7 +24,7 @@ module Padrino
     # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
     #
     def exclude
-      @_exclude ||= %w(test spec tmp features config public db).map { |path| Padrino.root(path) }
+      @_exclude ||= Set.new %w(test spec tmp features config public db).map{ |path| Padrino.root(path) }
     end
 
     ##
@@ -74,11 +74,10 @@ module Padrino
     #
     def lock!
       klasses = ObjectSpace.classes do |klass|
-        klass._orig_klass_name.split('::')[0]
+        klass._orig_klass_name.split('::').first
       end
-
-      klasses = klasses | Padrino.mounted_apps.map { |app| app.app_class }
-      Padrino::Reloader.exclude_constants.merge(klasses)
+      klasses |= Padrino.mounted_apps.map(&:app_class)
+      exclude_constants.merge(klasses)
     end
 
     ##
@@ -109,18 +108,12 @@ module Padrino
     # Removes the specified class and constant.
     #
     def remove_constant(const)
-      return if exclude_constants.any? { |c| const._orig_klass_name.index(c) == 0 } &&
-               !include_constants.any? { |c| const._orig_klass_name.index(c) == 0 }
-      begin
-        parts  = const.to_s.sub(/^::(Object)?/, 'Object::').split('::')
-        object = parts.pop
-        base   = parts.empty? ? Object : Inflector.constantize(parts.join('::'))
-        base.send :remove_const, object
-        logger.devel "Removed constant: #{const} from #{base}"
-      rescue NameError
-      end
+      return if constant_excluded?(const)
+      base, _, object = const.to_s.rpartition('::')
+      base.constantize.send :remove_const, object
+      logger.devel "Removed constant #{const} from #{base}"
+    rescue NameError
     end
-
 
     ##
     # Returns the list of special tracked files for Reloader.
@@ -233,6 +226,10 @@ module Padrino
         files += app.app_obj.dependencies
       end
       files + special_files
+    end
+
+    def constant_excluded?(const)
+      (exclude_constants - include_constants).any?{ |c| const._orig_klass_name.start_with?(c) }
     end
 
     ##
