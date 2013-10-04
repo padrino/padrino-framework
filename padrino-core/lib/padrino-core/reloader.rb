@@ -177,7 +177,7 @@ module Padrino
         began_at = Time.now
         I18n.reload!
         update_modification_time(file)
-        logger.debug :reload, Time.now, file
+        logger.debug :reload, began_at, file
       end
     end
 
