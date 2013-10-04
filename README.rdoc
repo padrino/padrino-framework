@@ -27,7 +27,7 @@ Here is a brief overview of functionality provided by the Padrino framework:
 Agnostic:: Full support for many popular testing, templating, mocking, and data storage choices.
 Generators:: Create Padrino applications, models, controllers i.e: padrino-gen project.
 Mountable:: Unlike other ruby frameworks, principally designed for mounting multiple apps.
-Routing:: Full url named routes, named params, respond_to support, before/after filter support.
+Routing:: Full url named routes, named params, before/after filter support.
 Tag Helpers:: View helpers such as: tag, content_tag, input_tag.
 Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag.
 Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
