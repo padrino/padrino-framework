@@ -50,6 +50,18 @@ class MarkupDemo < Sinatra::Base
         content_tag(:span, "This not a template block")
       end
     end
+
+    def content_tag_with_block
+      one = content_tag(:p) do
+        "one"
+      end
+      two = content_tag(:p) do
+        "two"
+      end
+      one << two
+    rescue
+      "<p>failed</p>".html_safe
+    end
   end
 end
 
