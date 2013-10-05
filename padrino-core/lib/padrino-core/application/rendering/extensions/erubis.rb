@@ -48,7 +48,7 @@ begin
         def precompiled_preamble(locals)
           buf = @padrino_app ? "ActiveSupport::SafeBuffer.new" : "''"
           old_postamble = super.split("\n")[0..-2]
-          [old_postamble, "#{@outvar} = _buf = (#{@outvar} || #{buf})"].join("\n")
+          [old_postamble, "__in_erb_template = true;#{@outvar} = _buf = (#{@outvar} || #{buf})"].join("\n")
         end
       end
     end
