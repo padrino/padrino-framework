@@ -1,4 +1,4 @@
-#encoding: utf-8 
+#encoding: utf-8
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
@@ -102,11 +102,11 @@ describe "Routing" do
   end
 
   should 'parse routes that are encoded' do
-    mock_app do 
+    mock_app do
       get('/щч') { 'success!' }
     end
     get(URI.escape('/щч'))
-    assert_equal 'success!', body    
+    assert_equal 'success!', body
   end
 
   should 'parse routes that include encoded slash' do
@@ -122,7 +122,7 @@ describe "Routing" do
   should 'encode params using UTF-8' do
     skip unless ''.respond_to?(:encoding) # for 1.8.7
 
-    mock_app do 
+    mock_app do
       get('/:foo') { params[:foo].encoding.name }
     end
     get '/bar'
@@ -367,7 +367,7 @@ describe "Routing" do
   end
 
   should "allow .'s in param values" do
-    skip
+    skip # TODO fix this?
     mock_app do
       get('/id/:email', :provides => [:json]) { |email, format| [email, format] * '/' }
     end
@@ -1840,7 +1840,7 @@ describe "Routing" do
   end
 
   should 'render a custom error page using error method' do
-    skip
+    skip # TODO sinatra bug?
     mock_app do
       error(404) { "custom 404 error" }
     end
