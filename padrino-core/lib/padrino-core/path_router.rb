@@ -36,19 +36,8 @@ module Padrino
         request = Request.new(env)
         return bad_request unless HTTP_VERBS.include?(request.request_method.downcase.to_sym)
         compile unless compiled?
-        begin
-          matched_routes = recognize(request)
-          [200, {}, matched_routes]
-        rescue => evar
-          case evar
-          when NotFound
-            not_found
-          when MethodNotAllowed
-            method_not_allowed('Allow' => request.acceptable_methods.sort.join(", "))
-          else
-            server_error
-          end
-        end
+        matched_routes = recognize(request)
+        [200, {}, matched_routes]
       end
 
       def compiled?
