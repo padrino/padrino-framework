@@ -54,7 +54,7 @@ module Padrino
       #   MyApp.reload!
       #
       def reload!
-        logger.devel "Reloading #{settings}"
+        logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
         Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file
@@ -103,6 +103,7 @@ module Padrino
         settings.default_routes!
         settings.default_errors!
         if defined?(I18n)
+          Reloader.special_files += settings.locale_path
           I18n.load_path << settings.locale_path
           I18n.reload!
         end
