@@ -804,10 +804,10 @@ module Padrino
       #
       def options_for_select(option_items, selected_value=nil)
         return [] if option_items.blank?
-        option_items.map do |caption, value, disabled|
-          value ||= caption
-          disabled ||= false
-          content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value), :disabled => disabled)
+        option_items.map do |caption, value, attributes|
+          attributes = { :disabled => attributes } unless attributes.kind_of?(Hash)
+          html_attributes = { :value => value || caption, :selected => option_is_selected?(value, caption, selected_value) }.merge(attributes||{})
+          content_tag(:option, caption, html_attributes)
         end
       end
 
@@ -815,26 +815,13 @@ module Padrino
       # Returns the optgroups with options tags for a select based on the given :grouped_options items.
       #
       def grouped_options_for_select(collection, selected=nil, prompt=false)
-        if collection.is_a?(Hash)
-          collection.map do |key, value|
-            # Hash format:
-            # {:first => [1,2,3], :second => [4,5,6]}
-            # or:
-            # {:first => [[1,2,3], {:disabled => true}], :second => [4,5,6]}
-            attributes_hash = value.last.is_a?(Hash) ? value.pop : nil
-            disabled ||=  attributes_hash && attributes_hash.include?(:disabled) ? attributes_hash[:disabled] : false
-            content_tag :optgroup, options_for_select(value, selected), :label => key, :disabled => disabled
-          end
-        elsif collection.is_a?(Array)
-          # Array format:
-          # ["Option Label", [:option1, :option2, ...]]
-          # or:
-          # ["Option Label", [:option1, :option2, ...], true]
-          # the last item tells if it is disabled or not. This is keeps it backwards compatible.
-          collection.map do |optgroup|
-            disabled ||= optgroup.count > 2 ? optgroup.pop : false
-            content_tag :optgroup, options_for_select(optgroup.last, selected), :label => optgroup.first, :disabled => disabled
-          end
+        collection.map do |item|
+          caption = item.shift
+          attributes = item.last.kind_of?(Hash) ? item.pop : (item.last == true || item.last == false || item.last == nil ? { :disabled => item.pop } : {})
+          value = item.flatten(1)
+          attributes = value.pop if value.last.kind_of?(Hash)
+          html_attributes = { :label => caption }.merge(attributes||{})
+          content_tag(:optgroup, options_for_select(value, selected), html_attributes)
         end
       end
 
