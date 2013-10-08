@@ -744,10 +744,12 @@ describe "FormHelpers" do
         "Friends" => ["Yoda",["Obiwan",2,:magister=>'no'],:lame=>'yes'],
         "Enemies" => [["Palpatine","Palpatine",:scary=>'yes',:old=>'yes'],["Darth Vader",3,:disabled=>true]]
       }
-      actual_html = select_tag( 'name', :grouped_options => opts )
+      actual_html = select_tag( 'name', :grouped_options => opts, :disabled_options => [2], :selected => ['Yoda'] )
       assert_has_tag(:optgroup, :label => "Friends", :lame => 'yes') { actual_html }
       assert_has_tag(:option,   :value => "Palpatine", :content => "Palpatine", :scary => 'yes', :old => 'yes') { actual_html }
       assert_has_tag(:option,   :content => "Darth Vader", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:option,   :content => "Obiwan", :disabled => 'disabled') { actual_html }
+      assert_has_tag(:option,   :content => "Yoda", :selected => 'selected') { actual_html }
     end
 
     should "display select tag in ruby with multiple attribute" do

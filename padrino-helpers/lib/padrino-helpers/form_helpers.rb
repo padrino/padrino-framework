@@ -617,10 +617,11 @@ module Padrino
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
         prompt = options.delete(:include_blank)
+        state = extract_state!(options)
         select_options_html = if options[:options]
-          options_for_select(options.delete(:options), options.delete(:selected))
+          options_for_select(options.delete(:options), state)
         elsif options[:grouped_options]
-          grouped_options_for_select(options.delete(:grouped_options), options.delete(:selected), prompt)
+          grouped_options_for_select(options.delete(:grouped_options), state)
         end
         select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
         options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
@@ -802,11 +803,13 @@ module Padrino
       ##
       # Returns the options tags for a select based on the given option items.
       #
-      def options_for_select(option_items, selected_value=nil)
+      def options_for_select(option_items, state = {})
         return [] if option_items.blank?
         option_items.map do |caption, value, attributes|
           attributes = { :disabled => attributes } unless attributes.kind_of?(Hash)
-          html_attributes = { :value => value || caption, :selected => option_is_selected?(value, caption, selected_value) }.merge(attributes||{})
+          html_attributes = { :value => value || caption  }.merge(attributes||{})
+          html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
+          html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
           content_tag(:option, caption, html_attributes)
         end
       end
@@ -814,14 +817,14 @@ module Padrino
       ##
       # Returns the optgroups with options tags for a select based on the given :grouped_options items.
       #
-      def grouped_options_for_select(collection, selected=nil, prompt=false)
+      def grouped_options_for_select(collection, state = {})
         collection.map do |item|
           caption = item.shift
           attributes = item.last.kind_of?(Hash) ? item.pop : (item.last == true || item.last == false || item.last == nil ? { :disabled => item.pop } : {})
           value = item.flatten(1)
           attributes = value.pop if value.last.kind_of?(Hash)
           html_attributes = { :label => caption }.merge(attributes||{})
-          content_tag(:optgroup, options_for_select(value, selected), html_attributes)
+          content_tag(:optgroup, options_for_select(value, state), html_attributes)
         end
       end
 
@@ -900,6 +903,13 @@ module Padrino
         Array(selected_values).any? do |selected|
           [value.to_s, caption.to_s].include?(selected.to_s)
         end
+      end
+
+      def extract_state!(options)
+        {
+          :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
+          :disabled => Array(options.delete(:disabled_options))
+        }
       end
     end
   end
