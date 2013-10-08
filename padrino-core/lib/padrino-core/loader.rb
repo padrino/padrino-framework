@@ -1,5 +1,5 @@
 module Padrino
-  class << self
+  module Loader
     ##
     # Hooks to be called before a load/reload.
     #
@@ -38,17 +38,6 @@ module Padrino
       @_after_load ||= []
       @_after_load << block if block_given?
       @_after_load
-    end
-
-    ##
-    # The used +$LOAD_PATHS+ from Padrino.
-    #
-    # @return [Array<String>]
-    #   The load paths used by Padrino.
-    #
-    def load_paths
-      @_load_paths_was = %w(lib models shared).map { |path| Padrino.root(path) }
-      @_load_paths ||= @_load_paths_was
     end
 
     ##
@@ -180,6 +169,26 @@ module Padrino
     end
 
     ##
+    # Concat to +$LOAD_PATH+ the given paths.
+    #
+    # @param [Array<String>] paths
+    #   The paths to concat.
+    #
+    def set_load_paths(*paths)
+      load_paths.concat(paths).uniq!
+    end
+
+    ##
+    # The used +$LOAD_PATHS+ from Padrino.
+    #
+    # @return [Array<String>]
+    #   The load paths used by Padrino.
+    #
+    def load_paths
+      @_load_paths ||= load_paths_was.dup
+    end
+
+    ##
     # Returns default list of path globs to load as dependencies.
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
@@ -190,35 +199,28 @@ module Padrino
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
-      @_dependency_paths ||= (dependency_paths_was + Array(module_paths))
-    end
-
-    ##
-    # Concat to +$LOAD_PATH+ the given paths.
-    #
-    # @param [Array<String>] paths
-    #   The paths to concat.
-    #
-    def set_load_paths(*paths)
-      $:.concat(paths); load_paths.concat(paths)
-      $:.uniq!; load_paths.uniq!
+      @_dependency_paths ||= dependency_paths_was + Array(module_paths)
     end
 
     private
 
     def module_paths
-      Padrino.modules.map(&:dependency_paths).flatten!
+      Padrino.modules.map(&:dependency_paths).flatten
+    end
+
+    def load_paths_was
+      @_load_paths_was ||= %w(lib models shared).map{ |path| Padrino.root(path) }.freeze
     end
 
     def dependency_paths_was
-      [
+      @_dependency_paths_was ||= [
         "#{root}/config/database.rb",
         "#{root}/lib/**/*.rb",
         "#{root}/shared/lib/**/*.rb",
         "#{root}/models/**/*.rb",
         "#{root}/shared/models/**/*.rb",
         "#{root}/config/apps.rb"
-      ]
+      ].freeze
     end
   end
 end

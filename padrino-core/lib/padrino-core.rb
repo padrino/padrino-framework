@@ -14,13 +14,14 @@ require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
 
-
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
   class ApplicationLoadError < RuntimeError # @private
   end
+
+  extend Loader
 
   class << self
     ##
