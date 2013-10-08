@@ -741,8 +741,8 @@ describe "FormHelpers" do
 
     should "display select tag with grouped options for a rails-style attribute hash" do
       opts = {
-        "Friends" => ["Yoda",["Obiwan",2,:magister=>'no'],:lame=>'yes'],
-        "Enemies" => [["Palpatine","Palpatine",:scary=>'yes',:old=>'yes'],["Darth Vader",3,:disabled=>true]]
+        "Friends" => ["Yoda",["Obiwan",2,{:magister=>'no'}],{:lame=>'yes'}],
+        "Enemies" => [["Palpatine","Palpatine",{:scary=>'yes',:old=>'yes'}],["Darth Vader",3,{:disabled=>true}]]
       }
       actual_html = select_tag( 'name', :grouped_options => opts, :disabled_options => [2], :selected => ['Yoda'] )
       assert_has_tag(:optgroup, :label => "Friends", :lame => 'yes') { actual_html }
