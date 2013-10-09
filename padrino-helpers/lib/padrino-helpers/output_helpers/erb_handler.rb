@@ -33,7 +33,7 @@ module Padrino
           captured_block = block.call(*args)
           ret = eval("@_out_buf", block.binding)
           self.output_buffer = _buf_was
-          ret.blank? ? captured_block : ret
+          block_is_type?(block) ? ret : captured_block
         end
 
         ##
