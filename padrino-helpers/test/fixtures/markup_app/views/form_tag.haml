@@ -1,6 +1,6 @@
-- form_tag '/simple', :class => 'simple-form' do
+= form_tag '/simple', :class => 'simple-form' do
   = error_messages_for nil
-  - field_set_tag do
+  = field_set_tag do
     = hidden_field_tag :session_id, :value => "__secret__"
     = label_tag :username
     = text_field_tag :username
@@ -26,10 +26,10 @@
     = check_box_tag :remember_me
     = submit_tag
 
-- form_tag '/advanced', :id => 'advanced', :class => 'advanced-form', :method => 'get' do
+= form_tag '/advanced', :id => 'advanced', :class => 'advanced-form', :method => 'get' do
   = error_messages_for MarkupUser.new, :header_message => "There are problems with saving user!"
   = hidden_field_tag :session_id, :value => "__secret__"
-  - field_set_tag "Advanced", :class => 'advanced-field-set' do
+  = field_set_tag "Advanced", :class => 'advanced-field-set' do
     %p
       = label_tag :username, :class => 'first', :caption => "Nickname"
       = text_field_tag :username, :value => params[:username], :id => 'the_username'
@@ -69,10 +69,10 @@
     %p
       = range_field_tag('ranger_with_min_max', :min => 1, :max => 50)
       = range_field_tag('ranger_with_range', :range => 1..5)
-  - field_set_tag(:class => 'buttons') do
+  = field_set_tag(:class => 'buttons') do
     = submit_tag "Login"
     = button_tag "Cancel"
     = image_submit_tag "buttons/submit.png"
 
-- form_tag '/dontprotect', :class => 'no-protection', :protect_from_csrf => false do
+= form_tag '/dontprotect', :class => 'no-protection', :protect_from_csrf => false do
   = submit_tag "Login"

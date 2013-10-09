@@ -9,20 +9,20 @@ describe "OutputHelpers" do
   context 'for #content_for method' do
     should 'work for erb templates' do
       visit '/erb/content_for'
-      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for"
-      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith"
+      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for", :count => 1
+      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith", :count => 1
     end
 
     should "work for haml templates" do
       visit '/haml/content_for'
-      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for"
-      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith"
+      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for", :count => 1
+      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith", :count => 1
     end
 
     should "work for slim templates" do
       visit '/slim/content_for'
-      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for"
-      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith"
+      assert_have_selector '.demo h1', :content => "This is content yielded from a content_for", :count => 1
+      assert_have_selector '.demo2 h1', :content => "This is content yielded with name Johnny Smith", :count => 1
     end
   end # content_for
 
