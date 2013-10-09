@@ -45,14 +45,11 @@ module Padrino
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
-        handler = find_proper_handler
-        captured_block, captured_html = nil, ""
-        if handler && handler.is_type? && handler.block_is_type?(block)
-          captured_html, captured_block = handler.capture_from_template(*args, &block)
+        if handler = find_proper_handler
+          handler.capture_from_template(*args, &block)
+        else
+          block.call(*args)
         end
-        # invoking the block directly if there was no template
-        captured_html = block_given? && ( captured_block || block.call(*args) )  if captured_html.blank?
-        captured_html
       end
       alias :capture :capture_html
 

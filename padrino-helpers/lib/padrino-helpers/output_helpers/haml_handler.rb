@@ -33,7 +33,8 @@ module Padrino
         #
         def capture_from_template(*args, &block)
           eval("_hamlout ||= @haml_buffer", block.binding)
-          template.capture_haml(*args, &block)
+          capture_html = template.capture_haml(*args, &block)
+          capture_html.blank? ? block.call(*args) : capture_html
         end
 
         ##
