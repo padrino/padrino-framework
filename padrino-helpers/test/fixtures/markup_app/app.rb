@@ -1,22 +1,14 @@
-require 'sinatra/base'
-require 'haml'
-require 'erubis'
-require 'slim'
-require 'padrino-core/application/rendering/extensions/erubis'
-require 'padrino-core/application/rendering/extensions/haml'
-require 'padrino-core/application/rendering/extensions/slim'
+require 'padrino-core'
 
 class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
+  register Padrino::Rendering
 
   configure do
     set :logging, false
     set :padrino_logging, false
     set :environment, :test
     set :root, File.dirname(__FILE__)
-    set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
-    set :haml, :escape_html => true
-    set :slim, :generator => Temple::Generators::RailsOutputBuffer, :buffer => "out_buf"
     set :sessions, true
     set :protect_from_csrf, true
   end
