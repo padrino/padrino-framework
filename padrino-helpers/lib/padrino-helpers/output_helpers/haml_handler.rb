@@ -32,9 +32,7 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          eval("_hamlout ||= @haml_buffer", block.binding)
-          capture_html = template.capture_haml(*args, &block)
-          capture_html.blank? ? block.call(*args) : capture_html
+          block_is_type?(block) ? template.capture_haml(*args, &block) : block.call(*args)
         end
 
         ##
