@@ -11,7 +11,7 @@
     =favicon_tag 'favicon.ico'
     =stylesheet_link_tag 'bootstrap', 'application'
   %body
-    - form_tag url(:sessions, :create), :class=>'login form-horizontal' do
+    = form_tag url(:sessions, :create), :class=>'login form-horizontal' do
       .login-header.modal-header
         .login-logo=image_tag('logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
       .login-body.modal-body

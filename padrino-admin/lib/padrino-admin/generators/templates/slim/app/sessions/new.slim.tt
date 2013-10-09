@@ -12,7 +12,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
     = stylesheet_link_tag 'bootstrap', 'application'
 
   body
-    - form_tag url(:sessions, :create), :class=>'login form-horizontal' do
+    = form_tag url(:sessions, :create), :class=>'login form-horizontal' do
         div class="login-header modal-header"
           div class="login-logo" = image_tag('logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
         div class="login-body modal-body"
