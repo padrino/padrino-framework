@@ -42,32 +42,12 @@ module Padrino
         end
 
         ##
-        # Returns an array of engines used for the template.
-        #
-        # @example
-        #   @handler.engines => [:erb, :erubis]
-        #
-        def engines
-          # Implemented in subclass.
-        end
-
-        ##
-        # Returns true if the current template type is same as this handlers; false otherwise.
-        #
-        # @example
-        #   @handler.is_type? => true
-        #
-        def is_type?
-          # Implemented in subclass.
-        end
-
-        ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
         # @example
-        #   @handler.block_is_type?(block) => true
+        #   @handler.engine_matches?(block) => true
         #
-        def block_is_type?(block)
+        def engine_matches?(block)
           # Implemented in subclass.
         end
 

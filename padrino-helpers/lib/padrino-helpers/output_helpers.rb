@@ -65,10 +65,9 @@ module Padrino
       #   concat_content("This will be output to the template buffer")
       #
       def concat_content(text="")
-        handler = find_proper_handler
-        if handler && handler.is_type?
+        if handler = find_proper_handler
           handler.concat_to_template(text)
-        else # theres no template to concat, return the text directly
+        else
           text
         end
       end
@@ -102,7 +101,7 @@ module Padrino
       #
       def block_is_template?(block)
         handler = find_proper_handler
-        block && handler && handler.block_is_type?(block)
+        block && handler && handler.engine_matches?(block)
       end
 
       ##
