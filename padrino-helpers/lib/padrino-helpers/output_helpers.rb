@@ -185,7 +185,8 @@ module Padrino
       #   find_proper_handler => <OutputHelpers::HamlHandler>
       #
       def find_proper_handler
-        OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.engines.include?(current_engine) && h.is_type? }
+        handler_class = OutputHelpers.handlers[current_engine]
+        handler_class && handler_class.new(self)
       end
 
       ##

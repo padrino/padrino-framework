@@ -57,7 +57,7 @@ module Padrino
           @_engines ||= [:haml]
         end
       end
-      OutputHelpers.register(HamlHandler)
+      OutputHelpers.register(:haml, HamlHandler)
     end
   end
 end

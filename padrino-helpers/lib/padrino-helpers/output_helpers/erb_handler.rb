@@ -72,7 +72,8 @@ module Padrino
           template.instance_variable_set(:@_out_buf, val)
         end
       end
-      OutputHelpers.register(ErbHandler)
+      OutputHelpers.register(:erb, ErbHandler)
+      OutputHelpers.register(:erubis, ErbHandler)
     end
   end
 end

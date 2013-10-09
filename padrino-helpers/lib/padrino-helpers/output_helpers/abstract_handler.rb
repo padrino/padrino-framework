@@ -8,7 +8,7 @@ module Padrino
       #   OutputHelpers.handlers => [<OutputHelpers::HamlHandler>, <OutputHelpers::ErbHandler>]
       #
       def self.handlers
-        @_template_handlers ||= []
+        @_template_handlers ||= {}
       end
 
       ##
@@ -17,8 +17,8 @@ module Padrino
       # @example
       #   OutputHelpers.register(OutputHelpers::HamlHandler)
       #
-      def self.register(handler)
-        handlers << handler
+      def self.register(engine, handler)
+        handlers[engine] = handler
       end
 
       # @abstract Extend this to create a template handler.

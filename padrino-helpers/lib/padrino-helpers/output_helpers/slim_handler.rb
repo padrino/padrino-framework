@@ -72,7 +72,7 @@ module Padrino
           template.instance_variable_set(:@_out_buf, val)
         end
       end
-      OutputHelpers.register(SlimHandler)
+      OutputHelpers.register(:slim, SlimHandler)
     end
   end
 end
