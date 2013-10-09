@@ -201,7 +201,6 @@ end
 class String
   def self.colors
     @_colors ||= {
-      :clear   => 0,
       :bold    => 1,
       :black   => 30,
       :red     => 31,
@@ -216,7 +215,7 @@ class String
 
   colors.each do |color, value|
     define_method(color) do
-      ["\e[", value.to_s, "m", self, "\e[", self.class.colors[:clear], "m"] * ''
+      "\e[#{value}m" << self << "\e[0m"
     end
   end
 
