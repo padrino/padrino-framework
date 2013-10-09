@@ -194,13 +194,13 @@ module Padrino
       #
       def colorize(string, *colors)
         colors.each do |c|
-          string = string.send(c)
+          string = string.colorize(c)
         end
         string
       end
 
       def stylized_level(level)
-        style = ColoredLevels[level].map { |c| "\e[%dm" % String.colors[c] } * ''
+        style = ColoredLevels[level].map { |c| "\e[%dm" % String::Colorizer.colors[c] } * ''
         [style, super, "\e[0m"] * ''
       end
     end
