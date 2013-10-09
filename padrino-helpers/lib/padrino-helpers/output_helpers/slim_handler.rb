@@ -54,7 +54,7 @@ module Padrino
         #   @handler.block_is_type?(block) => true
         #
         def block_is_type?(block)
-          block && eval('defined? __in_erb_template', block.binding)
+          block && eval('defined? __in_slim_template', block.binding)
         end
 
         ##
