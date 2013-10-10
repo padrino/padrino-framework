@@ -13,16 +13,6 @@ module Padrino
         end
 
         ##
-        # Returns true if the current template type is same as this handlers; false otherwise.
-        #
-        # @example
-        #   @handler.is_type? => true
-        #
-        def is_type?
-          !self.output_buffer.nil?
-        end
-
-        ##
         # Captures the html from a block of template code for this handler.
         #
         # @example
@@ -30,49 +20,29 @@ module Padrino
         #
         def capture_from_template(*args, &block)
           self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
-          captured_block = block.call(*args)
-          ret = eval("@_out_buf", block.binding)
+          raw = block.call(*args)
+          captured = template.instance_variable_get(:@_out_buf)
           self.output_buffer = _buf_was
-          [ ret, captured_block ]
-        end
-
-        ##
-        # Outputs the given text to the templates buffer directly.
-        #
-        # @example
-        #   @handler.concat_to_template("This will be output to the template buffer")
-        #
-        def concat_to_template(text="")
-          self.output_buffer << text if is_type? && text
-          nil
+          engine_matches?(block) ? captured : raw
         end
 
         ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
         # @example
-        #   @handler.block_is_type?(block) => true
+        #   @handler.engine_matches?(block) => true
         #
-        def block_is_type?(block)
-          block && eval('defined? __in_slim_template', block.binding)
-        end
-
-        ##
-        # Returns an array of engines used for the template.
-        #
-        # @example
-        #   @handler.engines => [:erb, :erubis]
-        #
-        def engines
-          @_engines ||= [:slim]
+        def engine_matches?(block)
+          block.binding.eval('defined? __in_slim_template')
         end
 
         protected
+
         def output_buffer=(val)
           template.instance_variable_set(:@_out_buf, val)
         end
       end
-      OutputHelpers.register(SlimHandler)
+      OutputHelpers.register(:slim, SlimHandler)
     end
   end
 end

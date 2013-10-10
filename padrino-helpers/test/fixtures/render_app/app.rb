@@ -2,7 +2,6 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 PADRINO_ENV = 'test' unless defined? PADRINO_ENV
 
 require 'padrino-core'
-require 'slim'
 
 class RenderUser
   attr_accessor :name
@@ -17,9 +16,6 @@ class RenderDemo < Padrino::Application
     set :logging, false
     set :padrino_logging, false
     set :environment, :test
-    set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
-    set :haml, :escape_html => true
-    set :slim, :generator => Temple::Generators::RailsOutputBuffer
   end
 
   # get current engines from partials
@@ -34,6 +30,10 @@ class RenderDemo < Padrino::Application
 
   get '/double_capture_:ext' do
     render "double_capture_#{params[:ext]}"
+  end
+
+  get '/wrong_capture_:ext' do
+    render "wrong_capture_#{params[:ext]}"
   end
 
   # partial with object
