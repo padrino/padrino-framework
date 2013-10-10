@@ -90,16 +90,14 @@ module Padrino
             url.concat(fragment) if fragment
           end
           options.reverse_merge!(:href => url)
-          link_content = capture_html(&block)
           return '' unless parse_conditions(url, options)
-          result_link = content_tag(:a, link_content, options)
-          block_is_template?(block) ? concat_content(result_link) : result_link
+          content_tag(:a, options, &block)
         else
           if args[1]
             url.concat(args[1])
             url.safe_concat(FRAGMENT_HASH).concat(fragment) if fragment
           else
-            url = FRAGMENT_HASH
+            url.concat(FRAGMENT_HASH)
             url.concat(fragment) if fragment
           end
           name = args[0]

@@ -1,44 +1,12 @@
 module Padrino
   module Helpers
     module OutputHelpers
-      ##
-      # Returns the list of all available template handlers.
-      #
-      # @example
-      #   OutputHelpers.handlers => [<OutputHelpers::HamlHandler>, <OutputHelpers::ErbHandler>]
-      #
-      def self.handlers
-        @_template_handlers ||= {}
-      end
-
-      ##
-      # Registers a new handler as available to the output helpers.
-      #
-      # @example
-      #   OutputHelpers.register(OutputHelpers::HamlHandler)
-      #
-      def self.register(engine, handler)
-        handlers[engine] = handler
-      end
-
-      # @abstract Extend this to create a template handler.
       class AbstractHandler
-        attr_reader :template
+        attr_reader :template, :output_buffer
 
         def initialize(template)
           @template = template
-        end
-
-        ##
-        # Returns extension of the template.
-        #
-        # @example
-        #   @handler.template_extension => "erb"
-        #
-        def template_extension
-          caller.find { |c| c =~ /\/views\// }[/\.([\w]*?)\:/, 1] rescue nil
-          # "/some/path/app/views/posts/foo.html.erb:3:in `evaluate_source'"
-          # => "erb"
+          @output_buffer = template.instance_variable_get(:@_out_buf)
         end
 
         ##
@@ -48,31 +16,44 @@ module Padrino
         #   @handler.engine_matches?(block) => true
         #
         def engine_matches?(block)
-          # Implemented in subclass.
         end
 
         ##
         # Captures the html from a block of template code for this handler.
         #
+        # This method is called to capture content of a block-loving helpers in templates.
+        # Haml has a special method to do this, for Erb and Slim we save original buffer,
+        # call the block and then restore the buffer.
+        #
         # @example
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          # Implemented in subclass.
+          self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
+          raw = block.call(*args)
+          captured = template.instance_variable_get(:@_out_buf)
+          self.output_buffer = _buf_was
+          engine_matches?(block) ? captured : raw
         end
 
         ##
-        # Outputs the given text to the templates buffer directly.
+        # Outputs the given text to the template.
         #
         # This method is called when template uses block-aware helpers. For Slim and Haml such
         # helpers just return output to use with `=`. For Erb this method is implemented in
-        # ErbHandler by concatenating text captured from the block to output buffer.
+        # ErbHandler by concatenating given text to output buffer.
         #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
           text
+        end
+
+        protected
+
+        def output_buffer=(val)
+          template.instance_variable_set(:@_out_buf, val)
         end
       end
     end

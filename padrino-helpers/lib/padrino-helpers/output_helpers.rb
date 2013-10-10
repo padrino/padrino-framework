@@ -9,6 +9,20 @@ module Padrino
       end
 
       ##
+      # Returns the list of all available template handlers.
+      #
+      def self.handlers
+        @_template_handlers ||= {}
+      end
+
+      ##
+      # Registers a new handler as available to the output helpers.
+      #
+      def self.register(engine, handler)
+        handlers[engine] = handler
+      end
+
+      ##
       # Module used to detect the current engine in vanilla Sinatra apps.
       #
       module SinatraCurrentEngine
