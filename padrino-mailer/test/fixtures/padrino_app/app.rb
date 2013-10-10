@@ -1,4 +1,4 @@
-ENV['PADRINO_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 class PadrinoApp < Padrino::Application

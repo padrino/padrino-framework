@@ -1,5 +1,5 @@
 MINITEST_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
-PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path('../../config/boot', __FILE__)
 
 class MiniTest::Unit::TestCase
