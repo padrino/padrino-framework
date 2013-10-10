@@ -90,5 +90,21 @@ describe "RenderHelpers" do
       visit '/double_capture_erb'
       assert_equal 1,$number_of_captures
     end
+
+    should "fail on wrong erb usage" do
+      assert_raises(SyntaxError) do
+        visit '/wrong_capture_erb'
+      end
+    end
+
+    should "ignore wrong haml usage" do
+      visit '/wrong_capture_haml'
+      assert_have_no_selector 'p', :content => 'this is wrong'
+    end
+
+    should "ignore wrong slim usage" do
+      visit '/wrong_capture_slim'
+      assert_have_no_selector 'p', :content => 'this is wrong'
+    end
   end
 end

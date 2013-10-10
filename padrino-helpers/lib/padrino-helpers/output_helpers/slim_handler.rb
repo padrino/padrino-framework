@@ -27,17 +27,6 @@ module Padrino
         end
 
         ##
-        # Outputs the given text to the templates buffer directly.
-        #
-        # @example
-        #   @handler.concat_to_template("This will be output to the template buffer")
-        #
-        def concat_to_template(text="")
-          self.output_buffer << text if text
-          nil
-        end
-
-        ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
         # @example

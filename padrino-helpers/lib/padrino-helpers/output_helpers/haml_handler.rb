@@ -24,17 +24,6 @@ module Padrino
         def capture_from_template(*args, &block)
           engine_matches?(block) ? template.capture_haml(*args, &block) : block.call(*args)
         end
-
-        ##
-        # Outputs the given text to the templates buffer directly.
-        #
-        # @example
-        #   @handler.concat_to_template("This will be output to the template buffer")
-        #
-        def concat_to_template(text="")
-          template.haml_concat(text)
-          nil
-        end
       end
       OutputHelpers.register(:haml, HamlHandler)
     end

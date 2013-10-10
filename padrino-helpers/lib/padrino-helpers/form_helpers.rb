@@ -90,9 +90,7 @@ module Padrino
           inner_form_html << csrf_token_field
         end
         inner_form_html << mark_safe(capture_html(&block))
-        not_concat = options.delete(:not_concat)
-        form_html  = content_tag(:form, inner_form_html, options)
-        not_concat ? form_html : concat_content(form_html)
+        concat_content content_tag(:form, inner_form_html, options)
       end
 
       ##

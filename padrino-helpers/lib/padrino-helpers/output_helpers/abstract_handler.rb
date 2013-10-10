@@ -64,11 +64,15 @@ module Padrino
         ##
         # Outputs the given text to the templates buffer directly.
         #
+        # This method is called when template uses block-aware helpers. For Slim and Haml such
+        # helpers just return output to use with `=`. For Erb this method is implemented in
+        # ErbHandler by concatenating text captured from the block to output buffer.
+        #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
-          # Implemented in subclass.
+          text
         end
       end
     end

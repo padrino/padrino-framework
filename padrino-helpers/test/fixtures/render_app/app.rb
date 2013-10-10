@@ -32,6 +32,10 @@ class RenderDemo < Padrino::Application
     render "double_capture_#{params[:ext]}"
   end
 
+  get '/wrong_capture_:ext' do
+    render "wrong_capture_#{params[:ext]}"
+  end
+
   # partial with object
   get '/partial/object' do
     partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
