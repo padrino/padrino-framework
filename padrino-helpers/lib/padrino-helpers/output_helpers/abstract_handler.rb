@@ -8,7 +8,7 @@ module Padrino
       #   OutputHelpers.handlers => [<OutputHelpers::HamlHandler>, <OutputHelpers::ErbHandler>]
       #
       def self.handlers
-        @_template_handlers ||= []
+        @_template_handlers ||= {}
       end
 
       ##
@@ -17,8 +17,8 @@ module Padrino
       # @example
       #   OutputHelpers.register(OutputHelpers::HamlHandler)
       #
-      def self.register(handler)
-        handlers << handler
+      def self.register(engine, handler)
+        handlers[engine] = handler
       end
 
       # @abstract Extend this to create a template handler.
@@ -42,32 +42,12 @@ module Padrino
         end
 
         ##
-        # Returns an array of engines used for the template.
-        #
-        # @example
-        #   @handler.engines => [:erb, :erubis]
-        #
-        def engines
-          # Implemented in subclass.
-        end
-
-        ##
-        # Returns true if the current template type is same as this handlers; false otherwise.
-        #
-        # @example
-        #   @handler.is_type? => true
-        #
-        def is_type?
-          # Implemented in subclass.
-        end
-
-        ##
         # Returns true if the block given is of the handler's template type; false otherwise.
         #
         # @example
-        #   @handler.block_is_type?(block) => true
+        #   @handler.engine_matches?(block) => true
         #
-        def block_is_type?(block)
+        def engine_matches?(block)
           # Implemented in subclass.
         end
 
@@ -84,11 +64,15 @@ module Padrino
         ##
         # Outputs the given text to the templates buffer directly.
         #
+        # This method is called when template uses block-aware helpers. For Slim and Haml such
+        # helpers just return output to use with `=`. For Erb this method is implemented in
+        # ErbHandler by concatenating text captured from the block to output buffer.
+        #
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
         def concat_to_template(text="")
-          # Implemented in subclass.
+          text
         end
       end
     end

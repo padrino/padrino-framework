@@ -1,4 +1,4 @@
-- form_for MarkupUser.new, '/demo', :id => 'demo' do |f|
+= form_for MarkupUser.new, '/demo', :id => 'demo' do |f|
   = f.error_messages(:header_message => "custom MarkupUser cannot be saved!")
   = f.hidden_field :session_id
   %p
@@ -43,7 +43,7 @@
   %p
     = f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button'
 
-- form_for MarkupUser.new, '/another_demo', :id => 'demo2', :method => 'get' do |f|
+= form_for MarkupUser.new, '/another_demo', :id => 'demo2', :method => 'get' do |f|
   = f.error_messages :header_message => "custom MarkupUser cannot be saved!"
   = f.hidden_field :session_id
   = f.text_field_block :username, { :class => 'input' }, { :caption => 'Nickname: ', :class => 'label' }
@@ -55,5 +55,5 @@
   = f.submit_block "Create", { :class => 'button' }
   = f.image_submit_block "buttons/ok.png", { :class => 'image' }
 
-- form_for :markup_user, '/third_demo', :id => 'demo3', :method => 'get' do |f|
+= form_for :markup_user, '/third_demo', :id => 'demo3', :method => 'get' do |f|
   = f.text_field_block :username
