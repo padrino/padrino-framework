@@ -211,12 +211,12 @@ module Padrino
 
     def dependency_paths_was
       @_dependency_paths_was ||= [
-        "#{root}/config/apps.rb",
         "#{root}/config/database.rb",
         "#{root}/lib/**/*.rb",
         "#{root}/models/**/*.rb",
         "#{root}/shared/lib/**/*.rb",
         "#{root}/shared/models/**/*.rb",
+        "#{root}/config/apps.rb"
       ].freeze
     end
   end
