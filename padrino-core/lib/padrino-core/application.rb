@@ -4,9 +4,6 @@ require 'padrino-core/application/routing'
 require 'padrino-core/application/showexceptions'
 
 module Padrino
-  class ApplicationSetupError < RuntimeError
-  end
-
   ##
   # Subclasses of this become independent Padrino applications
   # (stemming from Sinatra::Application).
@@ -31,15 +28,8 @@ module Padrino
         begun_at = Time.now
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         base.default_configuration!
-        base.prerequisites.concat([
-          File.join(base.root, '/models.rb'),
-          File.join(base.root, '/models/**/*.rb'),
-          File.join(base.root, '/lib.rb'),
-          File.join(base.root, '/lib/**/*.rb')
-        ]).uniq!
-        Padrino.require_dependencies(base.prerequisites)
         logger.devel :setup, begun_at, base
-        super(base) # Loading the subclass inherited method
+        super(base)
       end
 
       ##
@@ -108,7 +98,6 @@ module Padrino
           I18n.reload!
         end
         @_configured = true
-        @_configured
       end
 
       ##
@@ -128,7 +117,13 @@ module Padrino
       #   directory that need to be added to +$LOAD_PATHS+ from this application
       #
       def load_paths
-        @_load_paths ||= %w[models lib mailers controllers helpers].map { |path| File.join(settings.root, path) }
+        @_load_paths ||= [
+          'models',
+          'lib',
+          'mailers',
+          'controllers',
+          'helpers',
+        ].map { |path| File.join(settings.root, path) }
       end
 
       ##
@@ -144,8 +139,14 @@ module Padrino
       #
       def dependencies
         [
-          'urls.rb', 'config/urls.rb', 'mailers/*.rb', 'mailers.rb',
-          'controllers/**/*.rb', 'controllers.rb', 'helpers/**/*.rb', 'helpers.rb'
+          'urls.rb',
+          'config/urls.rb',
+          'mailers/*.rb',
+          'mailers.rb',
+          'controllers/**/*.rb',
+          'controllers.rb',
+          'helpers/**/*.rb',
+          'helpers.rb',
         ].map { |file| Dir[File.join(settings.root, file)] }.flatten
       end
 
@@ -169,37 +170,49 @@ module Padrino
       end
 
       protected
+
       ##
       # Defines default settings for Padrino application.
       #
       def default_configuration!
-        # Overwriting Sinatra defaults
-        set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
+        set :app_file, File.expand_path(caller_files.first || $0)
+        set :app_name, settings.to_s.underscore.to_sym
+
         set :environment, Padrino.env
         set :reload, Proc.new { development? }
         set :logging, Proc.new { development? }
+
         set :method_override, true
-        set :sessions, false
-        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
-        set :views, Proc.new { File.join(root, 'views') }
-        set :images_path, Proc.new { File.join(public_folder, 'images') }
-        set :protection, true
-
-        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
-
-        # Padrino specific
-        set :uri_root, '/'
-        set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
+
+        default_paths!
+        default_security!
+
+        class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
+
+        setup_dependencies!
+      end
+
+      def setup_dependencies!
+        prerequisites.concat(default_prerequisites).uniq!
+        Padrino.require_dependencies(prerequisites)
+      end
+
+      def default_paths!
+        set :locale_path,   Proc.new { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
+        set :views,         Proc.new { File.join(root, 'views') }
+
+        set :uri_root,      '/'
+        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
+        set :images_path,   Proc.new { File.join(public_folder, 'images') }
+      end
+      
+      def default_security!
+        set :protection, true
         set :authentication, false
-
-        set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
-
-        # Authenticity token
+        set :sessions, false
         set :protect_from_csrf, false
         set :allow_disabled_csrf, false
-        # Load the Global Configurations
-        class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
       end
 
       ##
@@ -221,9 +234,7 @@ module Padrino
       #
       def default_filters!
         before do
-          unless @_content_type
-            response['Content-Type'] = 'text/html;charset=utf-8'
-          end
+          response['Content-Type'] = 'text/html;charset=utf-8' unless @_content_type
         end
       end
 
@@ -250,7 +261,17 @@ module Padrino
         Padrino.require_dependencies(dependencies, :force => true)
       end
 
+      def default_prerequisites
+        [
+          File.join(settings.root, '/models.rb'),
+          File.join(settings.root, '/models/**/*.rb'),
+          File.join(settings.root, '/lib.rb'),
+          File.join(settings.root, '/lib/**/*.rb'),
+        ]
+      end
+
       private
+
       # Overrides the default middleware for Sinatra based on Padrino conventions.
       # Also initializes the application after setting up the middleware.
       def setup_default_middleware(builder)
