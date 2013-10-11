@@ -83,21 +83,14 @@ module Padrino
     #
     def configure_apps(&block)
       return  unless block_given?
-      @@_global_configurations ||= []
-      @@_global_configurations << block
-      @_global_configuration = lambda do |app|
-        @@_global_configurations.each do |configuration|
-          app.class_eval(&configuration)
-        end
-      end
+      global_configurations << block
     end
 
     ##
-    # Returns project-wide configuration settings defined in
-    # {configure_apps} block.
+    # Stores global configuration blocks.
     #
-    def apps_configuration
-      @_global_configuration
+    def global_configurations
+      @_global_configurations ||= []
     end
 
     ##

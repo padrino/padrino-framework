@@ -47,7 +47,7 @@ module Padrino
         logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
-        Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file
+        Padrino.require_dependencies(settings.app_file, :force => true)
         require_dependencies
         default_filters!
         default_routes!
@@ -187,13 +187,11 @@ module Padrino
 
         default_paths!
         default_security!
-
-        class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
-
-        setup_dependencies!
+        global_configuration!
+        setup_prerequisites!
       end
 
-      def setup_dependencies!
+      def setup_prerequisites!
         prerequisites.concat(default_prerequisites).uniq!
         Padrino.require_dependencies(prerequisites)
       end
@@ -213,6 +211,15 @@ module Padrino
         set :sessions, false
         set :protect_from_csrf, false
         set :allow_disabled_csrf, false
+      end
+
+      ##
+      # Applies global padrino configuration blocks to current application.
+      #
+      def global_configuration!
+        Padrino.global_configurations.each do |configuration|
+          class_eval(&configuration)
+        end
       end
 
       ##
@@ -261,13 +268,16 @@ module Padrino
         Padrino.require_dependencies(dependencies, :force => true)
       end
 
+      ##
+      # Returns globs of default paths of application prerequisites.
+      #
       def default_prerequisites
         [
-          File.join(settings.root, '/models.rb'),
-          File.join(settings.root, '/models/**/*.rb'),
-          File.join(settings.root, '/lib.rb'),
-          File.join(settings.root, '/lib/**/*.rb'),
-        ]
+          '/models.rb',
+          '/models/**/*.rb',
+          '/lib.rb',
+          '/lib/**/*.rb',
+        ].map{ |glob| File.join(settings.root, glob) }
       end
 
       private
