@@ -54,7 +54,7 @@ This manifest file uses the standard `bundler` gem syntax of which details can b
 
 This gem allows us to place all our dependencies into a single file. Padrino will then automatically require all necessary files (if they exist on the system).
 
-If the dependencies are not on the system, you can automatically vendor all necessary gems using the `bundle install ./vendor` command within the application root or (only with bundler 1.0) run `bundle install` to install system wide. Note that this is all possible without any further effort than adding the Gemfile (or having this generated automatically with generators explained later).
+If the dependencies are not on the system, you can automatically vendor all necessary gems using the `bundle install --path ./vendor` command within the application root or (only with bundler 1.0) run `bundle install` to install system wide. Note that this is all possible without any further effort than adding the Gemfile (or having this generated automatically with generators explained later).
 
  
 
