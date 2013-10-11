@@ -42,22 +42,30 @@ module Padrino
           @app_name     = fetch_app_name(app)
           @actions      = controller_actions(fields)
           @controller   = name.to_s.underscore
-          @layout       = options[:layout] if options[:layout] && !options[:layout].empty?
-
-          block_opts = []
-          block_opts << ":parent => :#{options[:parent]}" if options[:parent] && !options[:parent].empty?
-          block_opts << ":provides => [#{options[:provides]}]" if options[:provides] && !options[:provides].empty?
-          @block_opts_string = block_opts.join(', ') unless block_opts.empty?
-
+          @layout       = options[:layout] if exist_option?(options[:layout])
+          @block_opts_string = create_block_options
           self.behavior = :revoke if options[:destroy]
-          template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")
-          template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
-          empty_directory destination_root(app, "/views/#{name.to_s.underscore}")
+          template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{@controller}.rb")
+          template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{@controller}_helper.rb")
+          empty_directory destination_root(app, "/views/#{@controller}")
           include_component_module_for(:test)
           generate_controller_test(name) if test?
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
+      end
+
+      private
+
+      def exist_option?(option)
+        option && !option.empty?
+      end
+
+      def create_block_options
+        block_options = []
+        block_options << ":parent => :#{options[:parent]}" if exist_option?(options[:parent])
+        block_options << ":provides => [#{options[:provides]}]" if exist_option?(options[:provides])
+        block_options.empty? ? nil : block_options.join(', ')
       end
     end
   end
