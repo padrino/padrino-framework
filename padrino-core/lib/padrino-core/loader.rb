@@ -57,7 +57,7 @@ module Padrino
       require_dependencies("#{root}/config/database.rb")
       Reloader.lock!
       before_load.each(&:call)
-      dependency_paths.each{ |path| require_dependencies(path) }
+      require_dependencies(*dependency_paths)
       after_load.each(&:call)
       logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
       Thread.current[:padrino_loaded] = true
