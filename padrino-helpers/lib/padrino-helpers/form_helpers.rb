@@ -273,13 +273,14 @@ module Padrino
       #
       def label_tag(name, options={}, &block)
         options = options.reverse_merge(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = options.delete(:caption).html_safe
+        caption_text = ''.html_safe
+        caption_text.concat options.delete(:caption)
         caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
 
-        if block_given? # label with inner content
+        if block_given?
           label_content = caption_text.concat capture_html(&block)
           concat_content(content_tag(:label, label_content, options))
-        else # regular label
+        else
           content_tag(:label, caption_text, options)
         end
       end

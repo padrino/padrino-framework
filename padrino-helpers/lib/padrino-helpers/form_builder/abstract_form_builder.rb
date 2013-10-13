@@ -272,7 +272,8 @@ module Padrino
           end
           variants.inject(''.html_safe) do |html, variant|
             variant[2] = "#{field_id(field)}_#{variant[1]}"
-            html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => "#{yield(variant)} #{variant[0]}")
+            caption = yield(variant) << ' ' << variant[0]
+            html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => caption)
           end
         end
 
