@@ -170,50 +170,45 @@ module Padrino
       #
       def error_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
-        objects = objects.map { |object_name|
-          object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name
-        }.compact
-        count   = objects.inject(0) { |sum, object| sum + object.errors.count }
+        objects = objects.map{ |obj| resolve_object(obj) }.compact
+        count   = objects.inject(0){ |sum, object| sum + object.errors.count }
+        return ''.html_safe if count.zero?
 
-        unless count.zero?
-          html = {}
-          [:id, :class, :style].each do |key|
-            if options.include?(key)
-              value = options[key]
-              html[key] = value unless value.blank?
-            else
-              html[key] = 'field-errors' unless key == :style
-            end
+        html_options = {}
+        [:id, :class, :style].each do |key|
+          if options.include?(key)
+            value = options[key]
+            html_options[key] = value unless value.blank?
+          else
+            html_options[key] = 'field-errors' unless key == :style
+          end
+        end
+
+        I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
+          object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
+
+          header_message = if options.include?(:header_message)
+            options[:header_message]
+          else
+            model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
+            locale.t :header, :count => count, :model => model_name
           end
 
-          options[:object_name] ||= objects.first.class.to_s.underscore.gsub(/\//, ' ')
+          body_message = options[:message] || locale.t(:body)
 
-          I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
-            header_message = if options.include?(:header_message)
-              options[:header_message]
-            else
-              object_name = options[:object_name]
-              object_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
-              locale.t :header, :count => count, :model => object_name
+          error_messages = objects.inject(''.html_safe) do |text, object|
+            object.errors.each do |field, message|
+              field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
+              text << content_tag(:li, "#{field_name} #{message}")
             end
-            message = options.include?(:message) ? options[:message] : locale.t(:body)
-            error_messages = objects.map { |object|
-              object_name = options[:object_name]
-              object.errors.map { |f, msg|
-                field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
-                content_tag(:li, "%s %s" % [field, msg])
-              }
-            }.join
-
-            contents = ActiveSupport::SafeBuffer.new
-            contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
-            contents << content_tag(:p, message) unless message.blank?
-            contents << safe_content_tag(:ul, error_messages)
-
-            content_tag(:div, contents, html)
+            text
           end
-        else
-          ''
+
+          contents = ActiveSupport::SafeBuffer.new
+          contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
+          contents << content_tag(:p, body_message) unless body_message.blank?
+          contents << content_tag(:ul, error_messages)
+          content_tag(:div, contents, html_options)
         end
       end
 
@@ -249,16 +244,12 @@ module Padrino
       #
       # @api public
       def error_message_on(object, field, options={})
-        object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
-        error  = object.errors[field] rescue nil
-        if error = Array(error)[0]
-          options.reverse_merge!(:tag => :span, :class => :error)
-          tag   = options.delete(:tag)
-          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
-          content_tag(tag, error, options)
-        else
-          ''
-        end
+        error = Array(resolve_object(object).errors[field]).first
+        return ''.html_safe unless error
+        options.reverse_merge!(:tag => :span, :class => :error)
+        tag   = options.delete(:tag)
+        error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
+        content_tag(tag, error, options)
       end
 
       ##
@@ -857,6 +848,7 @@ module Padrino
       end
 
       private
+
       ##
       # Returns the FormBuilder class to use based on all available setting sources
       # If explicitly defined, returns that, otherwise returns defaults.
@@ -900,6 +892,10 @@ module Padrino
           :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
           :disabled => Array(options.delete(:disabled_options))
         }
+      end
+      
+      def resolve_object(object)
+        object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
       end
     end
   end
