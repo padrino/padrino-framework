@@ -78,6 +78,7 @@ module Padrino
       #   form_tag '/register', :class => "registration_form" do ... end
       #
       def form_tag(url, options={}, &block)
+        options = options.dup
         desired_method = options[:method].to_s
         options.delete(:method) unless desired_method =~ /get|post/i
         options.reverse_merge!(:method => 'post',
@@ -246,7 +247,7 @@ module Padrino
       def error_message_on(object, field, options={})
         error = Array(resolve_object(object).errors[field]).first
         return ''.html_safe unless error
-        options.reverse_merge!(:tag => :span, :class => :error)
+        options = options.reverse_merge(:tag => :span, :class => :error)
         tag   = options.delete(:tag)
         error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
         content_tag(tag, error, options)
@@ -271,7 +272,7 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options.reverse_merge!(:caption => "#{name.to_s.humanize}: ", :for => name)
+        options = options.reverse_merge(:caption => "#{name.to_s.humanize}: ", :for => name)
         caption_text = options.delete(:caption).html_safe
         caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
 
@@ -341,7 +342,7 @@ module Padrino
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge!(:name => name))
+        input_tag(:text, options.reverse_merge(:name => name))
       end
 
       ##
@@ -491,8 +492,7 @@ module Padrino
       #   hidden_field_tag :session_key, :value => "__secret__"
       #
       def hidden_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:hidden, options)
+        input_tag(:hidden, options.reverse_merge(:name => name))
       end
 
       ##
@@ -502,7 +502,7 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name, :rows => "", :cols => "")
+        options = options.reverse_merge(:name => name, :rows => "", :cols => "")
         content_tag(:textarea, options.delete(:value).to_s, options)
       end
 
@@ -514,8 +514,7 @@ module Padrino
       #
       # @api public
       def password_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:password, options)
+        input_tag(:password, options.reverse_merge(:name => name))
       end
 
       ##
@@ -525,8 +524,7 @@ module Padrino
       #   check_box_tag :remember_me, :value => 'Yes'
       #
       def check_box_tag(name, options={})
-        options.reverse_merge!(:name => name, :value => '1')
-        input_tag(:checkbox, options)
+        input_tag(:checkbox, options.reverse_merge(:name => name, :value => '1'))
       end
 
       ##
@@ -536,8 +534,7 @@ module Padrino
       #   radio_button_tag :remember_me, :value => 'true'
       #
       def radio_button_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:radio, options)
+        input_tag(:radio, options.reverse_merge(:name => name))
       end
 
       ##
@@ -549,8 +546,7 @@ module Padrino
       # @api public
       def file_field_tag(name, options={})
         name = "#{name}[]" if options[:multiple]
-        options.reverse_merge!(:name => name)
-        input_tag(:file, options)
+        input_tag(:file, options.reverse_merge(:name => name))
       end
 
       ##
@@ -594,7 +590,7 @@ module Padrino
       # @return [String] The HTML input field based on the +options+ specified.
       #
       def select_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options = options.reverse_merge(:name => name)
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
         prompt = options.delete(:include_blank)
@@ -623,8 +619,7 @@ module Padrino
       #   button_tag "Cancel", :class => 'clear'
       #
       def button_tag(caption, options = {})
-        options.reverse_merge!(:value => caption)
-        input_tag(:button, options)
+        input_tag(:button, options.reverse_merge(:value => caption))
       end
 
       ##
@@ -642,10 +637,9 @@ module Padrino
       #   submit_tag :class => 'btn'
       #
       def submit_tag(*args)
-        options = args[-1].is_a?(Hash) ? args.pop : {}
-        caption = args.length >= 1 ? args.shift : "Submit"
-        options.reverse_merge!(:value => caption)
-        input_tag(:submit, options)
+        options = args.extract_options!
+        caption = args.length >= 1 ? args.first : "Submit"
+        input_tag(:submit, options.reverse_merge(:value => caption))
       end
 
       ##
@@ -662,8 +656,7 @@ module Padrino
       #   submit_tag "Create", :class => 'success'
       #
       def image_submit_tag(source, options={})
-        options.reverse_merge!(:src => image_path(source))
-        input_tag(:image, options)
+        input_tag(:image, options.reverse_merge(:src => image_path(source)))
       end
 
       ##
@@ -762,7 +755,7 @@ module Padrino
       # @return [String] The html range field
       #
       def range_field_tag(name, options = {})
-        options.reverse_merge!(:name => name)
+        options = options.reverse_merge(:name => name)
         if range = options.delete(:range)
           options[:min], options[:max] = range.min, range.max
         end
