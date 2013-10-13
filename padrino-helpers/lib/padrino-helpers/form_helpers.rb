@@ -716,14 +716,14 @@ module Padrino
       #   # </form>
       #
       def button_to(*args, &block)
+        options   = args.extract_options!.dup
         name, url = args[0], args[1]
-        options   = args.extract_options!
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}
         if block_given?
-          form_tag(url, options, &block)
+          form_tag(url || name, options, &block)
         else
-          form_tag(url, options.merge!(:not_concat => true)) do
+          form_tag(url, options) do
             submit_tag(name, submit_options)
           end
         end
