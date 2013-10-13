@@ -591,18 +591,11 @@ module Padrino
       #
       def select_tag(name, options={})
         options = options.reverse_merge(:name => name)
+        options[:name] = "#{options[:name]}[]" if options[:multiple]
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
-        prompt = options.delete(:include_blank)
-        state = extract_state!(options)
-        select_options_html = if options[:options]
-          options_for_select(options.delete(:options), state)
-        elsif options[:grouped_options]
-          grouped_options_for_select(options.delete(:grouped_options), state)
-        end
-        select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
-        options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
-        safe_content_tag(:select, select_options_html, options)
+        options_tags = extract_option_tags!(options)
+        content_tag(:select, options_tags, options)
       end
 
       ##
@@ -806,11 +799,15 @@ module Padrino
       # Returns the blank option serving as a prompt if passed.
       #
       def blank_option(prompt)
-        return unless prompt
         case prompt
-          when String then content_tag(:option, prompt,       :value => '')
-          when Array  then content_tag(:option, prompt.first, :value => prompt.last)
-          else             content_tag(:option, '',           :value => '')
+        when nil, false
+          nil
+        when String
+          content_tag(:option, prompt,       :value => '')
+        when Array
+          content_tag(:option, prompt.first, :value => prompt.last)
+        else
+          content_tag(:option, '',           :value => '')
         end
       end
 
@@ -880,13 +877,28 @@ module Padrino
         end
       end
 
-      def extract_state!(options)
+      def extract_option_state!(options)
         {
           :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
           :disabled => Array(options.delete(:disabled_options))
         }
       end
       
+      def extract_option_tags!(options)
+        state = extract_option_state!(options)
+        option_tags = case
+        when options[:options]
+          options_for_select(options.delete(:options), state)
+        when options[:grouped_options]
+          grouped_options_for_select(options.delete(:grouped_options), state)
+        else
+          []
+        end
+        prompt = options.delete(:include_blank)
+        option_tags.unshift(blank_option(prompt)) if prompt
+        option_tags
+      end
+
       def resolve_object(object)
         object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
       end
