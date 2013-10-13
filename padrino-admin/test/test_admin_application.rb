@@ -6,6 +6,26 @@ describe "AdminApplication" do
     load_fixture 'data_mapper'
   end
 
+  describe "session id setting" do
+    it "should provide it if it doesn't exist" do
+      mock_app do
+        register Padrino::Admin::AccessControl
+      end
+
+      assert_equal @app.session_id, "_padrino_#{File.basename(Padrino.root)}_#{@app.app_name}".to_sym
+    end
+
+    # it "should preserve it if it already existed" do
+    #   Padrino.configure_apps { enable :sessions; set :session_id, "foo" }
+
+    #   mock_app do
+    #     register Padrino::Admin::AccessControl
+    #   end
+
+    #   assert_equal @app.session_id, "foo"
+    # end
+  end
+
   it 'should require correctly login' do
     mock_app do
       register Padrino::Admin::AccessControl
