@@ -31,6 +31,7 @@ module Padrino
         FileUtils.mkdir_p(File.dirname(options[:pid]))
       end
       options[:server] = detect_rack_handler if options[:server].blank?
+      options.merge!(Hash[*options.delete(:options).map {|opt| opt.split('=',2)}.flatten].symbolize_keys!) if options[:options].is_a?(Array)
       new(options, app).start
     end
 
