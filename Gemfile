@@ -46,19 +46,6 @@ group :development do
   gem "lumberjack"
 end
 
-group :cache do
-  gem "redis", ">= 2.0.0"
-  gem "mongo", ">= 1.3.1"
-  platforms :mri do
-    gem "bson_ext",  ">= 1.3.1"
-    gem 'dalli',     ">= 1.0.2"
-    gem "memcached", ">= 0.20.1"
-  end
-  platform :rbx do
-    gem 'dalli',  ">= 1.0.2"
-  end
-end
-
 %w[
    padrino
    padrino-admin

@@ -16,10 +16,10 @@ module Padrino
       #     enable :caching          # turns on caching mechanism
       #
       #     controller '/blog', :cache => true do
-      #       expires_in 15
+      #       expires 15
       #
       #       get '/entries' do
-      #         # expires_in 15 => can also be defined inside a single route
+      #         # expires 15 => can also be defined inside a single route
       #         'Just broke up eating twinkies, lol'
       #       end
       #
@@ -32,7 +32,7 @@ module Padrino
       #
       # You can manually expire cache with CachedApp.cache.delete(:my_name)
       #
-      # Note that the "latest" method call to <tt>expires_in</tt> determines its value: if
+      # Note that the "latest" method call to <tt>expires</tt> determines its value: if
       # called within a route, as opposed to a controller definition, the route's
       # value will be assumed.
       #
@@ -51,17 +51,22 @@ module Padrino
         #
         # @example
         #   controller '/blog', :cache => true do
-        #     expires_in 15
+        #     expires 15
         #
         #     get '/entries' do
-        #       # expires_in 15 => can also be defined inside a single route
         #       'Just broke up eating twinkies, lol'
         #     end
         #   end
         #
+        # @api public
+        def expires(time)
+          @route.cache_expires = time if @route
+          @_last_expires       = time
+        end
+
         def expires_in(time)
-          @route.cache_expires_in = time if @route
-          @_last_expires_in       = time
+          warn 'expires_in has been deprecated in favour of expires'
+          expires(time)
         end
 
         ##
@@ -99,7 +104,7 @@ module Padrino
               if settings.caching?
                 began_at     = Time.now
 
-                value = settings.cache.get(resolve_cache_key || env['PATH_INFO'])
+                value = settings.cache[resolve_cache_key || env['PATH_INFO']]
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
                 if value
@@ -113,11 +118,11 @@ module Padrino
                 began_at     = Time.now
                 content      = @_response_buffer
 
-                if @_last_expires_in
-                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
-                  @_last_expires_in = nil
+                if @_last_expires
+                  settings.cache.store(resolve_cache_key || env['PATH_INFO'], content, :expires => @_last_expires)
+                  @_last_expires = nil
                 else
-                  settings.cache.set(resolve_cache_key || env['PATH_INFO'], content)
+                  settings.cache.store(resolve_cache_key || env['PATH_INFO'], content)
                 end
 
                 logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
