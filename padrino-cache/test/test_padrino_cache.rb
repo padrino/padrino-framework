@@ -90,14 +90,14 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
-    assert_equal 'foo', @app.cache.get(:foo)
+    assert_equal 'foo', @app.cache[:foo]
     get "/foo"
     assert_equal 'foo', body
 
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
-    assert_equal 'bar', @app.cache.get(:bar)
+    assert_equal 'bar', @app.cache[:bar]
     get "/bar"
     assert_equal 'bar', body
   end
@@ -160,7 +160,7 @@ describe "PadrinoCache" do
       enable :caching
       controller :cache => true do
         get("/foo") {
-          expires_in 1
+          expires 1
           called ? 'test again' : (called = 'test')
         }
       end
@@ -184,8 +184,8 @@ describe "PadrinoCache" do
       enable :caching
       controller do
         get("/foo") {
-          expires_in 1
-          cache(:test, :expires_in => 2) do
+          expires 1
+          cache(:test, :expires => 2) do
             called ? 'test again' : (called = 'test')
           end
         }
@@ -197,7 +197,7 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
-    sleep 2
+    sleep 3
     get "/foo"
     assert_equal 200, status
     assert_equal 'test again', body
@@ -231,14 +231,14 @@ describe "PadrinoCache" do
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
-    assert_equal nil, @app.cache.get('/404')
+    assert_equal nil, @app.cache['/404']
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status
-    assert_equal nil, @app.cache.get('/503')
+    assert_equal nil, @app.cache['/503']
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status
@@ -246,10 +246,10 @@ describe "PadrinoCache" do
 
   should 'cache should not hit with unique params' do
     call_count = 0
-    mock_app do 
+    mock_app do
       register Padrino::Cache
       enable :caching
-      before do 
+      before do
         param = params[:test] || 'none'
         cache_key "foo?#{param}"
       end
@@ -273,7 +273,7 @@ describe "PadrinoCache" do
 
   should 'resolve block cache keys' do
     call_count = 0
-    mock_app do 
+    mock_app do
       register Padrino::Cache
       enable :caching
 
@@ -294,7 +294,7 @@ describe "PadrinoCache" do
   end
 
   should 'raise an error if providing both a cache_key and block' do
-    mock_app do 
+    mock_app do
       register Padrino::Cache
       enable :caching
 

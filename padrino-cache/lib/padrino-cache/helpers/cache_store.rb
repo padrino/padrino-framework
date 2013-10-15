@@ -8,6 +8,7 @@ module Padrino
           else
             settings.cache.delete(self.class.url(*key))
           end
+          nil
         end
       end
     end
