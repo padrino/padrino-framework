@@ -39,9 +39,17 @@ module Padrino
           self.behavior = :revoke if options[:destroy]
           app_skeleton(lowercase_app_folder, options[:tiny])
           empty_directory destination_root("public/#{lowercase_app_folder}")
-          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')"
-
+          append_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', "\
+                                                          ":app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')"
           return if self.behavior == :revoke
+        end
+        finish_message
+      end
+
+      private
+
+      def finish_message
+        if in_app_root?
           say
           say '=' * 65, :green
           say "Your #{@app_name} application has been installed."

@@ -144,20 +144,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
       desc 'Runs the "up" for a given migration VERSION.'
-      task :up => :environment do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:up, "db/migrate/", version)
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
+      task(:up => :environment){ migrate_version(:up) }
 
       desc 'Runs the "down" for a given migration VERSION.'
-      task :down => :environment do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:down, "db/migrate/", version)
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
+      task(:down => :environment){ migrate_version(:down) }
     end
 
     desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
@@ -255,7 +245,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         case abcs[Padrino.env][:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
           ActiveRecord::Base.establish_connection(abcs[Padrino.env])
-          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
+          open_structure_sql("w+"){|f| f << ActiveRecord::Base.connection.structure_dump }
         when "postgresql"
           ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
           ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
@@ -281,7 +271,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
 
         if ActiveRecord::Base.connection.supports_migrations?
-          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "a") { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+          open_structure_sql("a"){|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
     end
@@ -365,6 +355,18 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       $stderr.puts "Couldn't drop #{config[:database]}"
     end
   end
+
+  def open_structure_sql(mode, &block)
+    File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", mode, &block)
+  end
+
+  def migrate_version(type)
+    version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
+    raise "VERSION is required" unless version
+    ActiveRecord::Migrator.run(type, "db/migrate/", version)
+    Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+  end
+
 
   task 'db:migrate' => 'ar:migrate'
   task 'db:create'  => 'ar:create'

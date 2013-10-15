@@ -50,21 +50,7 @@ module Padrino
         if options[:template] # Run the template to create project
           execute_runner(:template, options[:template])
         else # generate project without template
-          directory('project/', destination_root)
-          empty_directory destination_root('public/images')
-          empty_directory destination_root('public/javascripts')
-          empty_directory destination_root('public/stylesheets')
-          empty_directory destination_root('tmp')
-          store_component_config('.components')
-          app_skeleton('app', options[:tiny])
-          template 'templates/Gemfile.tt', destination_root('Gemfile')
-          template 'templates/Rakefile.tt', destination_root('Rakefile')
-          if options.gem?
-            template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
-            template 'templates/gem/README.md.tt', destination_root('README.md')
-            template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
-            template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
-          end
+          setup_templates_for_project
         end
       end
 
@@ -102,7 +88,7 @@ module Padrino
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
         say "$ bundle" unless options[:bundle]
-        say "="*65, :green
+        say "=" * 65, :green
         say
       end
 
@@ -120,6 +106,29 @@ module Padrino
       def git_author_email
         git_author_email = `git config user.email`.chomp rescue ''
         git_author_email.empty? ? "TODO: Write your email address" : git_author_email
+      end
+
+      private
+
+      def setup_templates_for_project
+        directory('project/', destination_root)
+        %w[public/images public/javascripts public/stylesheets tmp].each do |path|
+          empty_directory destination_root(path)
+        end
+        store_component_config('.components')
+        app_skeleton('app', options[:tiny])
+
+        %w[Gemfile Rakefile].each{|filename| create_template_file("templates/#{filename}.tt", filename) }
+        if options.gem?
+          create_template_file('templates/gem/gemspec.tt', name + '.gemspec')
+          create_template_file('templates/gem/README.md.tt', 'README.md')
+          create_template_file('templates/gem/lib/libname.tt', "lib/#{name}.rb")
+          create_template_file('templates/gem/lib/libname/version.tt', "lib/#{name}/version.rb")
+        end
+      end
+
+      def create_template_file(path, filename)
+        template(path, destination_root(filename))
       end
     end
   end
