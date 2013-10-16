@@ -774,7 +774,6 @@ module Padrino
       def options_for_select(option_items, state = {})
         return [] if option_items.blank?
         option_items.map do |caption, value, attributes|
-          attributes = { :disabled => attributes } unless attributes.kind_of?(Hash)
           html_attributes = { :value => value || caption  }.merge(attributes||{})
           html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
           html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
@@ -788,7 +787,7 @@ module Padrino
       def grouped_options_for_select(collection, state = {})
         collection.map do |item|
           caption = item.shift
-          attributes = item.last.kind_of?(Hash) ? item.pop : (item.last == true || item.last == false || item.last == nil ? { :disabled => item.pop } : {})
+          attributes = item.last.kind_of?(Hash) ? item.pop : {}
           value = item.flatten(1)
           attributes = value.pop if value.last.kind_of?(Hash)
           html_attributes = { :label => caption }.merge(attributes||{})
