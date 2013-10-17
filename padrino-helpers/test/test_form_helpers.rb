@@ -675,7 +675,7 @@ describe "FormHelpers" do
     should "display select tag with grouped options for a nested array and accept disabled groups" do
       opts = [
         ["Friends",["Yoda",["Obiwan",2]]],
-        ["Enemies", ["Palpatine",['Darth Vader',3]], true]
+        ["Enemies", ["Palpatine",['Darth Vader',3]], {:disabled => true}]
       ]
       actual_html = select_tag( 'name', :grouped_options => opts )
       assert_has_tag(:select,   :name => "name") { actual_html }
@@ -686,8 +686,8 @@ describe "FormHelpers" do
 
     should "display select tag with grouped options for a nested array and accept disabled groups and/or with disabled options" do
       opts = [
-        ["Friends",["Yoda",["Obiwan",2, true]]],
-        ["Enemies", [["Palpatine", "Palpatine", true],['Darth Vader',3]], true]
+        ["Friends",["Yoda",["Obiwan",2, {:disabled => true}]]],
+        ["Enemies", [["Palpatine", "Palpatine", {:disabled => true}],['Darth Vader',3]], {:disabled => true}]
       ]
       actual_html = select_tag( 'name', :grouped_options => opts )
       assert_has_tag(:select,   :name => "name") { actual_html }
@@ -713,22 +713,10 @@ describe "FormHelpers" do
       assert_has_tag(:option,   :value => "3", :content => "Darth Vader") { actual_html }
     end
 
-    should "display select tag with grouped options for a hash and accept disabled groups" do
-      opts = {
-        "Friends" => ["Yoda",["Obiwan",2]],
-        "Enemies" => ["Palpatine",['Darth Vader',3], {:disabled => true}]
-      }
-      actual_html = select_tag( 'name', :grouped_options => opts )
-      assert_has_tag(:select,   :name => "name") { actual_html }
-      assert_has_tag(:option,   :disabled => 'disabled', :count => 0) { actual_html }
-      assert_has_tag(:optgroup, :disabled => 'disabled', :count => 1) { actual_html }
-      assert_has_tag(:optgroup, :label => "Enemies", :disabled => 'disabled') { actual_html }
-    end
-
     should "display select tag with grouped options for a hash and accept disabled groups and/or with disabled options" do
       opts = {
-        "Friends" => ["Yoda",["Obiwan",2,true]],
-        "Enemies" => [["Palpatine","Palpatine",true],["Darth Vader",3], {:disabled => true}]
+        "Friends" => ["Yoda",["Obiwan",2,{:disabled => true}]],
+        "Enemies" => [["Palpatine","Palpatine",{:disabled => true}],["Darth Vader",3], {:disabled => true}]
       }
       actual_html = select_tag( 'name', :grouped_options => opts )
       assert_has_tag(:select,   :name => "name") { actual_html }
@@ -768,7 +756,7 @@ describe "FormHelpers" do
     end
 
     should "display options with values and accept disabled options" do
-      options = [['Green', 'green1', true], ['Blue', 'blue1'], ['Black', "black1"]]
+      options = [['Green', 'green1', {:disabled => true}], ['Blue', 'blue1'], ['Black', "black1"]]
       actual_html = select_tag(:favorite_color, :options => options)
       assert_has_tag(:select, :name => 'favorite_color') { actual_html }
       assert_has_tag('select option', :disabled => 'disabled', :count => 1) { actual_html }
