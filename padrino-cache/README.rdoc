@@ -5,7 +5,8 @@
 This component enables caching of an application's response contents on
 both page- and fragment-levels. Output cached in this manner is
 persisted, until it expires or is actively expired, in a configurable store
-of your choosing. Several common caching stores are supported out of the box.
+of your choosing. Most popular key/value stores work out of the box. Take a look
+at the [Moneta documentation](http://rubydoc.info/gems/moneta) for a list of all supported stores.
 
 == Caching Quickstart
 
@@ -214,7 +215,8 @@ Note that any other action will reference the same content if it uses the same k
     end
   end
 
-The <tt>opts</tt> argument is actually passed to the underlying store. All stores included with Padrino support the <tt>:expires</tt> option out of the box.
+The <tt>opts</tt> argument is actually passed to the underlying store. The stores support the <tt>:expires</tt> option out of the box or
+are enhanced by Moneta to support it.
 
 Finally, to DRY up things a bit, we might do:
 
@@ -253,9 +255,15 @@ You can set a global caching option or a per app caching options.
 
 === Global Caching Options
 
-  Padrino.cache = Padrino::Cache.new(:LRUHash)
-  Padrino.cache = Padrino::Cache.new(:Memcached)
-  Padrino.cache = Padrino::Cache.new(:Redis)
+  Padrino.cache = Padrino::Cache.new(:LRUHash) # Keeps cached values in memory
+  Padrino.cache = Padrino::Cache.new(:Memcached) # Uses default server at localhost
+  Padrino.cache = Padrino::Cache.new(:Memcached, '127.0.0.1:11211', :exception_retry_limit => 1)
+  Padrino.cache = Padrino::Cache.new(:Memcached, :backend => memcached_or_dalli_instance)
+  Padrino.cache = Padrino::Cache.new(:Redis) # Uses default server at localhost
+  Padrino.cache = Padrino::Cache.new(:Redis, :host => '127.0.0.1', :port => 6379, :db => 0)
+  Padrino.cache = Padrino::Cache.new(:Redis, :backend => redis_instance)
+  Padrino.cache = Padrino::Cache.new(:Mongo) # Uses default server at localhost
+  Padrino.cache = Padrino::Cache.new(:Mongo, :backend => mongo_client_instance)
   Padrino.cache = Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
 
 You can manage your cache from anywhere in your app:
@@ -264,6 +272,9 @@ You can manage your cache from anywhere in your app:
   Padrino.cache['val'] # => 'test'
   Padrino.cache.delete('val')
   Padrino.cache.clear
+
+The Padrino cache constructor `Padrino::Cache.new` calls `Moneta.new` to create a cache instance. Please refer to the [Moneta documentation](http://rubydoc.info/gems/moneta) if you
+have special requirements, for example if you want to configure the marshalling mechanism or use a more exotic backend.
 
 ==== Application Caching Options
 
