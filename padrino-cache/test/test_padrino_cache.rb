@@ -90,14 +90,14 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'foo', body
-    assert_equal 'foo', @app.cache[:foo]
+    assert_equal 'foo', @app.cache[:foo][:body]
     get "/foo"
     assert_equal 'foo', body
 
     get "/bar"
     assert_equal 200, status
     assert_equal 'bar', body
-    assert_equal 'bar', @app.cache[:bar]
+    assert_equal 'bar', @app.cache[:bar][:body]
     get "/bar"
     assert_equal 'bar', body
   end
@@ -306,4 +306,29 @@ describe "PadrinoCache" do
     assert_raises(RuntimeError) { get '/foo' }
   end
 
+  should 'cache content_type' do
+    called = false
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/foo', :cache => true do
+        content_type :json
+        if called
+          "you'll never see me"
+        else
+          cache_key :foo
+          called = '{"foo":"bar"}'
+
+          called
+        end
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal '{"foo":"bar"}', body
+    assert_equal '{"foo":"bar"}', @app.cache[:foo][:body]
+    get "/foo"
+    assert_equal '{"foo":"bar"}', body
+    assert_match /json/, last_response.content_type
+  end
 end

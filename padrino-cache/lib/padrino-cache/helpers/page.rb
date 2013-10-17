@@ -107,7 +107,10 @@ module Padrino
                 value = settings.cache[resolve_cache_key || env['PATH_INFO']]
                 logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
 
-                if value
+                if value.kind_of?(Hash)
+                  content_type value[:content_type]
+                  halt 200, value[:body]
+                elsif value
                   halt 200, value
                 end
               end
@@ -116,7 +119,10 @@ module Padrino
             route.after_filters do
               if settings.caching? && @_response_buffer.kind_of?(String)
                 began_at     = Time.now
-                content      = @_response_buffer
+                content = {
+                  :body         => @_response_buffer,
+                  :content_type => @_content_type
+                }
 
                 if @_last_expires
                   settings.cache.store(resolve_cache_key || env['PATH_INFO'], content, :expires => @_last_expires)
