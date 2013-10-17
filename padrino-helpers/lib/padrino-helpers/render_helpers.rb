@@ -31,26 +31,24 @@ module Padrino
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
       def partial(template, options={})
-        options.reverse_merge!(:locals => {}, :layout => false)
-        path            = template.to_s.split(File::SEPARATOR)
-        object_name     = path[-1].to_sym
-        path[-1]        = "_#{path[-1]}"
+        options = options.reverse_merge(:locals => {}, :layout => false)
         explicit_engine = options.delete(:engine)
-        template_path   = File.join(path).to_sym
-        raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
-        if collection = options.delete(:collection)
-          options.delete(:object)
-          counter = 0
-          collection.map { |member|
-            counter += 1
-            options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
-            render(explicit_engine, template_path, options.dup)
-          }.join("\n").html_safe
+
+        path,_,name = template.to_s.rpartition(File::SEPARATOR)
+        template_path = File.join(path,"_#{name}").to_sym
+        object_name = name.to_sym
+
+        objects, counter = if options[:collection].respond_to?(:inject)
+          [options.delete(:collection), 0]
         else
-          if member = options.delete(:object)
-            options[:locals].merge!(object_name => member)
-          end
-          render(explicit_engine, template_path, options.dup).html_safe
+          [[options.delete(:object)], nil]
+        end
+
+        locals = options[:locals]
+        objects.inject(''.html_safe) do |html,object|
+          locals[object_name] = object if object
+          locals["#{object_name}_counter".to_sym] = counter += 1 if counter
+          html << render(explicit_engine, template_path, options).html_safe
         end
       end
       alias :render_partial :partial
