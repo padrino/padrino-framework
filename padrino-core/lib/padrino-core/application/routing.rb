@@ -684,6 +684,7 @@ module Padrino
           mime_types        = types.map { |t| mime_type(t) }.compact
           url_format        = params[:format].to_sym if params[:format]
           accepts           = request.accept.map(&:to_str)
+          accepts           = [] if accepts == ["*/*"]
 
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
