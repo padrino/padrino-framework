@@ -62,7 +62,6 @@ module Padrino
       host  = Regexp.new("^#{Regexp.quote(host)}$", true, 'n') unless host.nil? || host.is_a?(Regexp)
 
       @mapping << [host, path, match, app]
-      sort!
     end
 
     # The call handler setup to route a request given the mappings specified.
@@ -71,6 +70,7 @@ module Padrino
       path_info = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
       http_host = env['HTTP_HOST']
+      last_result = nil
 
       @mapping.each do |host, path, match, app|
         next unless host.nil? || http_host =~ host
@@ -79,19 +79,17 @@ module Padrino
 
         rest = "/" if rest.empty?
 
-        return app.call(
+        last_result = app.call(
           env.merge(
             'SCRIPT_NAME' => (script_name + path),
             'PATH_INFO'   => rest))
+        next if last_result[0] == 404
+        return last_result
       end
+      return last_result if last_result
+
       Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
       [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
-    end
-
-    private
-
-    def sort!
-      @mapping = @mapping.sort_by { |h, p, m, a| -p.size }
     end
   end
 end
