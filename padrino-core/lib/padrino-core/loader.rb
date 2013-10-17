@@ -169,6 +169,7 @@ module Padrino
     #
     def set_load_paths(*paths)
       load_paths.concat(paths).uniq!
+      $LOAD_PATH.concat(paths).uniq!
     end
 
     ##

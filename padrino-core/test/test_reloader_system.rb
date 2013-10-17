@@ -39,5 +39,14 @@ describe "SystemReloader" do
         File.open(parent_file, "w") { |f| f.write(backup) }
       end
     end
+    
+    should 'tamper with LOAD_PATH' do
+      SystemDemo.load_paths.each do |lib_dir|
+        assert_includes $LOAD_PATH, lib_dir
+      end
+      Padrino.send(:load_paths_was).each do |lib_dir|
+        assert_includes $LOAD_PATH, lib_dir
+      end
+    end
   end
 end
