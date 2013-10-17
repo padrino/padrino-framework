@@ -67,6 +67,7 @@ module Padrino
 
     # The call handler setup to route a request given the mappings specified.
     def call(env)
+      began_at = Time.now
       path_info = env["PATH_INFO"].to_s
       script_name = env['SCRIPT_NAME']
       http_host = env['HTTP_HOST']
@@ -83,6 +84,7 @@ module Padrino
             'SCRIPT_NAME' => (script_name + path),
             'PATH_INFO'   => rest))
       end
+      Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
       [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
     end
 
