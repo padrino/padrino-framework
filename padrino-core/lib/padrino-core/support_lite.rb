@@ -4,6 +4,7 @@
 require 'active_support/core_ext/module/aliasing'           # alias_method_chain
 require 'active_support/core_ext/hash/keys'                 # symbolize_keys
 require 'active_support/core_ext/hash/reverse_merge'        # reverse_merge
+require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/slice'                # slice
 require 'active_support/core_ext/object/blank'              # present?
 require 'active_support/core_ext/array/extract_options'     # extract_options

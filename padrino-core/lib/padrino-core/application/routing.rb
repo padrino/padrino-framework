@@ -784,10 +784,12 @@ module Padrino
       #
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
-          path_params[-1] = params.merge(path_params[-1])
+          path_params[-1] = params.merge(path_params[-1].with_indifferent_access)
         else
           path_params << params
         end
+
+        path_params[-1] = path_params[-1].symbolize_keys
         @route.path(*path_params)
       end
 

@@ -1789,6 +1789,33 @@ describe "Routing" do
     assert ok?
   end
 
+  should 'return params as a HashWithIndifferentAccess object via GET' do
+    mock_app do
+      get('/foo/:bar') { "#{params["bar"]} #{params[:bar]}" }
+      get(:foo, :map => '/prefix/:var') { "#{params["var"]} #{params[:var]}" }
+    end
+
+    get('/foo/some_text')
+    assert_equal "some_text some_text", body
+
+    get('/prefix/var')
+    assert_equal "var var", body
+  end
+
+  should 'return params as a HashWithIndifferentAccess object via POST' do
+    mock_app do
+      post('/user') do
+        "#{params["user"]["full_name"]} #{params[:user][:full_name]}"
+      end
+    end
+
+    post '/user', {:user => {:full_name => 'example user'}}
+    assert_equal "example user example user", body
+
+    post '/user', {"user" => {"full_name" => 'example user'}}
+    assert_equal "example user example user", body
+  end
+
   should 'have MethodOverride middleware with more options' do
     mock_app do
       put('/hi', :provides => [:json]) { 'hi' }
