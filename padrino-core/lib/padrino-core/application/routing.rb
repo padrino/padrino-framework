@@ -172,6 +172,7 @@ class HttpRouter
             env['router.request'] = request
             env['router.params'] ||= {}
             #{"env['router.params'].merge!(Hash[#{param_names.inspect}.zip(request.params)])" if dynamic?}
+            env['router.params'] = env['router.params'].with_indifferent_access
             @router.rewrite#{"_partial" if route.match_partially}_path_info(env, request)
             response = @router.process_destination_path(#{path_ivar}, env)
             return response unless router.pass_on_response(response)
@@ -959,10 +960,12 @@ module Padrino
       #
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
-          path_params[-1] = params.merge(path_params[-1])
+          path_params[-1] = params.merge(path_params[-1].with_indifferent_access)
         else
           path_params << params
         end
+
+        path_params[-1] = path_params[-1].symbolize_keys
         @route.path(*path_params)
       end
 
