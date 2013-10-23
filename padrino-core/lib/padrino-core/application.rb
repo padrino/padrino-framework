@@ -206,7 +206,7 @@ module Padrino
       end
       
       def default_security!
-        set :protection, true
+        set :protection, :except => :path_traversal
         set :authentication, false
         set :sessions, false
         set :protect_from_csrf, false
