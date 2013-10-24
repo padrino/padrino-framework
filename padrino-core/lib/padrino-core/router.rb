@@ -79,17 +79,13 @@ module Padrino
 
         rest = "/" if rest.empty?
 
-        last_result = app.call(
-          env.merge(
-            'SCRIPT_NAME' => (script_name + path),
-            'PATH_INFO'   => rest))
-        next if last_result[0] == 404
-        return last_result
+        last_result = app.call(env.merge('SCRIPT_NAME' => script_name + path, 'PATH_INFO' => rest))
+        break unless (app.respond_to?(:cascade) ? app.cascade : Mounter::DEFAULT_CASCADE).include?(last_result[0])
       end
-      return last_result if last_result
-
-      Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
-      [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
+      last_result || begin
+        Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
+        [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
+      end
     end
   end
 end
