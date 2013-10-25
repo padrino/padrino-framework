@@ -155,6 +155,23 @@ describe "Mounter" do
       assert_equal "(:posts, :regexp)", regexp_route.name
       assert_equal "/\\/foo|\\/baz/", regexp_route.path
     end
+    
+    should "configure cascade apps" do
+      class ::App1 < Padrino::Application
+        get(:index) { halt 404, 'index1' }
+      end
+      class ::App2 < Padrino::Application
+        get(:index) { halt 404, 'index2' }
+      end
+      class ::App3 < Padrino::Application
+        get(:index) { halt 404, 'index3' }
+      end
+      Padrino.mount('app1').to('/foo')
+      Padrino.mount('app2', :cascade => false).to('/foo')
+      Padrino.mount('app3', :cascade => false).to('/foo')
+      res = Rack::MockRequest.new(Padrino.application).get("/foo")
+      assert_equal 'index2', res.body
+    end
 
     should 'correctly instantiate a new padrino application' do
       mock_app do

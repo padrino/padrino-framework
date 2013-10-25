@@ -8,10 +8,11 @@ module Padrino
   #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
   #
   class Mounter
+    DEFAULT_CASCADE = [404, 405]
     class MounterException < RuntimeError
     end
 
-    attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host
+    attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host, :cascade
 
     ##
     # @param [String, Padrino::Application] name
@@ -33,6 +34,7 @@ module Padrino
       ensure_app_file! || ensure_app_object!
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @uri_root  = "/"
+      @cascade   = (options.has_key?(:cascade) && !options[:cascade]) ? [] : Array(options[:cascade] || DEFAULT_CASCADE.dup)
       Padrino::Reloader.exclude_constants << @app_class
     end
 
@@ -87,6 +89,7 @@ module Padrino
       app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
       app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exists?(app_obj.public_folder)
       app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
+      app_obj.set :cascade,        app_data.cascade
       app_obj.setup_application! # Initializes the app here with above settings.
       router.map(:to => app_obj, :path => app_data.uri_root, :host => app_data.app_host)
     end

@@ -17,8 +17,8 @@ describe "Router" do
     }
     map = Padrino::Router.new(
       { :path => '/bar',     :to => app },
-      { :path => '/foo',     :to => app },
-      { :path => '/foo/bar', :to => app }
+      { :path => '/foo/bar', :to => app },
+      { :path => '/foo',     :to => app }
     )
 
     res = Rack::MockRequest.new(map).get("/")
@@ -67,6 +67,57 @@ describe "Router" do
     assert res.ok?
     assert_equal "/bar", res["X-ScriptName"]
     assert_equal "/", res["X-PathInfo"]
+  end
+
+  should "dispatch requests to cascade mounted apps" do
+    app = lambda { |env|
+      scary = !!env['PATH_INFO'].match(/scary/)
+      [scary ? 404 : 200, {
+        'X-ScriptName' => env['SCRIPT_NAME'],
+        'X-PathInfo' => env['PATH_INFO'],
+        'Content-Type' => 'text/plain'
+      }, [""]]
+    }
+    api = lambda { |env|
+      spooky = !!env['QUERY_STRING'].match(/spooky/)
+      [spooky ? 200 : 404, {
+        'X-API' => spooky,
+        'X-ScriptName' => env['SCRIPT_NAME'],
+        'X-PathInfo' => env['PATH_INFO'],
+        'Content-Type' => 'application/json'
+      }, [""]]
+    }
+    map = Padrino::Router.new(
+      { :path => '/bar',     :to => api },
+      { :path => '/bar',     :to => app }
+    )
+
+    res = Rack::MockRequest.new(map).get("/werewolf")
+    assert_equal 404, res.status
+    assert_equal nil, res["X-API"]
+    assert_equal nil, res["X-ScriptName"]
+    assert_equal nil, res["X-PathInfo"]
+
+    res = Rack::MockRequest.new(map).get("/bar/mitzvah")
+    assert res.ok?
+    assert_equal nil, res["X-API"]
+    assert_equal 'text/plain', res["Content-Type"]
+    assert_equal "/bar", res["X-ScriptName"]
+    assert_equal "/mitzvah", res["X-PathInfo"]
+
+    res = Rack::MockRequest.new(map).get("/bar?spooky")
+    assert res.ok?
+    assert_equal true, res["X-API"]
+    assert_equal 'application/json', res["Content-Type"]
+    assert_equal "/bar", res["X-ScriptName"]
+    assert_equal "/", res["X-PathInfo"]
+
+    res = Rack::MockRequest.new(map).get("/bar/scary")
+    assert_equal 404, res.status
+    assert_equal nil, res["X-API"]
+    assert_equal 'text/plain', res["Content-Type"]
+    assert_equal "/bar", res["X-ScriptName"]
+    assert_equal "/scary", res["X-PathInfo"]
   end
 
   should "dispatches hosts correctly" do
