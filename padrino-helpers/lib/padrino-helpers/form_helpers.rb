@@ -19,6 +19,8 @@ module Padrino
       #   Also accepts HTML options.
       # @option settings [String] :builder ("StandardFormBuilder")
       #   The FormBuilder class to use such as StandardFormBuilder.
+      # @option settings [Symbol] :as
+      #   Sets custom form object name.
       # @param [Proc] block
       #   The fields and content inside this form.
       #
@@ -29,12 +31,14 @@ module Padrino
       # @example
       #   form_for :user, '/register' do |f| ... end
       #   form_for @user, '/register', :id => 'register' do |f| ... end
+      #   form_for @user, '/register', :as => :customer do |f| ... end
       #
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
         html = capture_html(instance, &block)
         settings[:multipart] = instance.multipart unless settings.include?(:multipart)
         settings.delete(:namespace)
+        settings.delete(:as)
         form_tag(url, settings) { html }
       end
 
@@ -883,7 +887,7 @@ module Padrino
           :disabled => Array(options.delete(:disabled_options))
         }
       end
-      
+
       def extract_option_tags!(options)
         state = extract_option_state!(options)
         option_tags = case
