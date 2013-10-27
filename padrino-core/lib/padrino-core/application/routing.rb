@@ -875,8 +875,11 @@ module Padrino
 
       def route!(base = settings, pass_block = nil)
         Thread.current['padrino.instance'] = self
-        code, headers, routes = base.compiled_router.call(@request.env)
-
+        code, headers, routes = begin
+          base.compiled_router.call(@request.env)
+        rescue PathRouter::NotFound, PathRouter::MethodNotAllowed
+          $!.response
+        end
         status(code)
         if code == 200
           routes.each_with_index do |(route, howl_params), index|

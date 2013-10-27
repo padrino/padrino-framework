@@ -5,6 +5,24 @@ module Padrino
   module PathRouter
     class InvalidRouteException < StandardError; end
 
+    class NotFound < StandardError
+      def response
+        [404, {}, ["Not Found"]]
+      end
+    end
+
+    class MethodNotAllowed < StandardError
+      def initialize(accepts)
+        @accepts = accepts
+      end
+
+      def response
+        headers = {}
+        headers['Allow'] = @accepts
+        [405, headers, ["MethodNotAllowed"]]
+      end
+    end
+
     def self.new
       Base.new
     end
@@ -109,8 +127,7 @@ module Padrino
         }.compact
 
         if result.empty?
-          request.acceptable_methods = matched_routes.map(&:verb)
-          raise MethodNotAllowed
+          raise MethodNotAllowed.new(matched_routes.map(&:verb))
         end
 
         result
@@ -133,14 +150,6 @@ module Padrino
 
       private
 
-      RESPONSE_HEADERS.keys.each do |method_name|
-        define_method(method_name){|headers = {}| generate_response(method_name.to_sym, headers) }
-        Object.const_set(method_name.to_s.split('_').map(&:capitalize).join, Class.new(StandardError))
-      end
-
-      def generate_response(key, headers = {})
-        [RESPONSE_HEADERS[key], headers, [key.to_s.split('_').map(&:capitalize) * " "]]
-      end
     end
 
     class Route
