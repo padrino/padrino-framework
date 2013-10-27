@@ -146,7 +146,7 @@ module Padrino
     class Route
       attr_accessor :block, :capture, :router, :name, :order,
                     :default_values, :path_for_generation, :verb
-      attr_accessor :action, :cache, :cache_key, :cache_expires_in,
+      attr_accessor :action, :cache, :cache_key, :cache_expires,
                     :parent, :use_layout, :controller, :user_agent
   
   
