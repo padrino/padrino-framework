@@ -90,25 +90,11 @@ module Padrino
       end
 
       def recognize(request)
-        path_info, verb, request_params = if request.is_a?(Hash)
-          [request['PATH_INFO'], request['REQUEST_METHOD'], {}]
-        else
-          [request.path_info, request.request_method, request.params]
-        end
-
-        verb = verb.downcase.to_sym
+        path_info, verb, request_params = parse_request(request)
         ignore_slash_path_info = path_info
         ignore_slash_path_info = path_info[0..-2] if path_info != "/" and path_info[-1] == "/"
-  
-        request_params = request_params.inject({}) do |result, entry|
-          result[entry[0].to_sym] = entry[1]
-          result
-        end
-        matched_routes = @routes.select do |route|
-          matcher = route.matcher
-          matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
-        end
 
+        matched_routes = scan_routes(path_info, ignore_slash_path_info)
         raise NotFound if matched_routes.empty?
   
         result = matched_routes.map{|route|
@@ -126,11 +112,7 @@ module Padrino
           [route, params]
         }.compact
 
-        if result.empty?
-          raise MethodNotAllowed.new(matched_routes.map(&:verb))
-        end
-
-        result
+        result.empty? ? (raise MethodNotAllowed.new(matched_routes.map(&:verb))) : result
       end
 
       def recognize_path(path_info)
@@ -150,6 +132,27 @@ module Padrino
 
       private
 
+      def scan_routes(path_info, ignore_slash_path_info)
+        @routes.select do |route|
+          matcher = route.matcher
+          matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
+        end
+      end
+
+      def parse_request(request)
+        if request.is_a?(Hash)
+          [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
+        else
+          [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
+        end
+      end
+
+      def parse_request_params(params)
+        params.inject({}) do |result, entry|
+          result[entry[0].to_sym] = entry[1]
+          result
+        end
+      end
     end
 
     class Route
