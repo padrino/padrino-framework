@@ -109,7 +109,7 @@ module Padrino
               result
             }).merge!(request_params){|key, self_value, new_value| self_value || new_value }
           end
-          [route, params]
+          [route, params.with_indifferent_access]
         }.compact
 
         result.empty? ? (raise MethodNotAllowed.new(matched_routes.map(&:verb))) : result
