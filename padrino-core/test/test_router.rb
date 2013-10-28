@@ -123,15 +123,15 @@ describe "Router" do
   should "dispatch requests to cascade mounted apps until it encounters one with cascade == false" do
 
     api = mock_app do
-      get 'spooky' do
-        ""
+      get 'scary' do
+        "1"
       end
       set :cascade, true
     end
 
     app = mock_app do
       get 'scary' do
-        ""
+        "2"
       end
       set :cascade, false
     end
@@ -151,6 +151,8 @@ describe "Router" do
 
     res = Rack::MockRequest.new(map).get("/bar/scary")
     assert res.ok?
+    #asserting that on ok we're good to go
+    assert_equal "1", res.body
 
     res = Rack::MockRequest.new(map).get("/bar/terrifying")
     assert !res.ok?
