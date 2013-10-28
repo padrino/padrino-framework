@@ -120,6 +120,43 @@ describe "Router" do
     assert_equal "/scary", res["X-PathInfo"]
   end
 
+  should "dispatch requests to cascade mounted apps until it encounters one with cascade == false" do
+
+    api = mock_app do
+      get 'spooky' do
+        ""
+      end
+      set :cascade, true
+    end
+
+    app = mock_app do
+      get 'scary' do
+        ""
+      end
+      set :cascade, false
+    end
+
+    app2 = mock_app do
+      get 'terrifying' do
+        ""
+      end
+
+    end
+
+    map = Padrino::Router.new(
+        { :path => '/bar',     :to => api },
+        { :path => '/bar',   :to => app  },
+        { :path => '/bar',     :to => app2 }
+    )
+
+    res = Rack::MockRequest.new(map).get("/bar/scary")
+    assert res.ok?
+
+    res = Rack::MockRequest.new(map).get("/bar/terrifying")
+    assert !res.ok?
+
+  end
+
   should "dispatches hosts correctly" do
     map = Padrino::Router.new(
      { :host => "foo.org", :to => lambda { |env|
