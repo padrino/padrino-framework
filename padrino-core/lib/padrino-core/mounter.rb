@@ -109,7 +109,9 @@ module Padrino
     #
     def named_routes
       app_obj.routes.map { |route|
-        name_array     = "(#{route.name.to_s.split("_").map { |piece| %Q[:#{piece}] }.join(", ")})"
+        route_name = route.name.to_s
+        route_name.sub!(/^#{route.controller}_/, "") if route.controller
+        name_array = "(#{route.controller ? %Q[:#{route.controller}] + ", " : ""}:#{route_name})"
         request_method = route.request_methods.first
         next if route.name.blank? || request_method == 'HEAD'
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path

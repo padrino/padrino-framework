@@ -130,15 +130,22 @@ describe "Mounter" do
           put(:update) { "users update" }
           delete(:destroy) { "users delete" }
         end
+        controllers :foo_bar do
+          get(:index) { "foo bar index" }
+          get(:new) { "foo bar new" }
+          post(:create) { "foo bar create" }
+          put(:update) { "foo bar update" }
+          delete(:destroy) { "foo bar delete" }
+        end
       end
 
       Padrino.mount("one_app").to("/")
       Padrino.mount("two_app").to("/two_app")
 
       assert_equal 15, Padrino.mounted_apps[0].routes.size
-      assert_equal 7, Padrino.mounted_apps[1].routes.size
+      assert_equal 14, Padrino.mounted_apps[1].routes.size
       assert_equal 6, Padrino.mounted_apps[0].named_routes.size
-      assert_equal 5, Padrino.mounted_apps[1].named_routes.size
+      assert_equal 10, Padrino.mounted_apps[1].named_routes.size
 
       first_route = Padrino.mounted_apps[0].named_routes[3]
       assert_equal "posts_show", first_route.identifier.to_s
@@ -154,6 +161,8 @@ describe "Mounter" do
       assert_equal "posts_regexp", regexp_route.identifier.to_s
       assert_equal "(:posts, :regexp)", regexp_route.name
       assert_equal "/\\/foo|\\/baz/", regexp_route.path
+      foo_bar_route = Padrino.mounted_apps[1].named_routes[5]
+      assert_equal "(:foo_bar, :index)", foo_bar_route.name
     end
     
     should "configure cascade apps" do
