@@ -194,7 +194,7 @@ module Padrino
     def apply?(request)
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [@scoped_controller, arg].flatten.join("_").to_sym)
+        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [@scoped_controller, arg].flatten.join(" ").to_sym)
         else             arg === request.path_info
         end
       end || @options.any? do |name, val|
@@ -558,7 +558,7 @@ module Padrino
       def url(*args)
         params = args.extract_options!  # parameters is hash at end
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
-        name = names.join("_").to_sym    # route name is concatenated with underscores
+        name = names[0, 2].join(" ").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
           params[:format] = params[:format].to_s unless params[:format].nil?
           params = value_to_param(params)
@@ -787,7 +787,7 @@ module Padrino
         name = options.delete(:name) if name.nil? && options.key?(:name)
         if name
           controller_name = controller.join("_")
-          name = "#{controller_name}_#{name}".to_sym unless controller_name.blank?
+          name = "#{controller_name} #{name}".to_sym unless controller_name.blank?
         end
 
         # Merge in option defaults.

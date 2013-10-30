@@ -148,17 +148,17 @@ describe "Mounter" do
       assert_equal 10, Padrino.mounted_apps[1].named_routes.size
 
       first_route = Padrino.mounted_apps[0].named_routes[3]
-      assert_equal "posts_show", first_route.identifier.to_s
+      assert_equal "posts show", first_route.identifier.to_s
       assert_equal "(:posts, :show)", first_route.name
       assert_equal "GET", first_route.verb
       assert_equal "/posts/show/:id(.:format)", first_route.path
       another_route = Padrino.mounted_apps[1].named_routes[2]
-      assert_equal "users_create", another_route.identifier.to_s
+      assert_equal "users create", another_route.identifier.to_s
       assert_equal "(:users, :create)", another_route.name
       assert_equal "POST", another_route.verb
       assert_equal "/two_app/users/create", another_route.path
       regexp_route = Padrino.mounted_apps[0].named_routes[5]
-      assert_equal "posts_regexp", regexp_route.identifier.to_s
+      assert_equal "posts regexp", regexp_route.identifier.to_s
       assert_equal "(:posts, :regexp)", regexp_route.name
       assert_equal "/\\/foo|\\/baz/", regexp_route.path
       foo_bar_route = Padrino.mounted_apps[1].named_routes[5]
