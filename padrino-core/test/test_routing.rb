@@ -56,6 +56,32 @@ describe "Routing" do
     }
   end
 
+  should 'fail with unrecognized route exception when namespace is invalid' do
+    mock_app do
+      controller :foo_bar do
+        get(:index){ "okey" }
+        get(:test_baz){ "okey" }
+      end
+    end
+    assert_equal "/foo_bar", @app.url_for(:foo_bar, :index)
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get @app.url_for(:foo, :bar, :index)
+    }
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get @app.url_for(:foo, :bar_index)
+    }
+    assert_equal "/foo_bar/test_baz", @app.url_for(:foo_bar, :test_baz)
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get @app.url_for(:foo_bar, :test, :baz)
+    }
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get @app.url_for(:foo, :bar_test, :baz)
+    }
+    assert_raises(Padrino::Routing::UnrecognizedException) {
+      get @app.url_for(:foo, :bar_test_baz)
+    }
+  end
+
   should 'accept regexp routes' do
     mock_app do
       get(%r./fob|/baz.) { "regexp" }
@@ -474,7 +500,7 @@ describe "Routing" do
       end
     end
     get "/posts"
-    assert_equal "posts_index", body
+    assert_equal "posts index", body
   end
 
   should "preserve the format if you set it manually" do
@@ -676,8 +702,8 @@ describe "Routing" do
     assert_equal "1", body
     get "/admin/show/1"
     assert_equal "show 1", body
-    assert_equal "/admin/1", @app.url(:admin_index, :id => 1)
-    assert_equal "/admin/show/1", @app.url(:admin_show, :id => 1)
+    assert_equal "/admin/1", @app.url(:admin, :index, :id => 1)
+    assert_equal "/admin/show/1", @app.url(:admin, :show, :id => 1)
     get "/foo/bar"
     assert_equal "foo_bar_index", body
   end
@@ -1894,8 +1920,8 @@ describe "Routing" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:foo_bar, { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:foo_bar, { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:"foo bar", { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
     assert_equal [:simple, { :id => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
     assert_equal [:simple, { :id => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
     assert_equal [:simple, { :id => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
