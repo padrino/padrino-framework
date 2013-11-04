@@ -238,6 +238,7 @@ module Padrino
         # Returns the object's models name.
         #
         def object_model_name(explicit_object=object)
+          return @options[:as] if root_form? && @options[:as].is_a?(Symbol)
           explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
         end
 
