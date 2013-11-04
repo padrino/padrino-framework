@@ -27,7 +27,7 @@
 
         <div class="form-group">
           <label for="password" class="col-lg-2 control-label"><%%= pat('login.password') %></label>
-          <div class="col-lg-10"><%%= password_field_tag :password, :value => params[:password], :class => 'form-control' %></div>
+          <div class="col-lg-10"><%%= password_field_tag :password, :class => 'form-control' %></div>
         </div>
 
         <fieldset class="login-control-group-last control-group">
