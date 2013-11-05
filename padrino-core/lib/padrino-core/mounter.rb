@@ -34,7 +34,7 @@ module Padrino
       ensure_app_file! || ensure_app_object!
       @app_root  = options[:app_root]  || File.dirname(@app_file)
       @uri_root  = "/"
-      @cascade   = (options.has_key?(:cascade) && !options[:cascade]) ? [] : Array(options[:cascade] || DEFAULT_CASCADE.dup)
+      @cascade   = options[:cascade] ? true == options[:cascade] ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
       Padrino::Reloader.exclude_constants << @app_class
     end
 
