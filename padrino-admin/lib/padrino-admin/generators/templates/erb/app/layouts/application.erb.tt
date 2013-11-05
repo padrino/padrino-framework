@@ -16,7 +16,7 @@
     <div class="navbar navbar-fixed-top">
       <div class=navbar-inner>
         <div class=container>
-          <%%= link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
+          <%%= link_to 'Padrino', url(:base, :index), :class => 'navbar-brand', :title => 'Padrino Admin' %>
           <ul class="nav navbar-nav pull-right">
             <li class=navbar-edit-account><%%= link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link' %></li>
             <li class=navbar-logout>
