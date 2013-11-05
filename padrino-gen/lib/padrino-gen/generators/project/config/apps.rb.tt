@@ -28,7 +28,7 @@
 Padrino.configure_apps do
   # enable :sessions
   set :session_secret, '<%= SecureRandom.hex(32) %>'
-  set :protection, true
+  set :protection, :except => :path_traversal
   set :protect_from_csrf, true
 end
 
