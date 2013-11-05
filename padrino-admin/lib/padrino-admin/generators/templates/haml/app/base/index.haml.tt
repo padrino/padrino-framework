@@ -5,7 +5,7 @@
 
 .base-icons
   .btn-group
-    .btn.btn-primary{:title => "Adapters for datamapper, sequel, activerecord, mongomapper, mongoid, couchrest"}=tag_icon("cogs icon-2x", "Orm Agnostic")
+    .btn.btn-primary{:title => "Adapters for datamapper, sequel, activerecord, minirecord, mongomapper, mongoid, couchrest"}=tag_icon("cogs icon-2x", "Orm Agnostic")
     .btn.btn-success{:title => "User Authentication Support, User Authorization Management"}=tag_icon("group icon-2x", "Authentication")
     .btn.btn-info{:title => "Erb, Haml, Slim Rendering Support"}=tag_icon("tasks icon-2x", "Template Agnostic")
     .btn.btn-warning{:title => "English, German, Russian, Danish, French, Brazilian and Italian localizations and many more!.."}=tag_icon("flag icon-2x", "Multi Language")
