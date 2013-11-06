@@ -209,6 +209,24 @@ describe "Rendering" do
     assert_equal "haml", body.chomp
   end
 
+  should 'allow to render template with layout that using other template engine.' do
+    create_layout :"layouts/foo", "application layout for <%= yield %>", :format => :erb
+    create_view :slim, "| slim", :format => :slim
+    create_view :haml, "haml", :format => :haml
+    create_view :erb, "erb", :format => :erb
+    mock_app do
+      get("/slim") { render("slim.slim", :layout => "foo.erb") }
+      get("/haml") { render("haml.haml", :layout => "foo.erb") }
+      get("/erb") { render("erb.erb", :layout => "foo.erb") }
+    end
+    get "/slim"
+    assert_equal "application layout for slim", body.chomp
+    get "/haml"
+    assert_equal "application layout for haml", body.chomp
+    get "/erb"
+    assert_equal "application layout for erb", body.chomp
+  end
+
   context 'for application render functionality' do
 
     should "work properly with logging and missing layout" do

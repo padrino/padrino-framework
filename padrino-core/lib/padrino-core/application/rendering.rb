@@ -211,6 +211,14 @@ module Padrino
         @current_engine, engine_was = engine, @current_engine
         @_out_buf,  _buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
 
+        layout_extension = File.extname(options[:layout].to_s)
+        layout_engine    = layout_extension[1, layout_extension.length - 1]
+
+        if %w[erb slim haml].include?(layout_engine)
+          options[:layout] = options[:layout].to_s[0, options[:layout].to_s.length - layout_extension.length].to_sym 
+          options[:layout_engine] = layout_engine.to_sym
+        end
+
         # Pass arguments to Sinatra render method.
         super(engine, data, options.dup, locals, &block)
       ensure
