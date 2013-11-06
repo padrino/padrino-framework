@@ -23,6 +23,17 @@ module Padrino
       Padrino.logger
     end
 
+    # TODO: Remove this hack after getting rid of thread-unsafe http_houter:
+    alias_method :original_call, :call
+    def call(*args)
+      settings.init_mutex.synchronize do
+        instance_eval{ undef :call }
+        class_eval{ alias_method :call, :original_call }
+        instance_eval{ undef :original_call }
+        super(*args)
+      end
+    end
+
     class << self
       def inherited(base)
         begun_at = Time.now
@@ -184,6 +195,9 @@ module Padrino
 
         set :method_override, true
         set :default_builder, 'StandardFormBuilder'
+
+        # TODO: Remove this hack after getting rid of thread-unsafe http_houter:
+        set :init_mutex, Mutex.new
 
         default_paths!
         default_security!
