@@ -81,6 +81,26 @@ module Padrino
       end
 
       ##
+      # Returns an absolute path of view in application views folder.
+      #
+      # @example
+      #   Admin.view_path 'users/index' #=> "/home/user/test/admin/views/users/index"
+      #
+      def view_path(view)
+        File.expand_path(view, views)
+      end
+
+      ##
+      # Returns an absolute path of application layout.
+      #
+      # @example
+      #   Admin.layout_path :application #=> "/home/user/test/admin/views/layouts/application"
+      #
+      def layout_path(layout)
+        view_path("layouts/#{layout}")
+      end
+
+      ##
       # Setup the application by registering initializers, load paths and logger.
       # Invoked automatically when an application is first instantiated.
       #

@@ -84,6 +84,11 @@ describe "Application" do
       assert_equal "Foo in nil", body
     end
 
+    should "resolve views and layouts paths" do
+      assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
+      assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
+    end
+
     context "errors" do
       should "haven't mapped errors on development" do
         mock_app { get('/'){ 'HI' } }
