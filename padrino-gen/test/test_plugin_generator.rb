@@ -68,7 +68,7 @@ describe "PluginGenerator" do
 
     should "resolve official template" do
       template_file = 'sampleblog'
-      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/templates/sampleblog_template.rb"
+      resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/templates/sampleblog_template.rb"
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { project_gen.invoke_all }
@@ -83,7 +83,7 @@ describe "PluginGenerator" do
 
     should "resolve official plugin" do
       template_file = 'hoptoad'
-      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/plugins/hoptoad_plugin.rb"
+      resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/plugins/hoptoad_plugin.rb"
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
@@ -92,7 +92,7 @@ describe "PluginGenerator" do
 
     should "print a warning if template cannot be found" do
       template_file  = 'hwat'
-      resolved_path = "https://github.com/padrino/padrino-recipes/raw/master/plugins/hwat_plugin.rb"
+      resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/plugins/hwat_plugin.rb"
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:say).with("The template at #{resolved_path} could not be found!", :red).returns(true).once
