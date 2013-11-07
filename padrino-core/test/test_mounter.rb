@@ -24,7 +24,14 @@ describe "Mounter" do
       assert_equal "TestApp", mounter.app_class
       assert_equal "/path/to/test.rb", mounter.app_file
       assert_equal "/test_app", mounter.uri_root
-      assert_equal File.dirname(mounter.app_file), mounter.app_root
+      assert_equal Padrino.root, mounter.app_root
+    end
+
+    should 'use app.root if available' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
+      mounter = Padrino::Mounter.new("kiq", :app_class => "Kiq")
+      mounter.to("/test_app")
+      assert_equal '/weird', mounter.app_root
     end
 
     should 'check locate_app_file with __FILE__' do
