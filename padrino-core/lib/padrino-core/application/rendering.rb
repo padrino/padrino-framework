@@ -195,11 +195,13 @@ module Padrino
         options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
         # Resolve layouts similar to in Rails
         if options[:layout].nil? && !settings.templates.has_key?(:layout)
-          layout_path, layout_engine = *resolved_layout
+          layout_path = settings.fetch_layout_path(options[:layout])
+          is_included_extension = %w[.slim .erb .haml].include?(File.extname(layout_path.to_s))
+          layout_path, layout_engine = *(is_included_extension ? resolve_template(layout_path) : resolved_layout)
 
           # We need to force layout false so sinatra don't try to render it
           options[:layout] = layout_path || false
-          options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
+          options[:layout] = false unless is_included_extension ? layout_engine : layout_engine == engine
           options[:layout_engine] = layout_engine || engine if options[:layout]
         elsif options[:layout].present?
           options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]))
