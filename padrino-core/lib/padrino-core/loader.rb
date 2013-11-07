@@ -134,7 +134,7 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!.merge( :cyclic => true )
-      files = paths.flatten.map{ |path| Dir[path] }.flatten.uniq
+      files = paths.flatten.map{ |path| Dir[path] }.flatten.uniq.sort
 
       while files.present?
         error, fatal, loaded = nil, nil, nil
