@@ -33,11 +33,6 @@ group :development do
   gem "uuid",      ">= 2.3.1"
   gem "builder",   ">= 2.1.2"
   gem "bcrypt-ruby", :require => "bcrypt"
-  platforms :mri_18 do
-    # gem "rcov",         "~> 0.9.8"
-    # gem "ruby-prof",    ">= 0.9.1"
-    gem "system_timer", ">= 1.0"
-  end
   platforms :jruby do
     gem "jruby-openssl"
   end

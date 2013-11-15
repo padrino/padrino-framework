@@ -31,7 +31,7 @@ class <%= @model_name %> < ActiveRecord::Base
 
   def encrypt_password
     value = ::BCrypt::Password.create(password)
-    value = value.force_encoding(Encoding::UTF_8) if value.respond_to?(:encoding) && value.encoding == Encoding::ASCII_8BIT
+    value = value.force_encoding(Encoding::UTF_8) if value.encoding == Encoding::ASCII_8BIT
     self.crypted_password = value
   end
 
