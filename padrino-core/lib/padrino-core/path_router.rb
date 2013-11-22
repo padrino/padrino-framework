@@ -253,13 +253,13 @@ module Padrino
       end
   
       def mustermann?
-        handler.class == Mustermann::Rails
+        handler.instance_of?(Mustermann::Sinatra)
       end
   
       def handler
         @handler ||= case @path
         when String
-          Mustermann.new(@path, :type => :rails, :capture => @capture)
+          Mustermann.new(@path, :capture => @capture)
         when Regexp
           /^(?:#{@path})$/
         end
