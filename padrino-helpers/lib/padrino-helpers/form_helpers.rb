@@ -651,7 +651,7 @@ module Padrino
       # @return [String] The html image button based on the +options+ specified.
       #
       # @example
-      #   submit_tag "Create", :class => 'success'
+      #   image_submit_tag 'form/submit.png'
       #
       def image_submit_tag(source, options={})
         input_tag(:image, options.reverse_merge(:src => image_path(source)))
