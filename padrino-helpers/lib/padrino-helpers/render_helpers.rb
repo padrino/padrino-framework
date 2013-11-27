@@ -30,7 +30,7 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      def partial(template, options={})
+      def partial(template, options={}, &block)
         options = options.reverse_merge(:locals => {}, :layout => false)
         explicit_engine = options.delete(:engine)
 
@@ -48,7 +48,7 @@ module Padrino
         objects.inject(''.html_safe) do |html,object|
           locals[object_name] = object if object
           locals["#{object_name}_counter".to_sym] = counter += 1 if counter
-          html << render(explicit_engine, template_path, options).html_safe
+          html << render(explicit_engine, template_path, options, &block).html_safe
         end
       end
       alias :render_partial :partial

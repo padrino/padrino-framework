@@ -61,4 +61,10 @@ class RenderDemo < Padrino::Application
       content_tag :div, 'go block!'
     end
   end
+
+  get '/partial_block_:ext' do
+    partial "partial_block_#{params[:ext]}" do
+      content_tag :div, 'go block!'
+    end
+  end
 end
