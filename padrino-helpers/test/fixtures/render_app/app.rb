@@ -55,4 +55,10 @@ class RenderDemo < Padrino::Application
   get '/partial/foward_slash' do
     partial '/template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
   end
+
+  get '/render_block_:ext' do
+    render "render_block_#{params[:ext]}" do
+      content_tag :div, 'go block!'
+    end
+  end
 end

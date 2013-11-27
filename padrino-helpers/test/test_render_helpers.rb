@@ -54,6 +54,30 @@ describe "RenderHelpers" do
     end
   end
 
+  context 'render with block' do
+    should 'render slim with block' do
+      visit '/render_block_slim'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.slim-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+    should 'render erb with block' do
+      visit '/render_block_erb'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.erb-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+    should 'render haml with block' do
+      visit '/render_block_haml'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.haml-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+  end
+
   context 'for #current_engine method' do
     should 'detect correctly current engine for a padrino application' do
       visit '/current_engine'
