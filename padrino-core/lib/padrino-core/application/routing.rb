@@ -905,7 +905,12 @@ module Padrino
 
           if matched_format
             @_content_type = url_format || accept_format || :html
-            content_type(@_content_type, :charset => 'utf-8')
+
+            if @_content_type != :json
+              content_type(@_content_type, :charset => 'utf-8')
+            else
+              content_type(@_content_type)
+            end
           end
 
           matched_format

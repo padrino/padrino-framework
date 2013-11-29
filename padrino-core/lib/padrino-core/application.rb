@@ -219,6 +219,9 @@ module Padrino
         # TODO: Remove this hack after getting rid of thread-unsafe http_houter:
         set :init_mutex, Mutex.new
 
+        # TODO: Remove this line after sinatra version up.
+        set :add_charset, %w[javascript xml xhtml+xml].map {|t| "application/#{t}" }
+
         default_paths!
         default_security!
         global_configuration!
