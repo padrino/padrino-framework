@@ -85,6 +85,7 @@ describe "RenderHelpers" do
       assert_have_selector 'h3', :content => 'postfix'
       assert_have_selector '.slim-block'
       assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
     end
     should 'show partial erb with block' do
       visit '/partial_block_erb'
@@ -92,6 +93,7 @@ describe "RenderHelpers" do
       assert_have_selector 'h3', :content => 'postfix'
       assert_have_selector '.erb-block'
       assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
     end
     should 'show partial haml with block' do
       visit '/partial_block_haml'
@@ -99,6 +101,7 @@ describe "RenderHelpers" do
       assert_have_selector 'h3', :content => 'postfix'
       assert_have_selector '.haml-block'
       assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
     end
   end
 

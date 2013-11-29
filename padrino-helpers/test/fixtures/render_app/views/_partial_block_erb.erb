@@ -2,4 +2,9 @@
 <div class="erb-block">
 <%= yield %>
 </div>
+<div class="go-deep">
+<% partial 'deep.erb' do %>
+Done
+<% end %>
+</div>
 <h3>postfix</h3>
