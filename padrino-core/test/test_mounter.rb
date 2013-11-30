@@ -144,7 +144,7 @@ describe "Mounter" do
       assert_equal "posts show", first_route.identifier.to_s
       assert_equal "(:posts, :show)", first_route.name
       assert_equal "GET", first_route.verb
-      assert_equal "/posts/show/:id(.:format)", first_route.path
+      assert_equal "/posts/show/:id(.:format)?", first_route.path
       another_route = Padrino.mounted_apps[1].named_routes[2]
       assert_equal "users create", another_route.identifier.to_s
       assert_equal "(:users, :create)", another_route.name
