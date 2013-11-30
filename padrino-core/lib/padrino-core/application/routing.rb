@@ -15,6 +15,19 @@ class Sinatra::Request
   end
 end
 
+##
+# This patches Sinatra to accept UTF-8 urls on JRuby 1.7.6
+#
+if RUBY_ENGINE == 'jruby' && RUBY_VERSION > '1.7.4'
+  class Sinatra::Base
+    class << self
+      alias_method :old_generate_method, :generate_method
+      def generate_method(method_name, &block)
+        old_generate_method(method_name.to_sym, &block)
+      end
+    end
+  end
+end
 
 class HttpRouter
   def rewrite_partial_path_info(env, request); end
