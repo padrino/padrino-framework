@@ -23,7 +23,8 @@ This is Fikus, a simple content management system written in the Ruby programmin
 -   Data stored in MongoDB
 -   Built-in page caching for performance
 -   Ability to specify different layouts per page
--   Why Fikus?
+
+### Why Fikus?
 
 I was in need of a very simple content management system. I wanted to quickly author somewhat static pages together for the web, but I didn’t want to deal with deploying the site, uploading files, or dealing with fitting my content in templates. That ruled out a lot of existing content management systems that did too much for what I wanted.
 
