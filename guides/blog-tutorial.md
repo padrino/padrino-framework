@@ -80,17 +80,24 @@ Now, let us examine the `config/database.rb` file to make sure the database conn
 Let us also setup a few simple routes in our application to demonstrate the Padrino routing system. Let’s go into the `app/app.rb` file and enter the following routes:
 
     # app/app.rb
-    class SampleBlog < Padrino::Application
-      register Padrino::Rendering  
-      register Padrino::Helpers
-      
-      # Add these routes below to the app file...
-      get "/" do
-        "Hello World!"
-      end
-
-      get :about, :map => '/about_us' do
-        render :haml, "%p This is a sample blog created to demonstrate how Padrino works!"
+    module SampleBlog
+      class App < Padrino::Application
+        register SassInitializer
+        use ActiveRecord::ConnectionAdapters::ConnectionManagement
+        register Padrino::Rendering
+        register Padrino::Mailer
+        register Padrino::Helpers
+          
+        enable :sessions
+          
+        # Add these routes below to the app file...
+        get "/" do
+          "Hello World!"
+        end
+    
+        get :about, :map => '/about_us' do
+          render :haml, "%p This is a sample blog created to demonstrate how Padrino works!"
+        end
       end
     end
 
@@ -196,7 +203,7 @@ This creates the post model. Next, let’s create the controller to allow the ba
 We’ll want to attached some of the standard routes (:index and :show) to the controller.
 
     # app/controllers/posts.rb
-    SampleBlog.controllers :posts do
+    SampleBlog::App.controllers :posts do
       get :index do
         @posts = Post.all(:order => 'created_at desc')
         render 'posts/index'
@@ -320,9 +327,12 @@ Head on over to `admin/controllers/posts.rb`. We’re going to include the `curr
         @post = Post.new(params[:post])
         @post.account = current_account
         if @post.save
-          flash[:notice] = 'Post was successfully created.'
-          redirect url(:posts, :edit, :id => @post.id)
+          @title = pat(:create_title, :model => "post #{@post.id}")
+          flash[:success] = pat(:create_success, :model => 'Post')
+          params[:save_and_continue] ? redirect(url(:posts, :index)) : redirect(url(:posts, :edit, :id => @post.id))
         else
+          @title = pat(:create_title, :model => 'post')
+          flash.now[:error] = pat(:create_error, :model => 'post')
           render 'posts/new'
         end
       end
@@ -416,7 +426,7 @@ With the layout and these two stylesheets in place, the blog will now have a muc
 Finally, before the application is deployed, let’s set up RSS and Atom feeds for our new blog so people can subscribe to our posts. For the feeds, we’re going to head back to the posts controller and make a few changes by appending a `provides` option to our `index` block. This command below instructs the route that it should respond to HTML, RSS and Atom formats.
 
     # app/controllers/posts.rb
-    SampleBlog.controllers :posts do
+    SampleBlog::App.controllers :posts do
     ...
       get :index, :provides => [:html, :rss, :atom] do
         @posts = Post.all(:order => 'created_at desc')
@@ -539,10 +549,11 @@ Now we need to create a Rakefile since we don’t have shell access to `padrino 
 And a Rakefile will be generated automatically that looks like this:
 
     # Rakefile
-    require File.dirname(__FILE__) + '/config/boot.rb'
-    require 'thor'
+    require 'bundler/setup'
     require 'padrino-core/cli/rake'
 
+    PadrinoTasks.use(:database)
+    PadrinoTasks.use(:activerecord)
     PadrinoTasks.init
 
 Finally we need to tweak our `seed.rb`:
