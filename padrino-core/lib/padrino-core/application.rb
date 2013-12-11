@@ -336,6 +336,29 @@ module Padrino
 
       # sets up csrf protection for the app:
       def setup_csrf_protection(builder)
+        check_csrf_protection_dependency
+
+        if protect_from_csrf?
+          builder.use(Rack::Protection::AuthenticityToken,
+                      options_for_csrf_protection_setup)
+        end
+      end
+
+      # returns the options used in the builder for csrf protection setup
+      def options_for_csrf_protection_setup
+        options = { :logger => logger }
+
+        if allow_disabled_csrf?
+          options.merge!({
+                             :reaction   => :report,
+                             :report_key => 'protection.csrf.failed'
+                         })
+        end
+        options
+      end
+
+      # Throw a exception if the protect_from_csrf is active but sessions not.
+      def check_csrf_protection_dependency
         if protect_from_csrf? && !sessions?
           raise(<<-ERROR)
 `protect_from_csrf` is activated, but `sessions` are not. To enable csrf
@@ -346,19 +369,7 @@ protection, use:
 or deactivate protect_from_csrf:
 
     disable :protect_from_csrf
-ERROR
-        end
-
-        if protect_from_csrf?
-          if allow_disabled_csrf?
-            builder.use Rack::Protection::AuthenticityToken,
-                        :reaction => :report,
-                        :report_key => 'protection.csrf.failed',
-                        :logger => logger
-          else
-            builder.use Rack::Protection::AuthenticityToken,
-                        :logger => logger
-          end
+          ERROR
         end
       end
     end
