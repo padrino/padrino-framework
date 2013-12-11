@@ -422,11 +422,15 @@ describe "Rendering" do
       mock_app do
         get("/foo", :provides => [:html, :js]) { render :foo }
       end
+
+      I18n.enforce_available_locales = false
       I18n.locale = :none
       get "/foo.js"
       assert_equal "Im Js", body
       get "/foo"
       assert_equal "Im Erb", body
+      I18n.enforce_available_locales = true
+
       I18n.locale = :en
       get "/foo"
       assert_equal "Im English Erb", body
@@ -442,6 +446,7 @@ describe "Rendering" do
       I18n.locale = :en
       get "/foo.pk"
       assert_equal 404, status
+
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -462,11 +467,15 @@ describe "Rendering" do
         layout :foo
         get("/bar", :provides => [:html, :js, :json]) { render :bar }
       end
+
+      I18n.enforce_available_locales = false
       I18n.locale = :none
       get "/bar.js"
       assert_equal "Hello Im Js in a Js layout", body
       get "/bar"
       assert_equal "Hello Im Erb in a Erb layout", body
+      I18n.enforce_available_locales = true
+
       I18n.locale = :en
       get "/bar"
       assert_equal "Hello Im English Erb in a Erb-En layout", body
@@ -484,6 +493,7 @@ describe "Rendering" do
       assert_equal "Im a json", body
       get "/bar.pk"
       assert_equal 404, status
+
     end
 
     should 'renders erb with blocks' do
