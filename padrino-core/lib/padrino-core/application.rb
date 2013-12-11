@@ -23,7 +23,7 @@ module Padrino
       Padrino.logger
     end
 
-    # TODO: Remove this hack after getting rid of thread-unsafe http_houter:
+    # TODO: Remove this hack after getting rid of thread-unsafe http_router:
     alias_method :original_call, :call
     def call(*args)
       settings.init_mutex.synchronize do
@@ -216,7 +216,7 @@ module Padrino
         set :method_override, true
         set :default_builder, 'StandardFormBuilder'
 
-        # TODO: Remove this hack after getting rid of thread-unsafe http_houter:
+        # TODO: Remove this hack after getting rid of thread-unsafe http_router:
         set :init_mutex, Mutex.new
 
         # TODO: Remove this line after sinatra version up.
