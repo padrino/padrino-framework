@@ -357,7 +357,7 @@ module Padrino
         options
       end
 
-      # Throw a exception if the protect_from_csrf is active but sessions not.
+      # throw an exception if the protect_from_csrf is active but sessions not.
       def check_csrf_protection_dependency
         if protect_from_csrf? && !sessions?
           raise(<<-ERROR)
