@@ -60,6 +60,17 @@ describe "Mounter" do
       assert_equal ["some_namespace/an_app"], Padrino.mounted_apps.map(&:name)
     end
 
+    should 'correctly set a name of a namespaced app' do
+      module ::SomeNamespace2
+        class AnApp < Padrino::Application
+          get(:index) { settings.app_name }
+        end
+      end
+      Padrino.mount("SomeNamespace2::AnApp").to("/")
+      res = Rack::MockRequest.new(Padrino.application).get("/")
+      assert_equal "some_namespace2/an_app", res.body
+    end
+
     should 'mount a primary app to root uri' do
       mounter = Padrino.mount("test_app", :app_file => __FILE__).to("/")
       assert_equal "test_app", mounter.name
