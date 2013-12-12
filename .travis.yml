@@ -6,7 +6,7 @@ install:
 rvm:
   - 1.9.3
   - 2.0.0
-  - rbx-19mode
+  - rbx-2.1.1
   - jruby-19mode
 notifications:
   irc: 'irc.freenode.org#padrino'
@@ -31,4 +31,4 @@ matrix:
   allow_failures:
     - rvm: 1.9.3
       env: SINATRA_EDGE=true
-    - rvm: rbx-19mode
+    - rvm: rbx-2.1.1
