@@ -390,3 +390,22 @@ You can specify the theme to use for your admin application using the `theme` fl
 The available themes are: *amro*, *bec*, *bec-green*, *blue*, *default*, *djime-cerulean*, *kathleene*, *olive*, *orange*, *reidb-greenish*, *ruby*, *warehouse*
 
 This will generate the admin application and mount this at `/admin`. For more information, check out the [Admin Guide](http://www.padrinorb.com/guides/padrino-admin).
+
+## Component Generator
+
+|Options|Default|Aliases|Description|
+|:------|:------|:------|:----------|
+|root|.|-r|the root destination path for the project|
+|adapter|sqlite|-a|specify orm db adapter (mysql, sqlite, postgres)|
+
+The available components and their default options are same as the Project Generator.
+
+### Some examples:
+
+Show help and selected components:
+
+    $ padrino g component
+
+Add to minirecord with mysql and rspec in your project:
+
+    $ padrino g component -d minirecord -a mysql2 -t rspec
