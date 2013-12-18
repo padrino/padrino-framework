@@ -94,6 +94,12 @@ The following commands are available:
       
     # Run/List tasks
     $ padrino rake
+      
+    # Run piece of code in the context of Padrino (with given environment)
+    $ padrino runner 'puts Padrino.env' -e development
+      
+    # Run Ruby file in the context of Padrino
+    $ padrino r script/my_script.rb
 
 The last command “padrino rake” look for rake files in:
 
