@@ -359,8 +359,8 @@ module Padrino
       #   asset_folder_name(:images) => 'images'
       #
       def asset_folder_name(kind)
-        if settings.respond_to? "#{kind}_asset_folder"
-          settings.send "#{kind}_asset_folder"
+        if self.class.respond_to? "#{kind}_asset_folder"
+          self.class.send "#{kind}_asset_folder"
         else
           case kind
           when :css then 'stylesheets'
