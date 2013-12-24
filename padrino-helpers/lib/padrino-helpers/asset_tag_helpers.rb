@@ -351,16 +351,22 @@ module Padrino
       ###
       # Returns the asset folder given a kind.
       #
+      # Configureable by setting kind_asset_folder.
+      #
       # @example
       #   asset_folder_name(:css) => 'stylesheets'
       #   asset_folder_name(:js)  => 'javascripts'
       #   asset_folder_name(:images) => 'images'
       #
       def asset_folder_name(kind)
-        case kind
-        when :css then 'stylesheets'
-        when :js  then 'javascripts'
-        else kind.to_s
+        if settings.respond_to? "#{kind}_asset_folder"
+          settings.send "#{kind}_asset_folder"
+        else
+          case kind
+          when :css then 'stylesheets'
+          when :js  then 'javascripts'
+          else kind.to_s
+          end
         end
       end
 
