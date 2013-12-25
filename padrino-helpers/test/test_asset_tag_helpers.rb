@@ -98,6 +98,16 @@ describe "AssetTagHelpers" do
       assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
       assert_have_selector :a, :content => "Test 2 With Block", :href => '/test2', :class => 'test', :id => 'test2'
     end
+
+    should "not double-escape" do
+      actual_link = link_to('test escape', '?a=1&b=2')
+      assert_has_tag('a', :href => '?a=1&b=2') { actual_link }
+    end
+
+    should "escape scary things" do
+      actual_link = link_to('test escape<adfs>', '?a=1&b=<script>alert(1)</script>')
+      assert_no_match('<script', actual_link)
+    end
   end
 
   context 'for #mail_to method' do

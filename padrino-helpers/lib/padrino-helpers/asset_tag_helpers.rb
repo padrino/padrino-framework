@@ -4,7 +4,6 @@ module Padrino
     # Helpers related to producing assets (images, stylesheets, js, etc) within templates.
     #
     module AssetTagHelpers
-      FRAGMENT_HASH = "#".html_safe.freeze
       APPEND_ASSET_EXTENSIONS = ["js", "css"]
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
 
@@ -79,32 +78,16 @@ module Padrino
         options  = args.extract_options!
         fragment = options.delete(:anchor).to_s if options[:anchor]
         fragment = options.delete(:fragment).to_s if options[:fragment]
-
-        url = ActiveSupport::SafeBuffer.new
-        if block_given?
-          if args[0]
-            url.concat(args[0])
-            url.concat(FRAGMENT_HASH).concat(fragment) if fragment
-          else
-            url.concat(FRAGMENT_HASH)
-            url.concat(fragment) if fragment
-          end
-          options.reverse_merge!(:href => url)
-          return '' unless parse_conditions(url, options)
-          content_tag(:a, options, &block)
+        name = block_given? ? '' : args.shift
+        if url = args.first
+          url << '#' << fragment if fragment
         else
-          if args[1]
-            url.concat(args[1])
-            url.safe_concat(FRAGMENT_HASH).concat(fragment) if fragment
-          else
-            url.concat(FRAGMENT_HASH)
-            url.concat(fragment) if fragment
-          end
-          name = args[0]
-          return name unless parse_conditions(url, options)
-          options.reverse_merge!(:href => url)
-          content_tag(:a, name, options)
+          url = '#'
+          url << fragment if fragment
         end
+        options.reverse_merge!(:href => url)
+        return name unless parse_conditions(url, options)
+        block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
 
       ##
