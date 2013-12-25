@@ -269,6 +269,14 @@ describe "AssetTagHelpers" do
       assert actual_html.html_safe?
     end
 
+    should "respond to js_asset_folder setting" do
+      time = stop_time_for_test
+      self.class.stubs(:js_asset_folder).returns('js')
+      assert_equal 'js', asset_folder_name(:js)
+      actual_html = javascript_include_tag('application')
+      assert_has_tag('script', :src => "/js/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+
     should "display javascript item for long relative path" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('example/demo/application')
