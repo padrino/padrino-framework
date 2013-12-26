@@ -7,6 +7,10 @@ module Padrino
       FRAGMENT_HASH = "#".html_safe.freeze
       APPEND_ASSET_EXTENSIONS = ["js", "css"]
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
+      ASSET_FOLDERS = {
+        :js => 'javascripts',
+        :css => 'stylesheets',
+      }
 
       ##
       # Creates a div to display the flash of given type if it exists.
@@ -310,9 +314,13 @@ module Padrino
       #   # Generates: /images/example.jpg?1269008689
       #   asset_path :images, 'example.jpg'
       #
-      def asset_path(kind, source)
+      #   # Generates: /uploads/file.ext?1269008689
+      #   asset_path 'uploads/file.ext'
+      #
+      def asset_path(kind, source = nil)
+        kind, source = source, kind if source.nil?
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
-        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\// # absolute source
+        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\//
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
@@ -320,6 +328,7 @@ module Padrino
       end
 
       private
+
       ##
       # Returns the URI root of the application with optional paths appended.
       #
@@ -357,16 +366,13 @@ module Padrino
       #   asset_folder_name(:css) => 'stylesheets'
       #   asset_folder_name(:js)  => 'javascripts'
       #   asset_folder_name(:images) => 'images'
+      #   asset_folder_name(:abrakadabrah) => 'abrakadabrah'
       #
       def asset_folder_name(kind)
         if self.class.respond_to? "#{kind}_asset_folder"
           self.class.send "#{kind}_asset_folder"
         else
-          case kind
-          when :css then 'stylesheets'
-          when :js  then 'javascripts'
-          else kind.to_s
-          end
+          (ASSET_FOLDERS[kind] || kind).to_s
         end
       end
 

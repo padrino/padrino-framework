@@ -364,4 +364,20 @@ describe "AssetTagHelpers" do
       assert_has_tag('link', :type => 'my-type', :rel => 'my-rel', :href => "/blog/post.rss", :title => 'my-title') { feed_tag :rss, "/blog/post.rss", :type => "my-type", :rel => "my-rel", :title => "my-title" }
     end
   end
+
+  context 'for #asset_path method' do
+    should 'generate proper paths for js and css' do
+      assert_match /\/javascripts\/app.js\?\d+/, asset_path(:js, 'app')
+      assert_match /\/stylesheets\/app.css\?\d+/, asset_path(:css, 'app')
+    end
+
+    should 'generate proper paths for images and other files' do
+      assert_match /\/images\/app.png\?\d+/, asset_path(:images, 'app.png')
+      assert_match /\/documents\/app.pdf\?\d+/, asset_path(:documents, 'app.pdf')
+    end
+
+    should 'generate proper paths for public folder' do
+      assert_match /\/files\/file.ext\?\d+/, asset_path('files/file.ext')
+    end
+  end
 end
