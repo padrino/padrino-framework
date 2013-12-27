@@ -63,7 +63,7 @@ module Padrino
         # Store in session[:return_to] the env['REQUEST_URI'].
         #
         def store_location!
-          session[:return_to] = env['REQUEST_URI']
+          session[:return_to] = "#{ENV['RACK_BASE_URI']}#{env['REQUEST_URI']}" if env['REQUEST_URI']
         end
 
         ##
