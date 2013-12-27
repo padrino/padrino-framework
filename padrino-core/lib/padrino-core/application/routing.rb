@@ -582,10 +582,7 @@ module Padrino
           else
             compiled_router.path(name, *(params_array << params))
           end
-        url[0,0] = conform_uri(uri_root) if defined?(uri_root)
-        url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
-        url = "/" if url.blank?
-        url
+        rebase_url(url)
       rescue HttpRouter::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise Padrino::Routing::UnrecognizedException.new(route_error)
@@ -598,6 +595,17 @@ module Padrino
 
         @conditions = conditions
         route('HEAD', path, *args, &block)
+      end
+
+      def rebase_url(url)
+        if url.start_with?('/')
+          new_url = ''
+          new_url << conform_uri(uri_root) if defined?(uri_root)
+          new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << url
+        else
+          url.blank? ? '/' : url
+        end
       end
 
       private
@@ -944,17 +952,24 @@ module Padrino
       #   url(:show, :id => 1)
       #   url(:show, :name => :test)
       #   url(:show, 1)
-      #   url("/foo")
+      #   url("/foo", false, false)
       #
       # @see Padrino::Routing::ClassMethods#url
       #
       def url(*args)
-        # Delegate to Sinatra 1.2 for simple url("/foo")
-        # http://www.sinatrarb.com/intro#Generating%20URLs
-        return super if args.first.is_a?(String) && !args[1].is_a?(Hash)
-
-        # Delegate to Padrino named route URL generation.
-        settings.url(*args)
+        if args.first.is_a?(String)
+          url_path = settings.rebase_url(args.shift)
+          if args.empty?
+            url_path
+          else
+            # Delegate sinatra-style urls to Sinatra. Ex: url("/foo", false, false)
+            # http://www.sinatrarb.com/intro#Generating%20URLs
+            super url_path, *args
+          end
+        else
+          # Delegate to Padrino named route URL generation.
+          settings.url(*args)
+        end
       end
       alias :url_for :url
 

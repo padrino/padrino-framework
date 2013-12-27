@@ -296,6 +296,24 @@ describe "Routing" do
     assert_equal 'http://example.org/test/foo?id=1', body
   end
 
+  should 'rebase simple string urls to app uri_root' do
+    mock_app do
+      set :uri_root, '/app'
+      get(:a){ url('/foo') }
+      get(:b){ url('bar') }
+      get(:c){ absolute_url('/foo') }
+      get(:d){ absolute_url('bar') }
+    end
+    get "/a"
+    assert_equal "/app/foo", body
+    get "/b"
+    assert_equal "bar", body
+    get "/c"
+    assert_equal "http://example.org/app/foo", body
+    get "/d"
+    assert_equal "http://example.org/bar", body
+  end
+
   should 'allow regex url with format' do
     mock_app do
       get(/.*/, :provides => :any) { "regexp" }
