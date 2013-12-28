@@ -10,7 +10,6 @@ require 'padrino-gen'
 require 'padrino-core'
 require 'padrino-mailer'
 require 'padrino-helpers'
-require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 Padrino::Generators.load_components!
 
