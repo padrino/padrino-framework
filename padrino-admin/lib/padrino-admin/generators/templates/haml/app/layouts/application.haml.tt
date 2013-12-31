@@ -16,7 +16,7 @@
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          =link_to 'Padrino', url(:base_index), :class => 'navbar-brand', :title => 'Padrino Admin'
+          =link_to 'Padrino', url(:base, :index), :class => 'navbar-brand', :title => 'Padrino Admin'
           %ul.nav.navbar-nav.pull-right
             %li.navbar-edit-account=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
             %li.navbar-logout
@@ -30,7 +30,7 @@
 
     .container.main
       .main-wrapper
-        =[:error, :warning, :success, :notice].map { |type| flash_tag(type, :class => "alert alert-#{type} fade in", :bootstrap => true) }.join.html_safe
+        ={:error => 'danger', :warning => 'warning', :success => 'success', :notice => 'info'}.map { |type, class_name| flash_tag(type, :class => "alert alert-#{class_name} fade in", :bootstrap => true) }.join.html_safe
         .row=yield
         .main-wrapper-push
 

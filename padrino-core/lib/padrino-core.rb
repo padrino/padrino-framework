@@ -14,13 +14,14 @@ require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
 
-
 PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
   class ApplicationLoadError < RuntimeError # @private
   end
+
+  extend Loader
 
   class << self
     ##
@@ -61,18 +62,10 @@ module Padrino
     #   No applications were mounted.
     #
     def application
-      raise ApplicationLoadError, "At least one app must be mounted!" unless Padrino.mounted_apps && Padrino.mounted_apps.any?
+      raise ApplicationLoadError, "At least one app must be mounted!" unless Padrino.mounted_apps.present?
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
-
-      if middleware.present?
-        builder = Rack::Builder.new
-        middleware.each { |c,a,b| builder.use(c, *a, &b) }
-        builder.run(router)
-        builder.to_app
-      else
-        router
-      end
+      middleware.present? ? add_middleware(router) : router
     end
 
     ##
@@ -90,21 +83,14 @@ module Padrino
     #
     def configure_apps(&block)
       return  unless block_given?
-      @@_global_configurations ||= []
-      @@_global_configurations << block
-      @_global_configuration = lambda do |app|
-        @@_global_configurations.each do |configuration|
-          app.class_eval(&configuration)
-        end
-      end
+      global_configurations << block
     end
 
     ##
-    # Returns project-wide configuration settings defined in
-    # {configure_apps} block.
+    # Stores global configuration blocks.
     #
-    def apps_configuration
-      @_global_configuration
+    def global_configurations
+      @_global_configurations ||= []
     end
 
     ##
@@ -119,13 +105,19 @@ module Padrino
     # @return [NilClass]
     #
     def set_encoding
-      if RUBY_VERSION < '1.9'
-        $KCODE='u'
-      else
-        Encoding.default_external = Encoding::UTF_8
-        Encoding.default_internal = Encoding::UTF_8
-      end
+      Encoding.default_external = Encoding::UTF_8
+      Encoding.default_internal = Encoding::UTF_8
       nil
+    end
+
+    ##
+    # Creates Rack stack with the router added to the middleware chain.
+    #
+    def add_middleware(router)
+      builder = Rack::Builder.new
+      middleware.each{ |mw,args,block| builder.use(mw, *args, &block) }
+      builder.run(router)
+      builder.to_app
     end
 
     ##
@@ -161,8 +153,8 @@ module Padrino
     # @yield []
     #   The given block will be passed to the initialized middleware.
     #
-    def use(m, *args, &block)
-      middleware << [m, args, block]
+    def use(mw, *args, &block)
+      middleware << [mw, args, block]
     end
 
     ##

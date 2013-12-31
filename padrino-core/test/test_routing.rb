@@ -1,4 +1,4 @@
-#encoding: utf-8 
+#encoding: utf-8
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
@@ -128,11 +128,11 @@ describe "Routing" do
   end
 
   should 'parse routes that are encoded' do
-    mock_app do 
+    mock_app do
       get('/щч') { 'success!' }
     end
     get(URI.escape('/щч'))
-    assert_equal 'success!', body    
+    assert_equal 'success!', body
   end
 
   should 'parse routes that include encoded slash' do
@@ -146,9 +146,7 @@ describe "Routing" do
   end
 
   should 'encode params using UTF-8' do
-    skip unless ''.respond_to?(:encoding) # for 1.8.7
-
-    mock_app do 
+    mock_app do
       get('/:foo') { params[:foo].encoding.name }
     end
     get '/bar'
@@ -298,6 +296,24 @@ describe "Routing" do
     assert_equal 'http://example.org/test/foo?id=1', body
   end
 
+  should 'rebase simple string urls to app uri_root' do
+    mock_app do
+      set :uri_root, '/app'
+      get(:a){ url('/foo') }
+      get(:b){ url('bar') }
+      get(:c){ absolute_url('/foo') }
+      get(:d, :map => '/d/e/f'){ absolute_url('bar') }
+    end
+    get "/a"
+    assert_equal "/app/foo", body
+    get "/b"
+    assert_equal "bar", body
+    get "/c"
+    assert_equal "http://example.org/app/foo", body
+    get "/d/e/f"
+    assert_equal "http://example.org/app/d/e/bar", body
+  end
+
   should 'allow regex url with format' do
     mock_app do
       get(/.*/, :provides => :any) { "regexp" }
@@ -380,7 +396,7 @@ describe "Routing" do
       get("/foo"){ content_type(:json); content_type.to_s }
     end
     get "/foo"
-    assert_equal 'application/json;charset=utf-8', content_type
+    assert_equal 'application/json', content_type
     assert_equal 'json', body
   end
 
@@ -665,7 +681,7 @@ describe "Routing" do
     assert_equal 'application/javascript;charset=utf-8', response["Content-Type"]
     get "/a.json"
     assert_equal "json", body
-    assert_equal 'application/json;charset=utf-8', response["Content-Type"]
+    assert_equal 'application/json', response["Content-Type"]
     get "/a.foo"
     assert_equal "foo", body
     assert_equal 'application/foo;charset=utf-8', response["Content-Type"]
@@ -1892,7 +1908,7 @@ describe "Routing" do
   end
 
   should 'render a custom error page using error method' do
-    skip
+    skip # TODO sinatra bug?
     mock_app do
       error(404) { "custom 404 error" }
     end

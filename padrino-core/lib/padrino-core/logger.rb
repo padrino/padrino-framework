@@ -52,10 +52,10 @@ module Padrino
     # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
-      :fatal =>  7,
-      :error =>  6,
-      :warn  =>  4,
-      :info  =>  3,
+      :fatal =>  4,
+      :error =>  3,
+      :warn  =>  2,
+      :info  =>  1,
       :debug =>  0,
       :devel => -1,
     } unless defined?(Levels)
@@ -194,13 +194,13 @@ module Padrino
       #
       def colorize(string, *colors)
         colors.each do |c|
-          string = string.send(c)
+          string = string.colorize(c)
         end
         string
       end
 
       def stylized_level(level)
-        style = ColoredLevels[level].map { |c| "\e[%dm" % String.colors[c] } * ''
+        style = ColoredLevels[level].map { |c| "\e[%dm" % String::Colorizer.colors[c] } * ''
         [style, super, "\e[0m"] * ''
       end
     end

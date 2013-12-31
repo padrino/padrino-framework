@@ -2,11 +2,9 @@ require 'padrino-core/application/flash'
 require 'padrino-core/application/rendering'
 require 'padrino-core/application/routing'
 require 'padrino-core/application/showexceptions'
+require 'padrino-core/application/authenticity_token'
 
 module Padrino
-  class ApplicationSetupError < RuntimeError
-  end
-
   ##
   # Subclasses of this become independent Padrino applications
   # (stemming from Sinatra::Application).
@@ -26,20 +24,24 @@ module Padrino
       Padrino.logger
     end
 
+    # TODO: Remove this hack after getting rid of thread-unsafe http_router:
+    alias_method :original_call, :call
+    def call(*args)
+      settings.init_mutex.synchronize do
+        instance_eval{ undef :call }
+        class_eval{ alias_method :call, :original_call }
+        instance_eval{ undef :original_call }
+        super(*args)
+      end
+    end
+
     class << self
       def inherited(base)
         begun_at = Time.now
         CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
         base.default_configuration!
-        base.prerequisites.concat([
-          File.join(base.root, '/models.rb'),
-          File.join(base.root, '/models/**/*.rb'),
-          File.join(base.root, '/lib.rb'),
-          File.join(base.root, '/lib/**/*.rb')
-        ]).uniq!
-        Padrino.require_dependencies(base.prerequisites)
         logger.devel :setup, begun_at, base
-        super(base) # Loading the subclass inherited method
+        super(base)
       end
 
       ##
@@ -54,10 +56,10 @@ module Padrino
       #   MyApp.reload!
       #
       def reload!
-        logger.devel "Reloading #{settings}"
+        logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
-        Padrino.require_dependencies(settings.app_file, :force => true) # Reload the app file
+        Padrino.require_dependencies(settings.app_file, :force => true)
         require_dependencies
         default_filters!
         default_routes!
@@ -91,6 +93,26 @@ module Padrino
       end
 
       ##
+      # Returns an absolute path of view in application views folder.
+      #
+      # @example
+      #   Admin.view_path 'users/index' #=> "/home/user/test/admin/views/users/index"
+      #
+      def view_path(view)
+        File.expand_path(view, views)
+      end
+
+      ##
+      # Returns an absolute path of application layout.
+      #
+      # @example
+      #   Admin.layout_path :application #=> "/home/user/test/admin/views/layouts/application"
+      #
+      def layout_path(layout)
+        view_path("layouts/#{layout}")
+      end
+
+      ##
       # Setup the application by registering initializers, load paths and logger.
       # Invoked automatically when an application is first instantiated.
       #
@@ -103,11 +125,11 @@ module Padrino
         settings.default_routes!
         settings.default_errors!
         if defined?(I18n)
+          Reloader.special_files += settings.locale_path
           I18n.load_path << settings.locale_path
           I18n.reload!
         end
         @_configured = true
-        @_configured
       end
 
       ##
@@ -127,7 +149,13 @@ module Padrino
       #   directory that need to be added to +$LOAD_PATHS+ from this application
       #
       def load_paths
-        @_load_paths ||= %w[models lib mailers controllers helpers].map { |path| File.join(settings.root, path) }
+        @_load_paths ||= [
+          'models',
+          'lib',
+          'mailers',
+          'controllers',
+          'helpers',
+        ].map { |path| File.join(settings.root, path) }
       end
 
       ##
@@ -143,8 +171,14 @@ module Padrino
       #
       def dependencies
         [
-          'urls.rb', 'config/urls.rb', 'mailers/*.rb', 'mailers.rb',
-          'controllers/**/*.rb', 'controllers.rb', 'helpers/**/*.rb', 'helpers.rb'
+          'urls.rb',
+          'config/urls.rb',
+          'mailers/*.rb',
+          'mailers.rb',
+          'controllers/**/*.rb',
+          'controllers.rb',
+          'helpers/**/*.rb',
+          'helpers.rb',
         ].map { |file| Dir[File.join(settings.root, file)] }.flatten
       end
 
@@ -168,37 +202,62 @@ module Padrino
       end
 
       protected
+
       ##
       # Defines default settings for Padrino application.
       #
       def default_configuration!
-        # Overwriting Sinatra defaults
-        set :app_file, File.expand_path(caller_files.first || $0) # Assume app file is first caller
+        set :app_file, File.expand_path(caller_files.first || $0)
+        set :app_name, settings.to_s.underscore.to_sym
+
         set :environment, Padrino.env
         set :reload, Proc.new { development? }
         set :logging, Proc.new { development? }
+
         set :method_override, true
-        set :sessions, false
-        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
-        set :views, Proc.new { File.join(root, 'views') }
-        set :images_path, Proc.new { File.join(public_folder, 'images') }
-        set :protection, true
-
-        set :haml, { :ugly => (Padrino.env == :production) } if defined?(Haml)
-
-        # Padrino specific
-        set :uri_root, '/'
-        set :app_name, settings.to_s.underscore.to_sym
         set :default_builder, 'StandardFormBuilder'
+
+        # TODO: Remove this hack after getting rid of thread-unsafe http_router:
+        set :init_mutex, Mutex.new
+
+        # TODO: Remove this line after sinatra version up.
+        set :add_charset, %w[javascript xml xhtml+xml].map {|t| "application/#{t}" }
+
+        default_paths!
+        default_security!
+        global_configuration!
+        setup_prerequisites!
+      end
+
+      def setup_prerequisites!
+        prerequisites.concat(default_prerequisites).uniq!
+        Padrino.require_dependencies(prerequisites)
+      end
+
+      def default_paths!
+        set :locale_path,   Proc.new { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
+        set :views,         Proc.new { File.join(root, 'views') }
+
+        set :uri_root,      '/'
+        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
+        set :images_path,   Proc.new { File.join(public_folder, 'images') }
+      end
+      
+      def default_security!
+        set :protection, :except => :path_traversal
         set :authentication, false
-
-        set :locale_path, Proc.new { Dir[File.join(settings.root, '/locale/**/*.{rb,yml}')] }
-
-        # Authenticity token
+        set :sessions, false
         set :protect_from_csrf, false
         set :allow_disabled_csrf, false
-        # Load the Global Configurations
-        class_eval(&Padrino.apps_configuration) if Padrino.apps_configuration
+      end
+
+      ##
+      # Applies global padrino configuration blocks to current application.
+      #
+      def global_configuration!
+        Padrino.global_configurations.each do |configuration|
+          class_eval(&configuration)
+        end
       end
 
       ##
@@ -220,9 +279,7 @@ module Padrino
       #
       def default_filters!
         before do
-          unless @_content_type
-            response['Content-Type'] = 'text/html;charset=utf-8'
-          end
+          response['Content-Type'] = 'text/html;charset=utf-8' unless @_content_type
         end
       end
 
@@ -249,7 +306,20 @@ module Padrino
         Padrino.require_dependencies(dependencies, :force => true)
       end
 
+      ##
+      # Returns globs of default paths of application prerequisites.
+      #
+      def default_prerequisites
+        [
+          '/models.rb',
+          '/models/**/*.rb',
+          '/lib.rb',
+          '/lib/**/*.rb',
+        ].map{ |glob| File.join(settings.root, glob) }
+      end
+
       private
+
       # Overrides the default middleware for Sinatra based on Padrino conventions.
       # Also initializes the application after setting up the middleware.
       def setup_default_middleware(builder)
@@ -267,6 +337,34 @@ module Padrino
 
       # sets up csrf protection for the app:
       def setup_csrf_protection(builder)
+        check_csrf_protection_dependency
+
+        if protect_from_csrf?
+          if protect_from_csrf.is_a?(Hash) && protect_from_csrf[:except]
+            builder.use(AuthenticityToken,
+                        options_for_csrf_protection_setup.merge(:except => protect_from_csrf[:except]))
+          else
+            builder.use(Rack::Protection::AuthenticityToken,
+                        options_for_csrf_protection_setup)
+          end
+        end
+      end
+
+      # returns the options used in the builder for csrf protection setup
+      def options_for_csrf_protection_setup
+        options = { :logger => logger }
+
+        if allow_disabled_csrf?
+          options.merge!({
+                             :reaction   => :report,
+                             :report_key => 'protection.csrf.failed'
+                         })
+        end
+        options
+      end
+
+      # throw an exception if the protect_from_csrf is active but sessions not.
+      def check_csrf_protection_dependency
         if protect_from_csrf? && !sessions?
           raise(<<-ERROR)
 `protect_from_csrf` is activated, but `sessions` are not. To enable csrf
@@ -277,19 +375,7 @@ protection, use:
 or deactivate protect_from_csrf:
 
     disable :protect_from_csrf
-ERROR
-        end
-
-        if protect_from_csrf?
-          if allow_disabled_csrf?
-            builder.use Rack::Protection::AuthenticityToken,
-                        :reaction => :report,
-                        :report_key => 'protection.csrf.failed',
-                        :logger => logger
-          else
-            builder.use Rack::Protection::AuthenticityToken,
-                        :logger => logger
-          end
+          ERROR
         end
       end
     end

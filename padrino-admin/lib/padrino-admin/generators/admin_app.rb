@@ -72,7 +72,7 @@ module Padrino
           directory "templates/app",       destination_root("admin")
           directory "templates/assets",    destination_root("public", "admin")
           template  "templates/app.rb.tt", destination_root("admin/app.rb")
-          append_file destination_root("config/apps.rb"),  "\nPadrino.mount(\"#{@app_name}::Admin\", :app_file => File.expand_path('../../admin/app.rb', __FILE__)).to(\"/admin\")"
+          inject_into_file destination_root('config/apps.rb'),  "\nPadrino.mount(\"#{@app_name}::Admin\", :app_file => File.expand_path('../../admin/app.rb', __FILE__)).to(\"/admin\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
           unless options[:destroy]
             insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:minirecord, :activerecord].include?(orm)
           end

@@ -97,6 +97,23 @@ describe "ModelGenerator" do
       assert_match_in_file(/      t.string :email/m,  migration_file_path)
       assert_match_in_file(/    drop_table :people/m, migration_file_path)
     end
+
+    should "abort if model name already exists" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
+      out, err = capture_io { generate(:model, 'kernel', "--root=#{@apptmp}/sample_project") }
+      assert_match(/Kernel already exists/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_kernel.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/kernel.rb")
+    end
+
+    should "abort if model name already exists in root" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
+      capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
+      out, err = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", :apps => "user") }
+      assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
+      assert_match(/User already exists/, out)
+    end
   end
 
   # ACTIVERECORD

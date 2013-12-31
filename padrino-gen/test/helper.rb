@@ -7,7 +7,9 @@ require 'webrat'
 require 'fakeweb'
 require 'thor/group'
 require 'padrino-gen'
-require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-core'
+require 'padrino-mailer'
+require 'padrino-helpers'
 
 Padrino::Generators.load_components!
 
@@ -29,6 +31,23 @@ class MiniTest::Spec
   # generate(:controller, 'DemoItems', '-r=/tmp/sample_project')
   def generate(name, *params)
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+  end
+
+  # generate_with_parts(:app, "demo", "--root=/tmp/sample_project", :apps => "subapp")
+  # This method is intended to reproduce the real environment.
+  def generate_with_parts(name, *params)
+    features, constants = [$", Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
+
+    if root = params.find{|x| x.index(/\-r=|\-\-root=/) }
+      root = root.split(/=/)[1]
+      options, model_path = {}, File.expand_path(File.join(root, "/models/**/*.rb"))
+      options = params.pop if params.last.is_a?(Hash)
+      Dir[model_path].each{|path| require path }
+      Array(options[:apps]).each{|app_name| require File.expand_path(File.join(root, "/#{app_name}/app.rb")) } if options[:apps]
+    end
+    "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+    ($" - features).each{|x| $".delete(x) }
+    (Object.constants - constants).each{|constant| Object.instance_eval{ remove_const(constant) }}
   end
 
   # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
@@ -97,7 +116,7 @@ class MiniTest::Spec
   # expects_initializer :test, "# Example"
   def expects_initializer(name, body,options={})
     #options.reverse_merge!(:root => "/tmp/sample_project")
-    path = File.join(options[:root],'lib',"#{name}_init.rb")
+    path = File.join(options[:root],'lib',"#{name}_initializer.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
     include_text = "    register #{name.to_s.camelize}Initializer\n"

@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")
@@ -30,7 +31,7 @@ Gem::Specification.new do |s|
   # s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
   # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
 
-  s.add_dependency("tilt", "~> 1.4.0")
+  s.add_dependency("tilt", "~> 1.4.1")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
@@ -38,6 +39,6 @@ Gem::Specification.new do |s|
   end
   s.add_dependency("mustermann", ">= 0.2.0")
   s.add_dependency("thor", "~> 0.17.0")
-  s.add_dependency("activesupport", ">= 3.1", "< 4.0")
+  s.add_dependency("activesupport", ">= 3.1")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end

@@ -37,9 +37,21 @@ begin
       #
       # @api private
       class Template < Tilt::ErubisTemplate
+        def render(*args)
+          app       = args.first
+          app_class = app.class
+          @is_padrino_app = app.kind_of?(Padrino::Application) || 
+                            (app_class.respond_to?(:erb) && app_class.erb[:engine_class] == Padrino::Erubis::SafeBufferTemplate)
+          super
+        end
+
+        ##
+        # In preamble we need a flag `__in_erb_template` and SafeBuffer for padrino apps.
+        #
         def precompiled_preamble(locals)
-          old_postamble = super.split("\n")[0..-2]
-          [old_postamble, "#{@outvar} = _buf = (#{@outvar} || ActiveSupport::SafeBuffer.new)"].join("\n")
+          original = super
+          return original unless @is_padrino_app
+          "__in_erb_template = true\n" << original.rpartition("\n").first << "#{@outvar} = _buf = ActiveSupport::SafeBuffer.new\n"
         end
       end
     end
@@ -48,8 +60,9 @@ begin
   Tilt.prefer(Padrino::Erubis::Template, :erb)
 
   if defined? Padrino::Rendering
-    Padrino::Rendering.engine_configurations[:erb] =
-      {:engine_class => Padrino::Erubis::SafeBufferTemplate}
+    Padrino::Rendering.engine_configurations[:erb] = {
+      :engine_class => Padrino::Erubis::SafeBufferTemplate,
+    }
   end
 rescue LoadError
 end

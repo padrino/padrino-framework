@@ -52,6 +52,10 @@ module Padrino
             @project_name = fetch_component_choice(:namespace)
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
+            if comp.to_s == 'orm' && choice.to_s != 'none'
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", :before => "PadrinoTasks.init"
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", :before => "PadrinoTasks.init"
+            end
           end
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'

@@ -25,19 +25,6 @@ describe "Application" do
       assert !Padrino.configure_apps
     end
 
-    should 'check haml options on production' do
-      assert defined?(Haml), 'Haml not defined'
-      assert_equal :test, PadrinoPristine.environment
-      assert !PadrinoPristine.haml[:ugly]
-      Padrino.stub :env, :production do
-        PadrinoPristine.send :default_configuration!
-        assert_equal :production, Padrino.env
-        assert_equal :production, PadrinoPristine.environment
-        assert PadrinoPristine.haml[:ugly]
-        PadrinoPristine.environment = :test
-      end
-    end
-
     should 'check padrino specific options' do
       assert !PadrinoPristine.instance_variable_get(:@_configured)
       PadrinoPristine.send(:setup_application!)
@@ -95,6 +82,11 @@ describe "Application" do
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
       assert_equal "Foo in nil", body
+    end
+
+    should "resolve views and layouts paths" do
+      assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
+      assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
     end
 
     context "errors" do

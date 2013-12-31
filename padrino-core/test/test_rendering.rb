@@ -209,6 +209,43 @@ describe "Rendering" do
     assert_equal "haml", body.chomp
   end
 
+  should 'allow to render template with layout option that using other template engine.' do
+    create_layout :"layouts/foo", "application layout for <%= yield %>", :format => :erb
+    create_view :slim, "| slim", :format => :slim
+    create_view :haml, "haml", :format => :haml
+    create_view :erb, "erb", :format => :erb
+    mock_app do
+      get("/slim") { render("slim.slim", :layout => "foo.erb") }
+      get("/haml") { render("haml.haml", :layout => "foo.erb") }
+      get("/erb") { render("erb.erb", :layout => "foo.erb") }
+    end
+    get "/slim"
+    assert_equal "application layout for slim", body.chomp
+    get "/haml"
+    assert_equal "application layout for haml", body.chomp
+    get "/erb"
+    assert_equal "application layout for erb", body.chomp
+  end
+
+  should 'allow to use extension with layout method.' do
+    create_layout :"layouts/bar", "application layout for <%= yield %>", :format => :erb
+    create_view :slim, "| slim", :format => :slim
+    create_view :haml, "haml", :format => :haml
+    create_view :erb, "erb", :format => :erb
+    mock_app do
+      layout "bar.erb"
+      get("/slim") { render("slim.slim") }
+      get("/haml") { render("haml.haml") }
+      get("/erb") { render("erb.erb") }
+    end
+    get "/slim"
+    assert_equal "application layout for slim", body.chomp
+    get "/haml"
+    assert_equal "application layout for haml", body.chomp
+    get "/erb"
+    assert_equal "application layout for erb", body.chomp
+  end
+
   context 'for application render functionality' do
 
     should "work properly with logging and missing layout" do
@@ -385,11 +422,15 @@ describe "Rendering" do
       mock_app do
         get("/foo", :provides => [:html, :js]) { render :foo }
       end
+
+      I18n.enforce_available_locales = false
       I18n.locale = :none
       get "/foo.js"
       assert_equal "Im Js", body
       get "/foo"
       assert_equal "Im Erb", body
+      I18n.enforce_available_locales = true
+
       I18n.locale = :en
       get "/foo"
       assert_equal "Im English Erb", body
@@ -405,6 +446,7 @@ describe "Rendering" do
       I18n.locale = :en
       get "/foo.pk"
       assert_equal 404, status
+
     end
 
     should 'resolve template content_type and locale with layout' do
@@ -425,11 +467,15 @@ describe "Rendering" do
         layout :foo
         get("/bar", :provides => [:html, :js, :json]) { render :bar }
       end
+
+      I18n.enforce_available_locales = false
       I18n.locale = :none
       get "/bar.js"
       assert_equal "Hello Im Js in a Js layout", body
       get "/bar"
       assert_equal "Hello Im Erb in a Erb layout", body
+      I18n.enforce_available_locales = true
+
       I18n.locale = :en
       get "/bar"
       assert_equal "Hello Im English Erb in a Erb-En layout", body
@@ -447,6 +493,14 @@ describe "Rendering" do
       assert_equal "Im a json", body
       get "/bar.pk"
       assert_equal 404, status
+
+    end
+
+    should 'resolve template location relative to controller name' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/blog'
+      assert_equal 'okay', body
     end
 
     should 'renders erb with blocks' do
@@ -527,6 +581,19 @@ describe "Rendering" do
       get '/with_layout'
       assert ok?
       assert_equal '<p><div>foo</div></p>', body.strip
+    end
+
+    should "render correct erb when use sinatra as middleware" do
+      class Bar < Sinatra::Base
+        get "/" do
+          render :erb, "<&'>"
+        end
+      end
+      mock_app do
+        use Bar
+      end
+      get "/"
+      assert_equal "<&'>", body
     end
   end
 end

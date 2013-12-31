@@ -377,13 +377,8 @@ describe "ProjectGenerator" do
     should "properly generate for mongoid" do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongoid', '--script=none') }
       assert_match(/applying.*?mongoid.*?orm/, out)
-      if RUBY_VERSION >= '1.9'
-        assert_match_in_file(/gem 'mongoid', '~>3.0.0'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
-      else
-        assert_match_in_file(/gem 'mongoid', '~>2.0'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/Mongoid.database/, "#{@apptmp}/project.com/config/database.rb")
-      end
+      assert_match_in_file(/gem 'mongoid', '~>3.0.0'/, "#{@apptmp}/project.com/Gemfile")
+      assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
     end
 
 
@@ -557,6 +552,20 @@ describe "ProjectGenerator" do
       assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
     end
 
+    should "properly generate for steak" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=steak', '--script=none') }
+      assert_match(/applying.*?steak.*?test/, out)
+      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:require => 'rack\/test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:group => 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'steak'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/RSpec::Core::RakeTask\.new\("spec:\#/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_match_in_file(/task 'spec' => spec_tasks/,"#{@apptmp}/sample_project/spec/spec.rake")
+    end
+
     should "properly generate for minitest" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
       assert_match(/applying.*?minitest.*?test/, out)
@@ -615,7 +624,7 @@ describe "ProjectGenerator" do
     should "properly generate for sass" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=sass') }
       assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/sass_init.rb")
+      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/sass_initializer.rb")
       assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
@@ -623,7 +632,7 @@ describe "ProjectGenerator" do
     should "properly generate for less" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=less') }
       assert_match_in_file(/gem 'rack-less'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/lib/less_init.rb")
+      assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/lib/less_initializer.rb")
       assert_match_in_file(/register LessInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
@@ -642,8 +651,8 @@ describe "ProjectGenerator" do
     should "properly generate for scss" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=scss') }
       assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/scss_init.rb")
-      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/lib/scss_init.rb")
+      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/lib/scss_initializer.rb")
+      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/lib/scss_initializer.rb")
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end

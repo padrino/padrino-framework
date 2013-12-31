@@ -70,6 +70,9 @@ describe "TagHelpers" do
       assert_have_selector :p, :content => "Test 2"
       assert_have_selector :p, :content => "Test 3"
       assert_have_selector :p, :content => "Test 4"
+      assert_have_selector :p, :content => "one"
+      assert_have_selector :p, :content => "two"
+      assert_have_no_selector :p, :content => "failed"
     end
 
     should "support tags with haml" do
@@ -78,6 +81,9 @@ describe "TagHelpers" do
       assert_have_selector :p, :content => "Test 2"
       assert_have_selector :p, :content => "Test 3", :class => 'test', :id => 'test3'
       assert_have_selector :p, :content => "Test 4"
+      assert_have_selector :p, :content => "one"
+      assert_have_selector :p, :content => "two"
+      assert_have_no_selector :p, :content => "failed"
     end
 
     should "support tags with slim" do
@@ -86,6 +92,9 @@ describe "TagHelpers" do
       assert_have_selector :p, :content => "Test 2"
       assert_have_selector :p, :content => "Test 3", :class => 'test', :id => 'test3'
       assert_have_selector :p, :content => "Test 4"
+      assert_have_selector :p, :content => "one"
+      assert_have_selector :p, :content => "two"
+      assert_have_no_selector :p, :content => "failed"
     end
   end
 

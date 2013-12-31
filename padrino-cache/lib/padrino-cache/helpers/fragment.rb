@@ -23,7 +23,7 @@ module Padrino
         # @param [String] key
         #   cache key
         # @param [Hash] opts
-        #   cache options, e.g :expires_in
+        #   cache options, e.g :expires
         # @param [Proc]
         #   Execution result to store in the cache
         #
@@ -36,7 +36,7 @@ module Padrino
         #       get :feed, :map => '/:username' do
         #         username = params[:username]
         #
-        #         @feed = cache( "feed_for_#{username}", :expires_in => 3 ) do
+        #         @feed = cache( "feed_for_#{username}", :expires => 3 ) do
         #           @tweets = Tweet.all( :username => username )
         #           render 'partials/feedcontent'
         #         end
@@ -47,15 +47,16 @@ module Padrino
         #     end
         #   end
         #
-        def cache(key, opts = nil, &block)
+        # @api public
+        def cache(key, opts = {}, &block)
           if settings.caching?
             began_at = Time.now
-            if value = settings.cache.get(key.to_s)
+            if value = settings.cache[key.to_s]
               logger.debug "GET Fragment", began_at, key.to_s if defined?(logger)
               concat_content(value.html_safe)
             else
               value = capture_html(&block)
-              settings.cache.set(key.to_s, value, opts)
+              settings.cache.store(key.to_s, value, opts)
               logger.debug "SET Fragment", began_at, key.to_s if defined?(logger)
               concat_content(value)
             end

@@ -98,6 +98,16 @@ describe "AssetTagHelpers" do
       assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
       assert_have_selector :a, :content => "Test 2 With Block", :href => '/test2', :class => 'test', :id => 'test2'
     end
+
+    should "not double-escape" do
+      actual_link = link_to('test escape', '?a=1&b=2')
+      assert_has_tag('a', :href => '?a=1&b=2') { actual_link }
+    end
+
+    should "escape scary things" do
+      actual_link = link_to('test escape<adfs>', '?a=1&b=<script>alert(1)</script>')
+      assert_no_match('<script', actual_link)
+    end
   end
 
   context 'for #mail_to method' do
@@ -269,6 +279,14 @@ describe "AssetTagHelpers" do
       assert actual_html.html_safe?
     end
 
+    should "respond to js_asset_folder setting" do
+      time = stop_time_for_test
+      self.class.stubs(:js_asset_folder).returns('js')
+      assert_equal 'js', asset_folder_name(:js)
+      actual_html = javascript_include_tag('application')
+      assert_has_tag('script', :src => "/js/application.js?#{time.to_i}", :type => "text/javascript") { actual_html }
+    end
+
     should "display javascript item for long relative path" do
       time = stop_time_for_test
       actual_html = javascript_include_tag('example/demo/application')
@@ -354,6 +372,22 @@ describe "AssetTagHelpers" do
 
     should "override options" do
       assert_has_tag('link', :type => 'my-type', :rel => 'my-rel', :href => "/blog/post.rss", :title => 'my-title') { feed_tag :rss, "/blog/post.rss", :type => "my-type", :rel => "my-rel", :title => "my-title" }
+    end
+  end
+
+  context 'for #asset_path method' do
+    should 'generate proper paths for js and css' do
+      assert_match /\/javascripts\/app.js\?\d+/, asset_path(:js, 'app')
+      assert_match /\/stylesheets\/app.css\?\d+/, asset_path(:css, 'app')
+    end
+
+    should 'generate proper paths for images and other files' do
+      assert_match /\/images\/app.png\?\d+/, asset_path(:images, 'app.png')
+      assert_match /\/documents\/app.pdf\?\d+/, asset_path(:documents, 'app.pdf')
+    end
+
+    should 'generate proper paths for public folder' do
+      assert_match /\/files\/file.ext\?\d+/, asset_path('files/file.ext')
     end
   end
 end

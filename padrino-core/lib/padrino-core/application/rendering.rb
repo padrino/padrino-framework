@@ -195,14 +195,16 @@ module Padrino
         options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
         # Resolve layouts similar to in Rails
         if options[:layout].nil? && !settings.templates.has_key?(:layout)
-          layout_path, layout_engine = *resolved_layout
+          layout_path = settings.fetch_layout_path(options[:layout])
+          is_included_extension = %w[.slim .erb .haml].include?(File.extname(layout_path.to_s))
+          layout_path, layout_engine = *(is_included_extension ? resolve_template(layout_path) : resolved_layout)
 
           # We need to force layout false so sinatra don't try to render it
           options[:layout] = layout_path || false
-          options[:layout] = false unless layout_engine == engine # TODO allow different layout engine
+          options[:layout] = false unless is_included_extension ? layout_engine : layout_engine == engine
           options[:layout_engine] = layout_engine || engine if options[:layout]
         elsif options[:layout].present?
-          options[:layout] = settings.fetch_layout_path(options[:layout] || @layout)
+          options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]))
         end
         # Default to original layout value if none found.
         options[:layout] ||= layout_was
@@ -276,11 +278,17 @@ module Padrino
         view_path = options.delete(:views) || settings.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
+        template_glob =
+          if respond_to?(:request) && request.controller.present?
+            File.join("{,#{request.controller}}", template_path)
+          else
+            template_path
+          end
 
         # Generate potential template candidates
-        templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
+        templates = Dir[File.join(view_path, template_glob) + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
-          template_file   = file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+          template_file   = file.squeeze('/').sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
         end
 

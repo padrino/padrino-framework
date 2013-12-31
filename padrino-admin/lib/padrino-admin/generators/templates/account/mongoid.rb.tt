@@ -43,11 +43,12 @@ class <%= @model_name %>
   end
 
   private
-    def encrypt_password
-      self.crypted_password = ::BCrypt::Password.create(self.password)
-    end
 
-    def password_required
-      crypted_password.blank? || self.password.present?
-    end
+  def encrypt_password
+    self.crypted_password = ::BCrypt::Password.create(self.password)
+  end
+
+  def password_required
+    crypted_password.blank? || self.password.present?
+  end
 end

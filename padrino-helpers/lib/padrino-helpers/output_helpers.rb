@@ -9,6 +9,20 @@ module Padrino
       end
 
       ##
+      # Returns the list of all available template handlers.
+      #
+      def self.handlers
+        @_template_handlers ||= {}
+      end
+
+      ##
+      # Registers a new handler as available to the output helpers.
+      #
+      def self.register(engine, handler)
+        handlers[engine] = handler
+      end
+
+      ##
       # Module used to detect the current engine in vanilla Sinatra apps.
       #
       module SinatraCurrentEngine
@@ -45,14 +59,11 @@ module Padrino
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
-        handler = find_proper_handler
-        captured_block, captured_html = nil, ""
-        if handler && handler.is_type? && handler.block_is_type?(block)
-          captured_html, captured_block = handler.capture_from_template(*args, &block)
+        if handler = find_proper_handler
+          handler.capture_from_template(*args, &block)
+        else
+          block.call(*args)
         end
-        # invoking the block directly if there was no template
-        captured_html = block_given? && ( captured_block || block.call(*args) )  if captured_html.blank?
-        captured_html
       end
       alias :capture :capture_html
 
@@ -68,10 +79,9 @@ module Padrino
       #   concat_content("This will be output to the template buffer")
       #
       def concat_content(text="")
-        handler = find_proper_handler
-        if handler && handler.is_type?
+        if handler = find_proper_handler
           handler.concat_to_template(text)
-        else # theres no template to concat, return the text directly
+        else
           text
         end
       end
@@ -105,7 +115,7 @@ module Padrino
       #
       def block_is_template?(block)
         handler = find_proper_handler
-        block && handler && handler.block_is_type?(block)
+        block && handler && handler.engine_matches?(block)
       end
 
       ##
@@ -124,7 +134,9 @@ module Padrino
       #   content_for(:name) { |name| ...content... }
       #   content_for(:name, "I'm Jeff")
       #
-      def content_for(key, content = nil, &block)
+      def content_for(key, content = nil, options = {}, &block)
+        options = content if content.is_a?(Hash)
+        content_blocks[key.to_sym].clear if options[:flush]
         content_blocks[key.to_sym] << (block_given? ? block : Proc.new { content })
       end
 
@@ -185,7 +197,8 @@ module Padrino
       #   find_proper_handler => <OutputHelpers::HamlHandler>
       #
       def find_proper_handler
-        OutputHelpers.handlers.map { |h| h.new(self) }.find { |h| h.engines.include?(current_engine) && h.is_type? }
+        handler_class = OutputHelpers.handlers[current_engine]
+        handler_class && handler_class.new(self)
       end
 
       ##

@@ -54,6 +54,57 @@ describe "RenderHelpers" do
     end
   end
 
+  context 'render with block' do
+    should 'render slim with block' do
+      visit '/render_block_slim'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.slim-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+    should 'render erb with block' do
+      visit '/render_block_erb'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.erb-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+    should 'render haml with block' do
+      visit '/render_block_haml'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.haml-block'
+      assert_have_selector 'div', :content => 'go block!'
+    end
+  end
+
+  context 'partial with block' do
+    should 'show partial slim with block' do
+      visit '/partial_block_slim'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.slim-block'
+      assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
+    end
+    should 'show partial erb with block' do
+      visit '/partial_block_erb'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.erb-block'
+      assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
+    end
+    should 'show partial haml with block' do
+      visit '/partial_block_haml'
+      assert_have_selector 'h1', :content => 'prefix'
+      assert_have_selector 'h3', :content => 'postfix'
+      assert_have_selector '.haml-block'
+      assert_have_selector 'div', :content => 'go block!'
+      assert_have_selector 'div.deep', :content => 'Done'
+    end
+  end
+
   context 'for #current_engine method' do
     should 'detect correctly current engine for a padrino application' do
       visit '/current_engine'
@@ -89,6 +140,22 @@ describe "RenderHelpers" do
       $number_of_captures = 0
       visit '/double_capture_erb'
       assert_equal 1,$number_of_captures
+    end
+
+    should "fail on wrong erb usage" do
+      assert_raises(SyntaxError) do
+        visit '/wrong_capture_erb'
+      end
+    end
+
+    should "ignore wrong haml usage" do
+      visit '/wrong_capture_haml'
+      assert_have_no_selector 'p', :content => 'this is wrong'
+    end
+
+    should "ignore wrong slim usage" do
+      visit '/wrong_capture_slim'
+      assert_have_no_selector 'p', :content => 'this is wrong'
     end
   end
 end

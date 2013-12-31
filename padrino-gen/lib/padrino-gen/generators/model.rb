@@ -32,22 +32,31 @@ module Padrino
         if in_app_root?
           app = options[:app]
           check_app_existence(app)
-          self.behavior = :revoke if options[:destroy]
-          if invalids = invalid_fields(fields)
-            say 'Invalid field name:', :red
-            say " #{invalids.join(", ")}"
+          camel_name = name.to_s.underscore.camelize
+          @project_name = ""
+          @project_name = fetch_project_name
+          if already_exists?(camel_name, @project_name)
+            say "#{camel_name} already exists."
+            say "Please, change the name."
             return
+          else
+            self.behavior = :revoke if options[:destroy]
+            if invalids = invalid_fields(fields)
+              say 'Invalid field name:', :red
+              say " #{invalids.join(", ")}"
+              return
+            end
+            unless include_component_module_for(:orm)
+              say "<= You need an ORM adapter for run this generator. Sorry!"
+              raise SystemExit
+            end
+            include_component_module_for(:test)
+            migration_name = "create_#{name.pluralize.underscore}"
+            apply_default_fields fields
+            create_model_file(name, :fields => fields, :app => app)
+            generate_model_test(name) if test?
+            create_model_migration(migration_name, name, fields) unless options[:skip_migration]
           end
-          unless include_component_module_for(:orm)
-            say "<= You need an ORM adapter for run this generator. Sorry!"
-            raise SystemExit
-          end
-          include_component_module_for(:test)
-          migration_name = "create_#{name.pluralize.underscore}"
-          apply_default_fields fields
-          create_model_file(name, :fields => fields, :app => app)
-          generate_model_test(name) if test?
-          create_model_migration(migration_name, name, fields) unless options[:skip_migration]
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end

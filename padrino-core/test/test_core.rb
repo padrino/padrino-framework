@@ -27,12 +27,8 @@ describe "Core" do
 
     should 'set correct utf-8 encoding' do
       Padrino.set_encoding
-      if RUBY_VERSION <'1.9'
-        assert_equal 'UTF8', $KCODE
-      else
-        assert_equal Encoding.default_external, Encoding::UTF_8
-        assert_equal Encoding.default_internal, Encoding::UTF_8
-      end
+      assert_equal Encoding.default_external, Encoding::UTF_8
+      assert_equal Encoding.default_internal, Encoding::UTF_8
     end
 
     should 'have load paths' do

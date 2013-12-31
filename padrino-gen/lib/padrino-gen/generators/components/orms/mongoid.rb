@@ -74,17 +74,8 @@ Mongoid::Config.sessions =
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => (RUBY_VERSION >= '1.9' ? '~>3.0.0' : '~>2.0')
-
-  if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
-    require_dependencies('SystemTimer', :require => 'system_timer')
-  end
-
-  if RUBY_VERSION >= '1.9'
-     create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @project_name.underscore))
-  else
-    create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
-  end
+  require_dependencies 'mongoid', :version => '~>3.0.0'
+  create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @project_name.underscore))
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)

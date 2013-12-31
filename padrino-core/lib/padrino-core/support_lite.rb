@@ -200,27 +200,41 @@ end
 #   puts help.red.bold
 #
 class String
-  def self.colors
-    @_colors ||= {
-      :clear   => 0,
-      :bold    => 1,
-      :black   => 30,
-      :red     => 31,
-      :green   => 32,
-      :yellow  => 33,
-      :blue    => 34,
-      :magenta => 35,
-      :cyan    => 36,
-      :white   => 37
-    }
+  # colorize(:red)
+  def colorize(color)
+    Colorizer.send(color, self)
   end
 
-  colors.each do |color, value|
-    define_method(color) do
-      ["\e[", value.to_s, "m", self, "\e[", self.class.colors[:clear], "m"] * ''
+  # Used to colorize strings for the shell
+  class Colorizer
+    # Returns colors integer mapping
+    def self.colors
+      @_colors ||= {
+        :clear   => 0,
+        :bold    => 1,
+        :black   => 30,
+        :red     => 31,
+        :green   => 32,
+        :yellow  => 33,
+        :blue    => 34,
+        :magenta => 35,
+        :cyan    => 36,
+        :white   => 37
+      }
+    end
+
+    # Defines class level color methods
+    # i.e  Colorizer.red("hello")
+    class << self
+      Colorizer.colors.each do |color, value|
+        define_method(color) do |target|
+          "\e[#{value}m" << target << "\e[0m"
+         end
+      end
     end
   end
 
+  # Strip unnecessary indentation of the front of a string
   def undent
     gsub(/^.{#{slice(/^ +/).size}}/, '')
   end
@@ -243,19 +257,3 @@ I18n.load_path += Dir["#{File.dirname(__FILE__)}/locale/*.yml"] if defined?(I18n
 # Used to determine if this file has already been required
 #
 module SupportLite; end
-
-module Padrino
-  class Utils
-    ###
-    # Silences output verbosity level so load
-    # errors are not visible when safe_load(file)
-    #
-    def self.silence_output
-      @verbosity_level, $-v = $-v, nil
-    end
-
-    def self.unsilence_output
-      $-v = @verbosity_level
-    end
-  end
-end

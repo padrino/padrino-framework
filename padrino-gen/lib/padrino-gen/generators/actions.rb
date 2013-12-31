@@ -199,6 +199,14 @@ module Padrino
       end
 
       ##
+      # Returns true if constant name already exists.
+      #
+      def already_exists?(name, project_name = nil)
+        project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
+        Object.const_defined?(name) || (project_name && project_name.const_defined?(name))
+      end
+
+      ##
       # Returns the field with an unacceptable name(for symbol) else returns nil.
       #
       # @param [Array<String>] fields
@@ -357,7 +365,7 @@ WARNING
         @_init_name, @_init_data = name, data
         register = data.present? ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
         inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
-        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_init.rb") if data.present?
+        template "templates/initializer.rb.tt", destination_root("/lib/#{name}_initializer.rb") if data.present?
       end
 
       ##

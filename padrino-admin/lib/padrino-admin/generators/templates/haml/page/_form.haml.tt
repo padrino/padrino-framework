@@ -3,7 +3,7 @@
 %fieldset.control-group{:class => error ? 'has-error' : ''}
   =f.label :<%= column[:name] %>, :class => 'control-label'
   .controls
-    <% if column[:field_type] == :text_area %>~<% else %>=<% end %>f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'input-xlarge input-with-feedback'<%- if (index == 0) -%>, :autofocus => true<%- end -%>
+    <% if column[:field_type] == :text_area %>~<% else %>=<% end %>f.<%= column[:field_type] %> :<%= column[:name] %>, :class => 'form-control input-large input-with-feedback'<%- if (index == 0) -%>, :autofocus => true<%- end -%>
 
     %span.help-inline=error ? f.error_message_on(:<%= column[:name] %>, :class => 'text-error') : pat(:example)
 <%- end -%>
@@ -13,4 +13,4 @@
   &nbsp;
   =f.submit pat(:save_and_continue), :class => 'btn btn-info', :name => 'save_and_continue'
   &nbsp;
-  =link_to pat(:cancel), url(:<%= @orm.name_plural %>, :index), :class => 'btn'
+  =link_to pat(:cancel), url(:<%= @orm.name_plural %>, :index), :class => 'btn btn-default'

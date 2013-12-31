@@ -24,7 +24,14 @@ describe "Mounter" do
       assert_equal "TestApp", mounter.app_class
       assert_equal "/path/to/test.rb", mounter.app_file
       assert_equal "/test_app", mounter.uri_root
-      assert_equal File.dirname(mounter.app_file), mounter.app_root
+      assert_equal Padrino.root, mounter.app_root
+    end
+
+    should 'use app.root if available' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
+      mounter = Padrino::Mounter.new("kiq", :app_class => "Kiq")
+      mounter.to("/test_app")
+      assert_equal '/weird', mounter.app_root
     end
 
     should 'check locate_app_file with __FILE__' do
@@ -51,6 +58,17 @@ describe "Mounter" do
       Padrino.mount("some_namespace/an_app").to("/")
       assert_equal SomeNamespace::AnApp, Padrino.mounted_apps.first.app_obj
       assert_equal ["some_namespace/an_app"], Padrino.mounted_apps.map(&:name)
+    end
+
+    should 'correctly set a name of a namespaced app' do
+      module ::SomeNamespace2
+        class AnApp < Padrino::Application
+          get(:index) { settings.app_name }
+        end
+      end
+      Padrino.mount("SomeNamespace2::AnApp").to("/")
+      res = Rack::MockRequest.new(Padrino.application).get("/")
+      assert_equal "some_namespace2/an_app", res.body
     end
 
     should 'mount a primary app to root uri' do
@@ -130,15 +148,22 @@ describe "Mounter" do
           put(:update) { "users update" }
           delete(:destroy) { "users delete" }
         end
+        controllers :foo_bar do
+          get(:index) { "foo bar index" }
+          get(:new) { "foo bar new" }
+          post(:create) { "foo bar create" }
+          put(:update) { "foo bar update" }
+          delete(:destroy) { "foo bar delete" }
+        end
       end
 
       Padrino.mount("one_app").to("/")
       Padrino.mount("two_app").to("/two_app")
 
       assert_equal 15, Padrino.mounted_apps[0].routes.size
-      assert_equal 7, Padrino.mounted_apps[1].routes.size
+      assert_equal 14, Padrino.mounted_apps[1].routes.size
       assert_equal 6, Padrino.mounted_apps[0].named_routes.size
-      assert_equal 5, Padrino.mounted_apps[1].named_routes.size
+      assert_equal 10, Padrino.mounted_apps[1].named_routes.size
 
       first_route = Padrino.mounted_apps[0].named_routes[3]
       assert_equal "posts show", first_route.identifier.to_s
@@ -154,6 +179,25 @@ describe "Mounter" do
       assert_equal "posts regexp", regexp_route.identifier.to_s
       assert_equal "(:posts, :regexp)", regexp_route.name
       assert_equal "/\\/foo|\\/baz/", regexp_route.path
+      foo_bar_route = Padrino.mounted_apps[1].named_routes[5]
+      assert_equal "(:foo_bar, :index)", foo_bar_route.name
+    end
+    
+    should "configure cascade apps" do
+      class ::App1 < Padrino::Application
+        get(:index) { halt 404, 'index1' }
+      end
+      class ::App2 < Padrino::Application
+        get(:index) { halt 404, 'index2' }
+      end
+      class ::App3 < Padrino::Application
+        get(:index) { halt 404, 'index3' }
+      end
+      Padrino.mount('app1', :cascade => true).to('/foo')
+      Padrino.mount('app2').to('/foo')
+      Padrino.mount('app3').to('/foo')
+      res = Rack::MockRequest.new(Padrino.application).get("/foo")
+      assert_equal 'index2', res.body
     end
 
     should 'correctly instantiate a new padrino application' do

@@ -19,6 +19,8 @@ module Padrino
       #   Also accepts HTML options.
       # @option settings [String] :builder ("StandardFormBuilder")
       #   The FormBuilder class to use such as StandardFormBuilder.
+      # @option settings [Symbol] :as
+      #   Sets custom form object name.
       # @param [Proc] block
       #   The fields and content inside this form.
       #
@@ -29,12 +31,14 @@ module Padrino
       # @example
       #   form_for :user, '/register' do |f| ... end
       #   form_for @user, '/register', :id => 'register' do |f| ... end
+      #   form_for @user, '/register', :as => :customer do |f| ... end
       #
       def form_for(object, url, settings={}, &block)
         instance = builder_instance(object, settings)
         html = capture_html(instance, &block)
         settings[:multipart] = instance.multipart unless settings.include?(:multipart)
         settings.delete(:namespace)
+        settings.delete(:as)
         form_tag(url, settings) { html }
       end
 
@@ -78,6 +82,7 @@ module Padrino
       #   form_tag '/register', :class => "registration_form" do ... end
       #
       def form_tag(url, options={}, &block)
+        options = options.dup
         desired_method = options[:method].to_s
         options.delete(:method) unless desired_method =~ /get|post/i
         options.reverse_merge!(:method => 'post',
@@ -90,9 +95,7 @@ module Padrino
           inner_form_html << csrf_token_field
         end
         inner_form_html << mark_safe(capture_html(&block))
-        not_concat = options.delete(:not_concat)
-        form_html  = content_tag(:form, inner_form_html, options)
-        not_concat ? form_html : concat_content(form_html)
+        concat_content content_tag(:form, inner_form_html, options)
       end
 
       ##
@@ -172,50 +175,45 @@ module Padrino
       #
       def error_messages_for(*objects)
         options = objects.extract_options!.symbolize_keys
-        objects = objects.map { |object_name|
-          object_name.is_a?(Symbol) ? instance_variable_get("@#{object_name}") : object_name
-        }.compact
-        count   = objects.inject(0) { |sum, object| sum + object.errors.count }
+        objects = objects.map{ |obj| resolve_object(obj) }.compact
+        count   = objects.inject(0){ |sum, object| sum + object.errors.count }
+        return ''.html_safe if count.zero?
 
-        unless count.zero?
-          html = {}
-          [:id, :class, :style].each do |key|
-            if options.include?(key)
-              value = options[key]
-              html[key] = value unless value.blank?
-            else
-              html[key] = 'field-errors' unless key == :style
-            end
+        html_options = {}
+        [:id, :class, :style].each do |key|
+          if options.include?(key)
+            value = options[key]
+            html_options[key] = value unless value.blank?
+          else
+            html_options[key] = 'field-errors' unless key == :style
+          end
+        end
+
+        I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
+          object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
+
+          header_message = if options.include?(:header_message)
+            options[:header_message]
+          else
+            model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
+            locale.t :header, :count => count, :model => model_name
           end
 
-          options[:object_name] ||= objects.first.class.to_s.underscore.gsub(/\//, ' ')
+          body_message = options[:message] || locale.t(:body)
 
-          I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
-            header_message = if options.include?(:header_message)
-              options[:header_message]
-            else
-              object_name = options[:object_name]
-              object_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
-              locale.t :header, :count => count, :model => object_name
+          error_messages = objects.inject(''.html_safe) do |text, object|
+            object.errors.each do |field, message|
+              field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
+              text << content_tag(:li, "#{field_name} #{message}")
             end
-            message = options.include?(:message) ? options[:message] : locale.t(:body)
-            error_messages = objects.map { |object|
-              object_name = options[:object_name]
-              object.errors.map { |f, msg|
-                field = I18n.t(f, :default => f.to_s.humanize, :scope => [:models, object_name, :attributes])
-                content_tag(:li, "%s %s" % [field, msg])
-              }
-            }.join
-
-            contents = ActiveSupport::SafeBuffer.new
-            contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
-            contents << content_tag(:p, message) unless message.blank?
-            contents << safe_content_tag(:ul, error_messages)
-
-            content_tag(:div, contents, html)
+            text
           end
-        else
-          ''
+
+          contents = ActiveSupport::SafeBuffer.new
+          contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
+          contents << content_tag(:p, body_message) unless body_message.blank?
+          contents << content_tag(:ul, error_messages)
+          content_tag(:div, contents, html_options)
         end
       end
 
@@ -251,24 +249,12 @@ module Padrino
       #
       # @api public
       def error_message_on(object, field, options={})
-        object = object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
-        error  = object.errors[field] rescue nil
-        error = if defined?(Ohm::Model) && object.is_a?(Ohm::Model)
-          I18n.t("ohm.errors.messages.#{error[0]}", :default => error[0].to_s)
-        else
-          # Array(error).first is necessary because some ORMs
-          # give us an array others directly a value.
-          Array(error)[0]
-        end
-
-        if error = Array(error)[0]
-          options.reverse_merge!(:tag => :span, :class => :error)
-          tag   = options.delete(:tag)
-          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
-          content_tag(tag, error, options)
-        else
-          ''
-        end
+        error = Array(resolve_object(object).errors[field]).first
+        return ''.html_safe unless error
+        options = options.reverse_merge(:tag => :span, :class => :error)
+        tag   = options.delete(:tag)
+        error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
+        content_tag(tag, error, options)
       end
 
       ##
@@ -290,14 +276,15 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options.reverse_merge!(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = options.delete(:caption).html_safe
+        options = options.reverse_merge(:caption => "#{name.to_s.humanize}: ", :for => name)
+        caption_text = ''.html_safe
+        caption_text.concat options.delete(:caption)
         caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
 
-        if block_given? # label with inner content
+        if block_given?
           label_content = caption_text.concat capture_html(&block)
           concat_content(content_tag(:label, label_content, options))
-        else # regular label
+        else
           content_tag(:label, caption_text, options)
         end
       end
@@ -360,7 +347,7 @@ module Padrino
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge!(:name => name))
+        input_tag(:text, options.reverse_merge(:name => name))
       end
 
       ##
@@ -510,8 +497,7 @@ module Padrino
       #   hidden_field_tag :session_key, :value => "__secret__"
       #
       def hidden_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:hidden, options)
+        input_tag(:hidden, options.reverse_merge(:name => name))
       end
 
       ##
@@ -521,7 +507,7 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options.reverse_merge!(:name => name, :rows => "", :cols => "")
+        options = options.reverse_merge(:name => name, :rows => "", :cols => "")
         content_tag(:textarea, options.delete(:value).to_s, options)
       end
 
@@ -533,8 +519,7 @@ module Padrino
       #
       # @api public
       def password_field_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:password, options)
+        input_tag(:password, options.reverse_merge(:name => name))
       end
 
       ##
@@ -544,8 +529,7 @@ module Padrino
       #   check_box_tag :remember_me, :value => 'Yes'
       #
       def check_box_tag(name, options={})
-        options.reverse_merge!(:name => name, :value => '1')
-        input_tag(:checkbox, options)
+        input_tag(:checkbox, options.reverse_merge(:name => name, :value => '1'))
       end
 
       ##
@@ -555,8 +539,7 @@ module Padrino
       #   radio_button_tag :remember_me, :value => 'true'
       #
       def radio_button_tag(name, options={})
-        options.reverse_merge!(:name => name)
-        input_tag(:radio, options)
+        input_tag(:radio, options.reverse_merge(:name => name))
       end
 
       ##
@@ -568,8 +551,7 @@ module Padrino
       # @api public
       def file_field_tag(name, options={})
         name = "#{name}[]" if options[:multiple]
-        options.reverse_merge!(:name => name)
-        input_tag(:file, options)
+        input_tag(:file, options.reverse_merge(:name => name))
       end
 
       ##
@@ -613,18 +595,12 @@ module Padrino
       # @return [String] The HTML input field based on the +options+ specified.
       #
       def select_tag(name, options={})
-        options.reverse_merge!(:name => name)
+        options = options.reverse_merge(:name => name)
+        options[:name] = "#{options[:name]}[]" if options[:multiple]
         collection, fields = options.delete(:collection), options.delete(:fields)
         options[:options] = options_from_collection(collection, fields) if collection
-        prompt = options.delete(:include_blank)
-        select_options_html = if options[:options]
-          options_for_select(options.delete(:options), options.delete(:selected))
-        elsif options[:grouped_options]
-          grouped_options_for_select(options.delete(:grouped_options), options.delete(:selected), prompt)
-        end
-        select_options_html = select_options_html.unshift(blank_option(prompt)) if select_options_html.is_a?(Array)
-        options.merge!(:name => "#{options[:name]}[]") if options[:multiple]
-        safe_content_tag(:select, select_options_html, options)
+        options_tags = extract_option_tags!(options)
+        content_tag(:select, options_tags, options)
       end
 
       ##
@@ -641,8 +617,7 @@ module Padrino
       #   button_tag "Cancel", :class => 'clear'
       #
       def button_tag(caption, options = {})
-        options.reverse_merge!(:value => caption)
-        input_tag(:button, options)
+        input_tag(:button, options.reverse_merge(:value => caption))
       end
 
       ##
@@ -660,10 +635,9 @@ module Padrino
       #   submit_tag :class => 'btn'
       #
       def submit_tag(*args)
-        options = args[-1].is_a?(Hash) ? args.pop : {}
-        caption = args.length >= 1 ? args.shift : "Submit"
-        options.reverse_merge!(:value => caption)
-        input_tag(:submit, options)
+        options = args.extract_options!
+        caption = args.length >= 1 ? args.first : "Submit"
+        input_tag(:submit, options.reverse_merge(:value => caption))
       end
 
       ##
@@ -677,11 +651,10 @@ module Padrino
       # @return [String] The html image button based on the +options+ specified.
       #
       # @example
-      #   submit_tag "Create", :class => 'success'
+      #   image_submit_tag 'form/submit.png'
       #
       def image_submit_tag(source, options={})
-        options.reverse_merge!(:src => image_path(source))
-        input_tag(:image, options)
+        input_tag(:image, options.reverse_merge(:src => image_path(source)))
       end
 
       ##
@@ -747,14 +720,14 @@ module Padrino
       #   # </form>
       #
       def button_to(*args, &block)
+        options   = args.extract_options!.dup
         name, url = args[0], args[1]
-        options   = args.extract_options!
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}
         if block_given?
-          form_tag(url, options, &block)
+          form_tag(url || name, options, &block)
         else
-          form_tag(url, options.merge!(:not_concat => true)) do
+          form_tag(url, options) do
             submit_tag(name, submit_options)
           end
         end
@@ -780,7 +753,7 @@ module Padrino
       # @return [String] The html range field
       #
       def range_field_tag(name, options = {})
-        options.reverse_merge!(:name => name)
+        options = options.reverse_merge(:name => name)
         if range = options.delete(:range)
           options[:min], options[:max] = range.min, range.max
         end
@@ -802,39 +775,27 @@ module Padrino
       ##
       # Returns the options tags for a select based on the given option items.
       #
-      def options_for_select(option_items, selected_value=nil)
+      def options_for_select(option_items, state = {})
         return [] if option_items.blank?
-        option_items.map do |caption, value, disabled|
-          value ||= caption
-          disabled ||= false
-          content_tag(:option, caption, :value => value, :selected => option_is_selected?(value, caption, selected_value), :disabled => disabled)
+        option_items.map do |caption, value, attributes|
+          html_attributes = { :value => value || caption  }.merge(attributes||{})
+          html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
+          html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
+          content_tag(:option, caption, html_attributes)
         end
       end
 
       ##
       # Returns the optgroups with options tags for a select based on the given :grouped_options items.
       #
-      def grouped_options_for_select(collection, selected=nil, prompt=false)
-        if collection.is_a?(Hash)
-          collection.map do |key, value|
-            # Hash format:
-            # {:first => [1,2,3], :second => [4,5,6]}
-            # or:
-            # {:first => [[1,2,3], {:disabled => true}], :second => [4,5,6]}
-            attributes_hash = value.last.is_a?(Hash) ? value.pop : nil
-            disabled ||=  attributes_hash && attributes_hash.include?(:disabled) ? attributes_hash[:disabled] : false
-            content_tag :optgroup, options_for_select(value, selected), :label => key, :disabled => disabled
-          end
-        elsif collection.is_a?(Array)
-          # Array format:
-          # ["Option Label", [:option1, :option2, ...]]
-          # or:
-          # ["Option Label", [:option1, :option2, ...], true]
-          # the last item tells if it is disabled or not. This is keeps it backwards compatible.
-          collection.map do |optgroup|
-            disabled ||= optgroup.count > 2 ? optgroup.pop : false
-            content_tag :optgroup, options_for_select(optgroup.last, selected), :label => optgroup.first, :disabled => disabled
-          end
+      def grouped_options_for_select(collection, state = {})
+        collection.map do |item|
+          caption = item.shift
+          attributes = item.last.kind_of?(Hash) ? item.pop : {}
+          value = item.flatten(1)
+          attributes = value.pop if value.last.kind_of?(Hash)
+          html_attributes = { :label => caption }.merge(attributes||{})
+          content_tag(:optgroup, options_for_select(value, state), html_attributes)
         end
       end
 
@@ -842,11 +803,15 @@ module Padrino
       # Returns the blank option serving as a prompt if passed.
       #
       def blank_option(prompt)
-        return unless prompt
         case prompt
-          when String then content_tag(:option, prompt,       :value => '')
-          when Array  then content_tag(:option, prompt.first, :value => prompt.last)
-          else             content_tag(:option, '',           :value => '')
+        when nil, false
+          nil
+        when String
+          content_tag(:option, prompt,       :value => '')
+        when Array
+          content_tag(:option, prompt.first, :value => prompt.last)
+        else
+          content_tag(:option, '',           :value => '')
         end
       end
 
@@ -877,6 +842,7 @@ module Padrino
       end
 
       private
+
       ##
       # Returns the FormBuilder class to use based on all available setting sources
       # If explicitly defined, returns that, otherwise returns defaults.
@@ -913,6 +879,32 @@ module Padrino
         Array(selected_values).any? do |selected|
           [value.to_s, caption.to_s].include?(selected.to_s)
         end
+      end
+
+      def extract_option_state!(options)
+        {
+          :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
+          :disabled => Array(options.delete(:disabled_options))
+        }
+      end
+
+      def extract_option_tags!(options)
+        state = extract_option_state!(options)
+        option_tags = case
+        when options[:options]
+          options_for_select(options.delete(:options), state)
+        when options[:grouped_options]
+          grouped_options_for_select(options.delete(:grouped_options), state)
+        else
+          []
+        end
+        prompt = options.delete(:include_blank)
+        option_tags.unshift(blank_option(prompt)) if prompt
+        option_tags
+      end
+
+      def resolve_object(object)
+        object.is_a?(Symbol) ? instance_variable_get("@#{object}") : object
       end
     end
   end
