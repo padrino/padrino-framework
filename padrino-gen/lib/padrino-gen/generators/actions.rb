@@ -199,6 +199,14 @@ module Padrino
       end
 
       ##
+      # Returns true if constant name already exists.
+      #
+      def already_exists?(name, project_name = nil)
+        project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
+        Object.const_defined?(name) || (project_name && project_name.const_defined?(name))
+      end
+
+      ##
       # Returns the field with an unacceptable name(for symbol) else returns nil.
       #
       # @param [Array<String>] fields

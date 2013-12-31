@@ -35,19 +35,25 @@ module Padrino
         if in_app_root?
           @project_name = options[:namespace].underscore.camelize
           @project_name = fetch_project_name(@app_folder) if @project_name.empty?
-          lowercase_app_folder = @app_folder.downcase
-          self.behavior = :revoke if options[:destroy]
-          app_skeleton(lowercase_app_folder, options[:tiny])
-          empty_directory destination_root("public/#{lowercase_app_folder}")
-          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
-
-          return if self.behavior == :revoke
-          say
-          say '=' * 65, :green
-          say "Your #{@app_name} application has been installed."
-          say '=' * 65, :green
-          say "This application has been mounted to /#{@app_name.downcase}"
-          say "You can configure a different path by editing 'config/apps.rb'"
+          if already_exists?(@app_name, @project_name)
+            say "#{@app_name} already exists."
+            say "Please, change the name."
+            return
+          else
+            lowercase_app_folder = @app_folder.downcase
+            self.behavior = :revoke if options[:destroy]
+            app_skeleton(lowercase_app_folder, options[:tiny])
+            empty_directory destination_root("public/#{lowercase_app_folder}")
+            inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
+  
+            return if self.behavior == :revoke
+            say
+            say '=' * 65, :green
+            say "Your #{@app_name} application has been installed."
+            say '=' * 65, :green
+            say "This application has been mounted to /#{@app_name.downcase}"
+            say "You can configure a different path by editing 'config/apps.rb'"
+          end
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end

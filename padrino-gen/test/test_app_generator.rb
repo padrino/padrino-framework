@@ -96,5 +96,26 @@ describe "AppGenerator" do
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/views")
       assert_no_match_in_file(/Padrino\.mount\("Demo"\).to\("\/demo"\)/,"#{@apptmp}/sample_project/config/apps.rb")
     end
+
+    should "abort if app name already exists" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, err = capture_io { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project") }
+      assert_match(/Kernel already exists/, out)
+      assert_no_dir_exists("#{@apptmp}/sample_project/public/kernel")
+      assert_no_dir_exists("#{@apptmp}/sample_project/kernel/controllers")
+      assert_no_dir_exists("#{@apptmp}/sample_project/kernel/helpers")
+      assert_no_file_exists("#{@apptmp}/sample_project/kernel/app.rb")
+    end
+
+    should "abort if app name already exists in root" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'subapp', "--root=#{@apptmp}/sample_project") }
+      out, err = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", :apps => "subapp") }
+      assert_dir_exists("#{@apptmp}/sample_project/public/subapp")
+      assert_dir_exists("#{@apptmp}/sample_project/subapp/controllers")
+      assert_dir_exists("#{@apptmp}/sample_project/subapp/helpers")
+      assert_file_exists("#{@apptmp}/sample_project/subapp/app.rb")
+      assert_match(/Subapp already exists/, out)
+    end
   end
 end
