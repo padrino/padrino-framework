@@ -2,6 +2,7 @@ require 'padrino-core/application/flash'
 require 'padrino-core/application/rendering'
 require 'padrino-core/application/routing'
 require 'padrino-core/application/showexceptions'
+require 'padrino-core/application/authenticity_token'
 
 module Padrino
   ##
@@ -339,26 +340,14 @@ module Padrino
         check_csrf_protection_dependency
 
         if protect_from_csrf?
-          if protect_from_csrf.is_a?(Hash)
-            except = Array(protect_from_csrf[:except])
-            unless except.empty?
-              except.each{|except_path| exception_router.before(except_path, &ignore_csrf_protection) }
-              builder.use exception_router
-            end
+          if protect_from_csrf.is_a?(Hash) && protect_from_csrf[:except].is_a?(Proc)
+            builder.use(AuthenticityToken,
+                        options_for_csrf_protection_setup.merge(:except => protect_from_csrf[:except]))
+          else
+            builder.use(Rack::Protection::AuthenticityToken,
+                        options_for_csrf_protection_setup)
           end
-          builder.use(Rack::Protection::AuthenticityToken,
-                      options_for_csrf_protection_setup)
         end
-      end
-
-      # the sinatra app for routes to disable the csrf protection.
-      def exception_router
-        @exception_router ||= Class.new(Sinatra::Base)
-      end
-
-      # returns a proc to avoid csrf protection.
-      def ignore_csrf_protection
-        Proc.new { env['HTTP_X_CSRF_TOKEN'] = session[:csrf] = SecureRandom.hex(32) }
       end
 
       # returns the options used in the builder for csrf protection setup
