@@ -302,7 +302,7 @@ describe "Routing" do
       get(:a){ url('/foo') }
       get(:b){ url('bar') }
       get(:c){ absolute_url('/foo') }
-      get(:d){ absolute_url('bar') }
+      get(:d, :map => '/d/e/f'){ absolute_url('bar') }
     end
     get "/a"
     assert_equal "/app/foo", body
@@ -310,8 +310,8 @@ describe "Routing" do
     assert_equal "bar", body
     get "/c"
     assert_equal "http://example.org/app/foo", body
-    get "/d"
-    assert_equal "http://example.org/bar", body
+    get "/d/e/f"
+    assert_equal "http://example.org/app/d/e/bar", body
   end
 
   should 'allow regex url with format' do

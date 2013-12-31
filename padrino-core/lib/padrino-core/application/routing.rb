@@ -979,9 +979,15 @@ module Padrino
       # @example
       #   absolute_url(:show, :id => 1)  # => http://example.com/show?id=1
       #   absolute_url(:show, 24)        # => https://example.com/admin/show/24
+      #   absolute_url('/foo/bar')       # => https://example.com/admin/foo/bar
+      #   absolute_url('baz')            # => https://example.com/admin/foo/baz
       #
-      def absolute_url( *args )
-        uri url(*args), true, false
+      def absolute_url(*args)
+        url_path = args.shift
+        if url_path.is_a?(String) && !url_path.start_with?('/')
+          url_path = request.env['PATH_INFO'].rpartition('/').first << '/' << url_path
+        end
+        uri url(url_path, *args), true, false
       end
 
       def recognize_path(path)
