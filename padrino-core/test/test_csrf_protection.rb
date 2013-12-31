@@ -76,5 +76,50 @@ describe "Application" do
         assert_equal 403, status
       end
     end
+
+    context "with :except option" do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :except => ["/", "/foo"]
+          post("/") { "Hello" }
+          post("/foo") { "Hello, foo" }
+          post("/bar") { "Hello, bar" }
+        end
+      end
+
+      should "allow ignoring CSRF protection on specific routes" do
+        post "/"
+        assert_equal 200, status
+        post "/foo"
+        assert_equal 200, status
+        post "/bar"
+        assert_equal 403, status
+      end
+    end
+
+    context "with middleware" do
+      before do
+        class Middleware < Sinatra::Base
+          post("/middleware") { "Hello, middleware" }
+          post("/dummy") { "Hello, dummy" }
+        end
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :except => ["/", "/middleware"]
+          use Middleware
+          post("/") { "Hello" }
+        end
+      end
+
+      should "allow ignoring CSRF protection on specific routes of middleware" do
+        post "/"
+        assert_equal 200, status
+        post "/middleware"
+        assert_equal 200, status
+        post "/dummy"
+        assert_equal 403, status
+      end
+    end
   end
 end
