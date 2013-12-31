@@ -340,7 +340,7 @@ module Padrino
         check_csrf_protection_dependency
 
         if protect_from_csrf?
-          if protect_from_csrf.is_a?(Hash) && protect_from_csrf[:except].is_a?(Proc)
+          if protect_from_csrf.is_a?(Hash) && protect_from_csrf[:except]
             builder.use(AuthenticityToken,
                         options_for_csrf_protection_setup.merge(:except => protect_from_csrf[:except]))
           else

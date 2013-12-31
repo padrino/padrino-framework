@@ -77,7 +77,7 @@ describe "Application" do
       end
     end
 
-    context "with :except option" do
+    context "with :except option that is using Proc" do
       before do
         mock_app do
           enable :sessions
@@ -94,6 +94,27 @@ describe "Application" do
         post "/foo"
         assert_equal 200, status
         post "/bar"
+        assert_equal 403, status
+      end
+    end
+
+    context "with :except option that is using String and Regexp" do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :except => ["/a", %r{^/a.c$}]
+          post("/a") { "a" }
+          post("/abc") { "abc" }
+          post("/foo") { "foo" }
+        end
+      end
+
+      should "allow ignoring CSRF protection on specific routes" do
+        post "/a"
+        assert_equal 200, status
+        post "/abc"
+        assert_equal 200, status
+        post "/foo"
         assert_equal 403, status
       end
     end
