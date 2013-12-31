@@ -341,7 +341,7 @@ module Padrino
         if protect_from_csrf?
           if protect_from_csrf.is_a?(Hash)
             except = Array(protect_from_csrf[:except])
-            if !except.empty?
+            unless except.empty?
               except.each{|except_path| exception_router.before(except_path, &ignore_csrf_protection) }
               builder.use exception_router
             end
