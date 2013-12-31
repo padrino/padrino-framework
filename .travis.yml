@@ -33,4 +33,3 @@ matrix:
     - rvm: 1.9.3
       env: SINATRA_EDGE=true
     - rvm: rbx-19mode
-    - rvm: 2.1.0
