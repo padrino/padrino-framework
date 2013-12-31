@@ -278,11 +278,12 @@ module Padrino
         view_path = options.delete(:views) || settings.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
+        template_glob = request.controller.present? ? File.join("{,#{request.controller}}", template_path) : template_path
 
         # Generate potential template candidates
-        templates = Dir[File.join(view_path, template_path) + ".*"].map do |file|
+        templates = Dir[File.join(view_path, template_glob) + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
-          template_file   = file.sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+          template_file   = file.squeeze('/').sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
         end
 

@@ -496,6 +496,13 @@ describe "Rendering" do
 
     end
 
+    should 'resolve template location relative to controller name' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/blog'
+      assert_equal 'okay', body
+    end
+
     should 'renders erb with blocks' do
       mock_app do
         def container
