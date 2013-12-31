@@ -77,11 +77,11 @@ describe "Application" do
       end
     end
 
-    context "with :except option" do
+    context "with :except option that is using Proc" do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :except => ["/", "/foo"]
+          set :protect_from_csrf, :except => proc{|env| ["/", "/foo"].any?{|path| path == env['PATH_INFO'] }}
           post("/") { "Hello" }
           post("/foo") { "Hello, foo" }
           post("/bar") { "Hello, bar" }
@@ -98,6 +98,27 @@ describe "Application" do
       end
     end
 
+    context "with :except option that is using String and Regexp" do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :except => ["/a", %r{^/a.c$}]
+          post("/a") { "a" }
+          post("/abc") { "abc" }
+          post("/foo") { "foo" }
+        end
+      end
+
+      should "allow ignoring CSRF protection on specific routes" do
+        post "/a"
+        assert_equal 200, status
+        post "/abc"
+        assert_equal 200, status
+        post "/foo"
+        assert_equal 403, status
+      end
+    end
+
     context "with middleware" do
       before do
         class Middleware < Sinatra::Base
@@ -106,7 +127,7 @@ describe "Application" do
         end
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :except => ["/", "/middleware"]
+          set :protect_from_csrf, :except => proc{|env| ["/", "/middleware"].any?{|path| path == env['PATH_INFO'] }}
           use Middleware
           post("/") { "Hello" }
         end
