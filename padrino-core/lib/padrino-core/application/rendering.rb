@@ -278,7 +278,12 @@ module Padrino
         view_path = options.delete(:views) || settings.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
-        template_glob = request.controller.present? ? File.join("{,#{request.controller}}", template_path) : template_path
+        template_glob =
+          if respond_to?(:request) && request.controller.present?
+            File.join("{,#{request.controller}}", template_path)
+          else
+            template_path
+          end
 
         # Generate potential template candidates
         templates = Dir[File.join(view_path, template_glob) + ".*"].map do |file|
