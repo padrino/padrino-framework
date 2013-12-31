@@ -16,6 +16,16 @@ task :environment do
   end
 end
 
+# Loads skeleton Padrino environment, no models, no application settings.
+task :skeleton do
+  module Padrino::Reloader
+    def self.safe_load(file, options)
+      super unless file.include?('/models/')
+    end
+  end
+  require File.expand_path('config/boot.rb', Rake.application.original_dir)
+end
+
 desc "Generate a secret key"
 task :secret do
   shell.say SecureRandom.hex(32)
