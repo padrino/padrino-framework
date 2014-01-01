@@ -25,4 +25,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("bundler", "~> 1.0")
+  s.add_development_dependency("padrino-helpers", Padrino.version)
+  s.add_development_dependency("padrino-mailer", Padrino.version)
 end
