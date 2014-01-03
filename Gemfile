@@ -36,6 +36,9 @@ group :development do
   platforms :jruby do
     gem "jruby-openssl"
   end
+  platforms :rbx do
+    gem 'rubysl'
+  end
   gem "mocha",    ">= 0.10.0"
   gem "minitest", "~> 4.0"
   gem "lumberjack"
