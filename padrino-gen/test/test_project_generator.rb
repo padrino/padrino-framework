@@ -582,21 +582,6 @@ describe "ProjectGenerator" do
       assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
     end # minitest
 
-    should "properly generate for testspec" do
-      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testspec', '--script=none') }
-      assert_match(/applying.*?testspec.*?test/, out)
-      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/:require => 'rack\/test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/:group => 'test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'test-spec'.*?:require => 'test\/spec'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/PADRINO_ENV = 'test' unless defined\?\(PADRINO_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/gem 'test-spec'.*?:require => 'test\/spec'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
-    end
-
     should "properly generate for cucumber" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber', '--script=none') }
       assert_match(/applying.*?cucumber.*?test/, out)

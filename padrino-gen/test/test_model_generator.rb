@@ -489,27 +489,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
       assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
     end
-
-    # TESTSPEC
-    should "generate test file for testspec" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testspec', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-    end
-
-    should "generate test file for testspec in specified app" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testspec', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-    end
   end
 
   context "the model destroy option" do
