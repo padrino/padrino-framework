@@ -41,16 +41,16 @@ module Padrino
         # Add access_control permission in our app.rb.
         #
         def add_project_module(controller)
-          permission = "    role.project_module :#{controller}, '/#{controller}'\n"
-          inject_into_file destination_root('/admin/app.rb'),  permission, :after => "access_control.roles_for :admin do |role|\n"
+          permission = "      role.project_module :#{controller}, '/#{controller}'\n"
+          inject_into_file destination_root(@admin_path+'/app.rb'),  permission, :after => "access_control.roles_for :admin do |role|\n"
         end
 
         ##
         # Remove from access_control permissions.
         #
         def remove_project_module(controller)
-          path = destination_root('/admin/app.rb')
-          say_status :replace, 'admin/app.rb', :red
+          path = destination_root(@admin_path+'/app.rb')
+          say_status :replace, @admin_path+'/app.rb', :red
           content = File.binread(path)
           content.gsub!(/^\s+role\.project_module :#{controller}, '\/#{controller}'\n/, '')
           File.open(path, 'wb') { |f| f.write content }

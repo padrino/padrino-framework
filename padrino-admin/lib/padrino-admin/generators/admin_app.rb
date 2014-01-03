@@ -31,14 +31,12 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      # TODO FIXME Review these and implement accordingly.
-      # See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
-      # class_option :app,     :desc => 'The application destination path', :aliases => '-a', :default => '/app', :type => :string
       # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
+      class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
 
       # Copies over the Padrino base admin application.
       def create_admin
@@ -58,23 +56,27 @@ module Padrino
           # Get the app's namespace.
           @app_name = fetch_app_name
 
+          # setup admin app name
+          @admin_name = options[:admin_name].classify
+          @admin_path = options[:admin_name].underscore
+
           store_component_choice(:admin_renderer, tmp_ext)
 
           self.behavior = :revoke if options[:destroy]
 
-          empty_directory destination_root("admin")
+          empty_directory destination_root(@admin_path)
 
           # Setup Admin Model
           @model_name     = options[:admin_model].classify
           @model_singular = @model_name.underscore
           @model_plural   = @model_singular.pluralize
 
-          directory "templates/app",       destination_root("admin")
-          directory "templates/assets",    destination_root("public", "admin")
-          template  "templates/app.rb.tt", destination_root("admin/app.rb")
-          inject_into_file destination_root('config/apps.rb'),  "\nPadrino.mount(\"#{@app_name}::Admin\", :app_file => File.expand_path('../../admin/app.rb', __FILE__)).to(\"/admin\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
+          directory "templates/app",       destination_root(@admin_path)
+          directory "templates/assets",    destination_root("public", @admin_path)
+          template  "templates/app.rb.tt", destination_root(@admin_path + "/app.rb")
+          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
           unless options[:destroy]
-            insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', 'admin' if [:minirecord, :activerecord].include?(orm)
+            insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', @admin_path if [:minirecord, :activerecord].include?(orm)
           end
 
           params = [
@@ -98,7 +100,7 @@ module Padrino
           ]
 
           unless options[:destroy]
-            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy], :admin_model => @model_singular)
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy], :admin_model => @model_singular, :admin_name => @admin_name)
             admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
             admin_app.invoke_all
           end
@@ -111,21 +113,21 @@ module Padrino
           end
           template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
 
-          empty_directory destination_root("admin/controllers")
-          empty_directory destination_root("admin/views")
-          empty_directory destination_root("admin/views/base")
-          empty_directory destination_root("admin/views/layouts")
-          empty_directory destination_root("admin/views/sessions")
-          empty_directory destination_root("admin/views/errors")
+          empty_directory destination_root(@admin_path+"/controllers")
+          empty_directory destination_root(@admin_path+"/views")
+          empty_directory destination_root(@admin_path+"/views/base")
+          empty_directory destination_root(@admin_path+"/views/layouts")
+          empty_directory destination_root(@admin_path+"/views/sessions")
+          empty_directory destination_root(@admin_path+"/views/errors")
 
-          template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("admin/views/base/index.#{ext}")
-          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("admin/views/layouts/application.#{ext}")
-          template "templates/#{ext}/app/layouts/error.#{ext}.tt", destination_root("admin/views/layouts/error.#{ext}")
-          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("admin/views/sessions/new.#{ext}")
+          template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root(@admin_path+"/views/base/index.#{ext}")
+          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root(@admin_path+"/views/layouts/application.#{ext}")
+          template "templates/#{ext}/app/layouts/error.#{ext}.tt",       destination_root(@admin_path+"/views/layouts/error.#{ext}")
+          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root(@admin_path+"/views/sessions/new.#{ext}")
           # Custom error.
-          template "templates/#{ext}/app/errors/403.#{ext}.tt",        destination_root("admin/views/errors/403.#{ext}")
-          template "templates/#{ext}/app/errors/404.#{ext}.tt",        destination_root("admin/views/errors/404.#{ext}")
-          template "templates/#{ext}/app/errors/500.#{ext}.tt",        destination_root("admin/views/errors/500.#{ext}")
+          template "templates/#{ext}/app/errors/403.#{ext}.tt",          destination_root(@admin_path+"/views/errors/403.#{ext}")
+          template "templates/#{ext}/app/errors/404.#{ext}.tt",          destination_root(@admin_path+"/views/errors/404.#{ext}")
+          template "templates/#{ext}/app/errors/500.#{ext}.tt",          destination_root(@admin_path+"/views/errors/500.#{ext}")
 
           unless options[:destroy]
             add_project_module @model_plural
@@ -137,7 +139,7 @@ module Padrino
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           # Destroy account only if not logged in.
-          gsub_file destination_root("admin/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
+          gsub_file destination_root(@admin_path+"/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
           return if self.behavior == :revoke
 
           instructions = []
@@ -145,7 +147,7 @@ module Padrino
           instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper || orm == :sequel)
           instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
-          instructions << "Visit the admin panel in the browser at '/admin'"
+          instructions << "Visit the admin panel in the browser at '/#{@admin_path}'"
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
 
           say
