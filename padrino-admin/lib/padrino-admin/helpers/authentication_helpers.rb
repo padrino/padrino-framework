@@ -78,23 +78,19 @@ module Padrino
         private
 
         def access_denied
-          # If we have a login_page we redirect the user
-          if login_page
-            redirect(login_page)
+          if login_page.present?
+            redirect url(login_page)
           else
             halt 401, "You don't have permission for this resource"
           end
         end
 
         def login_page
-          login_page ||= settings.login_page rescue nil
-          return unless login_page
-          login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
-          login_page
+          settings.respond_to?(:login_page) && settings.login_page
         end
 
         def store_location
-          settings.store_location rescue nil
+          settings.respond_to?(:store_location) && settings.store_location
         end
 
         def login_from_session
@@ -104,7 +100,7 @@ module Padrino
         def admin_model_obj
           @_admin_model_obj ||= settings.admin_model.constantize
         rescue NameError
-          raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
+          raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model"
         end
       end
     end
