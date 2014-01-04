@@ -365,9 +365,9 @@ module Padrino
 
       # throw an exception if the protect_from_csrf is active but sessions not.
       def check_csrf_protection_dependency
-        if protect_from_csrf? && !sessions?
-          raise(<<-ERROR)
-`protect_from_csrf` is activated, but `sessions` are not. To enable csrf
+        if (protect_from_csrf? && !sessions?) && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
+          warn(<<-ERROR)
+`protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
 protection, use:
 
     enable :sessions
@@ -375,6 +375,11 @@ protection, use:
 or deactivate protect_from_csrf:
 
     disable :protect_from_csrf
+
+If you use a different session store, ignore this warning using:
+
+    # in boot.rb:
+    Padrino::IGNORE_CSRF_SETUP_WARNING = true
           ERROR
         end
       end
