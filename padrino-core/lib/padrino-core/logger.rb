@@ -280,7 +280,7 @@ module Padrino
 
         stream = case config[:stream]
           when :to_file
-            FileUtils.mkdir_p(Padrino.root('log')) unless File.exists?(Padrino.root('log'))
+            FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
             File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
           when :null   then StringIO.new
           when :stdout then $stdout

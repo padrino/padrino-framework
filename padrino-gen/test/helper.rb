@@ -87,7 +87,7 @@ class MiniTest::Spec
   end
 
   def assert_no_match_in_file(pattern, file)
-    File.exists?(file) ? assert_no_match(pattern, File.read(file)) : assert_file_exists(file)
+    File.exist?(file) ? assert_no_match(pattern, File.read(file)) : assert_file_exists(file)
   end
 
   # expects_generated :model, "post title:string body:text"

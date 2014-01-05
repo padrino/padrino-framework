@@ -22,7 +22,7 @@ module Padrino
 
       # Look for custom template files in a generators folder under the project root.
       def source_paths
-        if File.exists? destination_root('generators')
+        if File.exist? destination_root('generators')
           ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
         else
           [File.expand_path(File.dirname(__FILE__))]

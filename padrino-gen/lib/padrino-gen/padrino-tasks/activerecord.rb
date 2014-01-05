@@ -240,7 +240,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc "Load a schema.rb file into the database"
       task :load => :environment do
         file = ENV['SCHEMA'] || Padrino.root("db", "schema.rb")
-        if File.exists?(file)
+        if File.exist?(file)
           load(file)
         else
           raise %{#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
