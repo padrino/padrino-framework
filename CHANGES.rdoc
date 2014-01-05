@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.12.0.rc2 (January 5th 2014)
+
+* FIX development dependency for padrino-gen (@namusyaka)
+* FIX #1520 Skip loading models for sequel migration tasks (@ujifgc)
+* FIX #1493 make admin aware of uri_root (@ujifgc)
+* NEW #854 allow -a master to rename admin path (@ujifgc)
+* FIX Get tests passing again on rubinius (@ujifgc)
+* FIX #1545 Don't raise on protect_from_csrf without sessions (@skade)
+* FIX #1546 Silence deprecation warnings for File.exists? (@fj)
+* REMOVE #1516 support for TestSpec component from generator (@ujifgc)
+
 == 0.12.0.rc1 (December 31st 2013)
 
 * FIX #1421 Prevent double-escaped HTML in simple_format (@inkstak)
