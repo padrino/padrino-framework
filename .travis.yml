@@ -32,3 +32,4 @@ matrix:
   allow_failures:
     - rvm: 1.9.3
       env: SINATRA_EDGE=true
+    - rvm: rbx
