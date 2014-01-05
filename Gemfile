@@ -38,6 +38,7 @@ group :development do
   end
   platforms :rbx do
     gem 'rubysl'
+    gem 'racc'
   end
   gem "mocha",    ">= 0.10.0"
   gem "minitest", "~> 4.0"
