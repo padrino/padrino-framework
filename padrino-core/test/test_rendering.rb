@@ -446,7 +446,14 @@ describe "Rendering" do
       I18n.locale = :en
       get "/foo.pk"
       assert_equal 404, status
+    end
 
+    should 'resolve templates and layouts located in absolute paths' do
+      mock_app do
+        get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }
+      end
+      get '/foo'
+      assert_match /okay absolute layout/, body
     end
 
     should 'resolve template content_type and locale with layout' do

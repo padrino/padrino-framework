@@ -204,7 +204,7 @@ module Padrino
           options[:layout] = false unless is_included_extension ? layout_engine : layout_engine == engine
           options[:layout_engine] = layout_engine || engine if options[:layout]
         elsif options[:layout].present?
-          options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]))
+          options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]), options)
         end
         # Default to original layout value if none found.
         options[:layout] ||= layout_was
@@ -274,7 +274,7 @@ module Padrino
         end
 
         # Resolve view path and options.
-        options.reverse_merge!(DEFAULT_RENDERING_OPTIONS)
+        options = DEFAULT_RENDERING_OPTIONS.merge(options)
         view_path = options.delete(:views) || settings.views || "./views"
         target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
