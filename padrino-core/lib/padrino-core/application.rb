@@ -59,6 +59,7 @@ module Padrino
         logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
+        reset_permissions! if respond_to?(:reset_permissions!)
         Padrino.require_dependencies(settings.app_file, :force => true)
         require_dependencies
         default_filters!

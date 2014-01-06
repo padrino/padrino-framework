@@ -13,6 +13,7 @@ subgems = [
   ["padrino-mailer", "= #{gemspec.version}"],
   ["padrino-gen", "= #{gemspec.version}"],
   ["padrino-admin", "= #{gemspec.version}"],
+  ["padrino-auth", "= #{gemspec.version}"],
   ["padrino-cache", "= #{gemspec.version}"]
 ]
 
