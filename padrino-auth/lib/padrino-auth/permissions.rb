@@ -13,6 +13,7 @@ module Padrino
       options = args.extract_options!
       action, object = action_and_object(options)
       object_type = detect_type(object)
+      @actions = {}
       args.each do |subject|
         @permits[subject] ||= {}
         @permits[subject][action] ||= []
@@ -37,7 +38,7 @@ module Padrino
       end
     end
 
-    if Padrino.env == :development
+    if Padrino.env != :production
       def list; @permits; end
     end
 

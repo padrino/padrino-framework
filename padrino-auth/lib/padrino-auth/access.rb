@@ -9,7 +9,8 @@ module Padrino
         app.set :permissions, Permissions.new
         app.reset_access!
         app.before do
-          access_action? or error(403)
+          message = Padrino.env != :production ? settings.permissions.list.inspect : '403 Forbidden'
+          access_action? or error(403, message)
         end
       end
 
