@@ -7,6 +7,8 @@ module Padrino
       def registered(app)
         included(app)
         app.set :permissions, Permissions.new
+        app.set :credentials_reader, :credentidals unless app.respond_to?(:credentials_reader)
+        app.send :attr_reader, app.credentials_reader unless app.instance_methods.include?(app.credentials_reader)
         app.reset_access!
         app.before do
           message = Padrino.env != :production ? settings.permissions.list.inspect : '403 Forbidden'
@@ -27,14 +29,14 @@ module Padrino
 
       def set_access(*args)
         options = args.extract_options!
-        options[:with] ||= Array(@_controller).first.to_s if @_controller.present?
+        options[:object] ||= Array(@_controller).first.to_s if @_controller.present?
         permissions.add(*args, options)
       end
     end
 
     module InstanceMethods
       def access_subject
-        send settings.access_subject
+        send settings.credentials_reader
       end
 
       def access_role?(*roles, &block)

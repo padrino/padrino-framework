@@ -2,22 +2,24 @@ require File.expand_path('../helper', __FILE__)
 
 describe "Padrino::Access" do
   before do
-    @bender = OpenStruct.new :name => 'Bender Bending Rodriguez', :role => :robots
-    @leela = OpenStruct.new :name => 'Turanga Leela', :role => :mutants
-    @fry = OpenStruct.new :name => 'Philip J. Fry', :role => :humans
-    @ami = OpenStruct.new :name => 'Amy Wong', :role => :humans
-    @zoidberg = OpenStruct.new :name => 'Dr. John A. Zoidberg', :role => :lobsters
     mock_app do
-      set :access_subject, :credentials
+      set :credentials_reader, :visitor
       register Padrino::Access
-      set :credentials, nil
-      helpers do
-        def credentials
-          settings.credentials
-        end
+      set_access :*, :allow => :login
+      set :users, [
+        OpenStruct.new(:id => :bender,   :name => 'Bender Bending Rodriguez', :role => :robots  ),
+        OpenStruct.new(:id => :leela,    :name => 'Turanga Leela',            :role => :mutants ),
+        OpenStruct.new(:id => :fry,      :name => 'Philip J. Fry',            :role => :humans  ),
+        OpenStruct.new(:id => :ami,      :name => 'Amy Wong',                 :role => :humans  ),
+        OpenStruct.new(:id => :zoidberg, :name => 'Dr. John A. Zoidberg',     :role => :lobsters),
+      ]
+      get(:login, :with => :id) do
+        user = settings.users.find{ |user| user.id.to_s == params[:id] }
+        self.send(:"#{settings.credentials_reader}=", user)
       end
       get(:index){ 'foo' }
       get(:bend){ 'bend' }
+      get(:subject){ self.send(settings.credentials_reader).inspect }
       get(:stop_partying){ 'stop partying' }
       controller :surface do
         get(:live) { 'live on the surface' }
@@ -26,6 +28,18 @@ describe "Padrino::Access" do
         get(:live) { 'live in the sewers' }
         get(:visit) { 'visit the sewers' }
       end
+      set :fake_session, {}
+      helpers do
+        def visitor
+          settings.fake_session[:visitor]
+        end
+        def visitor=(user)
+          settings.fake_session[:visitor] = user
+        end
+      end
+    end
+    @app.users.each do |user|
+      instance_variable_set :"@#{user.id}", user
     end
   end
 
@@ -34,17 +48,18 @@ describe "Padrino::Access" do
     assert_kind_of Padrino::Permissions, @app.permissions
   end
 
-  should 'set wildcard access' do
-    deny
+  should 'properly detect access subject' do
     set_access :*
-    allow
+    get '/login/ami'
+    get '/subject'
+    assert_equal @ami.inspect, body
   end
 
   should 'reset access properly' do
-    set_access :robots
-    allow @bender
+    set_access :*
+    allow
     @app.reset_access!
-    deny @bender
+    deny
   end
 
   should 'set group access' do
@@ -91,5 +106,17 @@ describe "Padrino::Access" do
     allow @fry, '/sewers/visit'
     allow @leela, '/surface/live'
     allow @leela, '/sewers/live'
+  end
+
+  should 'detect object when setting access from controller' do
+    # only humans and lobsters should have binocular vision
+    @app.controller :binocular do
+      set_access :humans, :lobsters
+      get(:vision) { 'binocular vision' }
+    end
+    deny @fry, '/'
+    allow @fry, '/binocular/vision'
+    allow @zoidberg, '/binocular/vision'
+    deny @leela, '/binocular/vision'
   end
 end

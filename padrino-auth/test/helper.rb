@@ -10,13 +10,15 @@ class MiniTest::Spec
   end
 
   def allow(subject = nil, path = '/')
-    @app.credentials = subject
+    @app.fake_session[:visitor] = nil
+    get "/login/#{subject.id}" if subject
     get path
     assert_equal 200, status, caller.first.to_s
   end
 
   def deny(subject = nil, path = '/')
-    @app.credentials = subject
+    @app.fake_session[:visitor] = nil
+    get "/login/#{subject.id}" if subject
     get path
     assert_equal 403, status, caller.first.to_s
   end

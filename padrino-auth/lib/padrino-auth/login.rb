@@ -6,8 +6,8 @@ module Padrino
   module Login
     class << self
       def set_defaults(app)
+        app.set :credentials_accessor, :credentials unless app.respond_to?(:credentials_accessor)
         app.set :session_id, app.app_name.to_sym unless app.respond_to?(:session_id)
-        app.set :access_subject, :credentials    unless app.respond_to?(:access_subject)
         app.set :login_url, '/login'             unless app.respond_to?(:login_url)
         app.set :login_model, :account           unless app.respond_to?(:login_model)
         app.disable :login_bypass                unless app.respond_to?(:login_bypass)
@@ -22,18 +22,13 @@ module Padrino
         app.controller :login do
           include Controller
         end
+        app.send :attr_reader, app.credentials_accessor unless app.instance_methods.include?(app.credentials_accessor)
+        app.send :attr_writer, app.credentials_accessor unless app.instance_methods.include?(:"#{app.credentials_accessor}=")
       end
 
       def included(base)
         base.send(:include, InstanceMethods)
-        base.extend(ClassMethods)
       end
-    end
-
-    module ClassMethods
-
-      private
-
     end
 
     module InstanceMethods
@@ -42,18 +37,13 @@ module Padrino
       end
 
       def authenticate
-        @credentials = login_model.authenticate(:email => params[:email], :password => params[:password])
-        @credentials ||= login_model.authenticate(:bypass => true) if settings.login_bypass && params[:bypass]
-        save_credentials
-      end
-
-      def credentials
-        @credentials || OpenStruct.new(:role => :guest)
+        resource = login_model.authenticate(:email => params[:email], :password => params[:password])
+        resource ||= login_model.authenticate(:bypass => true) if settings.login_bypass && params[:bypass]
+        save_credentials(resource)
       end
 
       def logged_in?
-        restore_credentials
-        !!@credentials
+        !!(send(settings.credentials_accessor) || restore_credentials)
       end
 
       def unauthorized?
@@ -71,7 +61,7 @@ module Padrino
             false
           end
         else
-          true
+          unauthorized?
         end
       end
 
@@ -88,13 +78,14 @@ module Padrino
         end
       end
 
-      def save_credentials
-        session[settings.session_id] = @credentials.id if @credentials
+      def save_credentials(resource)
+        session[settings.session_id] = resource.respond_to?(:id) ? resource.id : resource
+        send(:"#{settings.credentials_accessor}=", resource)
       end
 
       def restore_credentials
         resource = login_model.authenticate(:session_id => session[settings.session_id])
-        @credentials = resource if resource
+        send(:"#{settings.credentials_accessor}=", resource)
       end
 
       def restore_location
@@ -102,8 +93,7 @@ module Padrino
       end
 
       def save_location
-        uri = request.env['REQUEST_URI'].to_s
-        p "wanna save #{uri}"
+        uri = request.env['REQUEST_URI'] || url(request.env['PATH_INFO'])
         return if uri.blank? || uri.match(/\.css$|\.js$|\.png$/)
         session[:return_to] = "#{ENV['RACK_BASE_URI']}#{uri}"
       rescue => e
