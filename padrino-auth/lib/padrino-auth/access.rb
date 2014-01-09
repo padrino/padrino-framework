@@ -11,8 +11,7 @@ module Padrino
         app.send :attr_reader, app.credentials_reader unless app.instance_methods.include?(app.credentials_reader)
         app.reset_access!
         app.before do
-          message = Padrino.env != :production ? settings.permissions.list.inspect : '403 Forbidden'
-          access_action? or error(403, message)
+          access_action? or error(403, '403 Forbidden')
         end
       end
 
@@ -29,7 +28,7 @@ module Padrino
 
       def set_access(*args)
         options = args.extract_options!
-        options[:object] ||= Array(@_controller).first.to_s if @_controller.present?
+        options[:object] ||= Array(@_controller).first.to_s.singularize.to_sym if @_controller.present?
         permissions.add(*args, options)
       end
     end

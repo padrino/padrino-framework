@@ -71,10 +71,9 @@ module Padrino
           save_location
           # 302 Found
           redirect url(login_url) 
-          message = settings.respond_to?(:permissions) ? settings.permissions.list.inspect : '401 Unauthorized'
           # 401 Unauthorized, authentication is required and
           # has not yet been provided
-          error 401, message
+          error 401, '401 Unauthorized'
         end
       end
 

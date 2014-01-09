@@ -15,9 +15,10 @@ module Padrino
       object_type = detect_type(object)
       @actions = {}
       args.each do |subject|
-        @permits[subject] ||= {}
-        @permits[subject][action] ||= []
-        @permits[subject][action] |= [object_type]
+        id = detect_id(subject)
+        @permits[id] ||= {}
+        @permits[id][action] ||= []
+        @permits[id][action] |= [object_type]
       end
     end
 
@@ -59,25 +60,39 @@ module Padrino
     end
 
     def find_actions(subject)
-      return @actions[subject] if @actions[subject]
-      actions = @permits[subject] || {}
+      id = detect_id(subject)
+      return @actions[id] if @actions[id]
+      actions = @permits[id] || {}
       if subject.respond_to?(:role) && (role_actions = @permits[subject.role.to_sym])
         actions.merge!(role_actions){ |_,a,b| Array(a)|Array(b) }
       end
       if public_actions = @permits[:*]
         actions.merge!(public_actions){ |_,a,b| Array(a)|Array(b) }
       end
-      @actions[subject] = actions
+      @actions[id] = actions
     end
 
     def detect_type(object)
       case object
-      when Symbol, String
+      when Symbol
         object.to_s.singularize.to_sym
       when Proc
         NotImplementedError
       else
         object
+      end
+    end
+
+    def detect_id(subject)
+      case
+      when Symbol === subject
+        subject
+      when subject.respond_to?(:to_param)
+        subject.to_param
+      when subject.respond_to?(:id)
+        subject.id.to_s
+      else
+        "#{subject}"
       end
     end
 
