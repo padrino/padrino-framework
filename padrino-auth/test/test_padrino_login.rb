@@ -2,30 +2,6 @@ require File.expand_path('../helper', __FILE__)
 require 'padrino-helpers'
 
 describe "Padrino::Access" do
-  module Character
-    extend self
-    def authenticate(credentials)
-      case
-      when credentials[:email] && credentials[:password]
-        target = all.find{ |c| c.id.to_s == credentials[:email] }
-        target.name.gsub(/[^A-Z]/,'') == credentials[:password] ? target : nil
-      when credentials.has_key?(:session_id)
-        all.find{ |c| c.id == credentials[:session_id] }
-      else
-        puts credentials
-        false
-      end
-    end
-    def all
-      @all = [
-        OpenStruct.new(:id => :bender,   :name => 'Bender Bending Rodriguez', :role => :robots  ),
-        OpenStruct.new(:id => :leela,    :name => 'Turanga Leela',            :role => :mutants ),
-        OpenStruct.new(:id => :fry,      :name => 'Philip J. Fry',            :role => :humans  ),
-        OpenStruct.new(:id => :ami,      :name => 'Amy Wong',                 :role => :humans  ),
-        OpenStruct.new(:id => :zoidberg, :name => 'Dr. John A. Zoidberg',     :role => :lobsters),
-      ]
-    end
-  end
   before do
     mock_app do
       set :credentials_accessor, :visitor

@@ -11,6 +11,13 @@ module Padrino
         app.set :login_url, '/login'             unless app.respond_to?(:login_url)
         app.set :login_model, :account           unless app.respond_to?(:login_model)
         app.disable :login_bypass                unless app.respond_to?(:login_bypass)
+        if app.respond_to?(:set_access)
+          app.set_access(:*, :allow => :*, :with => :login)
+        else
+          app.set :permissions do
+            set_access(:*, :allow => :*, :with => :login)
+          end
+        end
       end
 
       def registered(app)
@@ -19,15 +26,22 @@ module Padrino
         app.before do
           log_in if authorization_required?
         end
-        app.controller :login do
-          include Controller
-        end
+        app.reset_login!
         app.send :attr_reader, app.credentials_accessor unless app.instance_methods.include?(app.credentials_accessor)
         app.send :attr_writer, app.credentials_accessor unless app.instance_methods.include?(:"#{app.credentials_accessor}=")
       end
 
       def included(base)
         base.send(:include, InstanceMethods)
+        base.extend(ClassMethods)
+      end
+    end
+
+    module ClassMethods
+      def reset_login!
+        controller :login do
+          include Controller
+        end
       end
     end
 

@@ -6,13 +6,7 @@ describe "Padrino::Access" do
       set :credentials_reader, :visitor
       register Padrino::Access
       set_access :*, :allow => :login
-      set :users, [
-        OpenStruct.new(:id => :bender,   :name => 'Bender Bending Rodriguez', :role => :robots  ),
-        OpenStruct.new(:id => :leela,    :name => 'Turanga Leela',            :role => :mutants ),
-        OpenStruct.new(:id => :fry,      :name => 'Philip J. Fry',            :role => :humans  ),
-        OpenStruct.new(:id => :ami,      :name => 'Amy Wong',                 :role => :humans  ),
-        OpenStruct.new(:id => :zoidberg, :name => 'Dr. John A. Zoidberg',     :role => :lobsters),
-      ]
+      set :users, Character.all
       get(:login, :with => :id) do
         user = settings.users.find{ |user| user.id.to_s == params[:id] }
         self.send(:"#{settings.credentials_reader}=", user)
@@ -38,7 +32,7 @@ describe "Padrino::Access" do
         end
       end
     end
-    @app.users.each do |user|
+    Character.all.each do |user|
       instance_variable_set :"@#{user.id}", user
     end
   end

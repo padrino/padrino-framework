@@ -23,3 +23,28 @@ class MiniTest::Spec
     assert_equal 403, status, caller.first.to_s
   end
 end
+
+module Character
+  extend self
+  def authenticate(credentials)
+    case
+    when credentials[:email] && credentials[:password]
+      target = all.find{ |c| c.id.to_s == credentials[:email] }
+      target.name.gsub(/[^A-Z]/,'') == credentials[:password] ? target : nil
+    when credentials.has_key?(:session_id)
+      k=all.find{ |c| c.id == credentials[:session_id] }
+    else
+      puts credentials
+      false
+    end
+  end
+  def all
+    @all = [
+      OpenStruct.new(:id => :bender,   :name => 'Bender Bending Rodriguez', :role => :robots  ),
+      OpenStruct.new(:id => :leela,    :name => 'Turanga Leela',            :role => :mutants ),
+      OpenStruct.new(:id => :fry,      :name => 'Philip J. Fry',            :role => :humans  ),
+      OpenStruct.new(:id => :ami,      :name => 'Amy Wong',                 :role => :humans  ),
+      OpenStruct.new(:id => :zoidberg, :name => 'Dr. John A. Zoidberg',     :role => :lobsters),
+    ]
+  end
+end

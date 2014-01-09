@@ -6,10 +6,12 @@ module Padrino
     class << self
       def registered(app)
         included(app)
+        deferred_permissions = app.method(:permissions) if app.respond_to?(:permissions)
         app.set :permissions, Permissions.new
-        app.set :credentials_reader, :credentidals unless app.respond_to?(:credentials_reader)
+        app.set :credentials_reader, :credentials unless app.respond_to?(:credentials_reader)
         app.send :attr_reader, app.credentials_reader unless app.instance_methods.include?(app.credentials_reader)
         app.reset_access!
+        deferred_permissions.call if deferred_permissions.kind_of?(Method)
         app.before do
           access_action? or error(403, '403 Forbidden')
         end
