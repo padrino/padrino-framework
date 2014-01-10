@@ -5,43 +5,36 @@ module Padrino
   # Padrino authentication module.
   module Login
     class << self
-      def set_defaults(app)
-        app.set :credentials_accessor, :credentials unless app.respond_to?(:credentials_accessor)
-        app.set :session_id, app.app_name.to_sym unless app.respond_to?(:session_id)
-        app.set :login_url, '/login'             unless app.respond_to?(:login_url)
-        app.set :login_model, :account           unless app.respond_to?(:login_model)
-        app.disable :login_bypass                unless app.respond_to?(:login_bypass)
-        if app.respond_to?(:set_access)
-          app.set_access(:*, :allow => :*, :with => :login)
-        else
-          app.set :permissions do
-            set_access(:*, :allow => :*, :with => :login)
-          end
-        end
-      end
-
       def registered(app)
+        fail 'Padrino::Login must be registered before Padrino::Access' if app.respond_to?(:set_access)
         included(app)
-        set_defaults(app)
+        setup_storage(app)
+        setup_controller(app)
         app.before do
           log_in if authorization_required?
         end
-        app.reset_login!
-        app.send :attr_reader, app.credentials_accessor unless app.instance_methods.include?(app.credentials_accessor)
-        app.send :attr_writer, app.credentials_accessor unless app.instance_methods.include?(:"#{app.credentials_accessor}=")
       end
 
       def included(base)
         base.send(:include, InstanceMethods)
-        base.extend(ClassMethods)
       end
-    end
 
-    module ClassMethods
-      def reset_login!
-        controller :login do
-          include Controller
-        end
+      private
+
+      def setup_storage(app)
+        app.default(:session_id, "_login_#{app.app_name}")
+        app.default(:login_model, :account)
+        app.default(:credentials_accessor, :credentials)
+        app.send :attr_reader, app.credentials_accessor unless app.instance_methods.include?(app.credentials_accessor)
+        app.send :attr_writer, app.credentials_accessor unless app.instance_methods.include?(:"#{app.credentials_accessor}=")
+        app.default(:login_bypass, false)
+      end
+
+      def setup_controller(app)
+        app.default(:login_url, '/login')
+        app.default(:login_permissions) { set_access(:*, :allow => :*, :with => :login) }
+        app.default(:login_controller, true)
+        app.controller(:login) { include Controller } if app.login_controller
       end
     end
 
@@ -106,11 +99,9 @@ module Padrino
       end
 
       def save_location
-        uri = request.env['REQUEST_URI'] || url(request.env['PATH_INFO'])
+        uri = env['REQUEST_URI'] || url(env['PATH_INFO'])
         return if uri.blank? || uri.match(/\.css$|\.js$|\.png$/)
         session[:return_to] = "#{ENV['RACK_BASE_URI']}#{uri}"
-      rescue => e
-        fail "saving session[:return_to] failed because of #{e.class}: #{e.message}"
       end
     end
   end

@@ -1,4 +1,5 @@
 module Padrino
+  # Class to store and check permissions used in Padrino::Access.
   class Permissions
     def initialize
       clear!
@@ -10,16 +11,11 @@ module Padrino
     end
 
     def add(*args)
+      @actions = {}
       options = args.extract_options!
       action, object = action_and_object(options)
       object_type = detect_type(object)
-      @actions = {}
-      args.each do |subject|
-        id = detect_id(subject)
-        @permits[id] ||= {}
-        @permits[id][action] ||= []
-        @permits[id][action] |= [object_type]
-      end
+      args.each{ |subject| merge(subject, action, object_type) }
     end
 
     def check(subject, options)
@@ -45,6 +41,13 @@ module Padrino
 
     private
 
+    def merge(subject, action, object_type)
+      subject_id = detect_id(subject)
+      @permits[subject_id] ||= {}
+      @permits[subject_id][action] ||= []
+      @permits[subject_id][action] |= [object_type]
+    end
+
     def check_role(subject, roles)
       if subject.respond_to?(:role)
         Array(roles).include?(subject.role)
@@ -60,16 +63,16 @@ module Padrino
     end
 
     def find_actions(subject)
-      id = detect_id(subject)
-      return @actions[id] if @actions[id]
-      actions = @permits[id] || {}
+      subject_id = detect_id(subject)
+      return @actions[subject_id] if @actions[subject_id]
+      actions = @permits[subject_id] || {}
       if subject.respond_to?(:role) && (role_actions = @permits[subject.role.to_sym])
-        actions.merge!(role_actions){ |_,a,b| Array(a)|Array(b) }
+        actions.merge!(role_actions){ |_,left,right| Array(left)|Array(right) }
       end
       if public_actions = @permits[:*]
-        actions.merge!(public_actions){ |_,a,b| Array(a)|Array(b) }
+        actions.merge!(public_actions){ |_,left,right| Array(left)|Array(right) }
       end
-      @actions[id] = actions
+      @actions[subject_id] = actions
     end
 
     def detect_type(object)

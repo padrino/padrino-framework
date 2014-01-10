@@ -4,6 +4,7 @@ require File.expand_path('../../../load_paths', __FILE__)
 require File.dirname(__FILE__)+'/../../padrino-core/test/helper'
 require 'padrino-auth'
 
+# Helper methods for testing Padrino::Access
 class MiniTest::Spec
   def set_access(*args)
     @app.set_access(*args)
@@ -26,18 +27,20 @@ end
 
 module Character
   extend self
+
   def authenticate(credentials)
     case
     when credentials[:email] && credentials[:password]
-      target = all.find{ |c| c.id.to_s == credentials[:email] }
+      target = all.find{ |resource| resource.id.to_s == credentials[:email] }
       target.name.gsub(/[^A-Z]/,'') == credentials[:password] ? target : nil
     when credentials.has_key?(:session_id)
-      k=all.find{ |c| c.id == credentials[:session_id] }
+      all.find{ |resource| resource.id == credentials[:session_id] }
     else
       puts credentials
       false
     end
   end
+
   def all
     @all = [
       OpenStruct.new(:id => :bender,   :name => 'Bender Bending Rodriguez', :role => :robots  ),
