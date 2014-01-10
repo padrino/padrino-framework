@@ -69,5 +69,18 @@ describe "Core" do
       res = Rack::MockRequest.new(Padrino.application).get("/")
       assert_equal "yes", res["Middleware-Called"]
     end
+
+    should "properly set default options" do
+      mock_app do
+        default :foo, :bar
+        default :zoo, :baz
+        set :foo, :bam
+        set :moo, :bam
+        default :moo, :ban
+      end
+      assert_equal @app.settings.foo, :bam
+      assert_equal @app.settings.zoo, :baz
+      assert_equal @app.settings.moo, :bam
+    end
   end
 end
