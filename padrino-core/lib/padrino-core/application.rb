@@ -201,6 +201,10 @@ module Padrino
         @_prerequisites ||= []
       end
 
+      def default(option, *args, &block)
+        set(option, *args, &block) unless respond_to?(option)
+      end
+
       protected
 
       ##
