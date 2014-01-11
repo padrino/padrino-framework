@@ -33,10 +33,9 @@ module Character
     when credentials[:email] && credentials[:password]
       target = all.find{ |resource| resource.id.to_s == credentials[:email] }
       target.name.gsub(/[^A-Z]/,'') == credentials[:password] ? target : nil
-    when credentials.has_key?(:session_id)
-      all.find{ |resource| resource.id == credentials[:session_id] }
+    when credentials.has_key?(:id)
+      all.find{ |resource| resource.id == credentials[:id] }
     else
-      puts credentials
       false
     end
   end

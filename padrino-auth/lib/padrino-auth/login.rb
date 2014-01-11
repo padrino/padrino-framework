@@ -1,4 +1,3 @@
-require 'ostruct'
 require 'padrino-auth/login/controller'
 
 module Padrino
@@ -60,24 +59,29 @@ module Padrino
     end
 
     module InstanceMethods
+      # Returns the model used to authenticate visitors.
       def login_model
         @login_model ||= settings.login_model.to_s.classify.constantize
       end
 
+      # Authenticates the visitor.
       def authenticate
         resource = login_model.authenticate(:email => params[:email], :password => params[:password])
         resource ||= login_model.authenticate(:bypass => true) if settings.login_bypass && params[:bypass]
         save_credentials(resource)
       end
 
+      # Checks if the visitor is authenticated.
       def logged_in?
         !!(send(settings.credentials_accessor) || restore_credentials)
       end
 
+      # Looks for authorization routine and calls it to check if the visitor is authorized.
       def unauthorized?
         respond_to?(:authorized?) && !authorized?
       end
 
+      # Checks if the current location needs the visitor to be authorized.
       def authorization_required?
         if logged_in?
           if unauthorized?
@@ -93,6 +97,7 @@ module Padrino
         end
       end
 
+      # Logs the visitor in using redirect to login page url.
       def log_in
         login_url = settings.login_url
         if request.env['PATH_INFO'] != login_url
@@ -105,20 +110,24 @@ module Padrino
         end
       end
 
+      # Saves credentials in session.
       def save_credentials(resource)
         session[settings.session_id] = resource.respond_to?(:id) ? resource.id : resource
         send(:"#{settings.credentials_accessor}=", resource)
       end
 
+      # Restores credentials from session using visitor model.
       def restore_credentials
-        resource = login_model.authenticate(:session_id => session[settings.session_id])
+        resource = login_model.authenticate(:id => session[settings.session_id])
         send(:"#{settings.credentials_accessor}=", resource)
       end
 
+      # Redirects back to saved location or '/'
       def restore_location
         redirect session.delete(:return_to) || url('/')
       end
 
+      # Saves location to session for following redirect in case of successful authentication.
       def save_location
         uri = env['REQUEST_URI'] || url(env['PATH_INFO'])
         return if uri.blank? || uri.match(/\.css$|\.js$|\.png$/)
