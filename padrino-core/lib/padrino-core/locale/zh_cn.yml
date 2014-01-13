@@ -22,7 +22,7 @@ zh_cn:
     formats:
       default: "%Y年%b月%d日 %H:%M:%S %z"
       short: "%b月%d日 %H:%M"
-      long: "%Y年%B月%d日 %H时%M分"
+      long: "%Y年%B%d日 %H时%M分"
     am: "上午"
     pm: "下午"
 
