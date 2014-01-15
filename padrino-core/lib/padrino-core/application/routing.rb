@@ -514,7 +514,13 @@ module Padrino
 
       def compiled_router
         if @deferred_routes
-          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(dest) } }
+          deferred_routes.each do |routes|
+            routes.each do |(route, dest)|
+              route.to(dest)
+              route.before_filters.flatten!
+              route.after_filters.flatten!
+            end
+          end
           @deferred_routes = nil
           router.sort!
         end
@@ -724,8 +730,8 @@ module Padrino
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
         # Add Application defaults.
-        route.before_filters.concat(@filters[:before])
-        route.after_filters.concat(@filters[:after])
+        route.before_filters << @filters[:before]
+        route.after_filters << @filters[:after]
         if @_controller
           route.use_layout = @layout
           route.controller = Array(@_controller)[0].to_s
