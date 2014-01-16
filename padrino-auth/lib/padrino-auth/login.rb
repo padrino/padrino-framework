@@ -88,7 +88,7 @@ module Padrino
             # 403 Forbidden, provided credentials were successfully
             # authenticated but the credentials still do not grant
             # the client permission to access the resource
-            error 403
+            error 403, '403 Forbidden'
           else
             false
           end
