@@ -1488,6 +1488,51 @@ describe "Routing" do
     assert_equal '{"test"=>"what"}', body
   end
 
+  should "work only for the given controller and route when using before-filter with route's name" do
+    mock_app do
+      controller :foo do
+        before(:index) { @a = "only to :index" }
+        get(:index) { @a }
+        get(:main) { @a }
+      end
+    end
+    get '/foo/'
+    assert_equal 'only to :index', body
+    get '/foo/main'
+    assert_equal '', body
+  end
+
+  should "work only for the given controller and route when using after-filter with route's name" do
+    mock_app do
+      controller :after_controller do
+        global = "global variable"
+        get(:index) { global }
+        get(:main) { global }
+        after(:index) { global = nil }
+      end
+    end
+    get '/after_controller'
+    assert_equal 'global variable', body
+    get '/after_controller'
+    assert_equal '', body
+  end
+
+  should "execute the before/after filters when they are inserted after the target route" do
+    mock_app do
+      controller :after_test do
+        global = "global variable"
+        get(:index) { global }
+        get(:foo) { global }
+        before(:index) { global.delete!(" ") }
+        after(:index) { global = "after" }
+      end
+    end
+    get '/after_test'
+    assert_equal 'globalvariable', body
+    get '/after_test/foo'
+    assert_equal 'after', body
+  end
+
   should 'work with controller and arbitrary params' do
     mock_app do
       get(:testing) { params[:foo] }
