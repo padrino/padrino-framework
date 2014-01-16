@@ -1,0 +1,35 @@
+h3
+  | Login
+  br
+  small= link_to request.env['HTTP_HOST'], url('/')
+
+= form_tag( '', :class => 'form-horizontal well' ) do
+  - [:error, :warning, :success, :notice].each do |type|
+    - next  if flash[type].blank?
+    .alert.alert-message class=('alert-' + (type == :notice ? :info : type).to_s) data-alert=true
+      = flash[type]
+
+  legend Social
+  .control-group
+    = link_to image_tag('/images/social/google.png'), url('/oauth/google')
+
+  legend Obsolete
+  .control-group
+    .input-prepend
+      span.add-on
+        i.icon-envelope
+      = text_field_tag :email, :value => params[:email], :placeholder => "email"
+  .control-group
+    .input-prepend
+      span.add-on
+        i.icon-lock
+      = password_field_tag :password, :value => params[:password], :placeholder => "password"
+  .control-group
+    = submit_tag('Log in', :class => 'btn btn-primary pull-right')
+    - if settings.login_bypass
+      label.checkbox
+        | Bypass
+        = check_box_tag :bypass, :value => 'Bypass'
+
+small
+  = link_to 'Forgot password?', url('/login/reset_password')
