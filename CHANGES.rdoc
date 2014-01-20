@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.12.0.rc3 (January 20th 2014)
+
+* FIX resolve_template should respect :views option (@ujifgc)
+* FIX #1547 Rename `showexceptions.rb` to `show_exceptions.rb` (@namusyaka)
+* NEW #1551 Introduce #default method to set application options (@ujifgc)
+* FIX #1553 Chinese time translations (@gokure)
+* FIX #1556 German translations (@Signum)
+* FIX #1555 Fix a problem the before/after filters (@namusyaka)
+* FIX #1550 Shove LOADING/RELOADING to devel log level
+* FIX #1445 Drop `PADRINO_ENV` in favour of `RACK_ENV` for further compatibility (@dariocravero)
+
 == 0.12.0.rc2 (January 5th 2014)
 
 * FIX development dependency for padrino-gen (@namusyaka)
