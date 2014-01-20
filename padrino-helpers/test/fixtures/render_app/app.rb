@@ -1,5 +1,5 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
-PADRINO_ENV = 'test' unless defined? PADRINO_ENV
+RACK_ENV = 'test' unless defined? RACK_ENV
 
 require 'padrino-core'
 
