@@ -89,7 +89,7 @@ module Padrino
       return unless options[:force] || file_changed?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
-      logger.debug(file_new?(file) ? :loading : :reload, began_at, file)
+      logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
       begin
         with_silence{ require(file) }
         Storage.commit(file)
@@ -153,7 +153,7 @@ module Padrino
         began_at = Time.now
         I18n.reload!
         update_modification_time(file)
-        logger.debug :reload, began_at, file
+        logger.devel :reload, began_at, file
       end
       true
     end
