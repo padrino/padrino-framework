@@ -14,6 +14,10 @@ require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
 
+if ENV["PADRINO_ENV"]
+  warn 'Environment variable PADRINO_ENV is deprecated. Please, use RACK_ENV.'
+  ENV["RACK_ENV"] ||= ENV["PADRINO_ENV"]
+end
 RACK_ENV = ENV["RACK_ENV"] ||= "development"  unless defined?(RACK_ENV)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
