@@ -11,7 +11,7 @@ module Padrino
       if except?(env)
         @app.call(env)
       else
-        super(env)
+        super
       end
     end
 
