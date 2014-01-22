@@ -344,13 +344,9 @@ module Padrino
         check_csrf_protection_dependency
 
         if protect_from_csrf?
-          if protect_from_csrf.is_a?(Hash) && protect_from_csrf[:except]
-            builder.use(AuthenticityToken,
-                        options_for_csrf_protection_setup.merge(:except => protect_from_csrf[:except]))
-          else
-            builder.use(Rack::Protection::AuthenticityToken,
-                        options_for_csrf_protection_setup)
-          end
+          options = options_for_csrf_protection_setup
+          options.merge!(protect_from_csrf) if protect_from_csrf.kind_of?(Hash)
+          builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
         end
       end
 

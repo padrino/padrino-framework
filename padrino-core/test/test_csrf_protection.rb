@@ -119,6 +119,21 @@ describe "Application" do
       end
     end
 
+    context "with custom protection options" do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :authenticity_param => 'foobar'
+          post("/a") { "a" }
+        end
+      end
+
+      should "allow configuring protection options" do
+        post "/a", {"foobar" => "a"}, 'rack.session' => {:csrf => "a"}
+        assert_equal 200, status
+      end
+    end
+
     context "with middleware" do
       before do
         class Middleware < Sinatra::Base
