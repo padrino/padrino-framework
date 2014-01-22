@@ -884,10 +884,10 @@ module Padrino
       def provides(*types)
         @_use_format = true
         condition do
-          mime_types        = types.map { |t| mime_type(t) }.compact
-          url_format        = params[:format].to_sym if params[:format]
-          accepts           = request.accept.map(&:to_str)
-          accepts           = [] if accepts == ["*/*"]
+          mime_types = types.map { |t| mime_type(t) }.compact
+          url_format = params[:format].to_sym if params[:format]
+          accepts    = request.accept.map(&:to_str)
+          accepts.clear if accepts == ["*/*"]
 
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
