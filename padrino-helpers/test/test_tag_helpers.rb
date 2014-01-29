@@ -64,6 +64,11 @@ describe "TagHelpers" do
       assert_has_tag('p.large#star', :content => "<>") { actual_html }
     end
 
+    should "convert to a string if the content is not a string" do
+      actual_html = content_tag(:p, 97)
+      assert_has_tag('p', :content => "97") { actual_html }
+    end
+
     should "support tags with erb" do
       visit '/erb/content_tag'
       assert_have_selector :p, :content => "Test 1", :class => 'test', :id => 'test1'

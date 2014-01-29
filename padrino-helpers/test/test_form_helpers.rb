@@ -646,9 +646,9 @@ describe "FormHelpers" do
     should "take a range as a collection for options" do
       actual_html = select_tag(:favorite_color, :options => (1..3))
       assert_has_tag(:select) { actual_html }
-      assert_has_tag('select option', :value => '1') { actual_html }
-      assert_has_tag('select option', :value => '2') { actual_html }
-      assert_has_tag('select option', :value => '3') { actual_html }
+      assert_has_tag('select option', :content => '1', :value => '1') { actual_html }
+      assert_has_tag('select option', :content => '2', :value => '2') { actual_html }
+      assert_has_tag('select option', :content => '3', :value => '3') { actual_html }
     end
 
     should "include blank for grouped options" do
