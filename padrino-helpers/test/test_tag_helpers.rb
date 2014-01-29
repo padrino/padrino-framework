@@ -67,10 +67,6 @@ describe "TagHelpers" do
     should "convert to a string if the content is not a string" do
       actual_html = content_tag(:p, 97)
       assert_has_tag('p', :content => "97") { actual_html }
-      actual_html = content_tag(:p, [97, 98])
-      assert_has_tag('p', :content => "97\n98") { actual_html }
-      actual_html = content_tag(:p, { :a => 97, :b => 98 })
-      assert_has_tag('p', :content => "[:a, 97]\n[:b, 98]") { actual_html }
     end
 
     should "support tags with erb" do
