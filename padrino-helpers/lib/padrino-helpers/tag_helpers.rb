@@ -127,9 +127,9 @@ module Padrino
         output = ActiveSupport::SafeBuffer.new
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
-          content.each { |c| output.concat c; output.safe_concat NEWLINE }
+          content.each { |c| output.concat c.to_s; output.safe_concat NEWLINE }
         else
-          output.concat content
+          output.concat content.to_s
         end
         output.safe_concat "</#{name}>"
 
