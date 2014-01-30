@@ -135,13 +135,23 @@ module Padrino
         # f.fields_for :addresses
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
-        def fields_for(child_association, instance_or_collection=nil, &block)
+        # f.fields_for :addresses, address, index: i
+        def fields_for(child_association, instance_or_collection=nil, options={}, &block)
           default_collection = self.object.send(child_association)
+
           include_index = default_collection.respond_to?(:each)
+          custom_index = options.has_key?(:index)
+
           nested_options = { :parent => self, :association => child_association }
           nested_objects = instance_or_collection ? Array(instance_or_collection) : Array(default_collection)
           nested_objects.each_with_index.map do |child_instance, index|
-            nested_options[:index] = include_index ? index : nil
+            if custom_index
+              nested_options[:index] = options[:index]
+            elsif include_index
+              nested_options[:index] = index
+            else
+              nested_options[:index] = nil
+            end
             @template.fields_for(child_instance,  { :nested => nested_options }, &block)
           end.join("\n").html_safe
         end

@@ -927,6 +927,23 @@ describe "FormBuilder" do
       assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_businesses_attributes_0_name', :name => 'user[addresses_attributes][1][businesses_attributes][0][name]') { actual_html }
     end
 
+    should "display fields for nested forms with custom indices" do
+      actual_html = standard_builder.fields_for :addresses do |child_form|
+        html = ''.html_safe
+        child_form.object.businesses.each_with_index do |business, i|
+          html += child_form.fields_for(:businesses, business, :index => ('a'..'z').to_a[i]) do |second_child_form|
+            second_child_form.label(:name) +
+            second_child_form.text_field(:name) +
+            second_child_form.check_box('_destroy')
+          end
+        end
+        html
+      end
+
+      assert_has_tag('label', :for => 'user_addresses_attributes_1_businesses_attributes_a_name', :content => 'Name') { actual_html }
+      assert_has_tag('input', :type => 'text', :id => 'user_addresses_attributes_1_businesses_attributes_a_name', :name => 'user[addresses_attributes][1][businesses_attributes][a][name]') { actual_html }
+    end
+
     should "display nested children fields in erb" do
       visit '/erb/fields_for'
       # Telephone
