@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/system')
 
 describe "SystemReloader" do
@@ -47,6 +48,11 @@ describe "SystemReloader" do
       Padrino.send(:load_paths_was).each do |lib_dir|
         assert_includes $LOAD_PATH, lib_dir
       end
+    end
+
+    should 'not fail horribly on reload event with non-padrino apps' do
+      Padrino.mount("kiq").to("/")
+      Padrino.reload!
     end
   end
 end

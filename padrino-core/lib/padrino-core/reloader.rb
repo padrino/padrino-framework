@@ -223,8 +223,9 @@ module Padrino
       files = Set.new
       Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
       Padrino.mounted_apps.each do |app|
+        next unless app.app_obj.respond_to?(:dependencies)
         files << app.app_file
-        files += app.app_obj.dependencies if app.app_obj.respond_to?(:dependencies)
+        files += app.app_obj.dependencies
       end
       files + special_files
     end
