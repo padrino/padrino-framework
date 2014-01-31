@@ -412,6 +412,15 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Ripple.load_configuration/, "#{@apptmp}/sample_project/config/database.rb")
       assert_match_in_file(/http_port: 8098/, "#{@apptmp}/sample_project/config/riak.yml")
     end
+
+    should "properly generate for dynamoid" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=dynamoid', '--script=none') }
+      assert_match(/applying.*?dynamoid.*?orm/, out)
+      assert_match_in_file(/gem 'aws-sdk'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'dynamoid', '~>0.7.1'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/AWS.config/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/Dynamoid.configure/, "#{@apptmp}/sample_project/config/database.rb")
+    end
   end
 
 
