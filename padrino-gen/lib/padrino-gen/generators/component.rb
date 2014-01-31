@@ -17,7 +17,8 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen component add components into a Padrino project"
 
-      class_option :root,    :desc => 'The root destination',                                             :aliases => '-r', :default => '.',    :type => :string
+      class_option :app,     :desc => 'The application name',                                             :aliases => '-n', :default => nil,         :type => :string
+      class_option :root,    :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
       class_option :adapter, :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
 
       defines_component_options :default => false
@@ -29,6 +30,7 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           @_components = options.dup.slice(*self.class.component_types)
+          @app_name = (options[:app] || "App").gsub(/\W/, '_').underscore.camelize
           if @_components.values.delete_if(&:blank?).empty?
             self.class.start(["-h"])
             say
@@ -50,6 +52,11 @@ module Padrino
               next unless yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
             end
             @project_name = fetch_component_choice(:namespace)
+            if comp.to_s == 'test' && !already_exists?(@app_name, @project_name)
+              say "#{@project_name}::#{@app_name} does not exist."
+              say "Please, change app name."
+              next
+            end
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
             if comp.to_s == 'orm' && choice.to_s != 'none'
