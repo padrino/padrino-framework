@@ -580,7 +580,7 @@ module Padrino
         name = names[0, 2].join(" ").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
           params[:format] = params[:format].to_s unless params[:format].nil?
-          params = value_to_param(params)
+          params = value_to_param(params.symbolize_keys)
         end
         url =
           if params_array.empty?
