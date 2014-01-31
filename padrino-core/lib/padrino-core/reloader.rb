@@ -168,7 +168,7 @@ module Padrino
         update_modification_time(file)
       else
         safe_load(file)
-        Padrino.mounted_apps.each do |app|
+        reloadable_apps.each do |app|
           app.app_obj.reload! if app.app_obj.dependencies.include?(file)
         end
       end
@@ -222,8 +222,7 @@ module Padrino
     def files_for_rotation
       files = Set.new
       Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
-      Padrino.mounted_apps.each do |app|
-        next unless app.app_obj.respond_to?(:dependencies)
+      reloadable_apps.each do |app|
         files << app.app_file
         files += app.app_obj.dependencies
       end
@@ -232,6 +231,10 @@ module Padrino
 
     def constant_excluded?(const)
       (exclude_constants - include_constants).any?{ |c| const._orig_klass_name.start_with?(c) }
+    end
+
+    def reloadable_apps
+      Padrino.mounted_apps.select{ |app| app.app_obj.respond_to?(:reload) && app.app_obj.reload? }
     end
 
     ##

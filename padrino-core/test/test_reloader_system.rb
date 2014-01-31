@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/system')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/static')
 
 describe "SystemReloader" do
   context 'for wierd and difficult reload events' do
@@ -40,7 +41,7 @@ describe "SystemReloader" do
         File.open(parent_file, "w") { |f| f.write(backup) }
       end
     end
-    
+
     should 'tamper with LOAD_PATH' do
       SystemDemo.load_paths.each do |lib_dir|
         assert_includes $LOAD_PATH, lib_dir
@@ -52,6 +53,11 @@ describe "SystemReloader" do
 
     should 'not fail horribly on reload event with non-padrino apps' do
       Padrino.mount("kiq").to("/")
+      Padrino.reload!
+    end
+
+    should 'not reload apps with disabled reload' do
+      Padrino.mount(StaticDemo).to("/")
       Padrino.reload!
     end
   end
