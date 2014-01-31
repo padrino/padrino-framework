@@ -284,6 +284,14 @@ describe "Routing" do
     assert_equal "https://example.org/hash/1", body
   end
 
+  should 'generate absolute urls from stringified keys' do
+    mock_app do
+      get(:hash, with: :id) { absolute_url(:hash, "id" => 1) }
+    end
+    get "/hash/2"
+    assert_equal "http://example.org/hash/1", body
+  end
+
   should 'generate proper absolute urls for mounted apps' do
     class Test < Padrino::Application
       get :foo do
