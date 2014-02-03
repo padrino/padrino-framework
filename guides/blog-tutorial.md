@@ -15,7 +15,6 @@ When reading about a new framework, I often find that the best way to get famili
 
 There is also a screencast available for this tutorial. You can check it out by:
 
--   [Watching it on blip.tv](http://blip.tv/file/3432970/) (Select fullscreen)
 -   [Watching it on Vimeo](http://vimeo.com/10522357) (Low Resolution)
 -   [Downloading the file](http://padrino.s3.amazonaws.com/screencast_1.mov) (211 Mb, 12:00 in [Quicktime](http://www.apple.com/quicktime/download))
 
