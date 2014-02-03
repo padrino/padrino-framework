@@ -51,6 +51,9 @@ module Padrino
 
       private
 
+      ##
+      # Alert if the model name is being used
+      #
       def model_name_already_exists?
         camel_name = name.to_s.underscore.camelize
 
@@ -64,6 +67,9 @@ module Padrino
         true
       end
 
+      ##
+      # Alert if there is not an ORM Adapter
+      #
       def check_orm
         unless include_component_module_for(:orm)
           say "<= You need an ORM adapter for run this generator. Sorry!"
@@ -71,12 +77,18 @@ module Padrino
         end
       end
 
+      ##
+      # Check app path
+      #
       def correct_path?
         return true if in_app_root?
         say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         false
       end
 
+      ##
+      # Check if there are invalid fields on model
+      #
       def has_invalid_fields?
         if invalids = invalid_fields(fields)
           say 'Invalid field name:', :red
