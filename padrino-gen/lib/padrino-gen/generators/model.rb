@@ -71,10 +71,10 @@ module Padrino
       # Alert if there is not an ORM Adapter
       #
       def check_orm
-        unless include_component_module_for(:orm)
-          say "<= You need an ORM adapter for run this generator. Sorry!"
-          raise SystemExit
-        end
+        return true if include_component_module_for(:orm)
+
+        say "<= You need an ORM adapter for run this generator. Sorry!"
+        raise SystemExit
       end
 
       ##
