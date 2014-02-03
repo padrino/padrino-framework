@@ -60,7 +60,6 @@ describe "Application" do
         mock_app do
           enable :sessions
           enable :protect_from_csrf
-          set :allow_disabled_csrf, true
           post('/on') { 'HI' }
           post('/off', :csrf_protection => false) { 'HI' }
         end
@@ -143,6 +142,7 @@ describe "Application" do
         mock_app do
           enable :sessions
           set :protect_from_csrf, :except => proc{|env| ["/", "/middleware"].any?{|path| path == env['PATH_INFO'] }}
+          disable :report_csrf_failure
           use Middleware
           post("/") { "Hello" }
         end
