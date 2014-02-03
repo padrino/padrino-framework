@@ -87,7 +87,7 @@ module Padrino
       end
 
       ##
-      # Check if there are invalid fields on model
+      # Check if the fields are valid
       #
       def has_invalid_fields?
         if invalids = invalid_fields(fields)
