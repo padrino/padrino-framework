@@ -28,18 +28,8 @@ module Padrino
       # Execute the model generation.
       #
       def create_model
-        self.destination_root = options[:root]
-        return unless correct_path?
-
         app = options[:app]
-        check_app_existence(app)
-
-        return if model_name_already_exists?
-
-        self.behavior = :revoke if options[:destroy]
-        return if has_invalid_fields?
-
-        check_orm
+        return unless valid_model_for?(app)
 
         include_component_module_for(:test)
         migration_name = "create_#{name.pluralize.underscore}"
@@ -50,6 +40,23 @@ module Padrino
       end
 
       private
+
+      ##
+      # Validate model characteristics
+      #
+      def valid_model_for?(app)
+        self.destination_root = options[:root]
+        return false unless correct_path?
+
+        check_app_existence(app)
+
+        return false if model_name_already_exists?
+
+        self.behavior = :revoke if options[:destroy]
+        return false if has_invalid_fields?
+
+        check_orm
+      end
 
       ##
       # Alert if the model name is being used
