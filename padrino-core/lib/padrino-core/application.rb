@@ -380,6 +380,13 @@ If you use a different session store, ignore this warning using:
     Padrino::IGNORE_CSRF_SETUP_WARNING = true
           ERROR
         end
+        if settings.respond_to?(:allow_disabled_csrf)
+          warn(<<-EOT)
+Setting `enable :allow_disabled_csrf` is deprecated.
+The new setting `report_csrf_failure` is enabled by default.
+You can use `disable :report_csrf_failure` if you do not want reports on csrf failures.
+          EOT
+        end
       end
     end
   end
