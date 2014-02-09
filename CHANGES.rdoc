@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.12.0 (February 9th 2014)
+
+* FIX #1578 Fix latvian translations (@graudeejs)
+* FIX #1576 incorrect nl.yml translations (@fevers)
+* FIX #1564 do not reload apps with disabled or absent :reload flag (@ujifgc)
+* FIX #1571 Allow for url generation to accept stringified keys (@jsmpereira)
+* NEW #1570 add custom index option for form_for abstract form helper (@graudeejs)
+* FIX #1567 Add :app option to the component generator (@namusyaka)
+* FIX #1563 Fix behavior of content_tag when use with content that is not a string (@tyabe)
+* NEW #1422 allow options Hash in protect_from_csrf (@ujifgc)
+
 == 0.12.0.rc3 (January 20th 2014)
 
 * FIX resolve_template should respect :views option (@ujifgc)
