@@ -49,7 +49,7 @@ describe "AdminAppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/bootstrap.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/application.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/jquery-1.9.0.min.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/jquery-1.11.0.min.js")
       assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
