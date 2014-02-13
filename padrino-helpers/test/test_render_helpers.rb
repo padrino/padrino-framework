@@ -159,7 +159,6 @@ describe "RenderHelpers" do
     end
 
     should "support weird ruby blocks in erb" do
-      skip
       visit '/ruby_block_capture_erb'
       assert_have_selector 'b', :content => 'c'
     end
@@ -170,7 +169,6 @@ describe "RenderHelpers" do
     end
     
     should "support weird ruby blocks in slim" do
-      skip
       visit '/ruby_block_capture_slim'
       assert_have_selector 'b', :content => 'c'
     end
