@@ -157,5 +157,22 @@ describe "RenderHelpers" do
       visit '/wrong_capture_slim'
       assert_have_no_selector 'p', :content => 'this is wrong'
     end
+
+    should "support weird ruby blocks in erb" do
+      skip
+      visit '/ruby_block_capture_erb'
+      assert_have_selector 'b', :content => 'c'
+    end
+
+    should "support weird ruby blocks in haml" do
+      visit '/ruby_block_capture_haml'
+      assert_have_selector 'b', :content => 'c'
+    end
+    
+    should "support weird ruby blocks in slim" do
+      skip
+      visit '/ruby_block_capture_slim'
+      assert_have_selector 'b', :content => 'c'
+    end
   end
 end
