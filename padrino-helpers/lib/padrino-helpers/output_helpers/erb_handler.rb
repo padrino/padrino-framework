@@ -17,7 +17,7 @@ module Padrino
         # Returns true if the block is Erb.
         #
         def engine_matches?(block)
-          block.binding.eval('defined? __in_erb_template')
+          block.binding.eval('defined?(__in_erb_template)&&__in_erb_template')
         end
       end
       OutputHelpers.register(:erb, ErbHandler)

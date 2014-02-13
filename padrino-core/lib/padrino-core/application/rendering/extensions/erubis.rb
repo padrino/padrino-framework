@@ -10,7 +10,7 @@ begin
       # @api private
       module SafeBufferEnhancer
         def add_expr_literal(src, code)
-          src << " #{@bufvar}.concat((" << code << ').to_s);'
+          src << "__in_erb_template = false; #{@bufvar}.concat((" << code << ').to_s); __in_erb_template = true;'
         end
 
         def add_stmt(src, code)
