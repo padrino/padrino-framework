@@ -510,11 +510,14 @@ describe "ModelGenerator" do
   end
 
   context "the model destroy option" do
+    module ActiveRecord
+      Base = Class.new
+    end
 
     should "destroy the model file" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
+      capture_io { generate_with_parts(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/test/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
@@ -523,7 +526,7 @@ describe "ModelGenerator" do
     should "destroy the model test file with rspec" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
       capture_io { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
+      capture_io { generate_with_parts(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/spec/models/user_spec.rb")
     end
 
@@ -531,7 +534,7 @@ describe "ModelGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'User', "-a=/subby","-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'User', "-a=/subby","-r=#{@apptmp}/sample_project", '-d') }
+      capture_io { generate_with_parts(:model, 'User', "-a=/subby","-r=#{@apptmp}/sample_project", '-d', :apps => "subby") }
       assert_no_file_exists("#{@apptmp}/sample_project/subby/models/user.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/test/subby/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
@@ -541,7 +544,7 @@ describe "ModelGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec', '-d=activerecord') }
       capture_io { generate(:model, 'bar_foo', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'foo', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'foo', "-r=#{@apptmp}/sample_project", '-d') }
+      capture_io { generate_with_parts(:model, 'foo', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_create_foos.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_bar_foos.rb")
     end
