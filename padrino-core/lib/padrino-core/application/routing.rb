@@ -678,9 +678,9 @@ module Padrino
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
 
-        # CSRF protection is always active except when explicitly switched off.
-        if allow_disabled_csrf
-          unless route_options[:csrf_protection] == false
+        # Add Sinatra condition to check rack-protection failure.
+        if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
+          unless route_options.has_key?(:csrf_protection)
             route_options[:csrf_protection] = true
           end
         end
@@ -932,17 +932,19 @@ module Padrino
       end
 
       ##
-      # Implements CSRF checking when `allow_disabled_csrf` is set to true.
-      #
-      # This condition is always on, except when it is explicitly switched
-      # off.
+      # Implements checking for rack-protection failure flag when
+      # `report_csrf_failure` is enabled.
       #
       # @example
       #   post("/", :csrf_protection => false)
       #
-      def csrf_protection(on = true)
-        if on
-          condition { halt 403 if request.env['protection.csrf.failed'] }
+      def csrf_protection(enabled)
+        return unless enabled
+        condition do
+          if request.env['protection.csrf.failed']
+            message = settings.protect_from_csrf.kind_of?(Hash) && settings.protect_from_csrf[:message] || 'Forbidden'
+            halt(403, message)
+          end
         end
       end
     end

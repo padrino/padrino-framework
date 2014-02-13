@@ -60,7 +60,7 @@ describe "Application" do
         mock_app do
           enable :sessions
           enable :protect_from_csrf
-          set :allow_disabled_csrf, true
+          enable :allow_disabled_csrf
           post('/on') { 'HI' }
           post('/off', :csrf_protection => false) { 'HI' }
         end
@@ -74,6 +74,7 @@ describe "Application" do
       should "not allow access to routes with csrf_protection on" do
         post "/on"
         assert_equal 403, status
+        assert_equal 'Forbidden', body
       end
     end
 
@@ -123,7 +124,7 @@ describe "Application" do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :authenticity_param => 'foobar'
+          set :protect_from_csrf, :authenticity_param => 'foobar', :message => 'sucker!'
           post("/a") { "a" }
         end
       end
@@ -131,6 +132,12 @@ describe "Application" do
       should "allow configuring protection options" do
         post "/a", {"foobar" => "a"}, 'rack.session' => {:csrf => "a"}
         assert_equal 200, status
+      end
+
+      should "allow configuring message" do
+        post "/a"
+        assert_equal 403, status
+        assert_equal 'sucker!', body
       end
     end
 
@@ -155,6 +162,26 @@ describe "Application" do
         assert_equal 200, status
         post "/dummy"
         assert_equal 403, status
+      end
+    end
+
+    context "with standard report layout" do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, :message => 'sucker!'
+          enable :report_csrf_failure
+          post("/a") { "a" }
+          error 403 do
+            halt 406, 'please, do not hack'
+          end
+        end
+      end
+
+      should "allow configuring protection options" do
+        post "/a"
+        assert_equal 406, status
+        assert_equal 'please, do not hack', body
       end
     end
   end
