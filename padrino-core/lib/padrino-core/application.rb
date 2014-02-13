@@ -249,9 +249,9 @@ module Padrino
       
       def default_security!
         set :protection, :except => :path_traversal
-        set :authentication, false
         set :sessions, false
         set :protect_from_csrf, false
+        set :report_csrf_failure, false
         set :allow_disabled_csrf, false
       end
 
@@ -353,12 +353,11 @@ module Padrino
       # returns the options used in the builder for csrf protection setup
       def options_for_csrf_protection_setup
         options = { :logger => logger }
-
-        if allow_disabled_csrf?
-          options.merge!({
-                             :reaction   => :report,
-                             :report_key => 'protection.csrf.failed'
-                         })
+        if report_csrf_failure? || allow_disabled_csrf?
+          options.merge!(
+            :reaction   => :report,
+            :report_key => 'protection.csrf.failed'
+          )
         end
         options
       end

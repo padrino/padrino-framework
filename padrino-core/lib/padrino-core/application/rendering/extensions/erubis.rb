@@ -13,6 +13,12 @@ begin
           src << "__in_erb_template = false; #{@bufvar}.concat((" << code << ').to_s); __in_erb_template = true;'
         end
 
+        def add_stmt(src, code)
+          code = code.sub('end', 'nil;end') if code =~ /\A\s*end\s*\Z/
+          src << code
+          src << ';' unless code[-1] == ?\n
+        end
+
         def add_expr_escaped(src, code)
           src << " #{@bufvar}.safe_concat " << code << ';'
         end

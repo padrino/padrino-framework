@@ -56,6 +56,7 @@ module Padrino
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
             when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
+            when :dynamoid     then @klass.attributes.map { |k,v| Column.new(k.to_s, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -99,7 +100,7 @@ module Padrino
 
         def find(params=nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
+            when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
             when :sequel, :ohm then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
@@ -123,7 +124,7 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :minirecord, :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
             when :datamapper, :ohm then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
@@ -144,6 +145,7 @@ module Padrino
             when :sequel then "#{klass_name}.where(:id => #{params})"
             when :mongoid then "#{klass_name}.find(#{params})"
             when :couchrest then "#{klass_name}.all(:keys => #{params})"
+            when :dynamoid then "#{klass_name}.find(#{params})"
             else find(params)
           end
         end
@@ -153,7 +155,7 @@ module Padrino
             when :ohm then "#{params}.each(&:delete)"
             when :sequel then  "#{params}.destroy"
             when :datamapper then "#{params}.destroy"
-            when :couchrest, :mongoid, :mongomapper then "#{params}.each(&:destroy)"
+            when :couchrest, :mongoid, :mongomapper, :dynamoid then "#{params}.each(&:destroy)"
             else "#{klass_name}.destroy #{params}"
           end
         end
