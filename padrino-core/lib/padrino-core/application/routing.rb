@@ -679,7 +679,7 @@ module Padrino
         route_options[:provides] = @_provides if @_provides
 
         # Add Sinatra condition to check rack-protection failure.
-        if protect_from_csrf && report_csrf_failure
+        if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
           unless route_options.has_key?(:csrf_protection)
             route_options[:csrf_protection] = true
           end
@@ -933,14 +933,18 @@ module Padrino
 
       ##
       # Implements checking for rack-protection failure flag when
-      # `report_csrf_failure` is enabled (default).
+      # `report_csrf_failure` is enabled.
       #
       # @example
       #   post("/", :csrf_protection => false)
       #
       def csrf_protection(enabled)
-        if enabled
-          condition { error 403 if request.env['protection.csrf.failed'] }
+        return unless enabled
+        condition do
+          if request.env['protection.csrf.failed']
+            message = settings.protect_from_csrf.kind_of?(Hash) && settings.protect_from_csrf[:message] || 'Forbidden'
+            halt(403, message)
+          end
         end
       end
     end

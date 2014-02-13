@@ -251,7 +251,8 @@ module Padrino
         set :protection, :except => :path_traversal
         set :sessions, false
         set :protect_from_csrf, false
-        set :report_csrf_failure, true
+        set :report_csrf_failure, false
+        set :allow_disabled_csrf, false
       end
 
       ##
@@ -352,7 +353,7 @@ module Padrino
       # returns the options used in the builder for csrf protection setup
       def options_for_csrf_protection_setup
         options = { :logger => logger }
-        if report_csrf_failure?
+        if report_csrf_failure? || allow_disabled_csrf?
           options.merge!(
             :reaction   => :report,
             :report_key => 'protection.csrf.failed'
@@ -379,13 +380,6 @@ If you use a different session store, ignore this warning using:
     # in boot.rb:
     Padrino::IGNORE_CSRF_SETUP_WARNING = true
           ERROR
-        end
-        if settings.respond_to?(:allow_disabled_csrf)
-          warn(<<-EOT)
-Setting `enable :allow_disabled_csrf` is deprecated.
-The new setting `report_csrf_failure` is enabled by default.
-You can use `disable :report_csrf_failure` if you do not want reports on csrf failures.
-          EOT
         end
       end
     end
