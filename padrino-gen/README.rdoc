@@ -43,7 +43,7 @@ renderer::   slim  (default), erb, erubis, liquid, haml
 stylesheet:: none  (default), less, compass, sass, scss
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, rightjs, extcore, dojo
-orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, minirecord, sequel, couchrest, ohm, mongomatic, ripple
+orm::        none  (default), datamapper, mongomapper, mongoid, activerecord, minirecord, sequel, couchrest, ohm, mongomatic, ripple, dynamoid
 
 In addition, you can generate projects based on existing templates:
 

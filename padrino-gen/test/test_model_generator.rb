@@ -388,6 +388,24 @@ describe "ModelGenerator" do
     end
   end
 
+  # DYNAMOID
+  context "model generator using dynamoid" do
+    should "generate model file with no properties" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=dynamoid') }
+      capture_io { generate(:model, 'person', "name:string", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class Person\n\s+include Dynamoid::Document/m, "#{@apptmp}/sample_project/models/person.rb")
+    end
+
+    should "generate model file with given fields" do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=dynamoid') }
+      capture_io { generate(:model, 'user', "name:string", "age:integer", "email:string", "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/class User\n\s+include Dynamoid::Document/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, :integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :email, :string/m, "#{@apptmp}/sample_project/models/user.rb")
+    end
+  end
+
   context "model generator testing files" do
     # BACON
     should "generate test file for bacon" do
