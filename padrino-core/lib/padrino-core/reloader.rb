@@ -96,7 +96,7 @@ module Padrino
         update_modification_time(file)
       rescue Exception => e
         unless options[:cyclic]
-          logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+          logger.exception e, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)

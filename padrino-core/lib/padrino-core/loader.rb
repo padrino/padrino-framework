@@ -155,7 +155,7 @@ module Padrino
 
         if fatal || !loaded
           e = fatal || error
-          logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+          logger.exception e, :short
           raise e
         end
       end

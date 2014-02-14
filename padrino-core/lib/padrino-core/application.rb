@@ -124,11 +124,7 @@ module Padrino
         settings.default_filters!
         settings.default_routes!
         settings.default_errors!
-        if defined?(I18n)
-          Reloader.special_files += settings.locale_path
-          I18n.load_path << settings.locale_path
-          I18n.reload!
-        end
+        setup_locale
         @_configured = true
       end
 
@@ -215,8 +211,8 @@ module Padrino
         set :app_name, settings.to_s.underscore.to_sym
 
         set :environment, Padrino.env
-        set :reload, Proc.new { development? }
-        set :logging, Proc.new { development? }
+        set :reload, proc { development? }
+        set :logging, proc { development? }
 
         set :method_override, true
         set :default_builder, 'StandardFormBuilder'
@@ -225,7 +221,7 @@ module Padrino
         set :init_mutex, Mutex.new
 
         # TODO: Remove this line after sinatra version up.
-        set :add_charset, %w[javascript xml xhtml+xml].map {|t| "application/#{t}" }
+        set :add_charset, %w[javascript xml xhtml+xml].map{ |type| "application/#{type}" }
 
         default_paths!
         default_security!
@@ -239,12 +235,12 @@ module Padrino
       end
 
       def default_paths!
-        set :locale_path,   Proc.new { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
-        set :views,         Proc.new { File.join(root, 'views') }
+        set :locale_path,   proc { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
+        set :views,         proc { File.join(root, 'views') }
 
         set :uri_root,      '/'
-        set :public_folder, Proc.new { Padrino.root('public', uri_root) }
-        set :images_path,   Proc.new { File.join(public_folder, 'images') }
+        set :public_folder, proc { Padrino.root('public', uri_root) }
+        set :images_path,   proc { File.join(public_folder, 'images') }
       end
       
       def default_security!
@@ -271,8 +267,7 @@ module Padrino
         configure :development do
           get '*__sinatra__/:image.png' do
             content_type :png
-            filename = File.dirname(__FILE__) + "/images/#{params[:image]}.png"
-            send_file filename
+            send_file(File.dirname(__FILE__) + "/images/#{params[:image]}.png")
           end
         end
       end
@@ -293,11 +288,8 @@ module Padrino
       def default_errors!
         configure :production do
           error ::Exception do
-            boom = env['sinatra.error']
-            logger.error ["#{boom.class} - #{boom.message}:", *boom.backtrace].join("\n ")
-            response.status = 500
-            content_type 'text/html'
-            '<h1>Internal Server Error</h1>'
+            logger.exception env['sinatra.error']
+            halt(500, { 'Content-Type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
           end unless errors.has_key?(::Exception)
         end
       end
@@ -320,6 +312,14 @@ module Padrino
           '/lib.rb',
           '/lib/**/*.rb',
         ].map{ |glob| File.join(settings.root, glob) }
+      end
+
+      def setup_locale
+        return unless defined? I18n
+        locale_path = settings.locale_path
+        Reloader.special_files += locale_path
+        I18n.load_path << locale_path
+        I18n.reload!
       end
 
       private

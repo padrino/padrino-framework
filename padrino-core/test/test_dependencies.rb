@@ -26,7 +26,7 @@ describe "Dependencies" do
         end
       end
       assert_equal 1, D
-      assert_match /RuntimeError: SomeThing/, @io.string
+      assert_match /RuntimeError - SomeThing/, @io.string
     end
 
     should 'resolve dependency problems' do
