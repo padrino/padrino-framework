@@ -211,8 +211,8 @@ describe "ProjectGenerator" do
     should "properly generate for rr and rspec" do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
-      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/conf.mock_with :rr/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/gem 'rr', :require => false/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/require 'rr'/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
 
     should "properly generate for mocha and rspec" do
