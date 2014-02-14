@@ -46,7 +46,7 @@ When /^I press '(.*)'$/ do |name|
 end
 
 Then /^I should see '(.*)'$/ do |text|
-  response_body.should contain(/#\{text}/m)
+  page.should have_content(text)
 end
 TEST
 
