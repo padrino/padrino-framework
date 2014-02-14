@@ -172,6 +172,30 @@ module Padrino
       def colorize!
         self.extend(Colorize)
       end
+
+      ##
+      # Logs an exception.
+      #
+      # @param [Exception] exception
+      #   The exception to log
+      #
+      # @param [Symbol] verbosity
+      #   :short or :long, default is :long
+      #
+      # @example
+      #   Padrino.logger.exception e
+      #   Padrino.logger.exception(e, :short)
+      def exception(boom, verbosity = :long, level = :error)
+        return unless Levels.has_key?(level)
+        text = ["#{boom.class} - #{boom.message}:"]
+        case verbosity
+        when :long
+          text += boom.backtrace
+        when :short
+          text << boom.backtrace.first
+        end
+        send level, text.join("\n ")
+      end
     end
 
     module Colorize
