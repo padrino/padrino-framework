@@ -140,6 +140,8 @@ describe "alternate logger: Lumberjack" do
     setup_logger
     Padrino.logger.debug("Debug message")
     assert_match(/Debug message/, @log.string)
+    Padrino.logger.exception(Exception.new 'scary message')
+    assert_match(/Exception - scary message/, @log.string)
   end
 
   should "colorize log output after colorize! is called" do

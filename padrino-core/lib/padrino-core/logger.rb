@@ -188,12 +188,13 @@ module Padrino
       def exception(boom, verbosity = :long, level = :error)
         return unless Levels.has_key?(level)
         text = ["#{boom.class} - #{boom.message}:"]
+        trace = boom.backtrace
         case verbosity
         when :long
-          text += boom.backtrace
+          text += trace
         when :short
-          text << boom.backtrace.first
-        end
+          text << trace.first
+        end if trace.kind_of?(Array)
         send level, text.join("\n ")
       end
     end
