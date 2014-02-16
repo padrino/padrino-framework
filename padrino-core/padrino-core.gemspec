@@ -23,14 +23,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  # TODO remove after a couple versions
-  # s.post_install_message = "\e[32m" + ("*" * 20)
-  # s.post_install_message << "\n UPGRADE NOTES\n\n\e[31m When upgrading, please 'enable :sessions' for each application"
-  # s.post_install_message << " as shown here:\e[0m http://bit.ly/kODKMx\n"
-  # s.post_install_message << "\e[31m When upgrading, please 'register Padrino::Rendering' for each application"
-  # s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
-  # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
-
   s.add_dependency("tilt", "~> 1.4.1")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
