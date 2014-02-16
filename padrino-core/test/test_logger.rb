@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require 'lumberjack'
 require 'logger'
 
 describe "PadrinoLogger" do
@@ -130,10 +129,21 @@ describe "PadrinoLogger" do
   end
 end
 
-describe "alternate logger: Lumberjack" do
+describe "alternate logger" do
+  class FancyLogger
+    attr_accessor :level, :log
+    def initialize(buf)
+      self.log = buf
+      self.level = 0
+    end
+    def add(level, text)
+      self.log << text
+    end
+  end
+
   def setup_logger
     @log = StringIO.new
-    Padrino.logger = Lumberjack::Logger.new(@log, :level => :debug)
+    Padrino.logger = FancyLogger.new(@log)
   end
 
   should "annotate the logger to support additional Padrino fancyness" do
