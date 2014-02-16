@@ -87,7 +87,7 @@ describe "AppGenerator" do
     should "destroys itself" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
-      out, err = capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d') }
+      out, err = capture_io { generate_with_parts(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d', :apps => "demo") }
       assert_no_match(/has been mounted/, out)
       assert_no_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/app.rb")

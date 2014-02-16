@@ -50,9 +50,14 @@ module Padrino
 
         check_app_existence(app)
 
-        return false if model_name_already_exists?
+        if options[:destroy]
+          self.behavior = :revoke
+        else
+          say "#{@camel_name} already exists."
+          say "Please, change the name."
+          return false
+        end if model_name_already_exists?
 
-        self.behavior = :revoke if options[:destroy]
         return false if has_invalid_fields?
 
         check_orm
@@ -62,15 +67,12 @@ module Padrino
       # Alert if the model name is being used
       #
       def model_name_already_exists?
-        camel_name = name.to_s.underscore.camelize
+        @camel_name = name.to_s.underscore.camelize
 
         @project_name = ""
         @project_name = fetch_project_name
 
-        return false unless already_exists?(camel_name, @project_name)
-
-        say "#{camel_name} already exists."
-        say "Please, change the name."
+        return false unless already_exists?(@camel_name, @project_name)
         true
       end
 
