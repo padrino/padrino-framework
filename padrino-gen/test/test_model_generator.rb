@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "ModelGenerator" do
   def setup
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
   end
 

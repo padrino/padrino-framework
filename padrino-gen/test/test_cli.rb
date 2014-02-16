@@ -3,7 +3,7 @@ require 'padrino-gen/generators/cli'
 
 describe "Cli" do
   def setup
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
   end
 

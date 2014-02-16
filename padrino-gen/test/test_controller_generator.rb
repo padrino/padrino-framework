@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "ControllerGenerator" do
   def setup
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
     @controller_path = "#{@apptmp}/sample_project/app/controllers/demo_items.rb"
     @controller_test_path = "#{@apptmp}/sample_project/test/app/controllers/demo_items_controller_test.rb"

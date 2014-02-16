@@ -2,7 +2,6 @@ require File.expand_path('../../../load_paths', __FILE__)
 require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
 require 'rack/test'
 require 'rack'
-require 'uuid'
 require 'webrat'
 require 'fakeweb'
 require 'thor/group'
