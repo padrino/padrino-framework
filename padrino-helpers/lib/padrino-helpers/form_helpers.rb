@@ -180,44 +180,15 @@ module Padrino
         options = objects.extract_options!.symbolize_keys
         objects = objects.map{ |obj| resolve_object(obj) }.compact
         count   = objects.inject(0){ |sum, object| sum + object.errors.count }
-        return ''.html_safe if count.zero?
+        return ActiveSupport::SafeBuffer.new if count.zero?
 
-        html_options = {}
-        [:id, :class, :style].each do |key|
-          if options.include?(key)
-            value = options[key]
-            html_options[key] = value unless value.blank?
-          else
-            html_options[key] = 'field-errors' unless key == :style
-          end
-        end
+        object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
 
-        I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
-          object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
-
-          header_message = if options.include?(:header_message)
-            options[:header_message]
-          else
-            model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
-            locale.t :header, :count => count, :model => model_name
-          end
-
-          body_message = options[:message] || locale.t(:body)
-
-          error_messages = objects.inject(''.html_safe) do |text, object|
-            object.errors.each do |field, message|
-              field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
-              text << content_tag(:li, "#{field_name} #{message}")
-            end
-            text
-          end
-
-          contents = ActiveSupport::SafeBuffer.new
-          contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
-          contents << content_tag(:p, body_message) unless body_message.blank?
-          contents << content_tag(:ul, error_messages)
-          content_tag(:div, contents, html_options)
-        end
+        contents = ActiveSupport::SafeBuffer.new
+        contents << error_header_tag(options, object_name, count)
+        contents << error_body_tag(options)
+        contents << error_list_tag(objects, object_name)
+        content_tag(:div, contents, error_html_attributes(options))
       end
 
       ##
@@ -253,7 +224,7 @@ module Padrino
       # @api public
       def error_message_on(object, field, options={})
         error = Array(resolve_object(object).errors[field]).first
-        return ''.html_safe unless error
+        return ActiveSupport::SafeBuffer.new unless error
         options = { :tag => :span, :class => :error }.update(options)
         tag   = options.delete(:tag)
         error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
@@ -280,7 +251,7 @@ module Padrino
       #
       def label_tag(name, options={}, &block)
         options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
-        caption_text = ''.html_safe << options.delete(:caption)
+        caption_text = ActiveSupport::SafeBuffer.new << options.delete(:caption)
         caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
         if block_given?
@@ -794,6 +765,39 @@ module Padrino
         builder_class = settings.delete(:builder) || default_builder
         builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
         builder_class.new(self, object, settings)
+      end
+
+      def error_list_tag(objects, object_name)
+        errors = objects.inject({}){ |all,object| all.update(object.errors) }
+        error_messages = errors.inject(ActiveSupport::SafeBuffer.new) do |all, (field, message)|
+          field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
+          all << content_tag(:li, "#{field_name} #{message}")
+        end
+        content_tag(:ul, error_messages)
+      end
+
+      def error_header_tag(options, object_name, count)
+        header_message = options[:header_message] || begin
+          model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
+          I18n.t :header, :count => count, :model => model_name, :locale => options[:locale], :scope => [:models, :errors, :template]
+        end
+        content_tag(options[:header_tag] || :h2, header_message) if header_message.present?
+      end
+
+      def error_body_tag(options)
+        body_message = options[:message] || I18n.t(:body, :locale => options[:locale], :scope => [:models, :errors, :template])
+        content_tag(:p, body_message) if body_message.present?
+      end
+
+      def error_html_attributes(options)
+        [:id, :class, :style].each_with_object({}) do |key,all|
+          if options.include?(key)
+            value = options[key]
+            all[key] = value unless value.blank?
+          else
+            all[key] = 'field-errors' unless key == :style
+          end
+        end
       end
 
       def resolve_object(object)
