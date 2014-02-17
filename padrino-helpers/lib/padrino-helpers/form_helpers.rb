@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'padrino-helpers/form_options_helpers'
 
 module Padrino
   module Helpers
@@ -6,6 +7,10 @@ module Padrino
     # Helpers related to producing form related tags and inputs into templates.
     #
     module FormHelpers
+      def self.included(base)
+        base.send(:include, FormOptionsHelpers) unless base.method_defined?(:extract_option_tags!)
+      end
+
       ##
       # Constructs a form for object using given or default form_builder.
       #
@@ -506,8 +511,9 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options = options.reverse_merge(:name => name, :rows => "", :cols => "")
-        content_tag(:textarea, options.delete(:value).to_s, options)
+        inner_html = options.delete(:value).to_s
+        attributes = { :name => name, :rows => "", :cols => "" }.merge(options)
+        content_tag(:textarea, inner_html, attributes)
       end
 
       ##
@@ -594,12 +600,9 @@ module Padrino
       # @return [String] The HTML input field based on the +options+ specified.
       #
       def select_tag(name, options={})
-        options = options.reverse_merge(:name => name)
+        options = { :name => name }.merge(options)
         options[:name] = "#{options[:name]}[]" if options[:multiple]
-        collection, fields = options.delete(:collection), options.delete(:fields)
-        options[:options] = options_from_collection(collection, fields) if collection
-        options_tags = extract_option_tags!(options)
-        content_tag(:select, options_tags, options)
+        content_tag(:select, extract_option_tags!(options), options)
       end
 
       ##
@@ -636,7 +639,7 @@ module Padrino
       def submit_tag(*args)
         options = args.extract_options!
         caption = args.length >= 1 ? args.first : "Submit"
-        input_tag(:submit, options.reverse_merge(:value => caption))
+        input_tag(:submit, { :value => caption }.merge(options))
       end
 
       ##
@@ -762,59 +765,6 @@ module Padrino
       protected
 
       ##
-      # Returns an array of option items for a select field based on the given collection.
-      #
-      # @param [Array] fields
-      #   fields is an array containing the fields to display from each item in the collection.
-      #
-      def options_from_collection(collection, fields)
-        collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
-      end
-
-      ##
-      # Returns the options tags for a select based on the given option items.
-      #
-      def options_for_select(option_items, state = {})
-        return [] if option_items.blank?
-        option_items.map do |caption, value, attributes|
-          html_attributes = { :value => value || caption  }.merge(attributes||{})
-          html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
-          html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
-          content_tag(:option, caption, html_attributes)
-        end
-      end
-
-      ##
-      # Returns the optgroups with options tags for a select based on the given :grouped_options items.
-      #
-      def grouped_options_for_select(collection, state = {})
-        collection.map do |item|
-          caption = item.shift
-          attributes = item.last.kind_of?(Hash) ? item.pop : {}
-          value = item.flatten(1)
-          attributes = value.pop if value.last.kind_of?(Hash)
-          html_attributes = { :label => caption }.merge(attributes||{})
-          content_tag(:optgroup, options_for_select(value, state), html_attributes)
-        end
-      end
-
-      ##
-      # Returns the blank option serving as a prompt if passed.
-      #
-      def blank_option(prompt)
-        case prompt
-        when nil, false
-          nil
-        when String
-          content_tag(:option, prompt,       :value => '')
-        when Array
-          content_tag(:option, prompt.first, :value => prompt.last)
-        else
-          content_tag(:option, '',           :value => '')
-        end
-      end
-
-      ##
       # Returns whether the application is being protected from CSRF. Defaults to true.
       #
       def is_protected_from_csrf?
@@ -853,42 +803,6 @@ module Padrino
         builder_class = settings.delete(:builder) || default_builder
         builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
         builder_class.new(self, object, settings)
-      end
-
-      ##
-      # Returns whether the option should be selected or not.
-      #
-      # @example
-      #   option_is_selected?("red", "Red", ["red", "blue"])   => true
-      #   option_is_selected?("red", "Red", ["green", "blue"]) => false
-      #
-      def option_is_selected?(value, caption, selected_values)
-        Array(selected_values).any? do |selected|
-          [value.to_s, caption.to_s].include?(selected.to_s)
-        end
-      end
-
-      def extract_option_state!(options)
-        {
-          :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
-          :disabled => Array(options.delete(:disabled_options))
-        }
-      end
-
-      def extract_option_tags!(options)
-        state = extract_option_state!(options)
-        option_tags = case
-        when options[:options]
-          options_for_select(options.delete(:options), state)
-        when options[:grouped_options]
-          grouped_options_for_select(options.delete(:grouped_options), state)
-        else
-          []
-        end
-        if prompt = options[:include_blank]
-          option_tags.unshift(blank_option(prompt))
-        end
-        option_tags
       end
 
       def resolve_object(object)
