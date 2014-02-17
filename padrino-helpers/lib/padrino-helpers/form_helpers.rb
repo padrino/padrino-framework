@@ -844,28 +844,16 @@ module Padrino
       private
 
       ##
-      # Returns the FormBuilder class to use based on all available setting sources
-      # If explicitly defined, returns that, otherwise returns defaults.
-      #
-      # @example
-      #   configured_form_builder_class(nil) => StandardFormBuilder
-      #
-      def configured_form_builder_class(explicit_builder=nil)
-        default_builder    = self.respond_to?(:settings) && self.settings.default_builder
-        configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
-        configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
-        configured_builder
-      end
-
-      ##
       # Returns an initialized builder instance for the given object and settings.
       #
       # @example
       #   builder_instance(@account, :nested => { ... }) => <FormBuilder>
       #
       def builder_instance(object, settings={})
-         builder_class = configured_form_builder_class(settings.delete(:builder))
-         builder_class.new(self, object, settings)
+        default_builder = self.respond_to?(:settings) && self.settings.default_builder || 'StandardFormBuilder'
+        builder_class = settings.delete(:builder) || default_builder
+        builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
+        builder_class.new(self, object, settings)
       end
 
       ##
