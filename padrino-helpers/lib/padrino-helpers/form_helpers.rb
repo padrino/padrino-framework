@@ -18,7 +18,7 @@ module Padrino
       #   The object for which the form is being built.
       # @param [String] URL
       #   The url this form will submit to.
-      # @param [Hash] settings
+      # @param [Hash] options
       #   The settings associated with this form.
       #   Accepts a :namespace option that will be prepended to the id attributes of the form's elements.
       #   Also accepts HTML options.
@@ -38,13 +38,11 @@ module Padrino
       #   form_for @user, '/register', :id => 'register' do |f| ... end
       #   form_for @user, '/register', :as => :customer do |f| ... end
       #
-      def form_for(object, url, settings={}, &block)
-        instance = builder_instance(object, settings)
+      def form_for(object, url, options={}, &block)
+        instance = builder_instance(object, options)
         html = capture_html(instance, &block)
-        settings[:multipart] = instance.multipart unless settings.include?(:multipart)
-        settings.delete(:namespace)
-        settings.delete(:as)
-        form_tag(url, settings) { html }
+        options = { :multipart => instance.multipart }.update(options.except(:namespace, :as))
+        form_tag(url, options) { html }
       end
 
       ##
@@ -53,7 +51,7 @@ module Padrino
       #
       # @param [Object] object
       #   The object for which the fields are being built.
-      # @param [Hash] settings
+      # @param [Hash] options
       #   The settings associated with these fields. Accepts HTML options.
       # @param [Proc] block
       #   The content inside this set of fields.
@@ -64,11 +62,11 @@ module Padrino
       #   fields_for @user.assignment do |assignment| ... end
       #   fields_for :assignment do |assigment| ... end
       #
-      def fields_for(object, settings={}, &block)
-        instance = builder_instance(object, settings)
+      def fields_for(object, options={}, &block)
+        instance = builder_instance(object, options)
         fields_html = capture_html(instance, &block)
         fields_html << instance.hidden_field(:id) if instance.send(:nested_object_id)
-        concat_safe_content fields_html
+        concat_content fields_html
       end
 
       ##
@@ -87,20 +85,21 @@ module Padrino
       #   form_tag '/register', :class => "registration_form" do ... end
       #
       def form_tag(url, options={}, &block)
-        options = options.dup
-        desired_method = options[:method].to_s
-        options.delete(:method) unless desired_method =~ /get|post/i
-        options.reverse_merge!(:method => 'post',
-                               :action => url,
-                               :protect_from_csrf => is_protected_from_csrf? )
+        options = {
+          :action => url,
+          :protect_from_csrf => is_protected_from_csrf?,
+          'accept-charset' => 'UTF-8'
+        }.update(options)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
-        options['accept-charset'] ||= 'UTF-8'
-        inner_form_html = hidden_form_method_field(desired_method)
-        if options[:protect_from_csrf] == true && !(desired_method =~ /get/i)
-          inner_form_html << csrf_token_field
+
+        if (desired_method = options[:method]) =~ /get/i
+          options.delete(:protect_from_csrf)
+        else
+          options[:method] = 'post'
         end
-        inner_form_html << capture_html(&block)
-        concat_content content_tag(:form, inner_form_html, options)
+        inner_form_html = hidden_form_method_field(desired_method)
+        inner_form_html << csrf_token_field if options[:protect_from_csrf]
+        concat_content content_tag(:form, inner_form_html << capture_html(&block), options)
       end
 
       ##
@@ -255,7 +254,7 @@ module Padrino
       def error_message_on(object, field, options={})
         error = Array(resolve_object(object).errors[field]).first
         return ''.html_safe unless error
-        options = options.reverse_merge(:tag => :span, :class => :error)
+        options = { :tag => :span, :class => :error }.update(options)
         tag   = options.delete(:tag)
         error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
         content_tag(tag, error, options)
@@ -280,14 +279,12 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options = options.reverse_merge(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = ''.html_safe
-        caption_text.concat options.delete(:caption)
-        caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
+        options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
+        caption_text = ''.html_safe << options.delete(:caption)
+        caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
         if block_given?
-          label_content = caption_text.concat capture_html(&block)
-          concat_content(content_tag(:label, label_content, options))
+          concat_content content_tag(:label, caption_text << capture_html(&block), options)
         else
           content_tag(:label, caption_text, options)
         end
@@ -351,7 +348,7 @@ module Padrino
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge(:name => name))
+        input_tag(:text, { :name => name }.update(options))
       end
 
       ##
@@ -415,7 +412,7 @@ module Padrino
       #   # => <input name="age" min="18" max="120" step="1" type="number" />
       #
       def number_field_tag(name, options={})
-        input_tag(:number, options.reverse_merge(:name => name))
+        input_tag(:number, { :name => name }.update(options))
       end
 
       ##
@@ -436,7 +433,7 @@ module Padrino
       #  # => <input name="home_phone" tabindex="3" type="tel" />
       #
       def telephone_field_tag(name, options={})
-        input_tag(:tel, options.reverse_merge(:name => name))
+        input_tag(:tel, { :name => name }.update(options))
       end
       alias_method :phone_field_tag, :telephone_field_tag
 
@@ -453,7 +450,7 @@ module Padrino
       #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
       def email_field_tag(name, options={})
-        input_tag(:email, options.reverse_merge(:name => name))
+        input_tag(:email, { :name => name }.update(options))
       end
 
       ##
@@ -475,7 +472,7 @@ module Padrino
       #  # => <input name="search" autofocus type="search" />
       #
       def search_field_tag(name, options={})
-        input_tag(:search, options.reverse_merge(:name => name))
+        input_tag(:search, { :name => name }.update(options))
       end
 
       ##
@@ -491,7 +488,7 @@ module Padrino
       #  <input name="home_page" class="string url", type="url" />
       #
       def url_field_tag(name, options={})
-        input_tag(:url, options.reverse_merge(:name => name))
+        input_tag(:url, { :name => name }.update(options))
       end
 
       ##
@@ -501,7 +498,7 @@ module Padrino
       #   hidden_field_tag :session_key, :value => "__secret__"
       #
       def hidden_field_tag(name, options={})
-        input_tag(:hidden, options.reverse_merge(:name => name))
+        input_tag(:hidden, { :name => name }.update(options))
       end
 
       ##
@@ -512,8 +509,8 @@ module Padrino
       #
       def text_area_tag(name, options={})
         inner_html = options.delete(:value).to_s
-        attributes = { :name => name, :rows => "", :cols => "" }.merge(options)
-        content_tag(:textarea, inner_html, attributes)
+        options = { :name => name, :rows => "", :cols => "" }.update(options)
+        content_tag(:textarea, inner_html, options)
       end
 
       ##
@@ -524,7 +521,7 @@ module Padrino
       #
       # @api public
       def password_field_tag(name, options={})
-        input_tag(:password, options.reverse_merge(:name => name))
+        input_tag(:password, { :name => name }.update(options))
       end
 
       ##
@@ -534,7 +531,7 @@ module Padrino
       #   check_box_tag :remember_me, :value => 'Yes'
       #
       def check_box_tag(name, options={})
-        input_tag(:checkbox, options.reverse_merge(:name => name, :value => '1'))
+        input_tag(:checkbox, { :name => name, :value => '1' }.update(options))
       end
 
       ##
@@ -544,7 +541,7 @@ module Padrino
       #   radio_button_tag :remember_me, :value => 'true'
       #
       def radio_button_tag(name, options={})
-        input_tag(:radio, options.reverse_merge(:name => name))
+        input_tag(:radio, { :name => name }.update(options))
       end
 
       ##
@@ -556,7 +553,7 @@ module Padrino
       # @api public
       def file_field_tag(name, options={})
         name = "#{name}[]" if options[:multiple]
-        input_tag(:file, options.reverse_merge(:name => name))
+        input_tag(:file, { :name => name }.update(options))
       end
 
       ##
@@ -619,7 +616,7 @@ module Padrino
       #   button_tag "Cancel", :class => 'clear'
       #
       def button_tag(caption, options = {})
-        input_tag(:button, options.reverse_merge(:value => caption))
+        input_tag(:button, { :value => caption }.update(options))
       end
 
       ##
@@ -656,7 +653,7 @@ module Padrino
       #   image_submit_tag 'form/submit.png'
       #
       def image_submit_tag(source, options={})
-        input_tag(:image, options.reverse_merge(:src => image_path(source)))
+        input_tag(:image, { :src => image_path(source) }.update(options))
       end
 
       ##
@@ -723,16 +720,10 @@ module Padrino
       #
       def button_to(*args, &block)
         options   = args.extract_options!.dup
-        name, url = args[0], args[1]
+        name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
-        submit_options = options.delete(:submit_options) || {}
-        if block_given?
-          form_tag(url || name, options, &block)
-        else
-          form_tag(url, options) do
-            submit_tag(name, submit_options)
-          end
-        end
+        block ||= proc { submit_tag(name, options.delete(:submit_options) || {}) }
+        form_tag(url || name, options, &block)
       end
 
       ##
@@ -755,7 +746,7 @@ module Padrino
       # @return [String] The html range field
       #
       def range_field_tag(name, options = {})
-        options = options.reverse_merge(:name => name)
+        options = { :name => name }.update(options)
         if range = options.delete(:range)
           options[:min], options[:max] = range.min, range.max
         end
