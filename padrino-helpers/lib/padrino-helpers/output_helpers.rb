@@ -175,7 +175,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        mark_safe(blocks.map { |content| capture_html(*args, &content) }.join)
+        blocks.inject(''.html_safe){ |all,content| all << capture_html(*args, &content) }
       end
 
       protected

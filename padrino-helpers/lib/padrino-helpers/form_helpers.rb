@@ -94,7 +94,7 @@ module Padrino
         if options[:protect_from_csrf] == true && !(desired_method =~ /get/i)
           inner_form_html << csrf_token_field
         end
-        inner_form_html << mark_safe(capture_html(&block))
+        inner_form_html << capture_html(&block)
         concat_content content_tag(:form, inner_form_html, options)
       end
 
@@ -136,10 +136,9 @@ module Padrino
       #
       def field_set_tag(*args, &block)
         options = args.extract_options!
-        legend_text = args[0].is_a?(String) ? args.first : nil
+        legend_text = args.first
         legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
-        field_set_content = legend_html + mark_safe(capture_html(&block))
-        concat_content content_tag(:fieldset, field_set_content, options)
+        concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
 
       ##
@@ -668,7 +667,7 @@ module Padrino
       # @example
       #   csrf_token_field
       #
-      def csrf_token_field(token = nil)
+      def csrf_token_field
         hidden_field_tag csrf_param, :value => csrf_token
       end
 
@@ -886,8 +885,9 @@ module Padrino
         else
           []
         end
-        prompt = options.delete(:include_blank)
-        option_tags.unshift(blank_option(prompt)) if prompt
+        if prompt = options[:include_blank]
+          option_tags.unshift(blank_option(prompt))
+        end
         option_tags
       end
 
