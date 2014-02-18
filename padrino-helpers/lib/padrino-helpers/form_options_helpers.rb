@@ -77,7 +77,7 @@ module Padrino
 
       def extract_option_state!(options)
         {
-          :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
+          :selected => Array(options.delete(:value))|Array(options.delete(:selected))|Array(options.delete(:selected_options)),
           :disabled => Array(options.delete(:disabled_options))
         }
       end
