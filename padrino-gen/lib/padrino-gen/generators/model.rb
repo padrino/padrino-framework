@@ -43,6 +43,7 @@ module Padrino
 
       ##
       # Validate model characteristics
+      # Alert if the model name is being used
       #
       def valid_model_for?(app)
         self.destination_root = options[:root]
@@ -64,7 +65,7 @@ module Padrino
       end
 
       ##
-      # Alert if the model name is being used
+      # Return false if the model name is being used
       #
       def model_name_already_exists?
         @camel_name = name.to_s.underscore.camelize
