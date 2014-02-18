@@ -34,7 +34,7 @@ module Padrino
       # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml)", :type => :string
+      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml, slim)", :type => :string
       class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
       class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
 
