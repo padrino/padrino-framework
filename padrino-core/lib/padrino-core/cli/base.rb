@@ -21,7 +21,7 @@ module Padrino
       method_option :options,   :type => :array,  :aliases => "-O", :desc => "--options NAME=VALUE NAME2=VALUE2'. pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$0} --server_options"
       method_option :server_options,   :type => :boolean, :desc => "Tells the current server handler's options that can be used with --options"
 
-      def start
+      def start(*args)
         prepare :start
         require File.expand_path("../adapter", __FILE__)
         require File.expand_path('config/boot.rb')
@@ -29,7 +29,7 @@ module Padrino
         if options[:server_options]
           puts server_options(options)
         else
-          Padrino::Cli::Adapter.start(options)
+          Padrino::Cli::Adapter.start(args.last ? options.merge(:config => args.last).freeze : options)
         end
       end
 
