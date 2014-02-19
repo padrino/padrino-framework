@@ -1,0 +1,199 @@
+module Padrino
+  ##
+  # Holds setup-oriented methods for Padrino::Application.
+  #
+  module ApplicationSetup
+    def self.registered(app)
+      app.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      ##
+      # Defines default settings for Padrino application.
+      #
+      def default_configuration!
+        set :app_file, File.expand_path(caller_files.first || $0)
+        set :app_name, settings.to_s.underscore.to_sym
+
+        set :environment, Padrino.env
+        set :reload, proc { development? }
+        set :logging, proc { development? }
+
+        set :method_override, true
+        set :default_builder, 'StandardFormBuilder'
+
+        # TODO: Remove this hack after getting rid of thread-unsafe http_router:
+        set :init_mutex, Mutex.new
+
+        # TODO: Remove this line after sinatra version up.
+        set :add_charset, %w[javascript xml xhtml+xml].map{ |type| "application/#{type}" }
+
+        default_paths
+        default_security
+        global_configuration
+        setup_prerequisites
+      end
+
+      ##
+      # Setup the application by registering initializers, load paths and logger.
+      # Invoked automatically when an application is first instantiated.
+      #
+      # @return [TrueClass]
+      #
+      def setup_application!
+        return if @_configured
+        require_dependencies
+        default_filters
+        default_routes
+        default_errors
+        setup_locale
+        @_configured = true
+      end
+
+      private
+
+      def default_paths
+        set :locale_path,   proc { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
+        set :views,         proc { File.join(root, 'views') }
+
+        set :uri_root,      '/'
+        set :public_folder, proc { Padrino.root('public', uri_root) }
+        set :images_path,   proc { File.join(public_folder, 'images') }
+      end
+
+      def default_security
+        set :protection, :except => :path_traversal
+        set :sessions, false
+        set :protect_from_csrf, false
+        set :report_csrf_failure, false
+        set :allow_disabled_csrf, false
+      end
+
+      ##
+      # Applies global padrino configuration blocks to current application.
+      #
+      def global_configuration
+        Padrino.global_configurations.each do |configuration|
+          class_eval(&configuration)
+        end
+      end
+
+      def setup_prerequisites
+        prerequisites.concat(default_prerequisites).uniq!
+        Padrino.require_dependencies(prerequisites)
+      end
+
+      ##
+      # Returns globs of default paths of application prerequisites.
+      #
+      def default_prerequisites
+        [
+          '/models.rb',
+          '/models/**/*.rb',
+          '/lib.rb',
+          '/lib/**/*.rb',
+        ].map{ |glob| File.join(settings.root, glob) }
+      end
+
+      # Overrides the default middleware for Sinatra based on Padrino conventions.
+      # Also initializes the application after setting up the middleware.
+      def setup_default_middleware(builder)
+        setup_sessions builder
+        builder.use Padrino::ShowExceptions         if show_exceptions?
+        builder.use Padrino::Logger::Rack, uri_root if Padrino.logger && logging?
+        builder.use Padrino::Reloader::Rack         if reload?
+        builder.use Rack::MethodOverride            if method_override?
+        builder.use Rack::Head
+        register Padrino::Flash
+        setup_protection builder
+        setup_csrf_protection builder
+        setup_application!
+      end
+
+      ##
+      # This filter it's used for know the format of the request, and
+      # automatically set the content type.
+      #
+      def default_filters
+        before do
+          response['Content-Type'] = 'text/html;charset=utf-8' unless @_content_type
+        end
+      end
+
+      ##
+      # We need to add almost __sinatra__ images.
+      #
+      def default_routes
+        configure :development do
+          get '*__sinatra__/:image.png' do
+            content_type :png
+            send_file(File.dirname(__FILE__) + "/../images/#{params[:image]}.png")
+          end
+        end
+      end
+
+      ##
+      # This log errors for production environments.
+      #
+      def default_errors
+        configure :production do
+          error ::Exception do
+            logger.exception env['sinatra.error']
+            halt(500, { 'Content-Type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
+          end unless errors.has_key?(::Exception)
+        end
+      end
+
+      def setup_locale
+        return unless defined? I18n
+        Reloader.special_files += locale_path
+        I18n.load_path << locale_path
+        I18n.reload!
+      end
+
+      # sets up csrf protection for the app
+      def setup_csrf_protection(builder)
+        check_csrf_protection_dependency
+
+        if protect_from_csrf?
+          options = options_for_csrf_protection_setup
+          options.merge!(protect_from_csrf) if protect_from_csrf.kind_of?(Hash)
+          builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
+        end
+      end
+
+      # returns the options used in the builder for csrf protection setup
+      def options_for_csrf_protection_setup
+        options = { :logger => logger }
+        if report_csrf_failure? || allow_disabled_csrf?
+          options.merge!(
+            :reaction   => :report,
+            :report_key => 'protection.csrf.failed'
+          )
+        end
+        options
+      end
+
+      # warn if the protect_from_csrf is active but sessions are not
+      def check_csrf_protection_dependency
+        if (protect_from_csrf? && !sessions?) && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
+          warn(<<-ERROR)
+  `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
+  protection, use:
+
+      enable :sessions
+
+  or deactivate protect_from_csrf:
+
+      disable :protect_from_csrf
+
+  If you use a different session store, ignore this warning using:
+
+      # in boot.rb:
+      Padrino::IGNORE_CSRF_SETUP_WARNING = true
+          ERROR
+        end
+      end
+    end
+  end
+end
