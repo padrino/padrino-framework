@@ -230,11 +230,14 @@ module Padrino
       #
       # @api public.
       def stylesheet_link_tag(*sources)
-        options = sources.extract_options!.symbolize_keys
-        options.reverse_merge!(:media => 'screen', :rel => 'stylesheet', :type => 'text/css')
-        sources.flatten.map { |source|
-          tag(:link, options.reverse_merge(:href => asset_path(:css, source)))
-        }.join("\n").html_safe
+        options = {
+          :media => 'screen',
+          :rel => 'stylesheet',
+          :type => 'text/css'
+        }.update(sources.extract_options!.symbolize_keys)
+        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+          all << tag(:link, { :href => asset_path(:css, source) }.update(options))
+        end
       end
 
       ##
@@ -252,11 +255,12 @@ module Padrino
       #   javascript_include_tag 'application', :extjs
       #
       def javascript_include_tag(*sources)
-        options = sources.extract_options!.symbolize_keys
-        options.reverse_merge!(:type => 'text/javascript')
-        sources.flatten.map { |source|
-          content_tag(:script, nil, options.reverse_merge(:src => asset_path(:js, source)))
-        }.join("\n").html_safe
+        options = {
+          :type => 'text/javascript'
+        }.update(sources.extract_options!.symbolize_keys)
+        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+          all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
+        end
       end
 
       ##
