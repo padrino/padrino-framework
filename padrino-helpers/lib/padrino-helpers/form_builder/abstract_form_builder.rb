@@ -202,7 +202,7 @@ module Padrino
           options = { :id => field_id(field), :selected => field_value(field) }.update(options)
           options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
-          variants_for_group(options).inject(''.html_safe) do |html, (caption,value)|
+          variants_for_group(options).inject(ActiveSupport::SafeBuffer.new) do |html, (caption,value)|
             variant_id = "#{options[:id]}_#{value}"
             attributes = { :value => value, :id => variant_id, :checked => selected_values.include?(value) }
             caption = yield(attributes) << ' ' << caption

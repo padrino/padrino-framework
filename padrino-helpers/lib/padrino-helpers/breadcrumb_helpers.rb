@@ -143,7 +143,7 @@ module Padrino
       #  # </ul>
       #
       def breadcrumbs(breadcrumbs, bootstrap = false, active = "active", options = {})
-        content = ''.html_safe
+        content = ActiveSupport::SafeBuffer.new
         breadcrumbs.items[0..-2].each do |item|
           content << render_item(item, bootstrap)
         end
@@ -173,7 +173,7 @@ module Padrino
       # @return [String] List item with breadcrumb
       #
       def render_item(item, bootstrap)
-        content = ''.html_safe
+        content = ActiveSupport::SafeBuffer.new
         content << link_to(item[:caption], item[:url])
         content << content_tag(:span, "/", :class => "divider") if bootstrap
         content_tag(:li, content, item[:options])

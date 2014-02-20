@@ -45,14 +45,14 @@ module Padrino
         end
 
         locals = options[:locals]
-        objects.inject(''.html_safe) do |html,object|
+        objects.inject(ActiveSupport::SafeBuffer.new) do |html,object|
           locals[object_name] = object if object
           locals["#{object_name}_counter".to_sym] = counter += 1 if counter
           if block_given?
-            output = render(explicit_engine, template_path, options){ capture_html(&block) }.html_safe
+            output = render(explicit_engine, template_path, options){ capture_html(&block) }
             html << (block_is_template?(block) ? concat_content(output) : output)
           else
-            html << render(explicit_engine, template_path, options).html_safe
+            html << render(explicit_engine, template_path, options)
           end
         end
       end
