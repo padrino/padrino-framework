@@ -64,7 +64,7 @@ TEST
 
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'minitest', :version => "~>2.6.0", :require => 'minitest/autorun', :group => 'test'
+  require_dependencies 'minitest', :require => 'minitest/autorun', :group => 'test'
   insert_test_suite_setup MINITEST_SETUP
   create_file destination_root("test/test.rake"), MINITEST_RAKE
 end
