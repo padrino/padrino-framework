@@ -49,10 +49,10 @@ module Padrino
           locals[object_name] = object if object
           locals["#{object_name}_counter".to_sym] = counter += 1 if counter
           if block_given?
-            output = render(explicit_engine, template_path, options){ capture_html(&block) }
+            output = render(explicit_engine, template_path, options){ capture_html(&block) }.html_safe
             html << (block_is_template?(block) ? concat_content(output) : output)
           else
-            html << render(explicit_engine, template_path, options)
+            html << render(explicit_engine, template_path, options).html_safe
           end
         end
       end
