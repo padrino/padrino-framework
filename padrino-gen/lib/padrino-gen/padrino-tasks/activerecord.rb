@@ -129,7 +129,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :migrate do
-      desc  'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with VERSION=x.'
+      desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with VERSION=x.'
       task :redo => :environment do
         if ENV["VERSION"]
           Rake::Task["ar:migrate:down"].invoke
@@ -144,35 +144,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
       desc 'Runs the "up" for a given migration VERSION.'
-      task :up => :environment do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:up, "db/migrate/", version)
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
+      task(:up => :environment){ migrate_as(:up) }
 
       desc 'Runs the "down" for a given migration VERSION.'
-      task :down => :environment do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:down, "db/migrate/", version)
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
+      task(:down => :environment){ migrate_as(:down) }
     end
 
     desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
-    task :rollback => :environment do
-      step = ENV['STEP'] ? ENV['STEP'].to_i : 1
-      ActiveRecord::Migrator.rollback('db/migrate/', step)
-      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-    end
+    task(:rollback => :environment){ move_as(:rollback) }
 
     desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
-    task :forward => :environment do
-      step = ENV['STEP'] ? ENV['STEP'].to_i : 1
-      ActiveRecord::Migrator.forward('db/migrate/', step)
-      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-    end
+    task(:forward => :environment){ move_as(:forward) }
 
     desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
     task :reset => [ 'ar:drop', 'ar:setup' ]
@@ -255,7 +237,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         case abcs[Padrino.env][:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
           ActiveRecord::Base.establish_connection(abcs[Padrino.env])
-          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
+          File.open(resolve_structure_sql, "w+"){|f| f << ActiveRecord::Base.connection.structure_dump }
         when "postgresql"
           ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
           ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
@@ -281,7 +263,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
 
         if ActiveRecord::Base.connection.supports_migrations?
-          File.open("#{Padrino.root}/db/#{Padrino.env}_structure.sql", "a") { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+          File.open(resolve_structure_sql, "a"){|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
     end
@@ -364,6 +346,27 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     when :drop
       $stderr.puts "Couldn't drop #{config[:database]}"
     end
+  end
+
+  def migrate_as(type)
+    version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
+    raise "VERSION is required" unless version
+    ActiveRecord::Migrator.run(type, "db/migrate/", version)
+    dump_schema
+  end
+
+  def move_as(type)
+    step = ENV['STEP'] ? ENV['STEP'].to_i : 1
+    ActiveRecord::Migrator.send(type, 'db/migrate/', step)
+    dump_schema
+  end
+
+  def dump_schema
+    Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+  end
+
+  def resolve_structure_sql
+    "#{Padrino.root}/db/#{Padrino.env}_structure.sql"
   end
 
   task 'db:migrate' => 'ar:migrate'
