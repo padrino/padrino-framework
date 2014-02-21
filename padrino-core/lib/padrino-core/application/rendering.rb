@@ -318,24 +318,29 @@ module Padrino
         parts = [views_path]
         parts << "{,#{request.controller}}" if respond_to?(:request) && request.controller.present?
         parts << template_path.chomp(File.extname(template_path)) + '.*'
-        Dir.glob(File.join(parts)).inject([]) do |all,file|
+        Dir.glob(File.join(parts)).sort.inject([]) do |all,file|
           next all if IGNORE_FILE_PATTERN.any?{ |pattern| file.to_s =~ pattern }
-          extname = File.extname(file)
-          all << [file.squeeze('/').sub(views_path, '').chomp(extname).to_sym, extname[1..-1].to_s.to_sym]
+          all << path_and_engine(file, views_path)
         end
       end
 
       def select_template(templates, template_path, content_type, _locale)
         simple_content_type = [:html, :plain].include?(content_type)
+        target_path, target_engine = path_and_engine(template_path)
 
-        templates.find{ |file,_| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
-        templates.find{ |file,_| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
-        templates.find do |file,engine|
-          target_engine = File.extname(template_path)[1..-1].to_s.to_sym
-          File.extname(file.to_s) == ".#{target_engine}" || engine == target_engine
-        end ||
-        templates.find{ |file,_| file.to_s == "#{template_path}.#{content_type}" } ||
-        templates.find{ |file,_| file.to_s == "#{template_path}" && simple_content_type }
+        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
+        templates.find{ |file,engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
+        templates.find{ |file,_| file.to_s == "#{target_path}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{target_path}" && simple_content_type }
+      end
+
+      def path_and_engine(path, relative=nil)
+        extname = File.extname(path)
+        engine = (extname[1..-1]||'none').to_sym
+        path = path.chomp(extname)
+        path = path.squeeze('/').sub(relative, '') if relative
+        [path.to_sym, engine]
       end
     end
   end
