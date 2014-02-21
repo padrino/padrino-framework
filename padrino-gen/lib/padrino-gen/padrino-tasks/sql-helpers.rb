@@ -1,19 +1,20 @@
 module Padrino
-  module Generators 
+  module Generators
     module SqlHelpers
       def self.create_db(adapter, user, password, host, database, charset, collation)
         case adapter
           when 'postgres'
+            command = (password ? "PGPASSWORD=#{password} " : '') + 'createdb'
             arguments = []
             arguments << "--encoding=#{charset}" if charset
             arguments << "--host=#{host}" if host
             arguments << "--username=#{user}" if user
             arguments << database
-            system("createdb", *arguments)
+            system(command, *arguments)
           when 'mysql'
             arguments = ["--user=#{user}"]
             arguments << "--password=#{password}" unless password.blank?
-            
+
             unless %w[127.0.0.1 localhost].include?(host)
               arguments << "--host=#{host}"
             end
@@ -30,11 +31,12 @@ module Padrino
       def self.drop_db(adapter, user, password, host, database)
         case adapter
           when 'postgres'
+            command = (password ? "PGPASSWORD=#{password} " : '') + 'dropdb'
             arguments = []
             arguments << "--host=#{host}" if host
             arguments << "--username=#{user}" if user
             arguments << database
-            system("dropdb", *arguments)
+            system(command, *arguments)
           when 'mysql'
             arguments = ["--user=#{user}"]
             arguments << "--password=#{password}" unless password.blank?
