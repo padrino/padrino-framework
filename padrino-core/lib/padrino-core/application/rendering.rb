@@ -95,6 +95,7 @@ module Padrino
       # @param [Array<template_path, content_type, locale>] render_options
       #
       def fetch_template_file(render_options)
+        logger.warn "##{__method__} is deprecated"
         (@_cached_templates ||= {})[render_options]
       end
 
@@ -107,6 +108,7 @@ module Padrino
       # @param [Array<template_path, content_type, locale>] render_options
       #
       def cache_template_file!(template_file, render_options)
+        logger.warn "##{__method__} is deprecated"
         (@_cached_templates ||= {})[render_options] = template_file || []
       end
 
@@ -118,13 +120,35 @@ module Padrino
       #
       def fetch_layout_path(given_layout=nil)
         layout_name = given_layout || @layout || :application
+        cache_layout_path(layout_name) do
+          if Dir["#{views}/#{layout_name}.*"].any?
+            layout_name.to_sym
+          else
+            File.join('layouts', layout_name.to_s).to_sym
+          end
+        end
+      end
+
+      def cache_layout_path(name)
         @_cached_layout ||= {}
-        cached_layout_path = @_cached_layout[layout_name]
-        return cached_layout_path if cached_layout_path
-        has_layout_at_root = Dir["#{views}/#{layout_name}.*"].any?
-        layout_path = has_layout_at_root ? layout_name.to_sym : File.join('layouts', layout_name.to_s).to_sym
-        @_cached_layout[layout_name] = layout_path unless reload_templates?
-        layout_path
+        if !reload_templates? && path = @_cached_layout[name]
+          path
+        else
+          @_cached_layout[name] = yield(name)
+        end
+      end
+
+      def cache_template_path(options)
+        began_at = Time.now
+        @_cached_templates ||= {}
+        logging = defined?(settings) && settings.logging? && defined?(logger)
+        if !reload_templates? && path = @_cached_templates[options]
+          logger.debug :cached, began_at, path[0] if logging
+        else
+          path = @_cached_templates[options] = yield(name)
+          logger.debug :template, began_at, path[0] if path && logging
+        end
+        path
       end
     end
 
@@ -157,7 +181,7 @@ module Padrino
       #   # => set directly the Content-Type to 'text/html'
       #
       def content_type(type=nil, params={})
-        unless type.nil?
+        if type
           super(type, params)
           @_content_type = type
         end
@@ -165,6 +189,7 @@ module Padrino
       end
 
       private
+
       ##
       # Enhancing Sinatra render functionality for:
       #
@@ -176,7 +201,6 @@ module Padrino
       # * Use render 'path/to/template', :layout => false, :engine => 'haml'
       #
       def render(engine, data=nil, options={}, locals={}, &block)
-
         # If engine is nil, ignore engine parameter and shift up all arguments
         # render nil, "index", { :layout => true }, { :localvar => "foo" }
         engine, data, options = data, options, locals if engine.nil? && data
@@ -188,36 +212,19 @@ module Padrino
 
         # If data is unassigned then this is a likely a template to be resolved
         # This means that no engine was explicitly defined
-        data, engine = *resolve_template(engine, options.dup) if data.nil?
-
-        # Use @layout if it exists
-        layout_was = options[:layout]
-        options[:layout] = @layout if options[:layout].nil? || options[:layout] == true
-        # Resolve layouts similar to in Rails
-        if options[:layout].nil? && !settings.templates.has_key?(:layout)
-          layout_path = settings.fetch_layout_path(options[:layout])
-          is_included_extension = %w[.slim .erb .haml].include?(File.extname(layout_path.to_s))
-          layout_path, layout_engine = *(is_included_extension ? resolve_template(layout_path) : resolved_layout)
-
-          # We need to force layout false so sinatra don't try to render it
-          options[:layout] = layout_path || false
-          options[:layout] = false unless is_included_extension ? layout_engine : layout_engine == engine
-          options[:layout_engine] = layout_engine || engine if options[:layout]
-        elsif options[:layout].present?
-          options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]), options)
-        end
-        # Default to original layout value if none found.
-        options[:layout] ||= layout_was
+        data, engine = resolve_template(engine, options) if data.nil?
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
-        @_out_buf,  _buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
+        @_out_buf,  buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
+
+        options = with_layout(options)
 
         # Pass arguments to Sinatra render method.
         super(engine, data, options.dup, locals, &block)
       ensure
         @current_engine = engine_was
-        @_out_buf = _buf_was
+        @_out_buf = buf_was
       end
 
       ##
@@ -230,8 +237,7 @@ module Padrino
       #   # => [nil, nil]
       #
       def resolved_layout
-        located_layout = resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true)
-        located_layout ? located_layout : [nil, nil]
+        resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true) || [nil, nil]
       end
 
       ##
@@ -262,52 +268,21 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
-        began_at = Time.now
-        _content_type = content_type || :html
-        # Fetch cached template for rendering options
-        template_path = template_path.to_s[0] == ?/ ? template_path.to_s : "/#{template_path}"
-        rendering_options = [template_path, _content_type, locale]
-        cached_template = settings.fetch_template_file(rendering_options)
-        if cached_template
-          logger.debug :cached, began_at, cached_template[0] if settings.logging? && defined?(logger)
-          return cached_template
+        template_path = template_path.to_s
+        template_path.insert(0, '/') unless template_path.start_with?('/')
+        rendering_options = [template_path, content_type || :html, locale]
+
+        settings.cache_template_path(rendering_options) do
+          options = DEFAULT_RENDERING_OPTIONS.merge(options)
+          view_path = options[:views] || settings.views || "./views"
+
+          template_candidates = glob_templates(view_path, template_path)
+          selected_template = select_template(template_candidates, *rendering_options)
+          selected_template ||= template_candidates.first unless options[:strict_format]
+
+          fail TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'"  if !selected_template && options[:raise_exceptions]
+          selected_template
         end
-
-        # Resolve view path and options.
-        options = DEFAULT_RENDERING_OPTIONS.merge(options)
-        view_path = options.delete(:views) || settings.views || "./views"
-        target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
-        template_path = template_path.chomp(".#{target_extension}")
-        template_glob =
-          if respond_to?(:request) && request.controller.present?
-            File.join("{,#{request.controller}}", template_path)
-          else
-            template_path
-          end
-
-        # Generate potential template candidates
-        templates = Dir[File.join(view_path, template_glob) + ".*"].map do |file|
-          template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
-          template_file   = file.squeeze('/').sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
-          [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
-        end
-
-        # Check if we have a simple content type
-        simple_content_type = [:html, :plain].include?(_content_type)
-
-        # Resolve final template to render
-        located_template =
-          templates.find { |file, e| file.to_s == "#{template_path}.#{locale}.#{_content_type}" } ||
-          templates.find { |file, e| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
-          templates.find { |file, e| File.extname(file.to_s) == ".#{target_extension}" or e.to_s == target_extension.to_s } ||
-          templates.find { |file, e| file.to_s == "#{template_path}.#{_content_type}" } ||
-          templates.find { |file, e| file.to_s == "#{template_path}" && simple_content_type } ||
-          (!options[:strict_format] && templates.first) # If not strict, fall back to the first located template.
-
-        raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'!"  if !located_template && options[:raise_exceptions]
-        settings.cache_template_file!(located_template, rendering_options) unless settings.reload_templates?
-        logger.debug :template, began_at, located_template[0] if located_template && settings.logging? && defined?(logger)
-        located_template
       end
 
       ##
@@ -315,6 +290,52 @@ module Padrino
       #
       def locale
         I18n.locale if defined?(I18n)
+      end
+
+      LAYOUT_EXTENSIONS = %w[.slim .erb .haml].freeze
+
+      def with_layout(options)
+        layout = options[:layout]
+        return options if layout == false
+
+        layout = @layout if !layout || layout == true
+        layout_path = settings.fetch_layout_path(layout)
+        if layout.present?
+          layout, layout_engine = resolve_template(layout_path, options)
+        elsif !settings.templates.has_key?(:layout)
+          is_included_extension = LAYOUT_EXTENSIONS.include?(File.extname(layout_path.to_s))
+          layout_path, layout_engine = resolved_layout
+          layout = layout_path || false
+          layout = false unless is_included_extension ? layout_engine : layout_engine == @current_engine
+        else
+          return options
+        end
+
+        options.merge(:layout_engine => layout_engine, :layout => layout)
+      end
+
+      def glob_templates(views_path, template_path)
+        parts = [views_path]
+        parts << "{,#{request.controller}}" if respond_to?(:request) && request.controller.present?
+        parts << template_path.chomp(File.extname(template_path)) + '.*'
+        Dir.glob(File.join(parts)).inject([]) do |all,file|
+          next all if IGNORE_FILE_PATTERN.any?{ |pattern| file.to_s =~ pattern }
+          extname = File.extname(file)
+          all << [file.squeeze('/').sub(views_path, '').chomp(extname).to_sym, extname[1..-1].to_s.to_sym]
+        end
+      end
+
+      def select_template(templates, template_path, content_type, _locale)
+        simple_content_type = [:html, :plain].include?(content_type)
+
+        templates.find{ |file,_| file.to_s == "#{template_path}.#{locale}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{template_path}.#{locale}" && simple_content_type } ||
+        templates.find do |file,engine|
+          target_engine = File.extname(template_path)[1..-1].to_s.to_sym
+          File.extname(file.to_s) == ".#{target_engine}" || engine == target_engine
+        end ||
+        templates.find{ |file,_| file.to_s == "#{template_path}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{template_path}" && simple_content_type }
       end
     end
   end
