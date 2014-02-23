@@ -131,7 +131,7 @@ module Padrino
 
           unless options[:destroy]
             add_project_module @model_plural
-            require_dependencies('bcrypt-ruby', :require => 'bcrypt')
+            require_dependencies('bcrypt')
           end
 
           # A nicer select box.
