@@ -40,7 +40,7 @@ module Padrino
       #
       def form_for(object, url, options={}, &block)
         instance = builder_instance(object, options)
-        # this can ninja up instance.multipart flag if the block calls instance.file_field
+        # this can erect instance.multipart flag if the block calls instance.file_field
         html = capture_html(instance, &block)
         options = { :multipart => instance.multipart }.update(options.except(:namespace, :as))
         form_tag(url, options) { html }

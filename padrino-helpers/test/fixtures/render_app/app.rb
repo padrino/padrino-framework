@@ -60,6 +60,22 @@ class RenderDemo < Padrino::Application
     partial '/template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
   end
 
+  # partial with unsafe engine
+  get '/partial/unsafe' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe.html.builder', &block
+  end
+
+  get '/partial/unsafe_one' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe_object', :object => 'Mary', &block
+  end
+
+  get '/partial/unsafe_many' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe_object', :collection => ['John', 'Mary'], &block
+  end
+
   get '/render_block_:ext' do
     render "render_block_#{params[:ext]}" do
       content_tag :div, 'go block!'

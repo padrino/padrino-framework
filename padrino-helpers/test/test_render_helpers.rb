@@ -54,6 +54,38 @@ describe "RenderHelpers" do
     end
   end
 
+  context 'for #partial method with unsafe engine' do
+    should "render partial without escaping it" do
+      visit '/partial/unsafe'
+      assert_have_selector "h1", :content => "User name is John"
+    end
+    should "render partial object without escaping it" do
+      visit '/partial/unsafe_one'
+      assert_have_selector "h1", :content => "User name is Mary"
+    end
+    should "render partial collection without escaping it" do
+      visit '/partial/unsafe_many'
+      assert_have_selector "h1", :content => "User name is John"
+      assert_have_selector "h1", :content => "User name is Mary"
+    end
+    should "render unsafe partial without escaping it" do
+      visit '/partial/unsafe?block=%3Cevil%3E'
+      assert_have_selector "h1", :content => "User name is John"
+      assert_have_selector "evil"
+    end
+    should "render unsafe partial object without escaping it" do
+      visit '/partial/unsafe_one?block=%3Cevil%3E'
+      assert_have_selector "h1", :content => "User name is Mary"
+      assert_have_selector "evil"
+    end
+    should "render unsafe partial collection without escaping it" do
+      visit '/partial/unsafe_many?block=%3Cevil%3E'
+      assert_have_selector "h1", :content => "User name is John"
+      assert_have_selector "h1", :content => "User name is Mary"
+      assert_have_selector "evil"
+    end
+  end
+
   context 'render with block' do
     should 'render slim with block' do
       visit '/render_block_slim'
