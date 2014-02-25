@@ -34,7 +34,7 @@ group :development do
     gem "jruby-openssl"
   end
   gem "mocha",    ">= 0.10.0"
-  gem "minitest", "~> 4.0"
+  gem "minitest", ">= 4.0"
 end
 
 %w[

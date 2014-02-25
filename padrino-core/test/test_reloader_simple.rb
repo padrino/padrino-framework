@@ -72,6 +72,7 @@ describe "SimpleReloader" do
 
     should 'correctly reset SimpleDemo fixture' do
       @app = SimpleDemo
+      get "/"
       @app.reload!
       get "/rand"
       assert ok?

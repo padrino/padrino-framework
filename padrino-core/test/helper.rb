@@ -5,6 +5,7 @@ require File.expand_path('../../../load_paths', __FILE__)
 require File.expand_path('../mini_shoulda', __FILE__)
 require 'padrino-core'
 require 'json'
+require 'builder'
 require 'rack/test'
 require 'rack'
 

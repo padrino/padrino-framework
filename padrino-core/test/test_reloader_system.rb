@@ -5,15 +5,18 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/static')
 
 describe "SystemReloader" do
   context 'for wierd and difficult reload events' do
-    should 'reload system features if they were required only in helper' do
+    setup do
       @app = SystemDemo
+      get '/'
+    end
+
+    should 'reload system features if they were required only in helper' do
       @app.reload!
       get '/'
       assert_equal 'Resolv', body
     end
 
     should 'reload children on parent change' do
-      @app = SystemDemo
       assert_equal Child.new.family, 'Danes'
       parent_file = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/models/parent.rb')
       new_class = <<-DOC
