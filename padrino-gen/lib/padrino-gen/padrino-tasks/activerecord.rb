@@ -234,10 +234,11 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc "Dump the database structure to a SQL file"
       task :dump => :environment do
         abcs = ActiveRecord::Base.configurations
-        case abcs[Padrino.env][:adapter]
+        config = abcs[Padrino.env]
+        case config[:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
-          ActiveRecord::Base.establish_connection(abcs[Padrino.env])
-          File.open(resolve_structure_sql, "w+"){|f| f << ActiveRecord::Base.connection.structure_dump }
+          config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
+          ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
         when "postgresql"
           ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
           ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
