@@ -4,6 +4,7 @@ require 'rack/test'
 require 'webrat'
 require 'padrino-helpers'
 require 'active_support/time'
+require 'builder'
 
 class MiniTest::Spec
   include Padrino::Helpers::OutputHelpers

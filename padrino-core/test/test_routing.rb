@@ -8,6 +8,7 @@ describe "Routing" do
   setup do
     Padrino::Application.send(:register, Padrino::Rendering)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+    Padrino.clear!
   end
 
   should "serve static files with simple cache control" do
