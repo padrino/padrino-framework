@@ -6,6 +6,8 @@ require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'm
 require 'rack/test'
 require 'padrino-core'
 require 'padrino-helpers'
+require 'mail'
+require 'padrino-mailer/ext'
 require 'padrino-mailer'
 
 class MiniTest::Spec
