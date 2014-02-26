@@ -11,6 +11,12 @@ describe "AdminAppGenerator" do
   end
 
   describe 'the admin app generator' do
+    setup do
+      # Account gets created by Datamapper's migration and then gets
+      # rejected by model generator as already defined
+      Object.send(:remove_const, :Account) if defined?(Account)
+    end
+
     it 'should fail outside app root' do
       out, err = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)

@@ -1,6 +1,4 @@
-require 'active_support/version'
-require 'active_support/core_ext/module/attribute_accessors'
-require 'active_support/core_ext/class/attribute_accessors' if ActiveSupport.version.to_s < '4.1'
+require 'active_support/core_ext/class/attribute_accessors'
 
 module Padrino
   module Admin

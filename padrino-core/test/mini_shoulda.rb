@@ -22,24 +22,27 @@ class MiniTest::Spec
   alias :assert_not_equal :refute_equal
 end
 
-class ColoredIO
-  def initialize(io)
-    @io = io
-  end
+if defined?(MiniTest::Unit.output)
+  class ColoredIO
+    def initialize(io)
+      @io = io
+    end
 
-  def print(o)
-    case o
-    when "." then @io.send(:print, o.colorize(:green))
-    when "E" then @io.send(:print, o.colorize(:red))
-    when "F" then @io.send(:print, o.colorize(:yellow))
-    when "S" then @io.send(:print, o.colorize(:magenta))
-    else @io.send(:print, o)
+    def print(o)
+      case o
+      when "." then @io.send(:print, o.colorize(:green))
+      when "E" then @io.send(:print, o.colorize(:red))
+      when "F" then @io.send(:print, o.colorize(:yellow))
+      when "S" then @io.send(:print, o.colorize(:magenta))
+      else @io.send(:print, o)
+      end
+    end
+
+    def puts(*o)
+      super
     end
   end
-
-  def puts(*o)
-    super
-  end
+  MiniTest::Unit.output = ColoredIO.new(MiniTest::Unit.output)
+else
+  require 'minitest/pride'
 end
-
-#MiniTest::Unit.output = ColoredIO.new(MiniTest::Unit.output)

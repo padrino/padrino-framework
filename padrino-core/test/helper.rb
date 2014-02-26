@@ -3,6 +3,7 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
 require File.expand_path('../../../load_paths', __FILE__)
 require File.expand_path('../mini_shoulda', __FILE__)
+require 'i18n'
 require 'padrino-core'
 require 'json'
 require 'builder'

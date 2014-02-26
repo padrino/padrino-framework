@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require 'i18n'
 require 'slim'
 
 describe "Rendering" do

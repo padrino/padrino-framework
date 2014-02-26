@@ -24,11 +24,6 @@ module Kernel
   end
 end
 
-class Class
-  # Allow assertions in request context
-  include MiniTest::Assertions
-end
-
 class MiniTest::Spec
   include Rack::Test::Methods
 
@@ -37,7 +32,6 @@ class MiniTest::Spec
   # the application.
   def mock_app(base=Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
-    @app.send :include, MiniTest::Assertions
     @app.register Padrino::Helpers
   end
 
