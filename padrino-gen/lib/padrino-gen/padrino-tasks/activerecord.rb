@@ -234,32 +234,33 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc "Dump the database structure to a SQL file"
       task :dump => :environment do
         abcs = ActiveRecord::Base.configurations
-        case abcs[Padrino.env][:adapter]
+        config = abcs[Padrino.env]
+        case config[:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
-          ActiveRecord::Base.establish_connection(abcs[Padrino.env])
-          File.open(resolve_structure_sql, "w+"){|f| f << ActiveRecord::Base.connection.structure_dump }
+          config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
+          ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
         when "postgresql"
-          ENV['PGHOST']     = abcs[Padrino.env][:host] if abcs[Padrino.env][:host]
-          ENV['PGPORT']     = abcs[Padrino.env][:port].to_s if abcs[Padrino.env][:port]
-          ENV['PGPASSWORD'] = abcs[Padrino.env][:password].to_s if abcs[Padrino.env][:password]
-          search_path = abcs[Padrino.env][:schema_search_path]
+          ENV['PGHOST']     = config[:host] if config[:host]
+          ENV['PGPORT']     = config[:port].to_s if config[:port]
+          ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
+          search_path = config[:schema_search_path]
           unless search_path.blank?
             search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
           end
-          `pg_dump -i -U "#{abcs[Padrino.env][:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{abcs[Padrino.env][:database]}`
+          `pg_dump -i -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
           raise "Error dumping database" if $?.exitstatus == 1
         when "sqlite", "sqlite3"
-          dbfile = abcs[Padrino.env][:database] || abcs[Padrino.env][:dbfile]
-          `#{abcs[Padrino.env][:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
+          dbfile = config[:database] || config[:dbfile]
+          `#{config[:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
         when "sqlserver"
-          `scptxfr /s #{abcs[Padrino.env][:host]} /d #{abcs[Padrino.env][:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
-          `scptxfr /s #{abcs[Padrino.env][:host]} /d #{abcs[Padrino.env][:database]} /I /F db\ /q /A /r`
+          `scptxfr /s #{config[:host]} /d #{config[:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
+          `scptxfr /s #{config[:host]} /d #{config[:database]} /I /F db\ /q /A /r`
         when "firebird"
-          set_firebird_env(abcs[Padrino.env])
-          db_string = firebird_db_string(abcs[Padrino.env])
+          set_firebird_env(config)
+          db_string = firebird_db_string(config)
           sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
         else
-          raise "Task not supported by '#{abcs[Padrino.env][:adapter]}'"
+          raise "Task not supported by '#{config[:adapter]}'"
         end
 
         if ActiveRecord::Base.connection.supports_migrations?
