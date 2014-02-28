@@ -118,6 +118,15 @@ describe "Mounter" do
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.map(&:name)
     end
 
+    should 'mount app with the same name as the module' do
+      Padrino.mount("Demo::App",  :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_app.rb')).to("/app")
+      Padrino.mount("Demo::Demo", :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_demo.rb')).to("/")
+
+      Padrino.mounted_apps.each do |app|
+        assert_equal app.app_obj.setup_application!, true
+      end
+    end
+
     should 'change mounted_root' do
       Padrino.mounted_root = "fixtures"
       assert_equal Padrino.root("fixtures", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
