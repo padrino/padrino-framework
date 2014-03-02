@@ -2,7 +2,8 @@ ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
 require File.expand_path('../../../load_paths', __FILE__)
-require File.expand_path('../mini_shoulda', __FILE__)
+require 'minitest/autorun'
+require 'minitest/pride'
 require 'i18n'
 require 'padrino-core'
 require 'json'
@@ -13,11 +14,6 @@ require 'rack'
 # Rubies < 1.9 don't handle hashes in the properly order so to prevent
 # this issue for now we remove extra values from mimetypes.
 Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
-
-class Sinatra::Base
-  # Allow assertions in request context
-  include MiniTest::Assertions
-end
 
 class MiniTest::Spec
   include Rack::Test::Methods

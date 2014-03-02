@@ -5,15 +5,16 @@ describe "Rendering" do
   def setup
     Padrino::Application.send(:register, Padrino::Rendering)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+    I18n.enforce_available_locales = true
   end
 
   def teardown
     remove_views
   end
 
-  context 'for application layout functionality' do
+  describe 'for application layout functionality' do
 
-    should 'get no layout' do
+    it 'should get no layout' do
       mock_app do
         get("/"){ "no layout" }
       end
@@ -22,7 +23,7 @@ describe "Rendering" do
       assert_equal "no layout", body
     end
 
-    should 'be compatible with sinatra layout' do
+    it 'should be compatible with sinatra layout' do
       mock_app do
         layout do
           "this is a <%= yield %>"
@@ -35,7 +36,7 @@ describe "Rendering" do
       assert_equal "this is a sinatra layout", body
     end
 
-    should 'use rails way layout' do
+    it 'should use rails way layout' do
       with_layout :application, "this is a <%= yield %>" do
         mock_app do
           get("/"){ render :erb, "rails way layout" }
@@ -46,7 +47,7 @@ describe "Rendering" do
       end
     end
 
-    should 'use rails way for a custom layout' do
+    it 'should use rails way for a custom layout' do
       with_layout "layouts/custom", "this is a <%= yield %>" do
         mock_app do
           layout :custom
@@ -58,7 +59,7 @@ describe "Rendering" do
       end
     end
 
-    should 'not use layout' do
+    it 'should not use layout' do
       with_layout :application, "this is an <%= yield %>" do
         with_view :index, "index" do
           mock_app do
@@ -73,7 +74,7 @@ describe "Rendering" do
       end
     end
 
-    should 'not use layout with js format' do
+    it 'should not use layout with js format' do
       create_layout :application, "this is an <%= yield %>"
       create_view :foo, "erb file"
       create_view :foo, "js file", :format => :js
@@ -86,7 +87,7 @@ describe "Rendering" do
       assert_equal "js file", body
     end
 
-    should 'use correct layout for each format' do
+    it 'should use correct layout for each format' do
       create_layout :application, "this is an <%= yield %>"
       create_layout :application, "document start <%= yield %> end", :format => :xml
       create_view :foo, "erb file"
@@ -100,7 +101,7 @@ describe "Rendering" do
       assert_equal "document start xml file end", body
     end
 
-    should 'by default use html file when no other is given' do
+    it 'should by default use html file when no other is given' do
       create_layout :baz, "html file", :format => :html
 
       mock_app do
@@ -115,7 +116,7 @@ describe "Rendering" do
       assert_equal "html file", body
     end
 
-    should 'not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
+    it 'should not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
       create_layout :foo, "html file", :format => :html
 
       mock_app do
@@ -134,7 +135,7 @@ describe "Rendering" do
       Padrino::Rendering::DEFAULT_RENDERING_OPTIONS.merge!(@save)
     end
 
-    should 'use correct layout with each controller' do
+    it 'should use correct layout with each controller' do
       create_layout :foo, "foo layout at <%= yield %>"
       create_layout :bar, "bar layout at <%= yield %>"
       create_layout :baz, "baz layout at <%= yield %>"
@@ -173,7 +174,7 @@ describe "Rendering" do
     end
   end
 
-  should 'solve layout in layouts paths' do
+  it 'should solve layout in layouts paths' do
     create_layout :foo, "foo layout <%= yield %>"
     create_layout :"layouts/bar", "bar layout <%= yield %>"
     mock_app do
@@ -189,7 +190,7 @@ describe "Rendering" do
     assert_equal "bar layout bar", body
   end
 
-  should 'render correctly if layout was not found or not exist' do
+  it 'should render correctly if layout was not found or not exist' do
     create_layout :application, "application layout for <%= yield %>"
     create_view :foo, "index", :format => :html
     create_view :foo, "xml.rss", :format => :rss
@@ -208,7 +209,7 @@ describe "Rendering" do
     assert_equal "haml", body.chomp
   end
 
-  should 'allow to render template with layout option that using other template engine.' do
+  it 'should allow to render template with layout option that using other template engine.' do
     create_layout :"layouts/foo", "application layout for <%= yield %>", :format => :erb
     create_view :slim, "| slim", :format => :slim
     create_view :haml, "haml", :format => :haml
@@ -226,7 +227,7 @@ describe "Rendering" do
     assert_equal "application layout for erb", body.chomp
   end
 
-  should 'allow to use extension with layout method.' do
+  it 'should allow to use extension with layout method.' do
     create_layout :"layouts/bar", "application layout for <%= yield %>", :format => :erb
     create_view :slim, "| slim", :format => :slim
     create_view :haml, "haml", :format => :haml
@@ -245,9 +246,9 @@ describe "Rendering" do
     assert_equal "application layout for erb", body.chomp
   end
 
-  context 'for application render functionality' do
+  describe 'for application render functionality' do
 
-    should "work properly with logging and missing layout" do
+    it 'should work properly with logging and missing layout' do
       create_view :index, "<%= foo %>"
       mock_app do
         enable :logging
@@ -257,7 +258,7 @@ describe "Rendering" do
       assert_equal "bar", body
     end
 
-    should "work properly with logging and layout" do
+    it 'should work properly with logging and layout' do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
@@ -268,7 +269,7 @@ describe "Rendering" do
       assert_equal "layout bar", body
     end
 
-    should 'be compatible with sinatra render' do
+    it 'should be compatible with sinatra render' do
       mock_app do
         get("/"){ render :erb, "<%= 1+2 %>" }
       end
@@ -276,7 +277,7 @@ describe "Rendering" do
       assert_equal "3", body
     end
 
-    should "support passing locals into render" do
+    it 'should support passing locals into render' do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
@@ -286,7 +287,7 @@ describe "Rendering" do
       assert_equal "layout bar", body
     end
 
-    should "support passing locals into sinatra render" do
+    it 'should support passing locals into sinatra render' do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
@@ -296,7 +297,7 @@ describe "Rendering" do
       assert_equal "layout bar", body
     end
 
-    should "support passing locals into special nil engine render" do
+    it 'should support passing locals into special nil engine render' do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
@@ -306,7 +307,7 @@ describe "Rendering" do
       assert_equal "layout bar", body
     end
 
-    should 'be compatible with sinatra views' do
+    it 'should be compatible with sinatra views' do
       with_view :index, "<%= 1+2 %>" do
         mock_app do
           get("/foo") { render :erb, :index }
@@ -328,7 +329,7 @@ describe "Rendering" do
       end
     end
 
-    should 'resolve template engine' do
+    it 'should resolve template engine' do
       with_view :index, "<%= 1+2 %>" do
         mock_app do
           get("/foo") { render :index }
@@ -341,7 +342,7 @@ describe "Rendering" do
       end
     end
 
-    should 'resolve template content type' do
+    it 'should resolve template content type' do
       create_view :foo, "Im Js", :format => :js
       create_view :foo, "Im Erb"
       mock_app do
@@ -355,7 +356,7 @@ describe "Rendering" do
       # assert_equal "Im Js", body
     end
 
-    should 'resolve with explicit template format' do
+    it 'should resolve with explicit template format' do
       create_view :foo, "Im Js", :format => :js
       create_view :foo, "Im Haml", :format => :haml
       create_view :foo, "Im Xml", :format => :xml
@@ -372,7 +373,7 @@ describe "Rendering" do
       assert_equal "Im Xml", body
     end
 
-    should 'resolve without explict template format' do
+    it 'should resolve without explict template format' do
       create_view :foo, "Im Html"
       create_view :foo, "xml.rss", :format => :rss
       mock_app do
@@ -384,7 +385,7 @@ describe "Rendering" do
       assert_equal "<rss/>\n", body
     end
 
-    should "ignore files ending in tilde and not render them" do
+    it 'should ignore files ending in tilde and not render them' do
       create_view :foo, "Im Wrong", :format => 'haml~'
       create_view :foo, "Im Haml",  :format => :haml
       create_view :bar, "Im Haml backup", :format => 'haml~'
@@ -397,7 +398,7 @@ describe "Rendering" do
       assert_raises(Padrino::Rendering::TemplateNotFound) { get '/bar' }
     end
 
-    should 'resolve template locale' do
+    it 'should resolve template locale' do
       create_view :foo, "Im English", :locale => :en
       create_view :foo, "Im Italian", :locale => :it
       mock_app do
@@ -411,7 +412,7 @@ describe "Rendering" do
       assert_equal "Im Italian", body
     end
 
-    should 'resolve template content_type and locale' do
+    it 'should resolve template content_type and locale' do
       create_view :foo, "Im Js",          :format => :js
       create_view :foo, "Im Erb"
       create_view :foo, "Im English Erb", :locale => :en
@@ -447,7 +448,7 @@ describe "Rendering" do
       assert_equal 404, status
     end
 
-    should 'resolve templates and layouts located in absolute paths' do
+    it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
         get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }
       end
@@ -455,7 +456,7 @@ describe "Rendering" do
       assert_match /okay absolute layout/, body
     end
 
-    should 'resolve template content_type and locale with layout' do
+    it 'should resolve template content_type and locale with layout' do
       create_layout :foo, "Hello <%= yield %> in a Js layout",     :format => :js
       create_layout :foo, "Hello <%= yield %> in a Js-En layout",  :format => :js, :locale => :en
       create_layout :foo, "Hello <%= yield %> in a Js-It layout",  :format => :js, :locale => :it
@@ -502,14 +503,14 @@ describe "Rendering" do
 
     end
 
-    should 'resolve template location relative to controller name' do
+    it 'should resolve template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
       @app = RenderDemo
       get '/blog'
       assert_equal 'okay', body
     end
 
-    should 'renders erb with blocks' do
+    it 'should renders erb with blocks' do
       mock_app do
         def container
           @_out_buf << "THIS."
@@ -526,7 +527,7 @@ describe "Rendering" do
       assert_equal 'THIS. IS. SPARTA!', body
     end
 
-    should 'render erb to a SafeBuffer' do
+    it 'should render erb to a SafeBuffer' do
       mock_app do
         layout do
           "this is a <%= yield %>"
@@ -547,7 +548,7 @@ describe "Rendering" do
       assert_equal 'this is a <span>span</span>', body
     end
 
-    should 'render haml to a SafeBuffer' do
+    it 'should render haml to a SafeBuffer' do
       mock_app do
         layout do
           "%p= yield"
@@ -568,7 +569,7 @@ describe "Rendering" do
       assert_equal '<p><div>foo</div></p>', body.gsub(/\s+/, "")
     end
 
-    should 'render slim to a SafeBuffer' do
+    it 'should render slim to a SafeBuffer' do
       mock_app do
         layout do
           "p= yield"
@@ -589,7 +590,7 @@ describe "Rendering" do
       assert_equal '<p><div>foo</div></p>', body.strip
     end
 
-    should "render correct erb when use sinatra as middleware" do
+    it 'should render correct erb when use sinatra as middleware' do
       class Bar < Sinatra::Base
         get "/" do
           render :erb, "<&'>"

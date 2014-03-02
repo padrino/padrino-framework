@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe Padrino::Flash do
-  context 'storage' do
+  describe 'storage' do
     before do
       @storage = Padrino::Flash::Storage.new(
         :success => 'Success msg',
@@ -13,53 +13,53 @@ describe Padrino::Flash do
       @storage[:two] = 'Two msg'
     end
 
-    should 'acts like hash' do
+    it 'should acts like hash' do
       assert_respond_to @storage, :[]
     end
 
-    should 'know its size' do
+    it 'should know its size' do
       assert_equal 4, @storage.length
       assert_equal @storage.length, @storage.size
     end
 
-    should 'sweep its content' do
+    it 'should sweep its content' do
       assert_equal 2, @storage.sweep.size
       assert_empty @storage.sweep
     end
 
-    should 'discard everything' do
+    it 'should discard everything' do
       assert_empty @storage.discard.sweep
     end
 
-    should 'discard specified key' do
+    it 'should discard specified key' do
       assert_equal 1, @storage.discard(:one).sweep.size
     end
 
-    should 'keep everything' do
+    it 'should keep everything' do
       assert_equal 2, @storage.sweep.keep.sweep.size
     end
 
-    should 'keep only specified key' do
+    it 'should keep only specified key' do
       assert_equal 1, @storage.sweep.keep(:one).sweep.size
     end
 
-    should 'not know the values you set right away' do
+    it 'should not know the values you set right away' do
       @storage[:foo] = 'bar'
       assert_nil @storage[:foo]
     end
 
-    should 'knows the values you set next time' do
+    it 'should knows the values you set next time' do
       @storage[:foo] = 'bar'
       @storage.sweep
       assert_equal 'bar', @storage[:foo]
     end
 
-    should 'set values for now' do
+    it 'should set values for now' do
       @storage.now[:foo] = 'bar'
       assert_equal 'bar', @storage[:foo]
     end
 
-    should 'forgets values you set only for now next time' do
+    it 'should forgets values you set only for now next time' do
       @storage.now[:foo] = 'bar'
       @storage.sweep
       assert_nil @storage[:foo]
@@ -97,42 +97,42 @@ describe Padrino::Flash do
     end
   end
 
-  context 'padrino application without sessions' do
+  describe 'padrino application without sessions' do
     before { mock_app(&routes) }
 
-    should 'show nothing' do
+    it 'should show nothing' do
       get '/'
       assert_equal '{}', body
     end
 
-    should 'set a flash' do
+    it 'should set a flash' do
       post '/', :foo => :bar
       assert_equal '{:foo=>"bar"}', body
     end
   end
 
-  context 'padrino application with sessions' do
+  describe 'padrino application with sessions' do
     before do
       mock_app { enable :sessions; class_eval(&routes) }
     end
 
-    should 'be sure have sessions enabled' do
+    it 'should be sure have sessions enabled' do
       assert @app.sessions
       get '/session'
       assert_equal 'true', body
     end
 
-    should 'show nothing' do
+    it 'should show nothing' do
       get '/'
       assert_equal '{}', body
     end
 
-    should 'set a flash' do
+    it 'should set a flash' do
       post '/', :foo => :bar
       assert_equal '{:foo=>"bar"}', body
     end
 
-    should 'get a flash' do
+    it 'should get a flash' do
       post '/', :foo => :bar
       get  '/', :key => :foo
       assert_equal 'bar', body
@@ -140,26 +140,26 @@ describe Padrino::Flash do
       assert_equal '{}', body
     end
 
-    should 'follow redirects with flash' do
+    it 'should follow redirects with flash' do
       get '/redirect'
       follow_redirect!
       assert_equal 'redirected!', body
       assert 301, status
     end
 
-    should 'set success' do
+    it 'should set success' do
       get '/success'
       get '/', :key => :success
       assert_equal 'Yup', body
     end
 
-    should 'set error' do
+    it 'should set error' do
       get '/error'
       get '/', :key => :error
       assert_equal 'Arg', body
     end
 
-    should 'set notice' do
+    it 'should set notice' do
       get '/notice'
       get '/', :key => :notice
       assert_equal 'Mmm', body

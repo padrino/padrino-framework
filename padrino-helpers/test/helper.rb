@@ -1,5 +1,7 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
+require 'minitest/autorun'
+require 'minitest/pride'
+require 'mocha/setup'
 require 'rack/test'
 require 'webrat'
 require 'padrino-helpers'

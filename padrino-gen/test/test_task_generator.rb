@@ -10,20 +10,20 @@ describe "TaskGenerator" do
     `rm -rf #{@apptmp}`
   end
 
-  context 'the task generator' do
-    should "fail outside app root" do
+  describe 'the task generator' do
+    it 'should fail outside app root' do
       out, err = capture_io { generate(:task, 'foo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/tasks/foo.rake')
     end
 
-    should "generate filename properly" do
+    it 'should generate filename properly' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:task, 'DemoTask', "--namespace=Sample", "--description='This is a sample'", "-r=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project/tasks/sample_demo_task.rake")
     end
 
-    should "generate task file with description" do
+    it 'should generate task file with description' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:task, 'foo', "--description=This is a sample", "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/foo.rake"
@@ -32,7 +32,7 @@ describe "TaskGenerator" do
       assert_match_in_file(/task :foo => :environment do/, file_path)
     end
 
-    should "generate task file with namespace" do
+    it 'should generate task file with namespace' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:task, 'foo', "--namespace=Sample", "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/sample_foo.rake"
@@ -41,7 +41,7 @@ describe "TaskGenerator" do
       assert_no_match_in_file(/desc/, file_path)
     end
 
-    should "generate task file with snake case name when using camelized name" do
+    it 'should generate task file with snake case name when using camelized name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:task, 'DemoTask', "--namespace=Sample", "--description=This is a sample", "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"

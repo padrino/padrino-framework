@@ -1,20 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Dependencies" do
-  context 'when we require a dependency that have another dependency' do
-    setup do
+  describe 'when we require a dependency that have another dependency' do
+    before do
       @log_level = Padrino::Logger::Config[:test]
       @io = StringIO.new
       Padrino::Logger::Config[:test] = { :log_level => :error, :stream => @io }
       Padrino::Logger.setup!
     end
 
-    teardown do
+    after do
       Padrino::Logger::Config[:test] = @log_level
       Padrino::Logger.setup!
     end
 
-    should 'raise an error without reloading it twice' do
+    it 'should raise an error without reloading it twice' do
       capture_io do
         assert_raises(RuntimeError) do
           Padrino.require_dependencies(
@@ -29,7 +29,7 @@ describe "Dependencies" do
       assert_match /RuntimeError - SomeThing/, @io.string
     end
 
-    should 'resolve dependency problems' do
+    it 'should resolve dependency problems' do
       capture_io do
         Padrino.require_dependencies(
           Padrino.root("fixtures/dependencies/a.rb"),
@@ -42,7 +42,7 @@ describe "Dependencies" do
       assert_equal "", @io.string
     end
 
-    should 'remove partially loaded constants' do
+    it 'should remove partially loaded constants' do
       capture_io do
         Padrino.require_dependencies(
           Padrino.root("fixtures/dependencies/circular/e.rb"),
