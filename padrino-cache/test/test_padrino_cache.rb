@@ -1,16 +1,12 @@
 require File.expand_path('../helper', __FILE__)
 
 describe "PadrinoCache" do
-
-  before do
-  end
-
   after do
     tmp = File.expand_path("../tmp", __FILE__)
     %x[rm -rf #{tmp}]
   end
 
-  should 'cache a fragment' do
+  it 'should cache a fragment' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -23,10 +19,10 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test fragment', body
-    assert_not_equal called, false
+    refute_equal called, false
   end
 
-  should 'cache a page' do
+  it 'should cache a page' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -39,10 +35,10 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test page', body
-    assert_not_equal false, called
+    refute_equal false, called
   end
 
-  should 'delete from the cache' do
+  it 'should delete from the cache' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -57,10 +53,10 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test page again', body
-    assert_not_equal false, called
+    refute_equal false, called
   end
 
-  should 'accept custom cache keys' do
+  it 'should accept custom cache keys' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -102,7 +98,7 @@ describe "PadrinoCache" do
     assert_equal 'bar', body
   end
 
-  should 'delete based on urls' do
+  it 'should delete based on urls' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -119,7 +115,7 @@ describe "PadrinoCache" do
     assert_equal 'test page again', body
   end
 
-  should 'accept allow controller-wide caching' do
+  it 'should accept allow controller-wide caching' do
     called = false
     mock_app do
       controller :cache => true do
@@ -136,7 +132,7 @@ describe "PadrinoCache" do
     assert_equal 'test', body
   end
 
-  should 'allow cache disabling on a per route basis' do
+  it 'should allow cache disabling on a per route basis' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -153,7 +149,7 @@ describe "PadrinoCache" do
     assert_equal 'test again', body
   end
 
-  should 'allow expiring for pages' do
+  it 'should allow expiring for pages' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -177,7 +173,7 @@ describe "PadrinoCache" do
     assert_equal 'test again', body
   end
 
-  should 'allow expiring for fragments' do
+  it 'should allow expiring for fragments' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -203,7 +199,7 @@ describe "PadrinoCache" do
     assert_equal 'test again', body
   end
 
-  should 'allow disabling of the cache' do
+  it 'should allow disabling of the cache' do
     called = false
     mock_app do
       register Padrino::Cache
@@ -219,7 +215,7 @@ describe "PadrinoCache" do
     assert_equal 500, status
   end
 
-  should 'not cache integer statuses' do
+  it 'should not cache integer statuses' do
     mock_app do
       register Padrino::Cache
       enable :caching
@@ -244,7 +240,7 @@ describe "PadrinoCache" do
     assert_equal 503, status
   end
 
-  should 'cache should not hit with unique params' do
+  it 'should cache should not hit with unique params' do
     call_count = 0
     mock_app do
       register Padrino::Cache
@@ -271,7 +267,7 @@ describe "PadrinoCache" do
     assert_equal 2, call_count
   end
 
-  should 'resolve block cache keys' do
+  it 'should resolve block cache keys' do
     call_count = 0
     mock_app do
       register Padrino::Cache
@@ -293,7 +289,7 @@ describe "PadrinoCache" do
     assert_equal 3, call_count
   end
 
-  should 'raise an error if providing both a cache_key and block' do
+  it 'should raise an error if providing both a cache_key and block' do
     mock_app do
       register Padrino::Cache
       enable :caching
@@ -306,7 +302,7 @@ describe "PadrinoCache" do
     assert_raises(RuntimeError) { get '/foo' }
   end
 
-  should 'cache content_type' do
+  it 'should cache content_type' do
     called = false
     mock_app do
       register Padrino::Cache

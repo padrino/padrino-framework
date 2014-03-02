@@ -7,7 +7,7 @@ describe "Router" do
     Padrino.clear!
   end
 
-  should "dispatch paths correctly" do
+  it 'should dispatch paths correctly' do
     app = lambda { |env|
       [200, {
         'X-ScriptName' => env['SCRIPT_NAME'],
@@ -69,7 +69,7 @@ describe "Router" do
     assert_equal "/", res["X-PathInfo"]
   end
 
-  should "dispatch requests to cascade mounted apps" do
+  it 'should dispatch requests to cascade mounted apps' do
     app = lambda { |env|
       scary = !!env['PATH_INFO'].match(/scary/)
       [scary ? 404 : 200, {
@@ -120,7 +120,7 @@ describe "Router" do
     assert_equal "/scary", res["X-PathInfo"]
   end
 
-  should "dispatch requests to cascade mounted apps and not cascade ok statuses" do
+  it 'should dispatch requests to cascade mounted apps and not cascade ok statuses' do
 
     api = mock_app do
       get 'scary' do
@@ -158,7 +158,7 @@ describe "Router" do
 
   end
 
-  should "dispatch requests to cascade mounted apps until it sees a cascade == false or []g" do
+  it 'should dispatch requests to cascade mounted apps until it sees a cascade == false or []g' do
     app = mock_app do
       get 'scary' do
         ""
@@ -188,7 +188,7 @@ describe "Router" do
     assert request_case.call.ok?
   end
 
-  should "dispatches hosts correctly" do
+  it 'should dispatches hosts correctly' do
     map = Padrino::Router.new(
      { :host => "foo.org", :to => lambda { |env|
        [200,
@@ -226,7 +226,7 @@ describe "Router" do
      assert_equal "subdomain.foo.org", res["X-Position"]
   end
 
-  should "works with padrino core applications" do
+  it 'should works with padrino core applications' do
     Padrino.mount("simple_demo").host("padrino.org")
     assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
     assert_equal ["padrino.org"], Padrino.mounted_apps.map(&:app_host)
@@ -241,7 +241,7 @@ describe "Router" do
     assert res.ok?
   end
 
-  should "works with padrino applications" do
+  it 'should works with padrino applications' do
     Padrino.mount("simple_demo").to("/foo").host(/.*\.padrino.org/)
 
     res = Rack::MockRequest.new(Padrino.application).get("/")

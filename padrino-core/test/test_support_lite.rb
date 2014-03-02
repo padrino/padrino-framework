@@ -1,24 +1,18 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "ObjectSpace" do
-  def setup
-  end
-
-  def teardown
-  end
-
-  context "#classes" do
-    should "take an snapshot of the current loaded classes" do
+  describe "#classes" do
+    it 'should take an snapshot of the current loaded classes' do
       snapshot = ObjectSpace.classes
       assert_equal snapshot.include?(Padrino::Logger), true
     end
 
-    should "return a Set object" do
+    it 'should return a Set object' do
       snapshot = ObjectSpace.classes
       assert_equal snapshot.kind_of?(Set), true
     end
 
-    should "be able to process a the class name given a block" do
+    it 'should be able to process a the class name given a block' do
       klasses = ObjectSpace.classes do |klass|
         if klass.name =~ /^Padrino::/
           klass
@@ -32,12 +26,12 @@ describe "ObjectSpace" do
     end
   end
 
-  context "#new_classes" do
-    setup do
+  describe "#new_classes" do
+    before do
       @snapshot = ObjectSpace.classes
     end
 
-    should "return list of new classes" do
+    it 'should return list of new classes' do
       class OSTest; end
       module OSTestModule; class B; end; end
 
@@ -48,7 +42,7 @@ describe "ObjectSpace" do
       assert_equal new_classes.include?(OSTestModule::B), true
     end
 
-    should "return a Set object" do
+    it 'should return a Set object' do
       new_classes = ObjectSpace.new_classes(@snapshot)
       assert_equal new_classes.kind_of?(Set), true
     end

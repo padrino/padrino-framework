@@ -11,7 +11,7 @@ describe "AdminAppGenerator" do
   end
 
   describe 'the admin app generator' do
-    setup do
+    before do
       # Account gets created by Datamapper's migration and then gets
       # rejected by model generator as already defined
       Object.send(:remove_const, :Account) if defined?(Account)

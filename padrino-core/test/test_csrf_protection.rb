@@ -4,8 +4,8 @@ describe "Application" do
   before { Padrino.clear! }
   after  { remove_views }
 
-  context 'CSRF protection' do
-    context "with CSRF protection on" do
+  describe 'CSRF protection' do
+    describe "with CSRF protection on" do
       before do
         mock_app do
           enable :sessions
@@ -14,23 +14,23 @@ describe "Application" do
         end
       end
 
-      should "not allow requests without tokens" do
+      it 'should not allow requests without tokens' do
         post "/"
         assert_equal 403, status
       end
 
-      should "allow requests with correct tokens" do
+      it 'should allow requests with correct tokens' do
         post "/", {"authenticity_token" => "a"}, 'rack.session' => {:csrf => "a"}
         assert_equal 200, status
       end
 
-      should "not allow requests with incorrect tokens" do
+      it 'should not allow requests with incorrect tokens' do
         post "/", {"authenticity_token" => "a"}, 'rack.session' => {:csrf => "b"}
         assert_equal 403, status
       end
     end
 
-    context "without CSRF protection on" do
+    describe "without CSRF protection on" do
       before do
         mock_app do
           enable :sessions
@@ -39,23 +39,23 @@ describe "Application" do
         end
       end
 
-      should "allows requests without tokens" do
+      it 'should allows requests without tokens' do
         post "/"
         assert_equal 200, status
       end
 
-      should "allow requests with correct tokens" do
+      it 'should allow requests with correct tokens' do
         post "/", {"authenticity_token" => "a"}, 'rack.session' => {:csrf => "a"}
         assert_equal 200, status        
       end
 
-      should "allow requests with incorrect tokens" do
+      it 'should allow requests with incorrect tokens' do
         post "/", {"authenticity_token" => "a"}, 'rack.session' => {:csrf => "b"}
         assert_equal 200, status
       end
     end
 
-    context "with optional CSRF protection" do
+    describe "with optional CSRF protection" do
       before do
         mock_app do
           enable :sessions
@@ -66,19 +66,19 @@ describe "Application" do
         end
       end
 
-      should "allow access to routes with csrf_protection off" do
+      it 'should allow access to routes with csrf_protection off' do
         post "/off"
         assert_equal 200, status
       end
 
-      should "not allow access to routes with csrf_protection on" do
+      it 'should not allow access to routes with csrf_protection on' do
         post "/on"
         assert_equal 403, status
         assert_equal 'Forbidden', body
       end
     end
 
-    context "with :except option that is using Proc" do
+    describe "with :except option that is using Proc" do
       before do
         mock_app do
           enable :sessions
@@ -89,7 +89,7 @@ describe "Application" do
         end
       end
 
-      should "allow ignoring CSRF protection on specific routes" do
+      it 'should allow ignoring CSRF protection on specific routes' do
         post "/"
         assert_equal 200, status
         post "/foo"
@@ -99,7 +99,7 @@ describe "Application" do
       end
     end
 
-    context "with :except option that is using String and Regexp" do
+    describe "with :except option that is using String and Regexp" do
       before do
         mock_app do
           enable :sessions
@@ -110,7 +110,7 @@ describe "Application" do
         end
       end
 
-      should "allow ignoring CSRF protection on specific routes" do
+      it 'should allow ignoring CSRF protection on specific routes' do
         post "/a"
         assert_equal 200, status
         post "/abc"
@@ -120,7 +120,7 @@ describe "Application" do
       end
     end
 
-    context "with custom protection options" do
+    describe "with custom protection options" do
       before do
         mock_app do
           enable :sessions
@@ -129,19 +129,19 @@ describe "Application" do
         end
       end
 
-      should "allow configuring protection options" do
+      it 'should allow configuring protection options' do
         post "/a", {"foobar" => "a"}, 'rack.session' => {:csrf => "a"}
         assert_equal 200, status
       end
 
-      should "allow configuring message" do
+      it 'should allow configuring message' do
         post "/a"
         assert_equal 403, status
         assert_equal 'sucker!', body
       end
     end
 
-    context "with middleware" do
+    describe "with middleware" do
       before do
         class Middleware < Sinatra::Base
           post("/middleware") { "Hello, middleware" }
@@ -155,7 +155,7 @@ describe "Application" do
         end
       end
 
-      should "allow ignoring CSRF protection on specific routes of middleware" do
+      it 'should allow ignoring CSRF protection on specific routes of middleware' do
         post "/"
         assert_equal 200, status
         post "/middleware"
@@ -165,7 +165,7 @@ describe "Application" do
       end
     end
 
-    context "with standard report layout" do
+    describe "with standard report layout" do
       before do
         mock_app do
           enable :sessions
@@ -178,7 +178,7 @@ describe "Application" do
         end
       end
 
-      should "allow configuring protection options" do
+      it 'should allow configuring protection options' do
         post "/a"
         assert_equal 406, status
         assert_equal 'please, do not hack', body

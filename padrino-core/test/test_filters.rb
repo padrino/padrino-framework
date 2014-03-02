@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Filters" do
-  should "filters by accept header" do
+  it 'should filters by accept header' do
     mock_app do
       get '/foo', :provides => [:xml, :js] do
         request.env['HTTP_ACCEPT']
@@ -30,7 +30,7 @@ describe "Filters" do
     assert_equal 406, status
   end
 
-  should "allow passing & halting in before filters" do
+  it 'should allow passing & halting in before filters' do
     mock_app do
       controller do
         before { env['QUERY_STRING'] == 'secret' or pass }
@@ -58,7 +58,7 @@ describe "Filters" do
     assert_equal "index", body
   end
 
-  should 'scope filters in the given controller' do
+  it 'should scope filters in the given controller' do
     mock_app do
       before { @global = 'global' }
       after { @global = nil }
@@ -88,7 +88,7 @@ describe "Filters" do
     assert_equal "global", body
   end
 
-  should 'be able to access params in a before filter' do
+  it 'should be able to access params in a before filter' do
     username_from_before_filter = nil
 
     mock_app do
@@ -103,7 +103,7 @@ describe "Filters" do
     assert_equal 'josh', username_from_before_filter
   end
 
-  should "be able to access params normally when a before filter is specified" do
+  it 'should be able to access params normally when a before filter is specified' do
     mock_app do
       before { }
       get :index do
@@ -114,7 +114,7 @@ describe "Filters" do
     assert_equal '{"test"=>"what"}', body
   end
 
-  should "be able to filter based on a path" do
+  it 'should be able to filter based on a path' do
     mock_app do
       before('/') { @test = "#{@test}before"}
       get :index do
@@ -130,7 +130,7 @@ describe "Filters" do
     assert_equal '', body
   end
 
-  should "be able to filter based on a symbol" do
+  it 'should be able to filter based on a symbol' do
     mock_app do
       before(:index) { @test = 'before'}
       get :index do
@@ -146,7 +146,7 @@ describe "Filters" do
     assert_equal '', body
   end
 
-  should "be able to filter based on a symbol for a controller" do
+  it 'should be able to filter based on a symbol for a controller' do
     mock_app do
       controller :foo do
         before(:test) { @test = 'foo'}
@@ -167,7 +167,7 @@ describe "Filters" do
     assert_equal 'bar response', body
   end
 
-  should "be able to filter based on a symbol or path" do
+  it 'should be able to filter based on a symbol or path' do
     mock_app do
       before(:index, '/main') { @test = 'before'}
       get :index do
@@ -183,7 +183,7 @@ describe "Filters" do
     assert_equal 'before', body
   end
 
-  should "be able to filter based on a symbol or regexp" do
+  it 'should be able to filter based on a symbol or regexp' do
     mock_app do
       before(:index, /main/) { @test = 'before'}
       get :index do
@@ -204,7 +204,7 @@ describe "Filters" do
     assert_equal '', body
   end
 
-  should "be able to filter excluding based on a symbol" do
+  it 'should be able to filter excluding based on a symbol' do
     mock_app do
       before(:except => :index) { @test = 'before'}
       get :index do
@@ -220,7 +220,7 @@ describe "Filters" do
     assert_equal 'before', body
   end
 
-  should "be able to filter based on a request param" do
+  it 'should be able to filter based on a request param' do
     mock_app do
       before(:agent => /IE/) { @test = 'before'}
       get :index do
@@ -233,7 +233,7 @@ describe "Filters" do
     assert_equal 'before', body
   end
 
-  should "be able to filter based on a symbol or path in multiple controller" do
+  it 'should be able to filter based on a symbol or path in multiple controller' do
     mock_app do
       controllers :foo do
         before(:index, '/foo/main') { @test = 'before' }
@@ -264,7 +264,7 @@ describe "Filters" do
     assert_equal 'also before', body
   end
 
-  should "call before filters even if there was no match" do
+  it 'should call before filters even if there was no match' do
     test = nil
     mock_app do
       before(:index, '/foo') { test = 'before' }
@@ -276,7 +276,7 @@ describe "Filters" do
     assert_equal 'before', test
   end
 
-  should "call before filters only once" do
+  it 'should call before filters only once' do
     once = ''
     mock_app do
       error 500 do
@@ -294,7 +294,7 @@ describe "Filters" do
     assert_equal 'before', once
   end
 
-  should 'catch exceptions in before filters' do
+  it 'should catch exceptions in before filters' do
     doodle = nil
     mock_app do
       after do
@@ -316,7 +316,7 @@ describe "Filters" do
     assert_equal nil, doodle
   end
 
-  should 'catch exceptions in after filters if no exceptions caught before' do
+  it 'should catch exceptions in after filters if no exceptions caught before' do
     doodle = ''
     mock_app do
       after do

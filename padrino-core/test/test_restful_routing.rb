@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Routing" do
-  should 'perform restul routing' do
+  it 'should perform restul routing' do
     mock_app do
       controller :parent => :parents do
         get :index do

@@ -1,9 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Part" do
-
-  context "the part" do
-    should "use correctly parts" do
+  describe "the part" do
+    it 'should use correctly parts' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
@@ -23,8 +22,8 @@ describe "Part" do
         end
       end
 
-      assert_not_nil message.html_part
-      assert_not_nil message.text_part
+      refute_nil message.html_part
+      refute_nil message.text_part
       assert_equal 4, message.parts.length
       assert_equal :plain, message.parts[0].content_type
       assert_equal 'plain text', message.parts[0].body.decoded
@@ -34,7 +33,7 @@ describe "Part" do
       assert_equal 'other', message.parts[2].body.decoded
     end
 
-    should "works with multipart templates" do
+    it 'should works with multipart templates' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
@@ -50,8 +49,8 @@ describe "Part" do
         end
       end
 
-      assert_not_nil message.html_part
-      assert_not_nil message.text_part
+      refute_nil message.html_part
+      refute_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
       assert_equal 'plain text', message.parts[0].body.decoded.chomp
@@ -59,7 +58,7 @@ describe "Part" do
       assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
-    should "works with less explict multipart templates" do
+    it 'should works with less explict multipart templates' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
@@ -70,8 +69,8 @@ describe "Part" do
         html_part { render('multipart/basic.html')  }
       end
 
-      assert_not_nil message.html_part
-      assert_not_nil message.text_part
+      refute_nil message.html_part
+      refute_nil message.text_part
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
       assert_equal 'plain text', message.parts[0].body.decoded.chomp
@@ -79,7 +78,7 @@ describe "Part" do
       assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
-    should "works with provides" do
+    it 'should works with provides' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
         to      'padrino@test.lindsaar.net'
@@ -97,7 +96,7 @@ describe "Part" do
       assert_equal 'text html', message.parts[1].body.decoded.chomp
     end
 
-    # should "provide a way to instantiate a new part as you go down" do
+    # it 'should provide a way to instantiate a new part as you go down' do
     #   message = Mail::Message.new do
     #     to           'padrino@test.lindsaar.net'
     #     subject      "nested multipart"
