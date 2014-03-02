@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
+  s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("tilt", "~> 1.4.1")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
