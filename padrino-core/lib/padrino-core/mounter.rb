@@ -137,7 +137,7 @@ module Padrino
       klass = Object
       for piece in app_class.split("::")
         piece = piece.to_sym
-        if klass.const_defined?(piece)
+        if klass.const_defined?(piece, false)
           klass = klass.const_get(piece)
         else
           return
