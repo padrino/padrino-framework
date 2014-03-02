@@ -25,8 +25,7 @@ module Padrino
           if File.exist?(boot)
             require File.expand_path(boot)
           else
-            # If we are outside app we need to load support_lite
-            require 'padrino-core/support_lite' unless defined?(SupportLite)
+            require 'padrino-support'
           end
         rescue StandardError => e
           puts "=> Problem loading #{boot}"

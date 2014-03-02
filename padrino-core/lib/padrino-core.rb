@@ -1,6 +1,6 @@
 require 'sinatra/base'
 require 'padrino-core/version'
-require 'padrino-core/support_lite'
+require 'padrino-support'
 require 'padrino-core/application'
 
 require 'padrino-core/caller'

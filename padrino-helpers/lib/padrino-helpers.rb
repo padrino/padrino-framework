@@ -1,4 +1,4 @@
-require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-support'
 require 'i18n'
 require 'enumerator'
 require 'active_support/time_with_zone'               # next extension depends on this
