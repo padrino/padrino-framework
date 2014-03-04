@@ -3,7 +3,7 @@ require 'padrino-gen/generators/cli'
 
 describe "Cli" do
   def setup
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
   end
 
@@ -11,14 +11,14 @@ describe "Cli" do
     `rm -rf #{@apptmp}`
   end
 
-  context 'the cli' do
+  describe 'the cli' do
 
-    should "fail without arguments" do
+    it 'should fail without arguments' do
       out, err = capture_io { generate(:cli) }
       assert_match(/Please specify generator to use/, out)
     end
 
-    should "work correctly if we have a project" do
+    it 'should work correctly if we have a project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:cli, "--root=#{@apptmp}/sample_project") }
       skip "Make a great asserition"

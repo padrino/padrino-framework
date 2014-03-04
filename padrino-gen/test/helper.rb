@@ -1,8 +1,9 @@
 require File.expand_path('../../../load_paths', __FILE__)
-require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
+require 'minitest/autorun'
+require 'minitest/pride'
+require 'mocha/setup'
 require 'rack/test'
 require 'rack'
-require 'uuid'
 require 'webrat'
 require 'fakeweb'
 require 'thor/group'
@@ -43,7 +44,10 @@ class MiniTest::Spec
       options, model_path = {}, File.expand_path(File.join(root, "/models/**/*.rb"))
       options = params.pop if params.last.is_a?(Hash)
       Dir[model_path].each{|path| require path }
-      Array(options[:apps]).each{|app_name| require File.expand_path(File.join(root, "/#{app_name}/app.rb")) } if options[:apps]
+      Array(options[:apps]).each do |app_name|
+        path = File.expand_path(File.join(root, "/#{app_name}/app.rb"))
+        require path if File.exist?(path)
+      end if options[:apps]
     end
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
     ($" - features).each{|x| $".delete(x) }
@@ -87,7 +91,7 @@ class MiniTest::Spec
   end
 
   def assert_no_match_in_file(pattern, file)
-    File.exists?(file) ? assert_no_match(pattern, File.read(file)) : assert_file_exists(file)
+    File.exist?(file) ? refute_match(pattern, File.read(file)) : assert_file_exists(file)
   end
 
   # expects_generated :model, "post title:string body:text"

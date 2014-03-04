@@ -1,5 +1,5 @@
 SHOULDA_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
-PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 require "test/unit"

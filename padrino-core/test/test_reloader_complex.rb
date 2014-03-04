@@ -3,14 +3,14 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/complex')
 
 describe "ComplexReloader" do
 
-  context 'for complex reload functionality' do
-    setup do
+  describe 'for complex reload functionality' do
+    before do
       Padrino.clear!
       Padrino.mount("complex_1_demo").to("/complex_1_demo")
       Padrino.mount("complex_2_demo").to("/complex_2_demo")
     end
 
-    should 'correctly instantiate Complex(1-2)Demo fixture' do
+    it 'should correctly instantiate Complex(1-2)Demo fixture' do
       assert_equal ["/complex_1_demo", "/complex_2_demo"], Padrino.mounted_apps.map(&:uri_root)
       assert_equal ["complex_1_demo", "complex_2_demo"], Padrino.mounted_apps.map(&:name)
       assert Complex1Demo.reload?
@@ -19,7 +19,7 @@ describe "ComplexReloader" do
       assert_match %r{fixtures/apps/complex.rb}, Complex2Demo.app_file
     end
 
-    should 'correctly reload Complex(1-2)Demo fixture' do
+    it 'should correctly reload Complex(1-2)Demo fixture' do
       assert_match %r{fixtures/apps/complex.rb}, Complex1Demo.app_file
       @app = Padrino.application
 

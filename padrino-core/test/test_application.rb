@@ -9,9 +9,9 @@ describe "Application" do
   before { Padrino.clear! }
   after  { remove_views }
 
-  context 'for application functionality' do
+  describe 'for application functionality' do
 
-    should 'check default options' do
+    it 'should check default options' do
       assert File.identical?(__FILE__, PadrinoPristine.app_file)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
@@ -25,7 +25,7 @@ describe "Application" do
       assert !Padrino.configure_apps
     end
 
-    should 'check padrino specific options' do
+    it 'should check padrino specific options' do
       assert !PadrinoPristine.instance_variable_get(:@_configured)
       PadrinoPristine.send(:setup_application!)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
@@ -34,7 +34,7 @@ describe "Application" do
       assert !PadrinoPristine.reload?
     end
 
-    should 'set global project settings' do
+    it 'should set global project settings' do
       Padrino.configure_apps { enable :sessions; set :foo, "bar" }
       PadrinoTestApp.send(:default_configuration!)
       PadrinoTestApp2.send(:default_configuration!)
@@ -43,7 +43,7 @@ describe "Application" do
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
 
-    should 'be able to configure_apps multiple times' do
+    it 'should be able to configure_apps multiple times' do
       Padrino.configure_apps { set :foo1, "bar" }
       Padrino.configure_apps { set :foo1, "bam" }
       Padrino.configure_apps { set :foo2, "baz" }
@@ -52,7 +52,7 @@ describe "Application" do
       assert_equal "baz", PadrinoTestApp.settings.foo2, "should have foo2 assigned to baz"
     end
 
-    should "have shared sessions accessible in project" do
+    it 'should have shared sessions accessible in project' do
       Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
@@ -67,7 +67,7 @@ describe "Application" do
     end
 
     # compare to: test_routing: allow global provides
-    should "set content_type to nil if none can be determined" do
+    it 'should set content_type to nil if none can be determined' do
       mock_app do
         provides :xml
 
@@ -84,25 +84,25 @@ describe "Application" do
       assert_equal "Foo in nil", body
     end
 
-    should "resolve views and layouts paths" do
+    it 'should resolve views and layouts paths' do
       assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
       assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
     end
 
-    context "errors" do
-      should "haven't mapped errors on development" do
+    describe "errors" do
+      it 'should have not mapped errors on development' do
         mock_app { get('/'){ 'HI' } }
         get "/"
         assert @app.errors.empty?
       end
 
-      should "have mapped errors on production" do
+      it 'should have mapped errors on production' do
         mock_app { set :environment, :production; get('/'){ 'HI' } }
         get "/"
         assert_equal 1, @app.errors.size
       end
 
-      should "overide errors" do
+      it 'should overide errors' do
         mock_app do
           set :environment, :production
           get('/'){ raise }

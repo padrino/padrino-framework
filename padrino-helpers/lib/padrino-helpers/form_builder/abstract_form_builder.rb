@@ -1,129 +1,119 @@
+require 'padrino-helpers/form_builder/deprecated_builder_methods'
+
 module Padrino
   module Helpers
     module FormBuilder
+      # Base class for Padrino Form Builder
       class AbstractFormBuilder
         attr_accessor :template, :object, :multipart
+        attr_reader :namespace, :is_nested, :parent_form, :nested_index, :attributes_name, :model_name
+
+        include DeprecatedBuilderMethods
 
         def initialize(template, object, options={})
           @template = template
-          @object   = build_object(object)
-          @options  = options
-          raise "FormBuilder template must be initialized!" unless template
-          raise "FormBuilder object must not be a nil value. If there's no object, use a symbol instead! (i.e :user)" unless object
+          fail "FormBuilder template must be initialized" unless template
+          @object = object.kind_of?(Symbol) ? build_object(object) : object
+          fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
+          @options = options
+          @namespace = options[:namespace]
+          @model_name = options[:as] || @object.class.to_s.underscore.gsub(/\//, '_')
+          nested = options[:nested]
+          if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
+            @parent_form = nested_parent
+            @nested_index = nested[:index]
+            @attributes_name = "#{nested[:association]}_attributes"
+          end
         end
 
         def error_messages(*params)
-          params.unshift object
-          @template.error_messages_for(*params)
+          @template.error_messages_for object, *params
         end
 
         def error_message_on(field, options={})
-          @template.error_message_on(object, field, options)
+          @template.error_message_on object, field, options
         end
 
         def label(field, options={}, &block)
-          options.reverse_merge!(:caption => "#{field_human_name(field)}: ")
-          @template.label_tag(field_id(field), options, &block)
+          options[:caption] ||= I18n.t("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models) + ': '
+          @template.label_tag(field_id(field), default_options(field, options), &block)
         end
 
         def hidden_field(field, options={})
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          @template.hidden_field_tag field_name(field), options
+          @template.hidden_field_tag field_name(field), default_options(field, options)
         end
 
         def text_field(field, options={})
-          merge_default_options!(field, options)
-          @template.text_field_tag field_name(field), options
+          @template.text_field_tag field_name(field), default_options(field, options)
         end
 
         def number_field(field, options={})
-          merge_default_options!(field, options)
-          @template.number_field_tag field_name(field), options
+          @template.number_field_tag field_name(field), default_options(field, options)
         end
 
         def telephone_field(field, options={})
-          merge_default_options!(field, options)
-          @template.telephone_field_tag field_name(field), options
+          @template.telephone_field_tag field_name(field), default_options(field, options)
         end
         alias_method :phone_field, :telephone_field
 
         def email_field(field, options={})
-          merge_default_options!(field, options)
-          @template.email_field_tag field_name(field), options
+          @template.email_field_tag field_name(field), default_options(field, options)
         end
 
         def search_field(field, options={})
-          merge_default_options!(field, options)
-          @template.search_field_tag field_name(field), options
+          @template.search_field_tag field_name(field), default_options(field, options)
         end
 
         def url_field(field, options={})
-          merge_default_options!(field, options)
-          @template.url_field_tag field_name(field), options
+          @template.url_field_tag field_name(field), default_options(field, options)
         end
 
         def text_area(field, options={})
-          merge_default_options!(field, options)
-          @template.text_area_tag field_name(field), options
+          @template.text_area_tag field_name(field), default_options(field, options)
         end
 
         def password_field(field, options={})
-          merge_default_options!(field, options)
-          @template.password_field_tag field_name(field), options
+          @template.password_field_tag field_name(field), default_options(field, options)
         end
 
         def select(field, options={})
-          options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
-          options.merge!(:class => field_error(field, options))
-          @template.select_tag field_name(field), options
+          @template.select_tag field_name(field), default_options(field, options)
         end
 
         def check_box_group(field, options={})
-          selected_values = Array(options[:selected] || field_value(field))
-          if options[:collection]
-            fields = options[:fields] || [:name, :id]
-            selected_values = selected_values.map{ |v| (v.respond_to?(fields[0]) ? v.send(fields[1]) : v).to_s }
-          end
-          labeled_group( field, options ) do |variant|
-            @template.check_box_tag( field_name(field)+'[]', :value => variant[1], :id => variant[2], :checked => selected_values.include?(variant[1]) )
+          labeled_group(field, options) do |attributes|
+            @template.check_box_tag(field_name(field)+'[]', attributes)
           end
         end
 
         def radio_button_group(field, options={})
-          fields = options[:fields] || [:name, :id]
-          selected_value = options[:selected] || field_value(field)
-          selected_value = selected_value.send(fields[1])  if selected_value.respond_to?(fields[0])
-          labeled_group( field, options ) do |variant|
-            @template.radio_button_tag( field_name(field), :value => variant[1], :id => variant[2], :checked => variant[1] == selected_value.to_s )
+          labeled_group(field, options) do |attributes|
+            @template.radio_button_tag(field_name(field), attributes)
           end
         end
 
         def check_box(field, options={})
-          html = ActiveSupport::SafeBuffer.new
-          unchecked_value = options.delete(:uncheck_value) || '0'
-          options.reverse_merge!(:id => field_id(field), :value => '1')
-          options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
-          html << @template.hidden_field_tag(options[:name] || field_name(field), :value => unchecked_value, :id => nil)
-          html << @template.check_box_tag(field_name(field), options)
+          options = default_options(field, options, :value => '1')
+          options[:checked] = true if is_checked?(field, options)
+          name = field_name(field)
+          html = @template.hidden_field_tag(name, :value => options.delete(:uncheck_value) || '0')
+          html << @template.check_box_tag(name, options)
         end
 
         def radio_button(field, options={})
-          options.reverse_merge!(:id => field_id(field, options[:value]))
-          options.reverse_merge!(:checked => true) if values_matches_field?(field, options[:value])
+          options = default_options(field, options)
+          options[:checked] = true if is_checked?(field, options)
+          options[:id] = field_id(field, options[:value])
           @template.radio_button_tag field_name(field), options
         end
 
         def file_field(field, options={})
           self.multipart = true
-          options.reverse_merge!(:id => field_id(field))
-          options.merge!(:class => field_error(field, options))
-          @template.file_field_tag field_name(field), options
+          @template.file_field_tag field_name(field), default_options(field, options).except(:value)
         end
 
         def submit(*args)
-          options = args[-1].is_a?(Hash) ? args.pop : {}
-          caption = args.length >= 1 ? args.shift : "Submit"
-          @template.submit_tag caption, options
+          @template.submit_tag *args
         end
 
         def image_submit(source, options={})
@@ -135,15 +125,17 @@ module Padrino
         # f.fields_for :addresses
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
-        def fields_for(child_association, instance_or_collection=nil, &block)
+        # f.fields_for :addresses, address, index: i
+        def fields_for(child_association, collection=nil, options={}, &block)
           default_collection = self.object.send(child_association)
+          collection ||= default_collection
           include_index = default_collection.respond_to?(:each)
+
           nested_options = { :parent => self, :association => child_association }
-          nested_objects = instance_or_collection ? Array(instance_or_collection) : Array(default_collection)
-          nested_objects.each_with_index.map do |child_instance, index|
-            nested_options[:index] = include_index ? index : nil
-            @template.fields_for(child_instance,  { :nested => nested_options }, &block)
-          end.join("\n").html_safe
+          Array(collection).each_with_index.inject(ActiveSupport::SafeBuffer.new) do |all,(child_instance,index)|
+            nested_options[:index] = options[:index] || (include_index ? index : nil)
+            all << @template.fields_for(child_instance,  { :nested => nested_options }, &block) << "\n"
+          end
         end
 
         def csrf_token_field
@@ -151,31 +143,10 @@ module Padrino
         end
 
         protected
+
         # Returns the known field types for a Formbuilder.
         def self.field_types
           [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select]
-        end
-
-        ##
-        # Returns true if the value matches the value in the field.
-        # field_has_value?(:gender, 'male')
-        def values_matches_field?(field, value)
-          value.present? && (field_value(field).to_s == value.to_s || field_value(field).to_s == 'true')
-        end
-
-        ##
-        # Add a :invalid css class to the field if it contain an error.
-        #
-        def field_error(field, options)
-          error = @object.errors[field] rescue nil
-          error.blank? ? options[:class] : [options[:class], :invalid].flatten.compact.join(" ")
-        end
-
-        ##
-        # Returns the human name of the field. Look that use builtin I18n.
-        #
-        def field_human_name(field)
-          I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
         end
 
         ##
@@ -184,10 +155,9 @@ module Padrino
         # field_name(:number) => "user[telephone_attributes][number]"
         # field_name(:street) => "user[addresses_attributes][0][street]"
         def field_name(field=nil)
-          result = field_result
-          result << field_name_fragment if nested_form?
+          result = field_name_fragment
           result << "[#{field}]" unless field.blank?
-          result.flatten.join
+          result
         end
 
         ##
@@ -197,118 +167,114 @@ module Padrino
         # field_name(:number) => "user_telephone_attributes_number"
         # field_name(:street) => "user_addresses_attributes_0_street"
         def field_id(field=nil, value=nil)
-          result = []
-          result << "#{@options[:namespace]}_" if @options[:namespace] && root_form?
-          result << field_result
-          result << field_id_fragment if nested_form?
+          result = (namespace && !is_nested) ? "#{namespace}_" : ''
+          result << field_id_fragment
           result << "_#{field}" unless field.blank?
           result << "_#{value}" unless value.blank?
-          result.flatten.join
+          result
         end
 
         ##
         # Returns the child object if it exists.
         #
         def nested_object_id
-          nested_form? && object.respond_to?(:new_record?) && !object.new_record? && object.id
-        end
-
-        ##
-        # Returns true if this form object is nested in a parent form.
-        #
-        def nested_form?
-          @options[:nested] && @options[:nested][:parent] && @options[:nested][:parent].respond_to?(:object)
+          is_nested && object.respond_to?(:new_record?) && !object.new_record? && object.id
         end
 
         ##
         # Returns the value for the object's field.
         #
         def field_value(field)
-          @object && @object.respond_to?(field) ? @object.send(field) : ""
+          @object.respond_to?(field) ? @object.send(field) : ''
         end
 
         ##
-        # Returns a new record of the type specified in the object
+        # Returns a record from template instance or create a record of specified class.
         #
-        def build_object(object_or_symbol)
-          object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or_symbol
-        end
-
-        ##
-        # Returns the object's models name.
-        #
-        def object_model_name(explicit_object=object)
-          return @options[:as] if root_form? && @options[:as].is_a?(Symbol)
-          explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
-        end
-
-        ##
-        # Returns the class type for the given object.
-        #
-        def object_class(explicit_object)
-          explicit_object.is_a?(Symbol) ? explicit_object.to_s.camelize.constantize : explicit_object.class
-        end
-
-        ##
-        # Returns true if this form is the top-level (not nested).
-        #
-        def root_form?
-          !nested_form?
+        def build_object(symbol)
+          @template.instance_variable_get("@#{symbol}") || symbol.to_s.camelize.constantize.new
         end
 
         ##
         # Builds a group of labels for radios or checkboxes.
         #
         def labeled_group(field, options={})
-          options.reverse_merge!(:id => field_id(field), :selected => field_value(field))
-          options.merge!(:class => field_error(field, options))
-          variants = case
-          when options[:options]
-            options[:options].map{ |caption, value| [caption.to_s, (value||caption).to_s] }
-          when options[:collection]
-            fields = options[:fields] || [:name, :id]
-            options[:collection].map{ |variant| [variant.send(fields.first).to_s, variant.send(fields.last).to_s] }
-          else
-            []
-          end
-          variants.inject(''.html_safe) do |html, variant|
-            variant[2] = "#{field_id(field)}_#{variant[1]}"
-            caption = yield(variant) << ' ' << variant[0]
-            html << @template.label_tag("#{field_name(field)}[]", :for => variant[2], :caption => caption)
+          options = { :id => field_id(field), :selected => field_value(field) }.update(options)
+          options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
+          selected_values = resolve_checked_values(field, options)
+          variants_for_group(options).inject(ActiveSupport::SafeBuffer.new) do |html, (caption,value)|
+            variant_id = "#{options[:id]}_#{value}"
+            attributes = { :value => value, :id => variant_id, :checked => selected_values.include?(value) }
+            caption = yield(attributes) << ' ' << caption
+            html << @template.label_tag("#{field_name(field)}[]", :for => variant_id, :caption => caption)
           end
         end
 
         private
 
-        def field_result
-          result = []
-          result << object_model_name if root_form?
-          result
+        def is_checked?(field, options)
+          !options.has_key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
+        end
+
+        def variants_for_group(options)
+          if variants = options[:options]
+            variants.map{ |caption, value| [caption.to_s, (value||caption).to_s] }
+          elsif collection = options[:collection]
+            collection.map{ |variant| field_values(variant, options) }
+          else
+            []
+          end
+        end
+
+        def resolve_checked_values(field, options)
+          selected_values = Array(options[:selected] || field_value(field))
+          if options[:collection]
+            _, id_method = *field_methods(options)
+            selected_values.map do |value|
+              (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
+            end
+          else
+            selected_values
+          end
+        end
+
+        def field_methods(options)
+          options[:fields] || [:name, :id]
+        end
+
+        def field_values(object, options)
+          field_methods(options).map{ |field| object.send(field).to_s }
         end
 
         def field_name_fragment
-          fragment = [result_options[:parent_form].field_name, "[#{result_options[:attributes_name]}", "]"]
-          fragment.insert(2, "][#{result_options[:nested_index]}") if result_options[:nested_index]
-          fragment
+          if is_nested
+            fragment = parent_form.field_name.dup << "[#{attributes_name}"
+            fragment << "][#{nested_index}" if nested_index
+            fragment << "]"
+          else
+            "#{model_name}"
+          end
         end
 
         def field_id_fragment
-          fragment = [result_options[:parent_form].field_id, "_#{result_options[:attributes_name]}"]
-          fragment.push("_#{result_options[:nested_index]}") if result_options[:nested_index]
-          fragment
+          if is_nested
+            fragment = parent_form.field_id.dup << "_#{attributes_name}"
+            fragment << "_#{nested_index}" if nested_index
+            fragment
+          else
+            "#{model_name}"
+          end
         end
 
-        def result_options
-          {
-            :parent_form  => @options[:nested][:parent],
-            :nested_index => @options[:nested][:index],
-            :attributes_name => "#{@options[:nested][:association]}_attributes"
-          }
+        def error_class(field)
+          error = @object.errors[field] if @object.respond_to?(:errors)
+          error.blank? ? {} : { :class => 'invalid' }
         end
 
-        def merge_default_options!(field, options)
-          options.reverse_merge!(:value => field_value(field), :id => field_id(field))
-          options.merge!(:class => field_error(field, options))
+        def default_options(field, options, defaults={})
+          { :value => field_value(field),
+            :id => field_id(field)
+          }.update(defaults).update(options).update(error_class(field)){ |_,*values| values.compact.join(' ') }
         end
       end
     end

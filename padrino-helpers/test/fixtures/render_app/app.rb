@@ -1,5 +1,5 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
-PADRINO_ENV = 'test' unless defined? PADRINO_ENV
+RACK_ENV = 'test' unless defined? RACK_ENV
 
 require 'padrino-core'
 
@@ -36,6 +36,10 @@ class RenderDemo < Padrino::Application
     render "wrong_capture_#{params[:ext]}"
   end
 
+  get '/ruby_block_capture_:ext' do
+    render "ruby_block_capture_#{params[:ext]}"
+  end
+
   # partial with object
   get '/partial/object' do
     partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
@@ -54,6 +58,22 @@ class RenderDemo < Padrino::Application
   # partial starting with forward slash
   get '/partial/foward_slash' do
     partial '/template/user', :object => RenderUser.new('John'), :locals => { :extra => "bar" }
+  end
+
+  # partial with unsafe engine
+  get '/partial/unsafe' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe.html.builder', &block
+  end
+
+  get '/partial/unsafe_one' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe_object', :object => 'Mary', &block
+  end
+
+  get '/partial/unsafe_many' do
+    block = params[:block] ? proc{ params[:block] } : nil
+    partial 'unsafe_object', :collection => ['John', 'Mary'], &block
   end
 
   get '/render_block_:ext' do

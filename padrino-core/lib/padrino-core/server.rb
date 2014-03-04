@@ -9,7 +9,18 @@ module Padrino
   #
   def self.run!(options={})
     Padrino.load!
-    Server.start(Padrino.application, options)
+    default_config_file = 'config.ru'
+    app =
+      if options[:config] || File.file?(default_config_file)
+        options[:config] ||= default_config_file
+        fail "Rack config file `#{options[:config]}` must have `.ru` extension" unless options[:config] =~ /\.ru$/
+        rack_app, rack_options = Rack::Builder.parse_file(options[:config])
+        options = rack_options.merge(options)
+        rack_app
+      else
+        Padrino.application
+      end
+    Server.start(app, options)
   end
 
   ##
@@ -17,7 +28,7 @@ module Padrino
   #
   class Server < Rack::Server
     # Server Handlers
-    Handlers = [:thin, :puma, :mongrel, :trinidad, :webrick]
+    Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]
 
     # Starts the application on the available server with specified options.
     def self.start(app, opts={})

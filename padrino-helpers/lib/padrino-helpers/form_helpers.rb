@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'padrino-helpers/form_options_helpers'
 
 module Padrino
   module Helpers
@@ -6,6 +7,10 @@ module Padrino
     # Helpers related to producing form related tags and inputs into templates.
     #
     module FormHelpers
+      def self.included(base)
+        base.send(:include, FormOptionsHelpers) unless base.method_defined?(:extract_option_tags!)
+      end
+
       ##
       # Constructs a form for object using given or default form_builder.
       #
@@ -13,7 +18,7 @@ module Padrino
       #   The object for which the form is being built.
       # @param [String] URL
       #   The url this form will submit to.
-      # @param [Hash] settings
+      # @param [Hash] options
       #   The settings associated with this form.
       #   Accepts a :namespace option that will be prepended to the id attributes of the form's elements.
       #   Also accepts HTML options.
@@ -33,13 +38,12 @@ module Padrino
       #   form_for @user, '/register', :id => 'register' do |f| ... end
       #   form_for @user, '/register', :as => :customer do |f| ... end
       #
-      def form_for(object, url, settings={}, &block)
-        instance = builder_instance(object, settings)
+      def form_for(object, url, options={}, &block)
+        instance = builder_instance(object, options)
+        # this can erect instance.multipart flag if the block calls instance.file_field
         html = capture_html(instance, &block)
-        settings[:multipart] = instance.multipart unless settings.include?(:multipart)
-        settings.delete(:namespace)
-        settings.delete(:as)
-        form_tag(url, settings) { html }
+        options = { :multipart => instance.multipart }.update(options.except(:namespace, :as))
+        form_tag(url, options) { html }
       end
 
       ##
@@ -48,7 +52,7 @@ module Padrino
       #
       # @param [Object] object
       #   The object for which the fields are being built.
-      # @param [Hash] settings
+      # @param [Hash] options
       #   The settings associated with these fields. Accepts HTML options.
       # @param [Proc] block
       #   The content inside this set of fields.
@@ -59,11 +63,11 @@ module Padrino
       #   fields_for @user.assignment do |assignment| ... end
       #   fields_for :assignment do |assigment| ... end
       #
-      def fields_for(object, settings={}, &block)
-        instance = builder_instance(object, settings)
+      def fields_for(object, options={}, &block)
+        instance = builder_instance(object, options)
         fields_html = capture_html(instance, &block)
         fields_html << instance.hidden_field(:id) if instance.send(:nested_object_id)
-        concat_safe_content fields_html
+        concat_content fields_html
       end
 
       ##
@@ -82,20 +86,21 @@ module Padrino
       #   form_tag '/register', :class => "registration_form" do ... end
       #
       def form_tag(url, options={}, &block)
-        options = options.dup
-        desired_method = options[:method].to_s
-        options.delete(:method) unless desired_method =~ /get|post/i
-        options.reverse_merge!(:method => 'post',
-                               :action => url,
-                               :protect_from_csrf => is_protected_from_csrf? )
+        options = {
+          :action => url,
+          :protect_from_csrf => is_protected_from_csrf?,
+          'accept-charset' => 'UTF-8'
+        }.update(options)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
-        options['accept-charset'] ||= 'UTF-8'
-        inner_form_html = hidden_form_method_field(desired_method)
-        if options[:protect_from_csrf] == true && !(desired_method =~ /get/i)
-          inner_form_html << csrf_token_field
+
+        if (desired_method = options[:method]) =~ /get/i
+          options.delete(:protect_from_csrf)
+        else
+          options[:method] = 'post'
         end
-        inner_form_html << mark_safe(capture_html(&block))
-        concat_content content_tag(:form, inner_form_html, options)
+        inner_form_html = hidden_form_method_field(desired_method)
+        inner_form_html << csrf_token_field if options[:protect_from_csrf]
+        concat_content content_tag(:form, inner_form_html << capture_html(&block), options)
       end
 
       ##
@@ -136,10 +141,9 @@ module Padrino
       #
       def field_set_tag(*args, &block)
         options = args.extract_options!
-        legend_text = args[0].is_a?(String) ? args.first : nil
+        legend_text = args.first
         legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
-        field_set_content = legend_html + mark_safe(capture_html(&block))
-        concat_content content_tag(:fieldset, field_set_content, options)
+        concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
 
       ##
@@ -177,44 +181,15 @@ module Padrino
         options = objects.extract_options!.symbolize_keys
         objects = objects.map{ |obj| resolve_object(obj) }.compact
         count   = objects.inject(0){ |sum, object| sum + object.errors.count }
-        return ''.html_safe if count.zero?
+        return ActiveSupport::SafeBuffer.new if count.zero?
 
-        html_options = {}
-        [:id, :class, :style].each do |key|
-          if options.include?(key)
-            value = options[key]
-            html_options[key] = value unless value.blank?
-          else
-            html_options[key] = 'field-errors' unless key == :style
-          end
-        end
+        object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
 
-        I18n.with_options :locale => options[:locale], :scope => [:models, :errors, :template] do |locale|
-          object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
-
-          header_message = if options.include?(:header_message)
-            options[:header_message]
-          else
-            model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
-            locale.t :header, :count => count, :model => model_name
-          end
-
-          body_message = options[:message] || locale.t(:body)
-
-          error_messages = objects.inject(''.html_safe) do |text, object|
-            object.errors.each do |field, message|
-              field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
-              text << content_tag(:li, "#{field_name} #{message}")
-            end
-            text
-          end
-
-          contents = ActiveSupport::SafeBuffer.new
-          contents << content_tag(options[:header_tag] || :h2, header_message) unless header_message.blank?
-          contents << content_tag(:p, body_message) unless body_message.blank?
-          contents << content_tag(:ul, error_messages)
-          content_tag(:div, contents, html_options)
-        end
+        contents = ActiveSupport::SafeBuffer.new
+        contents << error_header_tag(options, object_name, count)
+        contents << error_body_tag(options)
+        contents << error_list_tag(objects, object_name)
+        content_tag(:div, contents, error_html_attributes(options))
       end
 
       ##
@@ -250,8 +225,8 @@ module Padrino
       # @api public
       def error_message_on(object, field, options={})
         error = Array(resolve_object(object).errors[field]).first
-        return ''.html_safe unless error
-        options = options.reverse_merge(:tag => :span, :class => :error)
+        return ActiveSupport::SafeBuffer.new unless error
+        options = { :tag => :span, :class => :error }.update(options)
         tag   = options.delete(:tag)
         error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
         content_tag(tag, error, options)
@@ -276,14 +251,12 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options = options.reverse_merge(:caption => "#{name.to_s.humanize}: ", :for => name)
-        caption_text = ''.html_safe
-        caption_text.concat options.delete(:caption)
-        caption_text.safe_concat "<span class='required'>*</span> " if options.delete(:required)
+        options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
+        caption_text = ActiveSupport::SafeBuffer.new << options.delete(:caption)
+        caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
         if block_given?
-          label_content = caption_text.concat capture_html(&block)
-          concat_content(content_tag(:label, label_content, options))
+          concat_content content_tag(:label, caption_text << capture_html(&block), options)
         else
           content_tag(:label, caption_text, options)
         end
@@ -347,7 +320,7 @@ module Padrino
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       def text_field_tag(name, options={})
-        input_tag(:text, options.reverse_merge(:name => name))
+        input_tag(:text, { :name => name }.update(options))
       end
 
       ##
@@ -411,7 +384,7 @@ module Padrino
       #   # => <input name="age" min="18" max="120" step="1" type="number" />
       #
       def number_field_tag(name, options={})
-        input_tag(:number, options.reverse_merge(:name => name))
+        input_tag(:number, { :name => name }.update(options))
       end
 
       ##
@@ -432,7 +405,7 @@ module Padrino
       #  # => <input name="home_phone" tabindex="3" type="tel" />
       #
       def telephone_field_tag(name, options={})
-        input_tag(:tel, options.reverse_merge(:name => name))
+        input_tag(:tel, { :name => name }.update(options))
       end
       alias_method :phone_field_tag, :telephone_field_tag
 
@@ -449,7 +422,7 @@ module Padrino
       #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
       def email_field_tag(name, options={})
-        input_tag(:email, options.reverse_merge(:name => name))
+        input_tag(:email, { :name => name }.update(options))
       end
 
       ##
@@ -471,7 +444,7 @@ module Padrino
       #  # => <input name="search" autofocus type="search" />
       #
       def search_field_tag(name, options={})
-        input_tag(:search, options.reverse_merge(:name => name))
+        input_tag(:search, { :name => name }.update(options))
       end
 
       ##
@@ -487,7 +460,7 @@ module Padrino
       #  <input name="home_page" class="string url", type="url" />
       #
       def url_field_tag(name, options={})
-        input_tag(:url, options.reverse_merge(:name => name))
+        input_tag(:url, { :name => name }.update(options))
       end
 
       ##
@@ -497,7 +470,7 @@ module Padrino
       #   hidden_field_tag :session_key, :value => "__secret__"
       #
       def hidden_field_tag(name, options={})
-        input_tag(:hidden, options.reverse_merge(:name => name))
+        input_tag(:hidden, { :name => name }.update(options))
       end
 
       ##
@@ -507,8 +480,9 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        options = options.reverse_merge(:name => name, :rows => "", :cols => "")
-        content_tag(:textarea, options.delete(:value).to_s, options)
+        inner_html = options.delete(:value).to_s
+        options = { :name => name, :rows => "", :cols => "" }.update(options)
+        content_tag(:textarea, inner_html, options)
       end
 
       ##
@@ -519,7 +493,7 @@ module Padrino
       #
       # @api public
       def password_field_tag(name, options={})
-        input_tag(:password, options.reverse_merge(:name => name))
+        input_tag(:password, { :name => name }.update(options))
       end
 
       ##
@@ -529,7 +503,7 @@ module Padrino
       #   check_box_tag :remember_me, :value => 'Yes'
       #
       def check_box_tag(name, options={})
-        input_tag(:checkbox, options.reverse_merge(:name => name, :value => '1'))
+        input_tag(:checkbox, { :name => name, :value => '1' }.update(options))
       end
 
       ##
@@ -539,7 +513,7 @@ module Padrino
       #   radio_button_tag :remember_me, :value => 'true'
       #
       def radio_button_tag(name, options={})
-        input_tag(:radio, options.reverse_merge(:name => name))
+        input_tag(:radio, { :name => name }.update(options))
       end
 
       ##
@@ -551,7 +525,7 @@ module Padrino
       # @api public
       def file_field_tag(name, options={})
         name = "#{name}[]" if options[:multiple]
-        input_tag(:file, options.reverse_merge(:name => name))
+        input_tag(:file, { :name => name }.update(options))
       end
 
       ##
@@ -595,12 +569,9 @@ module Padrino
       # @return [String] The HTML input field based on the +options+ specified.
       #
       def select_tag(name, options={})
-        options = options.reverse_merge(:name => name)
+        options = { :name => name }.merge(options)
         options[:name] = "#{options[:name]}[]" if options[:multiple]
-        collection, fields = options.delete(:collection), options.delete(:fields)
-        options[:options] = options_from_collection(collection, fields) if collection
-        options_tags = extract_option_tags!(options)
-        content_tag(:select, options_tags, options)
+        content_tag(:select, extract_option_tags!(options), options)
       end
 
       ##
@@ -617,7 +588,7 @@ module Padrino
       #   button_tag "Cancel", :class => 'clear'
       #
       def button_tag(caption, options = {})
-        input_tag(:button, options.reverse_merge(:value => caption))
+        input_tag(:button, { :value => caption }.update(options))
       end
 
       ##
@@ -637,7 +608,7 @@ module Padrino
       def submit_tag(*args)
         options = args.extract_options!
         caption = args.length >= 1 ? args.first : "Submit"
-        input_tag(:submit, options.reverse_merge(:value => caption))
+        input_tag(:submit, { :value => caption }.merge(options))
       end
 
       ##
@@ -654,7 +625,7 @@ module Padrino
       #   image_submit_tag 'form/submit.png'
       #
       def image_submit_tag(source, options={})
-        input_tag(:image, options.reverse_merge(:src => image_path(source)))
+        input_tag(:image, { :src => image_path(source) }.update(options))
       end
 
       ##
@@ -668,7 +639,7 @@ module Padrino
       # @example
       #   csrf_token_field
       #
-      def csrf_token_field(token = nil)
+      def csrf_token_field
         hidden_field_tag csrf_param, :value => csrf_token
       end
 
@@ -721,16 +692,10 @@ module Padrino
       #
       def button_to(*args, &block)
         options   = args.extract_options!.dup
-        name, url = args[0], args[1]
+        name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
-        submit_options = options.delete(:submit_options) || {}
-        if block_given?
-          form_tag(url || name, options, &block)
-        else
-          form_tag(url, options) do
-            submit_tag(name, submit_options)
-          end
-        end
+        block ||= proc { submit_tag(name, options.delete(:submit_options) || {}) }
+        form_tag(url || name, options, &block)
       end
 
       ##
@@ -753,7 +718,7 @@ module Padrino
       # @return [String] The html range field
       #
       def range_field_tag(name, options = {})
-        options = options.reverse_merge(:name => name)
+        options = { :name => name }.update(options)
         if range = options.delete(:range)
           options[:min], options[:max] = range.min, range.max
         end
@@ -761,59 +726,6 @@ module Padrino
       end
 
       protected
-
-      ##
-      # Returns an array of option items for a select field based on the given collection.
-      #
-      # @param [Array] fields
-      #   fields is an array containing the fields to display from each item in the collection.
-      #
-      def options_from_collection(collection, fields)
-        collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
-      end
-
-      ##
-      # Returns the options tags for a select based on the given option items.
-      #
-      def options_for_select(option_items, state = {})
-        return [] if option_items.blank?
-        option_items.map do |caption, value, attributes|
-          html_attributes = { :value => value || caption  }.merge(attributes||{})
-          html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
-          html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
-          content_tag(:option, caption, html_attributes)
-        end
-      end
-
-      ##
-      # Returns the optgroups with options tags for a select based on the given :grouped_options items.
-      #
-      def grouped_options_for_select(collection, state = {})
-        collection.map do |item|
-          caption = item.shift
-          attributes = item.last.kind_of?(Hash) ? item.pop : {}
-          value = item.flatten(1)
-          attributes = value.pop if value.last.kind_of?(Hash)
-          html_attributes = { :label => caption }.merge(attributes||{})
-          content_tag(:optgroup, options_for_select(value, state), html_attributes)
-        end
-      end
-
-      ##
-      # Returns the blank option serving as a prompt if passed.
-      #
-      def blank_option(prompt)
-        case prompt
-        when nil, false
-          nil
-        when String
-          content_tag(:option, prompt,       :value => '')
-        when Array
-          content_tag(:option, prompt.first, :value => prompt.last)
-        else
-          content_tag(:option, '',           :value => '')
-        end
-      end
 
       ##
       # Returns whether the application is being protected from CSRF. Defaults to true.
@@ -844,63 +756,49 @@ module Padrino
       private
 
       ##
-      # Returns the FormBuilder class to use based on all available setting sources
-      # If explicitly defined, returns that, otherwise returns defaults.
-      #
-      # @example
-      #   configured_form_builder_class(nil) => StandardFormBuilder
-      #
-      def configured_form_builder_class(explicit_builder=nil)
-        default_builder    = self.respond_to?(:settings) && self.settings.default_builder
-        configured_builder = explicit_builder || default_builder || 'StandardFormBuilder'
-        configured_builder = "Padrino::Helpers::FormBuilder::#{configured_builder}".constantize if configured_builder.is_a?(String)
-        configured_builder
-      end
-
-      ##
       # Returns an initialized builder instance for the given object and settings.
       #
       # @example
       #   builder_instance(@account, :nested => { ... }) => <FormBuilder>
       #
       def builder_instance(object, settings={})
-         builder_class = configured_form_builder_class(settings.delete(:builder))
-         builder_class.new(self, object, settings)
+        default_builder = self.respond_to?(:settings) && self.settings.default_builder || 'StandardFormBuilder'
+        builder_class = settings.delete(:builder) || default_builder
+        builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
+        builder_class.new(self, object, settings)
       end
 
-      ##
-      # Returns whether the option should be selected or not.
-      #
-      # @example
-      #   option_is_selected?("red", "Red", ["red", "blue"])   => true
-      #   option_is_selected?("red", "Red", ["green", "blue"]) => false
-      #
-      def option_is_selected?(value, caption, selected_values)
-        Array(selected_values).any? do |selected|
-          [value.to_s, caption.to_s].include?(selected.to_s)
+      def error_list_tag(objects, object_name)
+        errors = objects.inject({}){ |all,object| all.update(object.errors) }
+        error_messages = errors.inject(ActiveSupport::SafeBuffer.new) do |all, (field, message)|
+          field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
+          all << content_tag(:li, "#{field_name} #{message}")
         end
+        content_tag(:ul, error_messages)
       end
 
-      def extract_option_state!(options)
-        {
-          :selected => Array(options.delete(:selected))|Array(options.delete(:selected_options)),
-          :disabled => Array(options.delete(:disabled_options))
-        }
-      end
-
-      def extract_option_tags!(options)
-        state = extract_option_state!(options)
-        option_tags = case
-        when options[:options]
-          options_for_select(options.delete(:options), state)
-        when options[:grouped_options]
-          grouped_options_for_select(options.delete(:grouped_options), state)
-        else
-          []
+      def error_header_tag(options, object_name, count)
+        header_message = options[:header_message] || begin
+          model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
+          I18n.t :header, :count => count, :model => model_name, :locale => options[:locale], :scope => [:models, :errors, :template]
         end
-        prompt = options.delete(:include_blank)
-        option_tags.unshift(blank_option(prompt)) if prompt
-        option_tags
+        content_tag(options[:header_tag] || :h2, header_message) if header_message.present?
+      end
+
+      def error_body_tag(options)
+        body_message = options[:message] || I18n.t(:body, :locale => options[:locale], :scope => [:models, :errors, :template])
+        content_tag(:p, body_message) if body_message.present?
+      end
+
+      def error_html_attributes(options)
+        [:id, :class, :style].each_with_object({}) do |key,all|
+          if options.include?(key)
+            value = options[key]
+            all[key] = value unless value.blank?
+          else
+            all[key] = 'field-errors' unless key == :style
+          end
+        end
       end
 
       def resolve_object(object)

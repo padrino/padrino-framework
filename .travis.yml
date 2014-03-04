@@ -6,9 +6,9 @@ install:
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1.0
-  - rbx-19mode
-  - jruby-19mode
+  - 2.1.1
+  - rbx
+  - jruby
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -27,9 +27,13 @@ branches:
 services: mongodb
 matrix:
   include:
-    - rvm: 1.9.3
+    - rvm: 2.1.1
       env: SINATRA_EDGE=true
+    - rvm: 2.1.1
+      env: AS_VERSION=4.1.0.rc1
   allow_failures:
-    - rvm: 1.9.3
+    - rvm: 2.1.1
       env: SINATRA_EDGE=true
-    - rvm: rbx-19mode
+    - rvm: 2.1.1
+      env: AS_VERSION=4.1.0.rc1
+    - rvm: rbx

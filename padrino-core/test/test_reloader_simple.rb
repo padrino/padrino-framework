@@ -3,9 +3,9 @@ require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/simple')
 
 describe "SimpleReloader" do
 
-  context 'for simple reset functionality' do
+  describe 'for simple reset functionality' do
 
-    should 'reset routes' do
+    it 'should reset routes' do
       mock_app do
         (1..10).each do |i|
           get("/#{i}") { "Foo #{i}" }
@@ -22,7 +22,7 @@ describe "SimpleReloader" do
       end
     end
 
-    should 'keep sinatra routes on development' do
+    it 'should keep sinatra routes on development' do
       mock_app do
         set :environment, :development
         get("/"){ "ok" }
@@ -42,9 +42,9 @@ describe "SimpleReloader" do
     end
   end
 
-  context 'for simple reload functionality' do
+  describe 'for simple reload functionality' do
 
-    should 'correctly instantiate SimpleDemo fixture' do
+    it 'should correctly instantiate SimpleDemo fixture' do
       Padrino.clear!
       Padrino.mount("simple_demo").to("/")
       assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
@@ -52,7 +52,8 @@ describe "SimpleReloader" do
       assert_match %r{fixtures/apps/simple.rb}, SimpleDemo.app_file
     end
 
-    should_eventually 'correctly reload SimpleDemo fixture' do
+    it 'should correctly reload SimpleDemo fixture' do
+      skip
       # TODO fix this test
       @app = SimpleDemo
       get "/"
@@ -70,8 +71,9 @@ describe "SimpleReloader" do
       Padrino.reload!
     end
 
-    should 'correctly reset SimpleDemo fixture' do
+    it 'should correctly reset SimpleDemo fixture' do
       @app = SimpleDemo
+      get "/"
       @app.reload!
       get "/rand"
       assert ok?
@@ -81,17 +83,17 @@ describe "SimpleReloader" do
       assert_equal 2, @app.filters[:after].size # app + content-type + padrino-flash
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
-      assert_equal 3, @app.extensions.size # [Padrino::Routing, Padrino::Rendering, Padrino::Flash]
+      assert_equal 4, @app.extensions.size # [Padrino::ApplicationSetup, Padrino::Routing, Padrino::Rendering, Padrino::Flash]
       assert_equal 0, @app.templates.size
       @app.reload!
       get "/rand"
-      assert_not_equal last_body, body
+      refute_equal last_body, body
       assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
       assert_equal 1, @app.errors.size
       assert_equal 2, @app.filters[:after].size
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
-      assert_equal 3, @app.extensions.size # [Padrino::Routing, Padrino::Rendering, Padrino::Flash]
+      assert_equal 4, @app.extensions.size # [Padrino::ApplicationSetup, Padrino::Routing, Padrino::Rendering, Padrino::Flash]
       assert_equal 0, @app.templates.size
     end
   end

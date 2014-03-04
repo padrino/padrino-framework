@@ -209,6 +209,12 @@ footer p {
   font-size: 2.5em;
   line-height: 1em;
 }
+.navbar .navbar-nav > .active > a,
+.navbar .navbar-nav > .active > a:hover,
+.navbar .navbar-nav > .active > a:focus {
+  color: #555;
+  background-color: #e7e7e7;
+}
 /* --- End Application::TopBar --- */
 
 /* --- Begin Application::List --- */

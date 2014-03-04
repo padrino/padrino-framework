@@ -14,7 +14,11 @@ require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
 
-PADRINO_ENV  = ENV["PADRINO_ENV"]  ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+if ENV["PADRINO_ENV"]
+  warn 'Environment variable PADRINO_ENV is deprecated. Please, use RACK_ENV.'
+  ENV["RACK_ENV"] ||= ENV["PADRINO_ENV"]
+end
+RACK_ENV = ENV["RACK_ENV"] ||= "development"  unless defined?(RACK_ENV)
 PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
@@ -43,13 +47,13 @@ module Padrino
     end
 
     ##
-    # Helper method that return {PADRINO_ENV}.
+    # Helper method that return {RACK_ENV}.
     #
     # @return [Symbol]
     #   The Padrino Environment.
     #
     def env
-      @_env ||= PADRINO_ENV.to_s.downcase.to_sym
+      @_env ||= RACK_ENV.to_s.downcase.to_sym
     end
 
     ##

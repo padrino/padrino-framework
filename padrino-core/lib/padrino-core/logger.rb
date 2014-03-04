@@ -172,6 +172,31 @@ module Padrino
       def colorize!
         self.extend(Colorize)
       end
+
+      ##
+      # Logs an exception.
+      #
+      # @param [Exception] exception
+      #   The exception to log
+      #
+      # @param [Symbol] verbosity
+      #   :short or :long, default is :long
+      #
+      # @example
+      #   Padrino.logger.exception e
+      #   Padrino.logger.exception(e, :short)
+      def exception(boom, verbosity = :long, level = :error)
+        return unless Levels.has_key?(level)
+        text = ["#{boom.class} - #{boom.message}:"]
+        trace = boom.backtrace
+        case verbosity
+        when :long
+          text += trace
+        when :short
+          text << trace.first
+        end if trace.kind_of?(Array)
+        send level, text.join("\n ")
+      end
     end
 
     module Colorize
@@ -280,7 +305,7 @@ module Padrino
 
         stream = case config[:stream]
           when :to_file
-            FileUtils.mkdir_p(Padrino.root('log')) unless File.exists?(Padrino.root('log'))
+            FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
             File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
           when :null   then StringIO.new
           when :stdout then $stdout

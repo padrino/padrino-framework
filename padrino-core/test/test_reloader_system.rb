@@ -1,17 +1,22 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/system')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/static')
 
 describe "SystemReloader" do
-  context 'for wierd and difficult reload events' do
-    should 'reload system features if they were required only in helper' do
+  describe 'for wierd and difficult reload events' do
+    before do
       @app = SystemDemo
+      get '/'
+    end
+
+    it 'should reload system features if they were required only in helper' do
       @app.reload!
       get '/'
       assert_equal 'Resolv', body
     end
 
-    should 'reload children on parent change' do
-      @app = SystemDemo
+    it 'should reload children on parent change' do
       assert_equal Child.new.family, 'Danes'
       parent_file = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/models/parent.rb')
       new_class = <<-DOC
@@ -39,14 +44,24 @@ describe "SystemReloader" do
         File.open(parent_file, "w") { |f| f.write(backup) }
       end
     end
-    
-    should 'tamper with LOAD_PATH' do
+
+    it 'should tamper with LOAD_PATH' do
       SystemDemo.load_paths.each do |lib_dir|
         assert_includes $LOAD_PATH, lib_dir
       end
       Padrino.send(:load_paths_was).each do |lib_dir|
         assert_includes $LOAD_PATH, lib_dir
       end
+    end
+
+    it 'should not fail horribly on reload event with non-padrino apps' do
+      Padrino.mount("kiq").to("/")
+      Padrino.reload!
+    end
+
+    it 'should not reload apps with disabled reload' do
+      Padrino.mount(StaticDemo).to("/")
+      Padrino.reload!
     end
   end
 end

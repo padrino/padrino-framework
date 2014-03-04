@@ -5,7 +5,7 @@ module Padrino
     %r{lib/padrino-.*$},
     %r{/padrino-.*/(lib|bin)},
     %r{/bin/padrino$},
-    %r{/sinatra(/(base|main|showexceptions))?\.rb$},
+    %r{/sinatra(/(base|main|show_?exceptions))?\.rb$},
     %r{lib/tilt.*\.rb$},
     %r{lib/rack.*\.rb$},
     %r{lib/mongrel.*\.rb$},

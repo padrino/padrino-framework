@@ -1,11 +1,12 @@
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
-# Remove this comment if you want do some like this: ruby PADRINO_ENV=test app.rb
+# Remove this comment if you want do some like this: ruby RACK_ENV=test app.rb
 #
 # require 'rubygems'
 # require 'padrino-core'
 #
 
 class SimpleDemo < Padrino::Application
+  register Padrino::Rendering
   set :reload, true
   before { true }
   after  { true }

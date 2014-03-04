@@ -31,7 +31,7 @@ module Padrino
     #   Padrino.cache = Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
     #   Padrino.cache = Padrino::Cache.new(:LRUHash) # Keeps cached values in memory
     #   Padrino.cache = Padrino::Cache.new(:Memcached) # Uses default server at localhost
-    #   Padrino.cache = Padrino::Cache.new(:Memcached, '127.0.0.1:11211', :exception_retry_limit => 1)
+    #   Padrino.cache = Padrino::Cache.new(:Memcached, :server => '127.0.0.1:11211', :exception_retry_limit => 1)
     #   Padrino.cache = Padrino::Cache.new(:Memcached, :backend => memcached_or_dalli_instance)
     #   Padrino.cache = Padrino::Cache.new(:Redis) # Uses default server at localhost
     #   Padrino.cache = Padrino::Cache.new(:Redis, :host => '127.0.0.1', :port => 6379, :db => 0)

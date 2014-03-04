@@ -89,14 +89,14 @@ module Padrino
       return unless options[:force] || file_changed?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
-      logger.debug(file_new?(file) ? :loading : :reload, began_at, file)
+      logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
       begin
         with_silence{ require(file) }
         Storage.commit(file)
         update_modification_time(file)
       rescue Exception => e
         unless options[:cyclic]
-          logger.error "#{e.class}: #{e.message}; #{e.backtrace.first}"
+          logger.exception e, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)
@@ -153,7 +153,7 @@ module Padrino
         began_at = Time.now
         I18n.reload!
         update_modification_time(file)
-        logger.debug :reload, began_at, file
+        logger.devel :reload, began_at, file
       end
       true
     end
@@ -167,10 +167,10 @@ module Padrino
         apps.each { |app| app.app_obj.reload! }
         update_modification_time(file)
       else
-        safe_load(file)
-        Padrino.mounted_apps.each do |app|
+        reloadable_apps.each do |app|
           app.app_obj.reload! if app.app_obj.dependencies.include?(file)
         end
+        safe_load(file)
       end
     end
 
@@ -222,7 +222,7 @@ module Padrino
     def files_for_rotation
       files = Set.new
       Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
-      Padrino.mounted_apps.each do |app|
+      reloadable_apps.each do |app|
         files << app.app_file
         files += app.app_obj.dependencies
       end
@@ -231,6 +231,10 @@ module Padrino
 
     def constant_excluded?(const)
       (exclude_constants - include_constants).any?{ |c| const._orig_klass_name.start_with?(c) }
+    end
+
+    def reloadable_apps
+      Padrino.mounted_apps.select{ |app| app.app_obj.respond_to?(:reload) && app.app_obj.reload? }
     end
 
     ##

@@ -333,7 +333,13 @@ module Padrino
 
       def compiled_router
         if @deferred_routes
-          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(&dest) } }
+          deferred_routes.each do |routes|
+            routes.each do |(route, dest)|
+              route.to(&dest)
+              route.before_filters.flatten!
+              route.after_filters.flatten!
+            end
+          end
           @deferred_routes = nil
         end
         router
@@ -391,7 +397,7 @@ module Padrino
         name = names[0, 2].join(" ").to_sym    # route name is concatenated with underscores
         if params.is_a?(Hash)
           params[:format] = params[:format].to_s unless params[:format].nil?
-          params = value_to_param(params)
+          params = value_to_param(params.symbolize_keys)
         end
         url =
           if params_array.empty?
@@ -488,8 +494,9 @@ module Padrino
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
 
-        if allow_disabled_csrf
-          unless route_options[:csrf_protection] == false
+        # Add Sinatra condition to check rack-protection failure.
+        if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
+          unless route_options.has_key?(:csrf_protection)
             route_options[:csrf_protection] = true
           end
         end
@@ -535,8 +542,9 @@ module Padrino
 
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
-        route.before_filters.concat(@filters[:before])
-        route.after_filters.concat(@filters[:after])
+        # Add Application defaults.
+        route.before_filters << @filters[:before]
+        route.after_filters << @filters[:after]
         if @_controller
           route.use_layout = @layout
           route.controller = Array(@_controller)[0].to_s
@@ -689,10 +697,10 @@ module Padrino
       def provides(*types)
         @_use_format = true
         condition do
-          mime_types        = types.map { |t| mime_type(t) }.compact
-          url_format        = params[:format].to_sym if params[:format]
-          accepts           = request.accept.map(&:to_str)
-          accepts           = [] if accepts == ["*/*"]
+          mime_types = types.map { |t| mime_type(t) }.compact
+          url_format = params[:format].to_sym if params[:format]
+          accepts    = request.accept.map(&:to_str)
+          accepts.clear if accepts == ["*/*"]
 
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
@@ -737,17 +745,19 @@ module Padrino
       end
 
       ##
-      # Implements CSRF checking when `allow_disabled_csrf` is set to true.
-      #
-      # This condition is always on, except when it is explicitly switched
-      # off.
+      # Implements checking for rack-protection failure flag when
+      # `report_csrf_failure` is enabled.
       #
       # @example
       #   post("/", :csrf_protection => false)
       #
-      def csrf_protection(on = true)
-        if on
-          condition { halt 403 if request.env['protection.csrf.failed'] }
+      def csrf_protection(enabled)
+        return unless enabled
+        condition do
+          if request.env['protection.csrf.failed']
+            message = settings.protect_from_csrf.kind_of?(Hash) && settings.protect_from_csrf[:message] || 'Forbidden'
+            halt(403, message)
+          end
         end
       end
     end

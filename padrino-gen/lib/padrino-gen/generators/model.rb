@@ -28,37 +28,81 @@ module Padrino
       # Execute the model generation.
       #
       def create_model
+        app = options[:app]
+        return unless valid_model_for?(app)
+
+        include_component_module_for(:test)
+        migration_name = "create_#{name.pluralize.underscore}"
+        apply_default_fields fields
+        create_model_file(name, :fields => fields, :app => app)
+        generate_model_test(name) if test?
+        create_model_migration(migration_name, name, fields) unless options[:skip_migration]
+      end
+
+      private
+
+      ##
+      # Validate model characteristics
+      # Alert if the model name is being used
+      #
+      def valid_model_for?(app)
         self.destination_root = options[:root]
-        if in_app_root?
-          app = options[:app]
-          check_app_existence(app)
-          camel_name = name.to_s.underscore.camelize
-          @project_name = ""
-          @project_name = fetch_project_name
-          if already_exists?(camel_name, @project_name)
-            say "#{camel_name} already exists."
-            say "Please, change the name."
-            return
-          else
-            self.behavior = :revoke if options[:destroy]
-            if invalids = invalid_fields(fields)
-              say 'Invalid field name:', :red
-              say " #{invalids.join(", ")}"
-              return
-            end
-            unless include_component_module_for(:orm)
-              say "<= You need an ORM adapter for run this generator. Sorry!"
-              raise SystemExit
-            end
-            include_component_module_for(:test)
-            migration_name = "create_#{name.pluralize.underscore}"
-            apply_default_fields fields
-            create_model_file(name, :fields => fields, :app => app)
-            generate_model_test(name) if test?
-            create_model_migration(migration_name, name, fields) unless options[:skip_migration]
-          end
+        return false unless correct_path?
+
+        check_app_existence(app)
+
+        if options[:destroy]
+          self.behavior = :revoke
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          say "#{@camel_name} already exists."
+          say "Please, change the name."
+          return false
+        end if model_name_already_exists?
+
+        return false if has_invalid_fields?
+
+        check_orm
+      end
+
+      ##
+      # Return false if the model name is being used
+      #
+      def model_name_already_exists?
+        @camel_name = name.to_s.underscore.camelize
+
+        @project_name = ""
+        @project_name = fetch_project_name
+
+        return false unless already_exists?(@camel_name, @project_name)
+        true
+      end
+
+      ##
+      # Alert if there is not an ORM Adapter
+      #
+      def check_orm
+        return true if include_component_module_for(:orm)
+
+        say "<= You need an ORM adapter for run this generator. Sorry!"
+        raise SystemExit
+      end
+
+      ##
+      # Check app path
+      #
+      def correct_path?
+        return true if in_app_root?
+        say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+        false
+      end
+
+      ##
+      # Check if the fields are valid
+      #
+      def has_invalid_fields?
+        if invalids = invalid_fields(fields)
+          say 'Invalid field name:', :red
+          say " #{invalids.join(", ")}"
         end
       end
     end

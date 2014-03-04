@@ -23,14 +23,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  # TODO remove after a couple versions
-  # s.post_install_message = "\e[32m" + ("*" * 20)
-  # s.post_install_message << "\n UPGRADE NOTES\n\n\e[31m When upgrading, please 'enable :sessions' for each application"
-  # s.post_install_message << " as shown here:\e[0m http://bit.ly/kODKMx\n"
-  # s.post_install_message << "\e[31m When upgrading, please 'register Padrino::Rendering' for each application"
-  # s.post_install_message << " as shown here:\e[0m https://gist.github.com/1d36a35794dbbd664ea4"
-  # s.post_install_message << "\n\e[32m" + ("*" * 20) + "\n\e[0m"
-
   s.add_dependency("tilt", "~> 1.4.1")
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
@@ -38,7 +30,7 @@ Gem::Specification.new do |s|
     s.add_dependency("sinatra", "~> 1.4.2")
   end
   s.add_dependency("mustermann", ">= 0.2.0")
-  s.add_dependency("thor", "~> 0.17.0")
+  s.add_dependency("thor", "~> 0.18.0")
   s.add_dependency("activesupport", ">= 3.1")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end

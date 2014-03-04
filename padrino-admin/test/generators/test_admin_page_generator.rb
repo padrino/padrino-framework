@@ -14,7 +14,7 @@ end
 
 describe "AdminPageGenerator" do
   before do 
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
   end
 

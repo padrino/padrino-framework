@@ -12,8 +12,8 @@ describe "Mounter" do
     $VERBOSE = @_verbose_was
   end
 
-  context 'for mounter functionality' do
-    should 'check methods' do
+  describe 'for mounter functionality' do
+    it 'should check methods' do
       mounter = Padrino::Mounter.new("test_app", :app_file => "/path/to/test.rb")
       mounter.to("/test_app")
       assert_kind_of Padrino::Mounter, mounter
@@ -27,14 +27,14 @@ describe "Mounter" do
       assert_equal Padrino.root, mounter.app_root
     end
 
-    should 'use app.root if available' do
+    it 'should use app.root if available' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
       mounter = Padrino::Mounter.new("kiq", :app_class => "Kiq")
       mounter.to("/test_app")
       assert_equal '/weird', mounter.app_root
     end
 
-    should 'check locate_app_file with __FILE__' do
+    it 'should check locate_app_file with __FILE__' do
       mounter = Padrino::Mounter.new("test_app", :app_file => __FILE__)
       mounter.to("/test_app")
       assert_equal "test_app", mounter.name
@@ -44,14 +44,14 @@ describe "Mounter" do
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
-    should 'mount an app' do
+    it 'should mount an app' do
       class ::AnApp < Padrino::Application; end
       Padrino.mount("an_app").to("/")
       assert_equal AnApp, Padrino.mounted_apps.first.app_obj
       assert_equal ["an_app"], Padrino.mounted_apps.map(&:name)
     end
 
-    should 'correctly mount an app in a namespace' do
+    it 'should correctly mount an app in a namespace' do
       module ::SomeNamespace
         class AnApp < Padrino::Application; end
       end
@@ -60,7 +60,7 @@ describe "Mounter" do
       assert_equal ["some_namespace/an_app"], Padrino.mounted_apps.map(&:name)
     end
 
-    should 'correctly set a name of a namespaced app' do
+    it 'should correctly set a name of a namespaced app' do
       module ::SomeNamespace2
         class AnApp < Padrino::Application
           get(:index) { settings.app_name }
@@ -71,7 +71,7 @@ describe "Mounter" do
       assert_equal "some_namespace2/an_app", res.body
     end
 
-    should 'mount a primary app to root uri' do
+    it 'should mount a primary app to root uri' do
       mounter = Padrino.mount("test_app", :app_file => __FILE__).to("/")
       assert_equal "test_app", mounter.name
       assert_equal "TestApp", mounter.app_class
@@ -81,7 +81,7 @@ describe "Mounter" do
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
-    should 'mount a primary app to sub_uri' do
+    it 'should mount a primary app to sub_uri' do
       mounter = Padrino.mount("test_app", :app_file => __FILE__).to('/me')
       assert_equal "test_app", mounter.name
       assert_equal "TestApp", mounter.app_class
@@ -91,18 +91,18 @@ describe "Mounter" do
       assert_equal File.dirname(mounter.app_file), mounter.app_root
     end
 
-    should "raise error when app has no located file" do
+    it 'should raise error when app has no located file' do
       # TODO enabling this screws minitest
       # assert_raises(Padrino::Mounter::MounterException) { Padrino.mount("tester_app").to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
 
-    should "raise error when app has no located object" do
+    it 'should raise error when app has no located object' do
       assert_raises(Padrino::Mounter::MounterException) { Padrino.mount("tester_app", :app_file => "/path/to/file.rb").to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
 
-    should 'mount multiple apps' do
+    it 'should mount multiple apps' do
       class ::OneApp < Padrino::Application; end
       class ::TwoApp < Padrino::Application; end
 
@@ -118,7 +118,16 @@ describe "Mounter" do
       assert_equal ["one_app", "two_app"], Padrino.mounted_apps.map(&:name)
     end
 
-    should 'change mounted_root' do
+    it 'should mount app with the same name as the module' do
+      Padrino.mount("Demo::App",  :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_app.rb')).to("/app")
+      Padrino.mount("Demo::Demo", :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_demo.rb')).to("/")
+
+      Padrino.mounted_apps.each do |app|
+        assert_equal app.app_obj.setup_application!, true
+      end
+    end
+
+    it 'should change mounted_root' do
       Padrino.mounted_root = "fixtures"
       assert_equal Padrino.root("fixtures", "test", "app.rb"), Padrino.mounted_root("test", "app.rb")
       Padrino.mounted_root = "apps"
@@ -127,7 +136,7 @@ describe "Mounter" do
       assert_equal Padrino.root("test", "app.rb"), Padrino.mounted_root("test", "app.rb")
     end
 
-    should "be able to access routes data for mounted apps" do
+    it 'should be able to access routes data for mounted apps' do
       class ::OneApp < Padrino::Application
         get("/test") { "test" }
         get(:index, :provides => [:js, :json]) { "index" }
@@ -183,7 +192,7 @@ describe "Mounter" do
       assert_equal "(:foo_bar, :index)", foo_bar_route.name
     end
     
-    should "configure cascade apps" do
+    it 'should configure cascade apps' do
       class ::App1 < Padrino::Application
         get(:index) { halt 404, 'index1' }
       end
@@ -200,7 +209,7 @@ describe "Mounter" do
       assert_equal 'index2', res.body
     end
 
-    should 'correctly instantiate a new padrino application' do
+    it 'should correctly instantiate a new padrino application' do
       mock_app do
         get("/demo_1"){ "Im Demo 1" }
         get("/demo_2"){ "Im Demo 2" }
@@ -212,7 +221,7 @@ describe "Mounter" do
       assert_equal "Im Demo 2", response.body
     end
 
-    should "not clobber the public setting when mounting an app" do
+    it 'should not clobber the public setting when mounting an app' do
       class ::PublicApp < Padrino::Application
         set :root, "/root"
         set :public_folder, File.expand_path(File.dirname(__FILE__))
@@ -224,7 +233,7 @@ describe "Mounter" do
       assert_equal File.read(__FILE__), res.body
     end
 
-    should "load apps from gems" do
+    it 'should load apps from gems' do
       spec_file = Padrino.root("fixtures", "app_gem", "app_gem.gemspec")
       spec = Gem::Specification.load(spec_file)
       spec.activate
