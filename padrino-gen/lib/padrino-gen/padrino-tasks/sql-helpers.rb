@@ -13,7 +13,7 @@ module Padrino
             arguments << "--username=#{user}" if user
             arguments << database
 
-            Process.spawn(environment, 'createdb', *arguments)
+            Process.wait Process.spawn(environment, 'createdb', *arguments)
           when 'mysql'
             environment = {}
             environment['MYSQL_PWD'] = password unless password.blank?
@@ -25,7 +25,7 @@ module Padrino
             arguments << '-e'
             arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
 
-            Process.spawn(environment, 'mysql', *arguments)
+            Process.wait Process.spawn(environment, 'mysql', *arguments)
           else
             raise "Adapter #{adapter} not supported for creating databases yet."
         end
@@ -42,7 +42,7 @@ module Padrino
             arguments << "--username=#{user}" if user
             arguments << database
 
-            Process.spawn(environment, 'dropdb', *arguments)
+            Process.wait Process.spawn(environment, 'dropdb', *arguments)
           when 'mysql'
             environment = {}
             environment['MYSQL_PWD'] = password unless password.blank?
@@ -54,7 +54,7 @@ module Padrino
             arguments << '-e'
             arguments << "DROP DATABASE IF EXISTS #{database}"
 
-            Process.spawn(environment, 'mysql', *arguments)
+            Process.wait Process.spawn(environment, 'mysql', *arguments)
           else
             raise "Adapter #{adapter} not supported for dropping databases yet."
         end
