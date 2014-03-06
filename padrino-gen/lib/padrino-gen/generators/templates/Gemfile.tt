@@ -24,6 +24,6 @@ gem 'rake'
 # gem 'padrino', :github => 'padrino/padrino-framework'
 
 # Or Individual Gems
-<% unless options.dev? %># <% end %>%w(core gen helpers cache mailer admin).each do |g|
+<% unless options.dev? %># <% end %>%w(core support gen helpers cache mailer admin).each do |g|
 <% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
 <% unless options.dev? %># <% end %>end
