@@ -1,17 +1,7 @@
 require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
 
 ##
-# Removes indentation
 # Add colors
-#
-# @example
-#   help <<-EOS.undent
-#     Here my help usage
-#      sample_code
-#
-#     Fix
-#   EOS
-#   puts help.red.bold
 #
 class String
   # colorize(:red)
@@ -46,10 +36,5 @@ class String
          end
       end
     end
-  end
-
-  # Strip unnecessary indentation of the front of a string
-  def undent
-    gsub(/^.{#{slice(/^ +/).size}}/, '')
   end
 end
