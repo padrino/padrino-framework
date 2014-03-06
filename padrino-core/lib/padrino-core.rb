@@ -66,7 +66,7 @@ module Padrino
     #   No applications were mounted.
     #
     def application
-      raise ApplicationLoadError, "At least one app must be mounted!" unless Padrino.mounted_apps.present?
+      warn 'WARNING! No apps are mounted. Please, mount apps in `config/apps.rb`' unless Padrino.mounted_apps.present?
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
       middleware.present? ? add_middleware(router) : router
