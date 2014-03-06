@@ -210,6 +210,11 @@ module Padrino
           options[:layout] = false unless is_included_extension ? layout_engine : layout_engine == engine
           options[:layout_engine] = layout_engine || engine if options[:layout]
         elsif options[:layout].present?
+          if "#{options[:layout]}".index('/') == 0
+            # if this isn't emptied, :views will prepend to absolute path
+            options = {:layout_options => {:views => ''}}.merge(options)
+          end
+
           options[:layout], options[:layout_engine] = *resolve_template(settings.fetch_layout_path(options[:layout]), options)
         end
         # Default to original layout value if none found.
@@ -295,11 +300,19 @@ module Padrino
 
         # Generate potential template candidates
         dir_path = is_absolute ? template_path : File.join(view_path, template_glob)
+
         templates = Dir[dir_path + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
-          template_file   = file.squeeze('/').sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
+          template_file   = file.squeeze('/')
+
+          unless is_absolute
+            template_file = template_file.sub(view_path, '')
+          end
+
+          template_file = template_file.chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
         end
+
 
         # Check if we have a simple content type
         simple_content_type = [:html, :plain].include?(_content_type)

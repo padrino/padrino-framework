@@ -448,11 +448,21 @@ describe "Rendering" do
       assert_equal 404, status
     end
 
-    should 'resolve layouts from specific application' do
+    should 'resolve layouts from same application' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
       @app = RenderDemo
       
       get '/blog/override'
+
+      assert_equal 'otay', body
+    end
+
+    should 'resolve layouts from different application' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps2/render2')
+      @app = RenderDemo2
+      
+      get '/blog2/override'
 
       assert_equal 'otay', body
     end
