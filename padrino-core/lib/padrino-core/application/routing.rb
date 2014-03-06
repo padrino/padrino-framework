@@ -1,5 +1,5 @@
 require 'http_router' unless defined?(HttpRouter)
-require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-support'
 
 ##
 # Adds to Sinatra +controller+ informations

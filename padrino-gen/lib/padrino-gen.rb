@@ -1,4 +1,3 @@
-require 'padrino-core/support_lite'
 require 'padrino-core/tasks'
 require 'padrino-gen/command'
 require 'active_support/ordered_hash'

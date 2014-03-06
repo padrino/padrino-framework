@@ -1,4 +1,4 @@
-require 'padrino-core/support_lite' unless defined?(SupportLite)
+require 'padrino-support'
 
 module Padrino
   ##

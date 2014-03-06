@@ -4,13 +4,13 @@
 require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = "padrino-helpers"
-  s.rubyforge_project = "padrino-helpers"
-  s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
+  s.name = "padrino-support"
+  s.rubyforge_project = "padrino-support"
+  s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu", "Igor Bochkariov"]
   s.email = "padrinorb@gmail.com"
-  s.summary = "Helpers for padrino"
+  s.summary = "Support for padrino"
   s.homepage = "http://www.padrinorb.com"
-  s.description = "Tag helpers, asset helpers, form helpers, form builders and many more helpers for padrino"
+  s.description = "A number of support methods and extensions for Padrino framework"
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
@@ -23,6 +23,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  s.add_dependency("padrino-support", Padrino.version)
-  s.add_dependency("i18n", "~> 0.6", ">= 0.6.7")
+  s.add_dependency("activesupport", ">= 3.1")
 end
