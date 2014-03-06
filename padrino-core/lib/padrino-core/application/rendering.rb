@@ -121,8 +121,14 @@ module Padrino
         @_cached_layout ||= {}
         cached_layout_path = @_cached_layout[layout_name]
         return cached_layout_path if cached_layout_path
-        has_layout_at_root = Dir["#{views}/#{layout_name}.*"].any?
-        layout_path = has_layout_at_root ? layout_name.to_sym : File.join('layouts', layout_name.to_s).to_sym
+        
+        layout_path = layout_name
+
+        unless "#{layout_path}".index('/') == 0
+          has_layout_at_root = Dir["#{views}/#{layout_name}.*"].any?
+          layout_path = has_layout_at_root ? layout_name.to_sym : File.join('layouts', layout_name.to_s).to_sym
+        end
+
         @_cached_layout[layout_name] = layout_path unless reload_templates?
         layout_path
       end
@@ -262,6 +268,8 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
+        is_absolute = "#{template_path}".index('/') == 0;
+
         began_at = Time.now
         _content_type = content_type || :html
         # Fetch cached template for rendering options
@@ -279,14 +287,15 @@ module Padrino
         target_extension = File.extname(template_path)[1..-1] || "none" # explicit template extension
         template_path = template_path.chomp(".#{target_extension}")
         template_glob =
-          if respond_to?(:request) && request.controller.present?
-            File.join("{,#{request.controller}}", template_path)
-          else
-            template_path
-          end
+            if respond_to?(:request) && request.controller.present?
+              File.join("{,#{request.controller}}", template_path)
+            else
+              template_path
+            end
 
         # Generate potential template candidates
-        templates = Dir[File.join(view_path, template_glob) + ".*"].map do |file|
+        dir_path = is_absolute ? template_path : File.join(view_path, template_glob)
+        templates = Dir[dir_path + ".*"].map do |file|
           template_engine = File.extname(file)[1..-1].to_sym # Retrieves engine extension
           template_file   = file.squeeze('/').sub(view_path, '').chomp(".#{template_engine}").to_sym # retrieves template filename
           [template_file, template_engine] unless IGNORE_FILE_PATTERN.any? { |pattern| template_engine.to_s =~ pattern }
