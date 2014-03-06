@@ -85,8 +85,16 @@ describe "ProjectGenerator" do
       assert_no_match_in_file('PadrinoTasks.use(:database)',"#{@apptmp}/sample_project/Rakefile")
     end
 
+    it 'should generate lean project' do
+      capture_io { generate(:project,'sample_project', '--lean', "--root=#{@apptmp}") }
+      assert_file_exists("#{@apptmp}/sample_project/public/favicon.ico")
+      assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/app/app.rb")
+      assert_no_match_in_file(/Padrino.mount\('SampleProject::App'/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
     it 'should generate tiny skeleton' do
-      capture_io { generate(:project,'sample_project', '--tiny',"--root=#{@apptmp}") }
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_project")
       assert_file_exists("#{@apptmp}/sample_project/app")
       assert_file_exists("#{@apptmp}/sample_project/app/controllers.rb")

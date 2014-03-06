@@ -26,6 +26,7 @@ module Padrino
       class_option :root,             :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
       class_option :dev,              :desc => 'Use padrino from a git checkout',                                                    :default => false,       :type => :boolean
       class_option :tiny,             :desc => 'Generate tiny app skeleton',                                       :aliases => '-i', :default => false,       :type => :boolean
+      class_option :lean,             :desc => 'Generate lean project without apps',                               :aliases => '-l', :default => false,       :type => :boolean
       class_option :adapter,          :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
       class_option :template,         :desc => 'Generate project from template',                                   :aliases => '-p', :default => nil,         :type => :string
       class_option :gem,              :desc => 'Generate project as a gem',                                        :aliases => '-g', :default => false,       :type => :boolean
@@ -47,16 +48,19 @@ module Padrino
         @project_name = name.gsub(/\W/, '_').underscore.camelize
         @app_name = app.gsub(/\W/, '_').underscore.camelize
         self.destination_root = File.join(options[:root], name)
-        if options[:template] # Run the template to create project
+        if options[:template]
           execute_runner(:template, options[:template])
-        else # generate project without template
+        else
           directory('project/', destination_root)
           empty_directory destination_root('public/images')
           empty_directory destination_root('public/javascripts')
           empty_directory destination_root('public/stylesheets')
           empty_directory destination_root('tmp')
           store_component_config('.components')
-          app_skeleton('app', options[:tiny])
+          unless options[:lean]
+            app_skeleton('app', options[:tiny])
+            append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('app/app.rb')).to('/')\n"
+          end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
           if options.gem?

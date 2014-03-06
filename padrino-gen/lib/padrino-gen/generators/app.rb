@@ -47,7 +47,13 @@ module Padrino
           lowercase_app_folder = @app_folder.downcase
           app_skeleton(lowercase_app_folder, options[:tiny])
           empty_directory destination_root("public/#{lowercase_app_folder}")
-          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
+
+          mount_command = "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n"
+          if File.read(destination_root('config/apps.rb')).match(/^Padrino.mount.*\.to\('\/'\)$/)
+            inject_into_file destination_root('config/apps.rb'), mount_command, :before => /^Padrino.mount.*\.to\('\/'\)$/
+          else
+            append_file destination_root('config/apps.rb'), mount_command
+          end
 
           return if self.behavior == :revoke
           say
