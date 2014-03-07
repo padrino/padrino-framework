@@ -207,7 +207,7 @@ module Padrino
     def apply?(request)
       detect = @args.any? do |arg|
         case arg
-        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [@scoped_controller, arg].flatten.join(" ").to_sym)
+        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [Array(@scoped_controller).join("_"), arg].join(" ").to_sym)
         else             arg === request.path_info
         end
       end || @options.any? do |name, val|
