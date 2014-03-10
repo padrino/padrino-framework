@@ -448,6 +448,14 @@ describe "Rendering" do
       assert_equal 404, status
     end
 
+    it 'should resolve layouts from specific application' do
+      skip
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/blog/override'
+      assert_equal 'otay', body
+    end
+
     it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
         get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }

@@ -8,6 +8,10 @@ RenderDemo.controllers :blog do
   get '/' do
     render 'post'
   end
+
+  get '/override' do
+    render 'post', :layout => RenderDemo.layout_path('specific') 
+  end
 end
 
 Padrino.load!
