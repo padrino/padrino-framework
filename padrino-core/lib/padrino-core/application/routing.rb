@@ -205,17 +205,7 @@ module Padrino
     end
 
     def apply?(request)
-      detect = @args.any? do |arg|
-        case arg
-        when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [Array(@scoped_controller).join("_"), arg].join(" ").to_sym)
-        else             arg === request.path_info
-        end
-      end || @options.any? do |name, val|
-        case name
-        when :agent then val === request.user_agent
-        else             val === request.send(name)
-        end
-      end
+      detect = match_with_arguments?(request) || match_with_options?(request)
       detect ^ !@mode
     end
 
@@ -226,6 +216,28 @@ module Padrino
         filter = self
         proc { instance_eval(&filter.block) if filter.apply?(request) }
       end
+    end
+
+    private
+
+    def scoped_controller_name
+      @scoped_controller_name ||= Array(@scoped_controller).join("_")
+    end
+
+    def match_with_arguments?(request)
+      route, path = request.route_obj, request.path_info
+      @args.any? do |argument|
+        if argument.instance_of?(Symbol)
+          route && (argument == route.name || route.name == [scoped_controller_name, argument].join(" ").to_sym)
+        else
+          argument === request.path_info
+        end
+      end
+    end
+
+    def match_with_options?(request)
+      user_agent = request.user_agent
+      @options.any?{|name, value| value === (name == :agent ? user_agent : request.send(name)) }
     end
   end
 
