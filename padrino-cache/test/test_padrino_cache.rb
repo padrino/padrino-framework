@@ -167,8 +167,7 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
-    sleep 2
-    get "/foo"
+    Time.stub(:now, Time.now + 3) { get "/foo" }
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -193,8 +192,7 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
-    sleep 3
-    get "/foo"
+    Time.stub(:now, Time.now + 3) { get "/foo" }
     assert_equal 200, status
     assert_equal 'test again', body
   end

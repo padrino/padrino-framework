@@ -1965,7 +1965,6 @@ describe "Routing" do
   end
 
   it 'should render a custom error page using error method' do
-    skip # TODO sinatra bug?
     mock_app do
       error(404) { "custom 404 error" }
     end

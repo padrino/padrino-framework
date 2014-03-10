@@ -43,32 +43,33 @@ describe "SimpleReloader" do
   end
 
   describe 'for simple reload functionality' do
-
-    it 'should correctly instantiate SimpleDemo fixture' do
+    before do
       Padrino.clear!
       Padrino.mount("simple_demo").to("/")
+      Padrino.reload!
+    end
+
+    it 'should correctly instantiate SimpleDemo fixture' do
       assert_equal ["simple_demo"], Padrino.mounted_apps.map(&:name)
       assert SimpleDemo.reload?
       assert_match %r{fixtures/apps/simple.rb}, SimpleDemo.app_file
     end
 
     it 'should correctly reload SimpleDemo fixture' do
-      skip
-      # TODO fix this test
       @app = SimpleDemo
       get "/"
       assert ok?
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
-      File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
-      sleep 1.1 # We need at least a cooldown of 1 sec.
-      get "/"
-      assert_equal new_phrase, body
-
-      # Now we need to prevent to commit a new changed file so we revert it
-      File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
-      Padrino.reload!
+      begin
+        File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
+        Time.stub(:now, Time.now + 2) { get "/" }
+        assert_equal new_phrase, body
+      ensure
+        File.open(SimpleDemo.app_file, "w") { |f| f.write(buffer) }
+        Padrino.reload!
+      end
     end
 
     it 'should correctly reset SimpleDemo fixture' do
