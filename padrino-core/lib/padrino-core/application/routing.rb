@@ -228,9 +228,11 @@ module Padrino
       route, path = request.route_obj, request.path_info
       @args.any? do |argument|
         if argument.instance_of?(Symbol)
-          route && (argument == route.name || route.name == [scoped_controller_name, argument].join(" ").to_sym)
+          next unless route
+          name = route.name
+          argument == name || name == [scoped_controller_name, argument].join(" ").to_sym
         else
-          argument === request.path_info
+          argument === path
         end
       end
     end
