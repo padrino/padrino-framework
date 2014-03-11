@@ -449,7 +449,6 @@ describe "Rendering" do
     end
 
     it 'should resolve layouts from specific application' do
-      skip
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
       @app = RenderDemo
       get '/blog/override'

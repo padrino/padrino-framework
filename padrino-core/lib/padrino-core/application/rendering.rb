@@ -90,7 +90,7 @@ module Padrino
 
       ##
       # Returns the cached template file to render for a given url,
-      # content_type and locale.
+      # content_type and locale. Deprecated since 0.12.1
       #
       # @param [Array<template_path, content_type, locale>] render_options
       #
@@ -100,7 +100,7 @@ module Padrino
       end
 
       ##
-      # Caches the template file for the given rendering options.
+      # Caches the template file for the given rendering options. Deprecated since 0.12.1
       #
       # @param [String] template_file
       #   The path of the template file.
@@ -115,16 +115,16 @@ module Padrino
       ##
       # Returns the cached layout path.
       #
-      # @param [Symbol, nil] given_layout
+      # @param [String, nil] given_layout
       #   The requested layout.
       #
-      def fetch_layout_path(given_layout=nil)
-        layout_name = given_layout || @layout || :application
+      def fetch_layout_path(given_layout)
+        layout_name = (given_layout || @layout || :application).to_s
         cache_layout_path(layout_name) do
-          if Dir["#{views}/#{layout_name}.*"].any?
-            layout_name.to_sym
+          if layout_name.start_with?('/') && Dir["#{layout_name}.*"].any? || Dir["#{views}/#{layout_name}.*"].any?
+            layout_name
           else
-            File.join('layouts', layout_name.to_s).to_sym
+            File.join('layouts', layout_name)
           end
         end
       end
@@ -218,10 +218,8 @@ module Padrino
         @current_engine, engine_was = engine, @current_engine
         @_out_buf,  buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
 
-        options = with_layout(options)
-
         # Pass arguments to Sinatra render method.
-        super(engine, data, options.dup, locals, &block)
+        super(engine, data, with_layout(options), locals, &block)
       ensure
         @current_engine = engine_was
         @_out_buf = buf_was
@@ -229,7 +227,7 @@ module Padrino
 
       ##
       # Returns the located layout tuple to be used for the rendered template
-      # (if available).
+      # (if available). Deprecated since 0.12.1
       #
       # @example
       #   resolve_layout
@@ -237,6 +235,7 @@ module Padrino
       #   # => [nil, nil]
       #
       def resolved_layout
+        logger.warn "##{__method__} is deprecated"
         resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true) || [nil, nil]
       end
 
@@ -269,7 +268,6 @@ module Padrino
       #
       def resolve_template(template_path, options={})
         template_path = template_path.to_s
-        template_path.insert(0, '/') unless template_path.start_with?('/')
         rendering_options = [template_path, content_type || :html, locale]
 
         settings.cache_template_path(rendering_options) do
@@ -294,24 +292,41 @@ module Padrino
 
       LAYOUT_EXTENSIONS = %w[.slim .erb .haml].freeze
 
+      def resolve_layout(layout, options={})
+        template_path = settings.fetch_layout_path(layout)
+        rendering_options = [template_path, content_type || :html, locale]
+
+        layout, engine =
+          settings.cache_template_path(rendering_options) do
+            view_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
+
+            template_candidates = glob_templates(view_path, template_path)
+            selected_template = select_template(template_candidates, *rendering_options)
+
+            fail TemplateNotFound, "Layout '#{template_path}' not found in '#{view_path}'" if !selected_template && layout.present?
+            selected_template
+          end
+
+        is_included_extension = LAYOUT_EXTENSIONS.include?(File.extname(template_path.to_s))
+        layout = false unless is_included_extension ? engine : engine == @current_engine
+
+        [layout, engine]
+      end
+
       def with_layout(options)
+        options = options.dup
         layout = options[:layout]
         return options if layout == false
 
         layout = @layout if !layout || layout == true
-        layout_path = settings.fetch_layout_path(layout)
-        if layout.present?
-          layout, layout_engine = resolve_template(layout_path, options)
-        elsif !settings.templates.has_key?(:layout)
-          is_included_extension = LAYOUT_EXTENSIONS.include?(File.extname(layout_path.to_s))
-          layout_path, layout_engine = resolved_layout
-          layout = layout_path || false
-          layout = false unless is_included_extension ? layout_engine : layout_engine == @current_engine
-        else
-          return options
-        end
+        return options if settings.templates.has_key?(:layout) && layout.blank?
 
-        options.merge(:layout_engine => layout_engine, :layout => layout)
+        if layout.kind_of?(String) && layout.start_with?('/')
+          options[:layout_options] ||= {}
+          options[:layout_options][:views] ||= ''
+        end
+        layout, layout_engine = resolve_layout(layout, options)
+        options.update(:layout => layout, :layout_engine => layout_engine)
       end
 
       def glob_templates(views_path, template_path)
@@ -339,6 +354,7 @@ module Padrino
         extname = File.extname(path)
         engine = (extname[1..-1]||'none').to_sym
         path = path.chomp(extname)
+        path.insert(0, '/') unless path.start_with?('/')
         path = path.squeeze('/').sub(relative, '') if relative
         [path.to_sym, engine]
       end
