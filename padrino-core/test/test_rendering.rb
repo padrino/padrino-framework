@@ -517,6 +517,13 @@ describe "Rendering" do
       assert_equal 'okay', body
     end
 
+    it 'should resolve nested template location relative to controller name' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/article/comment'
+      assert_equal 'okay comment', body
+    end
+
     it 'should renders erb with blocks' do
       mock_app do
         def container

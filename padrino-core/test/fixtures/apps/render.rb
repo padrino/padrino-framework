@@ -14,4 +14,10 @@ RenderDemo.controllers :blog do
   end
 end
 
+RenderDemo.controllers :article, :comment do
+  get '/' do
+    render 'show'
+  end
+end
+
 Padrino.load!

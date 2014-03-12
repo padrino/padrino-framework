@@ -748,7 +748,7 @@ module Padrino
         route.after_filters << @filters[:after]
         if @_controller
           route.use_layout = @layout
-          route.controller = Array(@_controller)[0].to_s
+          route.controller = Array(@_controller).join('/')
         end
 
         deferred_routes[priority] << [route, block]
