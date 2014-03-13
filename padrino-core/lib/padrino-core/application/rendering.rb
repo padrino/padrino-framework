@@ -331,7 +331,9 @@ module Padrino
 
       def glob_templates(views_path, template_path)
         parts = [views_path]
-        parts << "{,#{request.controller}}" if respond_to?(:request) && request.controller.present?
+        if respond_to?(:request) && request.respond_to?(:controller) && request.controller.present?
+          parts << "{,#{request.controller}}"
+        end
         parts << template_path.chomp(File.extname(template_path)) + '.*'
         Dir.glob(File.join(parts)).sort.inject([]) do |all,file|
           next all if IGNORE_FILE_PATTERN.any?{ |pattern| file.to_s =~ pattern }

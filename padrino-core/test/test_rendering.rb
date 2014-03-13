@@ -617,4 +617,24 @@ describe "Rendering" do
       assert_equal "<&'>", body
     end
   end
+
+  describe 'standalone Sinatra usage of Rendering' do
+    before do
+      Sinatra::Request.class_eval{ alias_method :monkey_controller, :controller; undef :controller }
+    end
+    after do
+      Sinatra::Request.class_eval{ alias_method :controller, :monkey_controller; undef :monkey_controller }
+    end
+    it 'should work with Sinatra::Base' do
+      class Application < Sinatra::Base
+        register Padrino::Rendering
+        get '/' do
+          render :post, :views => File.dirname(__FILE__)+'/fixtures/apps/views/blog' 
+        end
+      end
+      @app = Application.new
+      get '/'
+      assert_equal 'okay', body
+    end
+  end
 end
