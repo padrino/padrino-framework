@@ -144,6 +144,7 @@ module Padrino
 
           instructions = []
           instructions << "Run 'bundle'"
+          instructions << "Run 'bundle exec rake db:create'" if (orm == :activerecord || orm == :datamapper || orm == :sequel)
           instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper || orm == :sequel)
           instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
