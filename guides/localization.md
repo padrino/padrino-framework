@@ -37,10 +37,10 @@ At the moment we support the following list of languages:
 
 Download and translate these files:
 
--   [padrino-core.yml](http://github.com/padrino/padrino-framework/raw/master/padrino-core/lib/padrino-core/locale/en.yml)
--   [padrino-admin.yml](http://github.com/padrino/padrino-framework/raw/master/padrino-admin/lib/padrino-admin/locale/admin/en.yml)
--   [padrino-admin-orm.yml](http://github.com/padrino/padrino-framework/raw/master/padrino-admin/lib/padrino-admin/locale/orm/en.yml)
--   [padrino-helper.yml](http://github.com/padrino/padrino-framework/raw/master/padrino-helpers/lib/padrino-helpers/locale/en.yml)
+-   [padrino-core.yml](https://raw.github.com/padrino/padrino-framework/master/padrino-support/lib/padrino-support/locale/en.yml)
+-   [padrino-admin.yml](http://raw.github.com/padrino/padrino-framework/master/padrino-admin/lib/padrino-admin/locale/admin/en.yml)
+-   [padrino-admin-orm.yml](http://raw.github.com/padrino/padrino-framework/master/padrino-admin/lib/padrino-admin/locale/orm/en.yml)
+-   [padrino-helper.yml](http://raw.github.com/padrino/padrino-framework/master/padrino-helpers/lib/padrino-helpers/locale/en.yml)
 
 zip your files and send it to [padrinorb@gmail.com](mailto:padrinorb@gmail.org)
 
