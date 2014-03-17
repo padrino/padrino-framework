@@ -1,4 +1,5 @@
 require 'padrino-support'
+require 'pathname'
 
 module Padrino
   ##
@@ -121,7 +122,7 @@ module Padrino
       def fetch_layout_path(given_layout)
         layout_name = (given_layout || @layout || :application).to_s
         cache_layout_path(layout_name) do
-          if layout_name.start_with?('/') && Dir["#{layout_name}.*"].any? || Dir["#{views}/#{layout_name}.*"].any?
+          if Pathname.new(layout_name).absolute? && Dir["#{layout_name}.*"].any? || Dir["#{views}/#{layout_name}.*"].any?
             layout_name
           else
             File.join('layouts', layout_name)
@@ -321,7 +322,7 @@ module Padrino
         layout = @layout if !layout || layout == true
         return options if settings.templates.has_key?(:layout) && layout.blank?
 
-        if layout.kind_of?(String) && layout.start_with?('/')
+        if layout.kind_of?(String) && Pathname.new(layout).absolute?
           options[:layout_options] ||= {}
           options[:layout_options][:views] ||= ''
         end
@@ -330,8 +331,9 @@ module Padrino
       end
 
       def glob_templates(views_path, template_path)
-        parts = [views_path]
-        if respond_to?(:request) && request.respond_to?(:controller) && request.controller.present?
+        parts = []
+        parts << views_path if views_path.present?
+        if respond_to?(:request) && request.respond_to?(:controller) && request.controller.present? && Pathname.new(template_path).relative?
           parts << "{,#{request.controller}}"
         end
         parts << template_path.chomp(File.extname(template_path)) + '.*'
@@ -356,7 +358,7 @@ module Padrino
         extname = File.extname(path)
         engine = (extname[1..-1]||'none').to_sym
         path = path.chomp(extname)
-        path.insert(0, '/') unless path.start_with?('/')
+        path.insert(0, '/') unless Pathname.new(path).absolute?
         path = path.squeeze('/').sub(relative, '') if relative
         [path.to_sym, engine]
       end
