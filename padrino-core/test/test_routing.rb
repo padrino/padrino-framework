@@ -1138,6 +1138,42 @@ describe "Routing" do
     assert_equal 'Hello World', body
   end
 
+  it 'should filters by media type' do
+    mock_app do
+      get '/foo', :accepts => [:xml, :json] do
+        request.env['CONTENT_TYPE']
+      end
+    end
+
+    get '/foo', {}, { 'CONTENT_TYPE' => 'application/xml' }
+    assert ok?
+    assert_equal 'application/xml', body
+    assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
+    get '/foo'
+    assert_equal 406, status
+    get '/foo.xml'
+    assert_equal 404, status
+
+    get '/foo', {}, { 'CONTENT_TYPE' => 'application/json' }
+    assert ok?
+    assert_equal 'application/json', body
+    assert_equal 'application/json', response.headers['Content-Type']
+  end
+
+  it 'should filters by media type when using :accepts as controller option' do
+    mock_app do
+      controller accepts: [:xml, :js] do
+        get '/foo' do
+          request.env['CONTENT_TYPE']
+        end
+      end
+    end
+
+    get '/foo', {}, { 'CONTENT_TYPE' => 'application/javascript' }
+    assert ok?
+    assert_equal 'application/javascript', body
+  end
+
   it 'should filters by accept header' do
     mock_app do
       get '/foo', :provides => [:xml, :js] do
