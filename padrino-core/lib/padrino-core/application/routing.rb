@@ -385,6 +385,7 @@ module Padrino
           @_map,        original_map        = options.delete(:map),        @_map
           @_conditions, original_conditions = options.delete(:conditions), @_conditions
           @_defaults,   original_defaults   = options,                     @_defaults
+          @_accepts,    original_accepts    = options.delete(:accepts),    @_accepts
 
           # Application defaults.
           @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
@@ -397,9 +398,9 @@ module Padrino
           @layout         = original_layout
 
           # Controller defaults.
-          @_controller, @_parents,  @_cache = original_controller, original_parent,   original_cache
-          @_defaults,   @_provides, @_map   = original_defaults,   original_provides, original_map
-          @_conditions, @_use_format        = original_conditions, original_use_format
+          @_controller, @_parents,  @_cache     = original_controller, original_parent,   original_cache
+          @_defaults,   @_provides, @_map       = original_defaults,   original_provides, original_map
+          @_conditions, @_use_format, @_accepts = original_conditions, original_use_format, original_accepts
         else
           include(*args) if extensions.any?
         end
@@ -691,6 +692,7 @@ module Padrino
         # Do padrino parsing. We dup options so we can build HEAD request correctly.
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
+        route_options[:accepts]  = @_accepts if @_accepts
 
         # Add Sinatra condition to check rack-protection failure.
         if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
@@ -786,6 +788,8 @@ module Padrino
 
           # Now we need to parse our provides
           options.delete(:provides) if options[:provides].nil?
+        
+          options.delete(:accepts) if options[:accepts].nil?
 
           if @_use_format or format_params = options[:provides]
             process_path_for_provides(path, format_params)
@@ -942,6 +946,27 @@ module Padrino
           end
 
           matched_format
+        end
+      end
+
+      ##
+      # Allows routing by Media type.
+      #
+      # @example
+      #   get "/a", :accepts => [:html, :js]
+      #   # => GET /a CONTENT_TYPE text/html => :html
+      #   # => GET /a CONTENT_TYPE application/javascript => :js
+      #   # => GET /a CONTENT_TYPE application/xml => 406
+      #
+      def accepts(*types)
+        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }.compact
+        condition do
+          halt 406 unless media_type = mime_types.detect{|mime_type| mime_type == request.media_type }
+          if media_type != 'application/json'
+            content_type(media_type, :charset => 'utf-8')
+          else
+            content_type(media_type)
+          end
         end
       end
 
