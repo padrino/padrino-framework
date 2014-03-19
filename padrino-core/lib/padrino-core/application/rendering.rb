@@ -118,11 +118,13 @@ module Padrino
       #
       # @param [String, nil] given_layout
       #   The requested layout.
+      # @param [String, nil] layouts_path
+      #   The directory where the layouts are located. Defaults to #views.
       #
-      def fetch_layout_path(given_layout)
+      def fetch_layout_path(given_layout, layouts_path=views)
         layout_name = (given_layout || @layout || :application).to_s
         cache_layout_path(layout_name) do
-          if Pathname.new(layout_name).absolute? && Dir["#{layout_name}.*"].any? || Dir["#{views}/#{layout_name}.*"].any?
+          if Pathname.new(layout_name).absolute? && Dir["#{layout_name}.*"].any? || Dir["#{layouts_path}/#{layout_name}.*"].any?
             layout_name
           else
             File.join('layouts', layout_name)
@@ -294,17 +296,16 @@ module Padrino
       LAYOUT_EXTENSIONS = %w[.slim .erb .haml].freeze
 
       def resolve_layout(layout, options={})
-        template_path = settings.fetch_layout_path(layout)
+        layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
+        template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
 
         layout, engine =
           settings.cache_template_path(rendering_options) do
-            view_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
-
-            template_candidates = glob_templates(view_path, template_path)
+            template_candidates = glob_templates(layouts_path, template_path)
             selected_template = select_template(template_candidates, *rendering_options)
 
-            fail TemplateNotFound, "Layout '#{template_path}' not found in '#{view_path}'" if !selected_template && layout.present?
+            fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout.present?
             selected_template
           end
 
@@ -323,8 +324,9 @@ module Padrino
         return options if settings.templates.has_key?(:layout) && layout.blank?
 
         if layout.kind_of?(String) && Pathname.new(layout).absolute?
+          layout_path, _, layout = layout.rpartition('/')
           options[:layout_options] ||= {}
-          options[:layout_options][:views] ||= ''
+          options[:layout_options][:views] ||= layout_path
         end
         layout, layout_engine = resolve_layout(layout, options)
         options.update(:layout => layout, :layout_engine => layout_engine)
