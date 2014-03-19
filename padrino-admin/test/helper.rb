@@ -8,7 +8,6 @@ require 'mocha/setup'
 require 'rack/test'
 require 'rack'
 require 'thor/group'
-require 'padrino-core/support_lite' unless defined?(SupportLite)
 require 'padrino-admin'
 require 'dm-core'
 require 'dm-migrations'

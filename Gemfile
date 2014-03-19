@@ -46,6 +46,7 @@ end
    padrino-gen
    padrino-helpers
    padrino-mailer
+   padrino-support
 ].each do |dep|
   gem dep, :path => File.expand_path('../' + dep, __FILE__)
 end

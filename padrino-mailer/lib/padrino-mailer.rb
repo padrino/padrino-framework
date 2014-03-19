@@ -3,7 +3,6 @@ begin
 rescue LoadError
   require 'sinatra/tilt'
 end
-require 'padrino-core/support_lite' unless defined?(SupportLite)
 
 module Padrino
   ##

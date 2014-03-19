@@ -5,11 +5,13 @@ require File.expand_path('../../../load_paths', __FILE__)
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'i18n'
+require 'padrino-support'
 require 'padrino-core'
 require 'json'
 require 'builder'
 require 'rack/test'
 require 'rack'
+require 'yaml'
 
 # Rubies < 1.9 don't handle hashes in the properly order so to prevent
 # this issue for now we remove extra values from mimetypes.

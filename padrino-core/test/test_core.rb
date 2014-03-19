@@ -34,7 +34,8 @@ describe "Core" do
     end
 
     it 'should raise application error if I instantiate a new padrino application without mounted apps' do
-      assert_raises(Padrino::ApplicationLoadError) { Padrino.application.new }
+      text = capture_io { Padrino.application }
+      assert_match /No apps are mounted/, text.to_s
     end
 
     it 'should check before/after padrino load hooks' do

@@ -144,7 +144,10 @@ module Padrino
 
           instructions = []
           instructions << "Run 'bundle'"
-          instructions << "Run 'bundle exec rake db:migrate'" if (orm == :activerecord || orm == :datamapper || orm == :sequel)
+          if [:activerecord, :datamapper, :sequel].include?(orm)
+            instructions << "Run 'bundle exec rake db:create' if you have not created a database yet"
+            instructions << "Run 'bundle exec rake db:migrate'"
+          end
           instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/#{@admin_path}'"

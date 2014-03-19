@@ -448,6 +448,13 @@ describe "Rendering" do
       assert_equal 404, status
     end
 
+    it 'should resolve layouts from specific application' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/blog/override'
+      assert_equal 'otay', body
+    end
+
     it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
         get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }
@@ -508,6 +515,13 @@ describe "Rendering" do
       @app = RenderDemo
       get '/blog'
       assert_equal 'okay', body
+    end
+
+    it 'should resolve nested template location relative to controller name' do
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      @app = RenderDemo
+      get '/article/comment'
+      assert_equal 'okay comment', body
     end
 
     it 'should renders erb with blocks' do
@@ -601,6 +615,26 @@ describe "Rendering" do
       end
       get "/"
       assert_equal "<&'>", body
+    end
+  end
+
+  describe 'standalone Sinatra usage of Rendering' do
+    before do
+      Sinatra::Request.class_eval{ alias_method :monkey_controller, :controller; undef :controller }
+    end
+    after do
+      Sinatra::Request.class_eval{ alias_method :controller, :monkey_controller; undef :monkey_controller }
+    end
+    it 'should work with Sinatra::Base' do
+      class Application < Sinatra::Base
+        register Padrino::Rendering
+        get '/' do
+          render :post, :views => File.dirname(__FILE__)+'/fixtures/apps/views/blog' 
+        end
+      end
+      @app = Application.new
+      get '/'
+      assert_equal 'okay', body
     end
   end
 end

@@ -167,8 +167,7 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
-    sleep 2
-    get "/foo"
+    Time.stub(:now, Time.now + 3) { get "/foo" }
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -193,8 +192,7 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
-    sleep 3
-    get "/foo"
+    Time.stub(:now, Time.now + 3) { get "/foo" }
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -326,5 +324,26 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal '{"foo":"bar"}', body
     assert_match /json/, last_response.content_type
+  end
+
+  it 'should cache an object' do
+    counter = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/' do
+        result = ''
+        2.times do
+          result = cache_object 'object1' do
+            counter += 1
+            { :foo => 'bar' }
+          end
+        end
+        result[:foo].to_s
+      end
+    end
+    get '/'
+    assert_equal 'bar', body
+    assert_equal 1, counter
   end
 end

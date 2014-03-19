@@ -93,6 +93,7 @@ module Padrino
       #   MyApp.cache.clear
       #
       def registered(app)
+        app.helpers Padrino::Cache::Helpers::ObjectCache
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page

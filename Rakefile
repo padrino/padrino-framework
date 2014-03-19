@@ -10,6 +10,7 @@ GEM_NAME = 'padrino-framework'
 
 padrino_gems = %w[
   padrino-core
+  padrino-support
   padrino-gen
   padrino-helpers
   padrino-mailer

@@ -220,6 +220,30 @@ describe "Filters" do
     assert_equal 'before', body
   end
 
+  it 'should be able to filter excluding based on a symbol when specify the multiple routes and use nested controller' do
+    mock_app do
+      controller :test, :nested do
+        before(:except => [:test1, :test2]) { @long = 'long'}
+        before(:except => [:test1]) { @short = 'short'}
+        get :test1 do
+          "#{@long} #{@short} normal"
+        end
+        get :test2 do
+          "#{@long} #{@short} normal"
+        end
+        get :test3 do
+          "#{@long} #{@short} normal"
+        end
+      end
+    end
+    get '/test/nested/test1'
+    assert_equal '  normal', body
+    get '/test/nested/test2'
+    assert_equal ' short normal', body
+    get '/test/nested/test3'
+    assert_equal 'long short normal', body
+  end
+
   it 'should be able to filter based on a request param' do
     mock_app do
       before(:agent => /IE/) { @test = 'before'}
