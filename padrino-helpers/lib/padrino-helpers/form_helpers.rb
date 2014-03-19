@@ -1,6 +1,6 @@
-require 'securerandom'
-require 'padrino-helpers/form_options_helpers'
-require 'padrino-helpers/form_errors_helpers'
+require 'padrino-helpers/form_helpers/errors'
+require 'padrino-helpers/form_helpers/options'
+require 'padrino-helpers/form_helpers/security'
 
 module Padrino
   module Helpers
@@ -9,8 +9,9 @@ module Padrino
     #
     module FormHelpers
       def self.included(base)
-        base.send(:include, FormOptionsHelpers) unless base.method_defined?(:extract_option_tags!)
-        base.send(:include, FormErrorsHelpers) unless base.method_defined?(:error_messages_for)
+        base.send(:include, FormHelpers::Errors)
+        base.send(:include, FormHelpers::Options)
+        base.send(:include, FormHelpers::Security)
       end
 
       ##
@@ -545,37 +546,6 @@ module Padrino
       end
 
       ##
-      # Constructs a hidden field containing a CSRF token.
-      #
-      # @param [String] token
-      #   The token to use. Will be read from the session by default.
-      #
-      # @return [String] The hidden field with CSRF token as value.
-      #
-      # @example
-      #   csrf_token_field
-      #
-      def csrf_token_field
-        hidden_field_tag csrf_param, :value => csrf_token
-      end
-
-      ##
-      # Constructs meta tags `csrf-param` and `csrf-token` with the name of the
-      # cross-site request forgery protection parameter and token, respectively.
-      #
-      # @return [String] The meta tags with the CSRF token and the param your app expects it in.
-      #
-      # @example
-      #   csrf_meta_tags
-      #
-      def csrf_meta_tags
-        if is_protected_from_csrf?
-          meta_tag(csrf_param, :name => 'csrf-param') <<
-          meta_tag(csrf_token, :name => 'csrf-token')
-        end
-      end
-
-      ##
       # Creates a form containing a single button that submits to the URL.
       #
       # @overload button_to(name, url, options={})
@@ -641,34 +611,6 @@ module Padrino
         input_tag(:range, options)
       end
 
-      protected
-
-      ##
-      # Returns whether the application is being protected from CSRF. Defaults to true.
-      #
-      def is_protected_from_csrf?
-        defined?(settings) ? settings.protect_from_csrf : true
-      end
-
-      ##
-      # Returns the current CSRF token (based on the session). If it doesn't exist,
-      # it will create one and assign it to the session's `csrf` key.
-      #
-      def csrf_token
-        session[:csrf] ||= SecureRandom.hex(32) if defined?(session)
-      end
-
-      ##
-      # Returns the param/field name in which your CSRF token should be expected by your
-      # controllers. Defaults to `authenticity_token`.
-      #
-      # Set this in your application with `set :csrf_param, :something_else`.
-      #
-      def csrf_param
-        defined?(settings) && settings.respond_to?(:csrf_param) ?
-          settings.csrf_param : :authenticity_token
-      end
-
       private
 
       ##
@@ -677,11 +619,11 @@ module Padrino
       # @example
       #   builder_instance(@account, :nested => { ... }) => <FormBuilder>
       #
-      def builder_instance(object, settings={})
-        default_builder = self.respond_to?(:settings) && self.settings.default_builder || 'StandardFormBuilder'
-        builder_class = settings.delete(:builder) || default_builder
+      def builder_instance(object, options={})
+        default_builder = respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder'
+        builder_class = options.delete(:builder) || default_builder
         builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
-        builder_class.new(self, object, settings)
+        builder_class.new(self, object, options)
       end
     end
   end
