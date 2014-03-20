@@ -13,8 +13,8 @@ module Padrino
       desc "start", "Starts the Padrino application (alternatively use 's')."
       map "s" => :start
       method_option :server,    :type => :string,  :aliases => "-a", :desc => "Rack Handler (default: autodetect)"
-      method_option :host,      :type => :string,  :aliases => "-h", :required => true, :default => '127.0.0.1', :desc => "Bind to HOST address."
-      method_option :port,      :type => :numeric, :aliases => "-p", :required => true, :default => 3000, :desc => "Use PORT."
+      method_option :host,      :type => :string,  :aliases => "-h", :desc => "Bind to HOST address (default: 127.0.0.1)"
+      method_option :port,      :type => :numeric, :aliases => "-p", :desc => "Use PORT (default: 3000)"
       method_option :daemonize, :type => :boolean, :aliases => "-d", :desc => "Run daemonized in the background."
       method_option :pid,       :type => :string,  :aliases => "-i", :desc => "File to store pid."
       method_option :debug,     :type => :boolean,                   :desc => "Set debugging flags."
