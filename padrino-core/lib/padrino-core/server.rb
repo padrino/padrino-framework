@@ -9,44 +9,41 @@ module Padrino
   #
   def self.run!(options={})
     Padrino.load!
+    Server.start(*detect_application(options))
+  end
+
+  private
+
+  #
+  #
+  def self.detect_application(options)
     default_config_file = 'config.ru'
-    app =
-      if options[:config] || File.file?(default_config_file)
-        options[:config] ||= default_config_file
-        fail "Rack config file `#{options[:config]}` must have `.ru` extension" unless options[:config] =~ /\.ru$/
-        rack_app, rack_options = Rack::Builder.parse_file(options[:config])
-        options = rack_options.merge(options)
-        rack_app
-      else
-        Padrino.application
-      end
-    Server.start(app, options)
+    if (config_file = options.delete(:config)) || File.file?(default_config_file)
+      config_file ||= default_config_file
+      fail "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
+      rack_app, rack_options = Rack::Builder.parse_file(config_file)
+      [rack_app, rack_options.merge(options)]
+    else
+      [Padrino.application, options]
+    end
   end
 
   ##
   # This module builds a Padrino server to run the project based on available handlers.
   #
   class Server < Rack::Server
+    DEFAULT_ADDRESS = { :Host => '127.0.0.1', :Port => 3000 }
+
     # Server Handlers
     Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]
 
     # Starts the application on the available server with specified options.
-    def self.start(app, opts={})
-      options = {}.merge(opts) # We use a standard hash instead of Thor::CoreExt::HashWithIndifferentAccess
-      options.symbolize_keys!
-      options[:Host] = options.delete(:host) || '127.0.0.1'
-      options[:Port] = options.delete(:port) || 3000
-      options[:AccessLog] = []
-      if options[:daemonize]
-        options[:pid] = File.expand_path(options[:pid].blank? ? 'tmp/pids/server.pid' : opts[:pid])
-        FileUtils.mkdir_p(File.dirname(options[:pid]))
-      end
+    def self.start(app, options={})
+      options = options.to_hash.symbolize_keys
+      options.update(parse_server_options(options.delete(:options)))
+      options.update(detect_address(options))
+      options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
       options[:server] = detect_rack_handler if options[:server].blank?
-      if options[:options].is_a?(Array)
-        parsed_server_options = options.delete(:options).map { |opt| opt.split('=', 2) }.flatten
-        server_options = Hash[*parsed_server_options].symbolize_keys!
-        options.merge!(server_options)
-      end
       new(options, app).start
     end
 
@@ -74,6 +71,7 @@ module Padrino
     end
 
     private
+
     # Detects the supported handler to use.
     #
     # @example
@@ -88,6 +86,30 @@ module Padrino
         end
       end
       fail "Server handler (#{Handlers.join(', ')}) not found."
+    end
+
+    # Prepares a directory for pid file.
+    #
+    def self.prepare_pid(pid)
+      pid = 'tmp/pids/server.pid' if pid.blank?
+      FileUtils.mkdir_p(File.dirname(pid))
+      File.expand_path(pid)
+    end
+
+    # Parses an array of server options.
+    #
+    def self.parse_server_options(options)
+      parsed_server_options = Array(options).map{ |option| option.split('=', 2) }.flatten
+      Hash[*parsed_server_options].symbolize_keys
+    end
+
+    # Detects Host and Port for Rack server.
+    #
+    def self.detect_address(options)
+      address = DEFAULT_ADDRESS.merge options.slice(:Host, :Port)
+      address[:Host] = options[:host] if options[:host].present?
+      address[:Port] = options[:port] if options[:port].present?
+      address
     end
   end
 end
