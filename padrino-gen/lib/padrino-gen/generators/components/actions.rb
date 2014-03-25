@@ -67,7 +67,7 @@ module Padrino
           else
             return if migration_exist?(filename)
             change_format = options[:change_format]
-            migration_scan = filename.underscore.camelize.scan(/(Add|Remove)(?:.*)(?:To|From)([A-Z0-9_].*?)$/).flatten
+            migration_scan = filename.underscore.camelize.scan(/(Add|Remove).*?(?:(?:To|From).+?)*(?:To|From)((?:To|From)?.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
             tuples = direction ? columns.map { |value| value.split(":") } : []
             tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] }

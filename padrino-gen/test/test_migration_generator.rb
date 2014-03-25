@@ -73,10 +73,13 @@ describe "MigrationGenerator" do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
         capture_io { generate(:migration, 'AddAuthenticityTokenFieldsToUsers', 'authentity_token:string', "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'AddEmailToTokyo', 'email:string', "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'AddLocationTofoo', 'location:string', "-r=#{@apptmp}/sample_project") }
         migration_file_path1 = "#{@apptmp}/sample_project/db/migrate/001_add_authenticity_token_fields_to_users.rb"
         migration_file_path2 = "#{@apptmp}/sample_project/db/migrate/002_add_email_to_tokyo.rb"
+        migration_file_path3 = "#{@apptmp}/sample_project/db/migrate/003_add_location_tofoo.rb"
         assert_match_in_file(/change_table :users/, migration_file_path1)
         assert_match_in_file(/change_table :tokyo/, migration_file_path2)
+        assert_match_in_file(/change_table :foos/,   migration_file_path3)
       end
     end
   end
