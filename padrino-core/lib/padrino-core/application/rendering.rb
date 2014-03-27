@@ -271,9 +271,10 @@ module Padrino
       #
       def resolve_template(template_path, options={})
         template_path = template_path.to_s
+        controller_key = respond_to?(:request) && request.respond_to?(:controller) && request.controller
         rendering_options = [template_path, content_type || :html, locale]
 
-        settings.cache_template_path(rendering_options) do
+        settings.cache_template_path(["#{controller_key}/#{template_path}", rendering_options[1], rendering_options[2]]) do
           options = DEFAULT_RENDERING_OPTIONS.merge(options)
           view_path = options[:views] || settings.views || "./views"
 

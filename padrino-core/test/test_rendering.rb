@@ -637,4 +637,39 @@ describe "Rendering" do
       assert_equal 'okay', body
     end
   end
+
+  describe 'locating of template paths' do
+    it 'should locate controller templates' do
+      mock_app do
+        disable :reload_templates
+        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        controller :test do
+          get :index do
+            render 'test/post'
+          end
+        end
+      end
+      get '/test'
+    end
+
+    it 'should properly cache template path' do
+      mock_app do
+        disable :reload_templates
+        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        controller :blog do
+          get :index do
+            render :post
+          end
+        end
+        controller :test do
+          get :index do
+            render 'post'
+          end
+        end
+      end
+      get '/blog'
+      get '/test'
+      assert_equal 'test', body
+    end
+  end
 end
