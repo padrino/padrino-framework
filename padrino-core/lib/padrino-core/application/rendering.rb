@@ -270,7 +270,10 @@ module Padrino
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
       def resolve_template(template_path, options={})
-        template_path = template_path.to_s
+        template_path = template_path.to_s[0] == ?/ ? template_path : "/#{template_path}"
+        if respond_to?(:request) && request.controller.present? && template_path.split('/').length <= 2
+          template_path = "/#{request.controller}" + template_path
+        end
         rendering_options = [template_path, content_type || :html, locale]
 
         settings.cache_template_path(rendering_options) do
