@@ -34,6 +34,13 @@ describe "RenderHelpers" do
     end
   end
 
+  describe 'for #partial with ext and collection' do
+    before { visit '/partial/collection.ext' }
+    it 'should not fail horribly with `invalid locals key` RuntimeError' do
+      assert_have_selector "h1", :content => "User name is John"
+    end
+  end
+
   describe 'for #partial method and locals' do
     before { visit '/partial/locals' }
     it 'should render partial html with locals' do

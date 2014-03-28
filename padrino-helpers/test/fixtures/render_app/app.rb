@@ -50,6 +50,11 @@ class RenderDemo < Padrino::Application
     partial 'template/user', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => "bar" }
   end
 
+  # partial with collection and ext
+  get '/partial/collection.ext' do
+    partial 'template/user.haml', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => "bar" }
+  end
+
   # partial with locals
   get '/partial/locals' do
     partial 'template/user', :locals => { :user => RenderUser.new('John'), :extra => "bar" }
