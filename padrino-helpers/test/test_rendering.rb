@@ -1,3 +1,4 @@
+require File.expand_path('../../../padrino-core/test/helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'slim'
 
@@ -450,7 +451,7 @@ describe "Rendering" do
 
     it 'should resolve layouts from specific application' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog/override'
       assert_equal 'otay', body
     end
@@ -512,14 +513,14 @@ describe "Rendering" do
 
     it 'should resolve template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog'
       assert_equal 'okay', body
     end
 
     it 'should resolve nested template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/article/comment'
       assert_equal 'okay comment', body
     end

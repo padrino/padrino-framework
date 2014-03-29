@@ -6,8 +6,6 @@ class FooError < RuntimeError; end
 
 describe "Routing" do
   before do
-    Padrino::Application.send(:register, Padrino::Rendering)
-    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     Padrino.clear!
   end
 

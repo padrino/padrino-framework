@@ -7,6 +7,7 @@ require 'active_support/option_merger'                # with_options
 require 'active_support/core_ext/object/with_options' # with_options
 require 'active_support/inflector'                    # humanize
 require 'active_support/core_ext/hash/except'         # Hash#except
+require 'padrino/rendering'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]

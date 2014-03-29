@@ -369,6 +369,6 @@ module Padrino
   end
 end
 
-require 'padrino-core/application/rendering/extensions/haml'
-require 'padrino-core/application/rendering/extensions/erubis'
-require 'padrino-core/application/rendering/extensions/slim'
+require 'padrino/rendering/extensions/haml'
+require 'padrino/rendering/extensions/erubis'
+require 'padrino/rendering/extensions/slim'

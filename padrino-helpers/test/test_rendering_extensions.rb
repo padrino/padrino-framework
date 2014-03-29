@@ -1,3 +1,4 @@
+require File.expand_path('../../../padrino-core/test/helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Rendering Extensions" do
