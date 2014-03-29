@@ -4,7 +4,7 @@ require 'slim'
 
 describe "Rendering" do
   def setup
-    Padrino::Application.send(:register, Padrino::Rendering)
+    Padrino::Application.register Padrino::Rendering
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     I18n.enforce_available_locales = true
   end

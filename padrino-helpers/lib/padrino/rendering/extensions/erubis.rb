@@ -46,7 +46,7 @@ begin
         def render(*args)
           app       = args.first
           app_class = app.class
-          @is_padrino_app = app.kind_of?(Padrino::Application) || 
+          @is_padrino_app = (defined?(Padrino::Application) && app.kind_of?(Padrino::Application)) || 
                             (app_class.respond_to?(:erb) && app_class.erb[:engine_class] == Padrino::Erubis::SafeBufferTemplate)
           super
         end

@@ -43,6 +43,7 @@ module Padrino
       #   end
       #
       def registered(app)
+        app.register Padrino::Rendering
         app.set :default_builder, 'StandardFormBuilder'
         app.helpers Padrino::Helpers::OutputHelpers
         app.helpers Padrino::Helpers::TagHelpers
