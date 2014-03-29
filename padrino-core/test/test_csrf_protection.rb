@@ -2,7 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Application" do
   before { Padrino.clear! }
-  after  { remove_views }
 
   describe 'CSRF protection' do
     describe "with CSRF protection on" do

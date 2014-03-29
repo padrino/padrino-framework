@@ -1,10 +1,8 @@
-require File.expand_path('../../../padrino-core/test/helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'slim'
 
 describe "Rendering" do
   def setup
-    Padrino::Application.register Padrino::Rendering
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     I18n.enforce_available_locales = true
   end
