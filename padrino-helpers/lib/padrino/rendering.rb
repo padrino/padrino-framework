@@ -50,6 +50,8 @@ module Padrino
       end
 
       def registered(app)
+        # this fail can be removed later when jRuby is not bugged and MRI19 is dropped
+        fail 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing' if app == Padrino::Application
         included(app)
         engine_configurations.each do |engine, configs|
           app.set engine, configs

@@ -8,6 +8,7 @@ describe "Rendering" do
   end
 
   def teardown
+    I18n.locale = :en
     remove_views
   end
 
@@ -669,6 +670,14 @@ describe "Rendering" do
       get '/blog'
       get '/test'
       assert_equal 'test', body
+    end
+  end
+
+  describe 'rendering bug in some' do
+    it 'should raise error on registering things to Padrino::Application' do
+      assert_raises(RuntimeError) do
+        Padrino::Application.register Padrino::Rendering
+      end
     end
   end
 end
