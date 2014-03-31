@@ -9,7 +9,6 @@ class RenderUser
 end
 
 class RenderDemo < Padrino::Application
-  register Padrino::Rendering
   register Padrino::Helpers
 
   configure do

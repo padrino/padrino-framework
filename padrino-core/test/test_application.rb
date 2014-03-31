@@ -7,7 +7,6 @@ class PadrinoTestApp2 < Padrino::Application; end
 
 describe "Application" do
   before { Padrino.clear! }
-  after  { remove_views }
 
   describe 'for application functionality' do
 

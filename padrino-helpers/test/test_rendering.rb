@@ -3,12 +3,12 @@ require 'slim'
 
 describe "Rendering" do
   def setup
-    Padrino::Application.send(:register, Padrino::Rendering)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     I18n.enforce_available_locales = true
   end
 
   def teardown
+    I18n.locale = :en
     remove_views
   end
 
@@ -450,7 +450,7 @@ describe "Rendering" do
 
     it 'should resolve layouts from specific application' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog/override'
       assert_equal 'otay', body
     end
@@ -512,14 +512,14 @@ describe "Rendering" do
 
     it 'should resolve template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog'
       assert_equal 'okay', body
     end
 
     it 'should resolve nested template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/article/comment'
       assert_equal 'okay comment', body
     end
@@ -670,6 +670,14 @@ describe "Rendering" do
       get '/blog'
       get '/test'
       assert_equal 'test', body
+    end
+  end
+
+  describe 'rendering bug in some' do
+    it 'should raise error on registering things to Padrino::Application' do
+      assert_raises(RuntimeError) do
+        Padrino::Application.register Padrino::Rendering
+      end
     end
   end
 end

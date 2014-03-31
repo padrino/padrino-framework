@@ -50,6 +50,10 @@ module Padrino
       end
 
       def registered(app)
+        if defined?(Padrino::Application) && app == Padrino::Application
+          # this fail can be removed later when jRuby is not bugged and MRI19 is dropped
+          fail 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
+        end
         included(app)
         engine_configurations.each do |engine, configs|
           app.set engine, configs
@@ -369,6 +373,6 @@ module Padrino
   end
 end
 
-require 'padrino-core/application/rendering/extensions/haml'
-require 'padrino-core/application/rendering/extensions/erubis'
-require 'padrino-core/application/rendering/extensions/slim'
+require 'padrino/rendering/extensions/haml'
+require 'padrino/rendering/extensions/erubis'
+require 'padrino/rendering/extensions/slim'
