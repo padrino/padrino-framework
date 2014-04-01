@@ -101,7 +101,7 @@ module Padrino
         duration = Time.now - began_at
         color    = :red if duration > 1
         action   = colorize(action.to_s.upcase.rjust(@_pad), color)
-        duration = colorize('%0.4fs' % duration, :bold, color)
+        duration = colorize('%0.4fs' % duration, color, :bold)
         push "#{action} (#{duration}) #{message}", level
       end
 
@@ -218,14 +218,11 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        colors.each do |c|
-          string = string.colorize(c)
-        end
-        string
+        string.colorize(:color => colors[0], :mode => colors[1])
       end
 
       def stylized_level(level)
-        style = ColoredLevels[level].map { |c| "\e[%dm" % String::Colorizer.colors[c] } * ''
+        style = ColoredLevels[level].map { |c| "\e[%dm" % (String::Colorizer.modes[c] || String::Colorizer.colors[c]) } * ''
         [style, super, "\e[0m"] * ''
       end
     end
@@ -437,7 +434,7 @@ module Padrino
             env["PATH_INFO"],
             env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
             ' - ',
-            logger.colorize(status.to_s[0..3], :bold),
+            logger.colorize(status.to_s[0..3], :default, :bold),
             ' ',
             code_to_name(status)
           ] * '',

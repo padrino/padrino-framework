@@ -71,7 +71,7 @@ describe "PadrinoLogger" do
         get("/"){ "Foo" }
       end
       get "/"
-      assert_match /\e\[1m200\e\[0m OK/, Padrino.logger.log.string
+      assert_match /\e\[1;9m200\e\[0m OK/, Padrino.logger.log.string
     end
 
     describe "static asset logging" do
@@ -164,7 +164,7 @@ describe "alternate logger" do
     end
     get "/"
 
-    assert_match /\e\[1m200\e\[0m OK/, @log.string
+    assert_match /\e\[1;9m200\e\[0m OK/, @log.string
   end
 end
 
@@ -190,7 +190,7 @@ describe "alternate logger: stdlib logger" do
     end
     get "/"
 
-    assert_match /\e\[1m200\e\[0m OK/, @log.string
+    assert_match /\e\[1;9m200\e\[0m OK/, @log.string
   end
 end
 
@@ -207,7 +207,7 @@ describe "options :colorize_logging" do
       Padrino::Logger.setup!
 
       access_to_mock_app
-      assert_match /\e\[1m200\e\[0m OK/, Padrino.logger.log.string
+      assert_match /\e\[1;9m200\e\[0m OK/, Padrino.logger.log.string
     end
   end
   describe 'set value is false' do
