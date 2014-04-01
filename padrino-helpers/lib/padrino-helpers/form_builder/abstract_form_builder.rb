@@ -231,7 +231,7 @@ module Padrino
           if options[:collection]
             _, id_method = *field_methods(options)
             selected_values.map do |value|
-              (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
+              value.to_s
             end
           else
             selected_values

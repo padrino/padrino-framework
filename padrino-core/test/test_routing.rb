@@ -145,6 +145,7 @@ describe "Routing" do
   end
 
   it 'should encode params using UTF-8' do
+    skip unless ''.respond_to?(:force_encoding)
     mock_app do
       get('/:foo') { params[:foo].encoding.name }
     end
@@ -285,7 +286,7 @@ describe "Routing" do
 
   it 'should generate absolute urls from stringified keys' do
     mock_app do
-      get(:hash, with: :id) { absolute_url(:hash, "id" => 1) }
+      get(:hash, :with => :id) { absolute_url(:hash, "id" => 1) }
     end
     get "/hash/2"
     assert_equal "http://example.org/hash/1", body
@@ -1160,7 +1161,7 @@ describe "Routing" do
 
   it 'should filters by media type when using :accepts as controller option' do
     mock_app do
-      controller accepts: [:xml, :js] do
+      controller :accepts => [:xml, :js] do
         get '/foo' do
           request.env['CONTENT_TYPE']
         end

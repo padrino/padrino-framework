@@ -45,7 +45,7 @@ module Padrino
         end
 
         locals = options[:locals]
-        objects.each_with_object(ActiveSupport::SafeBuffer.new) do |object,html|
+        objects.inject(ActiveSupport::SafeBuffer.new) do |html,object|
           locals[object_name] = object if object
           locals["#{object_name}_counter".to_sym] = counter += 1 if counter
           content =
@@ -55,6 +55,7 @@ module Padrino
               render(explicit_engine, template_path, options)
             end
           html.safe_concat content if content
+          html
         end
       end
       alias :render_partial :partial

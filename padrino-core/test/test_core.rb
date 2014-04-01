@@ -24,6 +24,7 @@ describe "Core" do
     end
 
     it 'should set correct utf-8 encoding' do
+      skip unless ''.respond_to?(:force_encoding)
       Padrino.set_encoding
       assert_equal Encoding.default_external, Encoding::UTF_8
       assert_equal Encoding.default_internal, Encoding::UTF_8

@@ -119,13 +119,14 @@ module Padrino
         end
 
         def error_html_attributes(options)
-          [:id, :class, :style].each_with_object({}) do |key,all|
+          [:id, :class, :style].inject({}) do |all,key|
             if options.include?(key)
               value = options[key]
               all[key] = value unless value.blank?
             else
               all[key] = 'field-errors' unless key == :style
             end
+            all
           end
         end
 

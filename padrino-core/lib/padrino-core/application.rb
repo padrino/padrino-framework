@@ -38,7 +38,7 @@ module Padrino
     class << self
       def inherited(base)
         begun_at = Time.now
-        CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS)
+        CALLERS_TO_IGNORE.concat(PADRINO_IGNORE_CALLERS) if defined?(CALLERS_TO_IGNORE)
         base.default_configuration!
         logger.devel :setup, begun_at, base
         super(base)

@@ -96,7 +96,7 @@ module Padrino
         }.update(options)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
 
-        if (desired_method = options[:method]) =~ /get/i
+        if (desired_method = options[:method].to_s) =~ /get/i
           options.delete(:protect_from_csrf)
         else
           options[:method] = 'post'

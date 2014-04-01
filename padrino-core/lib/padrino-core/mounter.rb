@@ -142,7 +142,9 @@ module Padrino
       klass = Object
       for piece in app_class.split("::")
         piece = piece.to_sym
-        if klass.const_defined?(piece, false)
+        args = [piece]
+        args << false if klass.method(:const_defined?).arity > 1
+        if klass.const_defined?(*args)
           klass = klass.const_get(piece)
         else
           return
