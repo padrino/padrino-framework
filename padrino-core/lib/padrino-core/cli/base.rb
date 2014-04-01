@@ -69,7 +69,10 @@ module Padrino
         require File.expand_path("../../version", __FILE__)
         ARGV.clear
         require 'irb'
-        require "irb/completion"
+        begin
+          require "irb/completion"
+        rescue LoadError
+        end
         require File.expand_path('config/boot.rb')
         puts "=> Loading #{Padrino.env} console (Padrino v.#{Padrino.version})"
         require File.expand_path('../console', __FILE__)
