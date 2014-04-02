@@ -203,11 +203,11 @@ module Padrino
       # Colors for levels
       ColoredLevels = {
         :fatal => [:bold, :red],
-        :error => [:red],
-        :warn  => [:yellow],
-        :info  => [:green],
-        :debug => [:cyan],
-        :devel => [:magenta]
+        :error => [:default, :red],
+        :warn  => [:default, :yellow],
+        :info  => [:default, :green],
+        :debug => [:default, :cyan],
+        :devel => [:default, :magenta]
       } unless defined?(ColoredLevels)
 
       ##
@@ -222,7 +222,7 @@ module Padrino
       end
 
       def stylized_level(level)
-        style = ColoredLevels[level].map { |c| "\e[%dm" % (String::Colorizer.modes[c] || String::Colorizer.colors[c]) } * ''
+        style = "\e[%d;%dm" % ColoredLevels[level].map{|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
         [style, super, "\e[0m"] * ''
       end
     end

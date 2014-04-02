@@ -110,11 +110,11 @@ describe "PadrinoLogger" do
       it 'should output under debug level' do
         Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:debug] }
         access_to_mock_app
-        assert_match /\e\[36m  DEBUG\e\[0m/, Padrino.logger.log.string
+        assert_match /\e\[0;36m  DEBUG\e\[0m/, Padrino.logger.log.string
 
         Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:devel] }
         access_to_mock_app
-        assert_match /\e\[36m  DEBUG\e\[0m/, Padrino.logger.log.string
+        assert_match /\e\[0;36m  DEBUG\e\[0m/, Padrino.logger.log.string
       end
       it 'should not output over debug level' do
         Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:info] }
