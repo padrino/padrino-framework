@@ -35,6 +35,8 @@ Bug fixes:
 * FIX Improve migration generator regex matching (@namusyaka)
 * FIX #1632 improve PADRINO_ENV deprecation compatibility (@ujifgc)
 * FIX #1634 Improve caching of template paths (@ujifgc)
+* FIX #1640 allow to run console without readlines (@ujifgc)
+* FIX #1644 Removes the media attribute from default attributes of stylesheet_link (@namusyaka)
 
 Refactoring and cleanup:
 
