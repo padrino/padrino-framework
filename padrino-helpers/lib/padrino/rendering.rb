@@ -373,6 +373,31 @@ module Padrino
   end
 end
 
-require 'padrino/rendering/extensions/haml'
-require 'padrino/rendering/extensions/erubis'
-require 'padrino/rendering/extensions/slim'
+unless defined? Padrino::Rendering::HamlTemplate
+  begin
+    require 'haml'
+    require 'haml/helpers/xss_mods'
+    require 'haml/helpers/action_view_extensions'
+  rescue LoadError
+  else
+    require 'padrino/rendering/haml_template'
+  end
+end
+
+unless defined? Padrino::Rendering::ErubisTemplate
+  begin
+    require 'erubis'
+  rescue LoadError
+  else
+    require 'padrino/rendering/erubis_template'
+  end
+end
+
+unless defined? Padrino::Rendering::SlimTemplate
+  begin
+    require 'slim'
+  rescue LoadError
+  else
+    require 'padrino/rendering/slim_template'
+  end
+end
