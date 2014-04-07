@@ -44,6 +44,8 @@ module Padrino
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
       options[:server] = detect_rack_handler if options[:server].blank?
+      # disable Webrick AccessLog
+      options[:AccessLog] = []
       new(options, app).start
     end
 
