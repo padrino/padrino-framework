@@ -898,6 +898,17 @@ describe "Routing" do
     assert_equal "hello", body
   end
 
+  it 'should set the params correctly even if using prioritized routes' do
+    mock_app do
+      get("*__sinatra__/:image.png"){}
+      get "/:primary/:secondary", :priority => :low do
+        "#{params[:primary]} #{params[:secondary]}"
+      end
+    end
+    get "/abc/def"
+    assert_equal "abc def", body
+  end
+
   it 'should catch all after controllers' do
     mock_app do
       get(:index, :with => :slug, :priority => :low) { "catch all" }
