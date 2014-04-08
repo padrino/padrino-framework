@@ -262,4 +262,20 @@ describe "Router" do
     res = Rack::MockRequest.new(Padrino.application).get("/foo/", "HTTP_HOST" => "bar.padrino.org")
     assert res.ok?
   end
+
+  it 'should keep the same environment object' do
+    app = lambda { |env|
+      env['path'] = env['PATH_INFO']
+      [200, {'Content-Type' => 'text/plain'}, [""]]
+    }
+    map = Padrino::Router.new(
+      { :path => '/bar',     :to => app },
+      { :path => '/foo/bar', :to => app },
+      { :path => '/foo',     :to => app }
+    )
+
+    env = Rack::MockRequest.env_for("/bar/foo")
+    map.call(env)
+    assert_equal "/foo", env["path"]
+  end
 end
