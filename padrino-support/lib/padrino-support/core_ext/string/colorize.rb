@@ -5,8 +5,13 @@ require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support
 #
 class String
   # colorize(:red)
-  def colorize(color)
-    Colorizer.send(color, self)
+  def colorize(args)
+    case args
+    when Symbol
+      Colorizer.send(args, self)
+    when Hash
+      Colorizer.send(args[:color], self, args[:mode])
+    end
   end
 
   # Used to colorize strings for the shell
@@ -14,8 +19,7 @@ class String
     # Returns colors integer mapping
     def self.colors
       @_colors ||= {
-        :clear   => 0,
-        :bold    => 1,
+        :default => 9,
         :black   => 30,
         :red     => 31,
         :green   => 32,
@@ -27,12 +31,21 @@ class String
       }
     end
 
+    # Returns modes integer mapping
+    def self.modes
+      @_modes ||= {
+        :default => 0,
+        :bold    => 1
+      }
+    end
+
     # Defines class level color methods
     # i.e  Colorizer.red("hello")
     class << self
       Colorizer.colors.each do |color, value|
-        define_method(color) do |target|
-          "\e[#{value}m" << target << "\e[0m"
+        define_method(color) do |target, mode_name = :default|
+          mode = modes[mode_name] || modes[:default]
+          "\e[#{mode};#{value}m" << target << "\e[0m"
          end
       end
     end
