@@ -132,6 +132,19 @@ class HttpRouter
     @routes.sort!{ |a, b| a.order <=> b.order }
   end
 
+  class Node::Glob
+    def to_code
+      id = root.next_counter
+      "request.params << (globbed_params#{id} = [])
+       until request.path.empty?
+         globbed_params#{id} << request.path.shift
+         #{super}
+       end
+       request.path[0,0] = globbed_params#{id}
+       request.params.pop"
+    end
+  end
+
   class Node::SpanningRegex
     def to_code
       params_count = @ordered_indicies.size
