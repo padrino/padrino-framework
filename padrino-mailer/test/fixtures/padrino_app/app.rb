@@ -2,7 +2,6 @@ ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 class PadrinoApp < Padrino::Application
-  register Padrino::Rendering
   register Padrino::Helpers
   register Padrino::Mailer
 

@@ -6,8 +6,6 @@ class FooError < RuntimeError; end
 
 describe "Routing" do
   before do
-    Padrino::Application.send(:register, Padrino::Rendering)
-    Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     Padrino.clear!
   end
 
@@ -897,6 +895,17 @@ describe "Routing" do
     get '/'
     assert_equal [:high, :normal, :low], route_order
     assert_equal "hello", body
+  end
+
+  it 'should set the params correctly even if using prioritized routes' do
+    mock_app do
+      get("*__sinatra__/:image.png"){}
+      get "/:primary/:secondary", :priority => :low do
+        "#{params[:primary]} #{params[:secondary]}"
+      end
+    end
+    get "/abc/def"
+    assert_equal "abc def", body
   end
 
   it 'should catch all after controllers' do

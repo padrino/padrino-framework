@@ -657,6 +657,13 @@ describe "FormHelpers" do
       assert_has_tag('select option:first-child', :value => "", :content => "") { actual_html }
     end
 
+    it 'should include blank as caption' do
+      opts = { "Red"  => ["Rose","Fire"], "Blue" => ["Sky","Sea"] }
+      actual_html = select_tag( 'color', :grouped_options => opts, :include_blank => 'Choose your destiny' )
+      assert_has_tag('select option:first-child', :value => "", :content => "Choose your destiny") { actual_html }
+      assert_has_no_tag('select[include_blank]') { actual_html }
+    end
+
     it 'should display select tag with grouped options for a nested array' do
       opts = [
         ["Friends",["Yoda",["Obiwan",2]]],

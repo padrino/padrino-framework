@@ -9,7 +9,6 @@ class RenderUser
 end
 
 class RenderDemo < Padrino::Application
-  register Padrino::Rendering
   register Padrino::Helpers
 
   configure do
@@ -48,6 +47,11 @@ class RenderDemo < Padrino::Application
   # partial with collection
   get '/partial/collection' do
     partial 'template/user', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => "bar" }
+  end
+
+  # partial with collection and ext
+  get '/partial/collection.ext' do
+    partial 'template/user.haml', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => "bar" }
   end
 
   # partial with locals

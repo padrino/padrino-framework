@@ -2,7 +2,6 @@ require 'padrino-core'
 
 class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
-  register Padrino::Rendering
 
   configure do
     set :logging, false

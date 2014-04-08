@@ -12,7 +12,7 @@ module Padrino
           else
             options_for_select(extract_option_items!(options), state)
           end
-          if prompt = options[:include_blank]
+          if prompt = options.delete(:include_blank)
             option_tags.unshift(blank_option(prompt))
           end
           option_tags

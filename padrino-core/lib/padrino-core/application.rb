@@ -1,5 +1,4 @@
 require 'padrino-core/application/flash'
-require 'padrino-core/application/rendering'
 require 'padrino-core/application/routing'
 require 'padrino-core/application/show_exceptions'
 require 'padrino-core/application/authenticity_token'

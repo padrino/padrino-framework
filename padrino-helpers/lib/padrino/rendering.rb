@@ -50,6 +50,10 @@ module Padrino
       end
 
       def registered(app)
+        if defined?(Padrino::Application) && app == Padrino::Application
+          # this fail can be removed later when jRuby is not bugged and MRI19 is dropped
+          fail 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
+        end
         included(app)
         engine_configurations.each do |engine, configs|
           app.set engine, configs
@@ -271,9 +275,10 @@ module Padrino
       #
       def resolve_template(template_path, options={})
         template_path = template_path.to_s
+        controller_key = respond_to?(:request) && request.respond_to?(:controller) && request.controller
         rendering_options = [template_path, content_type || :html, locale]
 
-        settings.cache_template_path(rendering_options) do
+        settings.cache_template_path(["#{controller_key}/#{template_path}", rendering_options[1], rendering_options[2]]) do
           options = DEFAULT_RENDERING_OPTIONS.merge(options)
           view_path = options[:views] || settings.views || "./views"
 
@@ -368,6 +373,31 @@ module Padrino
   end
 end
 
-require 'padrino-core/application/rendering/extensions/haml'
-require 'padrino-core/application/rendering/extensions/erubis'
-require 'padrino-core/application/rendering/extensions/slim'
+unless defined? Padrino::Rendering::HamlTemplate
+  begin
+    require 'haml'
+    require 'haml/helpers/xss_mods'
+    require 'haml/helpers/action_view_extensions'
+  rescue LoadError
+  else
+    require 'padrino/rendering/haml_template'
+  end
+end
+
+unless defined? Padrino::Rendering::ErubisTemplate
+  begin
+    require 'erubis'
+  rescue LoadError
+  else
+    require 'padrino/rendering/erubis_template'
+  end
+end
+
+unless defined? Padrino::Rendering::SlimTemplate
+  begin
+    require 'slim'
+  rescue LoadError
+  else
+    require 'padrino/rendering/slim_template'
+  end
+end

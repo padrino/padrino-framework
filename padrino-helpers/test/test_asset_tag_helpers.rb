@@ -227,21 +227,21 @@ describe "AssetTagHelpers" do
     it 'should display stylesheet link item' do
       time = stop_time_for_test
       actual_html = stylesheet_link_tag('style')
-      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      expected_options = { :rel => "stylesheet", :type => "text/css" }
       assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css?#{time.to_i}")) { actual_html }
       assert actual_html.html_safe?
     end
 
     it 'should display stylesheet link item for long relative path' do
       time = stop_time_for_test
-      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      expected_options = { :rel => "stylesheet", :type => "text/css" }
       actual_html = stylesheet_link_tag('example/demo/style')
       assert_has_tag('link', expected_options.merge(:href => "/stylesheets/example/demo/style.css?#{time.to_i}")) { actual_html }
     end
 
     it 'should display stylesheet link item with absolute path' do
       time = stop_time_for_test
-      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      expected_options = { :rel => "stylesheet", :type => "text/css" }
       actual_html = stylesheet_link_tag('/css/style')
       assert_has_tag('link', expected_options.merge(:href => "/css/style.css")) { actual_html }
     end
@@ -249,7 +249,7 @@ describe "AssetTagHelpers" do
     it 'should display stylesheet link item with uri root' do
       self.class.stubs(:uri_root).returns("/blog")
       time = stop_time_for_test
-      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      expected_options = { :rel => "stylesheet", :type => "text/css" }
       actual_html = stylesheet_link_tag('style')
       assert_has_tag('link', expected_options.merge(:href => "/blog/stylesheets/style.css?#{time.to_i}")) { actual_html }
     end
@@ -257,7 +257,7 @@ describe "AssetTagHelpers" do
     it 'should display stylesheet link items' do
       time = stop_time_for_test
       actual_html = stylesheet_link_tag('style', 'layout.css', 'http://google.com/style.css')
-      assert_has_tag('link', :media => "screen", :rel => "stylesheet", :type => "text/css", :count => 3) { actual_html }
+      assert_has_tag('link', :rel => "stylesheet", :type => "text/css", :count => 3) { actual_html }
       assert_has_tag('link', :href => "/stylesheets/style.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "/stylesheets/layout.css?#{time.to_i}") { actual_html }
       assert_has_tag('link', :href => "http://google.com/style.css") { actual_html }
@@ -266,8 +266,12 @@ describe "AssetTagHelpers" do
 
     it 'should not use a timestamp if stamp setting is false' do
       self.class.expects(:asset_stamp).returns(false)
-      expected_options = { :media => "screen", :rel => "stylesheet", :type => "text/css" }
+      expected_options = { :rel => "stylesheet", :type => "text/css" }
       assert_has_tag('link', expected_options.merge(:href => "/stylesheets/style.css")) { stylesheet_link_tag('style') }
+    end
+
+    it 'should display stylesheet link used custom options' do
+      assert_has_tag('link', :rel => 'stylesheet', :media => 'screen') { stylesheet_link_tag('style', :media => 'screen') }
     end
   end
 

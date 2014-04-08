@@ -36,7 +36,7 @@ module Padrino
 
         path,_,name = template.to_s.rpartition(File::SEPARATOR)
         template_path = File.join(path,"_#{name}").to_sym
-        object_name = name.to_sym
+        object_name = name.partition('.').first.to_sym
 
         objects, counter = if options[:collection].respond_to?(:inject)
           [options.delete(:collection), 0]

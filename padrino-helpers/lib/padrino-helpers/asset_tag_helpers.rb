@@ -231,7 +231,6 @@ module Padrino
       # @api public.
       def stylesheet_link_tag(*sources)
         options = {
-          :media => 'screen',
           :rel => 'stylesheet',
           :type => 'text/css'
         }.update(sources.extract_options!.symbolize_keys)

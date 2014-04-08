@@ -1,5 +1,54 @@
 = CHANGES
 
+== 0.12.1 (April 4th 2014)
+
+New features:
+
+* NEW #1574 Add dynamoid orm component (@nof)
+* NEW #1573 Add report_csrf_failure, enable custom reports (@ujifgc)
+* NEW Introduces Logger#exception method for application (@ujifgc)
+* NEW Allow password to be supplied to postgres (@ct-clearhaus)
+* NEW #1495 Adds support for lean generation option (@ujifgc)
+* NEW #1560 Introduces cache_object helper (@dariocravero)
+* NEW #1310 Implement :accepts option (@namusyaka)
+* FIX #1260 Load config.ru with Padrino server (@ujifgc)
+* FIX Respect host and port in config.ru (@ujifgc)
+* FIX #1622 resolve nested relative template (@ujifgc)
+
+Bug fixes:
+
+* FIX Do not reload controllers twice (@ujifgc)
+* FIX Mimic rack-protection when no handler is defined (@ujifgc)
+* FIX #1582 ensure that captured blocks in erb and slim templates return nil (@minad)
+* FIX #1584 Avoids improper model checking (@namusyaka)
+* FIX the destroyer of sub application (@namusyaka)
+* FIX String escape safety issues with helpers (@ujifgc)
+* FIX stylesheet_link_tag and javascript_include_tag to use proper concat (@ujifgc)
+* FIX #1600 replaces html_safe with more effective safe_concat (@ujifgc)
+* FIX #1595 Fix bug in Padrino::Mounter.app_constant (@tyabe)
+* FIX #1606 Adjust tests to run on newer minitest versions (@ujifgc)
+* FIX #1609 Switch tests to explicit minitest and remove mini_shoulda (@ujifgc)
+* FIX #1615 Wait for external DB processes to finish before the task finishes. (@dariocravero)
+* FIX #1618 Wrong value of named_routes when specifying the multiple routes and nested (@namusyaka)
+* FIX #1621 Add explicit specification of ActiveRecord::Base.default_timezone (@tyabe)
+* FIX #1624 Detect path absoluteness properly (@ujifgc)
+* FIX Improve migration generator regex matching (@namusyaka)
+* FIX #1632 improve PADRINO_ENV deprecation compatibility (@ujifgc)
+* FIX #1634 Improve caching of template paths (@ujifgc)
+* FIX #1640 allow to run console without readlines (@ujifgc)
+* FIX #1644 Removes the media attribute from default attributes of stylesheet_link (@namusyaka)
+
+Refactoring and cleanup:
+
+* FIX #1635 Move rendering to padrino-helpers (@ujifgc)
+* FIX #1612 Refactor support_lite into a padrino-support gem outside of core (@ujifgc)
+* FIX Refactor model generator (@scudelletti)
+* FIX Extract form_select_helpers and cleanup (@ujifgc)
+* FIX Cleanup the error_messages_for codebase in helpers (@ujifgc)
+* FIX Refactor application code moving setup into an application_setup file (@ujifgc)
+* FIX Major rendering refactor and cleanup (@ujifgc)
+* FIX #1602 Refactor the activerecord tasks (@namusyaka)
+
 == 0.12.0 (February 9th 2014)
 
 * FIX #1578 Fix latvian translations (@graudeejs)

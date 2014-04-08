@@ -3,12 +3,12 @@ require 'slim'
 
 describe "Rendering" do
   def setup
-    Padrino::Application.send(:register, Padrino::Rendering)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
     I18n.enforce_available_locales = true
   end
 
   def teardown
+    I18n.locale = :en
     remove_views
   end
 
@@ -450,7 +450,7 @@ describe "Rendering" do
 
     it 'should resolve layouts from specific application' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog/override'
       assert_equal 'otay', body
     end
@@ -512,14 +512,14 @@ describe "Rendering" do
 
     it 'should resolve template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/blog'
       assert_equal 'okay', body
     end
 
     it 'should resolve nested template location relative to controller name' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
-      @app = RenderDemo
+      @app = RenderDemo2
       get '/article/comment'
       assert_equal 'okay comment', body
     end
@@ -635,6 +635,49 @@ describe "Rendering" do
       @app = Application.new
       get '/'
       assert_equal 'okay', body
+    end
+  end
+
+  describe 'locating of template paths' do
+    it 'should locate controller templates' do
+      mock_app do
+        disable :reload_templates
+        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        controller :test do
+          get :index do
+            render 'test/post'
+          end
+        end
+      end
+      get '/test'
+    end
+
+    it 'should properly cache template path' do
+      mock_app do
+        disable :reload_templates
+        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        controller :blog do
+          get :index do
+            render :post
+          end
+        end
+        controller :test do
+          get :index do
+            render 'post'
+          end
+        end
+      end
+      get '/blog'
+      get '/test'
+      assert_equal 'test', body
+    end
+  end
+
+  describe 'rendering bug in some' do
+    it 'should raise error on registering things to Padrino::Application' do
+      assert_raises(RuntimeError) do
+        Padrino::Application.register Padrino::Rendering
+      end
     end
   end
 end

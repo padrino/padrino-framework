@@ -3,7 +3,10 @@ require 'rake'
 require 'rake/dsl_definition'
 require 'thor'
 require 'securerandom' unless defined?(SecureRandom)
-require 'padrino-gen'
+begin
+  require 'padrino-gen'
+rescue LoadError
+end
 
 module PadrinoTasks
   def self.init(init=false)
