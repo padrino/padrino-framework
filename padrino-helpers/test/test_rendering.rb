@@ -190,25 +190,6 @@ describe "Rendering" do
     assert_equal "bar layout bar", body
   end
 
-  it 'should render correctly if layout was not found or not exist' do
-    create_layout :application, "application layout for <%= yield %>"
-    create_view :foo, "index", :format => :html
-    create_view :foo, "xml.rss", :format => :rss
-    mock_app do
-      get("/foo", :provides => [:html, :rss]) { render('foo') }
-      get("/baz", :provides => :js) { render(:erb, 'baz') }
-      get("/bar") { render :haml, "haml" }
-    end
-    get "/foo"
-    assert_equal "application layout for index", body
-    get "/foo.rss"
-    assert_equal "<rss/>", body.chomp
-    get "/baz.js"
-    assert_equal "baz", body
-    get "/bar"
-    assert_equal "haml", body.chomp
-  end
-
   it 'should allow to render template with layout option that using other template engine.' do
     create_layout :"layouts/foo", "application layout for <%= yield %>", :format => :erb
     create_view :slim, "| slim", :format => :slim
@@ -234,6 +215,25 @@ describe "Rendering" do
     create_view :erb, "erb", :format => :erb
     mock_app do
       layout "bar.erb"
+      get("/slim") { render("slim.slim") }
+      get("/haml") { render("haml.haml") }
+      get("/erb") { render("erb.erb") }
+    end
+    get "/slim"
+    assert_equal "application layout for slim", body.chomp
+    get "/haml"
+    assert_equal "application layout for haml", body.chomp
+    get "/erb"
+    assert_equal "application layout for erb", body.chomp
+  end
+
+  it 'should find a layout by symbol' do
+    create_layout :"layouts/bar", "application layout for <%= yield %>", :format => :erb
+    create_view :slim, "| slim", :format => :slim
+    create_view :haml, "haml", :format => :haml
+    create_view :erb, "erb", :format => :erb
+    mock_app do
+      layout :bar
       get("/slim") { render("slim.slim") }
       get("/haml") { render("haml.haml") }
       get("/erb") { render("erb.erb") }
