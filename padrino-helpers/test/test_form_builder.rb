@@ -273,6 +273,7 @@ describe "FormBuilder" do
     it 'should display correct label html' do
       actual_html = standard_builder.label(:first_name, :class => 'large', :caption => "F. Name: ")
       assert_has_tag('label', :class => 'large', :for => 'user_first_name', :content => "F. Name: ") { actual_html }
+      assert_has_no_tag('label#user_first_name') { actual_html }
     end
 
     it 'should set specific content inside the label if a block was provided' do

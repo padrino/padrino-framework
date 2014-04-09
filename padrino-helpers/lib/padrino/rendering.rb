@@ -298,26 +298,18 @@ module Padrino
         I18n.locale if defined?(I18n)
       end
 
-      LAYOUT_EXTENSIONS = %w[.slim .erb .haml].freeze
-
       def resolve_layout(layout, options={})
         layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
         template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
 
-        layout, engine =
-          settings.cache_template_path(rendering_options) do
-            template_candidates = glob_templates(layouts_path, template_path)
-            selected_template = select_template(template_candidates, *rendering_options)
+        settings.cache_template_path(rendering_options) do
+          template_candidates = glob_templates(layouts_path, template_path)
+          selected_template = select_template(template_candidates, *rendering_options)
 
-            fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout.present?
-            selected_template
-          end
-
-        is_included_extension = LAYOUT_EXTENSIONS.include?(File.extname(template_path.to_s))
-        layout = false unless is_included_extension ? engine : engine == @current_engine
-
-        [layout, engine]
+          fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout.present?
+          selected_template
+        end
       end
 
       def with_layout(options)

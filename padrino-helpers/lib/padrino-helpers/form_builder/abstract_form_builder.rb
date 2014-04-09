@@ -35,6 +35,7 @@ module Padrino
         end
 
         def label(field, options={}, &block)
+          options[:id] ||= nil
           options[:caption] ||= I18n.t("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models) + ': '
           @template.label_tag(field_id(field), default_options(field, options), &block)
         end
