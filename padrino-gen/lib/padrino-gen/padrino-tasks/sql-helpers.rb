@@ -26,6 +26,9 @@ module Padrino
             arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
 
             Process.wait Process.spawn(environment, 'mysql', *arguments)
+          when 'sqlite'
+            fail "Database #{database} already exists" if File.file?(database)
+            File.open(database, 'a') {}
           else
             raise "Adapter #{adapter} not supported for creating databases yet."
         end
@@ -55,6 +58,8 @@ module Padrino
             arguments << "DROP DATABASE IF EXISTS #{database}"
 
             Process.wait Process.spawn(environment, 'mysql', *arguments)
+          when 'sqlite'
+            File.delete(database) if File.file?(database)
           else
             raise "Adapter #{adapter} not supported for dropping databases yet."
         end
