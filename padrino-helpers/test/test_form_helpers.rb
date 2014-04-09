@@ -782,6 +782,13 @@ describe "FormHelpers" do
       assert_has_tag('select option', :content => 'Black', :value => 'black1', :selected => 'selected') { actual_html }
     end
 
+    it 'should not misselect options with default value' do
+      options = ['Green', 'Blue']
+      actual_html = select_tag(:favorite_color, :options => options, :selected => ['Green', ''])
+      assert_has_tag('select option', :selected => 'selected', :count => 1) { actual_html }
+      assert_has_tag('select option', :content => 'Green', :value => 'Green', :selected => 'selected') { actual_html }
+    end
+
     it 'should display options selected only for exact match' do
       options = [['One', '1'], ['1', '10'], ['Two', "-1"]]
       actual_html = select_tag(:range, :options => options, :selected => '-1')

@@ -55,7 +55,7 @@ module Padrino
         def options_for_select(option_items, state = {})
           return [] if option_items.blank?
           option_items.map do |caption, value, attributes|
-            html_attributes = { :value => value || caption  }.merge(attributes||{})
+            html_attributes = { :value => value ||= caption }.merge(attributes||{})
             html_attributes[:selected] ||= option_is_selected?(value, caption, state[:selected])
             html_attributes[:disabled] ||= option_is_selected?(value, caption, state[:disabled])
             content_tag(:option, caption, html_attributes)
