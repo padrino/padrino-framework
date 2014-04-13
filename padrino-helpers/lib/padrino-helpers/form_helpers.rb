@@ -459,10 +459,12 @@ module Padrino
       #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
       #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
       #
-      #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
-      #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
-      #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
-      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #   # Optgroups can be generated using the rails-style attribute hash.
+      #   grouped_options = {
+      #     "Friends" => ["Yoda", ["Obiwan", 2, {:magister => 'no'}], {:lame => 'yes'}],
+      #     "Enemies" => [["Palpatine", "Palpatine", {:scary => 'yes', :old => 'yes'}], ["Darth Vader", 3, {:disabled => true}]]
+      #   }
+      #   select_tag(:name, :grouped_options => grouped_options)
       #
       # @param [String] name
       #   The name of the input field.

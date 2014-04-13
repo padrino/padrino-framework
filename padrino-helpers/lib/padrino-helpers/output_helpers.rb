@@ -125,14 +125,20 @@ module Padrino
       # @overload content_for(key, content)
       #   @param [Symbol] key      Name of your key for the content yield.
       #   @param [String] content  Text to be stored for this key.
+      #   @param [Hash]   options  Options associated with this method.
       # @overload content_for(key, &block)
       #   @param [Symbol] key      Name of your key for the content yield.
       #   @param [Proc]   block    Block to be stored as content for this key.
+      #   @param [Hash]   options  Options associated with this method.
+      #
+      # @option options [Boolean] :flush
+      #   Specifies whether to replace the content.
       #
       # @example
       #   content_for(:name) { ...content... }
       #   content_for(:name) { |name| ...content... }
       #   content_for(:name, "I'm Jeff")
+      #   content_for(:name, :flush => true) { ...new content... }
       #
       def content_for(key, content = nil, options = {}, &block)
         options = content if content.is_a?(Hash)
