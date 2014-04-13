@@ -102,6 +102,8 @@ describe "AssetTagHelpers" do
     it 'should not double-escape' do
       actual_link = link_to('test escape', '?a=1&b=2')
       assert_has_tag('a', :href => '?a=1&b=2') { actual_link }
+      assert_match %r{&amp;}, actual_link
+      refute_match %r{&amp;amp;}, actual_link
     end
 
     it 'should escape scary things' do
@@ -133,6 +135,13 @@ describe "AssetTagHelpers" do
       actual_html = mail_to('test@demo.com', "My&Email", :subject => "this&that")
       assert_match 'this%26that', actual_html
       assert_match 'My&amp;Email', actual_html
+    end
+
+    it 'should not double-escape ampersands in query' do
+      actual_html = mail_to('to@demo.com', "Email", :subject => 'Hi there', :bcc => 'bcc@test.com')
+      assert_has_tag(:a, :href => 'mailto:to@demo.com?bcc=bcc@test.com&subject=Hi%20there', :content => 'Email') { actual_html }
+      assert_match %r{&amp;}, actual_html
+      refute_match %r{&amp;amp;}, actual_html
     end
 
     it 'should display mail link element in haml' do
