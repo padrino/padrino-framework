@@ -3,7 +3,6 @@ require 'padrino-core'
 require 'padrino-helpers'
 FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)
 require 'moneta'
-require 'padrino-cache/legacy_store'
 
 module Padrino
   class << self
@@ -111,12 +110,7 @@ module Padrino
     def self.new(name, options = {})
       # Activate expiration by default
       options[:expires] = true unless options.include?(:expires)
-      a = Moneta.new(name, options)
-      Moneta.build do
-        # Use proxy to support deprecated Padrino interface
-        use LegacyStore
-        adapter a
-      end
+      Moneta.new(name, options)
     end
 
     Padrino.cache = Padrino::Cache.new(:LRUHash)
