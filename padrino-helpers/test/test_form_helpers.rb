@@ -97,6 +97,11 @@ describe "FormHelpers" do
       assert_has_no_tag(:input, :name => 'authenticity_token') { actual_html }
     end
 
+    it 'should not include protect_from_csrf as an attribute of form element' do
+      actual_html = form_tag('/superadmindelete', :protect_from_csrf => true){ "Demo" }
+      assert_has_no_tag(:form, protect_from_csrf: "true"){ actual_html }
+    end
+
     it 'should display correct forms in erb' do
       visit '/erb/form_tag'
       assert_have_selector 'form.simple-form', :action => '/simple'
