@@ -20,11 +20,11 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 
           div class='form-group'
             label for="email" class='col-lg-2 control-label' = pat('login.email')
-            div class='col-lg-10'  = email_field_tag :email, :value => params[:email], :autofocus => true, :class => 'form-control'
+            div class='col-lg-10'  = email_field_tag :email, :id => :email, :value => params[:email], :autofocus => true, :class => 'form-control'
 
           div class='form-group'
             label for="password" class='col-lg-2 control-label' = pat('login.password')
-            div class='col-lg-10'  = password_field_tag :password, :class => 'form-control'
+            div class='col-lg-10'  = password_field_tag :password, :id => :password, :class => 'form-control'
 
           fieldset class='login-control-group-last control-group'
             div class='login-controls controls'
