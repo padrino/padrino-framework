@@ -8,30 +8,30 @@
     %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
     %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
     %title= @title.present? ? "#{@title} | Padrino Admin" : "#{pat('login.title')} | Padrino Admin"
-    =favicon_tag 'favicon.ico'
-    =stylesheet_link_tag 'bootstrap', 'application'
+    = favicon_tag 'favicon.ico'
+    = stylesheet_link_tag 'bootstrap', 'application'
   %body
     = form_tag url(:sessions, :create), :class=>'login form-horizontal' do
       .login-header.modal-header
         .login-logo=image_tag('logo.png', :alt => "Padrino's logo", :height => 250, :width => 193)
       .login-body.modal-body
-        =  {:error => 'danger', :warning => 'warning', :success => 'success', :notice => 'info'}.map { |type, class_name| flash_tag(type, :class => "alert alert-#{class_name} fade in", :bootstrap => true) }.join.html_safe
+        = {:error => 'danger', :warning => 'warning', :success => 'success', :notice => 'info'}.map { |type, class_name| flash_tag(type, :class => "alert alert-#{class_name} fade in", :bootstrap => true) }.join.html_safe
 
         .form-group
           %label.col-lg-2.control-label{:for => :email}= pat('login.email')
-          .col-lg-10=email_field_tag :email, :id => :email, :value => params[:email], :autofocus => true, :class =>'form-control'
+          .col-lg-10= email_field_tag :email, :id => :email, :value => params[:email], :autofocus => true, :class =>'form-control'
 
         .form-group
           %label.col-lg-2.control-label{:for => :password}= pat('login.password')
-          .col-lg-10=password_field_tag :password, :id => :password, :class =>'form-control'
+          .col-lg-10= password_field_tag :password, :id => :password, :class =>'form-control'
 
         %fieldset.login-control-group-last.control-group
           .login-controls.controls
             %label.login-bypass-label.checkbox
-              =check_box_tag :bypass
-              =pat('login.bypass')
+              = check_box_tag :bypass
+              = pat('login.bypass')
 
       .login-footer.modal-footer
-        =submit_tag(pat('login.sign_in'), :class => 'btn btn-primary pull-right')
+        = submit_tag(pat('login.sign_in'), :class => 'btn btn-primary pull-right')
 
-        =javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/affix bootstrap/alert bootstrap/button bootstrap/carousel bootstrap/collapse bootstrap/dropdown  bootstrap/tooltip bootstrap/transition  bootstrap/modal bootstrap/popover bootstrap/scrollspy bootstrap/tab]), :application
+        = javascript_include_tag 'jquery-1.9.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/affix bootstrap/alert bootstrap/button bootstrap/carousel bootstrap/collapse bootstrap/dropdown  bootstrap/tooltip bootstrap/transition  bootstrap/modal bootstrap/popover bootstrap/scrollspy bootstrap/tab]), :application
