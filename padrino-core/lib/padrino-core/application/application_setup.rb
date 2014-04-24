@@ -151,12 +151,12 @@ module Padrino
         I18n.reload!
       end
 
-      # allow custome session set
+      # allow custome session management
       def setup_sessions(builder)
-        if sessions && sessions.kind_of?(Hash)
-         builder.use sessions[:use], sessions[:config] || {}
+        if sessions.kind_of?(Hash) && sessions[:use]
+          builder.use sessions[:use], sessions[:config] || {}
         else
-          super(builder)
+          super
         end
       end
 
