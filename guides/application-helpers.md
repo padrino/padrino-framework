@@ -175,7 +175,7 @@ Form helpers are the ‘standard’ form tag helpers you would come to expect wh
     # app/views/example.haml
     = form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
       = flash_tag(:notice)
-      - field_set_tag do
+      = field_set_tag do
         %p
           = label_tag :username, :class => 'first'
           = text_field_tag :username, :value => params[:username]
@@ -187,7 +187,7 @@ Form helpers are the ‘standard’ form tag helpers you would come to expect wh
           = select_tag :strategy, :options => ['delete', 'destroy'], :selected => 'delete'
         %p
           = check_box_tag :confirm_delete
-      - field_set_tag(:class => 'buttons') do
+      = field_set_tag(:class => 'buttons') do
         = submit_tag "Remove"
 
 The list of defined helpers in the ‘form helpers’ category:
@@ -305,7 +305,7 @@ A form\_for using these basic fields might look like:
         = f.label :color, :caption => "Favorite Color?"
         = f.select :color, :options => ['red', 'black']
       %p
-        - fields_for @user.location do |location|
+        = fields_for @user.location do |location|
           = location.text_field :street
           = location.text_field :city
       %p
@@ -482,7 +482,7 @@ The model declarations are dependent on your chosen ORM. Check the documentation
     = form_for @person, '/person/create'  do |f|
       = f.text_field :name 
       = f.text_field :favorite_color
-      - f.fields_for :addresses do |address_form| 
+      = f.fields_for :addresses do |address_form| 
         = address_form.label :street 
         = address_form.text_field :street
         = address_form.label :city
