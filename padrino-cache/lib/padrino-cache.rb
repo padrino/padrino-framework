@@ -62,6 +62,7 @@ module Padrino
       ##
       # Register these helpers:
       #
+      #   Padrino::Cache::Helpers::ObjectCache
       #   Padrino::Cache::Helpers::CacheStore
       #   Padrino::Cache::Helpers::Fragment
       #   Padrino::Cache::Helpers::Page
