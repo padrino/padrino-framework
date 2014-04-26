@@ -173,7 +173,7 @@ By default, all ‘assets’ including images, scripts, and stylesheets have a t
 Form helpers are the ‘standard’ form tag helpers you would come to expect when building forms. A simple example of constructing a non-object form would be:
 
     # app/views/example.haml
-    - form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
+    = form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
       = flash_tag(:notice)
       - field_set_tag do
         %p
@@ -287,7 +287,7 @@ Form builders are full-featured objects allowing the construction of complex obj
 A form\_for using these basic fields might look like:
 
     # app/views/example.haml
-    - form_for @user, '/register', :id => 'register' do |f|
+    = form_for @user, '/register', :id => 'register' do |f|
       = f.error_messages
       %p
         = f.label :username, :caption => "Nickname"
@@ -390,7 +390,7 @@ There is also an additional StandardFormBuilder which builds on the abstract fie
 A form\_for using these standard fields might be:
 
     # app/views/example.haml
-    - form_for @user, '/register', :id => 'register' do |f|
+    = form_for @user, '/register', :id => 'register' do |f|
         = f.error_messages
         = f.text_field_block :name, :caption => "Full name"
         = f.text_field_block :email
@@ -452,7 +452,7 @@ You can also easily build your own FormBuilder which allows for customized field
 
 Once a custom builder is defined, any call to form\_for can use the new builder:
 
-    - form_for @user, '/register', :builder => 'MyCustomFormBuilder', :id => 'register' do |f|
+    = form_for @user, '/register', :builder => 'MyCustomFormBuilder', :id => 'register' do |f|
       ...fields here...
 
 The form builder can even be made into the default builder when form\_for is invoked:
@@ -479,7 +479,7 @@ Available in the 0.9.21 Padrino release is support for nested object form helper
 The model declarations are dependent on your chosen ORM. Check the documentation to understand how to declare nested attributes in your given ORM component. Given those models and enabling nested attributes for the association, the following view will allow nested form creation:
 
     # app/views/person/_form.html.haml
-    - form_for @person, '/person/create'  do |f|
+    = form_for @person, '/person/create'  do |f|
       = f.text_field :name 
       = f.text_field :favorite_color
       - f.fields_for :addresses do |address_form| 
@@ -660,7 +660,7 @@ In addition to the helpers above, certain helpers also have certain unobtrusive 
 To generate a ‘remote’ form in a view:
 
     # /app/views/users/new.html.haml
-    - form_for :user, url(:create, :format => :js), :remote => true do |f|
+    = form_for :user, url(:create, :format => :js), :remote => true do |f|
       .content=partial "/users/form"
 
 which will generate the following unobtrusive markup:
