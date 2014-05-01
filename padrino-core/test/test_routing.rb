@@ -7,6 +7,7 @@ class FooError < RuntimeError; end
 describe "Routing" do
   before do
     Padrino.clear!
+    ENV['RACK_BASE_URI'] = nil
   end
 
   it 'should serve static files with simple cache control' do
@@ -855,6 +856,18 @@ describe "Routing" do
     assert_equal "/foo", @app.url(:foo)
     ENV['RACK_BASE_URI'] = '/testing'
     assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
+
+  it 'should use uri_root and RACK_BASE_URI' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    ENV['RACK_BASE_URI'] = '/base'
+    @app.uri_root = 'testing'
+    assert_equal '/base/testing/foo/bar', @app.url(:foo, :bar)
     ENV['RACK_BASE_URI'] = nil
   end
 
