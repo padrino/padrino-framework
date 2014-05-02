@@ -634,8 +634,8 @@ module Padrino
       def rebase_url(url)
         if url.start_with?('/')
           new_url = ''
-          new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << url
         else
           url.blank? ? '/' : url
