@@ -595,28 +595,32 @@ module Padrino
       ##
       # Instance method for url generation.
       #
+      # @option options [String] :fragment
+      #   An addition to url to identify a portion of requested resource (i.e #something).
+      # @option options [String] :anchor
+      #   Synonym for fragment.
+      #
       # @example
       #   url(:show, :id => 1)
       #   url(:show, :name => 'test', :id => 24)
       #   url(:show, 1)
       #   url(:controller_name, :show, :id => 21)
       #   url(:controller_show, :id => 29)
+      #   url(:index, :fragment => 'comments')
       #
       def url(*args)
-        params = args.extract_options!  # parameters is hash at end
+        params = args.extract_options!
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
         name = names[0, 2].join(" ").to_sym    # route name is concatenated with underscores
-        if params.is_a?(Hash)
-          params[:format] = params[:format].to_s unless params[:format].nil?
-          params = value_to_param(params.symbolize_keys)
-        end
+        fragment = params.delete(:fragment) || params.delete(:anchor)
+        params = value_to_param(params.symbolize_keys)
         url =
           if params_array.empty?
             compiled_router.path(name, params)
           else
             compiled_router.path(name, *(params_array << params))
           end
-        rebase_url(url)
+        rebase_url(fragment ? url + '#' + fragment : url)
       rescue HttpRouter::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise Padrino::Routing::UnrecognizedException.new(route_error)

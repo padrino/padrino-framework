@@ -52,10 +52,6 @@ module Padrino
       #   @param [Hash]    options  The html options.
       #   @param [Proc]    block    The link content.
       #
-      # @option options [String] :anchor
-      #   The anchor for the link (i.e #something).
-      # @option options [String] :fragment
-      #   Synonym for anchor.
       # @option options [Boolean] :if
       #   If true, the link will appear, otherwise not.
       # @option options [Boolean] :unless
@@ -80,17 +76,18 @@ module Padrino
       #
       def link_to(*args, &block)
         options  = args.extract_options!
-        fragment = options.delete(:anchor).to_s if options[:anchor]
-        fragment = options.delete(:fragment).to_s if options[:fragment]
         name = block_given? ? '' : args.shift
-        if url = args.first
-          url << '#' << fragment if fragment
-        else
-          url = '#'
-          url << fragment if fragment
+        href = args.first
+        if fragment = options[:fragment] || options[:anchor]
+          warn 'Options :anchor and :fragment are deprecated for #link_to. Please use :fragment for #url'
+          if respond_to?(:url)
+            href = url(href, options)
+          else
+            href << '#' << fragment.to_s
+          end
         end
-        options.reverse_merge!(:href => url)
-        return name unless parse_conditions(url, options)
+        options.reverse_merge!(:href => href || '#')
+        return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
 
