@@ -3,6 +3,7 @@ require 'padrino-core/application/routing'
 require 'padrino-core/application/show_exceptions'
 require 'padrino-core/application/authenticity_token'
 require 'padrino-core/application/application_setup'
+require 'padrino-core/application/params_protection'
 
 module Padrino
   ##
@@ -14,6 +15,7 @@ module Padrino
   class Application < Sinatra::Base
     register Padrino::ApplicationSetup
     register Padrino::Routing
+    register Padrino::ParamsProtection
 
     ##
     # Returns the logger for this application.
