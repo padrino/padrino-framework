@@ -2,7 +2,7 @@ MINITEST_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path('../../config/boot', __FILE__)
 
-class MiniTest::Unit::TestCase
+class MiniTest::Spec
   include Rack::Test::Methods
 
   # You can use this method to custom specify a Rack app
