@@ -65,6 +65,20 @@ describe !NAME! do
 end
 TEST
 
+RSPEC_HELPER_TEST = (<<-TEST) unless defined?(RSPEC_HELPER_TEST)
+require 'spec_helper'
+
+describe "!NAME!" do
+  let(:helpers){ Class.new }
+  before { helpers.extend !NAME! }
+  subject { helpers }
+
+  it "should return nil" do
+    expect(subject.foo).to be_nil
+  end
+end
+TEST
+
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'rspec', :group => 'test'
@@ -82,4 +96,10 @@ def generate_model_test(name)
   rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   model_spec_path = File.join('spec',options[:app],'models',"#{name.to_s.underscore}_spec.rb")
   create_file destination_root(model_spec_path), rspec_contents, :skip => true
+end
+
+def generate_helper_test(name, project_name, app_name)
+  rspec_contents = RSPEC_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
+  helper_spec_path = File.join('spec', options[:app], 'helpers', "#{name.underscore}_spec.rb")
+  create_file destination_root(helper_spec_path), rspec_contents, :skip => true
 end

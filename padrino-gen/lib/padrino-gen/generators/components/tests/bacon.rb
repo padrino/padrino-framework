@@ -59,6 +59,21 @@ describe "!NAME! Model" do
 end
 TEST
 
+BACON_HELPER_TEST = <<-TEST unless defined?(BACON_HELPER_TEST)
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+
+describe "!NAME!" do
+  before do
+    @helpers = Class.new
+    @helpers.extend !NAME!
+  end
+
+  it "should return nil" do
+    @helpers.foo.should.equal nil
+  end
+end
+TEST
+
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'bacon', :group => 'test'
@@ -74,8 +89,14 @@ end
 
 def generate_model_test(name)
   bacon_contents  = BACON_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  path = options[:app] == '.' ? '/..' : '/../..'
-  bacon_contents.gsub!(/!PATH!/,path)
+  bacon_contents.gsub!(/!PATH!/, recognize_path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), bacon_contents, :skip => true
+end
+
+def generate_helper_test(name, project_name, app_name)
+  bacon_contents = BACON_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
+  bacon_contents.gsub!(/!PATH!/, recognize_path)
+  helper_spec_path = File.join('test', options[:app], 'helpers', "#{name.underscore}_test.rb")
+  create_file destination_root(helper_spec_path), bacon_contents, :skip => true
 end

@@ -62,6 +62,25 @@ describe "!NAME! Model" do
 end
 TEST
 
+MINITEST_HELPER_TEST = (<<-TEST) unless defined?(MINITEST_HELPER_TEST)
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+
+describe "!NAME!" do
+  before do
+    @helpers = Class.new
+    @helpers.extend !NAME!
+  end
+
+  def helpers
+    @helpers
+  end
+
+  it "should return nil" do
+    assert_equal nil, helpers.foo
+  end
+end
+TEST
+
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'minitest', :require => 'minitest/autorun', :group => 'test'
@@ -77,8 +96,14 @@ end
 
 def generate_model_test(name)
   minitest_contents = MINITEST_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  path = options[:app] == '.' ? '/..' : '/../..'
-  minitest_contents.gsub!(/!PATH!/,path)
+  minitest_contents.gsub!(/!PATH!/, recognize_path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), minitest_contents, :skip => true
+end
+
+def generate_helper_test(name, project_name, app_name)
+  minitest_contents = MINITEST_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
+  minitest_contents.gsub!(/!PATH!/, recognize_path)
+  helper_spec_path = File.join('test', options[:app], 'helpers', "#{name.underscore}_test.rb")
+  create_file destination_root(helper_spec_path), minitest_contents, :skip => true
 end
