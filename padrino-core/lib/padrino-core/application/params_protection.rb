@@ -1,3 +1,5 @@
+require 'active_support/core_ext/object/deep_dup'
+
 module Padrino
   ##
   # Padrino application module providing means for mass-assignment protection.
@@ -30,6 +32,7 @@ module Padrino
       def allow(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
         condition do
+          @original_params = params.deep_dup
           filter_params!(params, allowed_params)
         end
       end
@@ -62,7 +65,7 @@ module Padrino
       #   Warning: this hash will be changed by deleting or replacing its values.
       # @param [Hash] allowed_params
       #   A hash of allowed keys and value classes or processing procs. Supported
-      #   scalar classes are: Integer (empty string is casted to nil).
+      #   scalar classes are: Integer (empty string is cast to nil).
       #
       # @example
       #   filter_params!( { "a" => "1", "b" => "abc", "d" => "drop" },
@@ -87,6 +90,13 @@ module Padrino
             params.delete(key)
           end
         end
+      end
+
+      ##
+      # Returns the original unfiltered query parameters hash.
+      #
+      def original_params
+        @original_params || params
       end
     end
   end
