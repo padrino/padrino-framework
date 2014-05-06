@@ -784,6 +784,8 @@ module Padrino
       def parse_route(path, options, verb)
         route_options = {}
 
+        options[:allow] += options[:with] if options[:with] && options[:allow]
+
         # We need check if path is a symbol, if that it's a named route.
         map = options.delete(:map)
 
