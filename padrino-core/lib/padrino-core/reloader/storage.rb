@@ -6,7 +6,7 @@ module Padrino
       def clear!
         files.each_key do |file|
           remove(file)
-          $LOADED_FEATURES.delete(file)
+          Reloader.remove_feature(file)
         end
         @files = {}
       end
@@ -14,7 +14,7 @@ module Padrino
       def remove(name)
         file = files[name] || return
         file[:constants].each{ |constant| Reloader.remove_constant(constant) }
-        file[:features].each{ |feature| $LOADED_FEATURES.delete(feature) }
+        file[:features].each{ |feature| Reloader.remove_feature(feature) }
         files.delete(name)
       end
 
@@ -27,7 +27,7 @@ module Padrino
         }
         features = file && file[:features] || []
         features.each{ |feature| Reloader.safe_load(feature, :force => true) }
-        $LOADED_FEATURES.delete(name) if old_features.include?(name)
+        Reloader.remove_feature(name) if old_features.include?(name)
       end
 
       def commit(name)
