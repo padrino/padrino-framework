@@ -10,7 +10,7 @@ describe "Padrino::ParamsProtection" do
   it 'should drop all parameters except allowed ones' do
     result = nil
     mock_app do
-      post :basic, :allow => [ :name ] do
+      post :basic, :params => [ :name ] do
         result = params
         ''
       end
@@ -22,7 +22,7 @@ describe "Padrino::ParamsProtection" do
   it 'should preserve original params' do
     result = nil
     mock_app do
-      post :basic, :allow => [ :name ] do
+      post :basic, :params => [ :name ] do
         result = original_params
         ''
       end
@@ -34,7 +34,7 @@ describe "Padrino::ParamsProtection" do
   it 'should work with recursive data' do
     result = nil
     mock_app do
-      post :basic, :allow => [ :name, :child => [ :name, :child => [ :name ] ] ] do
+      post :basic, :params => [ :name, :child => [ :name, :child => [ :name ] ] ] do
         result = [params, original_params]
         ''
       end
@@ -52,7 +52,7 @@ describe "Padrino::ParamsProtection" do
   it 'should be able to process the data' do
     result = nil
     mock_app do
-      post :basic, :allow => [ :name, :position => proc{ |v| 'anti-'+v } ] do
+      post :basic, :params => [ :name, :position => proc{ |v| 'anti-'+v } ] do
         result = params
         ''
       end
@@ -64,7 +64,7 @@ describe "Padrino::ParamsProtection" do
   it 'should pass :with parameters' do
     result = nil
     mock_app do
-      post :basic, :with => [:id, :tag], :allow => [ :name ] do
+      post :basic, :with => [:id, :tag], :params => [ :name ] do
         result = params
         ''
       end
@@ -73,15 +73,41 @@ describe "Padrino::ParamsProtection" do
     assert_equal({ 'name' => @jack['name'], 'id' => '24', 'tag' => '42' }, result)
   end
 
+  it 'should understand true or false values' do
+    result = nil
+    mock_app do
+      get :hide, :with => [ :id ], :params => false do
+        result = params
+        ''
+      end
+      get :show, :with => [ :id ], :params => true do
+        result = params
+        ''
+      end
+    end
+    get '/hide/1?' + @jack.to_query
+    assert_equal({"id"=>"1"}, result)
+    get '/show/1?' + @jack.to_query
+    assert_equal({"id"=>"1"}.merge(@jack), result)
+  end
+
   it 'should be configurable with controller options' do
     result = nil
     mock_app do
-      controller :persons, :allow => [ :name ] do
-        post :create, :allow => [ :name, :position ] do
+      controller :persons, :params => [ :name ] do
+        post :create, :params => [ :name, :position ] do
           result = params
           ''
         end
         post :update, :with => [ :id ] do
+          result = params
+          ''
+        end
+        post :delete, :params => true do
+          result = params
+          ''
+        end
+        post :destroy, :with => [ :id ], :params => false do
           result = params
           ''
         end
@@ -91,19 +117,9 @@ describe "Padrino::ParamsProtection" do
     assert_equal({ 'name' => @jack['name'], 'position' => 'terrorist' }, result)
     post '/persons/update/1?name=Chloe+O\'Brian&position=hacker'
     assert_equal({ 'id' => '1', 'name' => 'Chloe O\'Brian' }, result)
-  end
-
-  it 'should not touch GET params when configured with controller' do
-    result = nil
-    mock_app do
-      controller :persons, :allow => [ :name ] do
-        get :show, :with => [ :id ] do
-          result = params
-          ''
-        end
-      end
-    end
-    get '/persons/show/1?name=Chloe+O\'Brian&position=hacker'
-    assert_equal({ 'id' => '1', 'name' => 'Chloe O\'Brian', 'position' => 'hacker' }, result)
+    post '/persons/delete?' + @jack.to_query
+    assert_equal(@jack, result)
+    post '/persons/destroy/1?' + @jack.to_query
+    assert_equal({"id"=>"1"}, result)
   end
 end

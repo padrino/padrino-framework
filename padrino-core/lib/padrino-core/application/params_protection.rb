@@ -21,15 +21,17 @@ module Padrino
       # Implements filtering of url query params. Can prevent mass-assignment.
       #
       # @example
-      #   post :update, :allow => [:name, :email]
-      #   post :update, :allow => [:name, :id => Integer]
-      #   post :update, :allow => [:name => proc{ |v| v.reverse }]
-      #   post :update, :allow => [:name, :parent => [:name, :position]]
+      #   post :update, :params => [:name, :email]
+      #   post :update, :params => [:name, :id => Integer]
+      #   post :update, :params => [:name => proc{ |v| v.reverse }]
+      #   post :update, :params => [:name, :parent => [:name, :position]]
+      #   post :update, :params => false
+      #   post :update, :params => true
       # @example
-      #   allow :name, :email, :password => prox{ |v| v.reverse }
+      #   params :name, :email, :password => prox{ |v| v.reverse }
       #   post :update        
       #
-      def allow(*allowed_params)
+      def params(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
         condition do
           @original_params = params.deep_dup
