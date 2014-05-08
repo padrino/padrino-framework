@@ -5,6 +5,7 @@ describe "Padrino::ParamsProtection" do
     @teri = { 'name' => 'Teri Bauer', 'position' => 'baby' }
     @kim = { 'name' => 'Kim Bauer', 'position' => 'daughter', 'child' => @teri }
     @jack = { 'name' => 'Jack Bauer', 'position' => 'terrorist', 'child' => @kim }
+    @family = { 'name' => 'Bauer', 'persons' => { 1 => @teri, 2 => @kim, 3 => @jack } }
   end
 
   it 'should drop all parameters except allowed ones' do
@@ -121,5 +122,29 @@ describe "Padrino::ParamsProtection" do
     assert_equal(@jack, result)
     post '/persons/destroy/1?' + @jack.to_query
     assert_equal({"id"=>"1"}, result)
+  end
+
+  it 'should successfully filter hashes' do
+    result = nil
+    mock_app do
+      post :family, :params => [ :persons => [ :name ] ] do
+        result = params
+        ''
+      end
+    end
+    post '/family?' + @family.to_query
+    assert_equal({"persons" => {"3" => {"name" => @jack["name"]}, "2" => {"name" => @kim["name"]}, "1" => {"name" => @teri["name"]}}}, result)
+  end
+
+  it 'should pass arrays' do
+    result = nil
+    mock_app do
+      post :family, :params => [ :names => [] ] do
+        result = params
+        ''
+      end
+    end
+    post '/family?names[]=Jack&names[]=Kim&names[]=Teri'
+    assert_equal({"names" => %w[Jack Kim Teri]}, result)
   end
 end
