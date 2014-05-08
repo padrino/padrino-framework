@@ -151,6 +151,15 @@ module Padrino
         I18n.reload!
       end
 
+      # allow custome session management
+      def setup_sessions(builder)
+        if sessions.kind_of?(Hash) && sessions[:use]
+          builder.use sessions[:use], sessions[:config] || {}
+        else
+          super
+        end
+      end
+
       # sets up csrf protection for the app
       def setup_csrf_protection(builder)
         check_csrf_protection_dependency
