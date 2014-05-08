@@ -113,6 +113,12 @@ describe "Padrino::ParamsProtection" do
           ''
         end
       end
+      controller :noparam, :params => false do
+        get :index do
+          result = params
+          ''
+        end
+      end
     end
     post '/persons/create?' + @jack.to_query
     assert_equal({ 'name' => @jack['name'], 'position' => 'terrorist' }, result)
@@ -122,6 +128,8 @@ describe "Padrino::ParamsProtection" do
     assert_equal(@jack, result)
     post '/persons/destroy/1?' + @jack.to_query
     assert_equal({"id"=>"1"}, result)
+    get '/noparam?a=1;b=2'
+    assert_equal({}, result)
   end
 
   it 'should successfully filter hashes' do

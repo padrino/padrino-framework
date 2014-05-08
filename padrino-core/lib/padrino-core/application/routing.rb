@@ -712,7 +712,7 @@ module Padrino
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
         route_options[:accepts]  = @_accepts if @_accepts
-        route_options[:params] = @_params if @_params && !route_options.include?(:params)
+        route_options[:params] = @_params unless @_params.nil? || route_options.include?(:params)
 
         # Add Sinatra condition to check rack-protection failure.
         if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
