@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require 'active_support/core_ext/hash/conversions'
 
 describe "Padrino::ParamsProtection" do
   before do
