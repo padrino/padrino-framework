@@ -29,7 +29,14 @@ module Padrino
       #   post :update, :params => true
       # @example
       #   params :name, :email, :password => prox{ |v| v.reverse }
-      #   post :update        
+      #   post :update
+      # @example
+      #   App.controller :accounts, :params => [:name, :position] do
+      #     post :create
+      #     post :update, :with => [ :id ], :params => [:name, :position, :addition]
+      #     get :show, :with => :id, :params => false
+      #     get :search, :params => true
+      #   end
       #
       def params(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
@@ -76,6 +83,12 @@ module Padrino
       #   filter_params!( { "id" => "", "child" => { "name" => "manny" } },
       #                   { "id" => Integer, "child" => { "name" => proc{ |v| v.camelize } } } )
       #   # => { "id" => nil, "child" => { "name" => "Manny" } }
+      #   filter_params!( { "a" => ["1", "2", "3"] },
+      #                   { "a" => true } )
+      #   # => { "a" => ["1", "2", "3"] }
+      #   filter_params!( { "persons" => {"p-1" => { "name" => "manny", "age" => "50" }, "p-2" => { "name" => "richard", "age" => "50" } } },
+      #                   { "persons" => { "name" => true } } )
+      #   # => { "persons" => {"p-1" => { "name" => "manny" }, "p-2" => { "name" => "richard" } } }
       #
       def filter_params!(params, allowed_params)
         params.each do |key,value|
