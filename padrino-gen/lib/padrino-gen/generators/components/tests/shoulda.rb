@@ -68,6 +68,27 @@ class !NAME!Test < Test::Unit::TestCase
 end
 TEST
 
+SHOULDA_HELPER_TEST = (<<-TEST) unless defined?(SHOULDA_HELPER_TEST)
+require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+
+class !NAME!Test < Test::Unit::TestCase
+  context "!NAME!" do
+    setup do
+      @helpers = Class.new
+      @helpers.extend !NAME!
+    end
+
+    def helpers
+      @helpers
+    end
+
+    should "return nil" do
+      assert_equal nil, helpers.foo
+    end
+  end
+end
+TEST
+
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'shoulda', :group => 'test'
@@ -83,8 +104,14 @@ end
 
 def generate_model_test(name)
   shoulda_contents = SHOULDA_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  path = options[:app] == '.' ? '/..' : '/../..'
-  shoulda_contents.gsub!(/!PATH!/,path)
+  shoulda_contents.gsub!(/!PATH!/, recognize_path)
   model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), shoulda_contents, :skip => true
+end
+
+def generate_helper_test(name, project_name, app_name)
+  shoulda_contents = SHOULDA_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
+  shoulda_contents.gsub!(/!PATH!/, recognize_path)
+  helper_spec_path = File.join('test', options[:app], 'helpers', "#{name.underscore}_test.rb")
+  create_file destination_root(helper_spec_path), shoulda_contents, :skip => true
 end

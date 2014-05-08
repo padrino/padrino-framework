@@ -495,6 +495,13 @@ WARNING
         end
       end
 
+      ##
+      # Recognizes the path of application.
+      #
+      def recognize_path
+        options[:app] == '.' ? '/..' : '/../..'
+      end
+
       # Class methods for Thor generators to support the generators and component choices.
       module ClassMethods
         ##
