@@ -399,6 +399,7 @@ module Padrino
           @_conditions, original_conditions = options.delete(:conditions), @_conditions
           @_defaults,   original_defaults   = options,                     @_defaults
           @_accepts,    original_accepts    = options.delete(:accepts),    @_accepts
+          @_params,     original_params     = options.delete(:params),     @_params
 
           # Application defaults.
           @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
@@ -414,6 +415,7 @@ module Padrino
           @_controller, @_parents,  @_cache     = original_controller, original_parent,   original_cache
           @_defaults,   @_provides, @_map       = original_defaults,   original_provides, original_map
           @_conditions, @_use_format, @_accepts = original_conditions, original_use_format, original_accepts
+          @_params                              = original_params
         else
           include(*args) if extensions.any?
         end
@@ -710,6 +712,7 @@ module Padrino
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
         route_options[:accepts]  = @_accepts if @_accepts
+        route_options[:params] = @_params unless @_params.nil? || route_options.include?(:params)
 
         # Add Sinatra condition to check rack-protection failure.
         if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
@@ -783,6 +786,13 @@ module Padrino
       #
       def parse_route(path, options, verb)
         route_options = {}
+
+        if options[:params] == true
+          options.delete(:params)
+        elsif options.include?(:params)
+          options[:params] ||= []
+          options[:params] += options[:with] if options[:with]
+        end
 
         # We need check if path is a symbol, if that it's a named route.
         map = options.delete(:map)
