@@ -5,7 +5,7 @@
 * NEW Include all helpers with `include Padrino::Helpers` (@ujifgc)
 * FIX #1646 do not pass include_blank as select attribute (@ujifgc)
 * FIX #1645 disable webrick accesslog (@ujifgc)
-* FIX #1648 params is not set correctly in prioritized routes (namusyaka)
+* FIX #1648 params is not set correctly in prioritized routes (@namusyaka)
 * FIX #1651 Pass the correct env variable through middleware (@judofyr)
 * FIX #1652 Rendering bugs by refactoring template resolution (@ujifgc)
 * NEW #1653 Allow create and drop for sqlite adapter
@@ -13,7 +13,7 @@
 * FIX #1655 Switch to SVG badges in readme for travis
 * FIX #1656 Add period and fix types for ja localization
 * FIX Do not pass protect_from_csrf as an attribute of form element (@namusyaka)
-* FIX The for attribute of the label element must be refer to a form control (@namusyaka)
+* FIX The for attribute of the label element must refer to a form control (@namusyaka)
 * NEW #1661 tests for csrf-protection with http header X-CSRF-TOKEN (@cookiebody)
 * FIX #1663 override setup_session method to support custom session management (@cookiebody)
 * FIX #1670 url when both uri_root and RACK_BASE_URI is setting (@tmtm)
