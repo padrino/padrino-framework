@@ -80,11 +80,7 @@ module Padrino
         href = args.first
         if fragment = options[:fragment] || options[:anchor]
           warn 'Options :anchor and :fragment are deprecated for #link_to. Please use :fragment for #url'
-          if respond_to?(:url)
-            href = url(href, options)
-          else
-            href << '#' << fragment.to_s
-          end
+          href << '#' << fragment.to_s
         end
         options.reverse_merge!(:href => href || '#')
         return name unless parse_conditions(href, options)
