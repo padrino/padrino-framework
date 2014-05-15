@@ -135,7 +135,7 @@ module Padrino
         end
       end
 
-      # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
+      # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
         begin
           info = []

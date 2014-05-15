@@ -31,7 +31,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
       class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
+      # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml, slim)", :type => :string
