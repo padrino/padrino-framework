@@ -31,6 +31,9 @@ describe "Part" do
       assert_equal 'This is a foo message in mailers/sample dir', message.parts[1].body.decoded.chomp
       assert_equal :plain, message.parts[2].content_type
       assert_equal 'other', message.parts[2].body.decoded
+
+      assert_equal 'This is a foo message in mailers/sample dir', message.html_part.body.decoded.chomp
+      assert_equal 'plain text', message.text_part.body.decoded
     end
 
     it 'should works with multipart templates' do
