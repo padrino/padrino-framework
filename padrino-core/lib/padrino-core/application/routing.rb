@@ -676,51 +676,29 @@ module Padrino
       #
       def provides(*types)
         @_use_format = true
+        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
-          mime_types = types.map{ |type| mime_type(type) }.compact
-          url_format = params[:format].to_sym if params[:format]
-          accepts    = request.accept.map(&:to_str)
-          accepts.clear if accepts == ["*/*"]
+          return provides_format?(types, params[:format].to_sym) if params[:format]
 
+          accepts = request.accept.map(&:to_str)
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
-          catch_all = (accepts.delete "*/*" || accepts.empty?)
-          matching_types = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
-          if matching_types.empty? && types.include?(:any)
-            matching_types = accepts
+          catch_all = accepts.delete("*/*")
+
+          return provides_any?(accepts) if types.include?(:any)
+
+          accepts = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+
+          type = accepts.first && mime_symbol(accepts.first)
+          type ||= catch_all && types.first
+
+          accept_format = CONTENT_TYPE_ALIASES[type] || type
+          if types.include?(accept_format)
+            content_type(accept_format || :html, :charset => 'utf-8')
+          else
+            halt 406 unless catch_all
+            false
           end
-
-          if !url_format && matching_types.first
-            type = ::Rack::Mime::MIME_TYPES.key(matching_types.first).sub(/\./,'').to_sym
-            accept_format = CONTENT_TYPE_ALIASES[type] || type
-          elsif catch_all && !types.include?(:any)
-            type = types.first
-            accept_format = CONTENT_TYPE_ALIASES[type] || type
-          end
-
-          matched_format = types.include?(:any)            ||
-                           types.include?(accept_format)   ||
-                           types.include?(url_format)      ||
-                           ((!url_format) && request.accept.empty? && types.include?(:html))
-
-          # Per rfc2616-sec14:
-          # Answer with 406 if accept is given but types to not match any
-          # provided type.
-          halt 406 if
-            (!url_format && !accepts.empty? && !matched_format) ||
-            (settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept && url_format && !matched_format)
-
-          if matched_format
-            @_content_type = url_format || accept_format || :html
-
-            if @_content_type != :json
-              content_type(@_content_type, :charset => 'utf-8')
-            else
-              content_type(@_content_type)
-            end
-          end
-
-          matched_format
         end
       end
 
@@ -734,14 +712,10 @@ module Padrino
       #   # => GET /a CONTENT_TYPE application/xml => 406
       #
       def accepts(*types)
-        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }.compact
+        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
-          halt 406 unless media_type = mime_types.detect{|mime_type| mime_type == request.media_type }
-          if media_type != 'application/json'
-            content_type(media_type, :charset => 'utf-8')
-          else
-            content_type(media_type)
-          end
+          halt 406 unless mime_types.include?(request.media_type)
+          content_type(mime_symbol(request.media_type), :charset => 'utf-8')
         end
       end
 
@@ -846,10 +820,10 @@ module Padrino
       # serving files from the public directory.
       #
       def static_file?(path_info)
-        return if (public_dir = settings.public_folder).nil?
+        return unless public_dir = settings.public_folder
         public_dir = File.expand_path(public_dir)
         path = File.expand_path(public_dir + unescape(path_info))
-        return if path[0, public_dir.length] != public_dir
+        return unless path.start_with?(public_dir)
         return unless File.file?(path)
         return path
       end
@@ -883,14 +857,34 @@ module Padrino
       #   end
       #
       def content_type(type=nil, params={})
-        unless type.nil?
-          super(type, params)
-          @_content_type = type
-        end
-        @_content_type
+        return @_content_type unless type
+        params.delete(:charset) if type == :json
+        super(type, params)
+        @_content_type = type
       end
 
       private
+
+      def provides_any?(formats)
+        accepted_format = formats.first
+        type = accepted_format ? mime_symbol(accepted_format) : :html
+        content_type(CONTENT_TYPE_ALIASES[type] || type, :charset => 'utf-8')
+      end
+
+      def provides_format?(types, format)
+        if ([:any, format] & types).empty?
+          # Per rfc2616-sec14:
+          # Answer with 406 if accept is given but types to not match any provided type.
+          halt 406 if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
+          false
+        else
+          content_type(format || :html, :charset => 'utf-8')
+        end
+      end
+
+      def mime_symbol(media_type)
+        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./,'').to_sym
+      end
 
       def filter!(type, base=settings)
         base.filters[type].each { |block| instance_eval(&block) }
@@ -914,20 +908,19 @@ module Padrino
 
       def route!(base=settings, pass_block=nil)
         Thread.current['padrino.instance'] = self
-        if base.compiled_router and match = base.compiled_router.call(@request.env)
-          if match.respond_to?(:each)
+
+        if base.compiled_router && result = base.compiled_router.call(@request.env)
+          if result.respond_to?(:each)
             route_eval do
-              response.headers.merge!(match[1])
-              status match[0]
-              route_missing if match[0] == 404
-              route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
+              response.headers.merge!(result[1])
+              route_missing if status(result[0]) == 404
+              route_missing if (allow = response['Allow']) && allow.include?(request.env['REQUEST_METHOD'])
             end
           end
         else
           filter! :before
         end
 
-        # Run routes defined in superclass.
         if base.superclass.respond_to?(:router)
           route!(base.superclass, pass_block)
           return
