@@ -396,18 +396,19 @@ module Padrino
       end
 
       # Parse params from the url method
-      def value_to_param(value)
-        case value
-          when Array
-            value.map { |v| value_to_param(v) }.compact
-          when Hash
-            value.inject({}) do |memo, (k,v)|
-              v = value_to_param(v)
-              memo[k] = v unless v.nil?
-              memo
-            end
-          when nil then nil
-          else value.respond_to?(:to_param) ? value.to_param : value
+      def value_to_param(object)
+        case object
+        when Array
+          object.map { |item| value_to_param(item) }.compact
+        when Hash
+          object.inject({}) do |all, (key, value)|
+            next all if value.nil?
+            all[key] = value_to_param(value)
+            all
+          end
+        when nil
+        else
+          object.respond_to?(:to_param) ? object.to_param : object
         end
       end
 
@@ -472,13 +473,14 @@ module Padrino
         path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
         options.reverse_merge!(@_conditions) if @_conditions
 
-        # Sinatra defaults
         method_name = "#{verb} #{path}"
         unbound_method = generate_method(method_name, &block)
 
-        block = block.arity != 0 ?
-          proc { |a,p| unbound_method.bind(a).call(*p) } :
-          proc { |a,p| unbound_method.bind(a).call }
+        block = if block.arity == 0
+                  proc{ |request, _| unbound_method.bind(request).call }
+                else
+                  proc{ |request, block_params| unbound_method.bind(request).call(*block_params) }
+                end
 
         invoke_hook(:route_added, verb, path, block)
 
@@ -505,7 +507,7 @@ module Padrino
         end
 
         # Add Sinatra conditions.
-        options.each { |o, a| route.respond_to?(o) ? route.send(o, *a) : send(o, *a) }
+        options.each{ |option, args| route.respond_to?(option) ? route.send(option, *args) : send(option, *args) }
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
@@ -675,7 +677,7 @@ module Padrino
       def provides(*types)
         @_use_format = true
         condition do
-          mime_types = types.map { |t| mime_type(t) }.compact
+          mime_types = types.map{ |type| mime_type(type) }.compact
           url_format = params[:format].to_sym if params[:format]
           accepts    = request.accept.map(&:to_str)
           accepts.clear if accepts == ["*/*"]
@@ -689,7 +691,7 @@ module Padrino
           end
 
           if !url_format && matching_types.first
-            type = ::Rack::Mime::MIME_TYPES.find { |k, v| v == matching_types.first }[0].sub(/\./,'').to_sym
+            type = ::Rack::Mime::MIME_TYPES.key(matching_types.first).sub(/\./,'').to_sym
             accept_format = CONTENT_TYPE_ALIASES[type] || type
           elsif catch_all && !types.include?(:any)
             type = types.first
@@ -915,7 +917,7 @@ module Padrino
         if base.compiled_router and match = base.compiled_router.call(@request.env)
           if match.respond_to?(:each)
             route_eval do
-              match[1].each { |k,v| response[k] = v }
+              response.headers.merge!(match[1])
               status match[0]
               route_missing if match[0] == 404
               route_missing if allow = response['Allow'] and allow.include?(request.env['REQUEST_METHOD'])
