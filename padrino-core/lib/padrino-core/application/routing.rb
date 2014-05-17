@@ -361,20 +361,9 @@ module Padrino
       #
       def url(*args)
         params = args.extract_options!
-        names, params_array = args.partition{|a| a.is_a?(Symbol)}
-        name = names[0, 2].join(" ").to_sym    # route name is concatenated with underscores
         fragment = params.delete(:fragment) || params.delete(:anchor)
-        params = value_to_param(params.symbolize_keys)
-        url =
-          if params_array.empty?
-            compiled_router.path(name, params)
-          else
-            compiled_router.path(name, *(params_array << params))
-          end
-        rebase_url(fragment ? url + '#' + fragment : url)
-      rescue HttpRouter::InvalidRouteException
-        route_error = "route mapping for url(#{name.inspect}) could not be found!"
-        raise Padrino::Routing::UnrecognizedException.new(route_error)
+        path = make_path_with_params(args, value_to_param(params.symbolize_keys))
+        rebase_url(fragment ? path << '#' << fragment : path)
       end
       alias :url_for :url
 
@@ -398,6 +387,16 @@ module Padrino
       end
 
       private
+
+      # Searches compiled router for a path responding to args and makes a path with params.
+      def make_path_with_params(args, params)
+        names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
+        name = names[0, 2].join(" ").to_sym
+        compiled_router.path(name, *(params_array << params))
+      rescue HttpRouter::InvalidRouteException
+        raise Padrino::Routing::UnrecognizedException, "Route mapping for url(#{name.inspect}) could not be found"
+      end
+
       # Parse params from the url method
       def value_to_param(value)
         case value
