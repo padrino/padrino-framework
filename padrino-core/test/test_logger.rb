@@ -2,9 +2,14 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'logger'
 
 describe "PadrinoLogger" do
+  before do
+    @save_config = Padrino::Logger::Config[:test].dup
+    Padrino::Logger::Config[:test][:stream] = :null
+    Padrino::Logger.setup!
+  end
 
-  def setup
-    Padrino::Logger::Config[:test][:stream] = :null # The default
+  after do
+    Padrino::Logger::Config[:test] = @save_config
     Padrino::Logger.setup!
   end
 
@@ -14,9 +19,7 @@ describe "PadrinoLogger" do
   end
 
   describe 'for logger functionality' do
-
     describe 'check stream config' do
-
       it 'should use stdout if stream is nil' do
         Padrino::Logger::Config[:test][:stream] = nil
         Padrino::Logger.setup!
@@ -116,6 +119,7 @@ describe "PadrinoLogger" do
         access_to_mock_app
         assert_match /\e\[0;36m  DEBUG\e\[0m/, Padrino.logger.log.string
       end
+
       it 'should not output over debug level' do
         Padrino.logger.instance_eval{ @level = Padrino::Logger::Levels[:info] }
         access_to_mock_app
@@ -141,13 +145,17 @@ describe "alternate logger" do
     end
   end
 
-  def setup_logger
+  before do
+    @save_logger = Padrino.logger
     @log = StringIO.new
     Padrino.logger = FancyLogger.new(@log)
   end
 
+  after do
+    Padrino.logger = @save_logger
+  end
+
   it 'should annotate the logger to support additional Padrino fancyness' do
-    setup_logger
     Padrino.logger.debug("Debug message")
     assert_match(/Debug message/, @log.string)
     Padrino.logger.exception(Exception.new 'scary message')
@@ -155,7 +163,6 @@ describe "alternate logger" do
   end
 
   it 'should colorize log output after colorize! is called' do
-    setup_logger
     Padrino.logger.colorize!
 
     mock_app do
@@ -169,19 +176,22 @@ describe "alternate logger" do
 end
 
 describe "alternate logger: stdlib logger" do
-  def setup_logger
+  before do
     @log = StringIO.new
+    @save_logger = Padrino.logger
     Padrino.logger = Logger.new(@log)
   end
 
+  after do
+    Padrino.logger = @save_logger
+  end
+
   it 'should annotate the logger to support additional Padrino fancyness' do
-    setup_logger
     Padrino.logger.debug("Debug message")
     assert_match(/Debug message/, @log.string)
   end
 
   it 'should colorize log output after colorize! is called' do
-    setup_logger
     Padrino.logger.colorize!
 
     mock_app do
@@ -202,7 +212,22 @@ describe "options :colorize_logging" do
     end
     get "/"
   end
+
+  before do
+    @save_config = Padrino::Logger::Config[:test].dup
+  end
+
+  after do
+    Padrino::Logger::Config[:test] = @save_config
+    Padrino::Logger.setup!
+  end
+
   describe 'default' do
+    before do
+      Padrino::Logger::Config[:test][:colorize_logging] = true
+      Padrino::Logger.setup!
+    end
+
     it 'should use colorize logging' do
       Padrino::Logger.setup!
 
@@ -210,11 +235,14 @@ describe "options :colorize_logging" do
       assert_match /\e\[1;9m200\e\[0m OK/, Padrino.logger.log.string
     end
   end
+
   describe 'set value is false' do
-    it 'should not use colorize logging' do
+    before do
       Padrino::Logger::Config[:test][:colorize_logging] = false
       Padrino::Logger.setup!
+    end
 
+    it 'should not use colorize logging' do
       access_to_mock_app
       assert_match /200 OK/, Padrino.logger.log.string
     end
