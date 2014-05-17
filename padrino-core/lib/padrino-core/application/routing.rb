@@ -237,10 +237,11 @@ module Padrino
       # @see http://www.padrinorb.com/guides/controllers#route-filters
       #
       def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
-        except = options.key?(:except) && Array(options.delete(:except))
-        raise("You cannot use except with other options specified") if except && (!args.empty? || !options.empty?)
-        options = except.last.is_a?(Hash) ? except.pop : {} if except
+        options = args.extract_options!
+        if except = options.delete(:except)
+          fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
+          options = Array(except).extract_options!
+        end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
 
