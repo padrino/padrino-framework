@@ -135,35 +135,7 @@ module Padrino
       #
       def controller(*args, &block)
         if block_given?
-          options = args.extract_options!
-
-          # Controller defaults.
-          @_controller, original_controller = args,                        @_controller
-          @_parents,    original_parent     = options.delete(:parent),     @_parents
-          @_provides,   original_provides   = options.delete(:provides),   @_provides
-          @_use_format, original_use_format = options.delete(:use_format), @_use_format
-          @_cache,      original_cache      = options.delete(:cache),      @_cache
-          @_map,        original_map        = options.delete(:map),        @_map
-          @_conditions, original_conditions = options.delete(:conditions), @_conditions
-          @_defaults,   original_defaults   = options,                     @_defaults
-          @_accepts,    original_accepts    = options.delete(:accepts),    @_accepts
-          @_params,     original_params     = options.delete(:params),     @_params
-
-          # Application defaults.
-          @filters,     original_filters    = { :before => @filters[:before].dup, :after => @filters[:after].dup }, @filters
-          @layout,      original_layout     = nil, @layout
-
-          instance_eval(&block)
-
-          # Application defaults.
-          @filters        = original_filters
-          @layout         = original_layout
-
-          # Controller defaults.
-          @_controller, @_parents,  @_cache     = original_controller, original_parent,   original_cache
-          @_defaults,   @_provides, @_map       = original_defaults,   original_provides, original_map
-          @_conditions, @_use_format, @_accepts = original_conditions, original_use_format, original_accepts
-          @_params                              = original_params
+          with_new_options(*args) { instance_eval(&block) }
         else
           include(*args) if extensions.any?
         end
@@ -272,8 +244,8 @@ module Padrino
       def parent(name, options={})
         defaults = { :optional => false, :map => name.to_s }
         options = defaults.merge(options)
-        @_parents = Array(@_parents) unless @_parents.is_a?(Array)
-        @_parents << Parent.new(name, options)
+        @_parent = Array(@_parent) unless @_parent.is_a?(Array)
+        @_parent << Parent.new(name, options)
       end
 
       ##
@@ -387,6 +359,32 @@ module Padrino
       end
 
       private
+
+      CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :map, :conditions, :accepts, :params ].freeze
+
+      # Saves controller options, yields the block, restores controller options.
+      def with_new_options(*args)
+        options = args.extract_options!
+
+        CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
+        replace_instance_variable(:@_controller, args)
+        replace_instance_variable(:@_defaults, options)
+        replace_instance_variable(:@filters, :before => @filters[:before].dup, :after => @filters[:after].dup)
+        replace_instance_variable(:@layout, nil)
+
+        yield
+
+        @original_instance.each do |key, value|
+          instance_variable_set(key, value)
+        end
+      end
+
+      # Sets instance variable by name and saves the original value in @original_instance hash
+      def replace_instance_variable(name, value)
+        @original_instance ||= {}
+        @original_instance[name] = instance_variable_get(name)
+        instance_variable_set(name, value)
+      end
 
       # Searches compiled router for a path responding to args and makes a path with params.
       def make_path_with_params(args, params)
@@ -584,8 +582,8 @@ module Padrino
           end
 
           # Now we need to parse our 'parent' params and parent scope.
-          if !absolute_map and parent_params = options.delete(:parent) || @_parents
-            parent_params = (Array(@_parents) + Array(parent_params)).uniq
+          if !absolute_map and parent_params = options.delete(:parent) || @_parent
+            parent_params = (Array(@_parent) + Array(parent_params)).uniq
             path = process_path_for_parent_params(path, parent_params)
           end
 
