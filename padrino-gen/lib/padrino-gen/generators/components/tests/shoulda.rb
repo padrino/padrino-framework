@@ -78,12 +78,8 @@ class !NAME!Test < Test::Unit::TestCase
       @helpers.extend !NAME!
     end
 
-    def helpers
-      @helpers
-    end
-
     should "return nil" do
-      assert_equal nil, helpers.foo
+      assert_equal nil, @helpers.foo
     end
   end
 end
