@@ -335,7 +335,7 @@ WARNING
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
-        ##
+      ##
       # Inserts a middleware inside app.rb.
       #
       # @param [String] include_text
