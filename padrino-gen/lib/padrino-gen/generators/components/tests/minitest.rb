@@ -1,6 +1,7 @@
 MINITEST_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path('../../config/boot', __FILE__)
+Dir[File.expand_path("../../app/helpers/**/*.rb", __FILE__)].each(&method(:require))
 
 class MiniTest::Spec
   include Rack::Test::Methods
