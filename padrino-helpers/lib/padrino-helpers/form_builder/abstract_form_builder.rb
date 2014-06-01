@@ -135,7 +135,7 @@ module Padrino
           nested_options = { :parent => self, :association => child_association }
           Array(collection).each_with_index.inject(ActiveSupport::SafeBuffer.new) do |all,(child_instance,index)|
             nested_options[:index] = options[:index] || (include_index ? index : nil)
-            all << @template.fields_for(child_instance,  { :nested => nested_options }, &block) << "\n"
+            all << @template.fields_for(child_instance,  { :nested => nested_options, :builder => self.class }, &block) << "\n"
           end
         end
 
