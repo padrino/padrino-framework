@@ -98,6 +98,6 @@ zh_tw:
     errors:
       template:
         header:
-          one:    "有 1 個錯誤發生使得「%{model}」無法被儲存。"
-          other:  "有 %{count} 個錯誤發生使得「%{model}」無法被儲存。"
+          one:    "發生了 1 個錯誤使得「%{model}」無法被儲存。"
+          other:  "發生了 %{count} 個錯誤使得「%{model}」無法被儲存。"
         body: "以下欄位發生問題："
