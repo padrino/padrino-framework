@@ -10,6 +10,7 @@ module Padrino
       end
   
       def match(pattern)
+        pattern = pattern[0..-2] if mustermann? and pattern != "/" and pattern.end_with?("/")
         handler.match(pattern)
       end
   
