@@ -102,7 +102,7 @@ module Padrino
           options[:method] = 'post'
         end
         inner_form_html = hidden_form_method_field(desired_method)
-        inner_form_html << csrf_token_field if options[:protect_from_csrf]
+        inner_form_html << csrf_token_field if options.delete(:protect_from_csrf)
         concat_content content_tag(:form, inner_form_html << capture_html(&block), options)
       end
 

@@ -28,8 +28,8 @@ module Padrino
     #   Instance of Moneta store
     #
     # @example
-    #   Padrino.cache = Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
-    #   Padrino.cache = Padrino::Cache.new(:LRUHash) # Keeps cached values in memory
+    #   Padrino.cache = Padrino::Cache.new(:LRUHash) # default choice
+    #   Padrino.cache = Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # Keeps cached values in file
     #   Padrino.cache = Padrino::Cache.new(:Memcached) # Uses default server at localhost
     #   Padrino.cache = Padrino::Cache.new(:Memcached, :server => '127.0.0.1:11211', :exception_retry_limit => 1)
     #   Padrino.cache = Padrino::Cache.new(:Memcached, :backend => memcached_or_dalli_instance)
@@ -62,6 +62,7 @@ module Padrino
       ##
       # Register these helpers:
       #
+      #   Padrino::Cache::Helpers::ObjectCache
       #   Padrino::Cache::Helpers::CacheStore
       #   Padrino::Cache::Helpers::Fragment
       #   Padrino::Cache::Helpers::Page

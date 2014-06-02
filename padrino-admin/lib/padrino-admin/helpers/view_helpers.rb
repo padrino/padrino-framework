@@ -17,7 +17,7 @@ module Padrino
         #   tag_icon(:edit, :list)
         #
         def tag_icon(icon, tag = nil)
-          content = content_tag(:i, '', :class=> "icon-#{icon}")
+          content = content_tag(:i, '', :class=> "fa fa-#{icon}")
           content << " #{tag}"
         end
 

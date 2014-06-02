@@ -13,14 +13,14 @@
             </a>
             <ul class="list-menu dropdown-menu" role=menu>
               <li class=ist-menu-wrapper>
-                <%%= link_to tag_icon(:check, pat(:select_all)), '#', :id => 'select-all', :class => 'list-menu-link' %>
+                <%%= link_to tag_icon('check-square-o', pat(:select_all)), '#', :id => 'select-all', :class => 'list-menu-link' %>
               </li>
               <li class=list-menu-wrapper.list-menu-wrapper-disabled>
-                <%%= link_to tag_icon('check-empty', pat(:deselect_all)), '#', :id => 'deselect-all', :class => 'list-menu-link list-menu-link-disabled' %>
+                <%%= link_to tag_icon('square-o', pat(:deselect_all)), '#', :id => 'deselect-all', :class => 'list-menu-link list-menu-link-disabled' %>
               </li>
               <li class="list-menu-divider divider"></li>
               <li class=list-menu-wrapper.list-menu-wrapper-disabled>
-                <%%=link_to tag_icon(:trash, pat(:delete_selected)), '#', :id => 'delete-selected', :class => 'list-menu-link list-menu-link-disabled' %>
+                <%%=link_to tag_icon('trash-o', pat(:delete_selected)), '#', :id => 'delete-selected', :class => 'list-menu-link list-menu-link-disabled' %>
                 <div class='list-menu-popover-delete-selected popover right'>
                   <div class=arrow></div>
                   <h3 class=popover-title><%%= pat(:delete_selected_title) %></h3>
@@ -60,7 +60,7 @@
           <td class="list-column list-row-action">
             <div class='list-row-action-wrapper'>
                <%%= link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>", :class => 'list-row-action-wrapper-link' %>
-               <%%= link_to tag_icon(:trash), :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>", :class => 'list-row-action-delete-one list-row-action-wrapper-link' %>
+               <%%= link_to tag_icon('trash-o'), :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>", :class => 'list-row-action-delete-one list-row-action-wrapper-link' %>
                <div class="popover list-row-action-popover-delete-one left">
                  <div class=arrow> </div>
                  <h3 class=popover-title><%%= pat(:delete, :model => "<%= @orm.name_singular %>") %></h3>

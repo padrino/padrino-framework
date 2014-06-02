@@ -335,7 +335,7 @@ WARNING
         inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
       end
 
-        ##
+      ##
       # Inserts a middleware inside app.rb.
       #
       # @param [String] include_text
@@ -493,6 +493,13 @@ WARNING
         elsif name =~ /^\W/
           raise ::NameError, "Project name #{name} cannot start with non-word character"
         end
+      end
+
+      ##
+      # Recognizes the path of application.
+      #
+      def recognize_path
+        options[:app] == '.' ? '/..' : '/../..'
       end
 
       # Class methods for Thor generators to support the generators and component choices.

@@ -87,6 +87,7 @@ module Padrino
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
+      return require(file) if external_feature?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
@@ -114,6 +115,13 @@ module Padrino
       base.send :remove_const, object
       logger.devel "Removed constant #{const} from #{base}"
     rescue NameError
+    end
+
+    ##
+    # Remove a feature from $LOADED_FEATURES so it can be required again.
+    #
+    def remove_feature(file)
+      $LOADED_FEATURES.delete(file) unless external_feature?(file)
     end
 
     ##
@@ -227,6 +235,13 @@ module Padrino
         files += app.app_obj.dependencies
       end
       files + special_files
+    end
+
+    ##
+    # Tells if a feature is internal or external for Padrino project.
+    #
+    def external_feature?(file)
+      !file.start_with?(Padrino.root)
     end
 
     def constant_excluded?(const)

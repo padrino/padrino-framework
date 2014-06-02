@@ -107,6 +107,7 @@ module Mail # @private
       new_part.instance_eval(&part_block) if part_block
       yield new_part if block_given?
       add_part(new_part)
+      new_part
     end
 
     def do_delivery_with_logging

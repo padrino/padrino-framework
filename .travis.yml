@@ -29,11 +29,7 @@ matrix:
   include:
     - rvm: 2.1.1
       env: SINATRA_EDGE=true
-    - rvm: 2.1.1
-      env: AS_VERSION=4.1.0.rc1
   allow_failures:
     - rvm: 2.1.1
       env: SINATRA_EDGE=true
-    - rvm: 2.1.1
-      env: AS_VERSION=4.1.0.rc1
     - rvm: rbx

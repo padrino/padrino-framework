@@ -7,6 +7,7 @@ class FooError < RuntimeError; end
 describe "Routing" do
   before do
     Padrino.clear!
+    ENV['RACK_BASE_URI'] = nil
   end
 
   it 'should serve static files with simple cache control' do
@@ -215,6 +216,8 @@ describe "Routing" do
       get(:foo, :with => :id){ |id| "/foo/#{id}" }
       get([:foo, :id]){ |id| "/foo/#{id}" }
       get(:hash, :with => :id){ url(:hash, :id => 1) }
+      get(:anchor) { url(:anchor, :anchor => 'comments') }
+      get(:fragment) { url(:anchor, :fragment => 'comments') }
       get([:hash, :id]){ url(:hash, :id => 1) }
       get(:array, :with => :id){ url(:array, 23) }
       get([:array, :id]){ url(:array, 23) }
@@ -232,6 +235,10 @@ describe "Routing" do
     assert_equal "/foo/123", body
     get "/hash/2"
     assert_equal "/hash/1", body
+    get "/anchor"
+    assert_equal "/anchor#comments", body
+    get "/fragment"
+    assert_equal "/anchor#comments", body
     get "/array/23"
     assert_equal "/array/23", body
     get "/hash_with_extra/1"
@@ -854,6 +861,18 @@ describe "Routing" do
     assert_equal "/foo", @app.url(:foo)
     ENV['RACK_BASE_URI'] = '/testing'
     assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
+
+  it 'should use uri_root and RACK_BASE_URI' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    ENV['RACK_BASE_URI'] = '/base'
+    @app.uri_root = 'testing'
+    assert_equal '/base/testing/foo/bar', @app.url(:foo, :bar)
     ENV['RACK_BASE_URI'] = nil
   end
 

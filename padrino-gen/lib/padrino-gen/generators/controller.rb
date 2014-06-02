@@ -42,6 +42,7 @@ module Padrino
           @app_name     = fetch_app_name(app)
           @actions      = controller_actions(fields)
           @controller   = name.to_s.underscore
+          @helper_name  = "#{@controller.camelize}Helper"
           @layout       = options[:layout] if options[:layout] && !options[:layout].empty?
 
           block_opts = []
@@ -54,7 +55,10 @@ module Padrino
           template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
           empty_directory destination_root(app, "/views/#{name.to_s.underscore}")
           include_component_module_for(:test)
-          generate_controller_test(name) if test?
+          if test?
+            generate_controller_test(name)
+            generate_helper_test(@helper_name, @project_name, @app_name)
+          end
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end

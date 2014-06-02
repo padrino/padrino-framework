@@ -167,6 +167,16 @@ describe "FormBuilder" do
       assert_raises(RuntimeError) { fields_for(@not_real) { |f| "Demo" } }
     end
 
+    it 'should respect the builder of parent' do
+      assert_raises(NoMethodError) do
+        form_for(@user, '/register', builder: "AbstractFormBuilder") do |f|
+          f.fields_for(:role_types, @user.role_types) do |field|
+            field.submit_block "Submit"
+          end
+        end
+      end
+    end
+
     it 'should display correct simple fields in haml' do
       visit '/haml/fields_for'
       assert_have_selector :form, :action => '/demo1', :id => 'demo-fields-for'

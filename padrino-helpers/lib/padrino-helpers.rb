@@ -31,7 +31,6 @@ module Padrino
       #   Padrino::Helpers::FormatHelpers
       #   Padrino::Helpers::RenderHelpers
       #   Padrino::Helpers::NumberHelpers
-      #   Padrino::Helpers::Breadcrumbs
       #
       # @param [Sinatra::Application] app
       #   The specified Padrino application.
@@ -57,7 +56,6 @@ module Padrino
         base.send :include, Padrino::Helpers::RenderHelpers
         base.send :include, Padrino::Helpers::NumberHelpers
         base.send :include, Padrino::Helpers::TranslationHelpers
-        base.send :include, Padrino::Helpers::Breadcrumbs
       end
     end
   end

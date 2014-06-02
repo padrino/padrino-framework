@@ -28,7 +28,7 @@ module Padrino
       #
       # @example
       #   MyApp.cache.set('records', records)
-      #   MyApp.cache.set('records', records, :expires_in => 30) # => 30 seconds
+      #   MyApp.cache.set('records', records, :expires => 30) # => 30 seconds
       #
       # @api public
       def set(key, value, opts = nil)
