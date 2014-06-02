@@ -1,28 +1,11 @@
 require 'mustermann'
 require 'rack'
+require 'padrino-core/path_router/error_handler'
+require 'padrino-core/path_router/route'
+require 'padrino-core/path_router/matcher'
 
 module Padrino
   module PathRouter
-    class InvalidRouteException < StandardError; end
-
-    class NotFound < StandardError
-      def response
-        [404, {}, ["Not Found"]]
-      end
-    end
-
-    class MethodNotAllowed < StandardError
-      def initialize(accepts)
-        @accepts = accepts
-      end
-
-      def response
-        headers = {}
-        headers['Allow'] = @accepts
-        [405, headers, ["MethodNotAllowed"]]
-      end
-    end
-
     def self.new
       Base.new
     end
@@ -152,125 +135,6 @@ module Padrino
           result[entry[0].to_sym] = entry[1]
           result
         end
-      end
-    end
-
-    class Route
-      attr_accessor :block, :capture, :router, :name, :order,
-                    :default_values, :path_for_generation, :verb
-      attr_accessor :action, :cache, :cache_key, :cache_expires,
-                    :parent, :use_layout, :controller, :user_agent
-  
-  
-      def initialize(path, &block)
-        @path    = path
-        @capture = {}
-        @order   = 0
-        @block   = block if block_given?
-      end
-  
-      def before_filters(&block)
-        @_before_filters ||= []
-        @_before_filters << block if block_given?
-        @_before_filters
-      end
-
-      def after_filters(&block)
-        @_after_filters ||= []
-        @_after_filters << block if block_given?
-        @_after_filters
-      end
-  
-      def custom_conditions(&block)
-        @_custom_conditions ||= []
-        @_custom_conditions << block if block_given?
-        @_custom_conditions
-      end
-  
-      def call(app, *args)
-        @block.call(app, *args)
-      end
-  
-      def request_methods
-        [verb.to_s.upcase]
-      end
-  
-      def original_path
-        @path
-      end
-  
-      def significant_variable_names
-        @significant_variable_names ||= if @path.is_a?(String)
-          @path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
-        elsif @path.is_a?(Regexp) and @path.respond_to?(:named_captures)
-          @path.named_captures.keys.map(&:to_sym)
-        else
-          []
-        end
-      end
-  
-      def matcher
-        @matcher ||= Matcher.new(@path, :capture => @capture,
-                                        :default_values => @default_values)
-      end
-  
-      def to(&block)
-        @block = block if block_given?
-        @order = @router.current_order
-        @router.increment_order
-      end
-      alias block= to
-  
-      def path(*args)
-        return @path if args.empty?
-        params = args[0]
-        params.delete(:captures)
-        matcher.expand(params) if matcher.mustermann?
-      end
-    end
-  
-    class Matcher
-      def initialize(path, options = {})
-        @path = path.is_a?(String) && path.empty? ? "/" : path
-        @capture = options.delete(:capture)
-        @default_values = options.delete(:default_values)
-      end
-  
-      def match(pattern)
-        handler.match(pattern)
-      end
-  
-      def expand(params)
-        params = params.dup
-        query = params.keys.inject({}) do |result, key|
-          result[key] = params.delete(key) if !handler.names.include?(key.to_s)
-          result
-        end
-        params.merge!(@default_values) if @default_values.is_a?(Hash)
-        expanded_path = handler.expand(params)
-        expanded_path = expanded_path + "?" + query.map{|k,v| "#{k}=#{v}" }.join("&") unless query.empty?
-        expanded_path
-      end
-  
-      def mustermann?
-        handler.instance_of?(Mustermann::Sinatra)
-      end
-  
-      def handler
-        @handler ||= case @path
-        when String
-          Mustermann.new(@path, :capture => @capture)
-        when Regexp
-          /^(?:#{@path})$/
-        end
-      end
-  
-      def to_s
-        handler.to_s
-      end
-  
-      def names
-        handler.names.map(&:to_sym)
       end
     end
   

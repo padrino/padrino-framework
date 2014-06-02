@@ -906,7 +906,7 @@ module Padrino
           begin
             base.compiled_router.call(@request.env)
           rescue PathRouter::NotFound, PathRouter::MethodNotAllowed
-            $!.response
+            $!.call
           end
         if status(code) == 200
           routes.each_with_index do |(route, howl_params), index|
