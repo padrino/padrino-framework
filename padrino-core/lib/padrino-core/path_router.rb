@@ -1,7 +1,7 @@
 require 'padrino-core/path_router/error_handler'
 require 'padrino-core/path_router/route'
 require 'padrino-core/path_router/matcher'
-require 'padrino-core/path_router/recognizer'
+require 'padrino-core/path_router/compiler'
 
 module Padrino
   module PathRouter
@@ -80,7 +80,7 @@ module Padrino
       end
 
       def prepare!
-        @engine = Recognizer.new(@routes)
+        @engine = Compiler.new(@routes)
         @prepared = true
         return if @current_order.zero?
         @routes.sort!{|a, b| a.order <=> b.order }
