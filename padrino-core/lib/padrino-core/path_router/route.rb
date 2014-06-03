@@ -42,8 +42,8 @@ module Padrino
       end
   
       def matcher
-        @matcher ||= Matcher.new(@path, :capture => @capture,
-                                        :default_values => options[:default_values])
+        @matcher ||= Matcher.new(@path, capture: @capture,
+                                        default_values: options[:default_values])
       end
 
       def match(pattern)
@@ -66,10 +66,10 @@ module Padrino
       def params_for(pattern, **parameters)
         match_data, params = match(pattern), {}
         if match_data.names.empty?
-          params.merge!(:captures => match_data.captures) unless match_data.captures.empty?
+          params.merge!(captures: match_data.captures) unless match_data.captures.empty?
           params
         else
-          params = matcher.handler.params(pattern, :captures => match_data) || params
+          params = matcher.handler.params(pattern, captures: match_data) || params
           params.with_indifferent_access.merge(parameters){|key, old, new| old || new }
         end
       end

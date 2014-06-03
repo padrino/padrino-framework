@@ -12,13 +12,13 @@ module Padrino
     class Base
       attr_reader :current_order, :routes
 
-      HTTP_VERBS       = [:get, :post, :delete, :put, :head]
+      HTTP_VERBS = %i[get post delete put head]
 
       def initialize
         reset!
       end
 
-      def add(verb, path, options = {}, &block)
+      def add(verb, path, **options, &block)
         route = Route.new(path, verb, options, &block)
         route.router = self
         @routes << route

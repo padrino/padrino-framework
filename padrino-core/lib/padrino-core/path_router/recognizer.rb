@@ -21,7 +21,7 @@ module Padrino
         _routes = @routes.select{|route| route.match(pattern) }
         raise_exception(404) if _routes.empty?
         result = _routes.map{|route| yield(route) if verb == route.verb }.compact
-        raise_exception(405, :verbs => _routes.map(&:verb)) if result.empty?
+        raise_exception(405, verbs: _routes.map(&:verb)) if result.empty?
         result
       end
   
@@ -40,7 +40,7 @@ module Padrino
         end
       end
   
-      def raise_exception(error_code, options = {})
+      def raise_exception(error_code, **options)
         raise ->(error_code) {
           case error_code
           when 400

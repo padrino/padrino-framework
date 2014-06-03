@@ -19,7 +19,7 @@ module Padrino
       private
 
       def roadmap
-        [:status, :headers, :body]
+        %i[status headers body]
       end
 
       def default_response

@@ -3,7 +3,7 @@ require 'mustermann/sinatra'
 module Padrino
   module PathRouter
     class Matcher
-      def initialize(path, options = {})
+      def initialize(path, **options)
         @path = path.is_a?(String) && path.empty? ? "/" : path
         @capture = options.delete(:capture)
         @default_values = options.delete(:default_values)
@@ -33,7 +33,7 @@ module Padrino
       def handler
         @handler ||= case @path
         when String
-          Mustermann.new(@path, :capture => @capture)
+          Mustermann.new(@path, capture: @capture)
         when Regexp
           /^(?:#{@path})$/
         end
