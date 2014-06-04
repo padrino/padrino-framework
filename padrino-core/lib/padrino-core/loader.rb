@@ -52,9 +52,7 @@ module Padrino
       began_at = Time.now
       @_called_from = first_caller
       set_encoding
-      set_load_paths(*load_paths)
       Logger.setup!
-      require_dependencies("#{root}/config/database.rb")
       Reloader.lock!
       before_load.each(&:call)
       require_dependencies(*dependency_paths)
@@ -71,9 +69,7 @@ module Padrino
     def clear!
       clear_middleware!
       mounted_apps.clear
-      @_load_paths = nil
       @_dependency_paths = nil
-      @_global_configuration = nil
       before_load.clear
       after_load.clear
       Reloader.clear!
@@ -162,27 +158,6 @@ module Padrino
     end
 
     ##
-    # Concat to +$LOAD_PATH+ the given paths.
-    #
-    # @param [Array<String>] paths
-    #   The paths to concat.
-    #
-    def set_load_paths(*paths)
-      load_paths.concat(paths).uniq!
-      $LOAD_PATH.concat(paths).uniq!
-    end
-
-    ##
-    # The used +$LOAD_PATHS+ from Padrino.
-    #
-    # @return [Array<String>]
-    #   The load paths used by Padrino.
-    #
-    def load_paths
-      @_load_paths ||= load_paths_was.dup
-    end
-
-    ##
     # Returns default list of path globs to load as dependencies.
     # Appends custom dependency patterns to the be loaded for Padrino.
     #
@@ -193,32 +168,24 @@ module Padrino
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
-      @_dependency_paths ||= dependency_paths_was + module_paths
+      @_dependency_paths ||= default_dependency_paths + modules_dependency_paths
     end
 
     private
 
-    def module_paths
+    def modules_dependency_paths
       modules.map(&:dependency_paths).flatten
     end
 
-    def load_paths_was
-      @_load_paths_was ||= [
-        "#{root}/lib",
-        "#{root}/models",
-        "#{root}/shared",
-      ].freeze
-    end
-
-    def dependency_paths_was
-      @_dependency_paths_was ||= [
+    def default_dependency_paths
+      @default_dependency_paths ||= [
         "#{root}/config/database.rb",
         "#{root}/lib/**/*.rb",
         "#{root}/models/**/*.rb",
         "#{root}/shared/lib/**/*.rb",
         "#{root}/shared/models/**/*.rb",
-        "#{root}/config/apps.rb"
-      ].freeze
+        "#{root}/config/apps.rb",
+      ]
     end
   end
 end

@@ -127,20 +127,6 @@ module Padrino
       end
 
       ##
-      # @return [Array]
-      #   directory that need to be added to +$LOAD_PATHS+ from this application
-      #
-      def load_paths
-        @_load_paths ||= [
-          'models',
-          'lib',
-          'mailers',
-          'controllers',
-          'helpers',
-        ].map { |path| File.join(settings.root, path) }
-      end
-
-      ##
       # Returns default list of path globs to load as dependencies.
       # Appends custom dependency patterns to the be loaded for your Application.
       #
@@ -161,7 +147,7 @@ module Padrino
           'controllers.rb',
           'helpers/**/*.rb',
           'helpers.rb',
-        ].map { |file| Dir[File.join(settings.root, file)] }.flatten
+        ].map { |file| Dir.glob(File.join(settings.root, file)) }.flatten
       end
 
       ##
@@ -193,7 +179,6 @@ module Padrino
       # Requires all files within the application load paths.
       #
       def require_dependencies
-        Padrino.set_load_paths(*load_paths)
         Padrino.require_dependencies(dependencies, :force => true)
       end
     end
