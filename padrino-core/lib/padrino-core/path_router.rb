@@ -10,7 +10,7 @@ module Padrino
     end
 
     class Base
-      attr_reader :current_order, :routes
+      attr_reader :current_order, :routes, :engine
 
       HTTP_VERBS = %i[get post delete put head]
 
@@ -73,17 +73,17 @@ module Padrino
         @current_order += 1
       end
 
-      private
-
-      def prepared?
-        !!@prepared
-      end
-
       def prepare!
         @engine = Compiler.new(@routes)
         @prepared = true
         return if @current_order.zero?
         @routes.sort!{|a, b| a.order <=> b.order }
+      end
+
+      private
+
+      def prepared?
+        !!@prepared
       end
     end
   end

@@ -15,8 +15,6 @@ module Padrino
         raise_exception(405, verbs: allows.map(&:verb)) if candidacies.empty?
         candidacies.map{|route| [route, route.params_for(pattern, params)]}
       end
-  
-      private
 
       def compile!
         return if compiled?
@@ -29,6 +27,8 @@ module Padrino
         @regexps = compile(@regexps)
       end
   
+      private
+
       def compile(regexps, paths = [])
         return paths if regexps.length.zero?
         paths << Regexp.union(regexps)
