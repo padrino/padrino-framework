@@ -1,7 +1,7 @@
 module Padrino
   module PathRouter
     class Route
-      attr_accessor :name, :capture, :order, :options
+      attr_accessor :name, :capture, :order, :options, :index
 
       attr_reader :verb, :block
 

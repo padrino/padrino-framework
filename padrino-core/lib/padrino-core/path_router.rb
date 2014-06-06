@@ -1,7 +1,7 @@
 require 'padrino-core/path_router/error_handler'
 require 'padrino-core/path_router/route'
 require 'padrino-core/path_router/matcher'
-require 'padrino-core/path_router/recognizer'
+require 'padrino-core/path_router/compiler'
 
 module Padrino
   module PathRouter
@@ -10,7 +10,7 @@ module Padrino
     end
 
     class Base
-      attr_reader :current_order, :routes
+      attr_reader :current_order, :routes, :engine
 
       HTTP_VERBS = %i[get post delete put head]
 
@@ -73,17 +73,17 @@ module Padrino
         @current_order += 1
       end
 
+      def prepare!
+        @engine = Compiler.new(@routes)
+        @prepared = true
+        return if @current_order.zero?
+        @routes.sort!{|a, b| a.order <=> b.order }
+      end
+
       private
 
       def prepared?
         !!@prepared
-      end
-
-      def prepare!
-        @engine = Recognizer.new(@routes)
-        @prepared = true
-        return if @current_order.zero?
-        @routes.sort!{|a, b| a.order <=> b.order }
       end
     end
   end
