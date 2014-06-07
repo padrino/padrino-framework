@@ -130,9 +130,9 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!.merge( :cyclic => true )
-      files = paths.flatten.map{|path| Dir[path].sort_by{|v| v.count('/') }}.flatten.uniq
+      files = paths.flatten.map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.flatten.uniq
 
-      while files.present?
+      until files.empty?
         error, fatal, loaded = nil, nil, nil
 
         files.dup.each do |file|
@@ -140,19 +140,17 @@ module Padrino
             Reloader.safe_load(file, options)
             files.delete(file)
             loaded = true
-          rescue NameError, LoadError => e
-            logger.devel "Cyclic dependency reload for #{e.class}: #{e.message}"
-            error = e
-          rescue Exception => e
-            fatal = e
+          rescue NameError, LoadError => error
+            logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
+          rescue Exception => fatal
             break
           end
         end
 
         if fatal || !loaded
-          e = fatal || error
-          logger.exception e, :short
-          raise e
+          exception = fatal || error
+          logger.exception exception, :short
+          raise exception
         end
       end
     end
@@ -172,7 +170,7 @@ module Padrino
     end
 
     # Deprecated
-    def set_load_paths(*paths)
+    def set_load_paths(*)
       warn 'Padrino.set_load_paths is deprecated. Please, use $LOAD_PATH.concat(paths)'
       []
     end

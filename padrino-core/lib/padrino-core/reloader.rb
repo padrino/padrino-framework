@@ -95,13 +95,13 @@ module Padrino
         with_silence{ require(file) }
         Storage.commit(file)
         update_modification_time(file)
-      rescue Exception => e
+      rescue Exception => exception
         unless options[:cyclic]
-          logger.exception e, :short
+          logger.exception exception, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)
-        raise e
+        raise
       end
     end
 
@@ -156,7 +156,7 @@ module Padrino
     # Reloads the file if it's special. For now it's only I18n locale files.
     #
     def reload_special(file)
-      return unless special_files.any?{ |f| File.identical?(f, file) }
+      return unless special_files.any?{ |special_file| File.identical?(special_file, file) }
       if defined?(I18n)
         began_at = Time.now
         I18n.reload!
@@ -171,14 +171,14 @@ module Padrino
     #
     def reload_regular(file)
       apps = mounted_apps_of(file)
-      if apps.present?
-        apps.each { |app| app.app_obj.reload! }
-        update_modification_time(file)
-      else
+      if apps.empty?
         reloadable_apps.each do |app|
           app.app_obj.reload! if app.app_obj.dependencies.include?(file)
         end
         safe_load(file)
+      else
+        apps.each { |app| app.app_obj.reload! }
+        update_modification_time(file)
       end
     end
 
@@ -201,14 +201,6 @@ module Padrino
     #
     def file_new?(file)
       MTIMES[file].nil?
-    end
-
-    ##
-    # Return the mounted_apps providing the app location.
-    # Can be an array because in one app.rb we can define multiple Padrino::Application.
-    #
-    def mounted_apps_of(file)
-      Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
     end
 
     ##
@@ -246,9 +238,20 @@ module Padrino
     end
 
     def constant_excluded?(const)
-      (exclude_constants - include_constants).any?{ |c| const._orig_klass_name.start_with?(c) }
+      (exclude_constants - include_constants).any?{ |excluded_constant| const._orig_klass_name.start_with?(excluded_constant) }
     end
 
+    ##
+    # Return the mounted_apps providing the app location.
+    # Can be an array because in one app.rb we can define multiple Padrino::Application.
+    #
+    def mounted_apps_of(file)
+      Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
+    end
+
+    ##
+    # Return the apps that allow reloading.
+    #
     def reloadable_apps
       Padrino.mounted_apps.select{ |app| app.app_obj.respond_to?(:reload) && app.app_obj.reload? }
     end
