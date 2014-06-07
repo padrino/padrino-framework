@@ -87,7 +87,7 @@ module Padrino
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
-      return require(file) if external_feature?(file)
+      return require(file) if feature_excluded?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
@@ -121,7 +121,7 @@ module Padrino
     # Remove a feature from $LOADED_FEATURES so it can be required again.
     #
     def remove_feature(file)
-      $LOADED_FEATURES.delete(file) unless external_feature?(file)
+      $LOADED_FEATURES.delete(file) unless feature_excluded?(file)
     end
 
     ##
@@ -229,19 +229,20 @@ module Padrino
     #
     def files_for_rotation
       files = Set.new
-      Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
+      files += Dir.glob("#{Padrino.root}/{lib,models,shared}/**/*.rb")
       reloadable_apps.each do |app|
         files << app.app_file
+        files += Dir.glob(app.app_obj.prerequisites)
         files += app.app_obj.dependencies
       end
       files + special_files
     end
 
     ##
-    # Tells if a feature is internal or external for Padrino project.
+    # Tells if a feature should be excluded from Reloader tracking.
     #
-    def external_feature?(file)
-      !file.start_with?(Padrino.root)
+    def feature_excluded?(file)
+      !file.start_with?(Padrino.root) || exclude.any?{ |excluded_path| file.start_with?(excluded_path) }
     end
 
     def constant_excluded?(const)
