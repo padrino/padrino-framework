@@ -63,6 +63,8 @@ describe "AppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
       assert_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_match_in_file(/:notifier/,"#{@apptmp}/sample_project/demo/mailers.rb")
+      assert_match_in_file(/module Helper/, "#{@apptmp}/sample_project/demo/helpers.rb")
+      assert_match_in_file(/helpers Helper/, "#{@apptmp}/sample_project/demo/helpers.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/controllers")
     end

@@ -104,6 +104,8 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/public/javascripts")
       assert_dir_exists("#{@apptmp}/sample_project/public/stylesheets")
       assert_match_in_file(/:notifier/,"#{@apptmp}/sample_project/app/mailers.rb")
+      assert_match_in_file(/module Helper/, "#{@apptmp}/sample_project/app/helpers.rb")
+      assert_match_in_file(/helpers Helper/, "#{@apptmp}/sample_project/app/helpers.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/controllers")
     end

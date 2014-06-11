@@ -464,6 +464,7 @@ WARNING
         directory('app/', destination_root(app))
         if tiny
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
+          @helper_name = 'Helper'
           template 'templates/helper.rb.tt', destination_root(app, 'helpers.rb')
           @short_name = 'notifier'
           template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')
