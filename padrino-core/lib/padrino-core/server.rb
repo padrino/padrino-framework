@@ -57,7 +57,9 @@ module Padrino
     def start
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
       [:INT, :TERM].each { |sig| trap(sig) { exit } }
-      super
+      super do |server|
+        server.threaded = true if server.respond_to?(:threaded=)
+      end
     ensure
       puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
     end
