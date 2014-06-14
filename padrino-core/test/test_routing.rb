@@ -1956,6 +1956,7 @@ describe "Routing" do
     mock_app do
       get('/foo/:bar') { "#{params["bar"]} #{params[:bar]}" }
       get(:foo, :map => '/prefix/:var') { "#{params["var"]} #{params[:var]}" }
+      get(:bar, :map => '/slice/:var') { params.slice("var", :var).values.join(" ") }
     end
 
     get('/foo/some_text')
@@ -1963,6 +1964,9 @@ describe "Routing" do
 
     get('/prefix/var')
     assert_equal "var var", body
+
+    get('/slice/slicey')
+    assert_equal "slicey slicey", body
   end
 
   it 'should return params as a HashWithIndifferentAccess object via POST' do
