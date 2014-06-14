@@ -133,6 +133,8 @@ describe "Message" do
       assert_equal ['padrino@you.com'],   message.to
       assert_equal 'Hello there Padrino', message.subject
       assert_equal 'text html',           message.body.to_s.chomp
+      message.encoded
+      assert_equal :html,                 message.content_type
 
       message = Mail::Message.new do
         views        File.dirname(__FILE__) + '/fixtures/views/mailers'
@@ -147,6 +149,8 @@ describe "Message" do
       assert_equal ['padrino@you.com'],   message.to
       assert_equal 'Hello there Padrino', message.subject
       assert_equal 'plain text',          message.body.to_s.chomp
+      message.encoded
+      assert_equal :plain,                message.content_type
     end
   end
 end

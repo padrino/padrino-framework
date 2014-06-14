@@ -27,7 +27,7 @@ module Padrino
       #   Padrino::Mailer::Mime::MIME_TYPES.fetch('text/plain', :plain)
       #
       def self.mime_type(mime, fallback=:plain)
-        MIME_TYPES.fetch(mime.to_s.downcase, fallback)
+        MIME_TYPES.fetch(mime.to_s.split(';').first.to_s.downcase, fallback)
       end
 
       ##
