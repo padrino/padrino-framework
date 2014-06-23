@@ -5,12 +5,6 @@ require 'padrino-helpers'
 FileSet.glob_require('padrino-admin/*.rb', __FILE__)
 FileSet.glob_require('padrino-admin/{helpers,utils}/*.rb', __FILE__)
 
-
-##
-# Load our Padrino::Admin locales.
-#
-# I18n.load_path = Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/*.yml"]
-
 module Padrino
   ##
   # Padrino::Admin is beautiful Ajax Admin, with these features:
