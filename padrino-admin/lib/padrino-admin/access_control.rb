@@ -13,6 +13,7 @@ module Padrino
         # Method used by Padrino::Application when we register the extension.
         #
         def registered(app)
+          app.register Padrino::Admin unless app.extensions.include?(Padrino::Admin)
           app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym unless app.respond_to?(:session_id)
           app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
