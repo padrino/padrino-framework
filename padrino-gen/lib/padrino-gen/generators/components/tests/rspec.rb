@@ -30,8 +30,8 @@ RSpec.describe "!NAME!Controller" do
       get "/"
     end
 
-    it "http status code to be ok" do
-      expect(last_response).to be_ok
+    it "returns hello world" do
+      expect(last_response.body).to eq "Hello World"
     end
   end
 end
