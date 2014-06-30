@@ -3,6 +3,10 @@ module Padrino
     # Raised when an application does not have a resolved root path.
     class  AppRootNotFound < RuntimeError; end
     ##
+    # Default helper name for use in tiny app skeleton generator.
+    #
+    DEFAULT_HELPER_NAME = "Helper".freeze
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -464,7 +468,7 @@ WARNING
         directory('app/', destination_root(app))
         if tiny
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
-          @helper_name = 'Helper'
+          @helper_name = DEFAULT_HELPER_NAME
           template 'templates/helper.rb.tt', destination_root(app, 'helpers.rb')
           @short_name = 'notifier'
           template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')

@@ -88,6 +88,30 @@ module Padrino
       end
 
       ##
+      # Generates test files for tiny app skeleton.
+      #
+      def setup_test_files
+        if options[:tiny] && @_components[:test] != :none
+          test_component = @_components[:test]
+          test_component = "rspec" if test_component == "cucumber"
+          uppercase_test_component = test_component.upcase
+          controller_template_name = "#{uppercase_test_component}_CONTROLLER_TEST"
+          helper_template_name     = "#{uppercase_test_component}_HELPER_TEST"
+          return unless defined?(controller_template_name)
+
+          controller_content = instance_eval(controller_template_name).gsub(/!NAME!/, "")
+          helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
+
+          proc{|*args| args.map{|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
+
+          directory_name = [:rspec, :steak].include?(test_component.to_sym) ? "spec" : "test"
+          base_path      = File.join(directory_name, "app")
+          create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, :skip => true
+          create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     :skip => true
+        end
+      end
+
+      ##
       # Bundle all required components using bundler and Gemfile.
       #
       def bundle_dependencies
@@ -106,7 +130,7 @@ module Padrino
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
         say "$ bundle" unless options[:bundle]
-        say "="*65, :green
+        say "=" * 65, :green
         say
       end
 
