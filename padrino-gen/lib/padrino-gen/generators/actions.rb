@@ -41,7 +41,7 @@ module Padrino
       #   The type of the component module.
       #
       # @example
-      #   generator_module_for('rr', :mock)
+      #   apply_component_for('rr', :mock)
       #
       def apply_component_for(choice, component)
         # I need to override Thor#apply because for unknow reason :verbose => false break tasks.
