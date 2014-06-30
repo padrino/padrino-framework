@@ -24,13 +24,15 @@ TEST
 RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
 require 'spec_helper'
 
-describe "!NAME!Controller" do
-  before do
-    get "/"
-  end
+RSpec.describe "!NAME!Controller" do
+  pending "add some examples to \#{__FILE__}" do
+    before do
+      get "/"
+    end
 
-  it "returns hello world" do
-    last_response.body.should == "Hello World"
+    it "returns hello world" do
+      expect(last_response.body).to eq "Hello World"
+    end
   end
 end
 TEST
@@ -39,15 +41,15 @@ RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
 begin
   require 'rspec/core/rake_task'
 
-  spec_tasks = Dir['spec/*/'].inject([]) do |result, d|
+  spec_tasks = Dir['spec/*/'].each_with_object([]) do |d, result|
     result << File.basename(d) unless Dir["\#{d}*"].empty?
-    result
   end
 
   spec_tasks.each do |folder|
+    desc "Run the spec suite in \#{folder}"
     RSpec::Core::RakeTask.new("spec:\#{folder}") do |t|
       t.pattern = "./spec/\#{folder}/**/*_spec.rb"
-      t.rspec_opts = %w(-fs --color)
+      t.rspec_opts = "--color"
     end
   end
 
@@ -61,20 +63,23 @@ TEST
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
-describe !NAME! do
+RSpec.describe !NAME! do
+  pending "add some examples to (or delete) \#{__FILE__}"
 end
 TEST
 
 RSPEC_HELPER_TEST = (<<-TEST) unless defined?(RSPEC_HELPER_TEST)
 require 'spec_helper'
 
-describe "!NAME!" do
-  let(:helpers){ Class.new }
-  before { helpers.extend !NAME! }
-  subject { helpers }
+RSpec.describe "!NAME!" do
+  pending "add some examples to (or delete) \#{__FILE__}" do
+    let(:helpers){ Class.new }
+    before { helpers.extend !NAME! }
+    subject { helpers }
 
-  it "should return nil" do
-    expect(subject.foo).to be_nil
+    it "should return nil" do
+      expect(subject.foo).to be_nil
+    end
   end
 end
 TEST
