@@ -12,70 +12,45 @@ class Category
 end
 
 # Fake Account Model
-class Account
-  include DataMapper::Resource
-  include DataMapper::Validate
+class Account < ActiveRecord::Base
   attr_accessor :password, :password_confirmation
 
-  # Properties
-  property :id,               Serial
-  property :name,             String
-  property :surname,          String
-  property :email,            String
-  property :crypted_password, String
-  property :salt,             String
-  property :role,             String
-
   # Validations
-  validates_presence_of      :email, :role
-  validates_presence_of      :password,                          :if => :password_required
-  validates_presence_of      :password_confirmation,             :if => :password_required
-  validates_length_of        :password, :min => 4, :max => 40,   :if => :password_required
-  validates_confirmation_of  :password,                          :if => :password_required
-  validates_length_of        :email,    :min => 3, :max => 100
-  validates_uniqueness_of    :email,    :case_sensitive => false
-  validates_format_of        :email,    :with => :email_address
-  validates_format_of        :role,     :with => /[A-Za-z]/
-
-  has n, :categories
-  def self.admin;  first(:role => "admin");  end
-  def self.editor; first(:role => "editor"); end
+  validates_presence_of     :email, :role
+  validates_presence_of     :password,                   :if => :password_required
+  validates_presence_of     :password_confirmation,      :if => :password_required
+  validates_length_of       :password, :within => 4..40, :if => :password_required
+  validates_confirmation_of :password,                   :if => :password_required
+  validates_length_of       :email,    :within => 3..100
+  validates_uniqueness_of   :email,    :case_sensitive => false
+  validates_format_of       :email,    :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+  validates_format_of       :role,     :with => /[A-Za-z]/
 
   # Callbacks
-  before :save, :generate_password
+  before_save :encrypt_password, :if => :password_required
 
   ##
-  # This method it's for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
-    account = first(:conditions => { :email => email }) if email.present?
-    account && account.password_clean == password ? account : nil
+    account = where("lower(email) = lower(?)", email).first if email.present?
+    account && account.has_password?(password) ? account : nil
   end
 
-  ##
-  # This method is used from AuthenticationHelper
-  #
-  def self.find_by_id(id)
-    get(id)
-  end
-
-  ##
-  # This method it's used for retrive the original password.
-  #
-  def password_clean
-    crypted_password.decrypt(salt)
+  def has_password?(password)
+    ::BCrypt::Password.new(crypted_password) == password
   end
 
   private
 
-  def generate_password
-    return if password.blank?
-    self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{email}--") if new?
-    self.crypted_password = password.encrypt(self.salt)
+  def encrypt_password
+    value = ::BCrypt::Password.create(password)
+    value = value.force_encoding(Encoding::UTF_8) if value.encoding == Encoding::ASCII_8BIT
+    self.crypted_password = value
   end
 
   def password_required
-    crypted_password.blank? || !password.blank?
+    crypted_password.blank? || password.present?
   end
 end
 
