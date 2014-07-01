@@ -26,11 +26,6 @@ module Padrino
 end
 
 ##
-# We need to apply Padrino::Admin::Utils::Extensions
-#
-String.send(:include, Padrino::Admin::Utils::Crypt)
-
-##
 # Now we need to add admin generators to padrino-gen
 #
 begin
