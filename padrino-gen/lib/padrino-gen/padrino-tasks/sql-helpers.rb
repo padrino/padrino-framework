@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Padrino
   module Generators
     module SqlHelpers
@@ -26,8 +28,9 @@ module Padrino
             arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
 
             Process.wait Process.spawn(environment, 'mysql', *arguments)
-          when 'sqlite'
+          when 'sqlite', 'sqlite3'
             fail "Database #{database} already exists" if File.file?(database)
+            FileUtils.mkdir_p(File.dirname(database))
             File.open(database, 'a') {}
           else
             raise "Adapter #{adapter} not supported for creating databases yet."
@@ -58,7 +61,7 @@ module Padrino
             arguments << "DROP DATABASE IF EXISTS #{database}"
 
             Process.wait Process.spawn(environment, 'mysql', *arguments)
-          when 'sqlite'
+          when 'sqlite', 'sqlite3'
             File.delete(database) if File.file?(database)
           else
             raise "Adapter #{adapter} not supported for dropping databases yet."
