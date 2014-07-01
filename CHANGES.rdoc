@@ -1,5 +1,11 @@
 = CHANGES
 
+== 0.12.3 (not released yet)
+* FIX #1701 don't load admin locales automatically and remove ActiveRecord's local copy of the
+locales (@dariocravero).
+IMPORTANT: If you're using the admin locales and you're not using `Padrino::Admin::AccessControl`
+you will have to add `register Padrino::Admin` to your `app/app.rb` in order to get the locales in.
+
 == 0.12.2 (May 12th 2014)
 
 * NEW Include all helpers with `include Padrino::Helpers` (@ujifgc)
