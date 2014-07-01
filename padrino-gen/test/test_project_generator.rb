@@ -668,6 +668,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec\.describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_match_in_file(/RSpec.describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
@@ -677,6 +678,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
@@ -686,6 +688,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
@@ -695,6 +698,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
@@ -704,6 +708,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
@@ -713,6 +718,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/context "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
@@ -722,6 +728,7 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
