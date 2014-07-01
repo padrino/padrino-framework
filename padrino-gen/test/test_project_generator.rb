@@ -661,4 +661,70 @@ describe "ProjectGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
   end
+
+  describe "tiny app skeleton generator for test component" do
+    it "should properly generate for rspec" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=rspec") }
+      assert_dir_exists("#{@apptmp}/sample_project/spec/")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/RSpec\.describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_match_in_file(/RSpec.describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+    end
+
+    it "should properly generate for steak" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=steak") }
+      assert_dir_exists("#{@apptmp}/sample_project/spec/")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+    end
+
+    it "should properly generate for cucumber" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=cucumber") }
+      assert_dir_exists("#{@apptmp}/sample_project/spec/")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+      assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
+    end
+
+    it "should properly generate for bacon" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=bacon") }
+      assert_dir_exists("#{@apptmp}/sample_project/test/")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+    end
+
+    it "should properly generate for minitest" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=minitest") }
+      assert_dir_exists("#{@apptmp}/sample_project/test/")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+    end
+
+    it "should properly generate for riot" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=riot") }
+      assert_dir_exists("#{@apptmp}/sample_project/test/")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/context "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+    end
+
+    it "should properly generate for shoulda" do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=shoulda") }
+      assert_dir_exists("#{@apptmp}/sample_project/test/")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+      assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+    end
+
+  end
 end
