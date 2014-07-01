@@ -51,24 +51,31 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     desc "Create the database"
     task :create => :environment do
       config = DataMapper.repository.adapter.options.symbolize_keys
+      adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
+
       database       = config[:database]  || config[:path]
+      database.sub!(/^\//,'') unless adapter.start_with?('sqlite')
+
       charset        = config[:charset]   || ENV['CHARSET']   || 'utf8'
       collation      = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
 
       puts "=> Creating database '#{database}'"
-      Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation)
+      Padrino::Generators::SqlHelpers.create_db(adapter, user, password, host, database, charset, collation)
       puts "<= dm:create executed"
     end
 
     desc "Drop the database (postgres and mysql only)"
     task :drop => :environment do
       config = DataMapper.repository.adapter.options.symbolize_keys
+      adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
+
       database       = config[:database] || config[:path]
+      database.sub!(/^\//,'') unless adapter.start_with?('sqlite')
 
       puts "=> Dropping database '#{database}'"
-      Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database)
+      Padrino::Generators::SqlHelpers.drop_db(adapter, user, password, host, database)
       puts "<= dm:drop executed"
     end
 
