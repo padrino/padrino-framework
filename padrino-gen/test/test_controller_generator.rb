@@ -185,6 +185,19 @@ describe "ControllerGenerator" do
       assert_match_in_file(/get :test do\n\n  end\n/m, @controller_path)
       assert_match_in_file(/post :yada do\n\n  end\n/m, @controller_path)
     end
+
+    describe "with 'no-helper' option" do
+      it 'should not generate helper within existing project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
+        capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '--no-helper') }
+        assert_file_exists("#{@apptmp}/sample_project/app/views/demo_items")
+        assert_file_exists("#{@apptmp}/sample_project/app/controllers/demo_items.rb")
+        assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/demo_items_controller_spec.rb")
+        assert_no_file_exists("#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
+        assert_no_file_exists("#{@apptmp}/sample_project/spec/app/helpers/demo_items_helper_spec.rb")
+      end
+    end
+
   end
 
   describe "the controller destroy option" do
