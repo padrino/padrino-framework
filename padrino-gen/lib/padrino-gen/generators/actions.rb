@@ -13,6 +13,14 @@ module Padrino
       def self.included(base)
         base.extend(ClassMethods)
       end
+      ##
+      # Avoids editing destination file if it does not exist.
+      #
+      def inject_into_file(destination, *args, &block)
+        destination_path = destination.start_with?("/") ? destination : destination_root(destination)
+        return unless File.exist?(destination_path)
+        super
+      end
 
       ##
       # Performs the necessary generator for a given component choice.

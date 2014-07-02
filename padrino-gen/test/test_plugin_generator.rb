@@ -39,12 +39,14 @@ describe "PluginGenerator" do
       expects_generated :migration, "AddEmailToUser email:string -r=#{@apptmp}/sample_project"
       expects_generated :fake, "foo bar -r=#{@apptmp}/sample_project"
       expects_generated :plugin, "carrierwave -r=#{@apptmp}/sample_project"
+      File.stubs(:exist?).returns(true)
       expects_dependencies 'nokogiri'
       expects_initializer :test, "# Example", :root => "#{@apptmp}/sample_project"
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"
       expects_generated :controller, "users get:index -r=#{@apptmp}/sample_project --app=testapp"
       example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
+      File.unstub(:exist?)
     end
   end
 
