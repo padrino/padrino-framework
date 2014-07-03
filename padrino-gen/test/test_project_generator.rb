@@ -93,6 +93,11 @@ describe "ProjectGenerator" do
       assert_no_match_in_file(/Padrino.mount\('SampleProject::App'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
+    it 'should generate lean project correctly even if the component is specified' do
+      out, err = capture_io { generate(:project,'sample_project', '--lean', "--root=#{@apptmp}", "--orm=activerecord", "--stylesheet=compass") }
+      assert_match("", err)
+    end
+
     it 'should generate tiny skeleton' do
       capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}") }
       assert_file_exists("#{@apptmp}/sample_project")
