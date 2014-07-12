@@ -199,6 +199,12 @@ describe "ProjectGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none') }
       assert_match_in_file(/gem 'padrino'/, "#{@apptmp}/sample_project/Gemfile")
     end
+
+    it 'should create .keep files for empty directories that are required for running application' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--stylesheet=sass", "--orm=sequel") }
+      assert_file_exists("#{@apptmp}/sample_project/tmp/.keep")
+      assert_file_exists("#{@apptmp}/sample_project/log/.keep")
+    end
   end
 
   describe "a generator for mock component" do

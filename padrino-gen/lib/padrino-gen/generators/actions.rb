@@ -515,6 +515,21 @@ WARNING
         options[:app] == '.' ? '/..' : '/../..'
       end
 
+      ##
+      # Creates an empty directory with .keep file
+      #
+      def empty_directory_with_keep_file(destination, config = {})
+        empty_directory(destination, config)
+        keep_file(destination)
+      end
+
+      ##
+      # Creates an empty .keep file
+      #
+      def keep_file(destination)
+        create_file("#{destination}/.keep")
+      end
+
       # Class methods for Thor generators to support the generators and component choices.
       module ClassMethods
         ##

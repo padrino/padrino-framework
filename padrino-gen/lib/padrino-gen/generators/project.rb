@@ -55,8 +55,8 @@ module Padrino
           empty_directory destination_root('public/images')
           empty_directory destination_root('public/javascripts')
           empty_directory destination_root('public/stylesheets')
-          empty_directory destination_root('tmp')
-          empty_directory destination_root('log')
+          empty_directory_with_keep_file destination_root('tmp')
+          empty_directory_with_keep_file destination_root('log')
           store_component_config('.components')
           unless options[:lean]
             app_skeleton('app', options[:tiny])
