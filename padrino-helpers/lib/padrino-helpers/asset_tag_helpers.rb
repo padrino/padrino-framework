@@ -302,7 +302,7 @@ module Padrino
       def asset_path(kind, source = nil)
         kind, source = source, kind if source.nil?
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
-        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\//
+        return source if source =~ ABSOLUTE_URL_PATTERN
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
