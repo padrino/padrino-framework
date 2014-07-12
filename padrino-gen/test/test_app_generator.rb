@@ -119,5 +119,14 @@ describe "AppGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/subapp/app.rb")
       assert_match(/Subapp already exists/, out)
     end
+
+    it 'should generate app files if :force option is specified' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, err = capture_io { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project", "--force") }
+      assert_dir_exists("#{@apptmp}/sample_project/public/kernel")
+      assert_dir_exists("#{@apptmp}/sample_project/kernel/controllers")
+      assert_dir_exists("#{@apptmp}/sample_project/kernel/helpers")
+      assert_file_exists("#{@apptmp}/sample_project/kernel/app.rb")
+    end
   end
 end
