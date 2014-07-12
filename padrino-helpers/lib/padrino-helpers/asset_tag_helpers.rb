@@ -296,6 +296,9 @@ module Padrino
       #   # Generates: /uploads/file.ext?1269008689
       #   asset_path 'uploads/file.ext'
       #
+      #   # Generates: //cdn.example.com/images/example.jpg?1269008689
+      #   set :asset_host, '//cdn.example.com'
+      #   asset_path :images, 'example.jpg'
       def asset_path(kind, source = nil)
         kind, source = source, kind if source.nil?
         source = asset_normalize_extension(kind, URI.escape(source.to_s))
@@ -303,6 +306,9 @@ module Padrino
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
+        if defined?(settings) && settings.respond_to?(:asset_host)
+          result_path.prepend(settings.asset_host)
+        end
         "#{result_path}#{timestamp}"
       end
 
