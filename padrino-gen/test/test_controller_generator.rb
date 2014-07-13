@@ -197,7 +197,6 @@ describe "ControllerGenerator" do
         assert_no_file_exists("#{@apptmp}/sample_project/spec/app/helpers/demo_items_helper_spec.rb")
       end
     end
-
   end
 
   describe "the controller destroy option" do
