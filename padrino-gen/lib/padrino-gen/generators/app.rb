@@ -17,10 +17,11 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen app generates a new Padrino application"
       argument     :name,      :desc => 'The name of your padrino application'
-      class_option :root,      :desc => 'The root destination',                   :aliases => '-r', :default => '.',   :type => :string
-      class_option :destroy,                                                      :aliases => '-d', :default => false, :type => :boolean
-      class_option :tiny,      :desc => 'Generate tiny app skeleton',             :aliases => '-i', :default => false, :type => :boolean
-      class_option :namespace, :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',    :type => :string
+      class_option :root,      :desc => 'The root destination',                     :aliases => '-r', :default => '.',   :type => :string
+      class_option :destroy,                                                        :aliases => '-d', :default => false, :type => :boolean
+      class_option :tiny,      :desc => 'Generate tiny app skeleton',               :aliases => '-i', :default => false, :type => :boolean
+      class_option :namespace, :desc => 'The name space of your padrino project',   :aliases => '-n', :default => '',    :type => :string
+      class_option :force,     :desc => 'Generate app files if app already exists', :aliases => '-f', :default => false, :type => :boolean
 
       # Show help if no ARGV given
       require_arguments!
@@ -39,9 +40,11 @@ module Padrino
           if options[:destroy]
             self.behavior = :revoke
           else
-            say "#{@app_name} already exists."
-            say "Please, change the name."
-            return
+            unless options[:force]
+              say "#{@app_name} already exists."
+              say "Please, change the name."
+              return
+            end
           end if already_exists?(@app_name, @project_name)
 
           lowercase_app_folder = @app_folder.downcase
