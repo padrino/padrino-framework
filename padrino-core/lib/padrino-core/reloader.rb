@@ -251,8 +251,12 @@ module Padrino
     #
     def external_constant?(const)
       sources = object_sources(const)
-      if sample = ObjectSpace.each_object(const).first
-        sources += object_sources(sample)
+      begin
+        if sample = ObjectSpace.each_object(const).first
+          sources += object_sources(sample)
+        end
+      rescue RuntimeError => error # JRuby 1.7.12 fails to ObjectSpace.each_object
+        raise unless RUBY_PLATFORM =='java' && error.message.start_with?("ObjectSpace is disabled")
       end
       !sources.any?{ |source| source.start_with?(Padrino.root) }
     end
