@@ -237,8 +237,40 @@ module Padrino
       !file.start_with?(Padrino.root) || exclude.any?{ |excluded_path| file.start_with?(excluded_path) }
     end
 
+    ##
+    # Tells if a constant should be excluded from Reloader routines.
+    #
     def constant_excluded?(const)
-      (exclude_constants - include_constants).any?{ |excluded_constant| const._orig_klass_name.start_with?(excluded_constant) }
+      external_constant?(const) || (exclude_constants - include_constants).any?{ |excluded_constant| const._orig_klass_name.start_with?(excluded_constant) }
+    end
+
+    ##
+    # Tells if a constant is defined only outside of Padrino project path.
+    # If a constant has any methods defined inside of the project path it's
+    # considered internal and will be included in further testing.
+    #
+    def external_constant?(const)
+      sources = object_sources(const)
+      if sample = ObjectSpace.each_object(const).first
+        sources += object_sources(sample)
+      end
+      !sources.any?{ |source| source.start_with?(Padrino.root) }
+    end
+
+    ##
+    # Gets all the sources in which target's class or instance methods are defined.
+    #
+    # Note: Method#source_location is for Ruby 1.9.3+ only.
+    #
+    def object_sources(target)
+      sources = Set.new
+      target.methods.each do |method_name|
+        method_object = target.method(method_name)
+        if method_object.owner == (target.class == Class ? target.singleton_class : target.class)
+          sources << method_object.source_location.first
+        end
+      end
+      sources
     end
 
     ##
