@@ -116,7 +116,7 @@ If set, the cache key used to store the response will be `name`. If this is not 
 
     class SimpleApp < Padrino::Application
       get '/post/:id', :cache => true do
-        cache_key request.path_info + "?" + params.slice("name", "page").to_param 
+        cache_key { request.path_info + "?" + params.slice("name", "page").to_param } 
         @post = Post.find(params[:id])
       end
     end
