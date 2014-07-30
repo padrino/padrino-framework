@@ -38,6 +38,57 @@ describe "PadrinoCache" do
     refute_equal false, called
   end
 
+  it 'should cache HEAD verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    head "/foo"
+    head "/foo"
+    assert_equal 1, called_times
+  end
+
+  it 'should not cache POST verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      post('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    post "/foo"
+    assert_equal 1, called_times
+    post "/foo"
+    assert_equal 2, called_times
+  end
+
+  it 'should not cache DELETE verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      delete('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    delete "/foo"
+    assert_equal 1, called_times
+    delete "/foo"
+    assert_equal 2, called_times
+  end
+
+  it 'should not cache PUT verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      put('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    put "/foo"
+    assert_equal 1, called_times
+    put "/foo"
+    assert_equal 2, called_times
+  end
+
   it 'should delete from the cache' do
     called = false
     mock_app do
