@@ -346,4 +346,44 @@ describe "PadrinoCache" do
     assert_equal 'bar', body
     assert_equal 1, counter
   end
+
+  it 'should allow different expiring times for different pages' do
+    skip
+    called_times_a = 0
+    called_times_b = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :cache => true do
+        get("/foo") do
+          expires 1
+          called_times_a += 1
+          called_times_b.to_s
+        end
+        get("/bar") do
+          expires 3
+          called_times_b += 1
+          called_times_b.to_s
+        end
+      end
+    end
+    Time.stub(:now, Time.now) { get "/foo"; get "/bar" }
+    assert_equal 1, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 0.5) { get "/foo"; get "/bar" }
+    assert_equal 1, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 2) { get "/foo"; get "/bar" }
+    assert_equal 2, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 2.5) { get "/foo"; get "/bar" }
+    assert_equal 2, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 4) { get "/foo"; get "/bar" }
+    assert_equal 3, called_times_a
+    assert_equal 2, called_times_b
+    Time.stub(:now, Time.now + 5.5) { get "/foo"; get "/bar" }
+    assert_equal 4, called_times_a
+    assert_equal 2, called_times_b
+  end
 end
