@@ -101,8 +101,12 @@ module Padrino
         app.set :cache, Padrino::Cache.new(:File,
                                            :dir => Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache'))
         app.disable :caching
+        included(app)
       end
-      alias :included :registered
+
+      def included(base)
+        base.extend Padrino::Cache::Helpers::Page::ClassMethods
+      end
 
       def padrino_route_added(route, verb, path, args, options, block)
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)

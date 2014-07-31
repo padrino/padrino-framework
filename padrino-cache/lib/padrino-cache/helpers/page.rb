@@ -60,8 +60,7 @@ module Padrino
         #
         # @api public
         def expires(time)
-          @route.cache_expires = time if @route
-          @_last_expires       = time
+          @route.cache_expires = time
         end
 
         def expires_in(time)
@@ -112,7 +111,7 @@ module Padrino
           end
 
           route.after_filters do
-            save_cached_response if settings.caching?
+            save_cached_response(route.cache_expires) if settings.caching?
           end
         end
 
@@ -128,7 +127,7 @@ module Padrino
           value
         end
 
-        def save_cached_response
+        def save_cached_response(cache_expires)
           return unless @_response_buffer.kind_of?(String)
 
           began_at = Time.now
@@ -139,7 +138,7 @@ module Padrino
             :content_type => @_content_type
           }
 
-          settings.cache.store(route_cache_key, content, :expires => @_last_expires)
+          settings.cache.store(route_cache_key, content, :expires => cache_expires)
 
           logger.debug "SET Cache", began_at, route_cache_key if defined?(logger)
         end
@@ -150,6 +149,24 @@ module Padrino
         def resolve_cache_key
           key = @route.cache_key
           key.is_a?(Proc) ? instance_eval(&key) : key
+        end
+
+        module ClassMethods
+          ##
+          # A method to set `expires` time inside `controller` blocks.
+          #
+          # @example
+          #   controller :users do
+          #     expires 15
+          #
+          #     get :show do
+          #       'shown'
+          #     end
+          #   end
+          #
+          def expires(time)
+            @_expires = time
+          end
         end
       end
     end
