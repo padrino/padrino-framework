@@ -582,7 +582,8 @@ module Padrino
         options   = args.extract_options!.dup
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
-        block ||= proc { submit_tag(name, options.delete(:submit_options) || {}) }
+        submit_options = options.delete(:submit_options) || {}
+        block ||= proc { submit_tag(name, submit_options) }
         form_tag(url || name, options, &block)
       end
 
