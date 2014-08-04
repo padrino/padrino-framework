@@ -22,9 +22,9 @@
 * DEL `Padrino::Admin::Utils::Crypt` as it wasn't being used (@dariocravero)
 * FIX #1710 Adjust path to pre-load the helper (@namusyaka)
 * NEW #1712 Implement :force option in the app generator and the model generator (@namusyaka)
-* FIX #1717 'log' and 'tmp' folders no longer contain a "keep" file  (@namusyaka)
+* FIX #1717 make generated 'log' and 'tmp' folders to contain ".keep" file  (@namusyaka)
 * FIX #1722 do not remove external constants (@ujifgc)
-* FIX #1727 do not apply default layout to templates with unsupported engine
+* FIX #1727 do not apply default layout to templates with unsupported engine (@ujifgc)
 * FIX controller-wide expires to be respected (@ujifgc)
 * FIX Do not pass :submit_options as an attribute of form element for button (@namusyaka)
 
