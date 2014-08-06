@@ -57,7 +57,6 @@ module Padrino
       before_load.each(&:call)
       require_dependencies(*dependency_paths)
       after_load.each(&:call)
-      precompile_routes!
       logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
       Thread.current[:padrino_loaded] = true
     end
@@ -180,13 +179,6 @@ module Padrino
     def load_paths
       warn 'Padrino.load_paths is deprecated. Please, use Padrino::Application#prerequisites'
       []
-    end
-
-    def precompile_routes!
-      mounted_apps.each do |app|
-        app_obj = app.app_obj
-        app_obj.respond_to?(:precompile_routes?) && app_obj.precompile_routes? && app_obj.precompile_routes!
-      end
     end
 
     def module_paths
