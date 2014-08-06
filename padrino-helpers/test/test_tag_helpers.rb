@@ -69,6 +69,12 @@ describe "TagHelpers" do
       assert_has_tag('p', :content => "97") { actual_html }
     end
 
+    it 'should insert newline to content if textarea tag' do
+      actual_html = content_tag(:textarea, "foo\nbar")
+      assert_has_tag('textarea', :content => "foo\nbar") { actual_html }
+      assert_match("<textarea>\nfoo\nbar</textarea>", actual_html)
+    end
+
     it 'should support tags with erb' do
       visit '/erb/content_tag'
       assert_have_selector :p, :content => "Test 1", :class => 'test', :id => 'test1'
