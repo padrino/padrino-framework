@@ -1,6 +1,8 @@
 module Padrino
   module PathRouter
     class Compiler
+      attr_reader :regexps
+
       def initialize(routes)
         @routes = routes
       end
@@ -25,6 +27,11 @@ module Padrino
           /(?<_#{index}>#{regexp})/
         end
         @regexps = compile(@regexps)
+        @compiled = true
+      end
+
+      def compiled?
+        !!@compiled
       end
   
       private
@@ -34,10 +41,6 @@ module Padrino
         paths << Regexp.union(regexps)
         regexps.shift
         compile(regexps, paths)
-      end
-  
-      def compiled?
-        !!@regexps
       end
   
       def match_with(pattern)
