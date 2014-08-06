@@ -179,6 +179,15 @@ module Padrino
         []
       end
 
+      def precompile_routes?
+        settings.respond_to?(:precompile_routes) && settings.precompile_routes?
+      end
+
+      def precompile_routes!
+        compiled_router.prepare!
+        compiled_router.engine.compile!
+      end
+
       protected
 
       ##
