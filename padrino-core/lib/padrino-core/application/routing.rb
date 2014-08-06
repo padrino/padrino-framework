@@ -582,7 +582,7 @@ module Padrino
 
           # Now we need to parse our provides
           options.delete(:provides) if options[:provides].nil?
-
+        
           options.delete(:accepts) if options[:accepts].nil?
 
           if @_use_format or format_params = options[:provides]
