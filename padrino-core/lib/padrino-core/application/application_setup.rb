@@ -23,7 +23,9 @@ module Padrino
         set :default_builder, 'StandardFormBuilder'
 
         # TODO: Remove this hack after getting rid of thread-unsafe http_router:
-        set :init_mutex, Mutex.new
+        if RUBY_PLATFORM == "java"
+          set :init_mutex, Mutex.new
+        end
 
         default_paths
         default_security
