@@ -114,6 +114,14 @@ describe "ModelGenerator" do
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       assert_match(/User already exists/, out)
     end
+
+    it 'should generate model files if :force option is specified' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
+      capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
+      out, err = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", "--force", :apps => "user") }
+      assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/models/user.rb")
+    end
   end
 
   # ACTIVERECORD

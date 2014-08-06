@@ -12,13 +12,13 @@ module Padrino
         "<" => "&lt;",
         ">" => "&gt;",
         '"' => "&quot;"
-      }
+      }.freeze
 
       ##
       # Cached Regexp for escaping values to avoid rebuilding one
       # on every escape operation.
       #
-      ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys)
+      ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys).freeze
 
       BOOLEAN_ATTRIBUTES = [
         :autoplay,
@@ -39,7 +39,7 @@ module Padrino
         :itemscope,
         :noresize,
         :novalidate
-      ]
+      ].freeze
 
       ##
       # Custom data attributes,
@@ -53,7 +53,7 @@ module Padrino
         :method,
         :remote,
         :confirm
-      ]
+      ].freeze
 
       ##
       # A html_safe newline string to avoid allocating a new on each
@@ -200,7 +200,7 @@ module Padrino
       #   # => <input type="number" autocomplete="off" />
       #
       def input_tag(type, options = {})
-        tag(:input, options.reverse_merge!(:type => type))
+        tag(:input, { :type => type }.update(options))
       end
 
       ##
@@ -230,7 +230,7 @@ module Padrino
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
       def tag(name, options = nil, open = false)
-        options    = parse_data_options(name, options)
+        options = parse_data_options(name, options)
         attributes = tag_attributes(options)
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
@@ -241,50 +241,51 @@ module Padrino
       # Returns a compiled list of HTML attributes.
       #
       def tag_attributes(options)
-        return '' if options.nil?
-        attributes = options.map do |k, v|
-          next if v.nil? || v == false
-          if v.is_a?(Hash)
-            nested_values(k, v)
-          elsif BOOLEAN_ATTRIBUTES.include?(k)
-            %(#{k}="#{k}")
+        return '' unless options
+        options.inject('') do |all,(key,value)|
+          next all unless value
+          all << ' ' if all.empty?
+          all << if value.is_a?(Hash)
+            nested_values(key, value)
+          elsif BOOLEAN_ATTRIBUTES.include?(key)
+            %(#{key}="#{key}" )
           else
-            %(#{k}="#{escape_value(v)}")
+            %(#{key}="#{escape_value(value)}" )
           end
-        end.compact
-        attributes.empty? ? '' : " #{attributes * ' '}"
+        end.chomp!(' ')
       end
 
       ##
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string.to_s.gsub(ESCAPE_REGEXP) { |c| ESCAPE_VALUES[c] }
+        string.to_s.gsub(ESCAPE_REGEXP) { |char| ESCAPE_VALUES[char] }
       end
 
       ##
       # Iterate through nested values.
       #
       def nested_values(attribute, hash)
-        hash.map do |k, v|
-          if v.is_a?(Hash)
-            nested_values("#{attribute}-#{k.to_s.dasherize}", v)
+        hash.inject('') do |all,(key,value)|
+          attribute_with_name = "#{attribute}-#{key.to_s.dasherize}"
+          all << if value.is_a?(Hash)
+            nested_values(attribute_with_name, value)
           else
-            %(#{attribute}-#{k.to_s.dasherize}="#{escape_value(v)}")
+            %(#{attribute_with_name}="#{escape_value(value)}" )
           end
-        end * ' '
+        end
       end
 
       ##
       # Parses custom data attributes.
       #
       def parse_data_options(tag, options)
-        return if options.nil?
+        return unless options
         parsed_options = options.dup
-        options.each do |k, v|
-          next if !DATA_ATTRIBUTES.include?(k) || (tag.to_s == 'form' && k == :method)
-          parsed_options["data-#{k}"] = parsed_options.delete(k)
-          parsed_options[:rel] = 'nofollow' if k == :method
+        options.each do |key, value|
+          next if !DATA_ATTRIBUTES.include?(key) || (tag.to_s == 'form' && key == :method)
+          parsed_options["data-#{key}"] = parsed_options.delete(key)
+          parsed_options[:rel] = 'nofollow' if key == :method
         end
         parsed_options
       end

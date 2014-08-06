@@ -38,6 +38,57 @@ describe "PadrinoCache" do
     refute_equal false, called
   end
 
+  it 'should cache HEAD verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    head "/foo"
+    head "/foo"
+    assert_equal 1, called_times
+  end
+
+  it 'should not cache POST verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      post('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    post "/foo"
+    assert_equal 1, called_times
+    post "/foo"
+    assert_equal 2, called_times
+  end
+
+  it 'should not cache DELETE verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      delete('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    delete "/foo"
+    assert_equal 1, called_times
+    delete "/foo"
+    assert_equal 2, called_times
+  end
+
+  it 'should not cache PUT verb' do
+    called_times = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      put('/foo', :cache => true){ called_times += 1; called_times.to_s }
+    end
+    put "/foo"
+    assert_equal 1, called_times
+    put "/foo"
+    assert_equal 2, called_times
+  end
+
   it 'should delete from the cache' do
     called = false
     mock_app do
@@ -115,7 +166,7 @@ describe "PadrinoCache" do
     assert_equal 'test page again', body
   end
 
-  it 'should accept allow controller-wide caching' do
+  it 'should allow controller-wide caching' do
     called = false
     mock_app do
       controller :cache => true do
@@ -130,6 +181,26 @@ describe "PadrinoCache" do
     get "/foo"
     assert_equal 200, status
     assert_equal 'test', body
+  end
+
+  it 'should allow controller-wide expires' do
+    called = false
+    mock_app do
+      register Padrino::Cache
+      controller :cache => true do
+        enable :caching
+        expires 1
+        get("/foo"){ called ? halt(500) : (called = 'test') }
+      end
+    end
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    get "/foo"
+    assert_equal 200, status
+    assert_equal 'test', body
+    Time.stub(:now, Time.now + 2) { get "/foo" }
+    assert_equal 500, status
   end
 
   it 'should allow cache disabling on a per route basis' do
@@ -345,5 +416,45 @@ describe "PadrinoCache" do
     get '/'
     assert_equal 'bar', body
     assert_equal 1, counter
+  end
+
+  it 'should allow different expiring times for different pages' do
+    skip
+    called_times_a = 0
+    called_times_b = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :cache => true do
+        get("/foo") do
+          expires 1
+          called_times_a += 1
+          called_times_b.to_s
+        end
+        get("/bar") do
+          expires 3
+          called_times_b += 1
+          called_times_b.to_s
+        end
+      end
+    end
+    Time.stub(:now, Time.now) { get "/foo"; get "/bar" }
+    assert_equal 1, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 0.5) { get "/foo"; get "/bar" }
+    assert_equal 1, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 2) { get "/foo"; get "/bar" }
+    assert_equal 2, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 2.5) { get "/foo"; get "/bar" }
+    assert_equal 2, called_times_a
+    assert_equal 1, called_times_b
+    Time.stub(:now, Time.now + 4) { get "/foo"; get "/bar" }
+    assert_equal 3, called_times_a
+    assert_equal 2, called_times_b
+    Time.stub(:now, Time.now + 5.5) { get "/foo"; get "/bar" }
+    assert_equal 4, called_times_a
+    assert_equal 2, called_times_b
   end
 end

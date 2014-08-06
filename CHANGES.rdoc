@@ -1,5 +1,36 @@
 = CHANGES
 
+== 0.12.3 (not released yet)
+
+* FIX #1579 Update admin deps such as font-awesome, jquery, bootstrap (@WaYdotNET)
+* FIX #1681 Set html message part properly within the mailer (@judofyr)
+* FIX Refactor application router code into multiple modules (@ujifgc)
+* FIX Cleanup routing controller code by removing code duplication (@ujifgc)
+* DEL #1684 Extract breadcrumbs into padrino-contrib (@namusyaka)
+* FIX #1690 fields_for helper should respect the builder of parent (@namusyaka)
+* FIX Update taiwanese translations to fix typos (@felix125)
+* FIX #1693 Remove load_paths and have reloader rely on default prerequisites (@ujifgc)
+* FIX #1694 Setup proper name for helper when generating a skeleton project (@namusyaka)
+* FIX make Padrino server threaded in development if possible (@ujifgc)
+* FIX #1697 Padrino::Mailer::Mime.mime_type detection (@tyabe)
+* FIX #1701 don't load admin locales automatically (@dariocravero)
+* FIX #1705 Upgrade to RSpec 3 syntax (@tyabe)
+* FIX #1683 Test should not depend on the execution order (@namusyaka)
+* NEW #1708 Adds no-helper option to controller generator to skip helpers (@tyabe)
+* FIX #1709 tiny app skeleton generator should provide test files (@namusyaka)
+* FIX datamapper sqlite rake tasks (@ujifgc)
+* DEL `Padrino::Admin::Utils::Crypt` as it wasn't being used (@dariocravero)
+* FIX #1710 Adjust path to pre-load the helper (@namusyaka)
+* NEW #1712 Implement :force option in the app generator and the model generator (@namusyaka)
+* FIX #1717 make generated 'log' and 'tmp' folders to contain ".keep" file  (@namusyaka)
+* FIX #1722 do not remove external constants (@ujifgc)
+* FIX #1727 do not apply default layout to templates with unsupported engine (@ujifgc)
+* FIX controller-wide expires to be respected (@ujifgc)
+* FIX Do not pass :submit_options as an attribute of form element for button (@namusyaka)
+
+NOTE: If you're using the admin locales and you're not using `Padrino::Admin::AccessControl`
+you will have to add `register Padrino::Admin` to your `app/app.rb` in order to get the locales in.
+
 == 0.12.2 (May 12th 2014)
 
 * NEW Include all helpers with `include Padrino::Helpers` (@ujifgc)

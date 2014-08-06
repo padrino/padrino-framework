@@ -1,6 +1,7 @@
 RIOT_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
 
 # Specify your app using the #app helper inside a context.
 # Takes either an app class or a block argument.

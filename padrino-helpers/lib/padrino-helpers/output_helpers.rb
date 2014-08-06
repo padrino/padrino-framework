@@ -158,7 +158,7 @@ module Padrino
       #   content_for? :header => true
       #
       def content_for?(key)
-        content_blocks[key.to_sym].present?
+        !content_blocks[key.to_sym].empty?
       end
 
       ##

@@ -5,12 +5,6 @@ require 'padrino-helpers'
 FileSet.glob_require('padrino-admin/*.rb', __FILE__)
 FileSet.glob_require('padrino-admin/{helpers,utils}/*.rb', __FILE__)
 
-
-##
-# Load our Padrino::Admin locales.
-#
-# I18n.load_path = Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/*.yml"]
-
 module Padrino
   ##
   # Padrino::Admin is beautiful Ajax Admin, with these features:
@@ -20,18 +14,16 @@ module Padrino
   # Scaffold:: You can simply create a new "admin interface" simply providing a Model
   # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)
   #
-  module Admin; end
+  module Admin
+    class << self
+      def registered(app)
+        # Load Padrino::Admin locales
+        I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
+      end
+      alias :included :registered
+    end
+  end
 end
-
-##
-# We need to apply Padrino::Admin::Utils::Extensions
-#
-String.send(:include, Padrino::Admin::Utils::Crypt)
-
-##
-# Load our Padrino::Admin locales
-#
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
 
 ##
 # Now we need to add admin generators to padrino-gen

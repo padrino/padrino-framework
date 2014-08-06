@@ -16,15 +16,16 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen controller generates a new Padrino controller"
 
-      argument     :name,      :desc => 'The name of your padrino controller'
-      argument     :fields,    :desc => 'The fields for the controller',                            :default => [],     :type => :array
-      class_option :root,      :desc => 'The root destination',                   :aliases => '-r', :default => '.',    :type => :string
-      class_option :app,       :desc => 'The application destination path',       :aliases => '-a', :default => '/app', :type => :string
-      class_option :destroy,                                                      :aliases => '-d', :default => false,  :type => :boolean
-      class_option :namespace, :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',     :type => :string
-      class_option :layout,    :desc => 'The layout for the controller',          :aliases => '-l', :default => '',     :type => :string
-      class_option :parent,    :desc => 'The parent of the controller',           :aliases => '-p', :default => '',     :type => :string
-      class_option :provides,  :desc => 'the formats provided by the controller', :aliases => '-f', :default => '',     :type => :string
+      argument     :name,       :desc => 'The name of your padrino controller'
+      argument     :fields,     :desc => 'The fields for the controller',                            :default => [],     :type => :array
+      class_option :root,       :desc => 'The root destination',                   :aliases => '-r', :default => '.',    :type => :string
+      class_option :app,        :desc => 'The application destination path',       :aliases => '-a', :default => '/app', :type => :string
+      class_option :destroy,                                                       :aliases => '-d', :default => false,  :type => :boolean
+      class_option :namespace,  :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',     :type => :string
+      class_option :layout,     :desc => 'The layout for the controller',          :aliases => '-l', :default => '',     :type => :string
+      class_option :parent,     :desc => 'The parent of the controller',           :aliases => '-p', :default => '',     :type => :string
+      class_option :provides,   :desc => 'The formats provided by the controller', :aliases => '-f', :default => '',     :type => :string
+      class_option :'no-helper',:desc => 'Not generate helper',                                      :default => false,  :type => :boolean
 
       # Show help if no ARGV given
       require_arguments!
@@ -52,12 +53,12 @@ module Padrino
 
           self.behavior = :revoke if options[:destroy]
           template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")
-          template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
+          template 'templates/helper.rb.tt',     destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb") unless options[:'no-helper']
           empty_directory destination_root(app, "/views/#{name.to_s.underscore}")
           include_component_module_for(:test)
           if test?
             generate_controller_test(name)
-            generate_helper_test(@helper_name, @project_name, @app_name)
+            generate_helper_test(@helper_name, @project_name, @app_name) unless options[:'no-helper']
           end
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'

@@ -15,12 +15,13 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen model generates a new model and migration files"
 
-      argument :name, :desc => 'The name of your padrino model'
-      argument :fields, :desc => 'The fields for the model', :type => :array, :default => []
-      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
-      class_option :app, :desc => 'The application destination path', :aliases => '-a', :default => '.', :type => :string
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :skip_migration, :aliases => '-s', :default => false, :type => :boolean
+      argument :name,               :desc => 'The name of your padrino model'
+      argument :fields,             :desc => 'The fields for the model',                                     :default => [],    :type => :array
+      class_option :root,           :desc => 'The root destination',                       :aliases => '-r', :default => '.',   :type => :string
+      class_option :app,            :desc => 'The application destination path',           :aliases => '-a', :default => '.',   :type => :string
+      class_option :destroy,                                                               :aliases => '-d', :default => false, :type => :boolean
+      class_option :skip_migration,                                                        :aliases => '-s', :default => false, :type => :boolean
+      class_option :force,          :desc => 'Generate model files if app already exists', :aliases => '-f', :default => false, :type => :boolean
 
       # Show help if no ARGV given.
       require_arguments!
@@ -54,9 +55,11 @@ module Padrino
         if options[:destroy]
           self.behavior = :revoke
         else
-          say "#{@camel_name} already exists."
-          say "Please, change the name."
-          return false
+          unless options[:force]
+            say "#{@camel_name} already exists."
+            say "Please, change the name."
+            return false
+          end
         end if model_name_already_exists?
 
         return false if has_invalid_fields?

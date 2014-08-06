@@ -990,6 +990,7 @@ describe "FormHelpers" do
     it 'should pass options on submit button when submit_options are given' do
       actual_html = button_to("Fancy button", '/users/1', :submit_options => { :class => :fancy })
       assert_has_tag('form input', :type => 'submit', :value => 'Fancy button', :class => 'fancy') { actual_html }
+      assert_has_no_tag('form', :"submit_options-class" => 'fancy'){ actual_html }
     end
 
     it 'should display correct button_to in erb' do

@@ -52,9 +52,7 @@ module Padrino
       began_at = Time.now
       @_called_from = first_caller
       set_encoding
-      set_load_paths(*load_paths)
       Logger.setup!
-      require_dependencies("#{root}/config/database.rb")
       Reloader.lock!
       before_load.each(&:call)
       require_dependencies(*dependency_paths)
@@ -71,9 +69,7 @@ module Padrino
     def clear!
       clear_middleware!
       mounted_apps.clear
-      @_load_paths = nil
       @_dependency_paths = nil
-      @_global_configuration = nil
       before_load.clear
       after_load.clear
       Reloader.clear!
@@ -134,9 +130,9 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!.merge( :cyclic => true )
-      files = paths.flatten.map{|path| Dir[path].sort_by{|v| v.count('/') }}.flatten.uniq
+      files = paths.flatten.map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.flatten.uniq
 
-      while files.present?
+      until files.empty?
         error, fatal, loaded = nil, nil, nil
 
         files.dup.each do |file|
@@ -144,42 +140,19 @@ module Padrino
             Reloader.safe_load(file, options)
             files.delete(file)
             loaded = true
-          rescue NameError, LoadError => e
-            logger.devel "Cyclic dependency reload for #{e.class}: #{e.message}"
-            error = e
-          rescue Exception => e
-            fatal = e
+          rescue NameError, LoadError => error
+            logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
+          rescue Exception => fatal
             break
           end
         end
 
         if fatal || !loaded
-          e = fatal || error
-          logger.exception e, :short
-          raise e
+          exception = fatal || error
+          logger.exception exception, :short
+          raise exception
         end
       end
-    end
-
-    ##
-    # Concat to +$LOAD_PATH+ the given paths.
-    #
-    # @param [Array<String>] paths
-    #   The paths to concat.
-    #
-    def set_load_paths(*paths)
-      load_paths.concat(paths).uniq!
-      $LOAD_PATH.concat(paths).uniq!
-    end
-
-    ##
-    # The used +$LOAD_PATHS+ from Padrino.
-    #
-    # @return [Array<String>]
-    #   The load paths used by Padrino.
-    #
-    def load_paths
-      @_load_paths ||= load_paths_was.dup
     end
 
     ##
@@ -193,32 +166,36 @@ module Padrino
     #   Padrino.dependency_paths << "#{Padrino.root}/uploaders/*.rb"
     #
     def dependency_paths
-      @_dependency_paths ||= dependency_paths_was + module_paths
+      @_dependency_paths ||= default_dependency_paths + modules_dependency_paths
+    end
+
+    # Deprecated
+    def set_load_paths(*)
+      warn 'Padrino.set_load_paths is deprecated. Please, use $LOAD_PATH.concat(paths)'
+      []
+    end
+
+    # Deprecated
+    def load_paths
+      warn 'Padrino.load_paths is deprecated. Please, use Padrino::Application#prerequisites'
+      []
     end
 
     private
 
-    def module_paths
+    def modules_dependency_paths
       modules.map(&:dependency_paths).flatten
     end
 
-    def load_paths_was
-      @_load_paths_was ||= [
-        "#{root}/lib",
-        "#{root}/models",
-        "#{root}/shared",
-      ].freeze
-    end
-
-    def dependency_paths_was
-      @_dependency_paths_was ||= [
+    def default_dependency_paths
+      @default_dependency_paths ||= [
         "#{root}/config/database.rb",
         "#{root}/lib/**/*.rb",
         "#{root}/models/**/*.rb",
         "#{root}/shared/lib/**/*.rb",
         "#{root}/shared/models/**/*.rb",
-        "#{root}/config/apps.rb"
-      ].freeze
+        "#{root}/config/apps.rb",
+      ]
     end
   end
 end

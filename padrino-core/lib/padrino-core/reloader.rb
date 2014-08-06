@@ -87,7 +87,7 @@ module Padrino
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
-      return require(file) if external_feature?(file)
+      return require(file) if feature_excluded?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
@@ -95,13 +95,13 @@ module Padrino
         with_silence{ require(file) }
         Storage.commit(file)
         update_modification_time(file)
-      rescue Exception => e
+      rescue Exception => exception
         unless options[:cyclic]
-          logger.exception e, :short
+          logger.exception exception, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)
-        raise e
+        raise
       end
     end
 
@@ -121,7 +121,7 @@ module Padrino
     # Remove a feature from $LOADED_FEATURES so it can be required again.
     #
     def remove_feature(file)
-      $LOADED_FEATURES.delete(file) unless external_feature?(file)
+      $LOADED_FEATURES.delete(file) unless feature_excluded?(file)
     end
 
     ##
@@ -156,7 +156,7 @@ module Padrino
     # Reloads the file if it's special. For now it's only I18n locale files.
     #
     def reload_special(file)
-      return unless special_files.any?{ |f| File.identical?(f, file) }
+      return unless special_files.any?{ |special_file| File.identical?(special_file, file) }
       if defined?(I18n)
         began_at = Time.now
         I18n.reload!
@@ -171,14 +171,14 @@ module Padrino
     #
     def reload_regular(file)
       apps = mounted_apps_of(file)
-      if apps.present?
-        apps.each { |app| app.app_obj.reload! }
-        update_modification_time(file)
-      else
+      if apps.empty?
         reloadable_apps.each do |app|
           app.app_obj.reload! if app.app_obj.dependencies.include?(file)
         end
         safe_load(file)
+      else
+        apps.each { |app| app.app_obj.reload! }
+        update_modification_time(file)
       end
     end
 
@@ -204,14 +204,6 @@ module Padrino
     end
 
     ##
-    # Return the mounted_apps providing the app location.
-    # Can be an array because in one app.rb we can define multiple Padrino::Application.
-    #
-    def mounted_apps_of(file)
-      Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
-    end
-
-    ##
     # Searches Ruby files in your +Padrino.load_paths+ , Padrino::Application.load_paths
     # and monitors them for any changes.
     #
@@ -229,25 +221,73 @@ module Padrino
     #
     def files_for_rotation
       files = Set.new
-      Padrino.load_paths.each{ |path| files += Dir.glob("#{path}/**/*.rb") }
+      files += Dir.glob("#{Padrino.root}/{lib,models,shared}/**/*.rb")
       reloadable_apps.each do |app|
         files << app.app_file
+        files += Dir.glob(app.app_obj.prerequisites)
         files += app.app_obj.dependencies
       end
       files + special_files
     end
 
     ##
-    # Tells if a feature is internal or external for Padrino project.
+    # Tells if a feature should be excluded from Reloader tracking.
     #
-    def external_feature?(file)
-      !file.start_with?(Padrino.root)
+    def feature_excluded?(file)
+      !file.start_with?(Padrino.root) || exclude.any?{ |excluded_path| file.start_with?(excluded_path) }
     end
 
+    ##
+    # Tells if a constant should be excluded from Reloader routines.
+    #
     def constant_excluded?(const)
-      (exclude_constants - include_constants).any?{ |c| const._orig_klass_name.start_with?(c) }
+      external_constant?(const) || (exclude_constants - include_constants).any?{ |excluded_constant| const._orig_klass_name.start_with?(excluded_constant) }
     end
 
+    ##
+    # Tells if a constant is defined only outside of Padrino project path.
+    # If a constant has any methods defined inside of the project path it's
+    # considered internal and will be included in further testing.
+    #
+    def external_constant?(const)
+      sources = object_sources(const)
+      begin
+        if sample = ObjectSpace.each_object(const).first
+          sources += object_sources(sample)
+        end
+      rescue RuntimeError => error # JRuby 1.7.12 fails to ObjectSpace.each_object
+        raise unless RUBY_PLATFORM =='java' && error.message.start_with?("ObjectSpace is disabled")
+      end
+      !sources.any?{ |source| source.start_with?(Padrino.root) }
+    end
+
+    ##
+    # Gets all the sources in which target's class or instance methods are defined.
+    #
+    # Note: Method#source_location is for Ruby 1.9.3+ only.
+    #
+    def object_sources(target)
+      sources = Set.new
+      target.methods.each do |method_name|
+        method_object = target.method(method_name)
+        if method_object.owner == (target.class == Class ? target.singleton_class : target.class)
+          sources << method_object.source_location.first
+        end
+      end
+      sources
+    end
+
+    ##
+    # Return the mounted_apps providing the app location.
+    # Can be an array because in one app.rb we can define multiple Padrino::Application.
+    #
+    def mounted_apps_of(file)
+      Padrino.mounted_apps.select { |app| File.identical?(file, app.app_file) }
+    end
+
+    ##
+    # Return the apps that allow reloading.
+    #
     def reloadable_apps
       Padrino.mounted_apps.select{ |app| app.app_obj.respond_to?(:reload) && app.app_obj.reload? }
     end
