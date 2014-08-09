@@ -402,5 +402,9 @@ describe "AssetTagHelpers" do
     it 'should generate proper paths for public folder' do
       assert_match /\/files\/file.ext\?\d+/, asset_path('files/file.ext')
     end
+
+    it 'should utilize asset host if it set so' do
+
+    end
   end
 end
