@@ -504,6 +504,8 @@ module Padrino
           if route.significant_variable_names.include?(option)
             route.add_match_with(option => Array(_args).first)
             true
+          else
+            (option == :collection || option == :member)
           end
         end
 
@@ -543,17 +545,33 @@ module Padrino
           options[:params] += options[:with] if options[:with]
         end
 
+        # Build our controller
+        controller = Array(@_controller).map(&:to_s)
+
         # We need check if path is a symbol, if that it's a named route.
         map = options.delete(:map)
+
+        if map.nil?
+          _map = controller.join("/")
+
+          if options.has_key?(:collection)
+            route_type = :collection
+          elsif options.has_key?(:member)
+            _map, route_type = "#{_map}/:id", :member
+          end
+
+          if options[route_type].present?
+            _map = "#{_map}/#{options[route_type]}"
+          end
+
+          map = _map if route_type
+        end
 
         # path i.e :index or :show
         if path.kind_of?(Symbol)
           name = path
           path = map ? map.dup : (path == :index ? '/' : path.to_s)
         end
-
-        # Build our controller
-        controller = Array(@_controller).map(&:to_s)
 
         case path
         when String # path i.e "/index" or "/show"

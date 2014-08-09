@@ -2112,4 +2112,98 @@ describe "Routing" do
     get '/users//'
     assert_equal 404, status
   end
+
+  it 'should accept :collection' do
+    mock_app do
+      controller :posts do
+        get :index, :collection => "unread" do
+          "success"
+        end
+      end
+    end
+    get '/posts/unread'
+    assert_equal "success", body
+  end
+
+  it 'blank :collection should be accepted' do
+    mock_app do
+      controller :posts do
+        get :index, :collection => "" do
+          "success"
+        end
+      end
+    end
+    get '/posts'
+    assert_equal "success", body
+  end
+
+  it 'should accept :member' do
+    mock_app do
+      controller :posts do
+        get :show, :member => "with_comments" do
+          params[:id]
+        end
+      end
+    end
+    get '/posts/1/with_comments'
+    assert_equal "1", body
+  end
+
+  it 'blank :member should be accepted' do
+    mock_app do
+      controller :posts do
+        get :show, :member => "" do
+          params[:id]
+        end
+      end
+    end
+    get '/posts/1'
+    assert_equal "1", body
+  end
+
+  it ":collection should override :member's presence" do
+    mock_app do
+      controller :posts do
+        get :index, :collection => "unread", :member => "" do
+          "success"
+        end
+      end
+    end
+    get '/posts/unread'
+    assert_equal "success", body
+
+    get '/posts/1'
+    assert_equal 404, status
+  end
+
+  it ':collection should not alter :map behaviour' do
+    mock_app do
+      controller :posts do
+        get :index, :collection => "unread", :map => "/users" do
+          "success"
+        end
+      end
+    end
+    get '/posts/unread'
+    assert_equal 404, status
+
+    get '/users'
+    assert_equal "success", body
+  end
+
+  it ':member should not alter :map behaviour' do
+    mock_app do
+      controller :posts do
+        get :show, :member => "with_comments", :map => "/users/:id/with_comments" do
+          params[:id]
+        end
+      end
+    end
+    get '/posts/1/with_comments'
+    assert_equal 404, status
+
+    get '/users/1/with_comments'
+    assert_equal "1", body
+  end
+
 end
