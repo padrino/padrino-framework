@@ -27,6 +27,10 @@
 * FIX #1727 do not apply default layout to templates with unsupported engine (@ujifgc)
 * FIX controller-wide expires to be respected (@ujifgc)
 * FIX Do not pass :submit_options as an attribute of form element for button (@namusyaka)
+* FIX #1732 Only use initializing with mutex on Java platform (@ujifgc)
+* FIX #1736 Respect the leading newline in textarea value (@krororo)
+* FIX email contition for minirecord adapter and AR4.1 (@tyabe)
+* FIX #1733 allow strings in :with option (@ujifgc)
 
 NOTE: If you're using the admin locales and you're not using `Padrino::Admin::AccessControl`
 you will have to add `register Padrino::Admin` to your `app/app.rb` in order to get the locales in.
