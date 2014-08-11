@@ -498,6 +498,12 @@ describe "FormHelpers" do
       assert_has_tag(:textarea, :content => "a test", :name => 'about', :rows => "5", :cols => "6") { actual_html }
     end
 
+    it 'should insert newline to before of content' do
+      actual_html = text_area_tag(:about, :value => "\na test")
+      assert_has_tag(:textarea, :content => "\na test", :name => 'about') { actual_html }
+      assert_match(%r{<textarea[^>]*>\n\na test</textarea>}, actual_html)
+    end
+
     it 'should display text area in erb' do
       visit '/erb/form_tag'
       assert_have_selector 'form.advanced-form textarea', :count => 1, :name => 'about', :class => 'large'

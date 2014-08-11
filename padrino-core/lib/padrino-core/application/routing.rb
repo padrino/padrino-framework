@@ -343,6 +343,15 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
+      def put(path, *args, &block)     route 'PUT',     path, *args, &block end
+      def post(path, *args, &block)    route 'POST',    path, *args, &block end
+      def delete(path, *args, &block)  route 'DELETE',  path, *args, &block end
+      def head(path, *args, &block)    route 'HEAD',    path, *args, &block end
+      def options(path, *args, &block) route 'OPTIONS', path, *args, &block end
+      def patch(path, *args, &block)   route 'PATCH',   path, *args, &block end
+      def link(path, *args, &block)    route 'LINK',    path, *args, &block end
+      def unlink(path, *args, &block)  route 'UNLINK',  path, *args, &block end
+
       def rebase_url(url)
         if url.start_with?('/')
           new_url = ''
@@ -616,7 +625,9 @@ module Padrino
       # Used for calculating path in route method.
       #
       def process_path_for_with_params(path, with_params)
-        File.join(path, Array(with_params).map(&:inspect).join("/"))
+        File.join(path, Array(with_params).map do |step|
+          step.kind_of?(String) ? step : step.inspect
+        end.join("/"))
       end
 
       ##
