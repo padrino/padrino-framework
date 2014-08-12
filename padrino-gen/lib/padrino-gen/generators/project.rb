@@ -55,8 +55,6 @@ module Padrino
           empty_directory destination_root('public/images')
           empty_directory destination_root('public/javascripts')
           empty_directory destination_root('public/stylesheets')
-          empty_directory_with_keep_file destination_root('tmp')
-          empty_directory_with_keep_file destination_root('log')
           store_component_config('.components')
           unless options[:lean]
             app_skeleton('app', options[:tiny])
@@ -71,6 +69,9 @@ module Padrino
             template 'templates/gem/README.md.tt', destination_root('README.md')
             template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
             template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
+          else
+            empty_directory_with_keep_file destination_root('tmp')
+            empty_directory_with_keep_file destination_root('log')
           end
         end
       end

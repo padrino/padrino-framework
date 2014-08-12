@@ -123,6 +123,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/^module SampleGem/,"#{@apptmp}/sample_gem/app/app.rb")
       assert_match_in_file(/class App/,"#{@apptmp}/sample_gem/app/app.rb")
       assert_file_exists("#{@apptmp}/sample_gem/README.md")
+      assert_no_file_exists("#{@apptmp}/sample_gem/tmp/.keep")
+      assert_no_file_exists("#{@apptmp}/sample_gem/log/.keep")
     end
 
     it 'should generate gemspec and special files with dashes in name' do
