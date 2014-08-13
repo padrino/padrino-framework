@@ -208,11 +208,8 @@ describe "AdminAppGenerator" do
         seeds_rb.puts "# Old Seeds Content"
       end
 
-      capture_io do
-        $stdout.expects(:print).with { |value| value =~ /Overwrite\s.*?\/db\/seeds.rb/ }.never
-        $stdin.stubs(:gets).returns('y')
-        generate(:admin_app, "--root=#{@apptmp}/sample_project")
-      end
+      out, err = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      refute_match /Overwrite\s.*?\/db\/seeds.rb/, out
 
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
