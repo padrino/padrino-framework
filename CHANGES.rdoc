@@ -31,6 +31,7 @@
 * FIX #1736 Respect the leading newline in textarea value (@krororo)
 * FIX #1738 Change email condition for default AR4.1 in minirecord (@tyabe)
 * FIX #1733 Allow strings in route :with option (@ujifgc)
+* FIX #1740 Loosen thor dependency to ~> 0.18 (@postmodern)
 * FIX #1741 Fix tests related to the thor generator (@namusyaka)
 
 NOTE: If you're using the admin locales and you're not using `Padrino::Admin::AccessControl`
