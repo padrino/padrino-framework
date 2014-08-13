@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.12.3 (not released yet)
+== 0.12.3 (August 13th 2014)
 
 * FIX #1579 Update admin deps such as font-awesome, jquery, bootstrap (@WaYdotNET)
 * FIX #1681 Set html message part properly within the mailer (@judofyr)
