@@ -1,4 +1,13 @@
-require 'win32console' if RUBY_PLATFORM =~ /(win|m)32/      # ruby color support for win
+# Ruby color support for Windows
+# If you want colorize on Windows with Ruby 1.9, please use ansicon:
+#   https://github.com/adoxa/ansicon
+# Other ways, add `gem 'win32console'` to your Gemfile.
+if RUBY_PLATFORM =~ /mswin|mingw/ && RUBY_VERSION < '2.0' && ENV['ANSICON'].nil?
+  begin
+    require 'win32console'
+  rescue LoadError
+  end
+end
 
 ##
 # Add colors
