@@ -52,9 +52,9 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         db_name = collection.database.name
         collection.database.session.with(:database => :admin) do |admin|
           admin.command(
-          :renameCollection => "#{db_name}.#{collection.name}",
-          :to               => "#{db_name}.#{new_name}",
-          :dropTarget       => true)
+            :renameCollection => "#{db_name}.#{collection.name}",
+            :to               => "#{db_name}.#{new_name}",
+            :dropTarget       => true)
         end
       end
     end
