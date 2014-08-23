@@ -289,7 +289,10 @@ module Padrino
     # Return the apps that allow reloading.
     #
     def reloadable_apps
-      Padrino.mounted_apps.select{ |app| app.app_obj.respond_to?(:reload) && app.app_obj.reload? }
+      Padrino.mounted_apps.select do |app|
+        next unless app.app_file.start_with?(Padrino.root)
+        app.app_obj.respond_to?(:reload) && app.app_obj.reload?
+      end
     end
 
     ##
