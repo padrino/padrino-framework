@@ -96,6 +96,17 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :database => !DB_NAME!
 SQLITE
 
+CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
+class ConnectionPoolManagement
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ActiveRecord::Base.connection_pool.with_connection { @app.call(env) }
+  end
+end
+MIDDLEWARE
 
 def setup_orm
   ar = MR
@@ -125,7 +136,7 @@ def setup_orm
   require_dependencies 'mini_record'
   create_file('config/database.rb', ar)
   insert_hook('ActiveRecord::Base.auto_upgrade!', :after_load)
-  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
+  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
 MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)
