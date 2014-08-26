@@ -517,7 +517,7 @@ module Padrino
         end
 
         # Add Sinatra conditions.
-        options.each{ |option, args| route.respond_to?(option) ? route.send(option, *args) : send(option, *args) }
+        options.each{ |option, _args| route.respond_to?(option) ? route.send(option, *_args) : send(option, *_args) }
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
