@@ -29,11 +29,6 @@ describe "Core" do
       assert_equal Encoding.default_internal, Encoding::UTF_8
     end
 
-    it 'should have load paths' do
-      skip
-      assert_equal [Padrino.root('lib'), Padrino.root('models'), Padrino.root('shared')], Padrino.load_paths
-    end
-
     it 'should raise application error if I instantiate a new padrino application without mounted apps' do
       text = capture_io { Padrino.application }
       assert_match /No apps are mounted/, text.to_s

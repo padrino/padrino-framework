@@ -46,16 +46,6 @@ describe "SystemReloader" do
       end
     end
 
-    it 'should tamper with LOAD_PATH' do
-      skip
-      SystemDemo.load_paths.each do |lib_dir|
-        assert_includes $LOAD_PATH, lib_dir
-      end
-      Padrino.send(:default_load_paths).each do |lib_dir|
-        assert_includes $LOAD_PATH, lib_dir
-      end
-    end
-
     it 'should not fail horribly on reload event with non-padrino apps' do
       Padrino.mount("kiq").to("/")
       Padrino.reload!
