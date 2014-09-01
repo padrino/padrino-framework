@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
     s.add_dependency("sinatra", "~> 1.4.2")
   end
   s.add_dependency("mustermann", ">= 0.2.0")
-  s.add_dependency("thor", "~> 0.18.0")
+  s.add_dependency("thor", "~> 0.18")
   s.add_dependency("activesupport", ">= 3.1")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end

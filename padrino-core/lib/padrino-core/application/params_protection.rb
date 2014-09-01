@@ -1,6 +1,6 @@
 begin
   require 'active_support/core_ext/object/deep_dup' # AS 4.1
-rescue LoadError => ex
+rescue LoadError
   require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
 end
 

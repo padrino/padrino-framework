@@ -52,7 +52,7 @@ module Padrino
       began_at = Time.now
       @_called_from = first_caller
       set_encoding
-      Logger.setup!
+      Padrino.logger
       Reloader.lock!
       before_load.each(&:call)
       require_dependencies(*dependency_paths)

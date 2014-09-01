@@ -499,9 +499,9 @@ describe "FormHelpers" do
     end
 
     it 'should insert newline to before of content' do
-      actual_html = text_area_tag(:about, :value => "\na test")
-      assert_has_tag(:textarea, :content => "\na test", :name => 'about') { actual_html }
-      assert_match(%r{<textarea[^>]*>\n\na test</textarea>}, actual_html)
+      actual_html = text_area_tag(:about, :value => "\na test&".html_safe)
+      assert_has_tag(:textarea, :content => "\na test&".html_safe, :name => 'about') { actual_html }
+      assert_match(%r{<textarea[^>]*>\n\na test&</textarea>}, actual_html)
     end
 
     it 'should display text area in erb' do
