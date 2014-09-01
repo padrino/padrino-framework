@@ -47,7 +47,7 @@ describe "SystemReloader" do
     end
 
     it 'should tamper with LOAD_PATH' do
-    skip
+      skip
       SystemDemo.load_paths.each do |lib_dir|
         assert_includes $LOAD_PATH, lib_dir
       end

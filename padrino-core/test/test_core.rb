@@ -30,7 +30,7 @@ describe "Core" do
     end
 
     it 'should have load paths' do
-    skip
+      skip
       assert_equal [Padrino.root('lib'), Padrino.root('models'), Padrino.root('shared')], Padrino.load_paths
     end
 
