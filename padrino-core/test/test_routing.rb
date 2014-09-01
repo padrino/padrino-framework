@@ -1824,8 +1824,6 @@ describe "Routing" do
   end
 
   it 'should reset provides for routes that did not use it' do
-    skip
-    #FIXME
     mock_app do
       get('/foo', :provides => :js){}
       get('/bar'){}

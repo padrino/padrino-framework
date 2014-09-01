@@ -517,7 +517,15 @@ module Padrino
         end
 
         # Add Sinatra conditions.
-        options.each{ |option, _args| route.respond_to?(option) ? route.send(option, *_args) : send(option, *_args) }
+        options.each do |option, _args|
+          if route.respond_to?(option)
+            route.send(option, *_args)
+          else
+            _args = Array(_args)
+            _args << true if option == :provides
+            send(option, *_args)
+          end
+        end
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
@@ -576,8 +584,8 @@ module Padrino
         
           options.delete(:accepts) if options[:accepts].nil?
 
-          if @_use_format or format_params = options[:provides]
-            process_path_for_provides(path, format_params)
+          if @_use_format || options[:provides]
+            process_path_for_provides(path)
             # options[:add_match_with] ||= {}
             # options[:add_match_with][:format] = /[^\.]+/
           end
@@ -655,7 +663,7 @@ module Padrino
       # Processes the existing path and appends the 'format' suffix onto the route.
       # Used for calculating path in route method.
       #
-      def process_path_for_provides(path, format_params)
+      def process_path_for_provides(path)
         path << "(.:format)" unless path[-10, 10] == '(.:format)'
       end
 
@@ -687,7 +695,11 @@ module Padrino
       #   # => GET /c.xml => 406
       #
       def provides(*types)
-        @_use_format = true
+        if types.last.instance_of?(TrueClass)
+          types.pop
+        else
+          @_use_format = true
+        end
         mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           return provides_format?(types, params[:format].to_sym) if params[:format]
