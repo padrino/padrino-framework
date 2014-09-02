@@ -72,7 +72,7 @@ To use the structured mailer syntax, we should define a custom mailer using the 
         to email
         subject 'Welcome to the site!'
         locals :name => name, :email => email
-        render 'registration_email'
+        render 'sample/registration_email'
         content_type :html       # optional, defaults to :plain
         via :sendmail            # optional, to smtp if defined otherwise sendmail
       end
@@ -164,7 +164,7 @@ To define mailer defaults for a message, we can do so app-wide or within a `mail
         to      'user@domain.com'
         subject 'Welcome to the site!'
         locals  :name => name
-        render  'registration'
+        render  'sample/registration'
       end
     end
 
