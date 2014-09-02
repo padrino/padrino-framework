@@ -26,7 +26,7 @@ Let’s take a look at using the Mailer in an application. By default, the maile
 
 Once those have been defined, the default will become smtp delivery unless overwritten in an individual mail definition.
 
-You can also configure the mailer to not run during tests. This can be done with:
+You can also configure the mailer to not send emails during development or testing. This can be done with:
 
     # app/app.rb
     set :delivery_method, :test
@@ -82,7 +82,7 @@ Note that this can be created much easier by using the padrino-mailer generator 
 
     $ padrino g mailer Sample registration_email
 
-This mailer defines a mail type called ‘`registration_mail`’ with the specified attributes for delivery. The `body` method is invoking the render command passing the `name` attribute to the body message template which should be defined in `[views_path]/mailers/sample/registration_email.erb` as shown below:
+This mailer defines a mail route called ‘`registration_mail`’ within the '`sample`' mailer. The '`registration_email`' route accepts the name and email arguments. Arguments are passed to the email body template via the `locals` method. The render command renders the email body template with the local variables, which should be defined in `[views_path]/mailers/sample/registration_email.erb` as shown below:
 
     # ./views/mailers/sample/registration_email.erb
     This is the body of the email and can access the <%= name %> variable.
@@ -90,7 +90,7 @@ This mailer defines a mail type called ‘`registration_mail`’ with the specif
 
 Note that the mailer has full support for content type resolution and the email could also be in the path `./views/mailers/sample/registration_email.html.erb` or `./views/mailers/sample/registration_email.plain.erb` specifying the mime type in the file name as well.
 
-Once the mailer definition has been completed and the template has been defined, the email can be sent using:
+Once the mailer has been defined and the template written, the email route can be invoked by the `deliver` method:
 
     deliver(:sample, :registration_email, "Bob", "bob@bobby.com")
 
