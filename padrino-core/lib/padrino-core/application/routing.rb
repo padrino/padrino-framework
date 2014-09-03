@@ -518,13 +518,8 @@ module Padrino
 
         # Add Sinatra conditions.
         options.each do |option, _args|
-          if route.respond_to?(option)
-            route.send(option, *_args)
-          else
-            _args = Array(_args)
-            _args << true if option == :provides
-            send(option, *_args)
-          end
+          option = :provides_format if option == :provides
+          route.respond_to?(option) ? route.send(option, *_args) : send(option, *_args)
         end
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
@@ -695,11 +690,11 @@ module Padrino
       #   # => GET /c.xml => 406
       #
       def provides(*types)
-        if types.last.instance_of?(TrueClass)
-          types.pop
-        else
-          @_use_format = true
-        end
+        @_use_format = true
+        provides_format(*types)
+      end
+
+      def provides_format(*types)
         mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           return provides_format?(types, params[:format].to_sym) if params[:format]
