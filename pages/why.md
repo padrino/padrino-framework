@@ -260,7 +260,7 @@ As you can see this is a much cleaner and simpler to keep things organized withi
 
 ## Agnostic
 
-Rails has its ActiveRecord, Merb has it’s Datamapper. With some work, you can have them use another ORM. With Padrino, using your desired library can be done with ease. This isn’t just specific for ORM’s either. On top of Sinatra’s philosophy of simplicity and expressiveness, Padrino comes shipped with a plethora of components you can choose from, whether it be for renderers, stylesheets, javascripts, and even tests and mocks. As of the current version, Padrino comes with component choices for:
+Rails has its ActiveRecord, Merb has its Datamapper. With some work, you can have them use another ORM. With Padrino, using your desired library can be done with ease. This isn’t just specific for ORM’s either. On top of Sinatra’s philosophy of simplicity and expressiveness, Padrino comes shipped with a plethora of components you can choose from, whether it be for renderers, stylesheets, javascripts, and even tests and mocks. As of the current version, Padrino comes with component choices for:
 
 Database Wrapper
 
