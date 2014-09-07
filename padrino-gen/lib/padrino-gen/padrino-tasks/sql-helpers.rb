@@ -16,7 +16,7 @@ module Padrino
             arguments << database
 
             Process.wait Process.spawn(environment, 'createdb', *arguments)
-          when 'mysql'
+          when 'mysql', 'mysql2'
             environment = {}
             environment['MYSQL_PWD'] = password unless password.blank?
 
@@ -49,7 +49,7 @@ module Padrino
             arguments << database
 
             Process.wait Process.spawn(environment, 'dropdb', *arguments)
-          when 'mysql'
+          when 'mysql', 'mysql2'
             environment = {}
             environment['MYSQL_PWD'] = password unless password.blank?
 
