@@ -347,6 +347,15 @@ module Padrino
         route('HEAD', path, *args, &block)
       end
 
+      def put(path, *args, &block)     route 'PUT',     path, *args, &block end
+      def post(path, *args, &block)    route 'POST',    path, *args, &block end
+      def delete(path, *args, &block)  route 'DELETE',  path, *args, &block end
+      def head(path, *args, &block)    route 'HEAD',    path, *args, &block end
+      def options(path, *args, &block) route 'OPTIONS', path, *args, &block end
+      def patch(path, *args, &block)   route 'PATCH',   path, *args, &block end
+      def link(path, *args, &block)    route 'LINK',    path, *args, &block end
+      def unlink(path, *args, &block)  route 'UNLINK',  path, *args, &block end
+
       def rebase_url(url)
         if url.start_with?('/')
           new_url = ''
@@ -360,7 +369,7 @@ module Padrino
 
       private
 
-      CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :map, :conditions, :accepts, :params ].freeze
+      CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
 
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
@@ -491,6 +500,7 @@ module Padrino
         priority_name = options.delete(:priority) || :normal
         priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
         route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
+        route.cache_expires = options.key?(:expires) ? options.delete(:expires) : @_expires
         route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
         route.add_request_method(verb.downcase.to_sym)
         route.host = options.delete(:host) if options.key?(:host)
@@ -507,7 +517,10 @@ module Padrino
         end
 
         # Add Sinatra conditions.
-        options.each{ |option, args| route.respond_to?(option) ? route.send(option, *args) : send(option, *args) }
+        options.each do |option, _args|
+          option = :provides_format if option == :provides
+          route.respond_to?(option) ? route.send(option, *_args) : send(option, *_args)
+        end
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
@@ -566,8 +579,8 @@ module Padrino
         
           options.delete(:accepts) if options[:accepts].nil?
 
-          if @_use_format or format_params = options[:provides]
-            process_path_for_provides(path, format_params)
+          if @_use_format || options[:provides]
+            process_path_for_provides(path)
             # options[:add_match_with] ||= {}
             # options[:add_match_with][:format] = /[^\.]+/
           end
@@ -621,7 +634,9 @@ module Padrino
       # Used for calculating path in route method.
       #
       def process_path_for_with_params(path, with_params)
-        File.join(path, Array(with_params).map(&:inspect).join("/"))
+        File.join(path, Array(with_params).map do |step|
+          step.kind_of?(String) ? step : step.inspect
+        end.join("/"))
       end
 
       ##
@@ -643,7 +658,7 @@ module Padrino
       # Processes the existing path and appends the 'format' suffix onto the route.
       # Used for calculating path in route method.
       #
-      def process_path_for_provides(path, format_params)
+      def process_path_for_provides(path)
         path << "(.:format)" unless path[-10, 10] == '(.:format)'
       end
 
@@ -676,6 +691,10 @@ module Padrino
       #
       def provides(*types)
         @_use_format = true
+        provides_format(*types)
+      end
+
+      def provides_format(*types)
         mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           return provides_format?(types, params[:format].to_sym) if params[:format]

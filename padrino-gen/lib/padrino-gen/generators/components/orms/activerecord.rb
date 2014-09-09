@@ -96,6 +96,17 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :database => !DB_NAME!
 SQLITE
 
+CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
+class ConnectionPoolManagement
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ActiveRecord::Base.connection_pool.with_connection { @app.call(env) }
+  end
+end
+MIDDLEWARE
 
 def setup_orm
   ar = AR
@@ -124,8 +135,8 @@ def setup_orm
     require_dependencies 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
-  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
+  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
 AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)

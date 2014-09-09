@@ -26,14 +26,6 @@ module Padrino
         end
 
         ##
-        # Returns a new record of the type specified in the object
-        #
-        def build_object(object_or_symbol)
-          logger.warn "##{__method__} is deprecated"
-          object_or_symbol.is_a?(Symbol) ? @template.instance_variable_get("@#{object_or_symbol}") || object_class(object_or_symbol).new : object_or
-        end
-
-        ##
         # Returns the object's models name.
         #
         def object_model_name(explicit_object=object)
@@ -58,11 +50,6 @@ module Padrino
         def root_form?
           logger.warn "##{__method__} is deprecated"
           !nested_form?
-        end
-
-        def build_object(symbol)
-          logger.warn "##{__method__} is deprecated"
-          @template.instance_variable_get("@#{symbol}") || symbol.to_s.camelize.constantize.new
         end
 
         def field_result

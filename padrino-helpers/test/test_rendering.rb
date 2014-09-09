@@ -246,6 +246,17 @@ describe "Rendering" do
     assert_equal "application layout for erb", body.chomp
   end
 
+  it 'should not apply default layout to unsupported layout engines' do
+    create_layout :application, "erb template <%= yield %>", :format => :erb
+    create_view 'foo', "xml.instruct!", :format => :builder
+    mock_app do
+      get('/layout_test.xml' ){ render :foo }
+    end
+    get "/layout_test.xml"
+    refute_match /erb template/, body
+    assert_match '<?xml', body
+  end
+
   describe 'for application render functionality' do
 
     it 'should work properly with logging and missing layout' do

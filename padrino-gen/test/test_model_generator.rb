@@ -57,15 +57,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/DataMapper.finalize/m,"#{@apptmp}/sample_project/config/boot.rb")
     end
 
-    it 'should generate only generate model once' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      response_success = capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      out, err = capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match(/identical\e\[0m  models\/user\.rb/, out)
-      assert_match(/identical\e\[0m  test\/models\/user_test\.rb/, out)
-    end
-
     it 'should generate migration file versions properly' do
       capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
@@ -128,7 +119,8 @@ describe "ModelGenerator" do
   describe "model generator using activerecord" do
     it 'should add activerecord middleware' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
-      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/lib/connection_pool_management_middleware.rb")
     end
 
     it 'should generate model file' do
@@ -179,8 +171,9 @@ describe "ModelGenerator" do
     end
 
     it 'should add activerecord middleware' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
-      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=minirecord') }
+      assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/lib/connection_pool_management_middleware.rb")
     end
 
     it 'should generate model file' do

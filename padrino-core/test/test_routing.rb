@@ -228,6 +228,10 @@ describe "Routing" do
       get("/old-bar/:id"){ params[:id] }
       post(:mix, :map => "/mix-bar/:id"){ params[:id] }
       get(:mix, :map => "/mix-bar/:id"){ params[:id] }
+      get(:foo, '', :with => :id){ |id| "/#{id}" }
+      post(:foo, '', :with => :id){ |id| "/#{id}" }
+      delete(:drugs, :with => [:id, 'destroy']){ |id| "/drugs/#{id}/destroy" }
+      delete(:drugs, '', :with => [:id, 'destroy']){ |id| "/#{id}/destroy" }
     end
     get "/foo"
     assert_equal "/foo", body
@@ -251,6 +255,14 @@ describe "Routing" do
     assert_equal "4", body
     get "/mix-bar/4"
     assert_equal "4", body
+    get "/123"
+    assert_equal "/123", body
+    post "/123"
+    assert_equal "/123", body
+    delete "/drugs/123/destroy"
+    assert_equal "/drugs/123/destroy", body
+    delete "/123/destroy"
+    assert_equal "/123/destroy", body
   end
 
   it 'should generate url with format' do
@@ -1812,8 +1824,6 @@ describe "Routing" do
   end
 
   it 'should reset provides for routes that did not use it' do
-    skip
-    #FIXME
     mock_app do
       get('/foo', :provides => :js){}
       get('/bar'){}

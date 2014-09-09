@@ -79,25 +79,21 @@ describe "ComponentGenerator" do
       capture_io { generate(:project, 'sample_project', '-renderer=slim', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'slim', components_chosen[:renderer]
-      $stdin.stub(:gets, 'yes') do
-        out, err = capture_io { generate(:component, '--renderer=haml', "-r=#{@apptmp}/sample_project") }
-        assert_match(/applying.*?haml.*?renderer/, out)
-        assert_match(/Switch renderer to/, out)
-        components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
-        assert_equal 'haml', components_chosen[:renderer]
-      end
+      Readline.stubs(:readline).returns('yes').once
+      out, err = capture_io { generate(:component, '--renderer=haml', "-r=#{@apptmp}/sample_project") }
+      assert_match(/applying.*?haml.*?renderer/, out)
+      components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
+      assert_equal 'haml', components_chosen[:renderer]
     end
     it 'should when deny changes, will not be applied' do
       capture_io { generate(:project, 'sample_project', '-renderer=slim', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'slim', components_chosen[:renderer]
-      $stdin.stub(:gets, 'no') do
-        out, err = capture_io { generate(:component, '--renderer=haml', "-r=#{@apptmp}/sample_project") }
-        refute_match(/applying.*?haml.*?renderer/, out)
-        assert_match(/Switch renderer to/, out)
-        components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
-        assert_equal 'slim', components_chosen[:renderer]
-      end
+      Readline.stubs(:readline).returns('no').once
+      out, err = capture_io { generate(:component, '--renderer=haml', "-r=#{@apptmp}/sample_project") }
+      refute_match(/applying.*?haml.*?renderer/, out)
+      components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
+      assert_equal 'slim', components_chosen[:renderer]
     end
   end
 

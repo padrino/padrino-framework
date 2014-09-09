@@ -397,7 +397,7 @@ module Padrino
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
       def text_area_tag(name, options={})
-        inner_html = options.delete(:value).to_s
+        inner_html = TagHelpers::NEWLINE + options.delete(:value).to_s
         options = { :name => name, :rows => "", :cols => "" }.update(options)
         content_tag(:textarea, inner_html, options)
       end
@@ -582,7 +582,8 @@ module Padrino
         options   = args.extract_options!.dup
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
-        block ||= proc { submit_tag(name, options.delete(:submit_options) || {}) }
+        submit_options = options.delete(:submit_options) || {}
+        block ||= proc { submit_tag(name, submit_options) }
         form_tag(url || name, options, &block)
       end
 
