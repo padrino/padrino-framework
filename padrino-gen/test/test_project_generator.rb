@@ -208,6 +208,12 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/tmp/.keep")
       assert_file_exists("#{@apptmp}/sample_project/log/.keep")
     end
+
+    it 'should allow to pass upcased name as the app name' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--app=API") }
+      assert_file_exists("#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/class API < Padrino::Application/, "#{@apptmp}/sample_project/app/app.rb")
+    end
   end
 
   describe "a generator for mock component" do

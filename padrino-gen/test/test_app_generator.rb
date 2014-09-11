@@ -128,5 +128,15 @@ describe "AppGenerator" do
       assert_dir_exists("#{@apptmp}/sample_project/kernel/helpers")
       assert_file_exists("#{@apptmp}/sample_project/kernel/app.rb")
     end
+
+    it 'should allow to pass upcased name as the app name' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, err = capture_io { generate(:app, 'API', "--root=#{@apptmp}/sample_project", "--force") }
+      assert_dir_exists("#{@apptmp}/sample_project/public/api")
+      assert_dir_exists("#{@apptmp}/sample_project/api/controllers")
+      assert_dir_exists("#{@apptmp}/sample_project/api/helpers")
+      assert_file_exists("#{@apptmp}/sample_project/api/app.rb")
+      assert_match_in_file(/class API < Padrino::Application/, "#{@apptmp}/sample_project/api/app.rb")
+    end
   end
 end
