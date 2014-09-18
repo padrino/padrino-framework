@@ -31,8 +31,9 @@ module Padrino
       #
       def create_app
         self.destination_root = options[:root]
-        @app_folder = name.gsub(/\W/, '_').underscore
-        @app_name   = @app_folder.camelize
+        underscore_name = name.gsub(/\W/, '_')
+        @app_folder = underscore_name.underscore
+        @app_name   = underscore_name.camelize
         if in_app_root?
           @project_name = options[:namespace].underscore.camelize
           @project_name = fetch_project_name(@app_folder) if @project_name.empty?

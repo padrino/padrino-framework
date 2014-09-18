@@ -30,7 +30,7 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           @_components = options.dup.slice(*self.class.component_types)
-          @app_name = (options[:app] || "App").gsub(/\W/, '_').underscore.camelize
+          @app_name = (options[:app] || "App").gsub(/\W/, '_').camelize
           if @_components.values.delete_if(&:blank?).empty?
             self.class.start(["-h"])
             say
