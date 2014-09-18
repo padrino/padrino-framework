@@ -9,6 +9,8 @@ rvm:
   - 2.1.1
   - rbx-2
   - jruby
+  - ruby-head
+  - jruby-head
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -32,3 +34,5 @@ matrix:
   allow_failures:
     - rvm: 2.1.1
       env: SINATRA_EDGE=true
+    - rvm: ruby-head
+    - rvm: jruby-head
