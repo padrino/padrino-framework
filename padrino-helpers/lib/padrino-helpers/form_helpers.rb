@@ -550,11 +550,11 @@ module Padrino
       ##
       # Creates a form containing a single button that submits to the URL.
       #
-      # @overload button_to(name, url, options={})
+      # @overload button_to(caption, url, options={})
       #   @param [String]  caption  The text caption.
       #   @param [String]  url      The url href.
       #   @param [Hash]    options  The html options.
-      # @overload button_to(name, options={}, &block)
+      # @overload button_to(url, options={}, &block)
       #   @param [String]  url      The url href.
       #   @param [Hash]    options  The html options.
       #   @param [Proc]    block    The button content.
