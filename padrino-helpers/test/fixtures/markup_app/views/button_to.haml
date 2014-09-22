@@ -3,3 +3,8 @@
     = label_tag :username
 = content_tag(:p, 'button_to test', :id => 'test-point')
 = button_to 'Bar button', '/bar'
+
+= button_to 'button button', '/bar' do
+  = content_tag :button do
+    %img
+    my deprecated button
