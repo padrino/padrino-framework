@@ -991,6 +991,7 @@ describe "FormHelpers" do
         content_tag :button, "My button's content", :type => :submit, :title => "My button"
       end
       assert_has_tag('form button', :type => 'submit', :content => "My button's content", :title => "My button") { actual_html }
+      assert_has_no_tag('form button button') { actual_html }
     end
 
     it 'should pass options on submit button when submit_options are given' do
@@ -1005,6 +1006,7 @@ describe "FormHelpers" do
       assert_have_selector('form label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+      assert_have_no_selector('button button')
     end
 
     it 'should display correct button_to in haml' do
@@ -1013,6 +1015,7 @@ describe "FormHelpers" do
       assert_have_selector('form label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+      assert_have_no_selector('button button')
     end
 
     it 'should display correct button_to in slim' do
@@ -1021,6 +1024,7 @@ describe "FormHelpers" do
       assert_have_selector('form label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
+      assert_have_no_selector('button button')
     end
   end
 

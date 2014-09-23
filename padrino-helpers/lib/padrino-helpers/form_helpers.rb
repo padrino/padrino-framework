@@ -583,8 +583,19 @@ module Padrino
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}
-        block ||= proc { submit_tag(name, submit_options) }
-        form_tag(url || name, options, &block)
+        form_tag(url || name, options) do
+          if block_given?
+            inner_html = capture_html(&block)
+            if inner_html.match /<button[^>]*>.*<\/button>/m
+              warn 'adding button content tag manually to button_to is deprecated #1772'
+              inner_html
+            else
+              content_tag('button', inner_html)
+            end
+          else
+            submit_tag(name, submit_options)
+          end
+        end
       end
 
       ##
