@@ -74,7 +74,7 @@ module Padrino
         end
       end
   
-      def raise_exception(error_code, **options)
+      def raise_exception(error_code, options = {})
         raise ->(error_code) {
           case error_code
           when 400

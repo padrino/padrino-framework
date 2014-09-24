@@ -30,7 +30,11 @@ group :development do
   gem "erubis",    ">= 2.7.0"
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
-  gem "mustermann", ">= 0.2.0"
+  if RUBY_VERSION < '2.0.0'
+    gem "mustermann19"
+  else
+    gem "mustermann"
+  end
   platforms :jruby do
     gem "jruby-openssl"
   end

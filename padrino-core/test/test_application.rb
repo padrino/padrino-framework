@@ -80,16 +80,16 @@ describe "Application" do
     end
 
     it 'should have different session values in different session management' do
-      class PadrinoTestApp3 < Padrino::Application
+      class PadrinoTestApp4 < Padrino::Application
         enable :sessions
       end
-      class PadrinoTestApp4 < Padrino::Application
+      class PadrinoTestApp5 < Padrino::Application
         set :sessions, :use => Rack::Session::Pool
       end
-      Padrino.mount("PadrinoTestApp3").to("/write")
-      Padrino.mount("PadrinoTestApp4").to("/read")
-      PadrinoTestApp3.get('/') { session[:foo] = "cookie" }
-      PadrinoTestApp4.get('/') { session[:foo] }
+      Padrino.mount("PadrinoTestApp4").to("/write")
+      Padrino.mount("PadrinoTestApp5").to("/read")
+      PadrinoTestApp4.get('/') { session[:foo] = "cookie" }
+      PadrinoTestApp5.get('/') { session[:foo] }
       @app = Padrino.application
       get '/write'
       get '/read'

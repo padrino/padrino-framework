@@ -11,7 +11,7 @@ module Padrino
                     :parent, :use_layout, :controller, :user_agent, :path_for_generation
   
   
-      def initialize(path, verb, **options, &block)
+      def initialize(path, verb, options = {}, &block)
         @path, @verb = path, verb
         @capture = {}
         @order   = 0
@@ -63,13 +63,14 @@ module Padrino
         matcher.expand(params) if matcher.mustermann?
       end
 
-      def params_for(pattern, **parameters)
+      def params_for(pattern, parameters = {})
         match_data, params = match(pattern), {}
         if match_data.names.empty?
-          params.merge!(captures: match_data.captures) unless match_data.captures.empty?
+          params.merge!(captures: match_data.captures.map{|value| value && value.force_encoding("utf-8") }) unless match_data.captures.empty?
           params
         else
           params = matcher.handler.params(pattern, captures: match_data) || params
+          params.values.map!{|value| value && value.force_encoding("utf-8") }
           params.with_indifferent_access.merge(parameters){|key, old, new| old || new }
         end
       end
