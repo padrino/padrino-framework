@@ -12,8 +12,6 @@ module Padrino
     class Base
       attr_reader :current_order, :routes, :engine
 
-      HTTP_VERBS = [:get, :post, :delete, :put, :head]
-
       def initialize
         reset!
       end
@@ -27,7 +25,6 @@ module Padrino
 
       def call(env)
         request = Rack::Request.new(env)
-        return bad_request unless HTTP_VERBS.include?(request.request_method.downcase.to_sym)
         matched_routes = recognize(request)
         [200, {}, matched_routes]
       end
@@ -41,9 +38,8 @@ module Padrino
           if !args.empty? and matcher.mustermann?
             matcher_names = matcher.names
             params_for_expand = Hash[matcher_names.map{|matcher_name|
-              [matcher_name.to_sym, (params[matcher_name.to_sym] || args.shift)]
-            }]
-            params_for_expand.merge!(Hash[params.select{|k, v| !matcher_names.include?(name.to_sym) }])
+              [matcher_name.to_sym, (params[matcher_name] || args.shift)]}]
+            params_for_expand.merge!(Hash[params.select{|k, v| !matcher_names.include?(name) }])
             args = saved_args.dup
           else
             params_for_expand = params.dup

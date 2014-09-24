@@ -44,7 +44,7 @@ module Padrino
       end
   
       def names
-        handler.names.map(&:to_sym)
+        handler.names
       end
     end
   end

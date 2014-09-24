@@ -10,7 +10,6 @@ module Padrino
       def call(request)
         compile! unless compiled?
         pattern, verb, params = parse_request(request)
-        raise_exception(400) unless valid_verb?(verb)
         candidacies = match_with(pattern)
         raise_exception(404) if candidacies.empty?
         candidacies, allows = candidacies.partition{|route| route.verb == verb }
@@ -55,22 +54,11 @@ module Padrino
         end
       end
   
-      def valid_verb?(verb)
-        PathRouter::Base::HTTP_VERBS.include?(verb.downcase.to_sym)
-      end
-  
       def parse_request(request)
         if request.is_a?(Hash)
           [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
         else
-          [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
-        end
-      end
-  
-      def parse_request_params(params)
-        params.inject({}) do |result, entry|
-          result[entry[0].to_sym] = entry[1]
-          result
+          [request.path_info, request.request_method.downcase.to_sym, request.params]
         end
       end
   

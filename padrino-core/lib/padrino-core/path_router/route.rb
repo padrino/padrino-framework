@@ -64,14 +64,15 @@ module Padrino
       end
 
       def params_for(pattern, parameters = {})
-        match_data, params = match(pattern), {}
+        match_data, params = match(pattern), indifferent_hash
         if match_data.names.empty?
           params.merge!(captures: match_data.captures.map{|value| value && value.force_encoding("utf-8") }) unless match_data.captures.empty?
           params
         else
-          params = matcher.handler.params(pattern, captures: match_data) || params
+          params_from_matcher = matcher.handler.params(pattern, :captures => match_data)
+          params.merge!(params_from_matcher) if params_from_matcher
           params.values.map!{|value| value && value.force_encoding("utf-8") }
-          params.with_indifferent_access.merge(parameters){|key, old, new| old || new }
+          params.merge(parameters){|key, old, new| old || new }
         end
       end
   
@@ -100,6 +101,10 @@ module Padrino
         options.each_pair do |key, value|
           accessor?(key) ? __send__("#{key}=", value) : (@options[key] = value)
         end
+      end
+
+      def indifferent_hash
+        Hash.new{|hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
       end
   
       def accessor?(key)
