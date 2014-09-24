@@ -381,6 +381,22 @@ WARNING
       end
 
       ##
+      # Creates and inserts middleware.
+      # @param [Symbol, String] name
+      #   Name of the middleware.
+      # @param [String] source
+      #   Text to generate into the middleware file.
+      #
+      # @example
+      #   middleware(:hello, "class Hello\nend")
+      #   #=> generates 'lib/hello_middleware.rb'
+      #
+      def middleware(name, source)
+        create_file destination_root("lib/#{name}_middleware.rb"), source
+        insert_middleware name.to_s.underscore.camelize
+      end
+
+      ##
       # Insert the regired gem and add in boot.rb custom contribs.
       #
       # @param [String] contrib

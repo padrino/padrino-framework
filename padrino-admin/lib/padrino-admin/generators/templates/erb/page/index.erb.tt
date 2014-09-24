@@ -40,6 +40,7 @@
         <th class=header> <%%= mat(:<%= @orm.name_singular %>, :<%= column.name %>) %></th>
         <% end -%>
         <th class="header list-row-action-header"></th>
+      </tr>
     </thead>
 
     <tbody>
@@ -69,9 +70,11 @@
                      <%%= submit_tag pat(:delete), :class =>'list-row-action-popover-delete-one-btn btn btn-danger btn-small' %>
                      <div class="btn btn-default btn-small cancel"><%%= pat(:cancel) %></div>
                    <%% end %>
+                 </div>
                </div>
              </div>
           </td>
+        </tr>
       <%% end %>
     </tbody>
   </table>

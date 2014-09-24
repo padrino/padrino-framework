@@ -119,7 +119,8 @@ describe "ModelGenerator" do
   describe "model generator using activerecord" do
     it 'should add activerecord middleware' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
-      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/lib/connection_pool_management_middleware.rb")
     end
 
     it 'should generate model file' do
@@ -170,8 +171,9 @@ describe "ModelGenerator" do
     end
 
     it 'should add activerecord middleware' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=activerecord') }
-      assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/app/app.rb")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=minirecord') }
+      assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/lib/connection_pool_management_middleware.rb")
     end
 
     it 'should generate model file' do

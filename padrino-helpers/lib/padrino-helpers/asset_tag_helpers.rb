@@ -69,7 +69,7 @@ module Padrino
       #   link_to('click me', '/dashboard', :class => 'linky')
       #   link_to('click me', '/dashboard', :remote => true)
       #   link_to('click me', '/dashboard', :method => :delete)
-      #   link_to('click me', :class => 'blocky') do; end
+      #   link_to('/dashboard', :class => 'blocky') do; end
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
       # condition padrino return true/false if the request.path_info match the given url.

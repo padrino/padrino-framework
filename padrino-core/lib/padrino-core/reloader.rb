@@ -269,6 +269,7 @@ module Padrino
     def object_sources(target)
       sources = Set.new
       target.methods.each do |method_name|
+        next unless method_name.kind_of?(Symbol)
         method_object = target.method(method_name)
         if method_object.owner == (target.class == Class ? target.singleton_class : target.class)
           sources << method_object.source_location.first

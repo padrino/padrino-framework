@@ -46,7 +46,7 @@ module Padrino
         app = (options[:app] || "App")
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
-        @app_name = app.gsub(/\W/, '_').underscore.camelize
+        @app_name = app.gsub(/\W/, '_').camelize
         self.destination_root = File.join(options[:root], name)
         if options[:template]
           execute_runner(:template, options[:template])
