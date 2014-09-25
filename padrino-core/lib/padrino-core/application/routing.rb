@@ -501,7 +501,8 @@ module Padrino
         route.user_agent = options.delete(:agent) if options.key?(:agent)
         if options.key?(:default_values)
           defaults = options.delete(:default_values)
-          route.options[:default_values] = defaults if defaults
+          #route.options[:default_values] = defaults if defaults
+          route.default_values = defaults if defaults
         end
         options.delete_if do |option, captures|
           if route.significant_variable_names.include?(option)
@@ -928,9 +929,9 @@ module Padrino
             $!.call
           end
         if status(code) == 200
-          routes.each_with_index do |(route, howl_params), index|
+          routes.each_with_index do |(route, params), index|
             next if route.user_agent && !(route.user_agent =~ @request.user_agent)
-            invoke_route(route, howl_params, :first => index.zero?)
+            invoke_route(route, params, :first => index.zero?)
           end
         else
           route_eval do

@@ -4,18 +4,30 @@ require 'padrino-core/path_router/matcher'
 require 'padrino-core/path_router/compiler'
 
 module Padrino
+  ##
+  # Provides an HTTP router for use in path routing.
+  #
   module PathRouter
+    ##
+    # Constructs an instance of PathRouter::Router.
+    #
     def self.new
-      Base.new
+      Router.new
     end
 
-    class Base
+    class Router
       attr_reader :current_order, :routes, :engine
 
+      ##
+      # Constructs an instance of PathRouter::Router.
+      #
       def initialize
         reset!
       end
 
+      ##
+      # Adds a new route to routes.
+      #
       def add(verb, path, options = {}, &block)
         route = Route.new(path, verb, options, &block)
         route.router = self
@@ -23,12 +35,18 @@ module Padrino
         route
       end
 
+      ##
+      # Returns all routes which are matched with the condition
+      #
       def call(env)
         request = Rack::Request.new(env)
         matched_routes = recognize(request)
         [200, {}, matched_routes]
       end
 
+      ##
+      # Finds a path which is matched with conditions from arguments
+      #
       def path(name, *args)
         params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
         saved_args = args.dup
@@ -49,26 +67,42 @@ module Padrino
         raise InvalidRouteException
       end
 
+      ##
+      # Calls Compiler#call to get all routes.
+      #
       def recognize(request)
         prepare! unless prepared?
         @engine.call(request)
       end
 
+      ##
+      # Recognizes route and expanded params from a path.
+      #
       def recognize_path(path_info)
         route, params = recognize(Rack::MockRequest.env_for(path_info)).first
         [route.name, params]
       end
 
+      ##
+      # Resets all routes, current order and preparation.
+      #
       def reset!
         @routes = []
         @current_order = 0
         @prepared = nil
       end
 
+      ##
+      # Increments the order.
+      #
       def increment_order
         @current_order += 1
       end
 
+      ##
+      # Constructs an instance of PathRouter::Compiler,
+      # and sorts all routes by using the order.
+      #
       def prepare!
         @engine = Compiler.new(@routes)
         @prepared = true
@@ -78,6 +112,9 @@ module Padrino
 
       private
 
+      ##
+      # Returns true if the router has been prepared.
+      #
       def prepared?
         !!@prepared
       end
