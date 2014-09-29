@@ -1,3 +1,5 @@
+require 'padrino-core/application' unless defined?(Padrino::Application)
+
 module Padrino
   module Generators
     ##
@@ -56,7 +58,13 @@ module Padrino
 
           if test?
             include_component_module_for(:test)
-            generate_controller_test(name)
+            path = @controller
+
+            if options[:parent] && !options[:parent].empty?
+              path = Application.send(:process_path_for_parent_params, path, [options[:parent]]).prepend("/")
+            end
+            path.prepend("/") unless path.start_with?("/")
+            generate_controller_test(name, path)
           end
 
           create_helper_files(app, name) unless options[:'no-helper']

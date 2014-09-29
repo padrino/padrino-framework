@@ -41,7 +41,7 @@ TEST
 MINITEST_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
-describe "!NAME!Controller" do
+describe "!PATH!" do
   before do
     get '/'
   end
@@ -89,8 +89,8 @@ def setup_test
   create_file destination_root("test/test.rake"), MINITEST_RAKE
 end
 
-def generate_controller_test(name)
-  minitest_contents = MINITEST_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+def generate_controller_test(name, path)
+  minitest_contents = MINITEST_CONTROLLER_TEST.gsub(/!PATH!/, path)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), minitest_contents, :skip => true
 end

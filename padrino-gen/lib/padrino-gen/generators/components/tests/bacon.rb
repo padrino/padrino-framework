@@ -25,7 +25,7 @@ TEST
 BACON_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(BACON_CONTROLLER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
-describe "!NAME!Controller" do
+describe "!PATH!" do
   it 'returns text at root' do
     get "/"
     last_response.body.should == "some text"
@@ -82,8 +82,8 @@ def setup_test
   create_file destination_root("test/test.rake"), BACON_RAKE
 end
 
-def generate_controller_test(name)
-  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+def generate_controller_test(name, path)
+  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!PATH!/, path)
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), bacon_contents, :skip => true
 end

@@ -103,7 +103,7 @@ module Padrino
           helper_template_name     = "#{uppercase_test_component}_HELPER_TEST"
           return unless defined?(controller_template_name)
 
-          controller_content = instance_eval(controller_template_name).gsub(/!NAME!/, "")
+          controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, "Controller").gsub(/!NAME!/, "")
           helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
 
           proc{|*args| args.map{|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
