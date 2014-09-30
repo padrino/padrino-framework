@@ -99,8 +99,8 @@ module Padrino
           type = allowed_params[key]
           next if value.kind_of?(Array) && type
           case
-          when type.kind_of?(Hash)
-            if key == key.pluralize
+          when type.kind_of?(Hash) && value.kind_of?(Hash)
+            if key == key.pluralize && value.values.first.kind_of?(Hash)
               value.each do |array_index,array_value|
                 value[array_index] = filter_params!(array_value, type)
               end
