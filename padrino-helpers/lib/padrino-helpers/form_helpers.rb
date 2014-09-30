@@ -513,10 +513,11 @@ module Padrino
       ##
       # Constructs a submit button from the given options.
       #
-      # @param [String] caption (defaults to: +Submit+)
-      #   The caption for the submit button.
-      # @param [Hash] options
-      #   The html options for the input field.
+      # @overload submit_tag(options={})
+      #   @param [Hash]    options  The html options for the input field.
+      # @overload submit_tag(caption, options={})
+      #   @param [String]  caption  The caption for the submit button.
+      #   @param [Hash]    options  The html options for the input field.
       #
       # @return [String] The html submit button based on the +options+ specified.
       #
