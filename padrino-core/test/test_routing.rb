@@ -2122,4 +2122,16 @@ describe "Routing" do
     get '/users//'
     assert_equal 404, status
   end
+
+  it "should support splat params" do
+    # This test will be fixed with the new router
+    skip
+    mock_app do
+      get "/say/*/to/*" do
+        params[:splat].inspect
+      end
+    end
+    get "/say/hello/to/world"
+    assert_equal ["hello", "world"], body
+  end
 end
