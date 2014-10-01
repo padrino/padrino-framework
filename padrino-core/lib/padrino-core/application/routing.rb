@@ -854,7 +854,7 @@ module Padrino
         if path = static_file?(request.path_info)
           env['sinatra.static_file'] = path
           cache_control(*settings.static_cache_control) if settings.static_cache_control?
-          send_file(path, options.merge(:disposition => nil))
+          send_file(path, options)
         end
       end
 
