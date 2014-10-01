@@ -691,4 +691,14 @@ describe "Rendering" do
       end
     end
   end
+
+  describe 'sinatra template helpers' do
+    it "should respect default_content_type option defined by sinatra" do
+      mock_app do
+        get(:index){ sass ".hey\n  border: 0" }
+      end
+      get '/'
+      assert_equal "text/css;charset=utf-8", response['Content-Type']
+    end
+  end
 end
