@@ -42,7 +42,6 @@ module Padrino
       def setup_application!
         return if @_configured
         require_dependencies
-        default_filters
         default_routes
         default_errors
         setup_locale
@@ -107,16 +106,6 @@ module Padrino
         setup_protection builder
         setup_csrf_protection builder
         setup_application!
-      end
-
-      ##
-      # This filter it's used for know the format of the request, and
-      # automatically set the content type.
-      #
-      def default_filters
-        before do
-          response['Content-Type'] = 'text/html;charset=utf-8' unless @_content_type
-        end
       end
 
       ##
