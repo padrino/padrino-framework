@@ -850,11 +850,11 @@ module Padrino
       #
       # Method for deliver static files.
       #
-      def static!
+      def static!(options = {})
         if path = static_file?(request.path_info)
           env['sinatra.static_file'] = path
           cache_control(*settings.static_cache_control) if settings.static_cache_control?
-          send_file(path, :disposition => nil)
+          send_file(path, options.merge(:disposition => nil))
         end
       end
 

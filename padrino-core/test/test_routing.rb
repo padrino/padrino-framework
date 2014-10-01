@@ -30,6 +30,22 @@ describe "Routing" do
     assert_equal headers['Cache-Control'], 'public, must-revalidate, max-age=300'
   end # static max_age
 
+  it 'should render static files with custom status via options' do
+    mock_app do
+      set :static, true
+      set :public_folder, File.dirname(__FILE__)
+
+      post '/*' do
+        static!(:status => params[:status])
+      end
+    end
+
+    post "/#{File.basename(__FILE__)}?status=422"
+    assert_equal response.status, 422
+    assert_equal File.size(__FILE__).to_s, response['Content-Length']
+    assert response.headers.include?('Last-Modified')
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
