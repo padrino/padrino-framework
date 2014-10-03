@@ -26,7 +26,7 @@ group :development do
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",   ">= 1.2.8"
   gem "webrat",    ">= 0.5.1"
-  gem "haml",      ">= 2.2.22"
+  gem "haml",      ">= 4.0.5"
   gem "erubis",    ">= 2.7.0"
   gem "slim",      ">= 1.3.0"
   gem "builder",   ">= 2.1.2"
