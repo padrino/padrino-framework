@@ -27,7 +27,11 @@ group :development do
   gem "fakeweb",   ">= 1.2.8"
   gem "webrat",    ">= 0.5.1"
   gem "haml",      ">= 4.0.5"
-  gem "erubis",    ">= 2.7.0"
+  if ENV['STDLIB_ERB']
+    puts "=> Using stdlib ERB engine"
+  else
+    gem "erubis",    ">= 2.7.0"
+  end
   gem "slim",      ">= 1.3.0"
   gem "builder",   ">= 2.1.2"
   platforms :jruby do

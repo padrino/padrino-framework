@@ -396,6 +396,15 @@ unless defined? Padrino::Rendering::SlimTemplate
   end
 end
 
+unless defined?(Padrino::Rendering::ErubisTemplate) || defined?(Padrino::Rendering::ERBTemplate)
+  begin
+    require 'erb'
+  rescue LoadError
+  else
+    require 'padrino/rendering/erb_template'
+  end
+end
+
 if Padrino::Rendering.engine_configurations.empty? && !defined?(Padrino::IGNORE_NO_RENDERING_ENGINE)
   warn <<-EOT
 WARNING: no supported rendering engine found. To use Padrino::Helpers and 
