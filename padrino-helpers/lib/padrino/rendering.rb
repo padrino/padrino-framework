@@ -395,3 +395,13 @@ unless defined? Padrino::Rendering::SlimTemplate
     require 'padrino/rendering/slim_template'
   end
 end
+
+if Padrino::Rendering.engine_configurations.empty? && !defined?(Padrino::IGNORE_NO_RENDERING_ENGINE)
+  warn <<-EOT
+WARNING: no supported rendering engine found. To use Padrino::Helpers and 
+Padrino::Rendering properly you should include `gem 'erubis'`, `gem 'haml'` 
+or `gem 'slim'` in your Gemfile. If you are confident about using 
+Padrino::Helpers without Padrino::Rendering, please define constant 
+`Padrino::IGNORE_NO_RENDERING_ENGINE = true` before `require 'padrino-helpers'`.
+  EOT
+end
