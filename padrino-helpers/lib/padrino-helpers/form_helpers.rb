@@ -580,6 +580,7 @@ module Padrino
       #   # </form>
       #
       def button_to(*args, &block)
+        warn 'Warning: method button_to with block will change behavior on Padrino 0.13.0 release and will wrap the content of the block with <button></button> tag.' if block_given?
         options   = args.extract_options!.dup
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
