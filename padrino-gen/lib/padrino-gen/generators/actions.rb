@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Padrino
   module Generators
     # Raised when an application does not have a resolved root path.
@@ -17,7 +19,7 @@ module Padrino
       # Avoids editing destination file if it does not exist.
       #
       def inject_into_file(destination, *args, &block)
-        destination_path = destination.start_with?("/") ? destination : destination_root(destination)
+        destination_path = Pathname.new(destination).absolute? ? destination : destination_root(destination)
         return unless File.exist?(destination_path)
         super
       end
