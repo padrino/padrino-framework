@@ -221,7 +221,9 @@ module Padrino
         # This means that no engine was explicitly defined
         data, engine = resolve_template(engine, options) if data.nil?
 
-        options[:layout] ||= false unless Rendering.engine_configurations.has_key?(engine)
+        unless Rendering.engine_configurations.has_key?(engine)
+          ensure_rendering_engine(engine) || (options[:layout] ||= false)
+        end
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
@@ -361,7 +363,16 @@ module Padrino
         path = path.chomp(extname)
         path.insert(0, '/') unless Pathname.new(path).absolute?
         path = path.squeeze('/').sub(relative, '') if relative
-        [path.to_sym, engine]
+        [path.to_sym, engine.to_sym]
+      end
+
+      def ensure_rendering_engine(engine)
+        return nil unless engine == :erb
+        require 'erb'
+      rescue LoadError
+      else
+        require 'padrino/rendering/erb_template'
+        settings.set :erb, Padrino::Rendering.engine_configurations[:erb]
       end
     end
   end
@@ -394,23 +405,4 @@ unless defined? Padrino::Rendering::SlimTemplate
   else
     require 'padrino/rendering/slim_template'
   end
-end
-
-unless defined?(Padrino::Rendering::ErubisTemplate) || defined?(Padrino::Rendering::ERBTemplate)
-  begin
-    require 'erb'
-  rescue LoadError
-  else
-    require 'padrino/rendering/erb_template'
-  end
-end
-
-if Padrino::Rendering.engine_configurations.empty? && !defined?(Padrino::IGNORE_NO_RENDERING_ENGINE)
-  warn <<-EOT
-WARNING: no supported rendering engine found. To use Padrino::Helpers and 
-Padrino::Rendering properly you should include `gem 'erubis'`, `gem 'haml'` 
-or `gem 'slim'` in your Gemfile. If you are confident about using 
-Padrino::Helpers without Padrino::Rendering, please define constant 
-`Padrino::IGNORE_NO_RENDERING_ENGINE = true` before `require 'padrino-helpers'`.
-  EOT
 end
