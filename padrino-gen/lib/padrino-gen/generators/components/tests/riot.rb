@@ -37,7 +37,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 context "!PATH!" do
   context "description here" do
     setup do
-      get "/"
+      get "!EXPANDED_PATH!"
     end
 
     asserts("the response body") { last_response.body }.equals "Hello World"
@@ -97,7 +97,7 @@ def setup_test
 end
 
 def generate_controller_test(name, path)
-  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!PATH!/, path)
+  riot_contents = RIOT_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), riot_contents, :skip => true
 end

@@ -27,7 +27,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 describe "!PATH!" do
   it 'returns text at root' do
-    get "/"
+    get "!EXPANDED_PATH!"
     last_response.body.should == "some text"
   end
 end
@@ -83,7 +83,7 @@ def setup_test
 end
 
 def generate_controller_test(name, path)
-  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!PATH!/, path)
+  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), bacon_contents, :skip => true
 end
