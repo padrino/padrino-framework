@@ -13,6 +13,7 @@ describe "ObserverGenerator" do
   describe 'the observer generator' do
     it 'fail outside app root' do
        out, err = capture_io { generate(:observer, 'foo', "-r=#{@apptmp}") }
+       assert_match(/not at the root/, out)
     end
   end
 end
