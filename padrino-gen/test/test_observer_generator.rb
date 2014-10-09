@@ -15,5 +15,11 @@ describe "ObserverGenerator" do
        out, err = capture_io { generate(:observer, 'foo', "-r=#{@apptmp}") }
        assert_match(/not at the root/, out)
     end
+
+    it 'should generate filename properly' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:observer, 'DemoObserver', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/app/models/demo_observer.rb")
+    end
   end
 end
