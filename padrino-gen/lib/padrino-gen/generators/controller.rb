@@ -61,7 +61,7 @@ module Padrino
             path = @controller
 
             if options[:parent] && !options[:parent].empty?
-              path = Application.send(:process_path_for_parent_params, path, [options[:parent]]).prepend("/")
+              path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend("/")
             end
             path.prepend("/") unless path.start_with?("/")
             generate_controller_test(name, path)

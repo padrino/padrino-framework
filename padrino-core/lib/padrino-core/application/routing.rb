@@ -367,6 +367,21 @@ module Padrino
         end
       end
 
+      ##
+      # Processes the existing path and prepends the 'parent' parameters onto the route
+      # Used for calculating path in route method.
+      #
+      def process_path_for_parent_params(path, parent_params)
+        parent_prefix = parent_params.flatten.compact.uniq.map do |param|
+          map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
+          part = "#{map}/:#{param.to_s.singularize}_id/"
+          part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+          part
+        end
+
+        [parent_prefix, path].flatten.join("")
+      end
+
       private
 
       CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
@@ -637,21 +652,6 @@ module Padrino
         File.join(path, Array(with_params).map do |step|
           step.kind_of?(String) ? step : step.inspect
         end.join("/"))
-      end
-
-      ##
-      # Processes the existing path and prepends the 'parent' parameters onto the route
-      # Used for calculating path in route method.
-      #
-      def process_path_for_parent_params(path, parent_params)
-        parent_prefix = parent_params.flatten.compact.uniq.map do |param|
-          map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
-          part = "#{map}/:#{param.to_s.singularize}_id/"
-          part = "(#{part})" if param.respond_to?(:optional) && param.optional?
-          part
-        end
-
-        [parent_prefix, path].flatten.join("")
       end
 
       ##
