@@ -61,7 +61,7 @@ describe "SimpleReloader" do
       assert ok?
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(SimpleDemo.app_file)
-      new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
+      new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
       begin
         File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get "/" }

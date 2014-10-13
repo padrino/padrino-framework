@@ -17,7 +17,7 @@ module Padrino
           fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
           @namespace = options[:namespace]
-          @model_name = options[:as] || @object.class.to_s.underscore.gsub(/\//, '_')
+          @model_name = options[:as] || @object.class.to_s.underscore.tr('/', '_')
           nested = options[:nested]
           if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
             @parent_form = nested_parent

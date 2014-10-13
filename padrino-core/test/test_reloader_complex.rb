@@ -43,8 +43,8 @@ describe "ComplexReloader" do
 
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(Complex1Demo.app_file)
-      new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
-      new_buffer.gsub!(/get\(:destroy\)/, 'get(:destroy, :with => :id)')
+      new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
+      new_buffer.sub!(/get\(:destroy\)/, 'get(:destroy, :with => :id)')
       begin
         File.open(Complex1Demo.app_file, "w") { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get "/complex_2_demo" }

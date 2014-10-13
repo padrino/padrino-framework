@@ -184,7 +184,7 @@ module Padrino
       #   favicon_tag 'favicon.png', :type => 'image/ico'
       #
       def favicon_tag(source, options={})
-        type = File.extname(source).gsub('.','')
+        type = File.extname(source).sub('.','')
         options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
         tag(:link, options)
       end
