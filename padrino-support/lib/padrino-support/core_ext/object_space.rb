@@ -11,12 +11,12 @@ module ObjectSpace
     #    end
     #  end
     #
-    def classes(&block)
+    def classes
       rs = Set.new
 
       ObjectSpace.each_object(Class).each do |klass|
-        if block
-          if r = block.call(klass)
+        if block_given?
+          if r = yield(klass)
             # add the returned value if the block returns something
             rs << r
           end

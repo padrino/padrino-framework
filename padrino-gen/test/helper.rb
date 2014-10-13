@@ -56,8 +56,8 @@ class MiniTest::Spec
 
   # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
   # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {}, &block)
-    html = block && block.call
+  def assert_has_tag(name, attributes = {})
+    html = yield if block_given?
     matcher = HaveSelector.new(name, attributes)
     raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
@@ -65,8 +65,8 @@ class MiniTest::Spec
 
   # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
   # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {}, &block)
-    html = block && block.call
+  def assert_has_no_tag(name, attributes = {})
+    html = yield if block_given?
     attributes.merge!(:count => 0)
     matcher = HaveSelector.new(name, attributes)
     raise "Please specify a block!" if html.blank?

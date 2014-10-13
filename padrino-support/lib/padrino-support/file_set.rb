@@ -8,10 +8,10 @@ module FileSet
   # Returns the list of files matching the glob pattern
   # FileSet.glob('padrino-core/application/*.rb', __FILE__) { |file| load file }
   #
-  def glob(glob_pattern, file_path=nil, &block)
+  def glob(glob_pattern, file_path=nil)
     glob_pattern = File.join(File.dirname(file_path), glob_pattern) if file_path
     file_list = Dir.glob(glob_pattern).sort
-    file_list.each { |file| block.call(file) }
+    file_list.each{ |file| yield(file) }
     file_list
   end
 

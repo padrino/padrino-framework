@@ -62,7 +62,7 @@ module Padrino
         if handler = find_proper_handler
           handler.capture_from_template(*args, &block)
         else
-          block.call(*args)
+          yield(*args)
         end
       end
       alias :capture :capture_html

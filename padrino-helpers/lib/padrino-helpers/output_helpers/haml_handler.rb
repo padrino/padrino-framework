@@ -16,7 +16,7 @@ module Padrino
         # Captures the html from a block of template code for this handler.
         #
         def capture_from_template(*args, &block)
-          engine_matches?(block) ? template.capture_haml(*args, &block) : block.call(*args)
+          engine_matches?(block) ? template.capture_haml(*args, &block) : yield(*args)
         end
       end
       OutputHelpers.register(:haml, HamlHandler)
