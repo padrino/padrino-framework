@@ -130,7 +130,7 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!.merge( :cyclic => true )
-      files = paths.flatten.map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.flatten.uniq
+      files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 
       until files.empty?
         error, fatal, loaded = nil, nil, nil
