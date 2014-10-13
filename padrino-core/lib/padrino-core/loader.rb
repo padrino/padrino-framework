@@ -133,7 +133,7 @@ module Padrino
       files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 
       until files.empty?
-        error, fatal, loaded = nil, nil, nil
+        error = fatal = loaded = nil
 
         files.dup.each do |file|
           begin

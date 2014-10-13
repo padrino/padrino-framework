@@ -3,7 +3,11 @@ module Padrino
     attr_reader :block
 
     def initialize(mode, scoped_controller, options, args, &block)
-      @mode, @scoped_controller, @options, @args, @block = mode, scoped_controller, options, args, block
+      @mode = mode
+      @scoped_controller = scoped_controller
+      @options = options
+      @args = args
+      @block = block
     end
 
     def apply?(request)
@@ -27,7 +31,8 @@ module Padrino
     end
 
     def match_with_arguments?(request)
-      route, path = request.route_obj, request.path_info
+      route = request.route_obj
+      path = request.path_info
       @args.any? do |argument|
         if argument.instance_of?(Symbol)
           next unless route

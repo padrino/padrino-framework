@@ -82,7 +82,8 @@ module Padrino
     #   @app.map_onto(router)
     #
     def map_onto(router)
-      app_data, app_obj = self, @app_obj
+      app_data = self
+      app_obj = @app_obj
       app_obj.set :uri_root,       app_data.uri_root
       app_obj.set :app_name,       app_data.app_obj.app_name.to_s
       app_obj.set :app_file,       app_data.app_file unless ::File.exist?(app_obj.app_file)
