@@ -2150,4 +2150,18 @@ describe "Routing" do
     get "/say/hello/to/world"
     assert_equal ["hello", "world"], body
   end
+
+  it "should match correctly paths even if the free regex route exists" do
+    mock_app do
+      get %r{/b/(?<aa>\w+)/(?<bb>\w+)} do
+        "free regex"
+      end
+
+      put '/b/:b/:c', :csrf_protection => false do
+        params.inspect
+      end
+    end
+    put "/b/x/y"
+    assert_equal '{"b"=>"x", "c"=>"y"}', body
+  end
 end

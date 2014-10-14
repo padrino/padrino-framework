@@ -178,4 +178,24 @@ class HttpRouter
       #{"end" unless route.match_partially}"
     end
   end
+
+  class Node::FreeRegex
+    def to_code
+      id = root.next_counter
+      "whole_path#{id} = \"/\#{request.joined_path}\"
+      if match = #{matcher.inspect}.match(whole_path#{id}) and match[0].size == whole_path#{id}.size
+        request.extra_env['router.regex_match'] = match
+        old_path = request.path
+        request.path = ['']
+        " << (use_named_captures? ?
+        "match.names.size.times{|i| request.params << match[i + 1]} if match.respond_to?(:names) && match.names" : "") << "
+        #{super}
+        request.path = old_path
+        request.extra_env.delete('router.regex_match')
+        " << (use_named_captures? ?
+        "request.params.slice!(-match.names.size, match.names.size)" : ""
+        ) << "
+      end"
+    end
+  end
 end
