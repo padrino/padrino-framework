@@ -6,6 +6,7 @@ describe "ControllerGenerator" do
     `mkdir -p #{@apptmp}`
     @controller_path = "#{@apptmp}/sample_project/app/controllers/demo_items.rb"
     @controller_test_path = "#{@apptmp}/sample_project/test/app/controllers/demo_items_controller_test.rb"
+    @controller_with_parent_test_path = "#{@apptmp}/sample_project/test/app/controllers/user_items_controller_test.rb"
     @helper_path = "#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb"
     @helper_test_path = "#{@apptmp}/sample_project/test/app/helpers/demo_items_helper_test.rb"
   end
@@ -56,7 +57,8 @@ describe "ControllerGenerator" do
       assert_match_in_file(/SampleProject::Subby.controllers :demo_items do/m, @controller_path.gsub('app','subby'))
       assert_match_in_file(/helpers DemoItemsHelper/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
       assert_file_exists("#{@apptmp}/sample_project/subby/views/demo_items")
-      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/describe "\/demo_items" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/demo_items"/m, @controller_test_path.gsub('app','subby'))
     end
 
     it 'should generate controller with specified layout' do
@@ -75,6 +77,8 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=user') }
       assert_match_in_file(/SampleProject::App.controllers :demo_items, :parent => :user do/m, @controller_path)
+      assert_match_in_file(/describe "\/user\/:user_id\/demo_items" do/, @controller_test_path)
+      assert_match_in_file(/get "\/user\/1\/demo_items"/, @controller_test_path)
     end
 
     it 'should generate controller without specified parent' do
@@ -108,8 +112,12 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
       assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
-      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/describe "\/demo_items" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/describe "\/user\/:user_id\/user_items"/, @controller_with_parent_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/demo_items"/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, @controller_with_parent_test_path.gsub('app','subby'))
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
     end
 
@@ -117,8 +125,12 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=riot') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
       assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
-      assert_match_in_file(/context "DemoItemsController" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/context "\/demo_items" do/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/context "\/user\/:user_id\/user_items"/, @controller_with_parent_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/demo_items"/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, @controller_with_parent_test_path.gsub('app','subby'))
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
     end
 
@@ -126,8 +138,12 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
       assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app', 'subby'))
-      assert_match_in_file(/describe "DemoItemsController" do/m, @controller_test_path.gsub('app', 'subby'))
+      assert_match_in_file(/describe "\/demo_items" do/m, @controller_test_path.gsub('app', 'subby'))
+      assert_match_in_file(/describe "\/user\/:user_id\/user_items"/, @controller_with_parent_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/demo_items"/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, @controller_with_parent_test_path.gsub('app','subby'))
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
     end
 
@@ -135,7 +151,11 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
+      assert_match_in_file(/describe "\/demo_items" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/describe "\/user\/:user_id\/user_items"/,"#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
+      assert_match_in_file(/get "\/demo_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, "#{@apptmp}/sample_project/spec/subby/helpers/demo_items_helper_spec.rb")
     end
 
@@ -143,9 +163,12 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
       expected_pattern = /class DemoItemsControllerTest < Test::Unit::TestCase/m
+      expected_pattern2 = /class UserItemsControllerTest < Test::Unit::TestCase/m
       assert_match_in_file(expected_pattern, @controller_test_path.gsub('app','subby'))
       assert_match_in_file(/(\/\.\.){2}/m, @controller_test_path.gsub('app','subby'))
+      assert_match_in_file(expected_pattern2, @controller_with_parent_test_path.gsub('app','subby'))
       assert_match_in_file(/context "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
       assert_file_exists(@helper_test_path.gsub('app','subby'))
       assert_file_exists("#{@apptmp}/sample_project/test/subby/helpers/demo_items_helper_test.rb")
@@ -155,8 +178,13 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=steak') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
-      assert_match_in_file(/feature "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/acceptance/controllers/demo_items_controller_spec.rb")
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
+      assert_match_in_file(/describe "\/demo_items" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/feature "\/demo_items" do/m, "#{@apptmp}/sample_project/spec/subby/acceptance/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/describe "\/user\/:user_id\/user_items" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
+      assert_match_in_file(/get "\/demo_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
+      assert_match_in_file(/feature "\/user\/:user_id\/user_items" do/m, "#{@apptmp}/sample_project/spec/subby/acceptance/controllers/user_items_controller_spec.rb")
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, "#{@apptmp}/sample_project/spec/subby/helpers/demo_items_helper_spec.rb")
     end
 
@@ -164,7 +192,11 @@ describe "ControllerGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=cucumber') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:controller, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "DemoItemsController" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      capture_io { generate(:controller, 'UserItems','-a=/subby', "-r=#{@apptmp}/sample_project", "-p=user") }
+      assert_match_in_file(/describe "\/demo_items" do/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/describe "\/user\/:user_id\/user_items"/, "#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
+      assert_match_in_file(/get "\/demo_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/get "\/user\/1\/user_items"/m, "#{@apptmp}/sample_project/spec/subby/controllers/user_items_controller_spec.rb")
       assert_match_in_file(/Capybara.app = /, "#{@apptmp}/sample_project/features/support/env.rb")
     end
 

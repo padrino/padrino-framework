@@ -690,6 +690,7 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
       assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec\.describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_match_in_file(/get "\/"/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_match_in_file(/RSpec.describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
 
