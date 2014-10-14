@@ -253,5 +253,37 @@ describe "Mounter" do
       assert_equal AppGem::App, mounter.app_obj
       assert_equal Padrino.root('public'), mounter.app_obj.public_folder
     end
+
+    it 'should support the Rack Application' do
+      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/rack_apps')
+      require path
+      Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path).to('/rack_app')
+      Padrino.mount('rack_app2', :app_class => 'RackApp2', :app_file => path).to('/rack_app2')
+      Padrino.mount('sinatra_app', :app_class => 'SinatraApp', :app_file => path).to('/sinatra_app')
+      app = Padrino.application
+      res = Rack::MockRequest.new(app).get("/rack_app")
+      assert_equal "hello rack app", res.body
+      res = Rack::MockRequest.new(app).get("/rack_app2")
+      assert_equal "hello rack app2", res.body
+      res = Rack::MockRequest.new(app).get("/sinatra_app")
+      assert_equal "hello sinatra app", res.body
+      res = Rack::MockRequest.new(app).get("/sinatra_app/static.html")
+      assert_equal "hello static file\n", res.body
+    end
+
+    it 'should support the Rack Application inside padrino project' do
+      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/app')
+      api_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/api/app')
+      require path
+      require api_path
+      Padrino.mount('api_app', :app_class => 'DemoProject::API', :app_file => api_path).to('/api')
+      Padrino.mount('main_app', :app_class => 'DemoProject::App').to('/')
+      app = Padrino.application
+      res = Rack::MockRequest.new(app).get("/")
+      assert_equal "padrino app", res.body
+      res = Rack::MockRequest.new(app).get("/api/hey")
+      assert_equal "api app", res.body
+      assert defined?(DemoProject::APILib)
+    end
   end
 end
