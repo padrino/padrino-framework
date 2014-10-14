@@ -127,6 +127,13 @@ module Mail # @private
     end
 
     ##
+    # Sinatra almost compatibility.
+    #
+    def self.set(name, value)
+      self.class.instance_eval{ define_method(name) { value } unless method_defined?(:erb) }
+    end
+
+    ##
     # Sets the message defined template path to the given view path.
     #
     def views(value)
