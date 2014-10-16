@@ -37,15 +37,7 @@ group :development do
   gem "minitest", ">= 4.0"
 end
 
-%w[
-   padrino
-   padrino-admin
-   padrino-cache
-   padrino-core
-   padrino-gen
-   padrino-helpers
-   padrino-mailer
-   padrino-support
-].each do |dep|
-  gem dep, :path => File.expand_path('../' + dep, __FILE__)
+load File.expand_path('../padrino/subgems.rb', __FILE__)
+PADRINO_GEMS.each do |name,_|
+  gem name, :path => File.expand_path('../' + name, __FILE__)
 end
