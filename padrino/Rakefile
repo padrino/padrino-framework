@@ -9,9 +9,8 @@ task "lib/padrino.rb" do
   FileUtils.mkdir_p "lib"
   File.open("lib/padrino.rb","w+") do |file|
     file.puts "# Automatically generated from 'padrino.gemspec' by `rake lib/padrino.rb`"
-    PADRINO_SUBGEMS.each do |pair|
-      g, _ = pair
-      file.puts "require '#{g}'" unless g =~ /padrino-(gen|performance)/
+    PADRINO_SUBGEMS.each_key do |name|
+      file.puts "require '#{name}'" unless name =~ /padrino-(gen|performance)/
     end
   end
 end
