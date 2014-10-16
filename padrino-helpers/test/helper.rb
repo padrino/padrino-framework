@@ -31,25 +31,21 @@ class MiniTest::Spec
   # In this case, block is the html to evaluate
   def assert_has_tag(name, attributes = {})
     html = yield if block_given?
-    assert html.html_safe?, 'html_safe? failed'
+    fail "Please specify a block" if html.blank?
+    assert html.html_safe?, 'output in not #html_safe?'
     matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
     assert matcher.matches?(html), matcher.failure_message
   end
 
-  # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
+  # assert_has_no_tag(:h1, :content => "yellow") { "<h1>green</h1>" }
   # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {})
-    html = yield if block_given?
-    attributes.merge!(:count => 0)
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
+  def assert_has_no_tag(name, attributes = {}, &block)
+    assert_has_tag(name, attributes.merge(:count => 0), &block)
   end
 
   # Asserts that a file matches the pattern
   def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
+    assert File.file?(file), "File '#{file}' does not exist"
     assert_match pattern, File.read(file)
   end
 
@@ -81,44 +77,34 @@ class MiniTest::Spec
   end
 
   def with_template(name, content, options={})
-    # Build a temp layout
     template = create_template(name, content, options)
     yield
   ensure
-    # Remove temp layout
     File.unlink(template) rescue nil
     remove_views
   end
   alias :with_view   :with_template
   alias :with_layout :with_template
 
-  def mock_app(base=Padrino::Application.dup, &block)
-    base.register Padrino::Rendering
-    @app = Sinatra.new(base, &block)
+  def mock_app(base=Padrino::Application, &block)
+    @app = Sinatra.new base do
+      register Padrino::Helpers
+      instance_eval &block
+    end
   end
 
   def app
     Rack::Lint.new(@app)
   end
 
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
-    assert_match pattern, File.read(file)
-  end
+  # Delegate some methods to the last response
+  alias_method :response, :last_response
 
-  # Delegate other missing methods to response.
-  def method_missing(name, *args, &block)
-    if response && response.respond_to?(name)
-      response.send(name, *args, &block)
-    else
-      super(name, *args, &block)
+  [:status, :headers, :body, :content_type, :ok?, :forbidden?].each do |method_name|
+    define_method method_name do
+      last_response.send(method_name)
     end
-  rescue Rack::Test::Error # no response yet
-    super(name, *args, &block)
   end
-
-  alias :response :last_response
 end
 
 module Webrat

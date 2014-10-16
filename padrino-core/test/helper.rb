@@ -12,10 +12,6 @@ require 'rack/test'
 require 'rack'
 require 'yaml'
 
-# Rubies < 1.9 don't handle hashes in the properly order so to prevent
-# this issue for now we remove extra values from mimetypes.
-Rack::Mime::MIME_TYPES.delete(".xsl") # In this way application/xml respond only to .xml
-
 class MiniTest::Spec
   include Rack::Test::Methods
 
@@ -36,16 +32,12 @@ class MiniTest::Spec
     assert_match pattern, File.read(file)
   end
 
-  # Delegate other missing methods to response.
-  def method_missing(name, *args, &block)
-    if response && response.respond_to?(name)
-      response.send(name, *args, &block)
-    else
-      super(name, *args, &block)
-    end
-  rescue Rack::Test::Error # no response yet
-    super(name, *args, &block)
-  end
+  # Delegate some methods to the last response
+  alias_method :response, :last_response
 
-  alias :response :last_response
+  [:status, :headers, :body, :content_type, :ok?, :forbidden?].each do |method_name|
+    define_method method_name do
+      last_response.send(method_name)
+    end
+  end
 end
