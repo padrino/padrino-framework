@@ -36,16 +36,16 @@ describe "AdminAppGenerator" do
     it "should generate the admin app" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      assert_file_exists("#{@apptmp}/sample_project")
-      assert_file_exists("#{@apptmp}/sample_project/admin")
+      assert_dir_exists("#{@apptmp}/sample_project")
+      assert_dir_exists("#{@apptmp}/sample_project/admin")
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
-      assert_file_exists("#{@apptmp}/sample_project/admin/controllers")
+      assert_dir_exists("#{@apptmp}/sample_project/admin/controllers")
       assert_file_exists("#{@apptmp}/sample_project/admin/controllers/accounts.rb")
       assert_file_exists("#{@apptmp}/sample_project/admin/controllers/base.rb")
       assert_file_exists("#{@apptmp}/sample_project/admin/controllers/sessions.rb")
-      assert_file_exists("#{@apptmp}/sample_project/admin/views")
-      assert_file_exists("#{@apptmp}/sample_project/public/admin")
-      assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
+      assert_dir_exists("#{@apptmp}/sample_project/admin/views")
+      assert_dir_exists("#{@apptmp}/sample_project/public/admin")
+      assert_dir_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/bootstrap.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/application.js")
@@ -83,7 +83,7 @@ describe "AdminAppGenerator" do
       it 'should correctly generate a new padrino admin application with haml renderer (default)' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_file_exists("#{@apptmp}/sample_project/admin/views")
+        assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.haml")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/edit.haml")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/index.haml")
@@ -98,7 +98,7 @@ describe "AdminAppGenerator" do
       it 'should correctly generate a new padrino admin application with erb renderer' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_file_exists("#{@apptmp}/sample_project/admin/views")
+        assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.erb")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/edit.erb")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/index.erb")
@@ -113,7 +113,7 @@ describe "AdminAppGenerator" do
       it 'should correctly generate a new padrino admin application with slim renderer' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_file_exists("#{@apptmp}/sample_project/admin/views")
+        assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.slim")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/edit.slim")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/index.slim")
@@ -153,14 +153,14 @@ describe "AdminAppGenerator" do
       skip
       # capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       # capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
-      # assert_file_exists("#{@apptmp}/sample_project")
-      # assert_file_exists("#{@apptmp}/sample_project/admin")
+      # assert_dir_exists("#{@apptmp}/sample_project")
+      # assert_dir_exists("#{@apptmp}/sample_project/admin")
       # assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
       # assert_file_exists("#{@apptmp}/sample_project/admin/controllers")
       # assert_file_exists("#{@apptmp}/sample_project/admin/controllers/accounts.rb")
       # assert_file_exists("#{@apptmp}/sample_project/admin/controllers/base.rb")
       # assert_file_exists("#{@apptmp}/sample_project/admin/controllers/sessions.rb")
-      # assert_file_exists("#{@apptmp}/sample_project/admin/views")
+      # assert_dir_exists("#{@apptmp}/sample_project/admin/views")
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.haml")
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/edit.haml")
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/index.haml")
@@ -170,8 +170,8 @@ describe "AdminAppGenerator" do
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/base/index.haml")
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/layouts/application.haml")
       # assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.haml")
-      # assert_file_exists("#{@apptmp}/sample_project/public/admin")
-      # assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
+      # assert_dir_exists("#{@apptmp}/sample_project/public/admin")
+      # assert_dir_exists("#{@apptmp}/sample_project/public/admin/stylesheets")
       # assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       # assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
       # assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")

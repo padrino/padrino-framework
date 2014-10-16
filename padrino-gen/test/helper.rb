@@ -2,7 +2,6 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
-require 'rack'
 require 'webrat'
 require 'fakeweb'
 require 'thor/group'
@@ -10,6 +9,8 @@ require 'padrino-gen'
 require 'padrino-core'
 require 'padrino-mailer'
 require 'padrino-helpers'
+
+require 'ext/minitest-spec'
 
 Padrino::Generators.load_components!
 
@@ -27,7 +28,6 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
 end
 
 class MiniTest::Spec
-  include Rack::Test::Methods
   include Webrat::Methods
   include Webrat::Matchers
 
@@ -64,46 +64,6 @@ class MiniTest::Spec
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
     ($" - features).each{|x| $".delete(x) }
     (Object.constants - constants).each{|constant| Object.instance_eval{ remove_const(constant) }}
-  end
-
-  # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {})
-    html = yield if block_given?
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
-  # assert_has_no_tag, tag(:h1, :content => "yellow") { "<h1>green</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {})
-    html = yield if block_given?
-    attributes.merge!(:count => 0)
-    matcher = HaveSelector.new(name, attributes)
-    raise "Please specify a block!" if html.blank?
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
-  # assert_file_exists('/tmp/app')
-  def assert_file_exists(file_path)
-    assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"
-  end
-  alias :assert_dir_exists :assert_file_exists
-
-  # assert_no_file_exists('/tmp/app')
-  def assert_no_file_exists(file_path)
-    assert !File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
-  end
-  alias :assert_no_dir_exists :assert_no_file_exists
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    File.exist?(file) ? assert_match(pattern, File.read(file)) : assert_file_exists(file)
-  end
-
-  def assert_no_match_in_file(pattern, file)
-    File.exist?(file) ? refute_match(pattern, File.read(file)) : assert_file_exists(file)
   end
 
   # expects_generated :model, "post title:string body:text"

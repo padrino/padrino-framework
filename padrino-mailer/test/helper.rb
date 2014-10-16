@@ -6,9 +6,10 @@ require 'minitest/pride'
 require 'rack/test'
 require 'padrino-core'
 require 'padrino-helpers'
-require 'mail'
 require 'padrino-mailer/ext'
 require 'padrino-mailer'
+
+require 'ext/rack-test-methods'
 
 class MiniTest::Spec
   include Rack::Test::Methods
@@ -41,20 +42,4 @@ class MiniTest::Spec
     end
     Mail::TestMailer.deliveries.clear
   end
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
-    assert_match pattern, File.read(file)
-  end
-
-  # Delegate other missing methods to response.
-  def method_missing(name, *args, &block)
-    if response && response.respond_to?(name)
-      response.send(name, *args, &block)
-    else
-      super(name, *args, &block)
-    end
-  end
-  alias :response :last_response
 end
