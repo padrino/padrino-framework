@@ -1,7 +1,7 @@
-### AUTOMATICALLY GENERATED. DO NOT EDIT!
+# Automatically generated from 'padrino.gemspec' by `rake lib/padrino.rb`
 require 'padrino-support'
 require 'padrino-core'
-require 'padrino-mailer'
 require 'padrino-helpers'
-require 'padrino-admin'
 require 'padrino-cache'
+require 'padrino-mailer'
+require 'padrino-admin'

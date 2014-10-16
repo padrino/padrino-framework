@@ -3,22 +3,9 @@ require 'fileutils'
 require 'rake'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
-ROOT     = File.expand_path(File.dirname(__FILE__))
-GEM_NAME = 'padrino-framework'
-
-padrino_gems = %w[
-  padrino-core
-  padrino-support
-  padrino-helpers
-  padrino-mailer
-  padrino-cache
-  padrino-admin
-  padrino-gen
-  padrino-performance
-  padrino
-]
-
-GEM_PATHS = padrino_gems.freeze
+load File.expand_path('../padrino/subgems.rb', __FILE__)
+GEM_PATHS = PADRINO_GEMS.keys
+ROOT = File.expand_path(File.dirname(__FILE__))
 
 def sh_rake(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
@@ -45,7 +32,7 @@ end
 
 desc "Clean pkg and other stuff"
 task :uninstall do
-  padrino_gems.each {|gem|
+  GEM_PATHS.each {|gem|
     system("gem uninstall #{gem} --force -I -x 2>/dev/null")
   }
 end
@@ -92,13 +79,13 @@ task :release => :publish
 desc "Run tests for all padrino stack gems"
 task :test do
   # Omit the padrino metagem since no tests there
-  GEM_PATHS[0..-2].each do |g|
+  GEM_PATHS.each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
     sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"
   end
 end
 
-padrino_gems.each do |element|
+GEM_PATHS.each do |element|
   desc "Run tests for #{element} component"
   task element.to_s do
     sh "cd #{element} && #{Gem.ruby} -S rake test"
