@@ -63,8 +63,8 @@ The available components and their default options are listed below:
 
 |Component|Default|Aliases|Options|
 |:--------|:------|:------|:------|
-|orm|none|-d|mongoid, activerecord, datamapper, couchrest, mongomatic, ohm, ripple, sequel|
-|test|none|-t|bacon, shoulda, cucumber, testspec, riot, rspec, minitest|
+|orm|none|-d|mongoid, activerecord, datamapper, couchrest, mongomatic, ohm, ripple, sequel, dynamoid|
+|test|none|-t|bacon, shoulda, cucumber, testspec, riot, rspec, minitest, steak|
 |script|none|-s|prototype, rightjs, jquery, mootools, extcore, dojo|
 |renderer|haml|-e|erb, haml, slim, liquid|
 |stylesheet|none|-c|sass, less, scss, compass|
@@ -169,10 +169,11 @@ Keep in mind that the template file is pure ruby and has full access to [all ava
 
 |Options|Default|Aliases|Description|
 |:------|:------|:------|:----------|
-|app|nil|-n|specify the application|
+|app|/app|-a|specify the application|
 |root|.|-r|specify the root destination|
-|layout| |-l|specify the layout|
-|parent| |-p|specify the parent|
+|namespace||-n|specify the name space of your padrino project|
+|layout||-l|specify the layout|
+|parent||-p|specify the parent|
 |provides| |-f|specify the formats for this controller|
 |destroy|false|-d|removes all generated files|
 
@@ -217,6 +218,7 @@ This removes all created controller files.
 |Options|Default|Aliases|Description|
 |:------|:------|:------|:----------|
 |root|.|-r|specify the root destination path|
+|app|.|-a|specify the application destination path|
 |skip\_migration|false|-s|skip migration generation|
 |destroy|false|-d|removes all generated files|
 
@@ -287,6 +289,7 @@ This removes the migration file.
 |:------|:------|:------|:----------|
 |app|nil|-n|specify the application|
 |root|.|-r|specify the root destination path|
+|namespace||-n|specify the name space of your padrino project|
 |destroy|false|-d|removes all generated files|
 
 Padrino provides generator support for quickly creating new mailers within your Padrino application.
@@ -373,10 +376,12 @@ To use the tiny skeleton generator for app run in your project:
 
 |Options|Default|Aliases|Description|
 |:------|:------|:------|:----------|
-|name|nil|-a|allows you to specify the admin app’s name|
+|admin_name|admin|-a|allows you to specify the admin app’s name|
+|admin_model|"Account"|-m|specify the name of model for access controlling|
 |root|.|-r|specify the root destination path|
 |theme|default|none|generate admin app with theme|
 |skip\_migration|false|-s|skip migration generation|
+|renderer||-e|the default value is a renderer used in the main app|
 |destroy|false|-d|removes all generated files|
 
 Padrino also comes with a built-in admin dashboard. To generate the admin application in your project:
@@ -409,3 +414,26 @@ Show help and selected components:
 Add to minirecord with mysql and rspec in your project:
 
     $ padrino g component -d minirecord -a mysql2 -t rspec
+
+## Task Generator
+
+|Options|Default|Aliases|Description|
+|root|.|-r|the root destination path for the project|
+|description|nil|-d|specify the description of your application task|
+|namespace|nil|-n|specify the namespace of your application task|
+
+Padrino provides generator for quickly generating new task for your app.
+
+### Some examples:
+
+Show help:
+
+    $ padrino g task
+
+Using the task generator is as simple as:
+
+    $ padrino g task foo
+
+Generate the task file with namespace and description options:
+
+    $ padrino g task bar --namespace=sample --description="This\ is\ a\ sample"
