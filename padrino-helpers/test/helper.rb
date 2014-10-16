@@ -5,9 +5,12 @@ require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
 require 'webrat'
-require 'padrino-helpers'
 require 'active_support/time'
 require 'builder'
+require 'padrino-helpers'
+
+require 'ext/minitest-spec'
+require 'ext/rack-test-methods'
 
 class MiniTest::Spec
   include Padrino::Helpers::OutputHelpers
@@ -25,28 +28,6 @@ class MiniTest::Spec
     time = Time.now
     Time.stubs(:now).returns(time)
     return time
-  end
-
-  # assert_has_tag(:h1, :content => "yellow") { "<h1>yellow</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_tag(name, attributes = {})
-    html = yield if block_given?
-    fail "Please specify a block" if html.blank?
-    assert html.html_safe?, 'output in not #html_safe?'
-    matcher = HaveSelector.new(name, attributes)
-    assert matcher.matches?(html), matcher.failure_message
-  end
-
-  # assert_has_no_tag(:h1, :content => "yellow") { "<h1>green</h1>" }
-  # In this case, block is the html to evaluate
-  def assert_has_no_tag(name, attributes = {}, &block)
-    assert_has_tag(name, attributes.merge(:count => 0), &block)
-  end
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.file?(file), "File '#{file}' does not exist"
-    assert_match pattern, File.read(file)
   end
 
   # mock_model("Business", :new_record? => true) => <Business>
@@ -95,15 +76,6 @@ class MiniTest::Spec
 
   def app
     Rack::Lint.new(@app)
-  end
-
-  # Delegate some methods to the last response
-  alias_method :response, :last_response
-
-  [:status, :headers, :body, :content_type, :ok?, :forbidden?].each do |method_name|
-    define_method method_name do
-      last_response.send(method_name)
-    end
   end
 end
 

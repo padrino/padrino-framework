@@ -42,7 +42,6 @@ module Padrino
         require 'padrino-mailer/mime'
         # This lazily loads the mail gem, due to its long require time.
         app.set :_padrino_mailer, proc {
-          require 'mail'
           require 'padrino-mailer/ext'
           app._padrino_mailer = Mail
         }

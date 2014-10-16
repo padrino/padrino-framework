@@ -57,5 +57,4 @@ describe "Padrino Performance OS Module" do
       refute(Padrino::Performance::OS.linux?, 'We a darwin operation system.')
     end
   end
-
 end
