@@ -572,12 +572,14 @@ describe "Rendering" do
 
     it 'should renders erb with blocks' do
       mock_app do
-        def container
-          @_out_buf << "THIS."
-          yield
-          @_out_buf << "SPARTA!"
+        helpers do
+          def container
+            @_out_buf << "THIS."
+            yield
+            @_out_buf << "SPARTA!"
+          end
+          def is; "IS."; end
         end
-        def is; "IS."; end
         get '/' do
           render :erb, '<% container do %> <%= is %> <% end %>'
         end
