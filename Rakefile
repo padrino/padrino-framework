@@ -1,6 +1,5 @@
 # rake bump[X.X.X] && rake publish
-require 'rubygems'  unless defined?(Gem)
-require 'fileutils' unless defined?(FileUtils)
+require 'fileutils'
 require 'rake'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 

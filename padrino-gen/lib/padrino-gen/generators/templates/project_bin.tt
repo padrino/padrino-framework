@@ -3,7 +3,6 @@
 Dir.chdir(File.dirname(__FILE__)+'/..')
 
 # Start the app with Padrino::Server
-require 'rubygems'
 require 'bundler/setup'
 require 'padrino-core/cli/launcher'
 
