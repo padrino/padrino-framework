@@ -1,5 +1,3 @@
-require File.expand_path('../../../load_paths', __FILE__)
-
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'padrino-core'
