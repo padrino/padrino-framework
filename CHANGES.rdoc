@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.12.4 (October 19th 2014)
+== 0.12.4 (October 19th 2014)
 
 * FIX #1744 Corrects color support for Windows (@tyabe)
 * FIX #1736 Regression with textarea helper (@ujifgc)
