@@ -1,5 +1,32 @@
 = CHANGES
 
+== 0.12.4 (October 19th 2014)
+
+* FIX #1744 Corrects color support for Windows (@tyabe)
+* FIX #1736 Regression with textarea helper (@ujifgc)
+* FIX #1743 Add a padrino-gen generator for creating new Helpers (@dariocravero)
+* FIX #1746 Avoid reloading the file if its path is not started with Padrino.root (@namusyaka)
+* DELETE deprecated build_object method (@namusyaka)
+* FIX #1752 Don't set the @_use_format variable when provides method is called (@namusyaka)
+* FIX #48 Update mailer documentation and sample code (@postmodern)
+* FIX #1752 Refactor routing code to avoid weird parameter (@namusyaka)
+* FIX #1754 Adds end tags to admin erb template for index (@namusyaka)
+* FIX #1749 Replace the AR::ConnectionManagement middleware with new middleware (@namusyaka)
+* NEW #1756 Adds support for mysql2 gem in sql rake task helpers (@d6rkaiz)
+* FIX #1761 Allow passing upcased string as the app name
+* FIX #1776 improve params filtering for routes (@ujifgc)
+* FIX #1778 Various YARD doc inconsistencies or errors (@claudiob)
+* FIX #1765 Use controller's base path instead of constant name at controller test (@namusyaka)
+* FIX #1781 Removes the default_filters method setting incorrect content-type (@namusyaka)
+* FIX Sinatra compatibility for passing options to the static! method
+* FIX #1585 Update HAML to pass tests by upgrading versions (@ujifgc)
+* FIX #1782 make padrino-gen detect absolute paths on Windows (@ujifgc)
+* FIX #1779 Use expanded path to request controller's content (@namusyaka)
+* FIX Use yield and flatmap when possible to speed up performance (@ujifgc)
+* NEW #1787 Mounter now supports Rack applications (@namusyaka)
+* FIX #1788 exception that occurs when the free regex route exists (@namusyaka)
+* NEW Merges the padrino-docs guides and content directly into the main repository (@ujifgc)
+
 == 0.12.3 (August 13th 2014)
 
 * FIX #1579 Update admin deps such as font-awesome, jquery, bootstrap (@WaYdotNET)
