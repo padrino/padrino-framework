@@ -94,30 +94,6 @@ module Padrino
       end
 
       ##
-      # Returns the cached template file to render for a given url,
-      # content_type and locale. Deprecated since 0.12.1
-      #
-      # @param [Array<template_path, content_type, locale>] render_options
-      #
-      def fetch_template_file(render_options)
-        logger.warn "##{__method__} is deprecated"
-        (@_cached_templates ||= {})[render_options]
-      end
-
-      ##
-      # Caches the template file for the given rendering options. Deprecated since 0.12.1
-      #
-      # @param [String] template_file
-      #   The path of the template file.
-      #
-      # @param [Array<template_path, content_type, locale>] render_options
-      #
-      def cache_template_file!(template_file, render_options)
-        logger.warn "##{__method__} is deprecated"
-        (@_cached_templates ||= {})[render_options] = template_file || []
-      end
-
-      ##
       # Returns the cached layout path.
       #
       # @param [String, nil] given_layout
@@ -234,20 +210,6 @@ module Padrino
       ensure
         @current_engine = engine_was
         @_out_buf = buf_was
-      end
-
-      ##
-      # Returns the located layout tuple to be used for the rendered template
-      # (if available). Deprecated since 0.12.1
-      #
-      # @example
-      #   resolve_layout
-      #   # => ["/layouts/custom", :erb]
-      #   # => [nil, nil]
-      #
-      def resolved_layout
-        logger.warn "##{__method__} is deprecated"
-        resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true) || [nil, nil]
       end
 
       ##

@@ -1,5 +1,3 @@
-require 'padrino-helpers/form_builder/deprecated_builder_methods'
-
 module Padrino
   module Helpers
     module FormBuilder
@@ -7,8 +5,6 @@ module Padrino
       class AbstractFormBuilder
         attr_accessor :template, :object, :multipart
         attr_reader :namespace, :is_nested, :parent_form, :nested_index, :attributes_name, :model_name
-
-        include DeprecatedBuilderMethods
 
         def initialize(template, object, options={})
           @template = template

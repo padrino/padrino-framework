@@ -1,5 +1,10 @@
 = CHANGES
 
+== 0.13.0.rc1 (not released)
+* DELETE remove deprecations (String#undent, #link_to with :fragment, old caching,
+  old form builder, rendering #fetch_template_file, #cache_template_file!, #resolved_layout,
+  Application#load_paths, Padrino.set_load_paths, Padrino.load_paths)
+
 == 0.12.4 (October 19th 2014)
 
 * FIX #1744 Corrects color support for Windows (@tyabe)

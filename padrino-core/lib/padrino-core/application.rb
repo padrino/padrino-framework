@@ -174,12 +174,6 @@ module Padrino
         set(option, *args, &block) unless respond_to?(option)
       end
 
-      # Deprecated
-      def load_paths
-        warn 'Padrino::Application#load_paths is deprecated. Please, use #prerequisites'
-        []
-      end
-
       protected
 
       ##

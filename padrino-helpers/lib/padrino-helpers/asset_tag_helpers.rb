@@ -78,10 +78,6 @@ module Padrino
         options  = args.extract_options!
         name = block_given? ? '' : args.shift
         href = args.first
-        if fragment = options[:fragment] || options[:anchor]
-          warn 'Options :anchor and :fragment are deprecated for #link_to. Please use :fragment for #url'
-          href << '#' << fragment.to_s
-        end
         options.reverse_merge!(:href => href || '#')
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)

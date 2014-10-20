@@ -169,18 +169,6 @@ module Padrino
       @_dependency_paths ||= default_dependency_paths + modules_dependency_paths
     end
 
-    # Deprecated
-    def set_load_paths(*)
-      warn 'Padrino.set_load_paths is deprecated. Please, use $LOAD_PATH.concat(paths)'
-      []
-    end
-
-    # Deprecated
-    def load_paths
-      warn 'Padrino.load_paths is deprecated. Please, use Padrino::Application#prerequisites'
-      []
-    end
-
     private
 
     def modules_dependency_paths
