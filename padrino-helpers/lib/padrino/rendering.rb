@@ -197,9 +197,7 @@ module Padrino
         # This means that no engine was explicitly defined
         data, engine = resolve_template(engine, options) if data.nil?
 
-        unless Rendering.engine_configurations.has_key?(engine)
-          ensure_rendering_engine(engine) || (options[:layout] ||= false)
-        end
+        ensure_rendering_engine(engine) || (options[:layout] ||= false)
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
@@ -329,6 +327,7 @@ module Padrino
       end
 
       def ensure_rendering_engine(engine)
+        return true if settings.respond_to?(engine)
         return nil unless engine == :erb
         require 'erb'
       rescue LoadError
