@@ -24,17 +24,17 @@ describe "AdminAppGenerator" do
     end
 
     it "should fail if we don't specify an orm on the project" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-e=haml') }
       assert_raises(SystemExit) { @out, @err = capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
     it "should store and apply session_secret" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it "should generate the admin app" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_dir_exists("#{@apptmp}/sample_project")
       assert_dir_exists("#{@apptmp}/sample_project/admin")
@@ -60,14 +60,14 @@ describe "AdminAppGenerator" do
     end
 
     it "should generate the master app" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project", '--admin-name=master') }
       assert_file_exists("#{@apptmp}/sample_project/master/app.rb")
     end
 
     # users can override certain templates from a generators/templates folder in the destination_root
     it "should use custom generator templates from the project root, if they exist" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       custom_template_path = "#{@apptmp}/sample_project/generators/templates/slim/app/layouts/"
       `mkdir -p #{custom_template_path} && echo "h1 = 'Hello, custom generator' " > #{custom_template_path}application.slim.tt`
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
@@ -81,7 +81,7 @@ describe "AdminAppGenerator" do
 
     describe "renderers" do
       it 'should correctly generate a new padrino admin application with haml renderer (default)' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.haml")
@@ -96,7 +96,7 @@ describe "AdminAppGenerator" do
       end
 
       it 'should correctly generate a new padrino admin application with erb renderer' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.erb")
@@ -111,7 +111,7 @@ describe "AdminAppGenerator" do
       end
 
       it 'should correctly generate a new padrino admin application with slim renderer' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_dir_exists("#{@apptmp}/sample_project/admin/views")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/accounts/_form.slim")
@@ -127,7 +127,7 @@ describe "AdminAppGenerator" do
     end
 
     it 'should correctly generate a new padrino admin application with a custom model' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=slim') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project", '-m=User') }
       assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/admin/controllers/users.rb")
       assert_match_in_file(/[^_]user/i, "#{@apptmp}/sample_project/admin/controllers/users.rb")
@@ -151,7 +151,7 @@ describe "AdminAppGenerator" do
       # Remember that --root/-r in the admin_app generator refers to the project's location, not the admin's location
       # inside it. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
       skip
-      # capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      # capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       # capture_io { generate(:admin_app,"-a=/admin", "--root=#{@apptmp}/sample_project") }
       # assert_dir_exists("#{@apptmp}/sample_project")
       # assert_dir_exists("#{@apptmp}/sample_project/admin")
@@ -181,26 +181,26 @@ describe "AdminAppGenerator" do
 
     describe "activerecord middleware" do
       it 'should add it for #activerecord' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
 
       it 'should add it #minirecord' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
 
       it 'should not add it for #datamapper' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_no_match_in_file(/  use ActiveRecord::ConnectionAdapters::ConnectionManagemen/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
     end
 
     it 'should not conflict with existing seeds file' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
 
       # Add seeds file
       FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
