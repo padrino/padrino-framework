@@ -30,13 +30,13 @@ describe "AdminPageGenerator" do
     end
 
     it 'should fail without an existent model' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_raises(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
     end
 
     it 'should correctly generate a new page' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
@@ -48,7 +48,7 @@ describe "AdminPageGenerator" do
 
     # users can override certain templates from a generators/templates folder in the destination_root
     it "should use custom generator templates from the project root, if they exist" do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       custom_template_path = "#{@apptmp}/sample_project/generators/templates/haml/page/"
       `mkdir -p #{custom_template_path} && echo "%h1= 'Hello, custom generator' " > #{custom_template_path}index.haml.tt`
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
@@ -59,7 +59,7 @@ describe "AdminPageGenerator" do
 
     describe "renderers" do
       it 'should correctly generate a new page with haml' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
@@ -75,7 +75,7 @@ describe "AdminPageGenerator" do
       end
 
       it 'should correctly generate a new page with erb' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=erb') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=erb') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
@@ -91,7 +91,7 @@ describe "AdminPageGenerator" do
       end
 
       it 'should correctly generate a new page with slim' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=slim') }
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=slim') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'person', "--root=#{@apptmp}/sample_project") }
@@ -108,7 +108,7 @@ describe "AdminPageGenerator" do
     end
 
     it 'should correctly generate a new padrino admin application with multiple models at the same time' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'person', "name:string", "age:integer", "email:string", "-root=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'page', "name:string", "body:string", "-root=#{@apptmp}/sample_project") }
