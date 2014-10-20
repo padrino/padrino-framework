@@ -172,7 +172,7 @@ describe "ProjectGenerator" do
       assert_equal 'none', components_chosen[:test]
       assert_equal 'none', components_chosen[:mock]
       assert_equal 'none', components_chosen[:script]
-      assert_equal 'slim', components_chosen[:renderer]
+      assert_equal 'none', components_chosen[:renderer]
     end
 
     it 'should create components file containing options chosen' do

@@ -17,7 +17,6 @@ describe "ComponentGenerator" do
     end
   end
 
-
   describe "add components" do
     it 'should properly generate default' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
@@ -73,10 +72,9 @@ describe "ComponentGenerator" do
     end
   end
 
-
   describe "component changes" do
     it 'should when allow changes, will be applied' do
-      capture_io { generate(:project, 'sample_project', '-renderer=slim', "--root=#{@apptmp}") }
+      capture_io { generate(:project, 'sample_project', '--renderer=slim', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'slim', components_chosen[:renderer]
       Readline.stubs(:readline).returns('yes').once
@@ -85,8 +83,9 @@ describe "ComponentGenerator" do
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'haml', components_chosen[:renderer]
     end
+
     it 'should when deny changes, will not be applied' do
-      capture_io { generate(:project, 'sample_project', '-renderer=slim', "--root=#{@apptmp}") }
+      capture_io { generate(:project, 'sample_project', '--renderer=slim', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'slim', components_chosen[:renderer]
       Readline.stubs(:readline).returns('no').once
@@ -96,5 +95,4 @@ describe "ComponentGenerator" do
       assert_equal 'slim', components_chosen[:renderer]
     end
   end
-
 end
