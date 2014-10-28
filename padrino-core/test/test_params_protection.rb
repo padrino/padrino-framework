@@ -75,6 +75,18 @@ describe "Padrino::ParamsProtection" do
     assert_equal({ 'name' => @jack['name'], 'id' => '24', 'tag' => '42' }, result)
   end
 
+  it 'should not fail if :with is not an Array' do
+    result = nil
+    mock_app do
+      post :basic, :with => :id, :params => [ :id ] do
+        result = params
+        ''
+      end
+    end
+    post '/basic/24?' + @jack.to_query
+    assert_equal({ 'id' => '24' }, result)
+  end
+
   it 'should understand true or false values' do
     result = nil
     mock_app do
