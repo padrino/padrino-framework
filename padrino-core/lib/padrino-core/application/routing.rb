@@ -567,7 +567,7 @@ module Padrino
           options.delete(:params)
         elsif options.include?(:params)
           options[:params] ||= []
-          options[:params] += options[:with] if options[:with]
+          options[:params] |= Array(options[:with]) if options[:with]
         end
 
         # We need check if path is a symbol, if that it's a named route.
