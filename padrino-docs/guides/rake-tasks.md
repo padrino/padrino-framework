@@ -135,6 +135,7 @@ Basically, instead of writing migrations you can directly edit your **schema.rb*
     rake sq:migrate:to[version]    # Perform migration up/down to VERSION
     rake sq:migrate:up             # Perform migration up to latest migration available
     rake sq:migrate:down           # Perform migration down (erase all data)
+    rake sq:reset                  # Drops the database, and migrates from scratch
 
 #### Mongomapper Tasks:
 
