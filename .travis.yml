@@ -34,7 +34,7 @@ matrix:
     - rvm: 2.1.1
       env: STDLIB_ERB=true
   allow_failures:
-    - rbx-2
+    - rvm: rbx-2
     - rvm: 2.1.1
       env: SINATRA_EDGE=true
     - rvm: ruby-head
