@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Padrino
   module Generators
     # Raised when an application does not have a resolved root path.
@@ -17,7 +19,7 @@ module Padrino
       # Avoids editing destination file if it does not exist.
       #
       def inject_into_file(destination, *args, &block)
-        destination_path = destination.start_with?("/") ? destination : destination_root(destination)
+        destination_path = Pathname.new(destination).absolute? ? destination : destination_root(destination)
         return unless File.exist?(destination_path)
         super
       end
@@ -306,7 +308,7 @@ WARNING
       #
       def require_dependencies(*gem_names)
         options = gem_names.extract_options!
-        gem_names.reverse.each { |lib| insert_into_gemfile(lib, options) }
+        gem_names.reverse_each { |lib| insert_into_gemfile(lib, options) }
       end
 
       ##
@@ -578,7 +580,7 @@ WARNING
             [ :test,       'testing framework',  { :aliases => '-t', :default => :none }],
             [ :mock,       'mocking library',    { :aliases => '-m', :default => :none }],
             [ :script,     'javascript library', { :aliases => '-s', :default => :none }],
-            [ :renderer,   'template engine',    { :aliases => '-e', :default => :slim }],
+            [ :renderer,   'template engine',    { :aliases => '-e', :default => :none }],
             [ :stylesheet, 'stylesheet engine',  { :aliases => '-c', :default => :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false

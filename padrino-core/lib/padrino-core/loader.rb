@@ -130,10 +130,10 @@ module Padrino
     #
     def require_dependencies(*paths)
       options = paths.extract_options!.merge( :cyclic => true )
-      files = paths.flatten.map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.flatten.uniq
+      files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 
       until files.empty?
-        error, fatal, loaded = nil, nil, nil
+        error = fatal = loaded = nil
 
         files.dup.each do |file|
           begin
@@ -167,22 +167,6 @@ module Padrino
     #
     def dependency_paths
       @_dependency_paths ||= default_dependency_paths + modules_dependency_paths
-    end
-
-    # Deprecated
-    def set_load_paths(*)
-      warn 'Padrino.set_load_paths is deprecated. Please, use $LOAD_PATH.concat(paths)'
-      []
-    end
-
-    # Deprecated
-    def load_paths
-      warn 'Padrino.load_paths is deprecated. Please, use Padrino::Application#prerequisites'
-      []
-    end
-
-    def module_paths
-      modules.map(&:dependency_paths).flatten
     end
 
     private

@@ -363,6 +363,21 @@ module Padrino
         end
       end
 
+      ##
+      # Processes the existing path and prepends the 'parent' parameters onto the route
+      # Used for calculating path in route method.
+      #
+      def process_path_for_parent_params(path, parent_params)
+        parent_prefix = parent_params.flatten.compact.uniq.map do |param|
+          map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
+          part = "#{map}/:#{param.to_s.singularize}_id/"
+          part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+          part
+        end
+
+        [parent_prefix, path].flatten.join("")
+      end
+
       private
 
       CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
@@ -547,7 +562,7 @@ module Padrino
           options.delete(:params)
         elsif options.include?(:params)
           options[:params] ||= []
-          options[:params] += options[:with] if options[:with]
+          options[:params] |= Array(options[:with]) if options[:with]
         end
 
         # We need check if path is a symbol, if that it's a named route.
@@ -845,11 +860,11 @@ module Padrino
       #
       # Method for deliver static files.
       #
-      def static!
+      def static!(options = {})
         if path = static_file?(request.path_info)
           env['sinatra.static_file'] = path
           cache_control(*settings.static_cache_control) if settings.static_cache_control?
-          send_file(path, :disposition => nil)
+          send_file(path, options)
         end
       end
 

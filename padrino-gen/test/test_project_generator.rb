@@ -14,7 +14,7 @@ describe "ProjectGenerator" do
   describe 'the project generator' do
     it 'should allow simple generator to run and create base_app with no options' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      assert_file_exists("#{@apptmp}/sample_project")
+      assert_dir_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/module SampleProject/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
@@ -31,12 +31,12 @@ describe "ProjectGenerator" do
 
     it 'should generate a valid name' do
       capture_io { generate(:project, 'project.com', "--root=#{@apptmp}") }
-      assert_file_exists("#{@apptmp}/project.com")
+      assert_dir_exists("#{@apptmp}/project.com")
       assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file("Padrino.mount('ProjectCom::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/project.com/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
-      assert_file_exists("#{@apptmp}/project.com/ws_dci_2011")
+      assert_dir_exists("#{@apptmp}/project.com/ws_dci_2011")
       assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
       assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
       assert_match_in_file("Padrino.mount('ProjectCom::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/project.com/config/apps.rb")
@@ -44,12 +44,12 @@ describe "ProjectGenerator" do
 
     it 'should generate nested path with dashes in name' do
       capture_io { generate(:project, 'sample-project', "--root=#{@apptmp}") }
-      assert_file_exists("#{@apptmp}/sample-project")
+      assert_dir_exists("#{@apptmp}/sample-project")
       assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/sample-project/app/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample-project/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/sample-project") }
-      assert_file_exists("#{@apptmp}/sample-project/ws_dci_2011")
+      assert_dir_exists("#{@apptmp}/sample-project/ws_dci_2011")
       assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
       assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/sample-project/config/apps.rb")
@@ -62,13 +62,13 @@ describe "ProjectGenerator" do
 
     it 'should display the right path' do
       out, err = capture_io { generate(:project, 'project', "--root=/tmp") }
-      assert_file_exists("/tmp/project")
+      assert_dir_exists("/tmp/project")
       assert_match(/cd \/tmp\/project/, out)
     end
 
     it 'should allow specifying alternate application name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') }
-      assert_file_exists("#{@apptmp}/sample_project")
+      assert_dir_exists("#{@apptmp}/sample_project")
       assert_match_in_file(/module SampleProject/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class BaseApp < Padrino::Application/,"#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::BaseApp', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
@@ -101,8 +101,8 @@ describe "ProjectGenerator" do
 
     it 'should generate tiny skeleton' do
       capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}") }
-      assert_file_exists("#{@apptmp}/sample_project")
-      assert_file_exists("#{@apptmp}/sample_project/app")
+      assert_dir_exists("#{@apptmp}/sample_project")
+      assert_dir_exists("#{@apptmp}/sample_project/app")
       assert_file_exists("#{@apptmp}/sample_project/app/controllers.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/helpers.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/mailers.rb")
@@ -172,7 +172,7 @@ describe "ProjectGenerator" do
       assert_equal 'none', components_chosen[:test]
       assert_equal 'none', components_chosen[:mock]
       assert_equal 'none', components_chosen[:script]
-      assert_equal 'slim', components_chosen[:renderer]
+      assert_equal 'none', components_chosen[:renderer]
     end
 
     it 'should create components file containing options chosen' do
@@ -690,6 +690,7 @@ describe "ProjectGenerator" do
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
       assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec\.describe "Controller" do/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
+      assert_match_in_file(/get "\/"/, "#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_match_in_file(/RSpec.describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
 
@@ -752,6 +753,5 @@ describe "ProjectGenerator" do
       assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
-
   end
 end

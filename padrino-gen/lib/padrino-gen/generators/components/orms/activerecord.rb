@@ -114,24 +114,24 @@ def setup_orm
   # We're now defaulting to mysql2 since mysql is deprecated
   case options[:adapter]
   when 'mysql-gem'
-    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'mysql', :version => "~> 2.8.1"
   when 'mysql', 'mysql2'
-    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'mysql2'
   when 'postgres'
-    ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'pg'
   else
-    ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
-    ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
-    ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
+    ar.sub! /!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
+    ar.sub! /!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
+    ar.sub! /!DB_TEST!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
@@ -148,7 +148,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  model_contents = AR_MODEL.sub(/!NAME!/, name.to_s.underscore.camelize)
   create_file(model_path, model_contents,:skip => true)
 end
 

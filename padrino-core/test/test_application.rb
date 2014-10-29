@@ -152,5 +152,17 @@ describe "Application" do
         assert_equal 20, PrecompiledApp::App.compiled_router.engine.regexps.length
       end
     end
+
+    describe 'global prerequisites' do
+      after do
+        Padrino::Application.prerequisites.clear
+      end
+
+      it 'should be inherited by children of Padrino::Application' do
+        Padrino::Application.prerequisites << 'my_prerequisites'
+        class InheritanceTest < Padrino::Application; end
+        assert_includes InheritanceTest.prerequisites, 'my_prerequisites'
+      end
+    end
   end # application functionality
 end

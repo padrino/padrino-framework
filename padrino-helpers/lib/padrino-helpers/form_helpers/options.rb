@@ -85,7 +85,8 @@ module Padrino
 
         def extract_option_items!(options)
           if options[:collection]
-            collection, fields = options.delete(:collection), options.delete(:fields)
+            fields = options.delete(:fields)
+            collection = options.delete(:collection)
             collection.map{ |item| [ item.send(fields.first), item.send(fields.last) ] }
           else
             options.delete(:options) || []

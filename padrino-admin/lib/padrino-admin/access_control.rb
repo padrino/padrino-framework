@@ -57,7 +57,7 @@ module Padrino
         def project_modules(account)
           role = account.role.to_sym rescue :any
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
-          authorizations.map(&:project_modules).flatten.uniq
+          authorizations.flat_map(&:project_modules).uniq
         end
 
         ##

@@ -75,6 +75,18 @@ describe "Padrino::ParamsProtection" do
     assert_equal({ 'name' => @jack['name'], 'id' => '24', 'tag' => '42' }, result)
   end
 
+  it 'should not fail if :with is not an Array' do
+    result = nil
+    mock_app do
+      post :basic, :with => :id, :params => [ :id ] do
+        result = params
+        ''
+      end
+    end
+    post '/basic/24?' + @jack.to_query
+    assert_equal({ 'id' => '24' }, result)
+  end
+
   it 'should understand true or false values' do
     result = nil
     mock_app do
@@ -155,5 +167,29 @@ describe "Padrino::ParamsProtection" do
     end
     post '/family?names[]=Jack&names[]=Kim&names[]=Teri'
     assert_equal({"names" => %w[Jack Kim Teri]}, result)
+  end
+
+  it 'should tolerate weird inflections' do
+    result = nil
+    mock_app do
+      post :i, :params => [ :gotta => [ :what ] ] do
+        result = params
+        ''
+      end
+    end
+    post '/i?gotta[what]=go&gotta[who]=self'
+    assert_equal({"gotta" => {"what" => "go"}}, result)
+  end
+
+  it 'should drop the key if the data type does not match route configuration' do
+    result = nil
+    mock_app do
+      post :i, :params => [ :gotta => [ :what ] ] do
+        result = params
+        ''
+      end
+    end
+    post '/i?gotta=go'
+    assert_equal({}, result)
   end
 end

@@ -30,7 +30,7 @@ module Padrino
         #
         def capture_from_template(*args, &block)
           self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
-          raw = block.call(*args)
+          raw = yield(*args)
           captured = template.instance_variable_get(:@_out_buf)
           self.output_buffer = _buf_was
           engine_matches?(block) && !captured.empty? ? captured : raw.to_s

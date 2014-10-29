@@ -103,7 +103,7 @@ module Padrino
     # Parses an array of server options.
     #
     def self.parse_server_options(options)
-      parsed_server_options = Array(options).map{ |option| option.split('=', 2) }.flatten
+      parsed_server_options = Array(options).flat_map{ |option| option.split('=', 2) }
       Hash[*parsed_server_options].symbolize_keys
     end
 

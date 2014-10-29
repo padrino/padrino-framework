@@ -36,18 +36,18 @@ module Padrino
 
         path,_,name = template.to_s.rpartition(File::SEPARATOR)
         template_path = File.join(path,"_#{name}").to_sym
-        object_name = name.partition('.').first.to_sym
+        item_name = name.partition('.').first.to_sym
 
-        objects, counter = if options[:collection].respond_to?(:inject)
+        items, counter = if options[:collection].respond_to?(:inject)
           [options.delete(:collection), 0]
         else
           [[options.delete(:object)], nil]
         end
 
         locals = options[:locals]
-        objects.each_with_object(ActiveSupport::SafeBuffer.new) do |object,html|
-          locals[object_name] = object if object
-          locals["#{object_name}_counter".to_sym] = counter += 1 if counter
+        items.each_with_object(ActiveSupport::SafeBuffer.new) do |item,html|
+          locals[item_name] = item if item
+          locals["#{item_name}_counter".to_sym] = counter += 1 if counter
           content =
             if block_given?
               concat_content render(explicit_engine, template_path, options){ capture_html(&block) }

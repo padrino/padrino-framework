@@ -61,7 +61,7 @@ describe "SimpleReloader" do
       assert ok?
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(SimpleDemo.app_file)
-      new_buffer = buffer.gsub(/The magick number is: \d+!/, new_phrase)
+      new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
       begin
         File.open(SimpleDemo.app_file, "w") { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get "/" }
@@ -79,7 +79,7 @@ describe "SimpleReloader" do
       get "/rand"
       assert ok?
       last_body = body
-      assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
+      assert_equal 1, @app.filters[:before].size
       assert_equal 1, @app.errors.size
       assert_equal 2, @app.filters[:after].size # app + content-type + padrino-flash
       assert_equal 0, @app.middleware.size
@@ -89,7 +89,7 @@ describe "SimpleReloader" do
       @app.reload!
       get "/rand"
       refute_equal last_body, body
-      assert_equal 2, @app.filters[:before].size # one is ours the other is default_filter for content type
+      assert_equal 1, @app.filters[:before].size
       assert_equal 1, @app.errors.size
       assert_equal 2, @app.filters[:after].size
       assert_equal 0, @app.middleware.size

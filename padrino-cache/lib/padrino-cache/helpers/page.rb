@@ -63,11 +63,6 @@ module Padrino
           @route.cache_expires = time
         end
 
-        def expires_in(time)
-          warn 'expires_in has been deprecated in favour of expires'
-          expires(time)
-        end
-
         ##
         # This helper is used within a route or route to indicate the name in the cache.
         #

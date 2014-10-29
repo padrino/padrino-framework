@@ -1,3 +1,5 @@
+require 'delegate'
+
 module Padrino
   ##
   # Represents a particular mounted Padrino application.
@@ -10,6 +12,55 @@ module Padrino
   class Mounter
     DEFAULT_CASCADE = [404, 405]
     class MounterException < RuntimeError
+    end
+
+    class ApplicationWrapper < SimpleDelegator
+      attr_accessor :uri_root
+      attr_writer :public_folder
+
+      def initialize(app, options = {})
+        @options = options
+        super(app)
+      end
+
+      def dependencies
+        @__dependencies ||= Dir["#{root}/**/*.rb"]
+      end
+
+      def prerequisite
+        @__prerequisite ||= []
+      end
+
+      def app_file
+        return @__app_file if @__app_file
+        obj = __getobj__
+        @__app_file = obj.respond_to?(:app_file) ? obj.app_file : @options[:app_file]
+      end
+
+      def root
+        return @__root if @__root
+        obj = __getobj__
+        @__root = obj.respond_to?(:root) ? obj.root : File.expand_path("#{app_file}/../")
+      end
+
+      def public_folder
+        return @public_folder if @public_folder
+        obj = __getobj__
+        @public_folder = obj.respond_to?(:public_folder) ? obj.public_folder : ""
+      end
+
+      def app_name
+        @__app_name ||= @options[:app_name] || __getobj__.to_s.underscore.to_sym
+      end
+
+      def setup_application!
+        @configured ||=
+          begin
+            $LOAD_PATH.concat(prerequisite)
+            Padrino.require_dependencies(dependencies, :force => true)
+            true
+          end
+      end
     end
 
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host, :cascade
@@ -32,10 +83,17 @@ module Padrino
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
+      @app_obj   = ApplicationWrapper.new(@app_obj, options) unless padrino_application?
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = "/"
       @cascade   = options[:cascade] ? true == options[:cascade] ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
       Padrino::Reloader.exclude_constants << @app_class
+    end
+
+    def padrino_application?
+      @app_obj.ancestors.include?(Padrino::Application)
+    rescue NameError
+      false
     end
 
     ##
@@ -82,14 +140,20 @@ module Padrino
     #   @app.map_onto(router)
     #
     def map_onto(router)
-      app_data, app_obj = self, @app_obj
-      app_obj.set :uri_root,       app_data.uri_root
-      app_obj.set :app_name,       app_data.app_obj.app_name.to_s
-      app_obj.set :app_file,       app_data.app_file unless ::File.exist?(app_obj.app_file)
-      app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
-      app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exist?(app_obj.public_folder)
-      app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
-      app_obj.set :cascade,        app_data.cascade
+      app_data = self
+      app_obj = @app_obj
+      if padrino_application?
+        app_obj.set :uri_root,       app_data.uri_root
+        app_obj.set :app_name,       app_data.app_obj.app_name.to_s
+        app_obj.set :app_file,       app_data.app_file unless ::File.exist?(app_obj.app_file)
+        app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
+        app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exist?(app_obj.public_folder)
+        app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
+        app_obj.set :cascade,        app_data.cascade
+      else
+        app_obj.uri_root      = app_data.uri_root
+        app_obj.public_folder = Padrino.root('public', app_data.uri_root) unless ::File.exist?(app_obj.public_folder)
+      end
       app_obj.setup_application! # Initializes the app here with above settings.
       router.map(:to => app_obj, :path => app_data.uri_root, :host => app_data.app_host)
     end

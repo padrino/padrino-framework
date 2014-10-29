@@ -537,12 +537,14 @@ describe "Rendering" do
 
     it 'should renders erb with blocks' do
       mock_app do
-        def container
-          @_out_buf << "THIS."
-          yield
-          @_out_buf << "SPARTA!"
+        helpers do
+          def container
+            @_out_buf << "THIS."
+            yield
+            @_out_buf << "SPARTA!"
+          end
+          def is; "IS."; end
         end
-        def is; "IS."; end
         get '/' do
           render :erb, '<% container do %> <%= is %> <% end %>'
         end
@@ -689,6 +691,16 @@ describe "Rendering" do
       assert_raises(RuntimeError) do
         Padrino::Application.register Padrino::Rendering
       end
+    end
+  end
+
+  describe 'sinatra template helpers' do
+    it "should respect default_content_type option defined by sinatra" do
+      mock_app do
+        get(:index){ builder "xml.foo" }
+      end
+      get '/'
+      assert_equal "application/xml;charset=utf-8", response['Content-Type']
     end
   end
 end

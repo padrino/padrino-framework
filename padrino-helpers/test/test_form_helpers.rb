@@ -1002,7 +1002,7 @@ describe "FormHelpers" do
     it 'should display correct button_to in erb' do
       visit '/erb/button_to'
       assert_have_selector('form', :action => '/foo')
-      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form button label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
     end
@@ -1010,7 +1010,7 @@ describe "FormHelpers" do
     it 'should display correct button_to in haml' do
       visit '/haml/button_to'
       assert_have_selector('form', :action => '/foo')
-      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form button label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
     end
@@ -1018,7 +1018,7 @@ describe "FormHelpers" do
     it 'should display correct button_to in slim' do
       visit '/slim/button_to'
       assert_have_selector('form', :action => '/foo')
-      assert_have_selector('form label', :for => 'username', :content => 'Username: ')
+      assert_have_selector('form button label', :for => 'username', :content => 'Username: ')
       assert_have_selector('form', :action => '/bar')
       assert_have_selector('#test-point ~ form > input[type=submit]', :value => 'Bar button')
     end

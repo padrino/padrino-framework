@@ -21,9 +21,9 @@ TEST
 STEAK_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(STEAK_CONTROLLER_TEST)
 require 'spec_helper'
 
-describe "!NAME!Controller" do
+describe "!PATH!" do
   before do
-    get "/"
+    get "!EXPANDED_PATH!"
   end
 
   it "returns hello world" do
@@ -35,9 +35,9 @@ TEST
 STEAK_CONTROLLER_ACCEPTANCE_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(STEAK_CONTROLLER_ACCEPTANCE_TEST)
 require 'spec_helper'
 
-feature "!NAME!Controller" do
+feature "!PATH!" do
   background do
-    visit "/"
+    visit "!EXPANDED_PATH!"
   end
 
   scenario "returns hello world" do
@@ -91,12 +91,12 @@ def setup_test
 end
 
 # Generates a controller test given the controllers name
-def generate_controller_test(name)
-  spec_contents = STEAK_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+def generate_controller_test(name, path)
+  spec_contents = STEAK_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
   controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
   create_file destination_root(controller_spec_path), spec_contents, :skip => true
 
-  acceptance_contents = STEAK_CONTROLLER_ACCEPTANCE_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  acceptance_contents = STEAK_CONTROLLER_ACCEPTANCE_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
   controller_acceptance_path = File.join('spec',options[:app],'acceptance','controllers',"#{name.to_s.underscore}_controller_spec.rb")
   create_file destination_root(controller_acceptance_path), acceptance_contents, :skip => true
 end

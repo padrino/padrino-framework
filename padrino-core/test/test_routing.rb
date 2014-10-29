@@ -30,6 +30,22 @@ describe "Routing" do
     assert_equal headers['Cache-Control'], 'public, must-revalidate, max-age=300'
   end # static max_age
 
+  it 'should render static files with custom status via options' do
+    mock_app do
+      set :static, true
+      set :public_folder, File.dirname(__FILE__)
+
+      post '/*' do
+        static!(:status => params[:status])
+      end
+    end
+
+    post "/#{File.basename(__FILE__)}?status=422"
+    assert_equal response.status, 422
+    assert_equal File.size(__FILE__).to_s, response['Content-Length']
+    assert response.headers.include?('Last-Modified')
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get("/foo"){ "okey" }
@@ -2120,5 +2136,31 @@ describe "Routing" do
     end
     get '/users//'
     assert_equal 404, status
+  end
+
+  it "should support splat params" do
+    # This test will be fixed with the new router
+    skip
+    mock_app do
+      get "/say/*/to/*" do
+        params[:splat].inspect
+      end
+    end
+    get "/say/hello/to/world"
+    assert_equal ["hello", "world"], body
+  end
+
+  it "should match correctly paths even if the free regex route exists" do
+    mock_app do
+      get %r{/b/(?<aa>\w+)/(?<bb>\w+)} do
+        "free regex"
+      end
+
+      put '/b/:b/:c', :csrf_protection => false do
+        params.inspect
+      end
+    end
+    put "/b/x/y"
+    assert_equal '{"b"=>"x", "c"=>"y"}', body
   end
 end

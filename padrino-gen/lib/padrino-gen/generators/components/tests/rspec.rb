@@ -25,10 +25,10 @@ TEST
 RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
 require 'spec_helper'
 
-RSpec.describe "!NAME!Controller" do
+RSpec.describe "!PATH!" do
   pending "add some examples to \#{__FILE__}" do
     before do
-      get "/"
+      get "!EXPANDED_PATH!"
     end
 
     it "returns hello world" do
@@ -92,8 +92,8 @@ def setup_test
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE
 end
 
-def generate_controller_test(name)
-  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+def generate_controller_test(name, path)
+  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
   controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
   create_file destination_root(controller_spec_path), rspec_contents, :skip => true
 end

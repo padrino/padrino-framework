@@ -1,5 +1,3 @@
-require 'padrino-helpers/form_builder/deprecated_builder_methods'
-
 module Padrino
   module Helpers
     module FormBuilder
@@ -8,8 +6,6 @@ module Padrino
         attr_accessor :template, :object, :multipart
         attr_reader :namespace, :is_nested, :parent_form, :nested_index, :attributes_name, :model_name
 
-        include DeprecatedBuilderMethods
-
         def initialize(template, object, options={})
           @template = template
           fail "FormBuilder template must be initialized" unless template
@@ -17,7 +13,7 @@ module Padrino
           fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
           @namespace = options[:namespace]
-          @model_name = options[:as] || @object.class.to_s.underscore.gsub(/\//, '_')
+          @model_name = options[:as] || @object.class.to_s.underscore.tr('/', '_')
           nested = options[:nested]
           if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
             @parent_form = nested_parent

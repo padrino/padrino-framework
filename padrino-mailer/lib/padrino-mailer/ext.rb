@@ -1,3 +1,5 @@
+require 'mail'
+
 module Mail # @private
   class Message # @private
     include Sinatra::Templates
@@ -122,6 +124,13 @@ module Mail # @private
     #
     def settings
       self.class
+    end
+
+    ##
+    # Sinatra almost compatibility.
+    #
+    def self.set(name, value)
+      self.class.instance_eval{ define_method(name) { value } unless method_defined?(:erb) }
     end
 
     ##

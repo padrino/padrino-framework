@@ -1,32 +1,16 @@
-# coding:utf-8
-RAKE_ROOT = __FILE__
-
-require 'rubygems'
 require File.expand_path(File.dirname(__FILE__) + '/../gem_rake_helper')
 
 ########### CUSTOM TASKS ##########
-
-gemspec = ::Gem::Specification.load(File.expand_path(File.dirname(__FILE__) + "/padrino.gemspec"))
-subgems = [
-  ["padrino-core", "= #{gemspec.version}"],
-  ["padrino-helpers", "= #{gemspec.version}"],
-  ["padrino-mailer", "= #{gemspec.version}"],
-  ["padrino-gen", "= #{gemspec.version}"],
-  ["padrino-admin", "= #{gemspec.version}"],
-  ["padrino-cache", "= #{gemspec.version}"],
-  ["padrino-support", "= #{gemspec.version}"],
-]
 
 task :package => "lib/padrino.rb"
 
 desc "Create padrino.rb"
 task "lib/padrino.rb" do
-  mkdir_p "lib"
+  FileUtils.mkdir_p "lib"
   File.open("lib/padrino.rb","w+") do |file|
-    file.puts "### AUTOMATICALLY GENERATED. DO NOT EDIT!"
-    subgems.each do |pair|
-      g, _ = pair
-      file.puts "require '#{g}'" unless g =~ /padrino-gen/
+    file.puts "# Automatically generated from 'padrino.gemspec' by `rake lib/padrino.rb`"
+    PADRINO_SUBGEMS.each_key do |name|
+      file.puts "require '#{name}'" unless name =~ /padrino-(gen|performance)/
     end
   end
 end

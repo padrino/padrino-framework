@@ -26,8 +26,12 @@ group :development do
   gem "rack-test", ">= 0.5.0"
   gem "fakeweb",   ">= 1.2.8"
   gem "webrat",    ">= 0.5.1"
-  gem "haml",      ">= 2.2.22"
-  gem "erubis",    ">= 2.7.0"
+  gem "haml",      ">= 4.0.5"
+  if ENV['STDLIB_ERB']
+    puts "=> Using stdlib ERB engine"
+  else
+    gem "erubis",    ">= 2.7.0"
+  end
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
   if RUBY_VERSION < '2.0.0'
@@ -42,15 +46,7 @@ group :development do
   gem "minitest", ">= 4.0"
 end
 
-%w[
-   padrino
-   padrino-admin
-   padrino-cache
-   padrino-core
-   padrino-gen
-   padrino-helpers
-   padrino-mailer
-   padrino-support
-].each do |dep|
-  gem dep, :path => File.expand_path('../' + dep, __FILE__)
+load File.expand_path('../padrino/subgems.rb', __FILE__)
+PADRINO_GEMS.each_key do |name|
+  gem name, :path => File.expand_path('../' + name, __FILE__)
 end

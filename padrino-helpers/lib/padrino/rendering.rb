@@ -94,30 +94,6 @@ module Padrino
       end
 
       ##
-      # Returns the cached template file to render for a given url,
-      # content_type and locale. Deprecated since 0.12.1
-      #
-      # @param [Array<template_path, content_type, locale>] render_options
-      #
-      def fetch_template_file(render_options)
-        logger.warn "##{__method__} is deprecated"
-        (@_cached_templates ||= {})[render_options]
-      end
-
-      ##
-      # Caches the template file for the given rendering options. Deprecated since 0.12.1
-      #
-      # @param [String] template_file
-      #   The path of the template file.
-      #
-      # @param [Array<template_path, content_type, locale>] render_options
-      #
-      def cache_template_file!(template_file, render_options)
-        logger.warn "##{__method__} is deprecated"
-        (@_cached_templates ||= {})[render_options] = template_file || []
-      end
-
-      ##
       # Returns the cached layout path.
       #
       # @param [String, nil] given_layout
@@ -221,7 +197,7 @@ module Padrino
         # This means that no engine was explicitly defined
         data, engine = resolve_template(engine, options) if data.nil?
 
-        options[:layout] ||= false unless Rendering.engine_configurations.has_key?(engine)
+        ensure_rendering_engine(engine) || (options[:layout] ||= false)
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
@@ -232,20 +208,6 @@ module Padrino
       ensure
         @current_engine = engine_was
         @_out_buf = buf_was
-      end
-
-      ##
-      # Returns the located layout tuple to be used for the rendered template
-      # (if available). Deprecated since 0.12.1
-      #
-      # @example
-      #   resolve_layout
-      #   # => ["/layouts/custom", :erb]
-      #   # => [nil, nil]
-      #
-      def resolved_layout
-        logger.warn "##{__method__} is deprecated"
-        resolve_template(settings.fetch_layout_path, :raise_exceptions => false, :strict_format => true) || [nil, nil]
       end
 
       ##
@@ -361,7 +323,17 @@ module Padrino
         path = path.chomp(extname)
         path.insert(0, '/') unless Pathname.new(path).absolute?
         path = path.squeeze('/').sub(relative, '') if relative
-        [path.to_sym, engine]
+        [path.to_sym, engine.to_sym]
+      end
+
+      def ensure_rendering_engine(engine)
+        return true if settings.respond_to?(engine)
+        return nil unless engine == :erb
+        require 'erb'
+      rescue LoadError
+      else
+        require 'padrino/rendering/erb_template'
+        settings.set :erb, Padrino::Rendering.engine_configurations[:erb]
       end
     end
   end
