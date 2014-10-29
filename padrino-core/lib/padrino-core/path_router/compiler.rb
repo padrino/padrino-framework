@@ -20,6 +20,7 @@ module Padrino
       def call(request)
         compile! unless compiled?
         pattern, verb, params = parse_request(request)
+        pattern = pattern.encode(Encoding.default_external)
         candidacies = match_with(pattern)
         raise_exception(404) if candidacies.empty?
         candidacies, allows = candidacies.partition{|route| route.verb == verb }
