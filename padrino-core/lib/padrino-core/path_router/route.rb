@@ -109,12 +109,12 @@ module Padrino
       def params_for(pattern, parameters = {})
         match_data, params = match(pattern), indifferent_hash
         if match_data.names.empty?
-          params.merge!(captures: match_data.captures.map{|value| value && value.force_encoding("utf-8") }) unless match_data.captures.empty?
+          params.merge!(captures: match_data.captures.map{|value| value.instance_of?(String) ? value.force_encoding("utf-8") : value }) unless match_data.captures.empty?
           params
         else
           params_from_matcher = matcher.handler.params(pattern, :captures => match_data)
           params.merge!(params_from_matcher) if params_from_matcher
-          params.values.map!{|value| value && value.force_encoding("utf-8") }
+          params.values.map!{|value| value.instance_of?(String) ? value.force_encoding("utf-8") : value }
           params.merge(parameters){|key, old, new| old || new }
         end
       end

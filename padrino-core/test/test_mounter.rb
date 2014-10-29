@@ -255,7 +255,7 @@ describe "Mounter" do
     end
 
     it 'should support the Rack Application' do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/rack_apps')
+      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
       require path
       Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path).to('/rack_app')
       Padrino.mount('rack_app2', :app_class => 'RackApp2', :app_file => path).to('/rack_app2')
