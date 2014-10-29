@@ -34,11 +34,7 @@ group :development do
   end
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
-  if RUBY_VERSION < '2.0.0'
-    gem "mustermann19"
-  else
-    gem "mustermann"
-  end
+  gem "mustermann19"
   platforms :jruby do
     gem "jruby-openssl"
   end
