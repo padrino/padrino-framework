@@ -12,6 +12,7 @@ require 'padrino-core'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
+require 'ext/rack-test-utils'
 
 class MiniTest::Spec
   include Rack::Test::Methods
