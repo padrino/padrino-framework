@@ -165,7 +165,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/family?names[]=Jack&names[]=Kim&names[]=Teri'
+    post '/family?' + { :names => %w{Jack Kim Teri} }.to_query
     assert_equal({"names" => %w[Jack Kim Teri]}, result)
   end
 
@@ -177,7 +177,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/i?gotta[what]=go&gotta[who]=self'
+    post '/i?' + { :gotta => { :what => 'go', :who => 'self' } }.to_query
     assert_equal({"gotta" => {"what" => "go"}}, result)
   end
 
