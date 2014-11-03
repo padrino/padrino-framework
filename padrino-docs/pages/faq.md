@@ -55,3 +55,27 @@ class MailTest < MiniTest::Test
     # Other assertions on last mail
   end
 end
+
+## How to test post routes, I keep getting a 403 forbidden response
+
+A generated Padrino project includes csrf protect on all post requests. This should not be disabled at the app level, unless you know what you are doing. Csrf can be disable in an individual test suite by overwritting the `protect_from_csrf` setting
+
+**Example**
+
+```rb
+require_relative '../test_config'
+
+class ControllerTest < MiniTest::Test
+  def setup
+    app ProjectName::App do
+      set :protect_from_csrf, false
+    end
+  end
+
+  def test_post_to_server
+    post '/request', data: 'information'
+    refute_equal 403, last_response.status
+    assert last_response.ok?
+  end
+end
+```
