@@ -55,6 +55,7 @@ class MailTest < MiniTest::Test
     # Other assertions on last mail
   end
 end
+```
 
 ## How to test post routes, I keep getting a 403 forbidden response
 
