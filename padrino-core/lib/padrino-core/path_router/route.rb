@@ -27,7 +27,8 @@ module Padrino
       # Constructs an instance of PathRouter::Route.
       #
       def initialize(path, verb, options = {}, &block)
-        @path, @verb = path, verb
+        @path = path
+        @verb = verb
         @capture = {}
         @order   = 0
         @block   = block if block_given?
@@ -55,13 +56,15 @@ module Padrino
         @path
       end
   
+      SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:\*]([a-zA-Z0-9_]+)/.freeze
+
       ##
       # Returns signficant variable names.
       #
       def significant_variable_names
         @significant_variable_names ||=
           if @path.is_a?(String)
-            @path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
+            @path.scan(SIGNIFICANT_VARIABLES_REGEX).map{ |p| p.last.to_sym }
           elsif @path.is_a?(Regexp) and @path.respond_to?(:named_captures)
             @path.named_captures.keys.map(&:to_sym)
           else
@@ -73,7 +76,7 @@ module Padrino
       # Returns an instance of PathRouter::Matcher that is associated with the route.
       #
       def matcher
-        @matcher ||= Matcher.new(@path, capture: @capture, default_values: default_values)
+        @matcher ||= Matcher.new(@path, :capture => @capture, :default_values => default_values)
       end
 
       ##
@@ -98,7 +101,7 @@ module Padrino
       #
       def path(*args)
         return @path if args.empty?
-        params = args[0]
+        params = args[0].dup
         params.delete(:captures)
         matcher.expand(params) if matcher.mustermann?
       end
@@ -107,14 +110,15 @@ module Padrino
       # Returns parameters which is created by the matcher.
       #
       def params_for(pattern, parameters = {})
-        match_data, params = match(pattern), indifferent_hash
+        match_data = match(pattern)
+        params = indifferent_hash
         if match_data.names.empty?
           params.merge!(:captures => match_data.captures) unless match_data.captures.empty?
           params
         else
           params_from_matcher = matcher.handler.params(pattern, :captures => match_data)
           params.merge!(params_from_matcher) if params_from_matcher
-          params.merge(parameters){|key, old, new| old || new }
+          params.merge(parameters){ |_, old, new| old || new }
         end
       end
   
@@ -151,7 +155,7 @@ module Padrino
       # Set value to accessor if option name has been defined as an accessora.
       #
       def merge_with_options!(options)
-        @options = {} unless @options
+        @options ||= {}
         options.each_pair do |key, value|
           accessor?(key) ? __send__("#{key}=", value) : (@options[key] = value)
         end
@@ -161,7 +165,7 @@ module Padrino
       # Creates a hash with indifferent access.
       #
       def indifferent_hash
-        Hash.new{|hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
+        Hash.new{ |hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
       end
   
       ##

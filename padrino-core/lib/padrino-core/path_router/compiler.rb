@@ -19,13 +19,13 @@ module Padrino
       #
       def call(request)
         compile! unless compiled?
-        pattern, verb, params = parse_request(request)
+        pattern, verb, params = *parse_request(request)
         pattern = pattern.encode(Encoding.default_external)
         candidacies = match_with(pattern)
         raise_exception(404) if candidacies.empty?
-        candidacies, allows = candidacies.partition{|route| route.verb == verb }
-        raise_exception(405, verbs: allows.map(&:verb)) if candidacies.empty?
-        candidacies.map{|route| [route, route.params_for(pattern, params)]}
+        candidacies, allows = *candidacies.partition{ |route| route.verb == verb }
+        raise_exception(405, :verbs => allows.map(&:verb)) if candidacies.empty?
+        candidacies.map{ |route| [route, route.params_for(pattern, params)] }
       end
 
       ##
@@ -68,8 +68,8 @@ module Padrino
         conditions = [pattern]
         conditions << pattern[0..-2] if pattern != "/" && pattern.end_with?("/")
         loop.with_object([]) do |_, candidacies|
-          return candidacies unless conditions.any?{|x| @regexps[offset] === x }
-          route = @routes[offset..-1].detect{|route| Regexp.last_match["_#{route.index}"] }
+          return candidacies unless conditions.any?{ |x| @regexps[offset] === x }
+          route = @routes[offset..-1].detect{ |route| Regexp.last_match["_#{route.index}"] }
           candidacies << route
           offset = route.index + 1
         end
