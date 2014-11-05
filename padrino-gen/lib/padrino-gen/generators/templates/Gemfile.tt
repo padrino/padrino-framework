@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+# Padrino supports Ruby version 1.9 and later
+# ruby '<%= RUBY_VERSION.to_s %>'
+
 # Distribute your app as a gem
 <% unless options.gem? %># <% end %>gemspec
 
