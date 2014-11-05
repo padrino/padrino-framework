@@ -74,7 +74,7 @@ Mongoid::Config.sessions =
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => '~>3.0.0'
+  require_dependencies 'mongoid', :version => '>= 3.0.0'
   create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @project_name.underscore))
 end
 
