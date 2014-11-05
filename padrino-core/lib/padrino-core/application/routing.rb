@@ -241,7 +241,8 @@ module Padrino
       #     end
       #   end
       #
-      def parent(name, options={})
+      def parent(name = nil, options={})
+        return super() unless name
         defaults = { :optional => false, :map => name.to_s }
         options = defaults.merge(options)
         @_parent = Array(@_parent) unless @_parent.is_a?(Array)
