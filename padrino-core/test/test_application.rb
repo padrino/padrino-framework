@@ -148,6 +148,14 @@ describe "Application" do
         assert_equal 1, @app.errors.size
         assert_equal 'custom error', body
       end
+
+      it 'should raise NameError even if Kernel.require is extended' do
+        assert_raises NameError do
+          ConstTest = Class.new(Padrino::Application)
+          require 'active_support/dependencies'
+          ConstTest::UninitializedConstant
+        end
+      end
     end
 
     describe 'global prerequisites' do
