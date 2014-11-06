@@ -48,6 +48,9 @@ module Padrino
         handler.instance_of?(Mustermann::Sinatra)
       end
 
+      ##
+      # Builds a parameters, and returns them.
+      #
       def params_for(pattern, others)
         data = match(pattern)
         params = indifferent_hash
