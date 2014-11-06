@@ -3,6 +3,30 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
 
+class RegexpLookAlike
+  # RegexpLookAlike#to_s, RegexpLookAlike#names and MatchData#names must be defined.
+  class MatchData
+    def captures
+      ["this", "is", "a", "test"]
+    end
+
+    def names
+      ["one", "two", "three", "four"]
+    end
+  end
+
+  def names
+    ["one", "two", "three", "four"]
+  end
+
+  def to_s
+    "/this/is/a/test/"
+  end
+
+  def match(string)
+    ::RegexpLookAlike::MatchData.new if string == "/this/is/a/test/"
+  end
+end
 
 describe "Routing" do
   before do
@@ -2173,5 +2197,17 @@ describe "Routing" do
     end
     get '/hello/Frank'
     assert_equal 'Hello Frank', body
+  end
+
+  it 'supports regular expression look-alike routes' do
+    mock_app {
+      get(RegexpLookAlike.new) do
+        [params[:one], params[:two], params[:three], params[:four]].join(" ")
+      end
+    }
+
+    get '/this/is/a/test/'
+    assert ok?
+    assert_equal 'this is a test', body
   end
 end

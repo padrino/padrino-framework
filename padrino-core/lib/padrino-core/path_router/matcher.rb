@@ -58,7 +58,7 @@ module Padrino
             new_params = handler.params(pattern, :captures => data)
             params.merge!(new_params) if new_params
           else
-            params.merge!(Hash[handler.names.zip(data.captures)]) if data
+            params.merge!(Hash[names.zip(data.captures)]) if data
           end
           params.merge!(others){ |_, old, new| old || new }
         end
@@ -75,6 +75,8 @@ module Padrino
             Mustermann.new(@path, :capture => @capture)
           when Regexp
             /^(?:#{@path})$/
+          else
+            @path
           end
       end
   
