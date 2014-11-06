@@ -33,7 +33,8 @@ group :development do
     gem "erubis",    ">= 2.7.0"
   end
   gem "slim",      ">= 1.3.0"
-  gem "builder",   ">= 2.1.2"
+  gem "builder",    ">= 2.1.2"
+  gem "mustermann19"
   platforms :jruby do
     gem "jruby-openssl"
   end

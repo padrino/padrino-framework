@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
 require 'haml'
 
 class PadrinoPristine < Padrino::Application; end
@@ -79,16 +80,16 @@ describe "Application" do
     end
 
     it 'should have different session values in different session management' do
-      class PadrinoTestApp3 < Padrino::Application
+      class PadrinoTestApp4 < Padrino::Application
         enable :sessions
       end
-      class PadrinoTestApp4 < Padrino::Application
+      class PadrinoTestApp5 < Padrino::Application
         set :sessions, :use => Rack::Session::Pool
       end
-      Padrino.mount("PadrinoTestApp3").to("/write")
-      Padrino.mount("PadrinoTestApp4").to("/read")
-      PadrinoTestApp3.get('/') { session[:foo] = "cookie" }
-      PadrinoTestApp4.get('/') { session[:foo] }
+      Padrino.mount("PadrinoTestApp4").to("/write")
+      Padrino.mount("PadrinoTestApp5").to("/read")
+      PadrinoTestApp4.get('/') { session[:foo] = "cookie" }
+      PadrinoTestApp5.get('/') { session[:foo] }
       @app = Padrino.application
       get '/write'
       get '/read'
@@ -148,6 +149,15 @@ describe "Application" do
           require 'active_support/dependencies'
           ConstTest::UninitializedConstant
         end
+      end
+    end
+
+    describe "pre-compile routes" do
+      before { PrecompiledApp::App.setup_application! }
+      it "should compile routes before first request if enabled the :precompile_routes option" do
+        assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
+        assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?
+        assert_equal 20, PrecompiledApp::App.compiled_router.engine.regexps.length
       end
     end
 

@@ -181,7 +181,7 @@ describe "Mounter" do
       assert_equal "posts show", first_route.identifier.to_s
       assert_equal "(:posts, :show)", first_route.name
       assert_equal "GET", first_route.verb
-      assert_equal "/posts/show/:id(.:format)", first_route.path
+      assert_equal "/posts/show/:id(.:format)?", first_route.path
       another_route = Padrino.mounted_apps[1].named_routes[2]
       assert_equal "users create", another_route.identifier.to_s
       assert_equal "(:users, :create)", another_route.name
@@ -255,7 +255,7 @@ describe "Mounter" do
     end
 
     it 'should support the Rack Application' do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/rack_apps')
+      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
       require path
       Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path).to('/rack_app')
       Padrino.mount('rack_app2', :app_class => 'RackApp2', :app_file => path).to('/rack_app2')

@@ -1,6 +1,6 @@
 require 'padrino-support'
+require 'padrino-core/path_router' unless defined?(PathRouter)
 require 'padrino-core/ext/sinatra'
-require 'padrino-core/ext/http_router'
 require 'padrino-core/filter'
 
 module Padrino
@@ -250,16 +250,14 @@ module Padrino
       end
 
       ##
-      # Using HttpRouter, for features and configurations.
+      # Using PathRouter, for features and configurations.
       #
       # @example
       #   router.add('/greedy/:greed')
       #   router.recognize('/simple')
       #
-      # @see http://github.com/joshbuddy/http_router
-      #
       def router
-        @router ||= HttpRouter.new
+        @router ||= PathRouter.new
         block_given? ? yield(@router) : @router
       end
       alias :urls :router
@@ -268,13 +266,12 @@ module Padrino
         if @deferred_routes
           deferred_routes.each do |routes|
             routes.each do |(route, dest)|
-              route.to(dest)
+              route.to(&dest)
               route.before_filters.flatten!
               route.after_filters.flatten!
             end
           end
           @deferred_routes = nil
-          router.sort!
         end
         router
       end
@@ -311,9 +308,8 @@ module Padrino
       #   # => [:foo_bar, :id => :mine]
       #
       def recognize_path(path)
-        responses = @router.recognize(Rack::MockRequest.env_for(path))
-        responses = responses[0] if responses[0].is_a?(Array)
-        [responses[0].path.route.name, responses[0].params]
+        responses = @router.recognize_path(path)
+        [responses[0], responses[1]]
       end
 
       ##
@@ -376,7 +372,7 @@ module Padrino
         parent_prefix = parent_params.flatten.compact.uniq.map do |param|
           map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
           part = "#{map}/:#{param.to_s.singularize}_id/"
-          part = "(#{part})" if param.respond_to?(:optional) && param.optional?
+          part = "(#{part})?" if param.respond_to?(:optional) && param.optional?
           part
         end
 
@@ -416,7 +412,7 @@ module Padrino
         names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
         name = names[0, 2].join(" ").to_sym
         compiled_router.path(name, *(params_array << params))
-      rescue HttpRouter::InvalidRouteException
+      rescue PathRouter::InvalidRouteException
         raise Padrino::Routing::UnrecognizedException, "Route mapping for url(#{name.inspect}) could not be found"
       end
 
@@ -480,7 +476,6 @@ module Padrino
           else raise
         end
 
-        # Do padrino parsing. We dup options so we can build HEAD request correctly.
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
         route_options[:accepts]  = @_accepts if @_accepts
@@ -509,8 +504,8 @@ module Padrino
 
         invoke_hook(:route_added, verb, path, block)
 
-        # HTTPRouter route construction
-        route = router.add(path, route_options)
+        path[0, 0] = "/" if path == "(.:format)?"
+        route = router.add(verb.downcase.to_sym, path, route_options)
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -518,16 +513,16 @@ module Padrino
         route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
         route.cache_expires = options.key?(:expires) ? options.delete(:expires) : @_expires
         route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
-        route.add_request_method(verb.downcase.to_sym)
         route.host = options.delete(:host) if options.key?(:host)
         route.user_agent = options.delete(:agent) if options.key?(:agent)
         if options.key?(:default_values)
           defaults = options.delete(:default_values)
-          route.add_default_values(defaults) if defaults
+          #route.options[:default_values] = defaults if defaults
+          route.default_values = defaults if defaults
         end
-        options.delete_if do |option, _args|
+        options.delete_if do |option, captures|
           if route.significant_variable_names.include?(option)
-            route.add_match_with(option => Array(_args).first)
+            route.capture[option] = Array(captures).first
             true
           end
         end
@@ -660,7 +655,7 @@ module Padrino
       # Used for calculating path in route method.
       #
       def process_path_for_provides(path)
-        path << "(.:format)" unless path[-10, 10] == '(.:format)'
+        path << "(.:format)?" unless path[-11, 11] == '(.:format)?'
       end
 
       ##
@@ -926,19 +921,25 @@ module Padrino
         end
       end
 
-      def route!(base=settings, pass_block=nil)
+      def route!(base = settings, pass_block = nil)
         Thread.current['padrino.instance'] = self
-
-        if base.compiled_router && result = base.compiled_router.call(@request.env)
-          if result.respond_to?(:each)
-            route_eval do
-              response.headers.merge!(result[1])
-              route_missing if status(result[0]) == 404
-              route_missing if (allow = response['Allow']) && allow.include?(request.env['REQUEST_METHOD'])
-            end
+        code, headers, routes =
+          begin
+            base.compiled_router.call(@request.env)
+          rescue PathRouter::NotFound, PathRouter::MethodNotAllowed
+            $!.call
+          end
+        if status(code) == 200
+          routes.each_with_index do |(route, params), index|
+            next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+            invoke_route(route, params, :first => index.zero?)
           end
         else
-          filter! :before
+          route_eval do
+            headers.each{|k, v| response[k] = v } unless headers.empty?
+            route_missing if code == 404
+            route_missing if (allow = response['Allow']) && allow.include?(request.env['REQUEST_METHOD'])
+          end
         end
 
         if base.superclass.respond_to?(:router)
@@ -947,8 +948,36 @@ module Padrino
         end
 
         route_eval(&pass_block) if pass_block
-
         route_missing
+      end
+
+      def invoke_route(route, params, options = {})
+        original_params, parent_layout, successful = @params.dup, @layout, false
+        captured_params = params[:captures].is_a?(Array) ? params.delete(:captures) :
+                                                           params.values_at(*route.matcher.names.dup)
+
+        @_response_buffer = nil
+        @route = request.route_obj = route
+        @params.merge!(params) if params.is_a?(Hash)
+        @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
+        @block_params = params
+
+        filter! :before if options[:first]
+
+        catch(:pass) do
+          begin
+            (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
+            @layout = route.use_layout if route.use_layout
+            route.custom_conditions.each {|block| pass if block.bind(self).call == false }
+            halt_response = catch(:halt){ route_eval{ route.block[self, captured_params] }}
+            @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+            successful = true
+            halt(halt_response)
+          ensure
+            (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) } if successful
+            @layout, @params = parent_layout, original_params
+          end
+        end
       end
     end
   end

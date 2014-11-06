@@ -3,6 +3,30 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
 
+class RegexpLookAlike
+  # RegexpLookAlike#to_s, RegexpLookAlike#names and MatchData#names must be defined.
+  class MatchData
+    def captures
+      ["this", "is", "a", "test"]
+    end
+
+    def names
+      ["one", "two", "three", "four"]
+    end
+  end
+
+  def names
+    ["one", "two", "three", "four"]
+  end
+
+  def to_s
+    "/this/is/a/test/"
+  end
+
+  def match(string)
+    ::RegexpLookAlike::MatchData.new if string == "/this/is/a/test/"
+  end
+end
 
 describe "Routing" do
   before do
@@ -451,7 +475,6 @@ describe "Routing" do
   end
 
   it 'should allow "." in param values' do
-    skip # TODO fix this?
     mock_app do
       get('/id/:email', :provides => [:json]) { |email, format| [email, format] * '/' }
     end
@@ -523,14 +546,14 @@ describe "Routing" do
   it 'should inject the action name into the request' do
     mock_app do
       controller :posts do
-        get('/omnomnom(/:id)') { request.action.inspect }
+        get('/omnomnom(/:id)?') { request.action.inspect }
         controller :mini do
           get([:a, :b, :c]) { request.action.inspect }
         end
       end
     end
     get "/posts/omnomnom"
-    assert_equal "\"/omnomnom(/:id)\"", body
+    assert_equal "\"/omnomnom(/:id)?\"", body
     get "/mini/a/b/c"
     assert_equal ":a", body
   end
@@ -971,7 +994,7 @@ describe "Routing" do
 
   it 'should allow optionals' do
     mock_app do
-      get(:show, :map => "/stories/:type(/:category)") do
+      get(:show, :map => "/stories/:type(/:category)?") do
         "#{params[:type]}/#{params[:category]}"
       end
     end
@@ -1519,7 +1542,7 @@ describe "Routing" do
 
   it 'should works with optionals params' do
     mock_app do
-      get("/foo(/:bar)") { params[:bar] }
+      get("/foo(/:bar)?") { params[:bar] }
     end
 
     get "/foo/bar"
@@ -1667,7 +1690,7 @@ describe "Routing" do
 
   it 'should use optionals params' do
     mock_app do
-      get(:index, :map => "/(:foo(/:bar))") { "#{params[:foo]}-#{params[:bar]}" }
+      get(:index, :map => "/:foo(/:bar)?") { "#{params[:foo]}-#{params[:bar]}" }
     end
     get "/foo"
     assert_equal "foo-", body
@@ -2081,14 +2104,14 @@ describe "Routing" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:"foo bar", { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:"foo bar", { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
-    assert_equal [:simple, { :id => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
-    assert_equal [:simple, { :id => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
-    assert_equal [:simple, { :id => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
-    assert_equal [:with_format, { :id => "bar", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
-    assert_equal [:with_format, { :id => "true", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
-    assert_equal [:with_format, { :id => "9", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
+    assert_equal [:"foo bar", { :id => "fantastic" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { :id => "18" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:simple, { :id => "bar" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => "bar"))
+    assert_equal [:simple, { :id => "true" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => true))
+    assert_equal [:simple, { :id => "9" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => 9))
+    assert_equal [:with_format, { :id => "bar", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
+    assert_equal [:with_format, { :id => "true", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
+    assert_equal [:with_format, { :id => "9", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
   it 'should have current_path' do
@@ -2163,5 +2186,28 @@ describe "Routing" do
     end
     put "/b/x/y"
     assert_equal '{"b"=>"x", "c"=>"y"}', body
+  end
+
+  it "should support named captures like %r{/hello/(?<person>[^/?#]+)} on Ruby >= 1.9" do
+    next if RUBY_VERSION < '1.9'
+    mock_app do
+      get Regexp.new('/hello/(?<person>[^/?#]+)') do
+        "Hello #{params['person']}"
+      end
+    end
+    get '/hello/Frank'
+    assert_equal 'Hello Frank', body
+  end
+
+  it 'supports regular expression look-alike routes' do
+    mock_app {
+      get(RegexpLookAlike.new) do
+        [params[:one], params[:two], params[:three], params[:four]].join(" ")
+      end
+    }
+
+    get '/this/is/a/test/'
+    assert ok?
+    assert_equal 'this is a test', body
   end
 end

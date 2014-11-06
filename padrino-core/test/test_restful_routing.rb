@@ -4,8 +4,8 @@ describe "Routing" do
   it 'should perform restul routing' do
     mock_app do
       controller :parent => :parents do
-        get :index do
-          "#{url_for(:index, params[:parent_id])} get"
+        get :index, :with => :asset_id do
+          "#{url_for(:index, params[:parent_id], :asset_id => params[:asset_id])} get"
         end
 
         put :index, :with => :asset_id do
@@ -21,8 +21,8 @@ describe "Routing" do
         end
       end
     end
-    get "/parents/1"
-    assert_equal "/parents/1 get", body
+    get "/parents/1/hi"
+    assert_equal "/parents/1/hi get", body
     put "/parents/1/hi"
     assert_equal "/parents/1/hi put", body
     post "/parents/1/hi"
