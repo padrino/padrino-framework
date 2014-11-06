@@ -8,15 +8,15 @@ module Padrino
       #
       def initialize(path, options = {})
         @path = path.is_a?(String) && path.empty? ? "/" : path
-        @capture = options.delete(:capture)
-        @default_values = options.delete(:default_values)
+        @capture = options[:capture]
+        @default_values = options[:default_values]
       end
   
       ##
       # Matches a pattern with the route matcher.
       #
       def match(pattern)
-        pattern = pattern[0..-2] if mustermann? and pattern != "/" and pattern.end_with?("/")
+        pattern = pattern[0..-2] if mustermann? && pattern != "/" && pattern.end_with?("/")
         handler.match(pattern)
       end
 
@@ -32,11 +32,12 @@ module Padrino
       #
       def expand(params)
         params = params.dup
-        query = params.keys.each_with_object({}){|key, result|
-          result[key] = params.delete(key) if !handler.names.include?(key.to_s) }
+        query = params.keys.each_with_object({}) do |key, result|
+          result[key] = params.delete(key) unless handler.names.include?(key.to_s)
+        end
         params.merge!(@default_values) if @default_values.is_a?(Hash)
         expanded_path = handler.expand(params)
-        expanded_path = expanded_path + "?" + query.map{|k,v| "#{k}=#{v}" }.join("&") unless query.empty?
+        expanded_path += "?" + query.to_query unless query.empty?
         expanded_path
       end
   
@@ -54,7 +55,7 @@ module Padrino
         @handler ||=
           case @path
           when String
-            Mustermann.new(@path, capture: @capture)
+            Mustermann.new(@path, :capture => @capture)
           when Regexp
             /^(?:#{@path})$/
           end
