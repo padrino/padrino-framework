@@ -2200,11 +2200,11 @@ describe "Routing" do
   end
 
   it 'supports regular expression look-alike routes' do
-    mock_app {
+    mock_app do
       get(RegexpLookAlike.new) do
         [params[:one], params[:two], params[:three], params[:four]].join(" ")
       end
-    }
+    end
 
     get '/this/is/a/test/'
     assert ok?

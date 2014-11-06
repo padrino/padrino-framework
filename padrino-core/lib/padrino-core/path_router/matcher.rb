@@ -57,8 +57,8 @@ module Padrino
           if mustermann?
             new_params = handler.params(pattern, :captures => data)
             params.merge!(new_params) if new_params
-          else
-            params.merge!(Hash[names.zip(data.captures)]) if data
+          elsif data
+            params.merge!(Hash[names.zip(data.captures)])
           end
           params.merge!(others){ |_, old, new| old || new }
         end
