@@ -47,6 +47,23 @@ module Padrino
       def mustermann?
         handler.instance_of?(Mustermann::Sinatra)
       end
+
+      def params_for(pattern, others)
+        data = match(pattern)
+        params = indifferent_hash
+        if data.names.empty?
+          params.merge!(:captures => data.captures) unless data.captures.empty?
+        else
+          if mustermann?
+            new_params = handler.params(pattern, :captures => data)
+            params.merge!(new_params) if new_params
+          else
+            params.merge!(Hash[handler.names.zip(data.captures)]) if data
+          end
+          params.merge!(others){ |_, old, new| old || new }
+        end
+        params
+      end
   
       ##
       # Returns the handler which is an instance of Mustermann or Regexp.
@@ -74,6 +91,15 @@ module Padrino
       #
       def names
         handler.names
+      end
+
+      private
+
+      ##
+      # Creates a hash with indifferent access.
+      #
+      def indifferent_hash
+        Hash.new{ |hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
       end
     end
   end

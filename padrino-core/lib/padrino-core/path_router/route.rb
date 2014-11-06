@@ -109,17 +109,8 @@ module Padrino
       ##
       # Returns parameters which is created by the matcher.
       #
-      def params_for(pattern, parameters = {})
-        match_data = match(pattern)
-        params = indifferent_hash
-        if match_data.names.empty?
-          params.merge!(:captures => match_data.captures) unless match_data.captures.empty?
-          params
-        else
-          params_from_matcher = matcher.handler.params(pattern, :captures => match_data)
-          params.merge!(params_from_matcher) if params_from_matcher
-          params.merge(parameters){ |_, old, new| old || new }
-        end
+      def params_for(pattern, others = {})
+        matcher.params_for(pattern, others)
       end
   
       ##
@@ -159,13 +150,6 @@ module Padrino
         options.each_pair do |key, value|
           accessor?(key) ? __send__("#{key}=", value) : (@options[key] = value)
         end
-      end
-
-      ##
-      # Creates a hash with indifferent access.
-      #
-      def indifferent_hash
-        Hash.new{ |hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
       end
   
       ##

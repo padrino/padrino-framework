@@ -2163,4 +2163,15 @@ describe "Routing" do
     put "/b/x/y"
     assert_equal '{"b"=>"x", "c"=>"y"}', body
   end
+
+  it "should support named captures like %r{/hello/(?<person>[^/?#]+)} on Ruby >= 1.9" do
+    next if RUBY_VERSION < '1.9'
+    mock_app do
+      get Regexp.new('/hello/(?<person>[^/?#]+)') do
+        "Hello #{params['person']}"
+      end
+    end
+    get '/hello/Frank'
+    assert_equal 'Hello Frank', body
+  end
 end
