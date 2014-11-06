@@ -119,7 +119,7 @@ Using *form\_builder* like:
 
 the tag **label** automatically translates for **you** the field name!!
 
-Therefore, it searches for translations/label strings at:
+Therefore, it searches for translations/label e.g. in `app/locale/en.yml` for strings at:
 
     models:
       account:
