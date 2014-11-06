@@ -93,9 +93,9 @@ run padrino rake task for localizing your model:
 
     padrino rake ar:translate
 
-a new it.yml file will be created into `/app/locale/models/account/it.yml` with the following:
+a new it.yml file will be created into `/app/locale/models/account/it.yml` .
 
-you can now edit your generated `it.yml` file to reflect your current locale (Italian):
+You can now edit your generated `it.yml` file to reflect your current locale (Italian) .
 
 padrino-admin will now use your newly created yml file for translating the column names of grids, forms, error\_messages etc…
 
@@ -118,3 +118,14 @@ Using *form\_builder* like:
           %td=f.select :role, :options => access_control.roles
 
 the tag **label** automatically translates for **you** the field name!!
+
+Therefore, it searches for translations/label strings at:
+
+    models:
+      account:
+        attributes:
+          name: Name
+          other_attribute: Label for other attribute ...
+
+.
+
