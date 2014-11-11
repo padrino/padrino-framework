@@ -24,7 +24,7 @@ module Padrino
       #
       # @example
       #   flash_tag(:notice, :id => 'flash-notice')
-      #   # Generates: <div class="notice">flash-notice</div>
+      #   # Generates: <div class="notice" id="flash-notice">flash-notice</div>
       #   flash_tag(:error, :success)
       #   # Generates: <div class="error">flash-error</div>
       #   # <div class="success">flash-success</div>
