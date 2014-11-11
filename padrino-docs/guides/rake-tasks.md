@@ -129,6 +129,12 @@ Basically, instead of writing migrations you can directly edit your **schema.rb*
     rake dm:reset                  # Drops the database, and migrates from scratch
     rake dm:setup                  # Create the database migrate and initialize with the seed data
 
+Example of [version] argument:
+
+    rake dm:migrate:down --version 3
+
+(looks for migration file in db/migrations/003***.rb)
+
 #### Sequel Tasks:
 
     rake sq:migrate:auto           # Perform automigration (reset your db data)
@@ -136,6 +142,12 @@ Basically, instead of writing migrations you can directly edit your **schema.rb*
     rake sq:migrate:up             # Perform migration up to latest migration available
     rake sq:migrate:down           # Perform migration down (erase all data)
     rake sq:reset                  # Drops the database, and migrates from scratch
+
+Example of [version] argument:
+
+    rake sq:migrate:to --version 3
+
+(looks for migration file in db/migrations/003***.rb)
 
 #### Mongomapper Tasks:
 
