@@ -197,7 +197,7 @@ module Padrino
       #   # => <input type="text" name="username" required autofocus />
       #
       #   input_tag :number, :name => 'credit_card', :autocomplete => :off
-      #   # => <input type="number" autocomplete="off" />
+      #   # => <input type="number" name="credit_card" autocomplete="off" />  
       #
       def input_tag(type, options = {})
         tag(:input, { :type => type }.update(options))
