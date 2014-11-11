@@ -136,10 +136,11 @@ module Padrino
       # @return [String] Mail link html tag with specified +options+.
       #
       # @example
-      #   # Generates: <a href="mailto:me@demo.com">me@demo.com</a>
       #   mail_to "me@demo.com"
-      #   # Generates: <a href="mailto:me@demo.com">My Email</a>
+      #   # Generates: <a href="mailto:me@demo.com">me@demo.com</a>
+      #
       #   mail_to "me@demo.com", "My Email"
+      #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
       def mail_to(email, caption=nil, mail_options={})
         html_options = mail_options.slice!(:cc, :bcc, :subject, :body)
@@ -159,11 +160,11 @@ module Padrino
       # @return [String] Meta html tag with specified +options+.
       #
       # @example
-      #   # Generates: <meta name="keywords" content="weblog,news" />
       #   meta_tag "weblog,news", :name => "keywords"
+      #   # Generates: <meta name="keywords" content="weblog,news" />
       #
-      #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
+      #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
       def meta_tag(content, options={})
         options.reverse_merge!("content" => content)
