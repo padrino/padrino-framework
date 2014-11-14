@@ -57,7 +57,7 @@ module Padrino
         @configured ||=
           begin
             $LOAD_PATH.concat(prerequisite)
-            Padrino.require_dependencies(dependencies, :force => true)
+            Padrino.require_dependencies(dependencies, :force => true) if root.start_with?(Padrino.root)
             true
           end
       end
