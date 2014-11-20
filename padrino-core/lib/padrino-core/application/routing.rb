@@ -923,22 +923,18 @@ module Padrino
 
       def route!(base = settings, pass_block = nil)
         Thread.current['padrino.instance'] = self
-        code, headers, routes =
-          begin
-            base.compiled_router.call(@request.env)
-          rescue PathRouter::NotFound, PathRouter::MethodNotAllowed
-            $!.call
-          end
-        if status(code) == 200
-          routes.each_with_index do |(route, params), index|
-            next if route.user_agent && !(route.user_agent =~ @request.user_agent)
-            invoke_route(route, params, :first => index.zero?)
-          end
-        else
-          route_eval do
-            headers.each{|k, v| response[k] = v } unless headers.empty?
-            route_missing if code == 404
-            route_missing if (allow = response['Allow']) && allow.include?(request.env['REQUEST_METHOD'])
+        routes = base.compiled_router.call(@request) do |route, params, offset|
+          next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+          returned_pass_block = invoke_route(route, params, offset)
+          pass_block = returned_pass_block if returned_pass_block
+        end
+
+        if routes.present?
+          verb = request.request_method.downcase.to_sym
+          candidacies, allows = routes.partition{|route| route.verb == verb }
+          if candidacies.empty?
+            response["Allows"] = allows.map(&:verb).join(", ")
+            halt 405
           end
         end
 
@@ -951,32 +947,38 @@ module Padrino
         route_missing
       end
 
-      def invoke_route(route, params, options = {})
-        original_params, parent_layout, successful = @params.dup, @layout, false
-        captured_params = params[:captures].is_a?(Array) ? params.delete(:captures) :
-                                                           params.values_at(*route.matcher.names.dup)
+      def invoke_route(route, params, offset)
+        original_params, parent_layout = @params.dup, @layout
 
         @_response_buffer = nil
         @route = request.route_obj = route
-        @params.merge!(params) if params.is_a?(Hash)
-        @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
-        @block_params = params
+        captured_params = captures_from_params(params)
 
-        filter! :before if options[:first]
+        @params.merge!(params) if params.kind_of?(Hash)
+        @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
+
+        filter! :before if offset.zero?
 
         catch(:pass) do
           begin
-            (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
-            @layout = route.use_layout if route.use_layout
-            route.custom_conditions.each {|block| pass if block.bind(self).call == false }
-            halt_response = catch(:halt){ route_eval{ route.block[self, captured_params] }}
-            @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
-            successful = true
-            halt(halt_response)
+              (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
+              @layout = route.use_layout if route.use_layout
+              route.custom_conditions.each {|block| pass if block.bind(self).call == false }
+              route_response = route.block[self, captured_params]
+              @_response_buffer = route_response.instance_of?(Array) ? route_response.last : route_response
+              halt(route_response)
           ensure
-            (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) } if successful
-            @layout, @params = parent_layout, original_params
+            (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) }
+            @params, @layout = original_params, parent_layout
           end
+        end
+      end
+
+      def captures_from_params(params)
+        if params[:captures].instance_of?(Array)
+          params.delete(:captures)
+        else
+          params.values_at(*route.matcher.names.dup)
         end
       end
     end

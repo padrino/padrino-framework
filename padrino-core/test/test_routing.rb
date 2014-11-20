@@ -2210,4 +2210,19 @@ describe "Routing" do
     assert ok?
     assert_equal 'this is a test', body
   end
+
+  it "uses optional block passed to pass as route block if no other route is found" do
+    mock_app do
+      get "/" do
+        pass do
+          "this"
+        end
+        "not this"
+      end
+    end
+
+    get "/"
+    assert ok?
+    assert "this", body
+  end
 end
