@@ -2163,15 +2163,13 @@ describe "Routing" do
   end
 
   it "should support splat params" do
-    # This test will be fixed with the new router
-    skip
     mock_app do
       get "/say/*/to/*" do
         params[:splat].inspect
       end
     end
     get "/say/hello/to/world"
-    assert_equal ["hello", "world"], body
+    assert_equal %Q[["hello", "world"]], body
   end
 
   it "should match correctly paths even if the free regex route exists" do
