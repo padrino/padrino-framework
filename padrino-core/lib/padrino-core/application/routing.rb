@@ -977,6 +977,8 @@ module Padrino
       def captures_from_params(params)
         if params[:captures].instance_of?(Array)
           params.delete(:captures)
+        elsif params[:splat].instance_of?(Array)
+          params[:splat]
         else
           params.values_at(*route.matcher.names.dup)
         end

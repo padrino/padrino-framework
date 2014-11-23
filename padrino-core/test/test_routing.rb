@@ -2221,6 +2221,27 @@ describe "Routing" do
 
     get "/"
     assert ok?
-    assert "this", body
+    assert_equal "this", body
+  end
+
+  it "supports mixing multiple splat params like /*/foo/*/* as block parameters" do
+    mock_app do
+      get '/*/foo/*/*' do |foo, bar, baz|
+        "#{foo}, #{bar}, #{baz}"
+      end
+    end
+
+    get '/bar/foo/bling/baz/boom'
+    assert ok?
+    assert_equal 'bar, bling, baz/boom', body
+  end
+
+  it "should support a url which is using multiple splat " do
+    mock_app do
+      get(:multiple_splat, :map => "/foo/*/bar/*"){ |a,b| "#{a}, #{b}" }
+    end
+
+    get "/foo/123/bar/456"
+    assert_equal "123, 456", body
   end
 end
