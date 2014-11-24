@@ -2163,15 +2163,13 @@ describe "Routing" do
   end
 
   it "should support splat params" do
-    # This test will be fixed with the new router
-    skip
     mock_app do
       get "/say/*/to/*" do
         params[:splat].inspect
       end
     end
     get "/say/hello/to/world"
-    assert_equal ["hello", "world"], body
+    assert_equal %Q[["hello", "world"]], body
   end
 
   it "should match correctly paths even if the free regex route exists" do
@@ -2209,5 +2207,41 @@ describe "Routing" do
     get '/this/is/a/test/'
     assert ok?
     assert_equal 'this is a test', body
+  end
+
+  it "uses optional block passed to pass as route block if no other route is found" do
+    mock_app do
+      get "/" do
+        pass do
+          "this"
+        end
+        "not this"
+      end
+    end
+
+    get "/"
+    assert ok?
+    assert_equal "this", body
+  end
+
+  it "supports mixing multiple splat params like /*/foo/*/* as block parameters" do
+    mock_app do
+      get '/*/foo/*/*' do |foo, bar, baz|
+        "#{foo}, #{bar}, #{baz}"
+      end
+    end
+
+    get '/bar/foo/bling/baz/boom'
+    assert ok?
+    assert_equal 'bar, bling, baz/boom', body
+  end
+
+  it "should support a url which is using multiple splat " do
+    mock_app do
+      get(:multiple_splat, :map => "/foo/*/bar/*"){ |a,b| "#{a}, #{b}" }
+    end
+
+    get "/foo/123/bar/456"
+    assert_equal "123, 456", body
   end
 end
