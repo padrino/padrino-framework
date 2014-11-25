@@ -2,7 +2,7 @@
 
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
-{@padrinorb}[http://twitter.com/padrinorb]
+{@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
 
 {<img src="https://api.travis-ci.org/padrino/padrino-framework.svg" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
 {<img src="https://gemnasium.com/padrino/padrino-framework.svg" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
@@ -87,6 +87,14 @@ Best way to learn more about building Padrino applications is to read following 
 
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
+
+== Further Questions
+
+Can't find an answer in the resources above?
+
+* Try the new {FAQ's}[https://github.com/padrino/padrino-framework/blob/master/padrino-docs/pages/faq.md].
+
+* Ask any questions on the {gitter channel}[https://gitter.im/padrino/padrino-framework].
 
 == Copyright
 
