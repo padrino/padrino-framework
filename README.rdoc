@@ -88,6 +88,14 @@ Best way to learn more about building Padrino applications is to read following 
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
 
+== Further Questions
+
+Can't find an answer in the resources above?
+
+* Try the new {FAQ's}[https://github.com/padrino/padrino-framework/blob/master/padrino-docs/pages/faq.md].
+
+* Ask any questions on the {gitter channel}[https://gitter.im/padrino/padrino-framework].
+
 == Copyright
 
 Copyright (c) 2012-2013 Padrino. See LICENSE for details.
