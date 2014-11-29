@@ -168,7 +168,7 @@ module Padrino
         # Returns the name of the project module humanize them for you.
         #
         def human_name
-           @name.to_s.humanize
+          @name.is_a?(Symbol) ? I18n.t("padrino.admin.menu.#{@name}", :default => options[:alias] ? options[:alias].to_s.humanize : @name.to_s.humanize) : @name        
         end
 
         ##
