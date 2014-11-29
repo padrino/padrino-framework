@@ -11,11 +11,10 @@ else
 end
 
 group :db do
+  gem "sequel"
   gem "dm-core",           ">=1.2"
-  gem "dm-migrations",     ">=1.2"
-  gem "dm-validations",    ">=1.2"
-  gem "dm-aggregates",     ">=1.2"
-  gem "dm-sqlite-adapter", ">=1.2"
+  gem "sqlite3", :platforms => [:mri, :rbx]
+  gem "jdbc-sqlite3", "~> 3.7.2", :platform => :jruby
 end
 
 group :development do

@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 describe "AdminApplication" do
 
   def setup
-    load_fixture 'data_mapper'
+    load_fixture 'sequel'
   end
 
   describe "session id setting" do
