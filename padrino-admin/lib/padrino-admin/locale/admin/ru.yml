@@ -4,7 +4,7 @@ ru:
       login:
         title: "Войти"
         email: "Email"
-        password: "пароль"
+        password: "Пароль"
         bypass: "Пропустить авторизацию?"
         sign_in: "Войти"
         error: "Неправильный Email или пароль"
