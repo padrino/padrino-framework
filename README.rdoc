@@ -52,7 +52,7 @@ To install the padrino framework, simply grab the latest version from gemcutter:
   $ gem install padrino
 
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+Now you are ready to use this gem to enhance your Sinatra projects or to create new Padrino applications.
 
 For a more detailed look at installing Padrino,
 check out the {Installation Guide}[http://www.padrinorb.com/guides/installation].
@@ -73,7 +73,7 @@ For information on how to use a specific gem in isolation within an existing Sin
 == Getting Started
 
 Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
-of existing sinatra functionality!
+of existing Sinatra functionality!
 
 First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
 to learn more about how Sinatra and Padrino work together.
