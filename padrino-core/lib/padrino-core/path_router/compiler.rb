@@ -15,20 +15,6 @@ module Padrino
       end
   
       ##
-      # Finds all routes which are matched with the condition.
-      #
-      def call(request)
-        compile! unless compiled?
-        pattern, verb, params = *parse_request(request)
-        pattern = pattern.encode(Encoding.default_external)
-        candidacies = match_with(pattern)
-        raise_exception(404) if candidacies.empty?
-        candidacies, allows = *candidacies.partition{ |route| route.verb == verb }
-        raise_exception(405, :verbs => allows.map(&:verb)) if candidacies.empty?
-        candidacies.map{ |route| [route, route.params_for(pattern, params)] }
-      end
-
-      ##
       # Compiles all routes into regexps.
       #
       def compile!
@@ -48,7 +34,50 @@ module Padrino
         !!@compiled
       end
   
+      ##
+      # Finds routes by using request.
+      #
+      def find_by_request(request)
+        rotation do |offset|
+          pattern  = request.path_info.encode(Encoding.default_external)
+          if route = match?(offset, pattern)
+            params = route.params_for(pattern, request.params)
+            yield(route, params, offset) if route.verb == request.request_method.downcase.to_sym
+            route
+          end
+        end
+      end
+
+      ##
+      # Finds routes by using PATH_INFO.
+      #
+      def find_by_pattern(pattern)
+        pattern = pattern.encode(Encoding.default_external)
+        rotation { |offset| match?(offset, pattern) }
+      end
+  
       private
+
+      ##
+      # Returns a instance of PathRouter::Route if path is matched with current regexp
+      #
+      def match?(offset, path)
+        current_regexp = @regexps[offset]
+        return unless current_regexp === path || current_regexp === path[0..-2]
+        @routes[offset..-1].detect{ |route| Regexp.last_match["_#{route.index}"] }
+      end
+
+      ##
+      # Runs through all regexps to find routes.
+      #
+      def rotation(offset = 0)
+        compile! unless compiled?
+        loop.with_object([]) do |_, candidacies|
+          return candidacies unless route = yield(offset)
+          candidacies << route
+          offset = route.index.next
+        end
+      end
 
       ##
       # Compiles routes into regexp recursively.
@@ -58,48 +87,6 @@ module Padrino
         paths << Regexp.union(regexps)
         regexps.shift
         recursive_compile(regexps, paths)
-      end
-  
-      ##
-      # Returns all routes which are matched with a pattern.
-      #
-      def match_with(pattern)
-        offset = 0
-        conditions = [pattern]
-        conditions << pattern[0..-2] if pattern != "/" && pattern.end_with?("/")
-        loop.with_object([]) do |_, candidacies|
-          return candidacies unless conditions.any?{ |x| @regexps[offset] === x }
-          route = @routes[offset..-1].detect{ |route| Regexp.last_match["_#{route.index}"] }
-          candidacies << route
-          offset = route.index + 1
-        end
-      end
-  
-      ##
-      # Parses request and then returns an array.
-      # 
-      def parse_request(request)
-        if request.is_a?(Hash)
-          [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
-        else
-          [request.path_info, request.request_method.downcase.to_sym, request.params]
-        end
-      end
-  
-      ##
-      # Raises an exception.
-      #
-      def raise_exception(error_code, options = {})
-        raise ->(error_code) {
-          case error_code
-          when 400
-            BadRequest
-          when 404
-            NotFound
-          when 405
-            MethodNotAllowed.new(options[:verbs])
-          end
-        }.call(error_code)
       end
     end
   end

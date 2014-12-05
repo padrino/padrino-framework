@@ -31,13 +31,8 @@ module Padrino
       # Expands the path by using parameters.
       #
       def expand(params)
-        params = params.dup
-        query = params.keys.each_with_object({}) do |key, result|
-          result[key] = params.delete(key) unless handler.names.include?(key.to_s)
-        end
-        params.merge!(@default_values) if @default_values.is_a?(Hash)
-        expanded_path = handler.expand(params)
-        expanded_path += "?" + query.to_query unless query.empty?
+        params = params.merge(@default_values) if @default_values.is_a?(Hash)
+        expanded_path = handler.expand(:append, params)
         expanded_path
       end
   

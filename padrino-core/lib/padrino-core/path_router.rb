@@ -38,10 +38,9 @@ module Padrino
       ##
       # Returns all routes which are matched with the condition
       #
-      def call(env)
-        request = Rack::Request.new(env)
-        matched_routes = recognize(request)
-        [200, {}, matched_routes]
+      def call(request, &block)
+        prepare! unless prepared?
+        @engine.find_by_request(request, &block)
       end
 
       ##
@@ -64,19 +63,12 @@ module Padrino
       end
 
       ##
-      # Calls Compiler#call to get all routes.
-      #
-      def recognize(request)
-        prepare! unless prepared?
-        @engine.call(request)
-      end
-
-      ##
       # Recognizes route and expanded params from a path.
       #
       def recognize_path(path_info)
-        route, params = *recognize(Rack::MockRequest.env_for(path_info)).first
-        [route.name, params]
+        prepare! unless prepared?
+        route = @engine.find_by_pattern(path_info).first
+        [route.name, route.params_for(path_info, {})]
       end
 
       ##
