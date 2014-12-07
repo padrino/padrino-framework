@@ -42,7 +42,7 @@ module Padrino
           pattern  = request.path_info.encode(Encoding.default_external)
           if route = match?(offset, pattern)
             params = route.params_for(pattern, request.params)
-            yield(route, params, offset) if route.verb == request.request_method.downcase.to_sym
+            yield(route, params) if route.verb == request.request_method.downcase.to_sym
             route
           end
         end

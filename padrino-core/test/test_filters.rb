@@ -300,6 +300,24 @@ describe "Filters" do
     assert_equal 'before', test
   end
 
+  it 'should ensure the call of before_filter at the first time' do
+    once = ''
+    mock_app do
+      before do
+        once += 'before'
+      end
+      get :index do
+        raise Exception, 'Oops'
+      end
+      post :index do
+        raise Exception, 'Oops'
+      end
+    end
+
+    post '/'
+    assert_equal 'before', once
+  end
+
   it 'should call before filters only once' do
     once = ''
     mock_app do

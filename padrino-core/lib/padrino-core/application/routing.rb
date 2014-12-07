@@ -923,10 +923,13 @@ module Padrino
 
       def route!(base = settings, pass_block = nil)
         Thread.current['padrino.instance'] = self
-        routes = base.compiled_router.call(@request) do |route, params, offset|
+        first_time = true
+
+        routes = base.compiled_router.call(@request) do |route, params|
           next if route.user_agent && !(route.user_agent =~ @request.user_agent)
-          returned_pass_block = invoke_route(route, params, offset)
+          returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
+          first_time = false if first_time
         end
 
         if routes.present?
@@ -947,7 +950,7 @@ module Padrino
         route_missing
       end
 
-      def invoke_route(route, params, offset)
+      def invoke_route(route, params, first_time)
         original_params, parent_layout = @params.dup, @layout
 
         @_response_buffer = nil
@@ -957,7 +960,7 @@ module Padrino
         @params.merge!(params) if params.kind_of?(Hash)
         @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
 
-        filter! :before if offset.zero?
+        filter! :before if first_time
 
         catch(:pass) do
           begin
