@@ -457,4 +457,22 @@ describe "PadrinoCache" do
     assert_equal 4, called_times_a
     assert_equal 2, called_times_b
   end
+
+  it "preserve the app's `caching` setting if set before registering the module" do
+    mock_app do
+      enable :caching
+      register Padrino::Cache
+    end
+
+    assert @app.caching
+  end
+
+  it "preserve the app's `cache` setting if set before registering the module" do
+    mock_app do
+      set :cache, Padrino::Cache.new(:Memory)
+      register Padrino::Cache
+    end
+
+    assert @app.cache.adapter.adapter.is_a?(Moneta::Adapters::Memory)
+  end
 end

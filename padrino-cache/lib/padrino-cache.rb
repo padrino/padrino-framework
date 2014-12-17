@@ -97,9 +97,11 @@ module Padrino
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page
-        app.set :cache, Padrino::Cache.new(:File,
-                                           :dir => Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache'))
-        app.disable :caching
+        unless app.respond_to?(:cache)
+          cache_dir = Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache')
+          app.set :cache, Padrino::Cache.new(:File, :dir => cache_dir)
+        end
+        app.disable :caching unless app.respond_to?(:caching)
         included(app)
       end
 
