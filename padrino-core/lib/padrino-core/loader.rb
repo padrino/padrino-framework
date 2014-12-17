@@ -72,6 +72,7 @@ module Padrino
       @_dependency_paths = nil
       before_load.clear
       after_load.clear
+      global_configurations.clear
       Reloader.clear!
       Thread.current[:padrino_loaded] = nil
     end
