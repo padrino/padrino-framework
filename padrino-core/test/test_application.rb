@@ -65,6 +65,13 @@ describe "Application" do
       assert_equal 'shared', body
     end
 
+    it 'should be able to execute the register keyword inside the configure_apps block' do
+      Asdf = Module.new
+      Padrino.configure_apps { register Asdf }
+      class GodFather < Padrino::Application; end
+      assert_includes GodFather.extensions, Asdf
+    end
+
     it 'should able to set custome session management' do
       class PadrinoTestApp3 < Padrino::Application
         set :sessions, :use => Rack::Session::Pool
