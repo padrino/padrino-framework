@@ -35,7 +35,7 @@ cs:
       edit_warning: "Nelze najít %{model} s ID %{id}."
       update_title: "Úpravy %{model}"
       update_success: " %{model} s ID %{id} byl úspěšně aktualizován."
-      update_error: "Nelze aktualizovat %{modelu}."
+      update_error: "Nelze aktualizovat %{model}."
       update_warning: "Nelze najít %{model} s ID %{id}"
       delete_title: "Delete %{model}?"
       delete_success: " %{model} s ID %{id} byl úspěšně odstraněn."
