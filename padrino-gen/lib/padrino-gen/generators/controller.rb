@@ -58,7 +58,7 @@ module Padrino
 
           if test?
             include_component_module_for(:test)
-            path = @controller
+            path = @controller.dup
 
             if options[:parent] && !options[:parent].empty?
               path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend("/")
