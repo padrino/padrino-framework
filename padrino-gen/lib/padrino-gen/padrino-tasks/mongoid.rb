@@ -167,6 +167,48 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         mongoid_new_collection(collection, "#{collection.name}_old").drop
       end
     end
+
+    desc "Generates .yml files for I18n translations"
+    task :translate => :environment do
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+
+      models.each do |m|
+        # Get the model class.
+        klass = m.camelize.constantize
+
+        # Avoid non Mongoid models.
+        next unless klass.ancestors.include?(Mongoid::Document)
+
+        # Init the processing.
+        print "Processing #{m.humanize}: "
+        FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
+        langs = Array(I18n.locale)
+
+        # Create models for it and en locales.
+        langs.each do |lang|
+          filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
+          columns    = klass.fields.values.map(&:name).reject { |name| name =~ /id/i }
+          # If the lang file already exist we need to check it.
+          if File.exist?(filename)
+            locale = File.open(filename).read
+            columns.each do |c|
+              locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
+            end
+            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
+          else
+            locale     = "#{lang}:" + "\n" +
+            "  models:" + "\n" +
+            "    #{m}:" + "\n" +
+            "      name: #{klass.name}" + "\n" +
+            "      attributes:" + "\n" +
+            columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
+          end
+          File.open(filename, "w") { |f| f.puts locale }
+        end
+        puts
+      end
+    end
   end
 
   task 'db:drop' => 'mi:drop'
