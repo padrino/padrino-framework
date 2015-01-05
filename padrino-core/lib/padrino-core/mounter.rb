@@ -27,8 +27,8 @@ module Padrino
         @__dependencies ||= Dir["#{root}/**/*.rb"]
       end
 
-      def prerequisite
-        @__prerequisite ||= []
+      def prerequisites
+        @__prerequisites ||= []
       end
 
       def app_file
@@ -56,7 +56,7 @@ module Padrino
       def setup_application!
         @configured ||=
           begin
-            $LOAD_PATH.concat(prerequisite)
+            $LOAD_PATH.concat(prerequisites)
             Padrino.require_dependencies(dependencies, :force => true) if root.start_with?(Padrino.root)
             true
           end
