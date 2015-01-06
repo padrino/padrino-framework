@@ -73,13 +73,6 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
     task :reset => ['drop', 'create', 'migrate', 'seed']
 
-    task :skeleton do
-      PADRINO_ROOT ||= Rake.application.original_dir
-      require 'padrino-core'
-      Padrino.send(:dependency_paths).reject!{ |path| path.include?('/models/') }
-      require File.expand_path('config/boot.rb', Rake.application.original_dir)
-    end
-
     task :seed => :environment do
       missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
       Padrino.require_dependencies(missing_model_features)
