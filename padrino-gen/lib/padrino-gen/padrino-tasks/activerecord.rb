@@ -32,7 +32,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     desc 'Create the database defined in config/database.yml for the current Padrino.env'
-    task :create => :environment do
+    task :create => :skeleton do
       create_database(ActiveRecord::Base.configurations[Padrino.env])
     end
 
