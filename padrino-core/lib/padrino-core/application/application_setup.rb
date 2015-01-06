@@ -49,8 +49,6 @@ module Padrino
         @_configured = true
       end
 
-      private
-
       def precompile_routes?
         settings.respond_to?(:precompile_routes) && settings.precompile_routes?
       end
@@ -59,6 +57,8 @@ module Padrino
         compiled_router.prepare!
         compiled_router.engine.compile!
       end
+
+      private
 
       def default_paths
         set :locale_path,   proc { Dir.glob File.join(root, 'locale/**/*.{rb,yml}') }
