@@ -212,7 +212,7 @@ describe "AdminAppGenerator" do
       refute_match /Overwrite\s.*?\/db\/seeds.rb/, out
 
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
-      assert_match_in_file 'Account.create(', "#{@apptmp}/sample_project/db/seeds.rb"
+      assert_match_in_file 'Account.new(', "#{@apptmp}/sample_project/db/seeds.rb"
     end
   end
 end
