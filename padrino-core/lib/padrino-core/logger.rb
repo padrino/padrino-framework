@@ -1,3 +1,5 @@
+require 'pathname'
+
 # Defines the log level for a Padrino project.
 PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
 
@@ -70,12 +72,37 @@ module Padrino
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
+            if location = resolve_source_location(caller(1, 1).shift)
+              args.prepend(location)
+            end if enable_source_location?
             push(args * '', name)
           end
         end
 
         define_method(:"#{name}?") do
           number >= level
+        end
+      end
+
+      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/.freeze
+
+      ##
+      # Returns true if :source_location is set to true.
+      #
+      def enable_source_location?
+        respond_to?(:source_location?) && source_location?
+      end
+
+      ##
+      # Resolves a filename and line-number from caller.
+      #
+      def resolve_source_location(message)
+        path, line = *message.scan(SOURCE_LOCATION_REGEXP).first
+        return unless path && line
+        root = Padrino.root
+        path = File.realpath(path) if Pathname.new(path).relative?
+        if path.start_with?(root) && !path.start_with?(Padrino.root("vendor"))
+          "[#{path.gsub("#{root}/", "")}:#{line}] "
         end
       end
 
@@ -342,16 +369,21 @@ module Padrino
     #   Whether or not to colorize log messages. Defaults to: true.
     #
     def initialize(options={})
-      @buffer          = []
-      @auto_flush      = options.has_key?(:auto_flush) ? options[:auto_flush] : true
-      @level           = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
-      @log             = options[:stream]  || $stdout
-      @log.sync        = true
-      @format_datetime = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message  = options[:format_message]  || "%s - %s %s"
-      @log_static      = options.has_key?(:log_static) ? options[:log_static] : false
+      @buffer           = []
+      @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
+      @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
+      @log              = options[:stream]  || $stdout
+      @log.sync         = true
+      @format_datetime  = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
+      @format_message   = options[:format_message]  || "%s - %s %s"
+      @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
+      @source_location  = options[:source_location]
       colorize! if @colorize_logging
+    end
+
+    def source_location?
+      !!@source_location
     end
 
     ##
