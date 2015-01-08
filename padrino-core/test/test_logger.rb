@@ -248,3 +248,48 @@ describe "options :colorize_logging" do
     end
   end
 end
+
+describe "options :source_location" do
+  before do
+    Padrino::Logger::Config[:test][:source_location] = true
+    Padrino::Logger.setup!
+  end
+
+  def stub_root(base_path = File.expand_path("."), &block)
+    callable = proc{ |*args| File.join(base_path, *args) }
+    Padrino.stub(:root, callable, &block)
+  end
+
+  it 'should output source_location if :source_location is set to true' do
+    stub_root { Padrino.logger.debug("hello world") }
+    assert_match /\[test\/test_logger\.rb:264\] hello world/, Padrino.logger.log.string
+  end
+
+  it 'should output source_location if file path is relative' do
+    stub_message = "test/test_logger.rb:269:in `test'"
+    Padrino::Logger.logger.stub(:caller, [stub_message]){ stub_root { Padrino.logger.debug("hello relative path") }}
+    assert_match /\[test\/test_logger\.rb:269\] hello relative path/, Padrino.logger.log.string
+  end
+
+  it 'should not output source_location if :source_location is set to false' do
+    Padrino::Logger::Config[:test][:source_location] = false
+    Padrino::Logger.setup!
+    stub_root { Padrino.logger.debug("hello world") }
+    assert_match /hello world/, Padrino.logger.log.string
+    refute_match /\[.+?\] hello world/, Padrino.logger.log.string
+  end
+
+  it 'should not output source_location unless file path is not started with Padrino.root' do
+    stub_root("/unknown/path/") { Padrino.logger.debug("hello boy") }
+    assert_match /hello boy/, Padrino.logger.log.string
+    refute_match /\[.+?\] hello boy/, Padrino.logger.log.string
+  end
+
+  it 'should not output source_location if source file path is started with Padrino.root + vendor' do
+    base_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/')
+    stub_message = File.expand_path(File.dirname(__FILE__) + '/fixtures/vendor/logger.rb') + ":291:in `test'"
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root(base_path) { Padrino.logger.debug("hello vendor") } }
+    assert_match /hello vendor/, Padrino.logger.log.string
+    refute_match /\[.+?\] hello vendor/, Padrino.logger.log.string
+  end
+end
