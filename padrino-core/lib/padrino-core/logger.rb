@@ -72,7 +72,7 @@ module Padrino
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
-            if location = resolve_source_location(caller(1, 1).shift)
+            if location = resolve_source_location(caller(1).shift)
               args.prepend(location)
             end if enable_source_location?
             push(args * '', name)
