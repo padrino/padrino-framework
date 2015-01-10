@@ -58,7 +58,20 @@ module Padrino
       require_dependencies(*dependency_paths)
       after_load.each(&:call)
       logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
+      precompile_all_routes!
       Thread.current[:padrino_loaded] = true
+    end
+
+    ##
+    # Precompiles all routes if :precompile_routes is set to true
+    #
+    def precompile_all_routes!
+      mounted_apps.each do |app|
+        app_obj = app.app_obj
+        next unless app_obj.respond_to?(:precompile_routes?) && app_obj.precompile_routes?
+        app_obj.setup_application!
+        logger.devel "Precompiled routes of #{app_obj} (routes size #{app_obj.compiled_router.routes.size})"
+      end
     end
 
     ##

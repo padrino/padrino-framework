@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
 require 'haml'
 
 class PadrinoPristine < Padrino::Application; end
@@ -160,11 +159,14 @@ describe "Application" do
     end
 
     describe "pre-compile routes" do
-      before { PrecompiledApp::App.setup_application! }
       it "should compile routes before first request if enabled the :precompile_routes option" do
+        require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
+        assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine
         assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?
+        assert_equal true, PrecompiledApp::SubApp.compiled_router.engine.compiled?
         assert_equal 20, PrecompiledApp::App.compiled_router.engine.regexps.length
+        assert_equal 20, PrecompiledApp::SubApp.compiled_router.engine.regexps.length
       end
     end
 
