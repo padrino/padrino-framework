@@ -5,6 +5,7 @@
   old form builder, rendering #fetch_template_file, #cache_template_file!, #resolved_layout,
   Application#load_paths, Padrino.set_load_paths, Padrino.load_paths)
 * FIX #1860 Padrino --environment switch now takes precedence over RACK_ENV environment variable
+* FIX #1849 return proper exit codes in CLI
 
 == 0.12.4 (October 19th 2014)
 
