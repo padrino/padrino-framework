@@ -194,8 +194,7 @@ module Padrino
         "#{root}/config/database.rb",
         "#{root}/lib/**/*.rb",
         "#{root}/models/**/*.rb",
-        "#{root}/shared/lib/**/*.rb",
-        "#{root}/shared/models/**/*.rb",
+        "#{root}/shared/**/*.rb",
         "#{root}/config/apps.rb",
       ]
     end
