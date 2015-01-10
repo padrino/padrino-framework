@@ -20,6 +20,10 @@ module Padrino
 
       def initialize(app, options = {})
         @options = options
+        app.instance_variable_set(:@padrino_wrapper, self)
+        if app.respond_to?(:setup_padrino_application)
+          app.setup_padrino_application(@options)
+        end
         super(app)
       end
 
@@ -28,7 +32,7 @@ module Padrino
       end
 
       def prerequisites
-        @__prerequisites ||= []
+        dependencies
       end
 
       def app_file
@@ -39,25 +43,31 @@ module Padrino
 
       def root
         return @__root if @__root
-        obj = __getobj__
         @__root = obj.respond_to?(:root) ? obj.root : File.expand_path("#{app_file}/../")
+      end
+
+      def obj
+        __getobj__
       end
 
       def public_folder
         return @public_folder if @public_folder
-        obj = __getobj__
         @public_folder = obj.respond_to?(:public_folder) ? obj.public_folder : ""
       end
 
       def app_name
-        @__app_name ||= @options[:app_name] || __getobj__.to_s.underscore.to_sym
+        @__app_name ||= @options[:app_name] || obj.to_s.underscore.to_sym
+      end
+
+      def require_dependencies
+        Padrino.require_dependencies(dependencies, :force => true)
       end
 
       def setup_application!
         @configured ||=
           begin
             $LOAD_PATH.concat(prerequisites)
-            Padrino.require_dependencies(dependencies, :force => true) if root.start_with?(Padrino.root)
+            require_dependencies if root.start_with?(Padrino.root)
             true
           end
       end
@@ -174,7 +184,7 @@ module Padrino
     def named_routes
       app_obj.routes.map { |route|
         route_name = route.name.to_s
-        route_name = 
+        route_name =
           if route.controller
             route_name.split(" ", 2).map{|name| ":#{name}" }.join(", ")
           else
