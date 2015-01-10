@@ -463,6 +463,41 @@ The form builder can even be made into the default builder when form\_for is inv
 And there you have it, a fairly complete form builder solution for Padrino (and Sinatra).
  I hope to create or merge in an even better ‘default’ form\_builder in the near future.
 
+### Form Builders and I18n
+
+When no caption to an e.g. input field is given, the StandardFormBuilder will look for keys
+(for the current locale) and add a respective localized caption for you.
+
+A rake task will help you to create respective files for you, if you use Active Record as ORM.
+If you do not, its super easy to do by hand:
+
+Given a model like
+
+    # lib/models/nature.rb
+    class Nature
+      property :health # exact definition depends on the ORM you use
+      property :issues
+    end
+
+the path to translated labels to be used in your locale file (e.g. `app/locale/en.yml`) is:
+
+    # app/locale/en.yml
+    models:
+      nature:
+        attributes:
+          health: Overall Health
+          issues: Issues
+.
+This will allow you to call
+
+    # your_nature_view.haml
+    = form_for @nature, '/nature', :id => 'create' do |f|
+        = f.text_field_block :health
+
+instead of including `:caption => I18n.t('nature.health')`.
+
+For more information on i18n look at the [Localization Guide](http://www.padrinorb.com/guides/localization) .
+
 ### Nested Object Form Support
 
 Available in the 0.9.21 Padrino release is support for nested object form helpers. This allows forms to have arbitrarily complex nested forms that can build multiple related objects together. Let’s take a simple example of a person with an address. Here are the related psuedo models:
