@@ -2244,4 +2244,23 @@ describe "Routing" do
     get "/foo/123/bar/456"
     assert_equal "123, 456", body
   end
+
+  it "should be able to use PathRouter#recognize to recognize routes" do
+    mock_app do
+      get(:sample){}
+    end
+    env = Rack::MockRequest.env_for("/sample")
+    request = Rack::Request.new(env)
+    assert_equal :sample, @app.router.recognize(request).first.name
+  end
+
+  it "should be able to use PathRouter#recognize to recognize routes by using Rack::MockRequest" do
+    mock_app do
+      get(:mock_sample){}
+    end
+    env = Rack::MockRequest.env_for("/mock_sample")
+    assert_equal :mock_sample, @app.router.recognize(env).first.name
+    env = Rack::MockRequest.env_for("/invalid")
+    assert_equal [], @app.router.recognize(env)
+  end
 end

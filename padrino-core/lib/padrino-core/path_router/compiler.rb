@@ -34,12 +34,23 @@ module Padrino
         !!@compiled
       end
   
+
       ##
-      # Finds routes by using request.
+      # Finds routes by using request or env.
       #
-      def find_by_request(request)
+      def find_by(request_or_env)
+        request = request_or_env.is_a?(Hash) ? Sinatra::Request.new(request_or_env) : request_or_env
+        pattern = encode_default_external(request.path_info)
+        verb    = request.request_method.downcase.to_sym
+        rotation { |offset| match?(offset, pattern) }.select { |route| route.verb == verb }
+      end
+
+      ##
+      # Calls routes by using request.
+      #
+      def call_by_request(request)
         rotation do |offset|
-          pattern  = request.path_info.encode(Encoding.default_external)
+          pattern  = encode_default_external(request.path_info)
           if route = match?(offset, pattern)
             params = route.params_for(pattern, request.params)
             yield(route, params) if route.verb == request.request_method.downcase.to_sym
@@ -87,6 +98,13 @@ module Padrino
         paths << Regexp.union(regexps)
         regexps.shift
         recursive_compile(regexps, paths)
+      end
+
+      ##
+      # Encode string with Encoding.default_external
+      #
+      def encode_default_external(string)
+        string.encode(Encoding.default_external)
       end
     end
   end
