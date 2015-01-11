@@ -2263,4 +2263,12 @@ describe "Routing" do
     env = Rack::MockRequest.env_for("/invalid")
     assert_equal [], @app.router.recognize(env)
   end
+
+  it "should be able to use params after sending request" do
+    last_app = mock_app do
+      get("/foo/:id"){ params.inspect }
+    end
+    get "/foo/123"
+    assert_equal({"id"=>"123"}, Thread.current['padrino.instance'].instance_variable_get(:@params))
+  end
 end

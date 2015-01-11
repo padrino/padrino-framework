@@ -927,9 +927,11 @@ module Padrino
 
         routes = base.compiled_router.call(@request) do |route, params|
           next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+          original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
           first_time = false if first_time
+          @params, @layout = original_params, parent_layout
         end
 
         if routes.present?
@@ -951,8 +953,6 @@ module Padrino
       end
 
       def invoke_route(route, params, first_time)
-        original_params, parent_layout = @params.dup, @layout
-
         @_response_buffer = nil
         @route = request.route_obj = route
         captured_params = captures_from_params(params)
@@ -972,7 +972,6 @@ module Padrino
               halt(route_response)
           ensure
             (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) }
-            @params, @layout = original_params, parent_layout
           end
         end
       end
