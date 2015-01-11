@@ -26,19 +26,6 @@ module Padrino
       Padrino.logger
     end
 
-    # TODO: Remove this hack (issue #863) after getting rid of thread-unsafe http_router:
-    if RUBY_PLATFORM == "java"
-      alias_method :original_call, :call
-      def call(*args)
-        settings.init_mutex.synchronize do
-          instance_eval{ undef :call }
-          class_eval{ alias_method :call, :original_call }
-          instance_eval{ undef :original_call }
-          super(*args)
-        end
-      end
-    end
-
     class << self
       def inherited(base)
         begun_at = Time.now
