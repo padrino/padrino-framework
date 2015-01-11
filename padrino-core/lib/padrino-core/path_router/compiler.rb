@@ -41,7 +41,7 @@ module Padrino
       def find_by(request_or_env)
         request = request_or_env.is_a?(Hash) ? Sinatra::Request.new(request_or_env) : request_or_env
         pattern = encode_default_external(request.path_info)
-        verb    = request.request_method.downcase.to_sym
+        verb    = request.request_method
         rotation { |offset| match?(offset, pattern) }.select { |route| route.verb == verb }
       end
 
@@ -53,7 +53,7 @@ module Padrino
           pattern  = encode_default_external(request.path_info)
           if route = match?(offset, pattern)
             params = route.params_for(pattern, request.params)
-            yield(route, params) if route.verb == request.request_method.downcase.to_sym
+            yield(route, params) if route.verb == request.request_method
             route
           end
         end

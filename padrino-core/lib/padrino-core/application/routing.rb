@@ -505,7 +505,7 @@ module Padrino
         invoke_hook(:route_added, verb, path, block)
 
         path[0, 0] = "/" if path == "(.:format)?"
-        route = router.add(verb.downcase.to_sym, path, route_options)
+        route = router.add(verb, path, route_options)
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -935,7 +935,7 @@ module Padrino
         end
 
         if routes.present?
-          verb = request.request_method.downcase.to_sym
+          verb = request.request_method
           candidacies, allows = routes.partition{|route| route.verb == verb }
           if candidacies.empty?
             response["Allows"] = allows.map(&:verb).join(", ")
