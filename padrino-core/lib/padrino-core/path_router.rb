@@ -40,7 +40,15 @@ module Padrino
       #
       def call(request, &block)
         prepare! unless prepared?
-        @engine.find_by_request(request, &block)
+        @engine.call_by_request(request, &block)
+      end
+
+      ##
+      # Returns all routes which are matched with the condition without block
+      #
+      def recognize(request_or_env)
+        prepare! unless prepared?
+        @engine.find_by(request_or_env)
       end
 
       ##

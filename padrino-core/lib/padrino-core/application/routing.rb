@@ -505,7 +505,7 @@ module Padrino
         invoke_hook(:route_added, verb, path, block)
 
         path[0, 0] = "/" if path == "(.:format)?"
-        route = router.add(verb.downcase.to_sym, path, route_options)
+        route = router.add(verb, path, route_options)
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -927,13 +927,15 @@ module Padrino
 
         routes = base.compiled_router.call(@request) do |route, params|
           next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+          original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
           first_time = false if first_time
+          @params, @layout = original_params, parent_layout
         end
 
         if routes.present?
-          verb = request.request_method.downcase.to_sym
+          verb = request.request_method
           candidacies, allows = routes.partition{|route| route.verb == verb }
           if candidacies.empty?
             response["Allows"] = allows.map(&:verb).join(", ")
@@ -951,8 +953,6 @@ module Padrino
       end
 
       def invoke_route(route, params, first_time)
-        original_params, parent_layout = @params.dup, @layout
-
         @_response_buffer = nil
         @route = request.route_obj = route
         captured_params = captures_from_params(params)
@@ -972,7 +972,6 @@ module Padrino
               halt(route_response)
           ensure
             (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) }
-            @params, @layout = original_params, parent_layout
           end
         end
       end
