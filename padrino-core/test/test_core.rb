@@ -77,5 +77,17 @@ describe "Core" do
       assert_equal @app.settings.zoo, :baz
       assert_equal @app.settings.moo, :bam
     end
+
+    it 'should return a friendly 500' do
+      mock_app do
+        enable :show_exceptions
+        get(:index){ raise StandardError }
+      end
+
+      get "/"
+      assert_equal 500, status
+      assert body.include?("StandardError")
+      assert body.include?("<code>show_exceptions</code> setting")
+    end
   end
 end
