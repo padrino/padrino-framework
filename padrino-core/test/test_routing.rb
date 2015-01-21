@@ -2281,4 +2281,16 @@ describe "Routing" do
     get "/sample/foo/bar"
     assert_equal "foo, bar", body
   end
+
+  it "should add the :format parameter to :captures hash if block arity is same with captured params size" do
+    mock_app do
+      get "/sample/:a/:b", :provides => :xml do |a, b, format|
+        "#{a}, #{b}, #{format}"
+      end
+    end
+    get "/sample/foo/bar"
+    assert_equal "foo, bar, ", body
+    get "/sample/foo/bar.xml"
+    assert_equal "foo, bar, xml", body
+  end
 end
