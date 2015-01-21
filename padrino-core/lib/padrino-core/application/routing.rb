@@ -982,7 +982,9 @@ module Padrino
         elsif params[:splat].instance_of?(Array)
           params[:splat]
         else
-          params.values_at(*route.matcher.names.dup)
+          names = route.matcher.names.dup
+          names.delete("format") unless names.length == route.block.arity
+          params.values_at(*names)
         end
       end
     end
