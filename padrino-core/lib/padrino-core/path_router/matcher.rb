@@ -3,6 +3,9 @@ require 'mustermann/sinatra'
 module Padrino
   module PathRouter
     class Matcher
+      # To count group of regexp
+      GROUP_REGEXP = %r{\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)}.freeze
+
       ##
       # Constructs an instance of PathRouter::Matcher.
       #
@@ -91,6 +94,17 @@ module Padrino
       #
       def names
         handler.names
+      end
+
+      ##
+      # Returns captures parameter length.
+      #
+      def capture_length
+        if mustermann?
+          handler.named_captures.inject(0) { |count, (_, capture)| count += capture.length }
+        else
+          handler.inspect.scan(GROUP_REGEXP).length
+        end
       end
 
       private

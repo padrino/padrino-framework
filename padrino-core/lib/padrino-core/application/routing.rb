@@ -21,6 +21,10 @@ module Padrino
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
 
+    # Raised when block arity was nonzero and was not same with
+    # captured parameter length.
+    class WrongArityException < RuntimeError; end
+
     class Parent < String
       attr_reader :map
       attr_reader :optional
@@ -507,7 +511,6 @@ module Padrino
 
         path[0, 0] = "/" if path == "(.:format)?"
         route = router.add(verb, path, route_options)
-        route.original_block_arity = block_arity
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -538,6 +541,12 @@ module Padrino
         route.custom_conditions.concat(conditions)
 
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
+
+        block_parameter_length = route.block_parameter_length
+        if block_arity.nonzero? && block_parameter_length != block_arity
+          raise WrongArityException,
+            "wrong number of block arguments (#{block_arity} for #{block_parameter_length})"
+        end
 
         # Add Application defaults.
         route.before_filters << @filters[:before]
@@ -984,9 +993,7 @@ module Padrino
         elsif params[:splat].instance_of?(Array)
           params[:splat]
         else
-          names = route.matcher.names.dup
-          names.delete("format") unless names.length == route.original_block_arity
-          params.values_at(*names)
+          params.values_at(*route.matcher.names.dup)
         end
       end
     end

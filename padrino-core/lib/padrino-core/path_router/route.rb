@@ -19,7 +19,7 @@ module Padrino
       ##
       # The accessors will be used in other classes
       #
-      attr_accessor :action, :cache, :cache_key, :cache_expires, :original_block_arity,
+      attr_accessor :action, :cache, :cache_key, :cache_expires,
                     :parent, :use_layout, :controller, :user_agent, :path_for_generation, :default_values
   
   
@@ -132,12 +132,19 @@ module Padrino
       end
   
       ##
-      # Returns custom_conditions as an array
+      # Returns custom_conditions as an array.
       #
       def custom_conditions(&block)
         @_custom_conditions ||= []
         @_custom_conditions << block if block_given?
         @_custom_conditions
+      end
+
+      ##
+      # Returns block parameter length.
+      #
+      def block_parameter_length
+        matcher.capture_length
       end
 
       private
