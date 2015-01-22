@@ -496,7 +496,8 @@ module Padrino
         method_name = "#{verb} #{path}"
         unbound_method = generate_method(method_name, &block)
 
-        block = if block.arity == 0
+        block_arity = block.arity
+        block = if block_arity == 0
                   proc{ |request, _| unbound_method.bind(request).call }
                 else
                   proc{ |request, block_params| unbound_method.bind(request).call(*block_params) }
@@ -506,6 +507,7 @@ module Padrino
 
         path[0, 0] = "/" if path == "(.:format)?"
         route = router.add(verb, path, route_options)
+        route.original_block_arity = block_arity
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -982,7 +984,9 @@ module Padrino
         elsif params[:splat].instance_of?(Array)
           params[:splat]
         else
-          params.values_at(*route.matcher.names.dup)
+          names = route.matcher.names.dup
+          names.delete("format") unless names.length == route.original_block_arity
+          params.values_at(*names)
         end
       end
     end
