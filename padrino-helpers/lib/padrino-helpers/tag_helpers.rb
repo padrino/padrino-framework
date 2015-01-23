@@ -53,7 +53,7 @@ module Padrino
         :method,
         :remote,
         :confirm
-      ].freeze
+      ]
 
       ##
       # A html_safe newline string to avoid allocating a new on each
