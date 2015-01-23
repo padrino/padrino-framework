@@ -2297,4 +2297,12 @@ describe "Routing" do
       get("/:a/sample/*/*") { |*all| }
     end
   end
+
+  it "should be able to use splat and named captues" do
+    mock_app do
+      get("/:a/:b/*/*/*") { |a, b, *splats| "#{a}, #{b}, (#{splats * ","})" }
+    end
+    get "/123/456/a/b/c/"
+    assert_equal "123, 456, (a,b,c)", body
+  end
 end
