@@ -23,7 +23,11 @@ module Padrino
 
     # Raised when block arity was nonzero and was not same with
     # captured parameter length.
-    class WrongArityException < RuntimeError; end
+    class BlockArityError < ArgumentError
+      def initialize(path, block_arity, required_arity)
+        super "route block arity does not match path '#{path}' (#{block_arity} for #{required_arity})"
+      end
+    end
 
     class Parent < String
       attr_reader :map
@@ -543,9 +547,8 @@ module Padrino
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
         block_parameter_length = route.block_parameter_length
-        if block_arity.nonzero? && block_parameter_length != block_arity
-          raise WrongArityException,
-            "wrong number of block arguments (#{block_arity} for #{block_parameter_length})"
+        if block_arity > 0 && block_parameter_length != block_arity
+          fail BlockArityError.new(route.path, block_arity, block_parameter_length)
         end
 
         # Add Application defaults.

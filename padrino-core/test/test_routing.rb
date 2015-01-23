@@ -2273,7 +2273,7 @@ describe "Routing" do
   end
 
   it "should raise an exception if block arity is not same with captured params size" do
-    assert_raises(Padrino::Routing::WrongArityException) do
+    assert_raises(Padrino::Routing::BlockArityError) do
       mock_app do
         get("/sample/:a/:b") { |a| }
       end
@@ -2290,5 +2290,11 @@ describe "Routing" do
     assert_equal "foo, bar, ", body
     get "/sample/foo/bar.xml"
     assert_equal "foo, bar, xml", body
+  end
+
+  it "should raise an exception if block arity is not same with captured params size" do
+    mock_app do
+      get("/:a/sample/*/*") { |*all| }
+    end
   end
 end
