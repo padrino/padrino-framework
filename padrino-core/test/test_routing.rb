@@ -2272,17 +2272,15 @@ describe "Routing" do
     assert_equal({"id"=>"123"}, Thread.current['padrino.instance'].instance_variable_get(:@params))
   end
 
-  it "should not add the :format parameter to :captures hash unless block arity is same with captured params size" do
-    mock_app do
-      get "/sample/:a/:b", :provides => :xml do |a, b|
-        "#{a}, #{b}"
+  it "should raise an exception if block arity is not same with captured params size" do
+    assert_raises(Padrino::Routing::BlockArityError) do
+      mock_app do
+        get("/sample/:a/:b") { |a| }
       end
     end
-    get "/sample/foo/bar"
-    assert_equal "foo, bar", body
   end
 
-  it "should add the :format parameter to :captures hash if block arity is same with captured params size" do
+  it "should pass format value as a block parameter" do
     mock_app do
       get "/sample/:a/:b", :provides => :xml do |a, b, format|
         "#{a}, #{b}, #{format}"
@@ -2292,5 +2290,11 @@ describe "Routing" do
     assert_equal "foo, bar, ", body
     get "/sample/foo/bar.xml"
     assert_equal "foo, bar, xml", body
+  end
+
+  it "should allow negative arity in route block" do
+    mock_app do
+      get("/:a/sample/*/*") { |*all| }
+    end
   end
 end
