@@ -996,7 +996,7 @@ module Padrino
         elsif params[:splat].instance_of?(Array)
           params[:splat]
         else
-          params.values_at(*route.matcher.names.dup)
+          params.values_at(*route.matcher.names)
         end
       end
     end

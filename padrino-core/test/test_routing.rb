@@ -2292,7 +2292,7 @@ describe "Routing" do
     assert_equal "foo, bar, xml", body
   end
 
-  it "should raise an exception if block arity is not same with captured params size" do
+  it "should allow negative arity in route block" do
     mock_app do
       get("/:a/sample/*/*") { |*all| }
     end
