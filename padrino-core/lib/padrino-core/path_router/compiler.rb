@@ -33,7 +33,6 @@ module Padrino
       def compiled?
         !!@compiled
       end
-  
 
       ##
       # Finds routes by using request or env.
