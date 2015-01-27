@@ -2251,15 +2251,6 @@ describe "Routing" do
     assert_equal 'bar, bling, baz/boom', body
   end
 
-  it "should support a url which is using multiple splat " do
-    mock_app do
-      get(:multiple_splat, :map => "/foo/*/bar/*"){ |a,b| "#{a}, #{b}" }
-    end
-
-    get "/foo/123/bar/456"
-    assert_equal "123, 456", body
-  end
-
   it "should be able to use PathRouter#recognize to recognize routes" do
     mock_app do
       get(:sample){}
