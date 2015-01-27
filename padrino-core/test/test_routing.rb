@@ -272,6 +272,7 @@ describe "Routing" do
       post(:foo, '', :with => :id){ |id| "/#{id}" }
       delete(:drugs, :with => [:id, 'destroy']){ |id| "/drugs/#{id}/destroy" }
       delete(:drugs, '', :with => [:id, 'destroy']){ |id| "/#{id}/destroy" }
+      get(:splatter, "/splatter/*/*"){ |a, b| url(:splatter, :splat => ["123", "456"])  }
     end
     get "/foo"
     assert_equal "/foo", body
@@ -303,6 +304,8 @@ describe "Routing" do
     assert_equal "/drugs/123/destroy", body
     delete "/123/destroy"
     assert_equal "/123/destroy", body
+    get "/splatter/123/456"
+    assert_equal "/splatter/123/456", body
   end
 
   it 'should generate url with format' do
