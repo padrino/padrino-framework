@@ -2175,6 +2175,18 @@ describe "Routing" do
     assert_equal %Q[["hello", "world"]], body
   end
 
+  it "should recognize the route containing splat params if path is ended with slash" do
+    mock_app do
+      get "/splat/*" do
+        "slash!"
+      end
+    end
+    get "/splat"
+    assert_equal 404, status
+    get "/splat/"
+    assert_equal "slash!", body
+  end
+
   it "should match correctly paths even if the free regex route exists" do
     mock_app do
       get %r{/b/(?<aa>\w+)/(?<bb>\w+)} do
@@ -2305,7 +2317,7 @@ describe "Routing" do
     mock_app do
       get("/:a/:b/*/*/*") { |a, b, *splats| "#{a}, #{b}, (#{splats * ","})" }
     end
-    get "/123/456/a/b/c/"
+    get "/123/456/a/b/c"
     assert_equal "123, 456, (a,b,c)", body
   end
 end
