@@ -386,15 +386,4 @@ describe "Filters" do
     assert_equal 'We broke after', body
     assert_equal 'Been now and after', doodle
   end
-
-  it "can modify the request" do
-    mock_app do
-      get('/foo') { request.path_info = '/bar'; pass }
-      get('/bar') { 'bar' }
-    end
-
-    get '/foo'
-    assert ok?
-    assert_equal 'bar', body
-  end
 end
