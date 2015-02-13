@@ -33,7 +33,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc 'Create the database defined in config/database.yml for the current Padrino.env'
     task :create => :skeleton do
-      create_database(ActiveRecord::Base.configurations[Padrino.env])
+      create_database(ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env])
     end
 
     def create_database(config)
@@ -105,7 +105,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc 'Drops the database for the current Padrino.env'
     task :drop => :skeleton do
-      config = ActiveRecord::Base.configurations[Padrino.env || :development]
+      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
       begin
         drop_database(config)
       rescue StandardError => e
@@ -161,7 +161,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc "Retrieves the charset for the current environment's database"
     task :charset => :skeleton do
-      config = ActiveRecord::Base.configurations[Padrino.env || :development]
+      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
       case config[:adapter]
       when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
         ActiveRecord::Base.establish_connection(config)
@@ -176,7 +176,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc "Retrieves the collation for the current environment's database"
     task :collation => :skeleton do
-      config = ActiveRecord::Base.configurations[Padrino.env || :development]
+      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
       case config[:adapter]
       when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
         ActiveRecord::Base.establish_connection(config)
@@ -233,8 +233,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     namespace :structure do
       desc "Dump the database structure to a SQL file"
       task :dump => :skeleton do
-        abcs = ActiveRecord::Base.configurations
-        config = abcs[Padrino.env]
+        config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env]
         case config[:adapter]
         when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
           config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
