@@ -121,17 +121,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false."
+    desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with MIGRATION_VERSION=x. Turn off output with VERBOSE=false."
     task :migrate => :skeleton do
       ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
-      ActiveRecord::Migrator.migrate("db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
+      ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
       Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
 
     namespace :migrate do
-      desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with VERSION=x.'
+      desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x.'
       task :redo => :skeleton do
-        if ENV["VERSION"]
+        if env_migration_version
           Rake::Task["ar:migrate:down"].invoke
           Rake::Task["ar:migrate:up"].invoke
         else
@@ -143,10 +143,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc 'Resets your database using your migrations for the current environment'
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
-      desc 'Runs the "up" for a given migration VERSION.'
+      desc 'Runs the "up" for a given MIGRATION_VERSION.'
       task(:up => :skeleton){ migrate_as(:up) }
 
-      desc 'Runs the "down" for a given migration VERSION.'
+      desc 'Runs the "down" for a given MIGRATION_VERSION.'
       task(:down => :skeleton){ migrate_as(:down) }
     end
 
@@ -349,8 +349,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def migrate_as(type)
-    version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-    raise "VERSION is required" unless version
+    version = env_migration_version
+    fail "MIGRATION_VERSION is required" unless version
     ActiveRecord::Migrator.run(type, "db/migrate/", version)
     dump_schema
   end
