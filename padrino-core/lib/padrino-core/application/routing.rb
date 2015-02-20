@@ -340,7 +340,7 @@ module Padrino
         params = args.extract_options!
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params.symbolize_keys))
-        rebase_url(fragment ? path << '#' << fragment : path)
+        rebase_url(fragment ? path << '#' << fragment.to_s : path)
       end
       alias :url_for :url
 
