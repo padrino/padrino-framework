@@ -212,7 +212,7 @@ module Padrino
       end
 
       ##
-      # Returns an html script tag for each of the sources provided.
+      # Returns a html link tag for each of the sources provided.
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/stylesheets for inclusion. You can provide also a full path.
       #
@@ -237,7 +237,7 @@ module Padrino
       end
 
       ##
-      # Returns an html script tag for each of the sources provided.
+      # Returns a html script tag for each of the sources provided.
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/javascript for inclusion. You can provide also a full path.
       #
