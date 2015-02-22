@@ -110,7 +110,7 @@ If you prefer explicit URLs to named aliases, that is also supported within a sp
       end
 
       get "/other/:id" do
-        # url is generated as "/admin/#{params[:id]}"
+        # url is generated as "/admin/other/#{params[:id]}"
       end
     end
 
