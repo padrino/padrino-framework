@@ -1,4 +1,4 @@
-# rake bump[X.X.X] && rake publish
+# rake bump[0.13.0.beta1] && rake publish
 require 'fileutils'
 require 'rake'
 require 'yard'
