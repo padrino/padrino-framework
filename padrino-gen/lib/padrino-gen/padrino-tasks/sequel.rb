@@ -9,11 +9,11 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
         puts "<= sq:migrate:auto executed"
       end
 
-      desc "Perform migration up/down to VERSION"
+      desc "Perform migration up/down to MIGRATION_VERSION"
       task :to, [:version] => :skeleton do |t, args|
-        version = (args[:version] || ENV['VERSION']).to_s.strip
+        version = (args[:version] || env_migration_version).to_s.strip
         ::Sequel.extension :migration
-        raise "No VERSION was provided" if version.empty?
+        fail "No MIGRATION_VERSION was provided" if version.empty?
         ::Sequel::Migrator.apply(Sequel::Model.db, "db/migrate", version.to_i)
         puts "<= sq:migrate:to[#{version}] executed"
       end
