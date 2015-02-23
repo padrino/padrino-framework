@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.12.5 (February 22nd 2015)
+
+* FIX #1794 inheritance of global prereqs (@ujifgc)
+* FIX #1798 handling non-array `with` statement for params (@ujifgc)
+* FIX Russian translation for password (@harrykiselev)
+* FIX Prevent Padrino from overriding cache settings (@dariocravero)
+* FIX sequence of execution for configuration methods in application (@namusyaka)
+* FIX translations for admin for cs (@ortiga)
+* FIX exception raised when running the controller generator (@namusyaka)
+* FIX #1875 lock down rack to < 1.6.0 because of sinatra conflict (@ujifgc)
+
 == 0.12.4 (October 19th 2014)
 
 * FIX #1744 Corrects color support for Windows (@tyabe)
