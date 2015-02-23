@@ -1,11 +1,55 @@
 = CHANGES
 
-== 0.13.0.rc1 (not released)
+== 0.13.0.beta1 (Not Released)
+
+* FIX cleanup and refactor rake taskss (@ujifgc)
+* NEW Remove deprecated cache functionality (@minad)
+* FIX Cleanup and improve test helpers for each gem (@ujifgc)
+* FIX allow Padrino::Rendering with standard ERB (@ujifgc)
+* NEW Emulate set method in mailer context (@ujifgc)
+* FIX #1772 add button content tag to button_to block (@ujifgc)
+* NEW #1133 switch default renderer to none (@ujifgc)
+* FIX #1792 Faster code using reverse_each to iterate gems (@glaucocustodio)
+* FIX #1793 Faster codeusing #sub instead of #gsub (@glaucocustodio)
+* FIX #1795 load missing models for sq:seed (@ujifgc)
+* NEW Use mustermann19 in all cases now (@namusyaka)
+* FIX Remove abuse of force_encoding (@ujifgc)
+* FIX #1811 Refactor and change style of path_router within core routing (@namusyaka)
+* FIX #1803 Use relative paths for sqlite and sequel (@ujifgc)
+* NEW #1800 Support named capture on regex for router (@namusyaka)
+* FIX #1821 Don't load dependency files unless app's root is within Padrino root (@namusyaka)
+* FIX Improved docs and FAQ for helpers and core (@fwolfst, @CrowdHailer, @seanhussey, @neilang)
+* FIX #1835 Switch admin to sequel fixtures rather than datamapper (@namusyaka)
+* FIX #1828 Refactor new router and fix sinatra compatibility (@namusyaka)
+* FIX Ensure the before_filter is triggered in certain cases (@namusyaka)
+* FIX Widen the range of `default_dependency_paths` (@namusyaka)
+* NEW #1831 Implement the `mi:translate` task (@namusyaka)
+* FIX #1852 ApplicationWrapper Prerequisite Issue (@hcatlin)
+* FIX #1856 Skips loading models for the activerecord rake tasks (@namusyaka)
+* NEW #1857 Precompile routes when loading Padrino (@namusyaka)
+* NEW #1818 Implement `source_location` option for logger (@namusyaka)
+* FIX #1859 Correct issues with the admin seeds generator (@Quintasan)
+* FIX Make broken async stream callbacks work in Padrino (@jay2u)
+* FIX #1862 Re-implement `PathRouter#recognize` (@namusyaka)
+* FIX #863 Removes unsafe http_router patch (@namusyaka)
+* FIX #1867 Update ShowExceptions to suit latest rack master (@namusyaka)
+* FIX #1879 Improve access to Active Record Database Configuration (@scudelletti)
 * DELETE remove deprecations (String#undent, #link_to with :fragment, old caching,
   old form builder, rendering #fetch_template_file, #cache_template_file!, #resolved_layout,
   Application#load_paths, Padrino.set_load_paths, Padrino.load_paths)
 * FIX #1860 Padrino --environment switch now takes precedence over RACK_ENV environment variable
 * FIX #1849 return proper exit codes in CLI
+
+== 0.12.5 (February 22nd 2015)
+
+* FIX #1794 inheritance of global prereqs (@ujifgc)
+* FIX #1798 handling non-array `with` statement for params (@ujifgc)
+* FIX Russian translation for password (@harrykiselev)
+* FIX Prevent Padrino from overriding cache settings (@dariocravero)
+* FIX sequence of execution for configuration methods in application (@namusyaka)
+* FIX translations for admin for cs (@ortiga)
+* FIX exception raised when running the controller generator (@namusyaka)
+* FIX #1875 lock down rack to < 1.6.0 because of sinatra conflict (@ujifgc)
 
 == 0.12.4 (October 19th 2014)
 
