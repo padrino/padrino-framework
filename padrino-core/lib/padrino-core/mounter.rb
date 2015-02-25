@@ -1,4 +1,4 @@
-require 'delegate'
+require 'padrino-core/mounter/application_extension'
 
 module Padrino
   ##
@@ -12,55 +12,6 @@ module Padrino
   class Mounter
     DEFAULT_CASCADE = [404, 405]
     class MounterException < RuntimeError
-    end
-
-    class ApplicationWrapper < SimpleDelegator
-      attr_accessor :uri_root
-      attr_writer :public_folder
-
-      def initialize(app, options = {})
-        @options = options
-        super(app)
-      end
-
-      def dependencies
-        @__dependencies ||= Dir["#{root}/**/*.rb"]
-      end
-
-      def prerequisites
-        @__prerequisites ||= []
-      end
-
-      def app_file
-        return @__app_file if @__app_file
-        obj = __getobj__
-        @__app_file = obj.respond_to?(:app_file) ? obj.app_file : @options[:app_file]
-      end
-
-      def root
-        return @__root if @__root
-        obj = __getobj__
-        @__root = obj.respond_to?(:root) ? obj.root : File.expand_path("#{app_file}/../")
-      end
-
-      def public_folder
-        return @public_folder if @public_folder
-        obj = __getobj__
-        @public_folder = obj.respond_to?(:public_folder) ? obj.public_folder : ""
-      end
-
-      def app_name
-        @__app_name ||= @options[:app_name] || __getobj__.to_s.underscore.to_sym
-      end
-
-      def setup_application!
-        @configured ||=
-          begin
-            $LOAD_PATH.concat(prerequisites)
-            Padrino.require_dependencies(dependencies, :force => true) if root.start_with?(Padrino.root)
-            true
-          end
-      end
     end
 
     attr_accessor :name, :uri_root, :app_file, :app_class, :app_root, :app_obj, :app_host, :cascade
@@ -83,7 +34,10 @@ module Padrino
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
-      @app_obj   = ApplicationWrapper.new(@app_obj, options) unless padrino_application?
+      unless padrino_application?
+        @app_obj.extend ApplicationExtension
+        @app_obj.mounter_options = options
+      end
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = "/"
       @cascade   = options[:cascade] ? true == options[:cascade] ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
