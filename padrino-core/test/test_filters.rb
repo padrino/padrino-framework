@@ -386,4 +386,15 @@ describe "Filters" do
     assert_equal 'We broke after', body
     assert_equal 'Been now and after', doodle
   end
+
+  it 'should trigger filters if superclass responds to :filters' do
+    class FilterApp < Padrino::Application
+      before { @foo = "foo" }
+    end
+    mock_app FilterApp do
+      get("/") { @foo }
+    end
+    get "/"
+    assert_equal "foo", body
+  end
 end
