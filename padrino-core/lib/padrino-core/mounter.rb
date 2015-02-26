@@ -128,7 +128,7 @@ module Padrino
     def named_routes
       app_obj.routes.map { |route|
         route_name = route.name.to_s
-        route_name = 
+        route_name =
           if route.controller
             route_name.split(" ", 2).map{|name| ":#{name}" }.join(", ")
           else

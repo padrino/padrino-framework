@@ -35,12 +35,16 @@ module Padrino
         @configured ||=
           begin
             $LOAD_PATH.concat(prerequisites)
-            Padrino.require_dependencies(dependencies, :force => true) if root.start_with?(Padrino.root)
+            require_dependencies if root.start_with?(Padrino.root)
             true
           end
       end
 
       private
+
+      def require_dependencies
+        Padrino.require_dependencies(dependencies, :force => true)
+      end
 
       def trace_method(method_name, &block)
         value = (baseclass == self || !baseclass.respond_to?(method_name)) ? nil : baseclass.send(method_name)
