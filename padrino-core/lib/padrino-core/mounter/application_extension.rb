@@ -32,12 +32,13 @@ module Padrino
       end
 
       def setup_application!
-        @configured ||=
-          begin
+        @configured ||= trace_method(:setup_application!) do |result|
+          result || begin
             $LOAD_PATH.concat(prerequisites)
             require_dependencies if root.start_with?(Padrino.root)
             true
           end
+        end
       end
 
       private
