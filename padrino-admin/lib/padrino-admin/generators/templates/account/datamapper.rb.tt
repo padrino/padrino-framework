@@ -44,6 +44,11 @@ class <%= @model_name %>
     ::BCrypt::Password.new(crypted_password) == password
   end
 
+  def password=(password)
+    self.crypted_password = nil if password.present?
+    @password = password
+  end
+
   private
 
   def password_required
