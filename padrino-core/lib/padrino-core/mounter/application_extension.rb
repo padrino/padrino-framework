@@ -5,7 +5,7 @@ module Padrino
       attr_writer :public_folder
 
       def dependencies
-        @__dependencies ||= Dir["#{root}/**/*.rb"]
+        @__dependencies ||= Dir["#{root}/**/*.rb"].delete_if { |path| path == app_file  }
       end
 
       def prerequisites
