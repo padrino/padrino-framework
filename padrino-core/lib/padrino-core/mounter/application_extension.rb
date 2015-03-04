@@ -5,7 +5,7 @@ module Padrino
       attr_writer :public_folder
 
       def dependencies
-        @__dependencies ||= Dir["#{root}/**/*.rb"].delete_if { |path| path == app_file  }
+        @__dependencies ||= Dir.glob("#{root}/**/*.rb").delete_if { |path| path == app_file }
       end
 
       def prerequisites
@@ -13,18 +13,15 @@ module Padrino
       end
 
       def app_file
-        return @__app_file if @__app_file
-        @__app_file = trace_method(:app_file) { |app_file| app_file || mounter_options[:app_file] }
+        @__app_file ||= trace_method(:app_file) { mounter_options[:app_file] }
       end
 
       def root
-        return @__root if @__root
-        @__root = trace_method(:root) { |root| root || File.expand_path("#{app_file}/../")  }
+        @__root ||= trace_method(:root) { File.expand_path("#{app_file}/../") }
       end
 
       def public_folder
-        return @public_folder if @public_folder
-        @public_folder = trace_method(:public_folder) { |public_folder| public_folder || ""  }
+        @public_folder ||= trace_method(:public_folder) { "" }
       end
 
       def app_name
@@ -32,12 +29,10 @@ module Padrino
       end
 
       def setup_application!
-        @configured ||= trace_method(:setup_application!) do |result|
-          result || begin
-            $LOAD_PATH.concat(prerequisites)
-            require_dependencies if root.start_with?(Padrino.root)
-            true
-          end
+        @configured ||= trace_method(:setup_application!) do
+          $LOAD_PATH.concat(prerequisites)
+          require_dependencies if root.start_with?(Padrino.root)
+          true
         end
       end
 
@@ -47,9 +42,9 @@ module Padrino
         Padrino.require_dependencies(dependencies, :force => true)
       end
 
-      def trace_method(method_name, &block)
-        value = (baseclass == self || !baseclass.respond_to?(method_name)) ? nil : baseclass.send(method_name)
-        block.call(value)
+      def trace_method(method_name)
+        value = baseclass.send(method_name) if baseclass != self && baseclass.respond_to?(method_name)
+        value || yield
       end
 
       def baseclass
