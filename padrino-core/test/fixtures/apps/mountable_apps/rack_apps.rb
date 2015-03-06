@@ -3,6 +3,10 @@ class RackApp
   def self.call(_)
     [200, {}, ["hello rack app"]]
   end
+
+  def self.prerequisites
+    super
+  end
 end
 
 RackApp2 = lambda{|_| [200, {}, ["hello rack app2"]] }
