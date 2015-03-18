@@ -620,6 +620,35 @@ module Padrino
         input_tag(:range, options)
       end
 
+      ##
+      # Constructs a datetime tag from the given options.
+      #
+      # @example
+      #   datetime_field_tag('datetime_with_min_max', :min => DateTime.new(1993, 2, 24, 12, 30, 45),
+      #                                               :max => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_field_tag('datetime_with_value', :value => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #
+      # @param [String] name
+      #   The name of the datetime field.
+      # @param [Hash] options
+      #   The html options for the datetime field.
+      # @option options [DateTime, String] :min
+      #  The min date time of the datetime field.
+      # @option options [DateTime, String] :max
+      #  The max date time of the datetime field.
+      # @option options [DateTime, String] :value
+      #  The value of the datetime field. See examples for details.
+      # @return [String] The html datetime field
+      #
+      def datetime_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        [:max, :min, :value].each do |attribute|
+          value = datetime_value(options[attribute])
+          options[attribute] = value.rfc3339 if value.respond_to?(:rfc3339)
+        end
+        input_tag(:datetime, options)
+      end
+
       private
 
       ##
@@ -633,6 +662,20 @@ module Padrino
         builder_class = options.delete(:builder) || default_builder
         builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
         builder_class.new(self, object, options)
+      end
+
+      ##
+      # Converts value into DateTime.
+      #
+      # @example
+      #   datetime_value('1993-02-24T12:30:45') #=> #<DateTime: 1993-02-24T12:30:45+00:00>
+      #
+      def datetime_value(value)
+        if value.kind_of?(String)
+          DateTime.parse(value) rescue nil
+        else
+          value
+        end
       end
     end
   end
