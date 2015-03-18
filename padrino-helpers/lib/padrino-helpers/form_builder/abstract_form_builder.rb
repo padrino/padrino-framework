@@ -125,6 +125,10 @@ module Padrino
           @template.image_submit_tag source, options
         end
 
+        def datetime_field(field, options={})
+          @template.datetime_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses

@@ -1053,4 +1053,48 @@ describe "FormHelpers" do
       assert_have_selector 'input', :type => 'range', :name => 'ranger_with_range', :min => '1', :max => '5', :count => 1
     end
   end
+
+  describe 'for #datetime_field_tag' do
+    before do
+      @expected = {
+        :name => 'datetime',
+        :max => "2000-04-01T12:00:00+00:00",
+        :min => "1993-02-24T12:30:45+00:00",
+        :value => "2000-04-01T12:00:00+00:00"
+      }
+    end
+
+    it 'should create an input tag with min and max and value options' do
+      max = DateTime.new(2000, 4, 1, 12, 0, 0)
+      min = DateTime.new(1993, 2, 24, 12, 30, 45)
+      value = DateTime.new(2000, 4, 1, 12, 0, 0)
+      actual_html = datetime_field_tag('datetime', :max => max, :min => min, :value => value)
+      assert_has_tag('input', @expected) { actual_html }
+    end
+
+    it 'should create an input tag with datetime' do
+      actual_html = datetime_field_tag('datetime')
+      assert_has_tag('input[type=datetime]') { actual_html }
+    end
+
+    it 'should create an input tag when the format string passed as datetime option value' do
+      actual_html = datetime_field_tag('datetime', :value => '1993-02-24T12:30:45+00:00')
+      assert_has_tag('input[type=datetime]', :value => "1993-02-24T12:30:45+00:00") { actual_html }
+    end
+
+    it 'should display correct datetime_field_tag in erb' do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct datetime_field_tag in haml' do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct datetime_field_tag in slim' do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', @expected
+    end
+  end
 end

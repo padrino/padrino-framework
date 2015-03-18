@@ -50,6 +50,10 @@
     <%= f.label :remember_me %>
     <%= f.check_box :remember_me, :value => '1' %>
   </p>
+  <p>
+    <%= f.label :datetime %>
+    <%= f.datetime_field :datetime, :max => DateTime.new(2000, 4, 1, 12, 0, 0) %>
+  </p>
   <p><%= f.submit "Create", :class => 'success', :id => 'demo-button' %></p>
   <p><%= f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button' %></p>
 <% end %>
