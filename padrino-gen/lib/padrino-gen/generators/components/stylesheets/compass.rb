@@ -31,7 +31,7 @@ COMPASS_REGISTER = <<-COMPASSR unless defined?(COMPASS_REGISTER)
 COMPASSR
 
 def setup_stylesheet
-  require_dependencies 'compass'
+  require_dependencies 'compass-blueprint'
   create_file destination_root('/lib/compass_plugin.rb'), COMPASS_INIT
   inject_into_file destination_root('/app/app.rb'), COMPASS_REGISTER, :after => "register Padrino::Helpers\n"
 
