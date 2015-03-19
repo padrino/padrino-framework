@@ -1249,4 +1249,40 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00+00:00"
     end
   end
+
+  describe 'for #datetime_local_field method' do
+    it 'should display correct datetime-local field html' do
+      actual_html = standard_builder.datetime_local_field(:datetime_local)
+      assert_has_tag('input[type=datetime-local]', :id => 'user_datetime_local', :name => 'user[datetime_local]') { actual_html }
+    end
+
+    it 'should format DateTime to correct value if min and max and value options exist' do
+      max = DateTime.new(2000, 4, 1, 12, 0, 0)
+      min = DateTime.new(1993, 2, 24, 12, 30, 45)
+      value = DateTime.new(2000, 4, 1, 12, 0, 0)
+      actual_html = standard_builder.datetime_local_field(:datetime_local, :max => max, :min => min, :value => value)
+      expected = {
+        :id => 'user_datetime_local',
+        :max => "2000-04-01T12:00:00+00:00",
+        :min => "1993-02-24T12:30:45+00:00",
+        :value => "2000-04-01T12:00:00+00:00"
+      }
+      assert_has_tag('input[type=datetime-local]', expected) { actual_html }
+    end
+
+    it 'should display correct datetime-local field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=datetime-local]', :id => 'markup_user_datetime_local'
+    end
+
+    it 'should display correct datetime-local field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=datetime-local]', :id => 'markup_user_datetime_local'
+    end
+
+    it 'should display correct datetime-local field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=datetime-local]', :id => 'markup_user_datetime_local'
+    end
+  end
 end

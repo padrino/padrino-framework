@@ -1097,4 +1097,48 @@ describe "FormHelpers" do
       assert_have_selector 'input', @expected
     end
   end
+
+  describe 'for #datetime_local_field_tag' do
+    before do
+      @expected = {
+        :name => 'datetime_local',
+        :max => "2000-04-01T12:00:00+00:00",
+        :min => "1993-02-24T12:30:45+00:00",
+        :value => "2000-04-01T12:00:00+00:00"
+      }
+    end
+
+    it 'should create an input tag with min and max and value options' do
+      max = DateTime.new(2000, 4, 1, 12, 0, 0)
+      min = DateTime.new(1993, 2, 24, 12, 30, 45)
+      value = DateTime.new(2000, 4, 1, 12, 0, 0)
+      actual_html = datetime_local_field_tag('datetime_local', :max => max, :min => min, :value => value)
+      assert_has_tag('input', @expected) { actual_html }
+    end
+
+    it 'should create an input tag with datetime-local' do
+      actual_html = datetime_local_field_tag('datetime_local')
+      assert_has_tag('input[type="datetime-local"]') { actual_html }
+    end
+
+    it 'should create an input tag when the format string passed as datetime-local option value' do
+      actual_html = datetime_local_field_tag('datetime_local', :value => '1993-02-24T12:30:45+00:00')
+      assert_has_tag('input[type="datetime-local"]', :value => "1993-02-24T12:30:45+00:00") { actual_html }
+    end
+
+    it 'should display correct datetime_local_field_tag in erb' do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct datetime_local_field_tag in haml' do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct datetime_local_field_tag in slim' do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', @expected
+    end
+  end
 end
