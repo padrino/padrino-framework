@@ -1058,9 +1058,9 @@ describe "FormHelpers" do
     before do
       @expected = {
         :name => 'datetime',
-        :max => "2000-04-01T12:00:00+00:00",
-        :min => "1993-02-24T12:30:45+00:00",
-        :value => "2000-04-01T12:00:00+00:00"
+        :max => "2000-04-01T12:00:00.000+0000",
+        :min => "1993-02-24T12:30:45.000+0000",
+        :value => "2000-04-01T12:00:00.000+0000"
       }
     end
 
@@ -1079,7 +1079,7 @@ describe "FormHelpers" do
 
     it 'should create an input tag when the format string passed as datetime option value' do
       actual_html = datetime_field_tag('datetime', :value => '1993-02-24T12:30:45+00:00')
-      assert_has_tag('input[type=datetime]', :value => "1993-02-24T12:30:45+00:00") { actual_html }
+      assert_has_tag('input[type=datetime]', :value => "1993-02-24T12:30:45.000+0000") { actual_html }
     end
 
     it 'should display correct datetime_field_tag in erb' do
@@ -1102,9 +1102,9 @@ describe "FormHelpers" do
     before do
       @expected = {
         :name => 'datetime_local',
-        :max => "2000-04-01T12:00:00+00:00",
-        :min => "1993-02-24T12:30:45+00:00",
-        :value => "2000-04-01T12:00:00+00:00"
+        :max => "2000-04-01T12:00:00",
+        :min => "1993-02-24T12:30:45",
+        :value => "2000-04-01T12:00:00"
       }
     end
 
@@ -1122,8 +1122,8 @@ describe "FormHelpers" do
     end
 
     it 'should create an input tag when the format string passed as datetime-local option value' do
-      actual_html = datetime_local_field_tag('datetime_local', :value => '1993-02-24T12:30:45+00:00')
-      assert_has_tag('input[type="datetime-local"]', :value => "1993-02-24T12:30:45+00:00") { actual_html }
+      actual_html = datetime_local_field_tag('datetime_local', :value => '1993-02-24T12:30:45')
+      assert_has_tag('input[type="datetime-local"]', :value => "1993-02-24T12:30:45") { actual_html }
     end
 
     it 'should display correct datetime_local_field_tag in erb' do
