@@ -1273,4 +1273,48 @@ describe "FormHelpers" do
       assert_have_selector 'input', @expected
     end
   end
+
+  describe 'for #time_field_tag' do
+    before do
+      @expected = {
+        :name => 'time',
+        :max => "13:30:00.000",
+        :min => "01:19:12.000",
+        :value => "13:30:00.000"
+      }
+    end
+
+    it 'should create an input tag with min and max and value options' do
+      max = Time.new(2008, 6, 21, 13, 30, 0)
+      min = Time.new(1993, 2, 24, 1, 19, 12)
+      value = Time.new(2008, 6, 21, 13, 30, 0)
+      actual_html = time_field_tag('time', :max => max, :min => min, :value => value)
+      assert_has_tag('input', @expected) { actual_html }
+    end
+
+    it 'should create an input tag with time' do
+      actual_html = time_field_tag('time')
+      assert_has_tag('input[type="time"]') { actual_html }
+    end
+
+    it 'should create an input tag when the format string passed as time option value' do
+      actual_html = time_field_tag('time', :value => '1993-02-24 01:19:12')
+      assert_has_tag('input[type="time"]', :value => "01:19:12.000") { actual_html }
+    end
+
+    it 'should display correct time_field_tag in erb' do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct time_field_tag in haml' do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct time_field_tag in slim' do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', @expected
+    end
+  end
 end

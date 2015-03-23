@@ -137,6 +137,10 @@ module Padrino
           @template.week_field_tag field_name(field), default_options(field, options)
         end
 
+        def time_field(field, options={})
+          @template.time_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses
