@@ -1285,4 +1285,40 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=datetime-local]', :id => 'markup_user_datetime_local'
     end
   end
+
+  describe 'for #date_field method' do
+    it 'should display correct date field html' do
+      actual_html = standard_builder.date_field(:date)
+      assert_has_tag('input[type=date]', :id => 'user_date', :name => 'user[date]') { actual_html }
+    end
+
+    it 'should format DateTime to correct value if min and max and value options exist' do
+      max = DateTime.new(2000, 4, 1)
+      min = DateTime.new(1993, 2, 24)
+      value = DateTime.new(2000, 4, 1)
+      actual_html = standard_builder.date_field(:date, :max => max, :min => min, :value => value)
+      expected = {
+        :id => 'user_date',
+        :max => "2000-04-01",
+        :min => "1993-02-24",
+        :value => "2000-04-01"
+      }
+      assert_has_tag('input[type=date]', expected) { actual_html }
+    end
+
+    it 'should display correct date field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=date]', :id => 'markup_user_date'
+    end
+
+    it 'should display correct date field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=date]', :id => 'markup_user_date'
+    end
+
+    it 'should display correct date field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=date]', :id => 'markup_user_date'
+    end
+  end
 end
