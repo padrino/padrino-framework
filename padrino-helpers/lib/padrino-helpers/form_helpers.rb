@@ -674,6 +674,32 @@ module Padrino
         input_tag(:"datetime-local", options)
       end
 
+      ##
+      # Constructs a date tag from the given options.
+      #
+      # @example
+      #   date_field_tag('date_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                       :max => DateTime.new(2000, 4, 1))
+      #   date_field_tag('date_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the date field.
+      # @param [Hash] options
+      #   The html options for the date field.
+      # @option options [DateTime, String] :min
+      #  The min date time of the date field.
+      # @option options [DateTime, String] :max
+      #  The max date time of the date field.
+      # @option options [DateTime, String] :value
+      #  The value of the date field. See examples for details.
+      # @return [String] The html date field
+      #
+      def date_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m-%d", options)
+        input_tag(:date, options)
+      end
+
       private
 
       ##

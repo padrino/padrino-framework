@@ -45,6 +45,9 @@
     = f.label :datetime_local
     = f.datetime_local_field :datetime_local, :max => DateTime.new(2000, 4, 1, 12, 0, 0)
   %p
+    = f.label :date
+    = f.date_field :date, :max => DateTime.new(2000, 4, 1)
+  %p
     = f.submit "Create", :class => 'success', :id => 'demo-button'
   %p
     = f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button'
