@@ -749,6 +749,32 @@ module Padrino
         input_tag(:week, options)
       end
 
+      ##
+      # Constructs a time tag from the given options.
+      #
+      # @example
+      #   time_field_tag('time_with_min_max', :max => Time.new(1993, 2, 24, 1, 19, 12),
+      #                                       :min => Time.new(2008, 6, 21, 13, 30, 0))
+      #   time_field_tag('time_with_value', :value => Time.new(2008, 6, 21, 13, 30, 0))
+      #
+      # @param [String] name
+      #   The name of the time field.
+      # @param [Hash] options
+      #   The html options for the time field.
+      # @option options [Time, DateTime, String] :min
+      #  The min time of the time field.
+      # @option options [Time, DateTime, String] :max
+      #  The max time of the time field.
+      # @option options [Time, DateTime, String] :value
+      #  The value of the time field. See examples for details.
+      # @return [String] The html time field
+      #
+      def time_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%T.%L", options)
+        input_tag(:time, options)
+      end
+
       private
 
       ##

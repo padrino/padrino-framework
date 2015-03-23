@@ -79,6 +79,8 @@
       = month_field_tag :month, :max => DateTime.new(2000, 4, 1), :min => DateTime.new(1993, 2, 24), :value => DateTime.new(2000, 4, 1)
     %p
       = week_field_tag :week, :max => DateTime.new(2000, 4, 1), :min => DateTime.new(1993, 2, 24), :value => DateTime.new(2000, 4, 1)
+    %p
+      = time_field_tag :time, :max => Time.new(2008, 6, 21, 13, 30, 0), :min => Time.new(1993, 2, 24, 1, 19, 12), :value => Time.new(2008, 6, 21, 13, 30, 0)
   = field_set_tag(:class => 'buttons') do
     = submit_tag "Login"
     = button_tag "Cancel"

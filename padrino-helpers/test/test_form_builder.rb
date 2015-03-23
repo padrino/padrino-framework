@@ -1393,4 +1393,40 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=week]', :id => 'markup_user_week'
     end
   end
+
+  describe 'for #time_field method' do
+    it 'should display correct time field html' do
+      actual_html = standard_builder.time_field(:time)
+      assert_has_tag('input[type=time]', :id => 'user_time', :name => 'user[time]') { actual_html }
+    end
+
+    it 'should format DateTime to correct value if min and max and value options exist' do
+      max = Time.new(2008, 6, 21, 13, 30, 0)
+      min = Time.new(1993, 2, 24, 1, 19, 12)
+      value = Time.new(2008, 6, 21, 13, 30, 0)
+      actual_html = standard_builder.time_field(:time, :max => max, :min => min, :value => value)
+      expected = {
+        :id => 'user_time',
+        :max => "13:30:00.000",
+        :min => "01:19:12.000",
+        :value => "13:30:00.000"
+      }
+      assert_has_tag('input[type=time]', expected) { actual_html }
+    end
+
+    it 'should display correct time field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=time]', :id => 'markup_user_time'
+    end
+
+    it 'should display correct time field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=time]', :id => 'markup_user_time'
+    end
+
+    it 'should display correct time field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=time]', :id => 'markup_user_time'
+    end
+  end
 end
