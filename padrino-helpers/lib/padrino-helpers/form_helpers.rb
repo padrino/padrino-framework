@@ -723,6 +723,32 @@ module Padrino
         input_tag(:month, options)
       end
 
+      ##
+      # Constructs a week tag from the given options.
+      #
+      # @example
+      #   week_field_tag('week_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                       :max => DateTime.new(2000, 4, 1))
+      #   week_field_tag('week_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the week field.
+      # @param [Hash] options
+      #   The html options for the week field.
+      # @option options [DateTime, String] :min
+      #  The min week time of the week field.
+      # @option options [DateTime, String] :max
+      #  The max week time of the week field.
+      # @option options [DateTime, String] :value
+      #  The value of the week field. See examples for details.
+      # @return [String] The html week field
+      #
+      def week_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-W%W", options)
+        input_tag(:week, options)
+      end
+
       private
 
       ##

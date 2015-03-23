@@ -1357,4 +1357,40 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=month]', :id => 'markup_user_month'
     end
   end
+
+  describe 'for #week_field method' do
+    it 'should display correct week field html' do
+      actual_html = standard_builder.week_field(:week)
+      assert_has_tag('input[type=week]', :id => 'user_week', :name => 'user[week]') { actual_html }
+    end
+
+    it 'should format DateTime to correct value if min and max and value options exist' do
+      max = DateTime.new(2000, 4, 1)
+      min = DateTime.new(1993, 2, 24)
+      value = DateTime.new(2000, 4, 1)
+      actual_html = standard_builder.week_field(:week, :max => max, :min => min, :value => value)
+      expected = {
+        :id => 'user_week',
+        :max => "2000-W13",
+        :min => "1993-W08",
+        :value => "2000-W13"
+      }
+      assert_has_tag('input[type=week]', expected) { actual_html }
+    end
+
+    it 'should display correct week field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=week]', :id => 'markup_user_week'
+    end
+
+    it 'should display correct week field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=week]', :id => 'markup_user_week'
+    end
+
+    it 'should display correct week field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=week]', :id => 'markup_user_week'
+    end
+  end
 end

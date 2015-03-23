@@ -95,6 +95,9 @@
     <p>
       <%= month_field_tag :month, :max => DateTime.new(2000, 4, 1), :min => DateTime.new(1993, 2, 24), :value => DateTime.new(2000, 4, 1) %>
     </p>
+    <p>
+      <%= week_field_tag :week, :max => DateTime.new(2000, 4, 1), :min => DateTime.new(1993, 2, 24), :value => DateTime.new(2000, 4, 1) %>
+    </p>
   <% end %>
   <% field_set_tag(:class => 'buttons') do %>
     <%= submit_tag "Login" %>
