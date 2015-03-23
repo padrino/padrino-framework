@@ -700,6 +700,32 @@ module Padrino
         input_tag(:date, options)
       end
 
+      ##
+      # Constructs a month tag from the given options.
+      #
+      # @example
+      #   month_field_tag('month_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                         :max => DateTime.new(2000, 4, 1))
+      #   month_field_tag('month_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the month field.
+      # @param [Hash] options
+      #   The html options for the month field.
+      # @option options [DateTime, String] :min
+      #  The min month time of the month field.
+      # @option options [DateTime, String] :max
+      #  The max month time of the month field.
+      # @option options [DateTime, String] :value
+      #  The value of the month field. See examples for details.
+      # @return [String] The html month field
+      #
+      def month_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m", options)
+        input_tag(:month, options)
+      end
+
       private
 
       ##

@@ -1321,4 +1321,40 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=date]', :id => 'markup_user_date'
     end
   end
+
+  describe 'for #month_field method' do
+    it 'should display correct month field html' do
+      actual_html = standard_builder.month_field(:month)
+      assert_has_tag('input[type=month]', :id => 'user_month', :name => 'user[month]') { actual_html }
+    end
+
+    it 'should format DateTime to correct value if min and max and value options exist' do
+      max = DateTime.new(2000, 4, 1)
+      min = DateTime.new(1993, 2, 24)
+      value = DateTime.new(2000, 4, 1)
+      actual_html = standard_builder.month_field(:month, :max => max, :min => min, :value => value)
+      expected = {
+        :id => 'user_month',
+        :max => "2000-04",
+        :min => "1993-02",
+        :value => "2000-04"
+      }
+      assert_has_tag('input[type=month]', expected) { actual_html }
+    end
+
+    it 'should display correct month field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=month]', :id => 'markup_user_month'
+    end
+
+    it 'should display correct month field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=month]', :id => 'markup_user_month'
+    end
+
+    it 'should display correct month field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=month]', :id => 'markup_user_month'
+    end
+  end
 end

@@ -1185,4 +1185,48 @@ describe "FormHelpers" do
       assert_have_selector 'input', @expected
     end
   end
+
+  describe 'for #month_field_tag' do
+    before do
+      @expected = {
+        :name => 'month',
+        :max => "2000-04",
+        :min => "1993-02",
+        :value => "2000-04"
+      }
+    end
+
+    it 'should create an input tag with min and max and value options' do
+      max = DateTime.new(2000, 4, 1)
+      min = DateTime.new(1993, 2, 24)
+      value = DateTime.new(2000, 4, 1)
+      actual_html = month_field_tag('month', :max => max, :min => min, :value => value)
+      assert_has_tag('input', @expected) { actual_html }
+    end
+
+    it 'should create an input tag with month' do
+      actual_html = month_field_tag('month')
+      assert_has_tag('input[type="month"]') { actual_html }
+    end
+
+    it 'should create an input tag when the format string passed as month option value' do
+      actual_html = month_field_tag('month', :value => '1993-02-24')
+      assert_has_tag('input[type="month"]', :value => "1993-02") { actual_html }
+    end
+
+    it 'should display correct month_field_tag in erb' do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct month_field_tag in haml' do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct month_field_tag in slim' do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', @expected
+    end
+  end
 end
