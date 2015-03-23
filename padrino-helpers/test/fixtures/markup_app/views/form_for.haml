@@ -51,6 +51,9 @@
     = f.label :month
     = f.month_field :month, :max => DateTime.new(2000, 4, 1)
   %p
+    = f.label :week
+    = f.week_field :week, :max => DateTime.new(2000, 4, 1)
+  %p
     = f.submit "Create", :class => 'success', :id => 'demo-button'
   %p
     = f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button'

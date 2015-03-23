@@ -133,6 +133,10 @@ module Padrino
           @template.month_field_tag field_name(field), default_options(field, options)
         end
 
+        def week_field(field, options={})
+          @template.week_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses
