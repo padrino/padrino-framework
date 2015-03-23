@@ -137,6 +137,10 @@ module Padrino
           @template.date_field_tag field_name(field), default_options(field, options)
         end
 
+        def month_field(field, options={})
+          @template.month_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses
