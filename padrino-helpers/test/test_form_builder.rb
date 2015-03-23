@@ -1227,26 +1227,26 @@ describe "FormBuilder" do
       actual_html = standard_builder.datetime_field(:datetime, :max => max, :min => min, :value => value)
       expected = {
         :id => 'user_datetime',
-        :max => "2000-04-01T12:00:00+00:00",
-        :min => "1993-02-24T12:30:45+00:00",
-        :value => "2000-04-01T12:00:00+00:00"
+        :max => "2000-04-01T12:00:00.000+0000",
+        :min => "1993-02-24T12:30:45.000+0000",
+        :value => "2000-04-01T12:00:00.000+0000"
       }
       assert_has_tag('input[type=datetime]', expected) { actual_html }
     end
 
     it 'should display correct datetime field in haml' do
       visit '/haml/form_for'
-      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00+00:00"
+      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00.000+0000"
     end
 
     it 'should display correct datetime field in erb' do
       visit '/erb/form_for'
-      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00+00:00"
+      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00.000+0000"
     end
 
     it 'should display correct datetime field in slim' do
       visit '/slim/form_for'
-      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00+00:00"
+      assert_have_selector '#demo input[type=datetime]', :id => 'markup_user_datetime', :max => "2000-04-01T12:00:00.000+0000"
     end
   end
 
@@ -1263,9 +1263,9 @@ describe "FormBuilder" do
       actual_html = standard_builder.datetime_local_field(:datetime_local, :max => max, :min => min, :value => value)
       expected = {
         :id => 'user_datetime_local',
-        :max => "2000-04-01T12:00:00+00:00",
-        :min => "1993-02-24T12:30:45+00:00",
-        :value => "2000-04-01T12:00:00+00:00"
+        :max => "2000-04-01T12:00:00",
+        :min => "1993-02-24T12:30:45",
+        :value => "2000-04-01T12:00:00"
       }
       assert_has_tag('input[type=datetime-local]', expected) { actual_html }
     end

@@ -641,7 +641,7 @@ module Padrino
       #
       def datetime_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime_rfc3339(options)
+        options = convert_attributes_into_datetime("%Y-%m-%dT%T.%L%z", options)
         input_tag(:datetime, options)
       end
 
@@ -667,7 +667,7 @@ module Padrino
       #
       def datetime_local_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime_rfc3339(options)
+        options = convert_attributes_into_datetime("%Y-%m-%dT%T", options)
         input_tag(:"datetime-local", options)
       end
 
@@ -703,10 +703,10 @@ module Padrino
       ##
       # Converts special attributes into datetime format strings that conforms to RFC 3399.
       #
-      def convert_attributes_into_datetime_rfc3339(options)
+      def convert_attributes_into_datetime(format, options)
         DATETIME_ATTRIBUTES.each_with_object(options) do |attribute|
           value = datetime_value(options[attribute])
-          options[attribute] = value.rfc3339 if value.respond_to?(:rfc3339)
+          options[attribute] = value.strftime(format) if value.respond_to?(:strftime)
         end
       end
     end
