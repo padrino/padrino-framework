@@ -149,6 +149,10 @@ module Padrino
           @template.time_field_tag field_name(field), default_options(field, options)
         end
 
+        def color_field(field, options={})
+          @template.color_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses

@@ -1429,4 +1429,26 @@ describe "FormBuilder" do
       assert_have_selector '#demo input[type=time]', :id => 'markup_user_time'
     end
   end
+
+  describe 'for #color_field method' do
+    it 'should display correct color field html' do
+      actual_html = standard_builder.color_field(:color)
+      assert_has_tag('input[type=color]', :id => 'user_color', :name => 'user[color]') { actual_html }
+    end
+
+    it 'should display correct color field in haml' do
+      visit '/haml/form_for'
+      assert_have_selector '#demo input[type=color]', :id => 'markup_user_color', :value => "#ff0000"
+    end
+
+    it 'should display correct color field in erb' do
+      visit '/erb/form_for'
+      assert_have_selector '#demo input[type=color]', :id => 'markup_user_color', :value => "#ff0000"
+    end
+
+    it 'should display correct color field in slim' do
+      visit '/slim/form_for'
+      assert_have_selector '#demo input[type=color]', :id => 'markup_user_color', :value => "#ff0000"
+    end
+  end
 end
