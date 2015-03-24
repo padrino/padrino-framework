@@ -1317,4 +1317,38 @@ describe "FormHelpers" do
       assert_have_selector 'input', @expected
     end
   end
+
+  describe 'for #color_field_tag' do
+    before do
+      @expected = {
+        :name => 'color',
+        :value => '#ff0000'
+      }
+    end
+
+    it 'should create an input tag with value option' do
+      actual_html = color_field_tag('color', :value => "#ff0000")
+      assert_has_tag('input[type="color"]', @expected) { actual_html }
+    end
+
+    it 'should create an input tag with short color code' do
+      actual_html = color_field_tag('color', :value => "#f00")
+      assert_has_tag('input[type="color"]', @expected) { actual_html }
+    end
+
+    it 'should display correct color_field_tag in erb' do
+      visit '/erb/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct color_field_tag in haml' do
+      visit '/haml/form_tag'
+      assert_have_selector 'input', @expected
+    end
+
+    it 'should display correct color_field_tag in slim' do
+      visit '/slim/form_tag'
+      assert_have_selector 'input', @expected
+    end
+  end
 end

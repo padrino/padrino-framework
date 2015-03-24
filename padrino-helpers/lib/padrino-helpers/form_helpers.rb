@@ -621,6 +621,7 @@ module Padrino
       end
 
       DATETIME_ATTRIBUTES = [:value, :max, :min].freeze
+      COLOR_CODE_REGEXP   = /\A#([0-9a-fA-F]{3}){1,2}\z/.freeze
 
       ##
       # Constructs a datetime tag from the given options.
@@ -778,6 +779,26 @@ module Padrino
         input_tag(:time, options)
       end
 
+      ##
+      # Constructs a color tag from the given options.
+      #
+      # @example
+      #   color_field_tag('color', :value => "#ff0000")
+      #   color_field_tag('color', :value => "#f00")
+      #
+      # @param [String] name
+      #   The name of the color field.
+      # @param [Hash] options
+      #   The html options for the color field.
+      # @option options [String] :value
+      #  The value of the color field. See examples for details.
+      #
+      def color_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options[:value] = adjust_color(options[:value])
+        input_tag(:color, options)
+      end
+
       private
 
       ##
@@ -814,6 +835,22 @@ module Padrino
         DATETIME_ATTRIBUTES.each_with_object(options) do |attribute|
           value = datetime_value(options[attribute])
           options[attribute] = value.strftime(format) if value.respond_to?(:strftime)
+        end
+      end
+
+      ##
+      # Adjusts color code for the given color.
+      #
+      # @example
+      #   adust_color("#000")    #=> "#000000"
+      #   adust_color("#ff0000") #=> "#ff0000"
+      #   adust_color("#foobar") #=> "#000000"
+      #
+      def adjust_color(color)
+        return "#000000" unless color =~ COLOR_CODE_REGEXP
+        return color if (color_size = color.size) == 7
+        color.slice(1, color_size - 1).each_char.with_object("#") do |chr, obj|
+          obj << chr * 2
         end
       end
     end
