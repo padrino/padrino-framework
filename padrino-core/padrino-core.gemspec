@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
-    s.add_dependency("sinatra", "~> 1.4.2")
+    s.add_dependency("sinatra", "~> 1.4.6")
   end
   s.add_dependency("mustermann19")
   s.add_dependency("thor", "~> 0.18")
