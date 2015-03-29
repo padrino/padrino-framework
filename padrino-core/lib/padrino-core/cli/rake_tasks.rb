@@ -1,11 +1,3 @@
-Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
-  begin
-    load(File.expand_path(file))
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-  end
-end
-
 # Loads the Padrino applications mounted within the project.
 # Setting up the required environment for Padrino.
 task :environment do
@@ -68,5 +60,13 @@ namespace :routes do
   task :app, [:app] => :environment do |t, args|
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
+  end
+end
+
+Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
+  begin
+    load(file)
+  rescue LoadError => e
+    warn "#{file}: #{e.message}"
   end
 end
