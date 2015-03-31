@@ -6,7 +6,7 @@ This component enables caching of an application's response contents on
 both page- and fragment-levels. Output cached in this manner is
 persisted, until it expires or is actively expired, in a configurable store
 of your choosing. Most popular key/value stores work out of the box. Take a look
-at the [Moneta documentation](http://rubydoc.info/gems/moneta) for a list of all supported stores.
+at the {Moneta documentation}[http://rubydoc.info/gems/moneta] for a list of all supported stores.
 
 == Caching Quickstart
 
@@ -343,4 +343,4 @@ Page-level expiration works exactly like the example above--by using
 
 == Copyright
 
-Copyright (c) 2011-2013 Padrino. See LICENSE for details.
+Copyright (c) 2011-2015 Padrino. See LICENSE for details.
