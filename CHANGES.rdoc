@@ -1,6 +1,17 @@
 = CHANGES
 
-== 0.13.0.beta1 (Not Released)
+== 0.13.0.beta2 (April 11th 2015)
+
+* FIX #1870 Trigger filters if superclass responds to :filters (@namusyaka)
+* FIX #749 Trigger resource dirtiness for datamapper (@ujifgc)
+* NEW #1853 Adds wrapper for application which allows better extensibility (@namusyaka)
+* FIX #1891 Refactorings for more reliable dependency loading (@hcatlin, @namusyaka)
+* FIX Update rack-test to 0.6.3 and remove old patch (@ujifgc)
+* FIX #1895 Use compass-blueprint gem for improved compass generator (@myokoym)
+* FIX #1899 Upgrade to sinatra 1.4.6 and latest rack version (@namusyaka)
+* FIX #1886 Moves rake task loading code later in the booting process (@namusyaka)
+
+== 0.13.0.beta1 (February 22nd 2015)
 
 * FIX cleanup and refactor rake taskss (@ujifgc)
 * NEW Remove deprecated cache functionality (@minad)
