@@ -1,11 +1,3 @@
-Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
-  begin
-    load(file)
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-  end
-end
-
 # Loads the Padrino applications mounted within the project.
 # Setting up the required environment for Padrino.
 task :environment do
@@ -43,6 +35,19 @@ def list_app_routes(app, args)
   end
 end
 
+def env_migration_version
+  version = ENV["MIGRATION_VERSION"]
+  if version.nil? && ENV["VERSION"]
+    deprecated = true
+    warn "Environment variable VERSION is deprecated, use MIGRATION_VERSION"
+    version = ENV["VERSION"]
+  end
+  version ? Integer(version) : nil
+rescue ArgumentError
+  warn "Environment variable #{deprecated ? '' : 'MIGRATION_'}VERSION=#{version} should be non-existant or Integer"
+  nil
+end
+
 desc "Displays a listing of the named routes within a project, optionally only those matched by [query]"
 task :routes, [:query] => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
@@ -55,5 +60,13 @@ namespace :routes do
   task :app, [:app] => :environment do |t, args|
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
+  end
+end
+
+Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
+  begin
+    load(file)
+  rescue LoadError => e
+    warn "#{file}: #{e.message}"
   end
 end

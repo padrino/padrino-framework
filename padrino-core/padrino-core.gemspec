@@ -27,9 +27,7 @@ Gem::Specification.new do |s|
   if ENV["SINATRA_EDGE"]
     s.add_dependency("sinatra")
   else
-    # remove this rack dependency after Sinatra > 1.4.5
-    s.add_dependency("rack", "< 1.6.0")
-    s.add_dependency("sinatra", "~> 1.4.2")
+    s.add_dependency("sinatra", "~> 1.4.6")
   end
   s.add_dependency("mustermann19")
   s.add_dependency("thor", "~> 0.18")

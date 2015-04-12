@@ -47,7 +47,7 @@ or use them altogether for a full-stack Padrino application.
 
 == Installation
 
-To install the padrino framework, simply grab the latest version from gemcutter:
+To install the padrino framework, simply grab the latest version from {RubyGems}[https://rubygems.org]:
 
   $ gem install padrino
 

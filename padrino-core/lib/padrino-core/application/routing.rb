@@ -916,6 +916,7 @@ module Padrino
       end
 
       def filter!(type, base=settings)
+        filter! type, base.superclass if base.superclass.respond_to?(:filters)
         base.filters[type].each { |block| instance_eval(&block) }
       end
 
