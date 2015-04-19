@@ -1,4 +1,3 @@
-#coding:utf-8
 require 'pathname'
 
 # Defines the log level for a Padrino project.
