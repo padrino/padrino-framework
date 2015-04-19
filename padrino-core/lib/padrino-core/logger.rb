@@ -390,6 +390,7 @@ module Padrino
     # Flush the entire buffer to the log object.
     #
     def flush
+      puts @buffer.size if $l
       return unless @buffer.size > 0
       @@mutex.synchronize do
         @log.write(@buffer.join(''))

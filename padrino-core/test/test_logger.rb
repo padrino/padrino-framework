@@ -58,6 +58,14 @@ describe "PadrinoLogger" do
       assert_match /log via alias/, @log.string
     end
 
+    it 'should not blow up on mixed or broken encoodings' do
+      skip
+      setup_logger(:log_level => :error, :auto_flush => false)
+      @logger.error "\xD0".force_encoding('BINARY')
+      @logger << 'фыв'
+      @logger.flush
+    end
+
     it 'should log an application' do
       mock_app do
         enable :logging
@@ -262,7 +270,7 @@ describe "options :source_location" do
 
   it 'should output source_location if :source_location is set to true' do
     stub_root { Padrino.logger.debug("hello world") }
-    assert_match /\[test\/test_logger\.rb:264\] hello world/, Padrino.logger.log.string
+    assert_match /\[test\/test_logger\.rb:#{__LINE__-1}\] hello world/, Padrino.logger.log.string
   end
 
   it 'should output source_location if file path is relative' do
