@@ -13,7 +13,7 @@
 
 == 0.13.0.beta1 (February 22nd 2015)
 
-* FIX cleanup and refactor rake taskss (@ujifgc)
+* FIX cleanup and refactor rake tasks (@ujifgc)
 * NEW Remove deprecated cache functionality (@minad)
 * FIX Cleanup and improve test helpers for each gem (@ujifgc)
 * FIX allow Padrino::Rendering with standard ERB (@ujifgc)
