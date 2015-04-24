@@ -1,3 +1,5 @@
+require File.expand_path(File.dirname(__FILE__) + '/helper')
+
 describe "PadrinoConfiguration" do
   it 'should be able to store values' do
     Padrino.config.val1 = 12345
