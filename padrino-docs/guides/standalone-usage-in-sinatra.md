@@ -109,7 +109,7 @@ Padrino enhances the Sinatra ‘render’ method to have support for automatic t
 
     # app.rb
     require 'sinatra/base'
-    require 'padrino-core/application/rendering'
+    require 'padrino-helpers'
 
     class Application < Sinatra::Base
       register Padrino::Rendering
