@@ -2174,4 +2174,18 @@ describe "Routing" do
     put "/b/x/y"
     assert_equal '{"b"=>"x", "c"=>"y"}', body
   end
+
+  it 'should generate urls and absolute urls' do
+    mock_app do
+      get(:index) { settings.url(:index) }
+      get(:absolute) { settings.absolute_url(:absolute) }
+    end
+    get '/'
+    assert_equal '/', body
+    get '/absolute'
+    assert_equal 'http://localhost/absolute', body
+    @app.set :base_url, 'http://example.com'
+    get '/absolute'
+    assert_equal 'http://example.com/absolute', body
+  end
 end
