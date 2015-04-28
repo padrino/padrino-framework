@@ -62,6 +62,7 @@ module Padrino
         set :uri_root,      '/'
         set :public_folder, proc { Padrino.root('public', uri_root) }
         set :images_path,   proc { File.join(public_folder, 'images') }
+        set :base_url,      'http://localhost'
       end
 
       def default_security

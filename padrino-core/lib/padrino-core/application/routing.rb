@@ -344,6 +344,14 @@ module Padrino
       end
       alias :url_for :url
 
+      ##
+      # Returns absolute url. By default adds 'http://localhost' before generated url.
+      # To change that `set :base_url, 'http://example.com'` in your app.
+      #
+      def absolute_url(*args)
+        base_url + url(*args)
+      end
+
       def get(path, *args, &block)
         conditions = @conditions.dup
         route('GET', path, *args, &block)
