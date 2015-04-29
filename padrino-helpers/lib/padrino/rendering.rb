@@ -35,6 +35,11 @@ module Padrino
     ] unless defined?(IGNORE_FILE_PATTERN)
 
     ##
+    # Defines common content-type alias mappings.
+    #
+    CONTENT_TYPE_ALIASES = { :htm => :html }
+
+    ##
     # Default options used in the resolve_template-method.
     #
     DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
@@ -307,13 +312,14 @@ module Padrino
       end
 
       def select_template(templates, template_path, content_type, _locale)
-        simple_content_type = [:html, :plain].include?(content_type)
+        symbol = content_type_symbol(content_type)
+        simple_content_type = [:html, :plain].include?(symbol)
         target_path, target_engine = path_and_engine(template_path)
 
-        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||
         templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
         templates.find{ |file,engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
-        templates.find{ |file,_| file.to_s == "#{target_path}.#{content_type}" } ||
+        templates.find{ |file,_| file.to_s == "#{target_path}.#{symbol}" } ||
         templates.find{ |file,_| file.to_s == "#{target_path}" && simple_content_type }
       end
 
@@ -334,6 +340,13 @@ module Padrino
       else
         require 'padrino/rendering/erb_template'
         settings.set :erb, Padrino::Rendering.engine_configurations[:erb]
+      end
+
+      def content_type_symbol(type)
+        if defined?(::Rack::Mime::MIME_TYPES) && type.kind_of?(String)
+          type = ::Rack::Mime::MIME_TYPES.key(type).sub(/\./,'').to_sym
+        end
+        CONTENT_TYPE_ALIASES[type] || type
       end
     end
   end
