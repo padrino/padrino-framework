@@ -116,6 +116,20 @@ describe "Rendering" do
       assert_equal "html file", body
     end
 
+    it 'should find proper templates when content_type is set by string' do
+      create_layout :error, "layout<%= yield %>"
+      create_view :e404, "404 file"
+
+      mock_app do
+        not_found do
+          content_type 'text/html'
+          render 'e404', :layout => :error
+        end
+      end
+      get '/missing'
+      assert_equal 'layout404 file', body
+    end
+
     it 'should not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
       create_layout :foo, "html file", :format => :html
 
