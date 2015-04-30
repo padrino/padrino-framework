@@ -117,6 +117,34 @@ module Padrino
           @template.image_submit_tag source, options
         end
 
+        def datetime_field(field, options={})
+          @template.datetime_field_tag field_name(field), default_options(field, options)
+        end
+
+        def datetime_local_field(field, options={})
+          @template.datetime_local_field_tag field_name(field), default_options(field, options)
+        end
+
+        def date_field(field, options={})
+          @template.date_field_tag field_name(field), default_options(field, options)
+        end
+
+        def month_field(field, options={})
+          @template.month_field_tag field_name(field), default_options(field, options)
+        end
+
+        def week_field(field, options={})
+          @template.week_field_tag field_name(field), default_options(field, options)
+        end
+
+        def time_field(field, options={})
+          @template.time_field_tag field_name(field), default_options(field, options)
+        end
+
+        def color_field(field, options={})
+          @template.color_field_tag field_name(field), default_options(field, options)
+        end
+
         ##
         # Supports nested fields for a child model within a form.
         # f.fields_for :addresses

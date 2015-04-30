@@ -620,6 +620,185 @@ module Padrino
         input_tag(:range, options)
       end
 
+      DATETIME_ATTRIBUTES = [:value, :max, :min].freeze
+      COLOR_CODE_REGEXP   = /\A#([0-9a-fA-F]{3}){1,2}\z/.freeze
+
+      ##
+      # Constructs a datetime tag from the given options.
+      #
+      # @example
+      #   datetime_field_tag('datetime_with_min_max', :min => DateTime.new(1993, 2, 24, 12, 30, 45),
+      #                                               :max => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_field_tag('datetime_with_value', :value => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #
+      # @param [String] name
+      #   The name of the datetime field.
+      # @param [Hash] options
+      #   The html options for the datetime field.
+      # @option options [DateTime, String] :min
+      #  The min date time of the datetime field.
+      # @option options [DateTime, String] :max
+      #  The max date time of the datetime field.
+      # @option options [DateTime, String] :value
+      #  The value of the datetime field. See examples for details.
+      # @return [String] The html datetime field
+      #
+      def datetime_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m-%dT%T.%L%z", options)
+        input_tag(:datetime, options)
+      end
+
+      ##
+      # Constructs a datetime-local tag from the given options.
+      #
+      # @example
+      #   datetime_local_field_tag('datetime_local_with_min_max', :min => DateTime.new(1993, 2, 24, 12, 30, 45),
+      #                                                           :max => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_local_field_tag('datetime_local_with_value', :value => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #
+      # @param [String] name
+      #   The name of the datetime local field.
+      # @param [Hash] options
+      #   The html options for the datetime-local field.
+      # @option options [DateTime, String] :min
+      #  The min date time of the datetime-local field.
+      # @option options [DateTime, String] :max
+      #  The max date time of the datetime-local field.
+      # @option options [DateTime, String] :value
+      #  The value of the datetime field. See examples for details.
+      # @return [String] The html datetime-local field
+      #
+      def datetime_local_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m-%dT%T", options)
+        input_tag(:"datetime-local", options)
+      end
+
+      ##
+      # Constructs a date tag from the given options.
+      #
+      # @example
+      #   date_field_tag('date_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                       :max => DateTime.new(2000, 4, 1))
+      #   date_field_tag('date_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the date field.
+      # @param [Hash] options
+      #   The html options for the date field.
+      # @option options [DateTime, String] :min
+      #  The min date time of the date field.
+      # @option options [DateTime, String] :max
+      #  The max date time of the date field.
+      # @option options [DateTime, String] :value
+      #  The value of the date field. See examples for details.
+      # @return [String] The html date field
+      #
+      def date_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m-%d", options)
+        input_tag(:date, options)
+      end
+
+      ##
+      # Constructs a month tag from the given options.
+      #
+      # @example
+      #   month_field_tag('month_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                         :max => DateTime.new(2000, 4, 1))
+      #   month_field_tag('month_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the month field.
+      # @param [Hash] options
+      #   The html options for the month field.
+      # @option options [DateTime, String] :min
+      #  The min month time of the month field.
+      # @option options [DateTime, String] :max
+      #  The max month time of the month field.
+      # @option options [DateTime, String] :value
+      #  The value of the month field. See examples for details.
+      # @return [String] The html month field
+      #
+      def month_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-%m", options)
+        input_tag(:month, options)
+      end
+
+      ##
+      # Constructs a week tag from the given options.
+      #
+      # @example
+      #   week_field_tag('week_with_min_max', :min => DateTime.new(1993, 2, 24),
+      #                                       :max => DateTime.new(2000, 4, 1))
+      #   week_field_tag('week_with_value', :value => DateTime.new(2000, 4, 1))
+      #
+      # @param [String] name
+      #   The name of the week field.
+      # @param [Hash] options
+      #   The html options for the week field.
+      # @option options [DateTime, String] :min
+      #  The min week time of the week field.
+      # @option options [DateTime, String] :max
+      #  The max week time of the week field.
+      # @option options [DateTime, String] :value
+      #  The value of the week field. See examples for details.
+      # @return [String] The html week field
+      #
+      def week_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%Y-W%W", options)
+        input_tag(:week, options)
+      end
+
+      ##
+      # Constructs a time tag from the given options.
+      #
+      # @example
+      #   time_field_tag('time_with_min_max', :max => Time.new(1993, 2, 24, 1, 19, 12),
+      #                                       :min => Time.new(2008, 6, 21, 13, 30, 0))
+      #   time_field_tag('time_with_value', :value => Time.new(2008, 6, 21, 13, 30, 0))
+      #
+      # @param [String] name
+      #   The name of the time field.
+      # @param [Hash] options
+      #   The html options for the time field.
+      # @option options [Time, DateTime, String] :min
+      #  The min time of the time field.
+      # @option options [Time, DateTime, String] :max
+      #  The max time of the time field.
+      # @option options [Time, DateTime, String] :value
+      #  The value of the time field. See examples for details.
+      # @return [String] The html time field
+      #
+      def time_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options = convert_attributes_into_datetime("%T.%L", options)
+        input_tag(:time, options)
+      end
+
+      ##
+      # Constructs a color tag from the given options.
+      #
+      # @example
+      #   color_field_tag('color', :value => "#ff0000")
+      #   color_field_tag('color', :value => "#f00")
+      #
+      # @param [String] name
+      #   The name of the color field.
+      # @param [Hash] options
+      #   The html options for the color field.
+      # @option options [String] :value
+      #  The value of the color field. See examples for details.
+      #
+      def color_field_tag(name, options = {})
+        options = { :name => name }.update(options)
+        options[:value] = adjust_color(options[:value])
+        input_tag(:color, options)
+      end
+
       private
 
       ##
@@ -633,6 +812,46 @@ module Padrino
         builder_class = options.delete(:builder) || default_builder
         builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
         builder_class.new(self, object, options)
+      end
+
+      ##
+      # Converts value into DateTime.
+      #
+      # @example
+      #   datetime_value('1993-02-24T12:30:45') #=> #<DateTime: 1993-02-24T12:30:45+00:00>
+      #
+      def datetime_value(value)
+        if value.kind_of?(String)
+          DateTime.parse(value) rescue nil
+        else
+          value
+        end
+      end
+
+      ##
+      # Converts special attributes into datetime format strings that conforms to RFC 3399.
+      #
+      def convert_attributes_into_datetime(format, options)
+        DATETIME_ATTRIBUTES.each_with_object(options) do |attribute|
+          value = datetime_value(options[attribute])
+          options[attribute] = value.strftime(format) if value.respond_to?(:strftime)
+        end
+      end
+
+      ##
+      # Adjusts color code for the given color.
+      #
+      # @example
+      #   adust_color("#000")    #=> "#000000"
+      #   adust_color("#ff0000") #=> "#ff0000"
+      #   adust_color("#foobar") #=> "#000000"
+      #
+      def adjust_color(color)
+        return "#000000" unless color =~ COLOR_CODE_REGEXP
+        return color if (color_size = color.size) == 7
+        color.slice(1, color_size - 1).each_char.with_object("#") do |chr, obj|
+          obj << chr * 2
+        end
       end
     end
   end

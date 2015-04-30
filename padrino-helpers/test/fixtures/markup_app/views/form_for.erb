@@ -50,6 +50,34 @@
     <%= f.label :remember_me %>
     <%= f.check_box :remember_me, :value => '1' %>
   </p>
+  <p>
+    <%= f.label :datetime %>
+    <%= f.datetime_field :datetime, :max => DateTime.new(2000, 4, 1, 12, 0, 0) %>
+  </p>
+  <p>
+    <%= f.label :datetime_local %>
+    <%= f.datetime_local_field :datetime_local, :max => DateTime.new(2000, 4, 1, 12, 0, 0) %>
+  </p>
+  <p>
+    <%= f.label :date %>
+    <%= f.date_field :date, :max => DateTime.new(2000, 4, 1) %>
+  </p>
+  <p>
+    <%= f.label :month %>
+    <%= f.month_field :month, :max => DateTime.new(2000, 4, 1) %>
+  </p>
+  <p>
+    <%= f.label :week %>
+    <%= f.week_field :week, :max => DateTime.new(2000, 4, 1) %>
+  </p>
+  <p>
+    <%= f.label :time %>
+    <%= f.time_field :time, :max => Time.new(2008, 6, 21, 13, 30, 0) %>
+  </p>
+  <p>
+    <%= f.label :color %>
+    <%= f.color_field :color, :value => "#f00" %>
+  </p>
   <p><%= f.submit "Create", :class => 'success', :id => 'demo-button' %></p>
   <p><%= f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button' %></p>
 <% end %>
