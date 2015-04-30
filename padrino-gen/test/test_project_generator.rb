@@ -753,5 +753,20 @@ describe "ProjectGenerator" do
       assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
+
+    it "should properly generate for testunit" do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testunit', '--script=none', '--tiny') }
+      assert_match(/applying.*?testunit.*?test/, out)
+      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:require => 'rack\/test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/:group => 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'test-unit'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
+      assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
+    end
   end
 end
