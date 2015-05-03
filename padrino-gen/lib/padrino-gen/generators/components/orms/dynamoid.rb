@@ -1,10 +1,10 @@
 DYNAMOID = (<<-DYNAMOID) unless defined?(DYNAMOID)
 
-Aws.config({
+Aws.config.update(
   :access_key_id => ENV['AWS_ACCESS_KEY'],
   :secret_access_key => ENV['AWS_SECRET_KEY'],
   :dynamo_db_endpoint => 'dynamodb.ap-southeast-1.amazonaws.com'
-})
+)
 
 Dynamoid.configure do |config|
   config.adapter = 'aws_sdk' # This adapter establishes a connection to the DynamoDB servers using Amazon's own AWS gem.
@@ -22,13 +22,13 @@ end
 # 
 # And then setting for Aws.config is as following:
 # 
-#   Aws.config({
+#   Aws.config.update(
 #     :access_key_id => 'xxx', # everything is ok
 #     :secret_access_key => 'xxx', # everything is ok
 #     :dynamo_db_endpoint => 'localhost', # fake_dynamo runs hostname
 #     :dynamo_db_port => 4567, # fake_dynamo listens port
 #     :use_ssl => false # fake_dynamo don't speak ssl
-#   })
+#   )
 #
 # Additional information on https://github.com/ananthakumaran/fake_dynamo
 DYNAMOID
