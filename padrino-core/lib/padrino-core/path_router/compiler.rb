@@ -73,7 +73,7 @@ module Padrino
       #
       def match?(offset, path)
         current_regexp = @regexps[offset]
-        return unless current_regexp === path || current_regexp === path[0..-2]
+        return unless current_regexp === path || (path.end_with?("/") && current_regexp === path[0..-2])
         @routes[offset..-1].detect{ |route| Regexp.last_match["_#{route.index}"] }
       end
 

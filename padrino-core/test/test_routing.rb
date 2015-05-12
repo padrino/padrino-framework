@@ -2339,4 +2339,19 @@ describe "Routing" do
     get '/absolute'
     assert_equal 'http://example.com/absolute', body
   end
+
+  it 'should not match if route regexps matches with incorrect_path[0..2]' do
+    mock_app do
+      get(:index) { "bork" }
+      get("/foo") { "foo" }
+    end
+    get "/"
+    assert_equal 200, status
+    get "/a"
+    assert_equal 404, status
+    get "/foo"
+    assert_equal 200, status
+    get "/fo"
+    assert_equal 404, status
+  end
 end
