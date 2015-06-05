@@ -12,7 +12,7 @@
               <%%= tag_icon :magic %> <span class=caret></span>
             </a>
             <ul class="list-menu dropdown-menu" role=menu>
-              <li class=ist-menu-wrapper>
+              <li class=list-menu-wrapper>
                 <%%= link_to tag_icon('check-square-o', pat(:select_all)), '#', :id => 'select-all', :class => 'list-menu-link' %>
               </li>
               <li class=list-menu-wrapper.list-menu-wrapper-disabled>
