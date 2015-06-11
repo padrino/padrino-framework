@@ -110,7 +110,7 @@ Next, we can integrate our authentication system within in `app/app.rb`:
 
     access_control.roles_for :any do |role|
       role.protect "/profile"
-      role.protect "/admin" # here a demo path
+      role.protect "/admin" # here is a demo path
     end
 
     # now we add a role for users
