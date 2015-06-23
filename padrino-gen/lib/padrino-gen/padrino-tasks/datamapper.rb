@@ -86,6 +86,8 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     task :setup => [:create, :migrate, :seed]
   end
 
+  task 'db:migrate:down' => 'dm:migrate:down'
+  task 'db:migrate:up' => 'dm:migrate:up'
   task 'db:migrate' => 'dm:migrate'
   task 'db:create'  => 'dm:create'
   task 'db:drop'    => 'dm:drop'
