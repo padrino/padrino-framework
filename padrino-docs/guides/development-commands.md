@@ -101,7 +101,7 @@ The following commands are available:
     # Run Ruby file in the context of Padrino
     $ padrino r script/my_script.rb
 
-The last command “padrino rake” look for rake files in:
+The last command “padrino rake” looks for rake files in:
 
     lib/tasks/**/*.rake
     tasks/**/*.rake
@@ -116,7 +116,7 @@ Using these commands can simplify common tasks making development that much smoo
 
 ## Special Folders
 
-Padrino load these paths:
+Padrino loads these paths:
 
     # special folders
     project/lib
@@ -125,7 +125,7 @@ Padrino load these paths:
     project/shared/models
     project/each_app/models
 
-This mean that you are free to store for example `models` where you prefer, if you have two or more apps with same models you can use `project/shared/models` or `root/models`.
+This means that you are free to store, for example, `models` where you prefer. If you have two or more apps with same models you can use `project/shared/models` or `root/models`.
 
 If you have only one app you still use `project/app/models`(this is the default padrino g choice)
 
