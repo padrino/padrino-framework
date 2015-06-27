@@ -76,7 +76,7 @@ module Padrino
           template  "templates/app.rb.tt", destination_root(@admin_path + "/app.rb")
           inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
           unless options[:destroy]
-            insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement', @admin_path if [:minirecord, :activerecord].include?(orm)
+            insert_middleware 'ConnectionPoolManagement', @admin_path if [:minirecord, :activerecord].include?(orm)
           end
 
           params = [
