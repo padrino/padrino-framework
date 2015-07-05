@@ -1,6 +1,6 @@
 DYNAMOID = (<<-DYNAMOID) unless defined?(DYNAMOID)
 
-Aws.config({
+AWS.config({
   :access_key_id => ENV['AWS_ACCESS_KEY'],
   :secret_access_key => ENV['AWS_SECRET_KEY'],
   :dynamo_db_endpoint => 'dynamodb.ap-southeast-1.amazonaws.com'
@@ -20,9 +20,9 @@ end
 #   - run
 #     fake_dynamo --port 4567
 # 
-# And then setting for Aws.config is as following:
+# And then setting for AWS.config is as following:
 # 
-#   Aws.config({
+#   AWS.config({
 #     :access_key_id => 'xxx', # everything is ok
 #     :secret_access_key => 'xxx', # everything is ok
 #     :dynamo_db_endpoint => 'localhost', # fake_dynamo runs hostname
