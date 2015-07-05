@@ -6,7 +6,7 @@
 #   shell.say name
 #
 email     = shell.ask "Which email do you want use for logging into admin?"
-password  = shell.ask "Tell me the password to use:"
+password  = shell.ask "Tell me the password to use:", :echo => false
 
 shell.say ""
 
@@ -18,7 +18,7 @@ if account.valid?
   shell.say "<%= @model_name %> has been successfully created, now you can login with:"
   shell.say "================================================================="
   shell.say "   email: #{email}"
-  shell.say "   password: #{password}"
+  shell.say "   password: #{?* * password.length}"
   shell.say "================================================================="
 else
   shell.say "Sorry, but something went wrong!"
