@@ -214,6 +214,12 @@ describe "ModelGenerator" do
 
   # DATAMAPPER
   describe "model generator using datamapper" do
+    it 'should add activerecord middleware' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
+      assert_match_in_file(/  use IdentityMap/m, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/lib/identity_map_middleware.rb")
+    end
+
     it 'should generate model file with camelized name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
       capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
