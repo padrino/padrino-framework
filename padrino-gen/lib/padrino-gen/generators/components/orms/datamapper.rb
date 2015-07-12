@@ -41,6 +41,21 @@ case Padrino.env
 end
 DM
 
+IDENTITY_MAP_MIDDLEWARE = <<-MIDDLEWARE
+class IdentityMap
+  def initialize(app, name = :default)
+    @app = app
+    @name = name.to_sym
+  end
+
+  def call(env)
+    ::DataMapper.repository(@name) do
+      @app.call(env)
+    end
+  end
+end
+MIDDLEWARE
+
 def setup_orm
   dm = DM
   db = @project_name.underscore
@@ -73,6 +88,7 @@ def setup_orm
 
   create_file("config/database.rb", dm)
   insert_hook("DataMapper.finalize", :after_load)
+  middleware :identity_map, IDENTITY_MAP_MIDDLEWARE
 end
 
 DM_MODEL = (<<-MODEL) unless defined?(DM_MODEL)
