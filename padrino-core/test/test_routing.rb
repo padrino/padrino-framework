@@ -436,6 +436,16 @@ describe "Routing" do
     assert_equal 406, status
   end
 
+  it 'should provide proper content when :provides is specified and Accept: `*/*` requested' do
+    mock_app do
+      get(:text, :provides => :text) { "text" }
+    end
+    header 'Accept', '*/*'
+    get "/text"
+    assert_equal 200, status
+    assert_equal "text", body
+  end
+
   it 'should return 404 on file extensions it does not provide and flag is not set' do
     mock_app do
       get(:a, :provides => [:html, :js]){ content_type }
