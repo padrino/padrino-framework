@@ -473,6 +473,10 @@ describe "PadrinoCache" do
       register Padrino::Cache
     end
 
-    assert @app.cache.adapter.adapter.is_a?(Moneta::Adapters::Memory)
+    adapter = @app.cache.adapter
+    while adapter.respond_to? :adapter
+      adapter = adapter.adapter
+    end
+    assert_kind_of Moneta::Adapters::Memory, adapter
   end
 end
