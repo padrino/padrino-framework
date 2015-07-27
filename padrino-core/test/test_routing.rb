@@ -2364,4 +2364,14 @@ describe "Routing" do
     get "/fo"
     assert_equal 404, status
   end
+
+  it "should maintain Sinatra's params indifference" do
+    mock_app do
+      get '/update', :with => :id do
+        "#{params[:product]['title']}==#{params[:product][:title]}"
+      end
+    end
+    get '/update/1?product[title]=test'
+    assert_equal 'test==test', body
+  end
 end

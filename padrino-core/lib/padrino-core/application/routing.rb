@@ -979,8 +979,9 @@ module Padrino
         @route = request.route_obj = route
         captured_params = captures_from_params(params)
 
-        @params.merge!(params) if params.kind_of?(Hash)
-        @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
+        @params.merge!(params) { |key, original, newval| original } unless params.empty?
+        @params[:format] = params[:format] if params[:format]
+        @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 
         filter! :before if first_time
 
