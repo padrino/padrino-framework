@@ -14,5 +14,6 @@ Feel free to fork it, apply your corrections or make a useful translation.
 ## Author(s)
 
 * [DAddYE](https://github.com/daddye), articles, guides, code.
+* [Quintasan](https://github.com/Quintasan), pages, editing.
 
 *add_you_here*
