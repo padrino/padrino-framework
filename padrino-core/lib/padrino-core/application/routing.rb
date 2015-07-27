@@ -715,8 +715,7 @@ module Padrino
           if types.include?(accept_format)
             content_type(accept_format || :html, :charset => 'utf-8')
           else
-            halt 406 unless catch_all
-            false
+            catch_all ? true : halt(406)
           end
         end
       end
