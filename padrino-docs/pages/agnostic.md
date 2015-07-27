@@ -11,11 +11,12 @@ The available components and their defaults are listed below:
 
 |Component|Default|Options|
 |:--------|:------|:------|
-|orm|none|mongomapper, mongoid, activerecord, datamapper, sequel, couchrest|
-|script|none|prototype, rightjs, jquery, mootools, extcore|
-|renderer|haml|erb, haml|
-|test|rspec|bacon, shoulda, cucumber, testspec, riot, rspec|
-|stylesheet|none|less, sass|
+|orm|none|mongoid, ripple, activerecord, sequel, mongomapper, minirecord, ohm, mongomatic, dynamoid,
+couchrest, datamapper|
+|script|none|rightjs, extcore, dojo, prototype, jquery, mootools|
+|renderer|haml|slim, haml, liquid, erb|
+|test|rspec|rspec, cucumber, minitest, steak, shoulda, riot, bacon|
+|stylesheet|none|compass, sass, scss, less|
 |mock|none|rr, mocha|
 
 Just create the project with the usual generator command and pass in your preferred components!
