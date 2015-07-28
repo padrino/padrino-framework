@@ -251,22 +251,11 @@ module Padrino
     #
     def external_constant?(const)
       sources = object_sources(const)
-      begin
-        if sample = ObjectSpace.each_object(const).first
-          sources += object_sources(sample)
-        end
-      rescue RuntimeError => error # JRuby 1.7.12 fails to ObjectSpace.each_object
-        raise unless RUBY_PLATFORM =='java' && error.message.start_with?("ObjectSpace is disabled")
-        # malevolent hack to get an instance of an object in jruby
-        sources += object_sources(const.new)
-      end
-      # consider the constant internal if we failed to find any sources or sample it's instance
-      return false if sample.nil? && sources.empty?
       !sources.any?{ |source| source.start_with?(Padrino.root) }
     end
 
     ##
-    # Gets all the sources in which target's class or instance methods are defined.
+    # Gets all the sources in which target class is defined.
     #
     # Note: Method#source_location is for Ruby 1.9.3+ only.
     #
@@ -275,7 +264,14 @@ module Padrino
       target.methods.each do |method_name|
         next unless method_name.kind_of?(Symbol)
         method_object = target.method(method_name)
-        if method_object.owner == (target.class == Class ? target.singleton_class : target.class)
+        if method_object.owner == target.singleton_class
+          sources << method_object.source_location.first
+        end
+      end
+      target.instance_methods.each do |method_name|
+        next unless method_name.kind_of?(Symbol)
+        method_object = target.instance_method(method_name)
+        if method_object.owner == target
           sources << method_object.source_location.first
         end
       end

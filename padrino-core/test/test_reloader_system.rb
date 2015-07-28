@@ -90,7 +90,6 @@ describe "SystemReloader" do
           def instance_test
           end
         end
-        DUMMY = InstanceTest.new
       DOC
       tmp_file = '/tmp/padrino_instance_demo.rb'
       begin
