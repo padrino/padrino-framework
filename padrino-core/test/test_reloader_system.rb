@@ -90,6 +90,7 @@ describe "SystemReloader" do
           def instance_test
           end
         end
+        DUMMY = InstanceTest.new
       DOC
       tmp_file = '/tmp/padrino_instance_demo.rb'
       begin
@@ -108,6 +109,16 @@ describe "SystemReloader" do
       ensure
         FileUtils.rm tmp_file
       end
+    end
+
+    it 'should not fail with superclass mismatch when reloading descendant classes with no instances' do
+      Padrino.clear!
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/stealthy/app.rb')
+      @app = SystemStealthyClassDemo
+      Padrino.mount(SystemStealthyClassDemo).to("/")
+      get '/'
+      FileUtils.touch File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/stealthy/helpers/stealthy_class_helpers.rb')
+      Padrino.reload!
     end
   end
 end
