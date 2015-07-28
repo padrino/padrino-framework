@@ -257,7 +257,11 @@ module Padrino
         end
       rescue RuntimeError => error # JRuby 1.7.12 fails to ObjectSpace.each_object
         raise unless RUBY_PLATFORM =='java' && error.message.start_with?("ObjectSpace is disabled")
+        # malevolent hack to get an instance of an object in jruby
+        sources += object_sources(const.new)
       end
+      # consider the constant internal if we failed to find any sources or sample it's instance
+      return false if sample.nil? && sources.empty?
       !sources.any?{ |source| source.start_with?(Padrino.root) }
     end
 
