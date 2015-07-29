@@ -9,8 +9,5 @@ class Woo < Boo
   end
 end
 
-
 class Soo < Boo
-  def poo
-  end
 end
