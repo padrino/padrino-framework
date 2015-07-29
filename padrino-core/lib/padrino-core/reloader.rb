@@ -251,6 +251,8 @@ module Padrino
     #
     def external_constant?(const)
       sources = object_sources(const)
+      # consider methodless constants not external
+      return false if sources.empty?
       !sources.any?{ |source| source.start_with?(Padrino.root) }
     end
 
