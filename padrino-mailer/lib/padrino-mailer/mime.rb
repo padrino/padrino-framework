@@ -36,7 +36,7 @@ module Padrino
       #
       # You can add your own mime types like:
       #
-      #   Padrino::Mailer::MIME_TYPES.merge!("text/xml" => :xml)
+      #   Padrino::Mailer::Mime::MIME_TYPES.merge!("text/xml" => :xml)
       #
       MIME_TYPES = {
         "text/html"  => :html,
