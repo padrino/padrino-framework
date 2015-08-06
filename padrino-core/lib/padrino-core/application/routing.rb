@@ -722,7 +722,7 @@ module Padrino
 
           accept_format = CONTENT_TYPE_ALIASES[type] || type
           if types.include?(accept_format)
-            content_type(accept_format || :html, :charset => 'utf-8')
+            content_type(accept_format || :html)
           else
             catch_all ? true : halt(406)
           end
@@ -742,7 +742,7 @@ module Padrino
         mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           halt 406 unless mime_types.include?(request.media_type)
-          content_type(mime_symbol(request.media_type), :charset => 'utf-8')
+          content_type(mime_symbol(request.media_type))
         end
       end
 
@@ -885,7 +885,6 @@ module Padrino
       #
       def content_type(type=nil, params={})
         return @_content_type unless type
-        params.delete(:charset) if type == :json
         super(type, params)
         @_content_type = type
       end
@@ -895,7 +894,7 @@ module Padrino
       def provides_any?(formats)
         accepted_format = formats.first
         type = accepted_format ? mime_symbol(accepted_format) : :html
-        content_type(CONTENT_TYPE_ALIASES[type] || type, :charset => 'utf-8')
+        content_type(CONTENT_TYPE_ALIASES[type] || type)
       end
 
       def provides_format?(types, format)
@@ -905,7 +904,7 @@ module Padrino
           halt 406 if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
           false
         else
-          content_type(format || :html, :charset => 'utf-8')
+          content_type(format || :html)
         end
       end
 
