@@ -766,10 +766,25 @@ describe "Routing" do
     assert_equal 'application/json', response["Content-Type"]
     get "/a.foo"
     assert_equal "foo", body
-    assert_equal 'application/foo;charset=utf-8', response["Content-Type"]
+    assert_equal 'application/foo', response["Content-Type"]
     get "/a"
     assert_equal "html", body
     assert_equal 'text/html;charset=utf-8', response["Content-Type"]
+  end
+
+  it 'should not drop json charset' do
+    mock_app do
+      get '/' do
+        content_type :json, :charset => 'utf-16'
+      end
+      get '/a' do
+        content_type :json, 'charset' => 'utf-16'
+      end
+    end
+    get '/'
+    assert_equal 'application/json;charset=utf-16', response["Content-Type"]
+    get '/a'
+    assert_equal 'application/json;charset=utf-16', response["Content-Type"]
   end
 
   it 'should use controllers' do
