@@ -1,6 +1,7 @@
 #coding:utf-8
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'logger'
+require 'tempfile'
 
 describe "PadrinoLogger" do
   before do
@@ -36,6 +37,28 @@ describe "PadrinoLogger" do
         Padrino::Logger::Config[:test][:stream] = my_stream
         Padrino::Logger.setup!
         assert_equal my_stream, Padrino.logger.log
+      end
+
+      it 'should use a custom file path' do
+        tempfile = Tempfile.new('app.txt')
+        path = tempfile.path
+        tempfile.unlink
+        Padrino::Logger::Config[:test][:stream] = :to_file
+        Padrino::Logger::Config[:test][:log_path] = path
+        Padrino::Logger.setup!
+        assert_file_exists path
+        File.unlink(path)
+      end
+
+      it 'should use a custom log directory' do
+        tmpdir = Dir.mktmpdir
+        Padrino::Logger::Config[:test][:stream] = :to_file
+        Padrino::Logger::Config[:test][:log_path] = tmpdir
+        Padrino::Logger.setup!
+        log_path = File.join(tmpdir, 'test.log')
+        assert_file_exists log_path
+        File.unlink(log_path)
+        Dir.rmdir(tmpdir)
       end
     end
 
