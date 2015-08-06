@@ -4,6 +4,7 @@ module Mail # @private
   class Message # @private
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
+    include Padrino::Helpers::RenderHelpers if defined? Padrino::Helpers::RenderHelpers
     attr_reader :template_cache
 
     def initialize_with_app(*args, &block)
@@ -265,6 +266,12 @@ module Mail # @private
       end
 
       self.body = super(engine, data, options, locals, &block) if provides.empty?
+    end
+
+    alias_method :original_partial, :partial if instance_methods.include?(:partial)
+    def partial(template, options={}, &block)
+      raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
+      self.body = original_partial(template, options, &block)
     end
 
     ##

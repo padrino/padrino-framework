@@ -152,5 +152,18 @@ describe "Message" do
       message.encoded
       assert_equal :plain,                message.content_type
     end
+
+    it 'should render partials' do
+      objects = [1,2,'<evil>','<good>'.html_safe]
+      message = Mail::Message.new do
+        from    'padrino@me.com'
+        to      'padrino@you.com'
+        subject 'Hello there Padrino'
+        views        File.dirname(__FILE__) + '/fixtures/views/mailers'
+        partial 'partial/object', :collection => objects
+      end
+
+      assert_equal "Object 1<br>\nObject 2<br>\nObject &lt;evil&gt;<br>\nObject <good><br>", message.body.to_s.chomp
+    end
   end
 end
