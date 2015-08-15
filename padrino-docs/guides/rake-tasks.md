@@ -108,12 +108,6 @@ Padrino has rake tasks for *DataMapper* , *ActiveRecord*, *Sequel*, *Mongomapper
     rake ar:structure:dump                 # Dumps the database structure to a SQL file.
     rake ar:version                        # Retrieves the current schema version number.
 
-**rake ar:auto:upgrade**
-
-This is some sort of super cool and useful task for people like me who don’t love migrations (especially for small apps). It’s a forked version of [auto\_migrations](http://github.com/pjhyett/auto_migrations)
-
-Basically, instead of writing migrations you can directly edit your **schema.rb** and perform *a non destructive* migration with `padrino rake ar:auto:upgrade`.
-
 #### DataMapper Tasks:
 
     rake dm:auto:migrate           # Performs an automigration (resets your db data)
