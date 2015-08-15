@@ -88,7 +88,6 @@ Padrino has rake tasks for *DataMapper* , *ActiveRecord*, *Sequel*, *Mongomapper
 #### ActiveRecord Tasks:
 
     rake ar:abort_if_pending_migrations    # Raises an error if there are pending migrations.
-    rake ar:auto:upgrade                   # Uses schema.rb to auto-upgrade.
     rake ar:charset                        # Retrieves database charset.
     rake ar:collation                      # Retrieves databsae collation.
     rake ar:create                         # Creates the database as defined in config/database.yml
@@ -105,8 +104,6 @@ Padrino has rake tasks for *DataMapper* , *ActiveRecord*, *Sequel*, *Mongomapper
     rake ar:rollback                       # Rolls back the schema to previous schema version.
     rake ar:schema:dump                    # Creates a portable db/schema.rb file.
     rake ar:schema:load                    # Loads a schema.rb file into the database.
-    rake ar:schema:to_migration            # Creates a migration from schema.rb
-    rake ar:schema:to_migration_with_reset # Creates a migration and resets the migrations log.
     rake ar:setup                          # Creates the database, loads the schema, and seeds data.
     rake ar:structure:dump                 # Dumps the database structure to a SQL file.
     rake ar:version                        # Retrieves the current schema version number.
