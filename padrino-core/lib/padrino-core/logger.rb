@@ -264,6 +264,9 @@ module Padrino
     #
     # :log_level:: Once of [:fatal, :error, :warn, :info, :debug]
     # :stream:: Once of [:to_file, :null, :stdout, :stderr] our your custom stream
+    # :log_path:: Defines log file path or directory if :stream is :to_file
+    #   If it's a file, its location is created by mkdir_p.
+    #   If it's a directory, it must exist. In this case log name is '<env>.log'
     # :log_level::
     #   The log level from, e.g. :fatal or :info. Defaults to :warn in the
     #   production environment and :debug otherwise.
@@ -279,6 +282,10 @@ module Padrino
     #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
+    #   # or change log file path
+    #   Padrino::Logger::Config[:development][:log_path] = 'logs/app-development.txt'
+    #   # or change log file directory
+    #   Padrino::Logger::Config[:development][:log_path] = '/var/logs/padrino'
     #   # or you can use your stream
     #   Padrino::Logger::Config[:development][:stream] = StringIO.new
     #
@@ -329,8 +336,18 @@ module Padrino
 
         stream = case config[:stream]
           when :to_file
-            FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
-            File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
+            if filename = config[:log_path]
+              filename = Padrino.root(filename) unless Pathname.new(filename).absolute?
+              if File.directory?(filename)
+                filename = File.join(filename, "#{Padrino.env}.log")
+              else
+                FileUtils.mkdir_p(File.dirname(filename))
+              end
+              File.new(filename, 'a+')
+            else
+              FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
+              File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
+            end
           when :null   then StringIO.new
           when :stdout then $stdout
           when :stderr then $stderr
