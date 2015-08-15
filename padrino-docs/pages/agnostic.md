@@ -14,8 +14,8 @@ The available components and their defaults are listed below:
 |orm|none|mongoid, ripple, activerecord, sequel, mongomapper, minirecord, ohm, mongomatic, dynamoid,
 couchrest, datamapper|
 |script|none|rightjs, extcore, dojo, prototype, jquery, mootools|
-|renderer|haml|slim, haml, liquid, erb|
-|test|rspec|rspec, cucumber, minitest, steak, shoulda, riot, bacon|
+|renderer|slim|slim, haml, erb|
+|test|none|rspec, cucumber, minitest, steak, shoulda, riot, bacon|
 |stylesheet|none|compass, sass, scss, less|
 |mock|none|rr, mocha|
 
