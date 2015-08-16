@@ -5,7 +5,8 @@ module Padrino
         def cache_object(key, opts = {})
           if settings.caching?
             began_at = Time.now
-            if value = settings.cache[key.to_s]
+            if settings.cache.key?(key.to_s)
+              value = settings.cache[key.to_s]
               logger.debug "GET Object", began_at, key.to_s if defined?(logger)
             else
               value = yield

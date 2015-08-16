@@ -479,4 +479,31 @@ describe "PadrinoCache" do
     end
     assert_kind_of Moneta::Adapters::Memory, adapter
   end
+
+  it "should check key existence" do
+    count1, count2 = 0, 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get "/" do
+        cache(:foo) do
+          count1 += 1
+          nil
+        end
+        count1.inspect
+      end
+
+      get "/object" do
+        cache_object(:bar) do
+          count2 += 1
+          nil
+        end
+        count2.inspect
+      end
+    end
+    2.times { get "/" }
+    assert_equal "1", body
+    2.times { get "/object" }
+    assert_equal "1", body
+  end
 end
