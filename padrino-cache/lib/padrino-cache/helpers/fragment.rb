@@ -51,9 +51,10 @@ module Padrino
         def cache(key, opts = {}, &block)
           if settings.caching?
             began_at = Time.now
-            if value = settings.cache[key.to_s]
+            if settings.cache.key?(key.to_s)
+              value = settings.cache[key.to_s]
               logger.debug "GET Fragment", began_at, key.to_s if defined?(logger)
-              concat_content(value.html_safe)
+              concat_content(value.to_s.html_safe)
             else
               value = capture_html(&block)
               settings.cache.store(key.to_s, value, opts)
