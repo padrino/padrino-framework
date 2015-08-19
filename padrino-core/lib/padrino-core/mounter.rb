@@ -96,20 +96,23 @@ module Padrino
     def map_onto(router)
       app_data = self
       app_obj = @app_obj
+
+      uri_root             = app_data.uri_root
+      public_folder_exists = File.exist?(app_obj.public_folder)
+
       if padrino_application?
-        app_obj.set :uri_root,       app_data.uri_root
-        app_obj.set :app_name,       app_data.app_obj.app_name.to_s
-        app_obj.set :app_file,       app_data.app_file unless File.exist?(app_obj.app_file)
-        app_obj.set :root,           app_data.app_root unless app_data.app_root.blank?
-        app_obj.set :public_folder,  Padrino.root('public', app_data.uri_root) unless File.exist?(app_obj.public_folder)
-        app_obj.set :static,         File.exist?(app_obj.public_folder) if app_obj.nil?
+        app_obj.set :uri_root,       uri_root
+        app_obj.set :app_name,       app_obj.app_name.to_s
+        app_obj.set :root,           app_data.app_root
+        app_obj.set :public_folder,  Padrino.root('public', uri_root) unless public_folder_exists
+        app_obj.set :static,         public_folder_exists
         app_obj.set :cascade,        app_data.cascade
       else
-        app_obj.uri_root      = app_data.uri_root
-        app_obj.public_folder = Padrino.root('public', app_data.uri_root) unless File.exist?(app_obj.public_folder)
+        app_obj.uri_root      = uri_root
+        app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end
       app_obj.setup_application! # Initializes the app here with above settings.
-      router.map(:to => app_obj, :path => app_data.uri_root, :host => app_data.app_host)
+      router.map(:to => app_obj, :path => uri_root, :host => app_data.app_host)
     end
 
     ###
@@ -185,8 +188,10 @@ module Padrino
     # Returns the determined location of the mounted application main file.
     #
     def locate_app_file
+      app_const = app_constant
+
       candidates  = []
-      candidates << app_constant.app_file if app_constant.respond_to?(:app_file) && File.exist?(app_constant.app_file.to_s)
+      candidates << app_const.app_file if app_const.respond_to?(:app_file)
       candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
       candidates << Padrino.mounted_root(name.downcase, "app.rb")
       simple_name = name.split("::").last.downcase
