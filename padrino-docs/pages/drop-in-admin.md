@@ -5,20 +5,19 @@ email: nesquena@gmail.com
 title: Drop-in Admin
 ---
 
-Padrino ships with an Admin Interface that includes the following features:
+Padrino is shipped with a slick and beautiful administration interface, with the following features:
 
 ||
-|Orm Agnostic|Adapters for datamapper, activerecord, sequel, mongomapper, mongoid|
-|Authentication|Account authentication support and permission management|
-|Template Agnostic|View support for Erb and Haml rendering engines|
-|Scaffold|Create a model “admin interface” by invoking a command|
-|MultiLanguage|Translated into 10 languages including English, Spanish, and Italian|
+|Orm Agnostic|Adapters for Active Record, MiniRecord, DataMapper, CouchRest, Mongoid, MongoMapper, Sequel, Ohm and Dynamoid|
+|Authentication|User authentication and authorization management|
+|Template Agnostic|Slim, Haml and ERB rendering support|
+|Scaffold|You can create a new "admin interface" by providing a single Model|
+|MultiLanguage|Translated into 10 languages including English, German and Russian|
 
 Example:
 
-    $ padrino-gen project cool --orm activerecord
+    $ padrino-gen project cool -d datamapper
     $ cd cool
-    $ padrino-gen admin
-    $ padrino-gen admin_page post
+    $ padrino g admin
 
-For usage information, check out our detailed [admin guide](/guides/padrino-admin).
+For more information, check out our detailed [Padrino Admin guide](/guides/padrino-admin).

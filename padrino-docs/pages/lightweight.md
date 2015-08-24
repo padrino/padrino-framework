@@ -16,4 +16,4 @@ Padrino strives to adhere to the following basic principles:
 -   Creative
 -   Concise
 
-This framework can be used with ease for web development for a project of any size from your lightweight json web service to a large full-stack web application!
+This framework can be used with ease for web development for a project of any size from your lightweight JSON web service to a large full-stack web application!
