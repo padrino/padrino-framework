@@ -35,7 +35,9 @@ At the moment we support the following list of languages:
 
 ## Provide your translations
 
-Download and translate these files:
+Fork [padrino-framework](https://github.com/padrino/padrino-framework), add translation files for your language and create a pull request.
+
+If you are not familiar with Github you can download and translate these files:
 
 -   [padrino-core.yml](https://raw.github.com/padrino/padrino-framework/master/padrino-support/lib/padrino-support/locale/en.yml)
 -   [padrino-admin.yml](http://raw.github.com/padrino/padrino-framework/master/padrino-admin/lib/padrino-admin/locale/admin/en.yml)
