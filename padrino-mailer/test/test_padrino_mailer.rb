@@ -110,5 +110,19 @@ describe "PadrinoMailer" do
                         :content_type => 'text/html', :delivery_method => @app.delivery_method,
                         :subject => 'Welcome Helper!', :body => "<a href=\"#\">jim</a>")
     end
+
+    it 'should fail with proper message if mailer is not registered' do
+      error = assert_raises RuntimeError do
+        post '/deliver/failing_mailer'
+      end
+      assert_match /is not registered/, error.message
+    end
+
+    it 'should fail with proper message if message does not exist' do
+      error = assert_raises RuntimeError do
+        post '/deliver/failing_message'
+      end
+      assert_match /has no message/, error.message
+    end
   end
 end
