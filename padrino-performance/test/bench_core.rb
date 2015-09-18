@@ -6,7 +6,7 @@ require 'minitest/autorun'
 require 'minitest/benchmark'
 require 'rack/test'
 
-class Minitest::Benchmark
+class Padrino::BenchSpec < Minitest::BenchSpec
   def self.bench_range
     [20, 80, 320, 1280]
   end
@@ -28,9 +28,11 @@ class Minitest::Benchmark
   def app
     Rack::Lint.new(@app)
   end
+
+  Minitest::Spec.register_spec_type(/^Padrino .* Performance$/, Padrino::BenchSpec)
 end
 
-describe 'Padrino Core Benchmark' do
+describe 'Padrino Core Performance' do
   before do
     Padrino.clear!
 
