@@ -11,10 +11,6 @@ class Padrino::BenchSpec < Minitest::BenchSpec
     [20, 80, 320, 1280]
   end
 
-  def self.io
-    $stdout
-  end
-
   def result_code
     ''
   end
@@ -29,14 +25,28 @@ class Padrino::BenchSpec < Minitest::BenchSpec
     Rack::Lint.new(@app)
   end
 
+  def self.bench_performance_any(name, &work)
+    bench name do
+      validation = proc do |range, times|
+        assert true
+      end
+      assert_performance(validation, &work)
+    end
+  end
+
+  def self.run(*)
+    puts self if self.superclass == Padrino::BenchSpec
+    super
+  end
+
   Minitest::Spec.register_spec_type(/^Padrino .* Performance$/, Padrino::BenchSpec)
 end
 
-describe 'Padrino Core Performance' do
+describe 'Padrino Routing Performance' do
   before do
     Padrino.clear!
 
-    paths = (1..100).map{ rand(36**8).to_s(36) }
+    @paths = paths = (1..100).map{ rand(36**8).to_s(36) }
 
     mock_app do
       get("/foo") { "okey" }
@@ -47,14 +57,6 @@ describe 'Padrino Core Performance' do
     end
 
     get '/'
-
-    @paths = paths
-  end
-
-  bench_performance_linear 'calling one path', 0.99 do |n|
-    n.times do
-      get '/foo'
-    end
   end
 
   bench_performance_linear 'calling 404', 0.99 do |n|
@@ -63,8 +65,10 @@ describe 'Padrino Core Performance' do
     end
   end
 
-  bench_performance_linear 'clean sample', 0.99 do |n|
-    n.times{ @paths.sample }
+  bench_performance_linear 'calling one path', 0.99 do |n|
+    n.times do
+      get '/foo'
+    end
   end
 
   bench_performance_linear 'calling sample', 0.99 do |n|
@@ -82,6 +86,34 @@ describe 'Padrino Core Performance' do
   bench_performance_linear 'sample and params', 0.99 do |n|
     n.times do
       get "/#{@paths.sample}?foo=bar&zoo=#{@paths.sample}"
+    end
+  end
+end
+
+describe 'Padrino Mounter Performance' do
+  class TestApp < Padrino::Application
+    get '/' do
+      'OK'
+    end
+  end
+
+  before do
+    Padrino.clear!
+
+    @paths = paths = (1..100).map{ rand(36**8).to_s(36) }
+
+    test_app = TestApp.dup
+
+    paths.each do |p|
+      Padrino.mount(TestApp).to("/#{p}")
+    end
+  end
+
+  bench_performance_any 'mounted sample' do |n|
+    request = Rack::MockRequest.new(Padrino.application)
+    n.times do
+      response = request.get("/#{@paths.sample}")
+      assert_equal 200, response.status
     end
   end
 end
