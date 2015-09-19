@@ -154,3 +154,33 @@ class Padrino::MounterBenchmark < Minitest::Benchmark
     assert_equal 200, response.status
   end
 end
+
+class Padrino::HugeRouterBenchmark < Minitest::Benchmark
+  include MockBenchmark
+
+  def setup
+    @apps = {}
+    @pathss = {}
+    @requests = {}
+    self.class.bench_range.each do |n|
+      @pathss[n] = paths = (1..n/20).map{ rand(36**8).to_s(36) }
+      @apps[n] = Sinatra.new Padrino::Application do
+        paths.each do |p|
+          get("/#{p}") { p.to_s }
+        end
+      end
+      @requests[n] = Rack::MockRequest.new(@apps[n])
+      @requests[n].get('/')
+    end
+  end
+
+  def bench_calling_sample
+    response = nil
+    assert_performance_linear 0.99 do |n|
+      n.times do
+        response = @requests[n].get("/#{@pathss[n].sample}")
+      end
+    end
+    assert_equal 200, response.status
+  end
+end
