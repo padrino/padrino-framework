@@ -22,7 +22,7 @@ class Padrino::BenchSpec < Minitest::BenchSpec
   end
 
   def app
-    Rack::Lint.new(@app)
+    @app
   end
 
   def self.bench_performance_any(name, &work)
@@ -102,8 +102,6 @@ describe 'Padrino Mounter Performance' do
 
     @paths = paths = (1..100).map{ rand(36**8).to_s(36) }
 
-    test_app = TestApp.dup
-
     paths.each do |p|
       Padrino.mount(TestApp).to("/#{p}")
     end
@@ -112,8 +110,7 @@ describe 'Padrino Mounter Performance' do
   bench_performance_any 'mounted sample' do |n|
     request = Rack::MockRequest.new(Padrino.application)
     n.times do
-      response = request.get("/#{@paths.sample}")
-      assert_equal 200, response.status
+      request.get("/#{@paths.sample}")
     end
   end
 end
