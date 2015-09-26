@@ -1,51 +1,54 @@
-require 'fileutils'
+require 'fileutils' unless defined?(FileUtils)
 require 'padrino-core'
 require 'padrino-helpers'
 FileSet.glob_require('padrino-cache/{helpers}/*.rb', __FILE__)
+require 'moneta'
 
 module Padrino
   class << self
     ##
-    # Returns the caching engine
+    # Returns the caching engine.
     #
     # @example
-    #   # with: Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
-    #   Padrino.cache.set('val', 'test')
-    #   Padrino.cache.get('val') # => 'test'
+    #   # with: Padrino.cache = Padrino::Cache.new(:File, :dir => /my/cache/path)
+    #   Padrino.cache['val'] = 'test'
+    #   Padrino.cache['val'] # => 'test'
     #   Padrino.cache.delete('val')
-    #   Padrino.cache.flush
+    #   Padrino.cache.clear
     #
-    # @api public
     def cache
       @_cache
     end
 
     ##
-    # Set the caching engine
+    # Set the caching engine.
     #
     # @param value
-    #   Instance of Padrino::Cache::Store
+    #   Instance of Moneta store
     #
     # @example
-    #   Padrino.cache = Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
-    #   Padrino.cache = Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
-    #   Padrino.cache = Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
-    #   Padrino.cache = Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
-    #   Padrino.cache = Padrino::Cache::Store::Memory.new(50)
-    #   Padrino.cache = Padrino::Cache::Store::File.new(/my/cache/path)
+    #   Padrino.cache = Padrino::Cache.new(:LRUHash) # default choice
+    #   Padrino.cache = Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # Keeps cached values in file
+    #   Padrino.cache = Padrino::Cache.new(:Memcached) # Uses default server at localhost
+    #   Padrino.cache = Padrino::Cache.new(:Memcached, :server => '127.0.0.1:11211', :exception_retry_limit => 1)
+    #   Padrino.cache = Padrino::Cache.new(:Memcached, :backend => memcached_or_dalli_instance)
+    #   Padrino.cache = Padrino::Cache.new(:Redis) # Uses default server at localhost
+    #   Padrino.cache = Padrino::Cache.new(:Redis, :host => '127.0.0.1', :port => 6379, :db => 0)
+    #   Padrino.cache = Padrino::Cache.new(:Redis, :backend => redis_instance)
+    #   Padrino.cache = Padrino::Cache.new(:Mongo) # Uses default server at localhost
+    #   Padrino.cache = Padrino::Cache.new(:Mongo, :backend => mongo_client_instance)
     #
     #   # You can manage your cache from anywhere in your app:
     #
-    #   Padrino.cache.set('val', 'test')
-    #   Padrino.cache.get('val') # => 'test'
+    #   Padrino.cache['val'] = 'test'
+    #   Padrino.cache['val'] # => 'test'
     #   Padrino.cache.delete('val')
-    #   Padrino.cache.flush
+    #   Padrino.cache.clear
     #
-    # @api public
     def cache=(value)
       @_cache= value
     end
-  end # self
+  end
 
   ##
   # This component enables caching of an application's response contents on
@@ -54,13 +57,11 @@ module Padrino
   # of your choosing. Several common caching stores are supported out of the box.
   #
   module Cache
-    autoload :Store,  'padrino-cache/store'
-    autoload :Parser, 'padrino-cache/parser'
-
     class << self
       ##
       # Register these helpers:
       #
+      #   Padrino::Cache::Helpers::ObjectCache
       #   Padrino::Cache::Helpers::CacheStore
       #   Padrino::Cache::Helpers::Fragment
       #   Padrino::Cache::Helpers::Page
@@ -69,40 +70,56 @@ module Padrino
       #
       # By default we use FileStore as showed below:
       #
-      #   set :cache, Padrino::Cache::Store::File.new(File.join(app.root, 'tmp', 'cache'))
+      #   set :cache, Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache'))
       #
-      # However, you can also change the file store easiily in your app.rb:
+      # However, you can also change the file store easily in your app.rb:
       #
-      #   set :cache, Padrino::Cache::Store::Memcache.new(::Memcached.new('127.0.0.1:11211', :exception_retry_limit => 1))
-      #   set :cache, Padrino::Cache::Store::Memcache.new(::Dalli::Client.new('127.0.0.1:11211', :exception_retry_limit => 1))
-      #   set :cache, Padrino::Cache::Store::Redis.new(::Redis.new(:host => '127.0.0.1', :port => 6379, :db => 0))
-      #   set :cache, Padrino::Cache::Store::Mongo.new(::Mongo::Connection.new('127.0.0.1', 27017).db('padrino'), :username => 'username', :password => 'password', :size => 64, :max => 100, :collection => 'cache')
-      #   set :cache, Padrino::Cache::Store::Memory.new(50)
-      #   set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
+      #   set :cache, Padrino::Cache.new(:LRUHash) # Keeps cached values in memory
+      #   set :cache, Padrino::Cache.new(:Memcached) # Uses default server at localhost
+      #   set :cache, Padrino::Cache.new(:Memcached, '127.0.0.1:11211', :exception_retry_limit => 1)
+      #   set :cache, Padrino::Cache.new(:Memcached, :backend => memcached_or_dalli_instance)
+      #   set :cache, Padrino::Cache.new(:Redis) # Uses default server at localhost
+      #   set :cache, Padrino::Cache.new(:Redis, :host => '127.0.0.1', :port => 6379, :db => 0)
+      #   set :cache, Padrino::Cache.new(:Redis, :backend => redis_instance)
+      #   set :cache, Padrino::Cache.new(:Mongo) # Uses default server at localhost
+      #   set :cache, Padrino::Cache.new(:Mongo, :backend => mongo_client_instance)
+      #   set :cache, Padrino::Cache.new(:File, :dir => Padrino.root('tmp', app_name.to_s, 'cache')) # default choice
       #
       # You can manage your cache from anywhere in your app:
       #
-      #   MyApp.cache.set('val', 'test')
-      #   MyApp.cache.get('val') # => 'test'
+      #   MyApp.cache['val'] = 'test'
+      #   MyApp.cache['val'] # => 'test'
       #   MyApp.cache.delete('val')
-      #   MyApp.cache.flush
+      #   MyApp.cache.clear
       #
-      # @api public
       def registered(app)
+        app.helpers Padrino::Cache::Helpers::ObjectCache
         app.helpers Padrino::Cache::Helpers::CacheStore
         app.helpers Padrino::Cache::Helpers::Fragment
         app.helpers Padrino::Cache::Helpers::Page
-        app.set :cache, Padrino::Cache::Store::File.new(Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache'))
-        app.disable :caching
+        unless app.respond_to?(:cache)
+          cache_dir = Padrino.root('tmp', defined?(app.app_name) ? app.app_name.to_s : '', 'cache')
+          app.set :cache, Padrino::Cache.new(:File, :dir => cache_dir)
+        end
+        app.disable :caching unless app.respond_to?(:caching)
+        included(app)
       end
-      alias :included :registered
 
-      # @private
-      def padrino_route_added(route, verb, path, args, options, block) # @private
+      def included(base)
+        base.extend Padrino::Cache::Helpers::Page::ClassMethods
+      end
+
+      def padrino_route_added(route, verb, path, args, options, block)
         Padrino::Cache::Helpers::Page.padrino_route_added(route, verb, path, args, options, block)
       end
     end
 
-    Padrino.cache = Store::Memory.new(50)
-  end # Cache
-end # Padrino
+    def self.new(name, options = {})
+      # Activate expiration by default
+      options[:expires] = true unless options.include?(:expires)
+      Moneta.new(name, options)
+    end
+
+    Padrino.cache = Padrino::Cache.new(:LRUHash)
+  end
+end

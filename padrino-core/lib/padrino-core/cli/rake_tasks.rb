@@ -1,14 +1,5 @@
-# Load rake tasks from common rake task definition locations
-Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
-  begin
-    load(file)
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-  end
-end
-
-# Loads the Padrino applications mounted within the project
-# setting up the required environment for Padrino
+# Loads the Padrino applications mounted within the project.
+# Setting up the required environment for Padrino.
 task :environment do
   require File.expand_path('config/boot.rb', Rake.application.original_dir)
 
@@ -17,12 +8,18 @@ task :environment do
   end
 end
 
+task :skeleton do
+  PADRINO_ROOT ||= Rake.application.original_dir
+  require 'padrino-core'
+  Padrino.send(:dependency_paths).reject!{ |path| path.include?('/models/') }
+  require File.expand_path('config/boot.rb', Rake.application.original_dir)
+end
+
 desc "Generate a secret key"
 task :secret do
   shell.say SecureRandom.hex(32)
 end
 
-# lists all routes of a given app
 def list_app_routes(app, args)
   app_routes = app.named_routes
   app_routes.reject! { |r| r.identifier.to_s !~ /#{args.query}/ } if args.query.present?
@@ -38,6 +35,19 @@ def list_app_routes(app, args)
   end
 end
 
+def env_migration_version
+  version = ENV["MIGRATION_VERSION"]
+  if version.nil? && ENV["VERSION"]
+    deprecated = true
+    warn "Environment variable VERSION is deprecated, use MIGRATION_VERSION"
+    version = ENV["VERSION"]
+  end
+  version ? Integer(version) : nil
+rescue ArgumentError
+  warn "Environment variable #{deprecated ? '' : 'MIGRATION_'}VERSION=#{version} should be non-existant or Integer"
+  nil
+end
+
 desc "Displays a listing of the named routes within a project, optionally only those matched by [query]"
 task :routes, [:query] => :environment do |t, args|
   Padrino.mounted_apps.each do |app|
@@ -50,5 +60,13 @@ namespace :routes do
   task :app, [:app] => :environment do |t, args|
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
+  end
+end
+
+Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
+  begin
+    load(file)
+  rescue LoadError => e
+    warn "#{file}: #{e.message}"
   end
 end

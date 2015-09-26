@@ -12,3 +12,12 @@
 
 <div class="demo_has_content"><%= content_for?(:demo).to_s %>
 <div class="fake_has_content"><%= content_for?(:fake).to_s %>
+
+<% content_for :demo3 do %>
+  <p class="duplication">One</p>
+<% end %>
+<% content_for :demo3, :flush => true do %>
+  <p class="duplication">Two</p>
+<% end %>
+
+<div class="demo3"><%= yield_content :demo3 %></div>

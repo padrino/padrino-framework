@@ -7,17 +7,13 @@ module Padrino
     # Responsible for executing plugins instructions within a Padrino project.
     #
     class Plugin < Thor::Group
-      # Defines the default URL for official padrino recipe plugins
+      # Defines the default URL for official padrino recipe plugins.
       PLUGIN_URL = 'https://github.com/padrino/padrino-recipes/tree/master/plugins'
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:plugin, self)
 
-      # Define the source plugin root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen plugin [plugin_identifier] [options]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Runner
@@ -29,14 +25,15 @@ module Padrino
       class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".",   :type => :string
       class_option :list, :desc => "list available plugins", :aliases => '-l', :default => false, :type => :boolean
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      # Show help if no argv given
+
+      # Show help if no ARGV given.
       require_arguments!
 
-      # Create the Padrino Plugin
+      ##
+      # Create the Padrino Plugin.
       #
-      # @api private
       def setup_plugin
-        if options[:list] || plugin_file.nil? # list method ran here
+        if options[:list] || plugin_file.nil?
           list_plugins
         else # executing the plugin instructions
           self.destination_root = options[:root]
@@ -65,6 +62,6 @@ module Padrino
           say plugins.map { |plugin| "  - #{plugin}" }.join("\n")
         end
       end
-    end # Plugins
-  end # Generators
-end # Padrino
+    end
+  end
+end

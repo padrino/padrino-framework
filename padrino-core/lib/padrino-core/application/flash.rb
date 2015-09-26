@@ -2,14 +2,13 @@ module Padrino
   module Flash
 
     class << self
-      # @private
       def registered(app)
         app.helpers Helpers
         app.after do
           session[:_flash] = @_flash.next if @_flash
         end
       end
-    end # self
+    end
 
     class Storage
       include Enumerable
@@ -178,7 +177,8 @@ module Padrino
 
     module Helpers
       ###
-      # Overloads the existing redirect helper in-order to provide support for flash messages
+      # Overloads the existing redirect helper in-order to provide support for
+      # flash messages.
       #
       # @overload redirect(url)
       #   @param [String] url
@@ -215,7 +215,7 @@ module Padrino
       alias_method :redirect_to, :redirect
 
       ###
-      # Returns the flash storage object
+      # Returns the flash storage object.
       #
       # @return [Storage]
       #
@@ -224,6 +224,6 @@ module Padrino
       def flash
         @_flash ||= Storage.new(env['rack.session'] ? session[:_flash] : {})
       end
-    end # Helpers
-  end # Flash
-end # Padrino
+    end
+  end
+end

@@ -1,18 +1,16 @@
-ENV['PADRINO_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
-require File.expand_path('../../../load_paths', __FILE__)
-require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
+require 'minitest/autorun'
+require 'minitest/pride'
+require 'mocha/setup'
 require 'rack/test'
-require 'rack'
-require 'uuid'
 require 'thor/group'
-require 'padrino-core/support_lite' unless defined?(SupportLite)
-require 'padrino-admin'
 require 'dm-core'
-require 'dm-migrations'
-require 'dm-validations'
-require 'dm-aggregates'
+require 'padrino-admin'
+
+require 'ext/minitest-spec'
+require 'ext/rack-test-methods'
 
 Padrino::Generators.load_components!
 
@@ -25,11 +23,6 @@ module Kernel
   end
 end
 
-class Class
-  # Allow assertions in request context
-  include MiniTest::Assertions
-end
-
 class MiniTest::Spec
   include Rack::Test::Methods
 
@@ -37,9 +30,10 @@ class MiniTest::Spec
   # given. Used in setup or individual spec methods to establish
   # the application.
   def mock_app(base=Padrino::Application, &block)
-    @app = Sinatra.new(base, &block)
-    @app.send :include, MiniTest::Assertions
-    @app.register Padrino::Helpers
+    @app = Sinatra.new base do
+      register Padrino::Helpers
+      instance_eval &block
+    end
   end
 
   def app
@@ -50,34 +44,4 @@ class MiniTest::Spec
   def generate(name, *params)
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
   end
-
-  # Assert_file_exists('/tmp/app')
-  def assert_file_exists(file_path)
-    assert File.exist?(file_path), "File at path '#{file_path}' does not exist!"
-  end
-
-  # Assert_no_file_exists('/tmp/app')
-  def assert_no_file_exists(file_path)
-    assert !File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
-  end
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    File.exist?(file) ? assert_match(pattern, File.read(file)) : assert_file_exists(file)
-  end
-
-  def assert_no_match_in_file(pattern, file)
-    File.exists?(file) ? assert_no_match(pattern, File.read(file)) : assert_file_exists(file)
-  end
-
-  # Delegate other missing methods to response.
-  def method_missing(name, *args, &block)
-    if response && response.respond_to?(name)
-      response.send(name, *args, &block)
-    else
-      super(name, *args, &block)
-    end
-  end
-
-  alias :response :last_response
 end

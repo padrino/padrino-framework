@@ -11,7 +11,6 @@ MONGO
 def setup_orm
   require_dependencies 'mongo_mapper'
   require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies('SystemTimer', :require => 'system_timer') if RUBY_VERSION =~ /1\.8/ && (!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')
   create_file("config/database.rb", MONGO.gsub(/!NAME!/, @project_name.underscore))
 end
 

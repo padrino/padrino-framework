@@ -4,16 +4,11 @@ module Padrino
     # Responsible for generating migration files for the appropriate ORM component.
     #
     class Migration < Thor::Group
-
-      # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:migration, self)
 
-      # Define the source template root
       def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      # Defines the banner for this CLI generator
       def self.banner; "padrino-gen migration [name] [fields]"; end
 
-      # Include related modules
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Components::Actions
@@ -25,7 +20,7 @@ module Padrino
       class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
 
-      # Show help if no argv given
+      # Show help if no ARGV given.
       require_arguments!
 
       # Creates the migration file within a Padrino project.
@@ -43,6 +38,6 @@ module Padrino
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
-    end # Migration
-  end # Generators
-end # Padrino
+    end
+  end
+end

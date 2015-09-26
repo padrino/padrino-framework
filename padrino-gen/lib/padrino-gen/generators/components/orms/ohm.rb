@@ -1,7 +1,7 @@
 OHM = (<<-OHM) unless defined?(OHM)
-# Ohm does not have the concept of namespaces
+# Ohm does not have the concept of namespaces.
 # This means that you will not be able to have
-# a distinct test,development or production database
+# a distinct test, development, or production database.
 #
 # You can, however, run multiple redis servers on the same host
 # and point to them based on the environment:
@@ -14,69 +14,16 @@ OHM = (<<-OHM) unless defined?(OHM)
 
 # Alternatively, you can try specifying a difference :db
 # which, outside of confirmation, appears to provide distinct
-# namespaces from testing
+# namespaces from testing:
 # case Padrino.env
 #  when :development then Ohm.connect(:db => 0)
 #  when :production then Ohm.connect(:db => 1)
 #  when :test then Ohm.connect(:db => 2)
 # end
-
-# This monkey patch provides traditional (hash of arrays) error handling for ohm models
-# Also add compatiblity with admin generator.
-module Ohm
-  class Model
-
-    alias_method :old_errors, :errors
-    def errors
-      @errors ||= ErrorsHash.new(self.class.to_reference, self.old_errors)
-    end
-
-    def update_attributes(attrs)
-      attrs.each do |key, value|
-        send(:"\#{key}=", value)
-      end if attrs
-    end
-
-    class << self
-      alias_method :old_attribute, :attribute
-      def attribute(name, cast=nil)
-        attributes << name
-        old_attribute(name, cast)
-      end
-
-      def attributes
-        @_attributes ||= []
-      end
-    end
-
-    class ErrorsHash < Hash
-      def initialize(scope, errors)
-        @scope  = scope
-        self.replace Hash.new { |hash, key| hash[key] = [] }
-
-        errors.each do |key, value|
-          self[key] << value
-        end
-      end
-
-      def push(arr)
-        self[arr[0]] << arr[1]
-      end
-
-      def full_messages
-        self.map do |key, value|
-          value.uniq.map do |reason|
-            I18n::t("ohm.%s.%s.%s" % [@scope, key, reason])
-          end.join(', ')
-        end
-      end
-    end
-  end
-end # unless Ohm::Model.new.errors.is_a?(Hash)
 OHM
 
 def setup_orm
-  require_dependencies 'ohm'
+  require_dependencies 'ohm', :version => "~> 1.3.0"
   create_file("config/database.rb", OHM)
 end
 

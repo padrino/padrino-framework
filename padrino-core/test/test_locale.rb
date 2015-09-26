@@ -4,7 +4,7 @@ describe "Locales" do
   Dir[File.expand_path("../../lib/padrino-core/locale/*.yml", __FILE__)].each do |file|
     base_original = YAML.load_file(file)
     name = File.basename(file, '.yml')
-    should "should have correct locale for #{name}" do
+    it "should should have correct locale for #{name}" do
       base = base_original[name]['date']['formats']
       assert base['default'].present?
       assert base['short'].present?

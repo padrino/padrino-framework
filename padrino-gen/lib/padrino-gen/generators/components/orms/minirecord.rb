@@ -1,4 +1,19 @@
 MR = (<<-MR) unless defined?(MR)
+##
+# You can use other adapters like:
+#
+#   ActiveRecord::Base.configurations[:development] = {
+#     :adapter   => 'mysql2',
+#     :encoding  => 'utf8',
+#     :reconnect => true,
+#     :database  => 'your_database',
+#     :pool      => 5,
+#     :username  => 'root',
+#     :password  => '',
+#     :host      => 'localhost',
+#     :socket    => '/tmp/mysql.sock'
+#   }
+#
 ActiveRecord::Base.configurations[:development] = {
 !DB_DEVELOPMENT!
 }
@@ -11,15 +26,17 @@ ActiveRecord::Base.configurations[:test] = {
 !DB_TEST!
 }
 
-# Setup our logger
+# Setup our logger.
 ActiveRecord::Base.logger = logger
 
-# Raise exception on mass assignment protection for Active Record models.
-ActiveRecord::Base.mass_assignment_sanitizer = :strict
+if ActiveRecord::VERSION::MAJOR.to_i < 4
+  # Raise exception on mass assignment protection for Active Record models.
+  ActiveRecord::Base.mass_assignment_sanitizer = :strict
 
-# Log the query plan for queries taking more than this (works
-# with SQLite, MySQL, and PostgreSQL).
-ActiveRecord::Base.auto_explain_threshold_in_seconds = 0.5
+  # Log the query plan for queries taking more than this (works
+  # with SQLite, MySQL, and PostgreSQL).
+  ActiveRecord::Base.auto_explain_threshold_in_seconds = 0.5
+end
 
 # Doesn't include Active Record class name as root for JSON serialized output.
 ActiveRecord::Base.include_root_in_json = false
@@ -36,6 +53,9 @@ ActiveSupport.escape_html_entities_in_json = false
 
 # Now we can establish connection with our db.
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
+
+# Timestamps are in the utc by default.
+ActiveRecord::Base.default_timezone = :utc
 MR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
@@ -75,6 +95,19 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :adapter => 'sqlite3',
   :database => !DB_NAME!
 SQLITE
+
+CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
+class ConnectionPoolManagement
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ActiveRecord::Base.connection_pool.with_connection { @app.call(env) }
+  end
+end
+MIDDLEWARE
+
 def setup_orm
   ar = MR
   db = @project_name.underscore
@@ -103,7 +136,7 @@ def setup_orm
   require_dependencies 'mini_record'
   create_file('config/database.rb', ar)
   insert_hook('ActiveRecord::Base.auto_upgrade!', :after_load)
-  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
+  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
 MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)

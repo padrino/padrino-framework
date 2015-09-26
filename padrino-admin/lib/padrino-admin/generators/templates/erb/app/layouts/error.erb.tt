@@ -16,7 +16,7 @@
     <div class="custom-error text-center">
       <div class="custom-error-body muted"><%%= yield %></div>
       <div class="custom-error-footer">
-        <%%= link_to tag_icon('arrow-left'),"#", :onclick => "history.go(-1);return false;", :class =>"custom-error-go-back btn pull-left", :title => "Go back" %>
+        <%%= link_to tag_icon('arrow-left'),"#", :onclick => "history.go(-1);return false;", :class =>"custom-error-go-back btn btn-default pull-left", :title => "Go back" %>
       </div>
     </div>
   </body>

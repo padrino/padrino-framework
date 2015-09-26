@@ -1,20 +1,15 @@
-require 'sinatra/base'
-require 'haml'
-require 'erubis'
-require 'slim'
-require 'padrino-core/application/rendering/extensions/erubis'
-require 'padrino-core/application/rendering/extensions/haml'
-require 'padrino-core/application/rendering/extensions/slim'
+require 'padrino-core'
 
 class MarkupDemo < Sinatra::Base
   register Padrino::Helpers
 
   configure do
+    set :logging, false
+    set :padrino_logging, false
+    set :environment, :test
     set :root, File.dirname(__FILE__)
-    set :erb, :engine_class => Padrino::Erubis::SafeBufferTemplate
-    set :haml, :escape_html => true
-    set :slim, :generator => Temple::Generators::RailsOutputBuffer,
-               :buffer => "out_buf"
+    set :sessions, true
+    set :protect_from_csrf, true
   end
 
   get '/:engine/:file' do
@@ -46,11 +41,23 @@ class MarkupDemo < Sinatra::Base
         content_tag(:span, "This not a template block")
       end
     end
+
+    def content_tag_with_block
+      one = content_tag(:p) do
+        "one"
+      end
+      two = content_tag(:p) do
+        "two"
+      end
+      one << two
+    rescue
+      "<p>failed</p>".html_safe
+    end
   end
 end
 
 class MarkupUser
-  def errors; { :fake => "must be valid", :second => "must be present", :third  => "must be a number", :email => "must be a email"}; end
+  def errors; { :fake => "must be valid", :second => "must be present", :third  => "must be a number", :email => "must be an email"}; end
   def session_id; 45; end
   def gender; 'male'; end
   def remember_me; '1'; end

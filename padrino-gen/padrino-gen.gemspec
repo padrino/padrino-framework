@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n") | Dir.glob("{lib}/**/*")
@@ -24,4 +25,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("bundler", "~> 1.0")
+  s.add_development_dependency("padrino-helpers", Padrino.version)
+  s.add_development_dependency("padrino-mailer", Padrino.version)
 end

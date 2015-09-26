@@ -1,4 +1,5 @@
-if PadrinoTasks.load?(:database, true)
+has_seeds = File.file?('db/seeds.rb')
+if PadrinoTasks.load?(:database, has_seeds)
   namespace :db do
     desc 'Load the seed data from db/seeds.rb'
     task :seed => :environment do

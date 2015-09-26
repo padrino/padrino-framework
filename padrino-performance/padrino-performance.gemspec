@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino::Performance.version
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")

@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-require 'rubygems' unless defined?(Gem)
 require 'bundler/setup' if %w(Gemfile .components).all? { |f| File.exist?(f) }
 
 padrino_core_path = File.expand_path('../../lib', __FILE__)

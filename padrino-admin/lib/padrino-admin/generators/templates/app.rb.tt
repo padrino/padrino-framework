@@ -1,6 +1,5 @@
 module <%= @app_name %>
-  class Admin < Padrino::Application
-    register Padrino::Rendering
+  class <%= @admin_name %> < Padrino::Application
     register Padrino::Mailer
     register Padrino::Helpers
     register Padrino::Admin::AccessControl
@@ -22,7 +21,7 @@ module <%= @app_name %>
     #
 
     set :admin_model, '<%= @model_name %>'
-    set :login_page,  '/admin/sessions/new'
+    set :login_page,  '/sessions/new'
 
     enable  :sessions
     disable :store_location

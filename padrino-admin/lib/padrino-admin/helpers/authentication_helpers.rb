@@ -13,14 +13,14 @@ module Padrino
         end
 
         ##
-        # Returns the current_account, it's an instance of <tt>Account</tt> model
+        # Returns the current_account, it's an instance of Account model.
         #
         def current_account
           @current_account ||= login_from_session
         end
 
         ##
-        # Override the current_account, you must provide an instance of Account Model
+        # Override the current_account, you must provide an instance of Account model.
         #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
@@ -31,7 +31,7 @@ module Padrino
         end
 
         ##
-        # Returns true if the +current_account+ is allowed to see the requested path
+        # Returns true if the +current_account+ is allowed to see the requested path.
         #
         # For configure this role please refer to: +Padrino::Admin::AccessControl::Base+
         #
@@ -40,7 +40,7 @@ module Padrino
         end
 
         ##
-        # Returns project modules for the current account
+        # Returns project modules for the current account.
         #
         def project_modules
           access_control.project_modules(current_account)
@@ -60,15 +60,15 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the env['REQUEST_URI']
+        # Store in session[:return_to] the env['REQUEST_URI'].
         #
         def store_location!
-          session[:return_to] = env['REQUEST_URI']
+          session[:return_to] = "#{ENV['RACK_BASE_URI']}#{env['REQUEST_URI']}" if env['REQUEST_URI']
         end
 
         ##
         # Redirect the account to the page that requested an authentication or
-        # if the account is not allowed/logged return it to a default page
+        # if the account is not allowed/logged return it to a default page.
         #
         def redirect_back_or_default(default)
           return_to = session.delete(:return_to)
@@ -76,37 +76,33 @@ module Padrino
         end
 
         private
-          def access_denied
-            # If we have a login_page we redirect the user
-            if login_page
-              redirect(login_page)
-            # If no match we halt with 401
-            else
-              halt 401, "You don't have permission for this resource"
-            end
-          end
 
-          def login_page
-            login_page ||= settings.login_page rescue nil
-            return unless login_page
-            login_page = File.join(ENV['RACK_BASE_URI'].to_s, login_page) if ENV['RACK_BASE_URI']
-            login_page
+        def access_denied
+          if login_page.present?
+            redirect url(login_page)
+          else
+            halt 401, "You don't have permission for this resource"
           end
+        end
 
-          def store_location
-            settings.store_location rescue nil
-          end
+        def login_page
+          settings.respond_to?(:login_page) && settings.login_page
+        end
 
-          def login_from_session
-            admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
-          end
+        def store_location
+          settings.respond_to?(:store_location) && settings.store_location
+        end
 
-          def admin_model_obj
-            @_admin_model_obj ||= settings.admin_model.constantize
-          rescue NameError => e
-            raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model!"
-          end
-      end # AuthenticationHelpers
-    end # Helpers
-  end # Admin
-end # Padrino
+        def login_from_session
+          admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
+        end
+
+        def admin_model_obj
+          @_admin_model_obj ||= settings.admin_model.constantize
+        rescue NameError
+          raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model"
+        end
+      end
+    end
+  end
+end

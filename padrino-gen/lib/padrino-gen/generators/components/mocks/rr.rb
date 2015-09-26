@@ -1,13 +1,13 @@
 def setup_mock
-  require_dependencies 'rr', :group => 'test'
+  require_dependencies 'rr', :require => false, :group => 'test'
   case options[:test].to_s
     when 'rspec'
-      inject_into_file 'spec/spec_helper.rb', "  conf.mock_with :rr\n", :after => "RSpec.configure do |conf|\n"
+      inject_into_file 'spec/spec_helper.rb', "require 'rr'\n", :after => "\"/../config/boot\")\n"
     when 'riot'
       inject_into_file "test/test_config.rb","require 'riot/rr'\n", :after => "\"/../config/boot\")\n"
     when 'minitest'
       insert_mocking_include "RR::Adapters::MiniTest", :path => "test/test_config.rb"
-    else # default include
+    else
       insert_mocking_include "RR::Adapters::TestUnit", :path => "test/test_config.rb"
   end
 end

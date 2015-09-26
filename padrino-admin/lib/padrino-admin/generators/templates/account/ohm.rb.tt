@@ -32,7 +32,7 @@ class Account < Ohm::Model
   end
 
   ##
-  # This method is for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
     account = with(:email, email) if email.present?
@@ -40,10 +40,18 @@ class Account < Ohm::Model
   end
 
   ##
-  # This method is used by AuthenticationHelper
+  # This method is used by AuthenticationHelper.
   #
   def self.find_by_id(id)
     self[id]
+  end
+
+  ##
+  # This method is used by Admin Sessions Controller for login bypass.
+  #
+  def self.first
+    first_id = key[:all].sort(:order => "asc", :limit => [0,1]).first
+    self[first_id] if first_id
   end
 
   def has_password?(password)
@@ -51,6 +59,7 @@ class Account < Ohm::Model
   end
 
   private
+
   def encrypt_password
     self.crypted_password = ::BCrypt::Password.create(password)  if password_required
   end

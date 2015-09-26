@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.version = Padrino.version
   s.platform = Gem::Platform::RUBY
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")
@@ -23,10 +24,13 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
+  s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("padrino-core",    Padrino.version)
   s.add_dependency("padrino-helpers", Padrino.version)
+  s.add_dependency("padrino-cache",   Padrino.version)
   s.add_dependency("padrino-mailer",  Padrino.version)
   s.add_dependency("padrino-gen",     Padrino.version)
-  s.add_dependency("padrino-cache",   Padrino.version)
   s.add_dependency("padrino-admin",   Padrino.version)
+
+  # add independent padrino gems to 'subgems.rb'
 end

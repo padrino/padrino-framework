@@ -8,19 +8,29 @@
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-  line-height: 1;
-  vertical-align: middle;
+  font-size: @font-size-small;
+  font-weight: @badge-font-weight;
+  color: @badge-color;
+  line-height: @badge-line-height;
+  vertical-align: baseline;
   white-space: nowrap;
   text-align: center;
-  background-color: @grayLight;
-  border-radius: 10px;
+  background-color: @badge-bg;
+  border-radius: @badge-border-radius;
 
-  // Empty labels/badges collapse
+  // Empty badges collapse automatically (not available in IE8)
   &:empty {
     display: none;
+  }
+
+  // Quick fix for badges in buttons
+  .btn & {
+    position: relative;
+    top: -1px;
+  }
+  .btn-xs & {
+    top: 0;
+    padding: 1px 5px;
   }
 }
 
@@ -28,30 +38,17 @@
 a.badge {
   &:hover,
   &:focus {
-    color: #fff;
+    color: @badge-link-hover-color;
     text-decoration: none;
     cursor: pointer;
-  }
-}
-
-// Quick fix for labels/badges in buttons
-.btn {
-  .badge {
-    position: relative;
-    top: -1px;
-  }
-}
-.btn-mini {
-  .badge {
-    top: 0;
   }
 }
 
 // Account for counters in navs
 a.list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
-  color: @link-color;
-  background-color: #fff;
+  color: @badge-active-color;
+  background-color: @badge-active-bg;
 }
 .nav-pills > li > a > .badge {
   margin-left: 3px;

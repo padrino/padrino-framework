@@ -1,24 +1,24 @@
-ENV['PADRINO_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 
-require File.expand_path('../../../load_paths', __FILE__)
-require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'helper')
-require 'uuid'
+require 'minitest/autorun'
+require 'minitest/pride'
+require 'rack/test'
 require 'padrino-cache'
-require 'fileutils'
+
+require 'ext/rack-test-methods'
 
 class MiniTest::Spec
+  include Rack::Test::Methods
 
-  def executable_on_path(binary)
-    @matches = []
+  # Sets up a Sinatra::Base subclass defined with the block
+  # given. Used in setup or individual spec methods to establish
+  # the application.
+  def mock_app(base=Padrino::Application, &block)
+    @app = Sinatra.new(base, &block)
+  end
 
-    ENV['PATH'].split(":").each do |path|
-      bintest = File.executable?("#{path}/#{binary}")
-      pathmatch = "#{path}/#{binary}"
-      @matches << pathmatch if bintest == true
-    end
-
-    @matches.length == 1 ? @matches.first : false
-
+  def app
+    Rack::Lint.new(@app)
   end
 end

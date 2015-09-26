@@ -1,8 +1,9 @@
 apply_component_for(:rspec, :test)
 
 CUCUMBER_SETUP = (<<-TEST) unless defined?(CUCUMBER_SETUP)
-PADRINO_ENV = 'test' unless defined?(PADRINO_ENV)
+RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../../config/boot")
+Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
 
 require 'capybara/cucumber'
 require 'rspec/expectations'
@@ -46,7 +47,7 @@ When /^I press '(.*)'$/ do |name|
 end
 
 Then /^I should see '(.*)'$/ do |text|
-  response_body.should contain(/#\{text}/m)
+  page.should have_content(text)
 end
 TEST
 

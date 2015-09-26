@@ -29,14 +29,16 @@ ActiveRecord::Base.configurations[:test] = {
 # Setup our logger
 ActiveRecord::Base.logger = logger
 
-# Raise exception on mass assignment protection for Active Record models.
-ActiveRecord::Base.mass_assignment_sanitizer = :strict
+if ActiveRecord::VERSION::MAJOR.to_i < 4
+  # Raise exception on mass assignment protection for Active Record models.
+  ActiveRecord::Base.mass_assignment_sanitizer = :strict
 
-# Log the query plan for queries taking more than this (works
-# with SQLite, MySQL, and PostgreSQL).
-ActiveRecord::Base.auto_explain_threshold_in_seconds = 0.5
+  # Log the query plan for queries taking more than this (works
+  # with SQLite, MySQL, and PostgreSQL).
+  ActiveRecord::Base.auto_explain_threshold_in_seconds = 0.5
+end
 
-# Include Active Record class name as root for JSON serialized output.
+# Doesn't include Active Record class name as root for JSON serialized output.
 ActiveRecord::Base.include_root_in_json = false
 
 # Store the full class name (including module namespace) in STI type column.
@@ -51,6 +53,9 @@ ActiveSupport.escape_html_entities_in_json = false
 
 # Now we can establish connection with our db.
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
+
+# Timestamps are in the utc by default.
+ActiveRecord::Base.default_timezone = :utc
 AR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
@@ -91,6 +96,17 @@ SQLITE = (<<-SQLITE) unless defined?(SQLITE)
   :database => !DB_NAME!
 SQLITE
 
+CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
+class ConnectionPoolManagement
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ActiveRecord::Base.connection_pool.with_connection { @app.call(env) }
+  end
+end
+MIDDLEWARE
 
 def setup_orm
   ar = AR
@@ -98,29 +114,29 @@ def setup_orm
   # We're now defaulting to mysql2 since mysql is deprecated
   case options[:adapter]
   when 'mysql-gem'
-    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'mysql', :version => "~> 2.8.1"
   when 'mysql', 'mysql2'
-    ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'mysql2'
   when 'postgres'
-    ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_development'")
-    ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_production'")
-    ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_test'")
+    ar.sub! /!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_development'")
+    ar.sub! /!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_production'")
+    ar.sub! /!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_test'")
     require_dependencies 'pg'
   else
-    ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
-    ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
-    ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
+    ar.sub! /!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
+    ar.sub! /!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
+    ar.sub! /!DB_TEST!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
   require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
-  insert_middleware 'ActiveRecord::ConnectionAdapters::ConnectionManagement'
   create_file("config/database.rb", ar)
+  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
 AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)
@@ -132,7 +148,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  model_contents = AR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  model_contents = AR_MODEL.sub(/!NAME!/, name.to_s.underscore.camelize)
   create_file(model_path, model_contents,:skip => true)
 end
 

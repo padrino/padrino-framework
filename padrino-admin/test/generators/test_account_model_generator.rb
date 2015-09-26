@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
 describe "AccountModelGenerator" do
   before do
-    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{UUID.new.generate}"
+    @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     %x[mkdir -p #{@apptmp}]
   end
 
@@ -12,31 +12,31 @@ describe "AccountModelGenerator" do
 
   describe 'activerecord' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
 
-    it 'should be a activerecord model instance' do
+    it 'should be an activerecord model instance' do
       assert_match_in_file(/class Account < ActiveRecord::Base/m, @model)
     end
   end
 
   describe 'minirecord' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=minirecord') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
 
-    it 'should be a activerecord model instance' do
+    it 'should be an activerecord model instance' do
       assert_match_in_file(/class Account < ActiveRecord::Base/m, @model)
     end
   end
 
   describe 'datamapper' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
@@ -48,7 +48,7 @@ describe "AccountModelGenerator" do
 
   describe 'mongoid' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=mongoid') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=mongoid') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
@@ -60,7 +60,7 @@ describe "AccountModelGenerator" do
 
   describe 'mongomapper' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=mongomapper') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=mongomapper') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
@@ -72,7 +72,7 @@ describe "AccountModelGenerator" do
 
   describe 'ohm' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=ohm') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=ohm') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
@@ -84,7 +84,7 @@ describe "AccountModelGenerator" do
 
   describe 'sequel' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end
@@ -96,7 +96,7 @@ describe "AccountModelGenerator" do
 
   describe 'couchrest' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=couchrest') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=couchrest') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       @model = "#{@apptmp}/sample_project/models/account.rb"
     end

@@ -1,12 +1,15 @@
-ENV['PADRINO_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
-require File.expand_path('../../../load_paths', __FILE__)
-require File.join(File.dirname(__FILE__), '..', '..', 'padrino-core', 'test', 'mini_shoulda')
+require 'minitest/autorun'
+require 'minitest/pride'
 require 'rack/test'
 require 'padrino-core'
 require 'padrino-helpers'
+require 'padrino-mailer/ext'
 require 'padrino-mailer'
+
+require 'ext/rack-test-methods'
 
 class MiniTest::Spec
   include Rack::Test::Methods
@@ -30,7 +33,6 @@ class MiniTest::Spec
   def assert_email_sent(mail_attributes, options={})
     mail_message = Mail::TestMailer.deliveries.last
     raise "No mail message has been sent!" unless mail_message.present?
-    smtp_settings = options.delete(:smtp) || mail_attributes.delete(:smtp)
     delivery_attributes = mail_attributes
     delivery_attributes = { :to => Array(mail_attributes[:to]), :from => Array(mail_attributes[:from]) }
     delivery_attributes.each_pair do |k, v|
@@ -40,20 +42,4 @@ class MiniTest::Spec
     end
     Mail::TestMailer.deliveries.clear
   end
-
-  # Asserts that a file matches the pattern
-  def assert_match_in_file(pattern, file)
-    assert File.exist?(file), "File '#{file}' does not exist!"
-    assert_match pattern, File.read(file)
-  end
-
-  # Delegate other missing methods to response.
-  def method_missing(name, *args, &block)
-    if response && response.respond_to?(name)
-      response.send(name, *args, &block)
-    else
-      super(name, *args, &block)
-    end
-  end
-  alias :response :last_response
 end

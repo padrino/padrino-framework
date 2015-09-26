@@ -7,20 +7,20 @@ module Padrino
       ##
       # Page caching is easy to integrate into your application. To turn it on, simply provide the
       # <tt>:cache => true</tt> option on either a controller or one of its routes.
-      # By default, cached content is persisted with a "file store"--that is, in a
+      # By default, cached content is persisted with a "file store" --that is, in a
       # subdirectory of your application root.
       #
       # @example
-      #   # Setting content expiry time
+      #   # Setting content expiry time.
       #   class CachedApp < Padrino::Application
       #     enable :caching          # turns on caching mechanism
       #
       #     controller '/blog', :cache => true do
-      #       expires_in 15
+      #       expires 15
       #
       #       get '/entries' do
-      #         # expires_in 15 => can also be defined inside a single route
-      #         'just broke up eating twinkies lol'
+      #         # expires 15 => can also be defined inside a single route
+      #         'Just broke up eating twinkies, lol'
       #       end
       #
       #       get '/post/:id' do
@@ -32,7 +32,7 @@ module Padrino
       #
       # You can manually expire cache with CachedApp.cache.delete(:my_name)
       #
-      # Note that the "latest" method call to <tt>expires_in</tt> determines its value: if
+      # Note that the "latest" method call to <tt>expires</tt> determines its value: if
       # called within a route, as opposed to a controller definition, the route's
       # value will be assumed.
       #
@@ -51,18 +51,16 @@ module Padrino
         #
         # @example
         #   controller '/blog', :cache => true do
-        #     expires_in 15
+        #     expires 15
         #
         #     get '/entries' do
-        #       # expires_in 15 => can also be defined inside a single route
-        #       'just broke up eating twinkies lol'
+        #       'Just broke up eating twinkies, lol'
         #     end
         #   end
         #
         # @api public
-        def expires_in(time)
-          @route.cache_expires_in = time if @route
-          @_last_expires_in       = time
+        def expires(time)
+          @route.cache_expires = time
         end
 
         ##
@@ -70,6 +68,8 @@ module Padrino
         #
         # @param [Symbol] name
         #   cache key
+        # @param [Proc] block
+        #   block to be evaluated to cache key
         #
         # @example
         #   controller '/blog', :cache => true do
@@ -80,46 +80,90 @@ module Padrino
         #     end
         #   end
         #
-        # @api public
-        def cache_key(name)
-          @route.cache_key = name
+        # @example
+        #     get '/foo', :cache => true do
+        #       cache_key { param[:id] }
+        #       "My id is #{param[:id}"
+        #     end
+        #   end
+        #
+        def cache_key(name = nil, &block)
+          fail "Can not provide both cache_key and a block" if name && block
+          @route.cache_key = name || block
         end
 
-        # @private
-        def self.padrino_route_added(route, verb, path, args, options, block) # @private
-          if route.cache and %w(GET HEAD).include?(verb)
-            route.before_filters do
-              if settings.caching?
-                began_at = Time.now
-                value = settings.cache.get(@route.cache_key || env['PATH_INFO'])
-                logger.debug "GET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger) && value
+        CACHED_VERBS = { 'GET' => true, 'HEAD' => true }.freeze
 
-                if value
-                  # content_type(value[:content_type]) if value[:content_type]
-                  halt 200, value
-                end
-              end
-            end
+        def self.padrino_route_added(route, verb, *)
+          return unless route.cache && CACHED_VERBS[verb]
 
-            route.after_filters do
-              if settings.caching? && @_response_buffer.kind_of?(String)
-                began_at = Time.now
-
-                content = @_response_buffer
-
-                if @_last_expires_in
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content, :expires_in => @_last_expires_in)
-                  @_last_expires_in = nil
-                else
-                  settings.cache.set(@route.cache_key || env['PATH_INFO'], content)
-                end
-
-                logger.debug "SET Cache", began_at, @route.cache_key || env['PATH_INFO'] if defined?(logger)
-              end
+          route.before_filters do
+            next unless settings.caching?
+            if cached_response = load_cached_response
+              content_type cached_response[:content_type]
+              halt 200, cached_response[:body]
             end
           end
+
+          route.after_filters do
+            save_cached_response(route.cache_expires) if settings.caching?
+          end
         end
-      end # Page
-    end # Helpers
-  end # Cache
-end # Padrino
+
+        private
+
+        def load_cached_response
+          began_at = Time.now
+          route_cache_key = resolve_cache_key || env['PATH_INFO']
+
+          value = settings.cache[route_cache_key]
+          logger.debug "GET Cache", began_at, route_cache_key if defined?(logger) && value
+
+          value
+        end
+
+        def save_cached_response(cache_expires)
+          return unless @_response_buffer.kind_of?(String)
+
+          began_at = Time.now
+          route_cache_key = resolve_cache_key || env['PATH_INFO']
+
+          content = {
+            :body         => @_response_buffer,
+            :content_type => @_content_type
+          }
+
+          settings.cache.store(route_cache_key, content, :expires => cache_expires)
+
+          logger.debug "SET Cache", began_at, route_cache_key if defined?(logger)
+        end
+
+        ##
+        # Resolve the cache_key when it's a block in the correct context.
+        #
+        def resolve_cache_key
+          key = @route.cache_key
+          key.is_a?(Proc) ? instance_eval(&key) : key
+        end
+
+        module ClassMethods
+          ##
+          # A method to set `expires` time inside `controller` blocks.
+          #
+          # @example
+          #   controller :users do
+          #     expires 15
+          #
+          #     get :show do
+          #       'shown'
+          #     end
+          #   end
+          #
+          def expires(time)
+            @_expires = time
+          end
+        end
+      end
+    end
+  end
+end
