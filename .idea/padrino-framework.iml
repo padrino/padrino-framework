@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RUBY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="padrino (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-admin (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-admin) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-admin/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-admin/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-cache (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-cache) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-cache/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-cache/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-core (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-core) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-core/bin" />
+          <root url="file://$MODULE_DIR$/padrino-core/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-core/bin" />
+          <root url="file://$MODULE_DIR$/padrino-core/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-gen (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-gen) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-gen/bin" />
+          <root url="file://$MODULE_DIR$/padrino-gen/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-gen/bin" />
+          <root url="file://$MODULE_DIR$/padrino-gen/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-helpers (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-helpers) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-helpers/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-helpers/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-mailer (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-mailer) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-mailer/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-mailer/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-performance (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-performance) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-performance/bin" />
+          <root url="file://$MODULE_DIR$/padrino-performance/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-performance/bin" />
+          <root url="file://$MODULE_DIR$/padrino-performance/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="padrino-support (v[path], /home/memonono/RubymineProjects/padrino-framework/padrino-support) [path][gem]">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/padrino-support/lib" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/padrino-support/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="activesupport (v4.2.4, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="addressable (v2.3.8, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="builder (v3.2.2, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v1.10.6, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dm-core (v1.2.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="enumerable-lazy (v0.0.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="erubis (v2.7.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="fakeweb (v1.3.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="haml (v4.0.7, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="http_router (v0.11.2, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="i18n (v0.7.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="json (v1.8.3, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mail (v2.5.4, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="metaclass (v0.0.4, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mime-types (v1.25.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.8.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mocha (v1.1.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="moneta (v0.7.20, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mustermann19 (v0.4.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="nokogiri (v1.5.11, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="polyglot (v0.3.5, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack (v1.6.4, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-protection (v1.5.3, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-test (v0.6.3, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rake (v10.4.2, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sequel (v4.26.0, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sinatra (v1.4.6, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="slim (v3.0.6, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sqlite3 (v1.3.10, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="temple (v0.7.6, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="thor (v0.19.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="thread_safe (v0.3.5, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tilt (v1.4.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="treetop (v1.4.15, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tzinfo (v1.2.2, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="url_mount (v0.2.1, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="webrat (v0.7.3, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="yard (v0.8.7.6, RVM: ruby-1.9.3-p429 [global]) [gem]" level="application" />
+  </component>
+</module>

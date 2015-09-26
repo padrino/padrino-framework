@@ -6,7 +6,7 @@ module Padrino
     #
     module FormatHelpers
       ##
-      # Returns escaped text to protect against malicious content
+      # Returns escaped text to protect against malicious content.
       #
       # @param [String] text
       #   Unsanitized HTML string that needs to be escaped.
@@ -17,7 +17,6 @@ module Padrino
       #   escape_html("<b>Hey<b>") => "&lt;b&gt;Hey&lt;b;gt;"
       #   h("Me & Bob") => "Me &amp; Bob"
       #
-      # @api public
       def escape_html(text)
         Rack::Utils.escape_html(text).html_safe
       end
@@ -25,8 +24,7 @@ module Padrino
       alias sanitize_html escape_html
 
       ##
-      # Returns escaped text to protect against malicious content
-      # Returns blank if the text is empty
+      # Returns escaped text to protect against malicious content.
       #
       # @param [String] text
       #   Unsanitized HTML string that needs to be escaped.
@@ -39,14 +37,13 @@ module Padrino
       #   h!("Me & Bob") => "Me &amp; Bob"
       #   h!("", "Whoops") => "Whoops"
       #
-      # @api public
       def h!(text, blank_text = '&nbsp;')
         return blank_text.html_safe if text.nil? || text.empty?
         h(text)
       end
 
       ##
-      # Strips all HTML tags from the html
+      # Strips all HTML tags from the html.
       #
       # @param [String] html
       #   The HTML for which to strip tags.
@@ -56,7 +53,6 @@ module Padrino
       # @example
       #   strip_tags("<b>Hey</b>") => "Hey"
       #
-      # @api public
       def strip_tags(html)
         html.gsub(/<\/?[^>]*>/, "") if html
       end
@@ -79,14 +75,13 @@ module Padrino
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
       #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
       #
-      # @api public
       def simple_format(text, options={})
         t = options.delete(:tag) || :p
         start_tag = tag(t, options, true)
-        text = escape_html(text.to_s.dup)
-        text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
-        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}")  # 2+ newline  -> paragraph
-        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
+        text = escape_html(text.to_s.dup) unless text.html_safe?
+        text.gsub!(/\r\n?/, "\n")                      # \r\n and \r -> \n
+        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}") # 2+ newline  -> paragraph
+        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />')   # 1 newline   -> br
         text.insert 0, start_tag
         text << "</#{t}>"
         text.html_safe
@@ -94,7 +89,7 @@ module Padrino
 
       ##
       # Attempts to pluralize the singular word unless count is 1. If plural is supplied, it will use that when count is > 1,
-      # otherwise it will use the Inflector to determine the plural form
+      # otherwise it will use inflector to determine the plural form.
       #
       # @param [Fixnum] count
       #   The count which determines pluralization.
@@ -108,7 +103,6 @@ module Padrino
       # @example
       #   pluralize(2, 'person') => '2 people'
       #
-      # @api public
       def pluralize(count, singular, plural = nil)
         "#{count || 0} " + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
       end
@@ -131,7 +125,6 @@ module Padrino
       # @example
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
-      # @api public
       def truncate(text, options={})
         options.reverse_merge!(:length => 30, :omission => "...")
         if text
@@ -159,7 +152,6 @@ module Padrino
       # @example
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
-      # @api public
       def truncate_words(text, options={})
         options.reverse_merge!(:length => 30, :omission => "...")
         if text
@@ -180,12 +172,11 @@ module Padrino
       #   @option options [Fixnum] :line_width (80)
       #     The line width before a wrap should occur.
       #
-      # @return [String] The text with line wraps for lines longer then +line_width+
+      # @return [String] The text with line wraps for lines longer then +line_width+.
       #
       # @example
       #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
       #
-      # @api public
       def word_wrap(text, *args)
         options = args.extract_options!
         unless args.blank?
@@ -223,7 +214,6 @@ module Padrino
       #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
-      # @api public
       def highlight(text, words, *args)
         options = args.extract_options!
         options.reverse_merge!(:highlighter => '<strong class="highlight">\1</strong>')
@@ -241,19 +231,19 @@ module Padrino
       # Set +include_seconds+ to true if you want more detailed approximations when distance < 1 min, 29 secs
       # Distances are reported based on the following table:
       #
-      #   0 <-> 29 secs                                                             # => less than a minute
-      #   30 secs <-> 1 min, 29 secs                                                # => 1 minute
-      #   1 min, 30 secs <-> 44 mins, 29 secs                                       # => [2..44] minutes
-      #   44 mins, 30 secs <-> 89 mins, 29 secs                                     # => about 1 hour
-      #   89 mins, 29 secs <-> 23 hrs, 59 mins, 29 secs                             # => about [2..24] hours
-      #   23 hrs, 59 mins, 29 secs <-> 47 hrs, 59 mins, 29 secs                     # => 1 day
-      #   47 hrs, 59 mins, 29 secs <-> 29 days, 23 hrs, 59 mins, 29 secs            # => [2..29] days
-      #   29 days, 23 hrs, 59 mins, 30 secs <-> 59 days, 23 hrs, 59 mins, 29 secs   # => about 1 month
-      #   59 days, 23 hrs, 59 mins, 30 secs <-> 1 yr minus 1 sec                    # => [2..12] months
-      #   1 yr <-> 1 yr, 3 months                                                   # => about 1 year
-      #   1 yr, 3 months <-> 1 yr, 9 months                                         # => over 1 year
-      #   1 yr, 9 months <-> 2 yr minus 1 sec                                       # => almost 2 years
-      #   2 yrs <-> max time or date                                                # => (same rules as 1 yr)
+      #   0 <-> 29 secs                                                           # => less than a minute
+      #   30 secs <-> 1 min, 29 secs                                              # => 1 minute
+      #   1 min, 30 secs <-> 44 mins, 29 secs                                     # => [2..44] minutes
+      #   44 mins, 30 secs <-> 89 mins, 29 secs                                   # => about 1 hour
+      #   89 mins, 29 secs <-> 23 hrs, 59 mins, 29 secs                           # => about [2..24] hours
+      #   23 hrs, 59 mins, 29 secs <-> 47 hrs, 59 mins, 29 secs                   # => 1 day
+      #   47 hrs, 59 mins, 29 secs <-> 29 days, 23 hrs, 59 mins, 29 secs          # => [2..29] days
+      #   29 days, 23 hrs, 59 mins, 30 secs <-> 59 days, 23 hrs, 59 mins, 29 secs # => about 1 month
+      #   59 days, 23 hrs, 59 mins, 30 secs <-> 1 yr minus 1 sec                  # => [2..12] months
+      #   1 yr <-> 1 yr, 3 months                                                 # => about 1 year
+      #   1 yr, 3 months <-> 1 yr, 9 months                                       # => over 1 year
+      #   1 yr, 9 months <-> 2 yr minus 1 sec                                     # => almost 2 years
+      #   2 yrs <-> max time or date                                              # => (same rules as 1 yr)
       #
       # With +include_seconds+ = true and the difference < 1 minute 29 seconds:
       #   0-4   secs      # => less than 5 seconds
@@ -295,7 +285,6 @@ module Padrino
       #   distance_of_time_in_words(to_time, from_time, true)     # => about 6 years
       #   distance_of_time_in_words(Time.now, Time.now)           # => less than a minute
       #
-      # @api public
       def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false, options = {})
         from_time = from_time.to_time if from_time.respond_to?(:to_time)
         to_time = to_time.to_time if to_time.respond_to?(:to_time)
@@ -351,27 +340,25 @@ module Padrino
       # @return [String] The time formatted as a relative string.
       #
       # @example
-      #   time_ago_in_words(3.minutes.from_now)       # => 3 minutes
-      #   time_ago_in_words(Time.now - 15.hours)      # => 15 hours
-      #   time_ago_in_words(Time.now)                 # => less than a minute
+      #   time_ago_in_words(3.minutes.from_now)  # => 3 minutes
+      #   time_ago_in_words(Time.now - 15.hours) # => 15 hours
+      #   time_ago_in_words(Time.now)            # => less than a minute
       #
-      # @api public
       def time_ago_in_words(from_time, include_seconds = false)
         distance_of_time_in_words(from_time, Time.now, include_seconds)
       end
 
       ##
-      # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino
+      # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino.
       #
       # @param [String] html
-      #   The html content to be escaped into javascript compatible format.
+      #   The HTML content to be escaped into javascript compatible format.
       #
       # @return [String] The html escaped for javascript passing.
       #
       # @example
       #   js_escape_html("<h1>Hey</h1>")
       #
-      # @api public
       def js_escape_html(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
@@ -380,6 +367,6 @@ module Padrino
         escaped_content
       end
       alias :escape_javascript :js_escape_html
-    end # FormatHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end

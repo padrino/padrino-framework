@@ -1,5 +1,4 @@
-require 'padrino-core/support_lite' unless defined?(SupportLite)
-require 'cgi'
+require 'padrino-support'
 require 'i18n'
 require 'enumerator'
 require 'active_support/time_with_zone'               # next extension depends on this
@@ -7,11 +6,12 @@ require 'active_support/core_ext/string/conversions'  # to_date
 require 'active_support/option_merger'                # with_options
 require 'active_support/core_ext/object/with_options' # with_options
 require 'active_support/inflector'                    # humanize
+require 'active_support/core_ext/hash/except'         # Hash#except
+require 'padrino/rendering'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
-
-# Load our locales
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]
+I18n.enforce_available_locales = true
 
 module Padrino
   ##
@@ -31,10 +31,9 @@ module Padrino
       #   Padrino::Helpers::FormatHelpers
       #   Padrino::Helpers::RenderHelpers
       #   Padrino::Helpers::NumberHelpers
-      #   Padrino::Helpers::Breadcrumbs
       #
       # @param [Sinatra::Application] app
-      #   The specified padrino application
+      #   The specified Padrino application.
       #
       # @example Register the helper module
       #   require 'padrino-helpers'
@@ -43,18 +42,21 @@ module Padrino
       #   end
       #
       def registered(app)
+        app.register Padrino::Rendering
         app.set :default_builder, 'StandardFormBuilder'
-        app.helpers Padrino::Helpers::OutputHelpers
-        app.helpers Padrino::Helpers::TagHelpers
-        app.helpers Padrino::Helpers::AssetTagHelpers
-        app.helpers Padrino::Helpers::FormHelpers
-        app.helpers Padrino::Helpers::FormatHelpers
-        app.helpers Padrino::Helpers::RenderHelpers
-        app.helpers Padrino::Helpers::NumberHelpers
-        app.helpers Padrino::Helpers::TranslationHelpers
-        app.helpers Padrino::Helpers::Breadcrumbs
+        included(app)
       end
-      alias :included :registered
+
+      def included(base)
+        base.send :include, Padrino::Helpers::OutputHelpers
+        base.send :include, Padrino::Helpers::TagHelpers
+        base.send :include, Padrino::Helpers::AssetTagHelpers
+        base.send :include, Padrino::Helpers::FormHelpers
+        base.send :include, Padrino::Helpers::FormatHelpers
+        base.send :include, Padrino::Helpers::RenderHelpers
+        base.send :include, Padrino::Helpers::NumberHelpers
+        base.send :include, Padrino::Helpers::TranslationHelpers
+      end
     end
-  end # Helpers
-end # Padrino
+  end
+end

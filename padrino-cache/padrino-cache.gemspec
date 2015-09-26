@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
+  s.license = "MIT"
 
   s.extra_rdoc_files = Dir["*.rdoc"]
   s.files         = `git ls-files`.split("\n")
@@ -24,4 +25,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency("padrino-core", Padrino.version)
   s.add_runtime_dependency("padrino-helpers", Padrino.version)
+  s.add_runtime_dependency("moneta", ["~> 0.7.0"])
 end

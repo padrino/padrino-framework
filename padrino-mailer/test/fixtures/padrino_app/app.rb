@@ -1,8 +1,7 @@
-ENV['PADRINO_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 class PadrinoApp < Padrino::Application
-  register Padrino::Rendering
   register Padrino::Helpers
   register Padrino::Mailer
 
@@ -45,7 +44,9 @@ class PadrinoApp < Padrino::Application
       via     :test
       render  'sample/helper_message'
     end
+  end
 
+  mailer :nonexistant do
   end
 
   post "/deliver/inline" do
@@ -73,6 +74,13 @@ class PadrinoApp < Padrino::Application
     result ? "mail delivered" : 'mail not delivered'
   end
 
+  post "/deliver/failing_mailer" do
+    deliver(:nonregistered, :mailer, "hey")
+  end
+
+  post "/deliver/failing_message" do
+    deliver(:nonexistant, :message, "hey")
+  end
 end
 
 Padrino.mount("PadrinoApp").to("/")

@@ -1,7 +1,7 @@
 module Padrino
   ##
   # This module it's used for bootstrap with padrino rake
-  # thirdy party tasks, in your gem/plugin/extension you
+  # third party tasks, in your gem/plugin/extension you
   # need only do this:
   #
   # @example
@@ -17,5 +17,5 @@ module Padrino
     def self.files
       @files ||= []
     end
-  end # Tasks
-end # Padrino
+  end
+end

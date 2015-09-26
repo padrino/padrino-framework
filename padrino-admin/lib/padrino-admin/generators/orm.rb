@@ -9,14 +9,14 @@ module Padrino
 
       ##
       # Defines the generic ORM management functions used to manipulate data for admin.
-      # @private
       class Orm
-        attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm
+        attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
         def initialize(name, orm, columns=nil, column_fields=nil)
           name            = name.to_s
           @klass_name     = name.underscore.camelize
           @klass          = @klass_name.constantize rescue nil
+          @name_param     = name.underscore.gsub(/\//, '_')
           @name_singular  = name.underscore.gsub(/^.*\//, '') # convert submodules i.e. FooBar::Jank.all # => jank
           @name_plural    = @name_singular.pluralize
           @orm            = orm.to_sym
@@ -56,6 +56,7 @@ module Padrino
             when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
             when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
+            when :dynamoid     then @klass.attributes.map { |k,v| Column.new(k.to_s, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -99,9 +100,8 @@ module Padrino
 
         def find(params=nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid then "#{klass_name}.find(#{params})"
-            when :datamapper then "#{klass_name}.get(#{params}.to_i)"
-            when :couchrest then "#{klass_name}.get(#{params})"
+            when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
+            when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
             when :sequel, :ohm then "#{klass_name}[#{params}]"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
@@ -124,7 +124,7 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid, :couchrest then "@#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :minirecord, :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
             when :datamapper, :ohm then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
@@ -145,15 +145,8 @@ module Padrino
             when :sequel then "#{klass_name}.where(:id => #{params})"
             when :mongoid then "#{klass_name}.find(#{params})"
             when :couchrest then "#{klass_name}.all(:keys => #{params})"
+            when :dynamoid then "#{klass_name}.find(#{params})"
             else find(params)
-          end
-        end
-
-        def parse_many_ids_on_params
-          base = "params[:#{@name_singular}_ids].split(',').map(&:strip)"
-          case orm
-            when :activerecord, :minirecord, :datamapper, :sequel then "#{base}.map(&:to_i)"
-            else base
           end
         end
 
@@ -162,7 +155,7 @@ module Padrino
             when :ohm then "#{params}.each(&:delete)"
             when :sequel then  "#{params}.destroy"
             when :datamapper then "#{params}.destroy"
-            when :couchrest, :mongoid, :mongomapper then "#{params}.each(&:destroy)"
+            when :couchrest, :mongoid, :mongomapper, :dynamoid then "#{params}.each(&:destroy)"
             else "#{klass_name}.destroy #{params}"
           end
         end
@@ -173,8 +166,7 @@ module Padrino
             else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
-
-      end # Orm
-    end # Generators
-  end # Admin
-end # Padrino
+      end
+    end
+  end
+end

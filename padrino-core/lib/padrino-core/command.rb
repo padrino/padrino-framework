@@ -3,7 +3,7 @@ require 'rbconfig'
 module Padrino
   ##
   # This method return the correct location of padrino bin or
-  # exec it using Kernel#system with the given args
+  # exec it using Kernel#system with the given args.
   #
   # @param [Array] args
   #   command or commands to execute
@@ -35,4 +35,4 @@ module Padrino
       ruby
     end
   end
-end # Padrino
+end

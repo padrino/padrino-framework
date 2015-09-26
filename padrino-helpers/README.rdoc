@@ -102,9 +102,9 @@ For more information on using asset helpers, check out the guide for
 Form helpers are the 'standard' form tag helpers you would come to expect when building forms. A simple
 example of constructing a non-object form would be:
 
-  - form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
+  = form_tag '/destroy', :class => 'destroy-form', :method => 'delete' do
     = flash_tag(:notice)
-    - field_set_tag do
+    = field_set_tag do
       %p
         = label_tag :username, :class => 'first'
         = text_field_tag :username, :value => params[:username]
@@ -116,7 +116,7 @@ example of constructing a non-object form would be:
         = select_tag :strategy, :options => ['delete', 'destroy'], :selected => 'delete'
       %p
         = check_box_tag :confirm_delete
-    - field_set_tag(:class => 'buttons') do
+    = field_set_tag(:class => 'buttons') do
       = submit_tag "Remove"
 
 For more information on using form helpers, check out the guide for
@@ -129,7 +129,7 @@ using a simple, intuitive syntax.
 
 A form_for using these basic fields might look like:
 
-  - form_for @user, '/register', :id => 'register' do |f|
+  = form_for @user, '/register', :id => 'register' do |f|
     = f.error_messages
     %p
       = f.label :username, :caption => "Nickname"
@@ -147,7 +147,7 @@ A form_for using these basic fields might look like:
       = f.label :color, :caption => "Favorite Color?"
       = f.select :color, :options => ['red', 'black']
     %p
-      - fields_for @user.location do |location|
+      = fields_for @user.location do |location|
         = location.text_field :street
         = location.text_field :city
     %p
@@ -159,7 +159,7 @@ There is also an additional StandardFormBuilder which builds on the abstract fie
 
 A form_for using these standard fields might be:
 
-  - form_for @user, '/register', :id => 'register' do |f|
+  = form_for @user, '/register', :id => 'register' do |f|
     = f.error_messages
     = f.text_field_block :name, :caption => "Full name"
     = f.text_field_block :email
@@ -236,4 +236,4 @@ For more information on using the render and partial helpers, check out the guid
 
 == Copyright
 
-Copyright (c) 2011 Padrino. See LICENSE for details.
+Copyright (c) 2011-2015 Padrino. See LICENSE for details.

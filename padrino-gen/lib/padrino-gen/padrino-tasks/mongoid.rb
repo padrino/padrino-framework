@@ -1,5 +1,5 @@
 if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
-  require 'mongoid' # eagerly load mongoid for version check
+  require 'mongoid'
 
   namespace :mi do
 
@@ -67,7 +67,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     # Helper to retrieve a list of models.
     def get_mongoid_models
       documents = []
-      Dir['{app,.}/models/*.rb'].sort.each do |file|
+      Dir['{app,.}/models/**/*.rb'].sort.each do |file|
         model_path = file[0..-4].split('/')[2..-1]
 
         begin
@@ -76,7 +76,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
             documents << klass
           end
         rescue => e
-          # Just for non-mongoid objects that dont have the embedded
+          # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end
       end
@@ -86,7 +86,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
 
     desc 'Create the indexes defined on your mongoid models'
     task :create_indexes => :environment do
-      get_mongoid_models.each { |model| model.create_indexes }
+      get_mongoid_models.each(&:create_indexes)
     end
 
     def convert_ids(obj)
@@ -114,14 +114,14 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       collection_names.each do |collection_name|
         puts "Converting #{collection_name} to use ObjectIDs"
 
-        # get old collection
+        # Get old collection.
         collection = mongoid_collection(collection_name)
 
-        # get new collection (a clean one)
+        # Get new collection (a clean one).
         mongoid_collection("#{collection_name}_new").drop
         new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
-        # convert collection documents
+        # Convert collection documents.
         enum_mongoid_documents(collection) do |doc|
           new_doc = convert_ids(doc)
           new_collection.insert(new_doc, :safe => true)
@@ -130,12 +130,12 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         puts "Done! Converted collection is in #{new_collection.name}\n\n"
       end
 
-      # no errors. great! now rename _new to collection_name
+      # No errors. great! now rename _new to collection_name.
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
         new_collection = mongoid_new_collection(collection, "#{collection_name}_new")
 
-        # swap collection to _old
+        # Swap collection to _old.
         puts "Moving #{collection.name} to #{collection_name}_old"
         mongoid_new_collection(collection, "#{collection_name}_old").drop
 
@@ -146,7 +146,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           puts "reason: #{e.message}\n\n"
         end
 
-        # swap _new to collection
+        # Swap _new to collection.
         puts "Moving #{new_collection.name} to #{collection_name}\n\n"
 
         begin
@@ -165,6 +165,48 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
         mongoid_new_collection(collection, "#{collection.name}_old").drop
+      end
+    end
+
+    desc "Generates .yml files for I18n translations"
+    task :translate => :environment do
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+
+      models.each do |m|
+        # Get the model class.
+        klass = m.camelize.constantize
+
+        # Avoid non Mongoid models.
+        next unless klass.ancestors.include?(Mongoid::Document)
+
+        # Init the processing.
+        print "Processing #{m.humanize}: "
+        FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
+        langs = Array(I18n.locale)
+
+        # Create models for it and en locales.
+        langs.each do |lang|
+          filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
+          columns    = klass.fields.values.map(&:name).reject { |name| name =~ /id/i }
+          # If the lang file already exist we need to check it.
+          if File.exist?(filename)
+            locale = File.open(filename).read
+            columns.each do |c|
+              locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
+            end
+            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
+          else
+            locale     = "#{lang}:" + "\n" +
+            "  models:" + "\n" +
+            "    #{m}:" + "\n" +
+            "      name: #{klass.name}" + "\n" +
+            "      attributes:" + "\n" +
+            columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
+          end
+          File.open(filename, "w") { |f| f.puts locale }
+        end
+        puts
       end
     end
   end

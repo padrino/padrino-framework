@@ -1,13 +1,13 @@
 pl:
   number:
-    # Used in number_with_delimiter()
-    # These are also the defaults for 'currency', 'percentage', 'precision', and 'human'
+    # Used in number_with_delimiter().
+    # These are also the defaults for 'currency', 'percentage', 'precision', and 'human'.
     format:
       separator: ","
       delimiter: " "
       precision: 2
 
-    # Used in number_to_currency()
+    # Used in number_to_currency().
     currency:
       format:
         format: "%n %u"
@@ -16,17 +16,17 @@ pl:
         delimiter: " "
         precision: 2
 
-    # Used in number_to_percentage()
+    # Used in number_to_percentage().
     percentage:
       format:
         delimiter: ""
 
-    # Used in number_to_precision()
+    # Used in number_to_precision().
     precision:
       format:
         delimiter: ""
 
-    # Used in number_to_human_size()
+    # Used in number_to_human_size().
     human:
       format:
         delimiter: ""
@@ -42,7 +42,7 @@ pl:
           gb: "GB"
           tb: "TB"
 
-  # Used in distance_of_time_in_words(), distance_of_time_in_words_to_now(), time_ago_in_words()
+  # Used in distance_of_time_in_words(), distance_of_time_in_words_to_now(), time_ago_in_words().
   datetime:
     distance_in_words:
       half_a_minute: "pół minuty"

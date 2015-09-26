@@ -3,5 +3,5 @@
   %li.active=link_to tag_icon(:plus, pat(:new)), url(:<%= @orm.name_plural %>, :new)
 
 .tabs-content
-  -form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create), :class => 'form-horizontal' do |f|
+  = form_for :<%= @orm.name_singular %>, url(:<%= @orm.name_plural %>, :create), :class => 'form-horizontal' do |f|
     =partial '<%= @orm.name_plural %>/form', :locals => { :f => f }

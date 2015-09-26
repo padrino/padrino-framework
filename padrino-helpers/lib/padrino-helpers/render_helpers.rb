@@ -5,7 +5,7 @@ module Padrino
     #
     module RenderHelpers
       ##
-      # Render a partials with collections support
+      # Render a partials with collections support.
       #
       # @param [String] template
       #   Relative path to partial template.
@@ -18,7 +18,7 @@ module Padrino
       # @option options [Hash] :locals ({})
       #   Local variables accessible in the partial.
       # @option options [Symbol] :engine
-      #   Explicit rendering engine to use for this partial
+      #   Explicit rendering engine to use for this partial.
       #
       # @return [String] The html generated from this partial.
       #
@@ -30,31 +30,34 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      # @api public
-      def partial(template, options={})
-        options.reverse_merge!(:locals => {}, :layout => false)
-        path            = template.to_s.split(File::SEPARATOR)
-        object_name     = path[-1].to_sym
-        path[-1]        = "_#{path[-1]}"
+      def partial(template, options={}, &block)
+        options = { :locals => {}, :layout => false }.update(options)
         explicit_engine = options.delete(:engine)
-        template_path   = File.join(path).to_sym
-        raise 'Partial collection specified but is nil' if options.has_key?(:collection) && options[:collection].nil?
-        if collection = options.delete(:collection)
-          options.delete(:object)
-          counter = 0
-          collection.map { |member|
-            counter += 1
-            options[:locals].merge!(object_name => member, "#{object_name}_counter".to_sym => counter)
-            render(explicit_engine, template_path, options.dup)
-          }.join("\n").html_safe
+
+        path,_,name = template.to_s.rpartition(File::SEPARATOR)
+        template_path = File.join(path,"_#{name}").to_sym
+        item_name = name.partition('.').first.to_sym
+
+        items, counter = if options[:collection].respond_to?(:inject)
+          [options.delete(:collection), 0]
         else
-          if member = options.delete(:object)
-            options[:locals].merge!(object_name => member)
-          end
-          render(explicit_engine, template_path, options.dup).html_safe
+          [[options.delete(:object)], nil]
+        end
+
+        locals = options[:locals]
+        items.each_with_object(ActiveSupport::SafeBuffer.new) do |item,html|
+          locals[item_name] = item if item
+          locals["#{item_name}_counter".to_sym] = counter += 1 if counter
+          content =
+            if block_given?
+              concat_content render(explicit_engine, template_path, options){ capture_html(&block) }
+            else
+              render(explicit_engine, template_path, options)
+            end
+          html.safe_concat content if content
         end
       end
       alias :render_partial :partial
-    end # RenderHelpers
-  end # Helpers
-end # Padrino
+    end
+  end
+end

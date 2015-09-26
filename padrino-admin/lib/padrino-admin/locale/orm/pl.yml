@@ -25,3 +25,14 @@ pl:
         record_invalid: "Negatywne sprawdzenie poprawności: %{errors}"
         content_type: "nieodozwolony format pliku"
   activerecord: *activemodel
+  ohm:
+    errors:
+      messages:
+        format: "jest nieprawidłowe"
+        not_present: "nie może być puste"
+        not_numeric: "nie jest liczbą"
+        not_url: "jest nieprawidłowe"
+        not_email: "jest nieprawidłowe"
+        not_valid: "nie znajduje się na liście dopuszczalnych wartości"
+        not_in_range: "nie znajduje się na liście dopuszczalnych wartości"
+        not_decimal: "jest nieprawidłowe"

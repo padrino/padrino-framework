@@ -6,20 +6,18 @@
 // Base styles
 // --------------------------------------------------
 
-// Core styles
 .btn {
   display: inline-block;
-  padding: 6px 12px;
   margin-bottom: 0; // For input.btn
-  font-size: @font-size-base;
-  font-weight: 500;
-  line-height: @line-height-base;
+  font-weight: @btn-font-weight;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
-  border: 1px solid @btn-border;
-  border-radius: @border-radius-base;
+  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+  border: 1px solid transparent;
   white-space: nowrap;
+  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-base);
+  .user-select(none);
 
   &:focus {
     .tab-focus();
@@ -27,7 +25,7 @@
 
   &:hover,
   &:focus {
-    color: #fff;
+    color: @btn-default-color;
     text-decoration: none;
   }
 
@@ -41,47 +39,99 @@
   &.disabled,
   &[disabled],
   fieldset[disabled] & {
-    cursor: default;
+    cursor: not-allowed;
     pointer-events: none; // Future-proof disabling of clicks
     .opacity(.65);
     .box-shadow(none);
   }
+}
 
+
+// Alternate buttons
+// --------------------------------------------------
+
+.btn-default {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+}
+.btn-primary {
+  .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+// Success appears as green
+.btn-success {
+  .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+}
+// Info appears as blue-green
+.btn-info {
+  .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+// Warning appears as orange
+.btn-warning {
+  .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
+}
+// Danger and error appear as red
+.btn-danger {
+  .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
+}
+
+
+// Link buttons
+// -------------------------
+
+// Make a button look and behave like a link
+.btn-link {
+  color: @link-color;
+  font-weight: normal;
+  cursor: pointer;
+  border-radius: 0;
+
+  &,
+  &:active,
+  &[disabled],
+  fieldset[disabled] & {
+    background-color: transparent;
+    .box-shadow(none);
+  }
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    border-color: transparent;
+  }
+  &:hover,
+  &:focus {
+    color: @link-hover-color;
+    text-decoration: underline;
+    background-color: transparent;
+  }
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus {
+      color: @btn-link-disabled-color;
+      text-decoration: none;
+    }
+  }
 }
 
 
 // Button Sizes
-// -------------------------
+// --------------------------------------------------
 
-// Large
-.btn-large {
-  padding: @padding-large;
-  font-size: @font-size-large;
-  border-radius: @border-radius-large;
+.btn-lg {
+  // line-height: ensure even-numbered height of button next to large input
+  .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+}
+.btn-sm {
+  // line-height: ensure proper height of button next to small input
+  .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+}
+.btn-xs {
+  .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
 }
 
-// Small
-.btn-small {
-  padding: @padding-small;
-  font-size: @font-size-small;
-  border-radius: @border-radius-small;
-}
-
-// Mini
-.btn-mini {
-  padding: @padding-mini;
-  font-size: @font-size-mini;
-  border-radius: @border-radius-small;
-}
-
-
-// Icons in buttons
-// -------------------------
-
-// TODO: figure this shit out
 
 // Block button
-// -------------------------
+// --------------------------------------------------
 
 .btn-block {
   display: block;
@@ -101,75 +151,5 @@ input[type="reset"],
 input[type="button"] {
   &.btn-block {
     width: 100%;
-  }
-}
-
-
-// Alternate buttons
-// --------------------------------------------------
-
-.btn {
-  color: @btn-color;
-  .btn-pseudo-states(@btn-bg, @btn-border);
-}
-.btn-primary {
-  .btn-pseudo-states(@btn-primary-bg, @btn-primary-border);
-}
-// Warning appears as orange
-.btn-warning {
-  .btn-pseudo-states(@btn-bg-warning, @btn-warning-border);
-}
-// Danger and error appear as red
-.btn-danger {
-  .btn-pseudo-states(@btn-bg-danger, @btn-danger-border);
-}
-// Success appears as green
-.btn-success {
-  .btn-pseudo-states(@btn-bg-success, @btn-success-border);
-}
-// Info appears as blue-green
-.btn-info {
-  .btn-pseudo-states(@btn-bg-info, @btn-info-border);
-}
-
-
-// Link buttons
-// --------------------------------------------------
-
-// Make a button look and behave like a link
-.btn-link,
-.btn-link:active,
-.btn-link[disabled],
-fieldset[disabled] .btn-link {
-  background-color: transparent;
-  background-image: none;
-  .box-shadow(none);
-}
-.btn-link,
-.btn-link:hover,
-.btn-link:focus,
-.btn-link:active {
-  border-color: transparent;
-}
-.btn-link {
-  color: @link-color;
-  font-weight: normal;
-  cursor: pointer;
-  border-radius: 0;
-}
-.btn-link:hover,
-.btn-link:focus {
-  color: @link-hover-color;
-  text-decoration: underline;
-  background-color: transparent;
-}
-.btn-link {
-  &[disabled],
-  fieldset[disabled] & {
-    &:hover,
-    &:focus {
-      color: @grayDark;
-      text-decoration: none;
-    }
   }
 }

@@ -2,45 +2,63 @@
 // Labels
 // --------------------------------------------------
 
-
-// Base classes
 .label {
-  padding: .25em .6em;
+  display: inline;
+  padding: .2em .6em .3em;
   font-size: 75%;
-  font-weight: 500;
-  color: #fff;
+  font-weight: bold;
   line-height: 1;
-  vertical-align: middle;
-  white-space: nowrap;
+  color: @label-color;
   text-align: center;
-  background-color: @grayLight;
+  white-space: nowrap;
+  vertical-align: baseline;
   border-radius: .25em;
-}
 
-// Hover state, but only for links
-a.label {
-  &:hover,
-  &:focus {
-    color: #fff;
-    text-decoration: none;
-    cursor: pointer;
+  // Add hover effects, but only for links
+  &[href] {
+    &:hover,
+    &:focus {
+      color: @label-link-hover-color;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+
+  // Empty labels collapse automatically (not available in IE8)
+  &:empty {
+    display: none;
+  }
+
+  // Quick fix for labels in buttons
+  .btn & {
+    position: relative;
+    top: -1px;
   }
 }
 
 // Colors
-// Only give background-color difference to links (and to simplify, we don't qualifty with `a` but [href] attribute)
-.label {
-  // Danger (red)
-  &-danger            { background-color: @label-danger-bg; }
-  &-danger[href]      { background-color: darken(@label-danger-bg, 10%); }
-  // Warnings (orange)
-  &-warning           { background-color: @label-warning-bg; }
-  &-warning[href]     { background-color: darken(@label-warning-bg, 10%); }
-  // Success (green)
-  &-success           { background-color: @label-success-bg; }
-  &-success[href]     { background-color: darken(@label-success-bg, 10%); }
-  // Info (turquoise)
-  &-info              { background-color: @label-info-bg; }
-  &-info[href]        { background-color: darken(@label-info-bg, 10%); }
+// Contextual variations (linked labels get darker on :hover)
+
+.label-default {
+  .label-variant(@label-default-bg);
 }
 
+.label-primary {
+  .label-variant(@label-primary-bg);
+}
+
+.label-success {
+  .label-variant(@label-success-bg);
+}
+
+.label-info {
+  .label-variant(@label-info-bg);
+}
+
+.label-warning {
+  .label-variant(@label-warning-bg);
+}
+
+.label-danger {
+  .label-variant(@label-danger-bg);
+}

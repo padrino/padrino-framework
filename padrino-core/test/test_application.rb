@@ -7,11 +7,10 @@ class PadrinoTestApp2 < Padrino::Application; end
 
 describe "Application" do
   before { Padrino.clear! }
-  after  { remove_views }
 
-  context 'for application functionality' do
+  describe 'for application functionality' do
 
-    should 'check default options' do
+    it 'should check default options' do
       assert File.identical?(__FILE__, PadrinoPristine.app_file)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
@@ -25,20 +24,7 @@ describe "Application" do
       assert !Padrino.configure_apps
     end
 
-    should 'check haml options on production' do
-      assert defined?(Haml), 'Haml not defined'
-      assert_equal :test, PadrinoPristine.environment
-      assert !PadrinoPristine.haml[:ugly]
-      Padrino.stub :env, :production do
-        PadrinoPristine.send :default_configuration!
-        assert_equal :production, Padrino.env
-        assert_equal :production, PadrinoPristine.environment
-        assert PadrinoPristine.haml[:ugly]
-        PadrinoPristine.environment = :test
-      end
-    end
-
-    should 'check padrino specific options' do
+    it 'should check padrino specific options' do
       assert !PadrinoPristine.instance_variable_get(:@_configured)
       PadrinoPristine.send(:setup_application!)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
@@ -47,7 +33,7 @@ describe "Application" do
       assert !PadrinoPristine.reload?
     end
 
-    should 'set global project settings' do
+    it 'should set global project settings' do
       Padrino.configure_apps { enable :sessions; set :foo, "bar" }
       PadrinoTestApp.send(:default_configuration!)
       PadrinoTestApp2.send(:default_configuration!)
@@ -56,7 +42,7 @@ describe "Application" do
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
 
-    should 'be able to configure_apps multiple times' do
+    it 'should be able to configure_apps multiple times' do
       Padrino.configure_apps { set :foo1, "bar" }
       Padrino.configure_apps { set :foo1, "bam" }
       Padrino.configure_apps { set :foo2, "baz" }
@@ -65,7 +51,7 @@ describe "Application" do
       assert_equal "baz", PadrinoTestApp.settings.foo2, "should have foo2 assigned to baz"
     end
 
-    should "have shared sessions accessible in project" do
+    it 'should have shared sessions accessible in project' do
       Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
@@ -79,38 +65,80 @@ describe "Application" do
       assert_equal 'shared', body
     end
 
+    it 'should be able to execute the register keyword inside the configure_apps block' do
+      Asdf = Module.new
+      Padrino.configure_apps { register Asdf }
+      class GodFather < Padrino::Application; end
+      assert_includes GodFather.extensions, Asdf
+    end
+
+    it 'should able to set custome session management' do
+      class PadrinoTestApp3 < Padrino::Application
+        set :sessions, :use => Rack::Session::Pool
+      end
+      Padrino.mount("PadrinoTestApp3").to("/")
+      PadrinoTestApp3.get('/write') { session[:foo] = "pool" }
+      PadrinoTestApp3.get('/read') { session[:foo] }
+      @app = Padrino.application
+      get '/write'
+      get '/read'
+      assert_equal 'pool', body
+    end
+
+    it 'should have different session values in different session management' do
+      class PadrinoTestApp4 < Padrino::Application
+        enable :sessions
+      end
+      class PadrinoTestApp5 < Padrino::Application
+        set :sessions, :use => Rack::Session::Pool
+      end
+      Padrino.mount("PadrinoTestApp4").to("/write")
+      Padrino.mount("PadrinoTestApp5").to("/read")
+      PadrinoTestApp4.get('/') { session[:foo] = "cookie" }
+      PadrinoTestApp5.get('/') { session[:foo] }
+      @app = Padrino.application
+      get '/write'
+      get '/read'
+      assert_equal '', body
+    end
+
     # compare to: test_routing: allow global provides
-    should "set content_type to :html if none can be determined" do
+    it 'should set content_type to nil if none can be determined' do
       mock_app do
         provides :xml
 
-        get("/foo"){ "Foo in #{content_type}" }
-        get("/bar"){ "Foo in #{content_type}" }
+        get("/foo"){ "Foo in #{content_type.inspect}" }
+        get("/bar"){ "Foo in #{content_type.inspect}" }
       end
 
       get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-      assert_equal 'Foo in xml', body
+      assert_equal 'Foo in :xml', body
       get '/foo'
-      assert_equal 'Foo in xml', body
+      assert_equal 'Foo in :xml', body
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-      assert_equal "Foo in html", body
-    end # content_type to :html
+      assert_equal "Foo in nil", body
+    end
 
-    context "errors" do
-      should "haven't mapped errors on development" do
+    it 'should resolve views and layouts paths' do
+      assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
+      assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
+    end
+
+    describe "errors" do
+      it 'should have not mapped errors on development' do
         mock_app { get('/'){ 'HI' } }
         get "/"
         assert @app.errors.empty?
       end
 
-      should "have mapped errors on production" do
+      it 'should have mapped errors on production' do
         mock_app { set :environment, :production; get('/'){ 'HI' } }
         get "/"
         assert_equal 1, @app.errors.size
       end
 
-      should "overide errors" do
+      it 'should overide errors' do
         mock_app do
           set :environment, :production
           get('/'){ raise }
@@ -119,6 +147,38 @@ describe "Application" do
         get "/"
         assert_equal 1, @app.errors.size
         assert_equal 'custom error', body
+      end
+
+      it 'should raise NameError even if Kernel.require is extended' do
+        assert_raises NameError do
+          ConstTest = Class.new(Padrino::Application)
+          require 'active_support/dependencies'
+          ConstTest::UninitializedConstant
+        end
+      end
+    end
+
+    describe "pre-compile routes" do
+      it "should compile routes before first request if enabled the :precompile_routes option" do
+        require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
+        assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
+        assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine
+        assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?
+        assert_equal true, PrecompiledApp::SubApp.compiled_router.engine.compiled?
+        assert_equal 20, PrecompiledApp::App.compiled_router.engine.regexps.length
+        assert_equal 20, PrecompiledApp::SubApp.compiled_router.engine.regexps.length
+      end
+    end
+
+    describe 'global prerequisites' do
+      after do
+        Padrino::Application.prerequisites.clear
+      end
+
+      it 'should be inherited by children of Padrino::Application' do
+        Padrino::Application.prerequisites << 'my_prerequisites'
+        class InheritanceTest < Padrino::Application; end
+        assert_includes InheritanceTest.prerequisites, 'my_prerequisites'
       end
     end
   end # application functionality

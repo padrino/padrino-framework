@@ -4,11 +4,14 @@ install:
   - gem update --system
   - bundle update
 rvm:
-  - 1.8.7
   - 1.9.3
   - 2.0.0
-  - rbx-18mode
-  - jruby-19mode
+  - 2.1
+  - 2.2
+  - rbx-2
+  - jruby
+  - ruby-head
+  - jruby-head
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -19,23 +22,22 @@ notifications:
     - florian.gilcher@asquera.de
     - dario@uxtemple.com
     - ujifgc@gmail.com
+    - ortuna@gmail.com
+    - namusyaka@gmail.com
 branches:
   only:
     - master
 services: mongodb
 matrix:
   include:
-    - rvm: 1.9.3
+    - rvm: 2.1
       env: SINATRA_EDGE=true
-    - rvm: 1.9.3
-      env: AS_VERSION=3.1.0
-    - rvm: 2.0.0
-      env: SINATRA_EDGE=true
-    - rvm: 2.0.0
-      env: AS_VERSION=3.1.0
+    - rvm: 2.1
+      env: STDLIB_ERB=true
   allow_failures:
-    - rvm: 1.9.3
+    - rvm: rbx-2
+    - rvm: 2.1
+    - rvm: 2.2
       env: SINATRA_EDGE=true
-    - rvm: 2.0.0
-      env: SINATRA_EDGE=true
-    - rvm: rbx-18mode
+    - rvm: ruby-head
+    - rvm: jruby-head

@@ -24,10 +24,10 @@ class <%= @model_name %>
   before_save :encrypt_password, :if => :password_required
 
   ##
-  # This method is for authentication purpose
+  # This method is for authentication purpose.
   #
   def self.authenticate(email, password)
-    account = first(:email => email) if email.present?
+    account = first(:email => /#{Regexp.escape(email)}/i) if email.present?
     account && account.has_password?(password) ? account : nil
   end
 
@@ -36,6 +36,7 @@ class <%= @model_name %>
   end
 
   private
+
   def encrypt_password
     self.crypted_password = ::BCrypt::Password.create(password)
   end

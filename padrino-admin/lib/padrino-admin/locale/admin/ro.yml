@@ -37,7 +37,7 @@ ro:
       update_success: "%{model} cu ID-ul %{id} a fost actualizat cu succes."
       update_error: "Nu sa putut actualiza %{model}."
       update_warning: "Nu am putut găsi %{model} cu ID-ul %{id}"
-      delete_title: "Ștergere %{modelu}?"
+      delete_title: "Ștergere %{model}?"
       delete_success: "%{model} cu ID-ul %{id} a fost șters cu succes."
       delete_error: "Imposibil de șters %{model}!"
       delete_warning: "Nu am putut găsi %{model} cu ID-ul %{id}."

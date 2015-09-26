@@ -1,10 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Email" do
-
-  context 'the mailer in a app' do
-
-    should 'send a basic inline email' do
+  describe 'the mailer in an app' do
+    it 'should send a basic inline email' do
       mock_app do
         register Padrino::Mailer
         get "/" do
@@ -26,7 +24,7 @@ describe "Email" do
       assert_equal 'Body',                email.body.to_s
     end
 
-    should 'send a basic inline from hash' do
+    it 'should send a basic inline from hash' do
       mock_app do
         register Padrino::Mailer
         get "/" do
@@ -48,7 +46,7 @@ describe "Email" do
       assert_equal 'Body',                email.body.to_s
     end
 
-    should 'send an basic email with body template' do
+    it 'should send an basic email with body template' do
       mock_app do
         register Padrino::Mailer
         get "/" do
@@ -71,7 +69,7 @@ describe "Email" do
       assert_equal 'This is a body of text from a template with interpolated &lt;i&gt; and non-interpolated tags<br/>', email.body.to_s.chomp
     end
 
-    should 'send emails with scoped mailer defaults' do
+    it 'should send emails with scoped mailer defaults' do
       mock_app do
         register Padrino::Mailer
         set :views, File.dirname(__FILE__) + '/fixtures/views'
@@ -96,7 +94,7 @@ describe "Email" do
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
 
-    should 'send emails with app mailer defaults' do
+    it 'should send emails with app mailer defaults' do
       mock_app do
         register Padrino::Mailer
         set :delivery_method, :test
@@ -120,7 +118,7 @@ describe "Email" do
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
 
-    should 'send emails without layout' do
+    it 'should send emails without layout' do
       mock_app do
         register Padrino::Mailer
         set :views, File.dirname(__FILE__) + '/fixtures/views'
@@ -146,7 +144,7 @@ describe "Email" do
       assert_match /TestMailer/, email.delivery_method.to_s
     end
 
-    should 'raise an error if there are two messages with the same name' do
+    it 'should raise an error if there are two messages with the same name' do
       assert_raises RuntimeError do
         mock_app do
           register Padrino::Mailer

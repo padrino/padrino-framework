@@ -22,12 +22,12 @@ module Padrino
       end
     end
   end
-  
+
   before_load do
-    puts `#{perf_memusage_command}`
+    puts "Memory before the application is loaded: #{perf_memusage_command}"
   end
 
   after_load do
-    puts `#{perf_memusage_command}`
+    puts "Memory usage after loading the application: #{perf_memusage_command}"
   end
 end

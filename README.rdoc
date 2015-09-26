@@ -2,11 +2,13 @@
 
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
-{@padrinorb}[http://twitter.com/padrinorb]
+{@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
 
-{<img src="https://api.travis-ci.org/padrino/padrino-framework.png" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
-{<img src="https://gemnasium.com/padrino/padrino-framework.png" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
-{<img src="https://codeclimate.com/github/padrino/padrino-framework.png" />}[https://codeclimate.com/github/padrino/padrino-framework]
+{<img src="https://api.travis-ci.org/padrino/padrino-framework.svg" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
+{<img src="https://gemnasium.com/padrino/padrino-framework.svg" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
+{<img src="http://img.shields.io/codeclimate/github/padrino/padrino-framework.svg" />}[https://codeclimate.com/github/padrino/padrino-framework]
+{<img src="https://badges.gitter.im/Join Chat.svg" />}[https://gitter.im/padrino/padrino-framework]
+
 == Preface
 
 Padrino is a ruby framework built upon the excellent {Sinatra Web Library}[http://www.sinatrarb.com].
@@ -27,7 +29,7 @@ Here is a brief overview of functionality provided by the Padrino framework:
 Agnostic:: Full support for many popular testing, templating, mocking, and data storage choices.
 Generators:: Create Padrino applications, models, controllers i.e: padrino-gen project.
 Mountable:: Unlike other ruby frameworks, principally designed for mounting multiple apps.
-Routing:: Full url named routes, named params, respond_to support, before/after filter support.
+Routing:: Full url named routes, named params, before/after filter support.
 Tag Helpers:: View helpers such as: tag, content_tag, input_tag.
 Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag.
 Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
@@ -45,12 +47,12 @@ or use them altogether for a full-stack Padrino application.
 
 == Installation
 
-To install the padrino framework, simply grab the latest version from gemcutter:
+To install the padrino framework, simply grab the latest version from {RubyGems}[https://rubygems.org]:
 
   $ gem install padrino
 
 This will install the necessary padrino gems to get you started.
-Now you are ready to use this gem to enhance your sinatra projects or to create new Padrino applications.
+Now you are ready to use this gem to enhance your Sinatra projects or to create new Padrino applications.
 
 For a more detailed look at installing Padrino,
 check out the {Installation Guide}[http://www.padrinorb.com/guides/installation].
@@ -71,7 +73,7 @@ For information on how to use a specific gem in isolation within an existing Sin
 == Getting Started
 
 Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
-of existing sinatra functionality!
+of existing Sinatra functionality!
 
 First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
 to learn more about how Sinatra and Padrino work together.
@@ -86,6 +88,22 @@ Best way to learn more about building Padrino applications is to read following 
 
 The individual Padrino sub-gems also contain README's which outlines their functionality.
 
+== Further Questions
+
+Can't find an answer in the resources above?
+
+* Try the new {FAQ's}[https://github.com/padrino/padrino-framework/blob/master/padrino-docs/pages/faq.md].
+
+* Ask any questions on the {gitter channel}[https://gitter.im/padrino/padrino-framework].
+
+== Bug reporting
+
+Log it onto Github by "creating a new issue":http://github.com/padrino/padrino-framework/issues.
+
+Be sure to include all relevant information, like the versions of Padrino, Rack, Sinatra, Ruby and operating system you are using.
+
+A minimal project showing the issue published on Github with Gemfile.lock is also extremely helpful.
+
 == Copyright
 
-Copyright (c) 2012 Padrino. See LICENSE for details.
+Copyright (c) 2012-2015 Padrino. See LICENSE for details.

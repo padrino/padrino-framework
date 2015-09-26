@@ -1,4 +1,4 @@
-- form_for MarkupUser.new, '/demo', :id => 'demo' do |f|
+= form_for MarkupUser.new, '/demo', :id => 'demo' do |f|
   = f.error_messages(:header_message => "custom MarkupUser cannot be saved!")
   = f.hidden_field :session_id
   %p
@@ -39,11 +39,33 @@
     = f.label :remember_me
     = f.check_box :remember_me, :value => "1"
   %p
+    = f.label :datetime
+    = f.datetime_field :datetime, :max => DateTime.new(2000, 4, 1, 12, 0, 0)
+  %p
+    = f.label :datetime_local
+    = f.datetime_local_field :datetime_local, :max => DateTime.new(2000, 4, 1, 12, 0, 0)
+  %p
+    = f.label :date
+    = f.date_field :date, :max => DateTime.new(2000, 4, 1)
+  %p
+    = f.label :month
+    = f.month_field :month, :max => DateTime.new(2000, 4, 1)
+  %p
+    = f.label :week
+    = f.week_field :week, :max => DateTime.new(2000, 4, 1)
+  %p
+    = f.label :time
+    = f.time_field :time, :max => Time.new(2008, 6, 21, 13, 30, 0)
+  %p
+    = f.label :color
+    = f.color_field :color, :value => "#f00"
+  </p>
+  %p
     = f.submit "Create", :class => 'success', :id => 'demo-button'
   %p
     = f.image_submit "buttons/post.png", :class => 'success', :id => 'image-button'
 
-- form_for MarkupUser.new, '/another_demo', :id => 'demo2', :method => 'get' do |f|
+= form_for MarkupUser.new, '/another_demo', :id => 'demo2', :method => 'get' do |f|
   = f.error_messages :header_message => "custom MarkupUser cannot be saved!"
   = f.hidden_field :session_id
   = f.text_field_block :username, { :class => 'input' }, { :caption => 'Nickname: ', :class => 'label' }
@@ -55,5 +77,5 @@
   = f.submit_block "Create", { :class => 'button' }
   = f.image_submit_block "buttons/ok.png", { :class => 'image' }
 
-- form_for :markup_user, '/third_demo', :id => 'demo3', :method => 'get' do |f|
+= form_for :markup_user, '/third_demo', :id => 'demo3', :method => 'get' do |f|
   = f.text_field_block :username

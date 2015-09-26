@@ -1,13 +1,13 @@
 - @user = MarkupUser.new
-- form_for @user , '/demo1', :id => 'demo-fields-for' do |f|
+= form_for @user , '/demo1', :id => 'demo-fields-for' do |f|
   = f.text_field :gender
-  - fields_for @user.permission do |permission|
+  = fields_for @user.permission do |permission|
     = permission.check_box :can_edit
     = permission.check_box :can_delete
-  - f.fields_for :telephone do |child_form|
+  = f.fields_for :telephone do |child_form|
     = child_form.label :number
     = child_form.text_field :number
-  - f.fields_for :addresses do |child_form|
+  = f.fields_for :addresses do |child_form|
     = child_form.label :name
     = child_form.text_field :name
     - unless child_form.object.new_record?
