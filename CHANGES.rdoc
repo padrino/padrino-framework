@@ -41,7 +41,7 @@
 * FIX #1772 add button content tag to button_to block (@ujifgc)
 * NEW #1133 switch default renderer to none (@ujifgc)
 * FIX #1792 Faster code using reverse_each to iterate gems (@glaucocustodio)
-* FIX #1793 Faster codeusing #sub instead of #gsub (@glaucocustodio)
+* FIX #1793 Faster code using #sub instead of #gsub (@glaucocustodio)
 * FIX #1795 load missing models for sq:seed (@ujifgc)
 * NEW Use mustermann19 in all cases now (@namusyaka)
 * FIX Remove abuse of force_encoding (@ujifgc)
