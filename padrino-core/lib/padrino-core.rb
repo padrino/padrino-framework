@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'padrino-core/version'
 require 'padrino-support'
+require 'padrino-core/configuration'
 require 'padrino-core/application'
 
 require 'padrino-core/caller'
@@ -25,6 +26,7 @@ module Padrino
   class ApplicationLoadError < RuntimeError # @private
   end
 
+  extend Configuration
   extend Loader
 
   class << self
