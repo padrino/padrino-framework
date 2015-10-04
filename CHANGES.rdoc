@@ -73,7 +73,7 @@
 * NEW #1857 Precompile routes when loading Padrino (@namusyaka)
 * NEW #1818 Implement `source_location` option for logger (@namusyaka)
 * FIX #1859 Correct issues with the admin seeds generator (@Quintasan)
-* FIX Make broken async stream callbacks work in Padrino (@jay2u)
+* FIX #1704 Make broken async stream callbacks work in Padrino (@jay2u)
 * FIX #1862 Re-implement `PathRouter#recognize` (@namusyaka)
 * FIX #863 Removes unsafe http_router patch (@namusyaka)
 * FIX #1867 Update ShowExceptions to suit latest rack master (@namusyaka)
