@@ -4,12 +4,14 @@
 
 - FIX #1965 Fail properly on wrong mailer name or message (@ujifgc)
 - FIX #1959 simplify the mounter class (@dnesteryuk)
-- FIX #1916 Check key existence on caching (@ujifgc)
+- FIX #1916 Check key existence on caching (@namusyaka)
 - NEW #1946 Documentation fixes re default renderer is now none (@Quintasan)
 - FIX #942 remove ar:auto:upgrade (@ujifgc)
 - NEW #1919 allow configuring log file path
 - FIX #1931 render partials in mail if padrino-helpers is available (@ujifgc)
 - FIX #1950 Padrino now follows Sinatra's charset policy (@ujifgc)
+- NEW #1909 Basic project configuration engine (@ujifgc)
+- NEW #1966 sample benchmark test of padrino core (@ujifgc)
 
 == 0.13.0.beta3 (August 2nd 2015)
 
