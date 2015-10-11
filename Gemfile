@@ -26,6 +26,7 @@ group :development do
   gem "fakeweb",   ">= 1.2.8"
   gem "webrat",    ">= 0.5.1"
   gem "haml",      ">= 4.0.5"
+  gem "liquid",    ">= 2.1.2"
   if ENV['STDLIB_ERB']
     puts "=> Using stdlib ERB engine"
   else

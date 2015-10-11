@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'slim'
+require 'liquid'
 
 describe "Rendering" do
   def setup
@@ -85,6 +86,26 @@ describe "Rendering" do
       assert_equal "this is an erb file", body
       get "/layout_test.js"
       assert_equal "js file", body
+    end
+
+    it 'should set and restore layout in controllers' do
+      create_layout :boo, "boo is a <%= yield %>"
+      create_layout :moo, "moo is a <%= yield %>"
+      create_view :foo, "liquid file", :format => :liquid
+      mock_app do
+        layout :boo
+        controller :moo do
+          layout :moo
+          get('/liquid') { render :foo }
+        end
+        controller :boo do
+          get('/liquid') { render :foo }
+        end
+      end
+      get "/moo/liquid"
+      assert_equal "moo is a liquid file", body
+      get "/boo/liquid"
+      assert_equal "boo is a liquid file", body
     end
 
     it 'should use correct layout for each format' do
