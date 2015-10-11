@@ -1,7 +1,9 @@
 = CHANGES
 
-== 0.13.0 (October 4th 2015)
+== 0.13.0 (October 11th 2015)
 
+- FIX #1796 Save and restore layout setting (@ujifgc)
+- FIX #1965 Fail properly on wrong mailer name or message (@ujifgc)
 - FIX #1965 Fail properly on wrong mailer name or message (@ujifgc)
 - FIX #1959 simplify the mounter class (@dnesteryuk)
 - FIX #1916 Check key existence on caching (@namusyaka)
