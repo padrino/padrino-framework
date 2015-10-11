@@ -45,7 +45,9 @@ module Padrino
         #
         def option_is_selected?(value, caption, selected_values)
           Array(selected_values).any? do |selected|
-            [value.to_s, caption.to_s].include?(selected.to_s)
+            value.to_s ?
+              value.to_s == selected.to_s :
+              caption.to_s == selected.to_s
           end
         end
 
@@ -90,7 +92,7 @@ module Padrino
             collection.map{ |item| [ item.send(fields.first), item.send(fields.last) ] }
           else
             options.delete(:options) || []
-          end        
+          end
         end
       end
     end

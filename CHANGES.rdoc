@@ -1,9 +1,10 @@
 = CHANGES
 
-== 0.13.0 (October 11th 2015)
+== 0.13.0 (Unreleased)
 
 - FIX #1614 Do not search for caller in bundler lib (@ujifgc)
 - FIX #1796 Save and restore layout setting (@ujifgc)
+- FIX #1882 Fix ambiguous selected items in "select_tag" (@nesquena)
 - FIX #1965 Fail properly on wrong mailer name or message (@ujifgc)
 - FIX #1959 simplify the mounter class (@dnesteryuk)
 - FIX #1916 Check key existence on caching (@namusyaka)

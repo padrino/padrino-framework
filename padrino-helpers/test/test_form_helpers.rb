@@ -773,6 +773,20 @@ describe "FormHelpers" do
       assert_has_tag('select option', :content => 'Black', :value => 'black1') { actual_html }
     end
 
+    it 'should display selected options first based on values not content' do
+      options = [['First', 'one'], ['one', 'two'], ['three', 'three']]
+      actual_html = select_tag(:number, :options => options, :selected => 'one')
+      assert_has_tag('select option', :selected => 'selected', :count => 1) { actual_html }
+      assert_has_tag('select option', :content => 'First', :value => 'one', :selected => 'selected') { actual_html }
+    end
+
+    it 'should display selected options falling back to checking content' do
+      options = [['one'], ['two'], ['three', 'three']]
+      actual_html = select_tag(:number, :options => options, :selected => 'one')
+      assert_has_tag('select option', :selected => 'selected', :count => 1) { actual_html }
+      assert_has_tag('select option', :content => 'one', :value => 'one', :selected => 'selected') { actual_html }
+    end
+
     it 'should display options with values and accept disabled options' do
       options = [['Green', 'green1', {:disabled => true}], ['Blue', 'blue1'], ['Black', "black1"]]
       actual_html = select_tag(:favorite_color, :options => options)
@@ -785,7 +799,7 @@ describe "FormHelpers" do
 
     it 'should display option with values and multiple selected' do
       options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
-      actual_html = select_tag(:favorite_color, :options => options, :selected => ['green1', 'Black'])
+      actual_html = select_tag(:favorite_color, :options => options, :selected => ['green1', 'black1'])
       assert_has_tag(:select, :name => 'favorite_color') { actual_html }
       assert_has_tag('select option', :selected => 'selected', :count => 2) { actual_html }
       assert_has_tag('select option', :content => 'Green', :value => 'green1', :selected => 'selected') { actual_html }
