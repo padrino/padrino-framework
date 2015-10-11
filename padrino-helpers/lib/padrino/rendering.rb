@@ -226,7 +226,7 @@ module Padrino
         # This means that no engine was explicitly defined
         data, engine = resolve_template(engine, options) if data.nil?
 
-        ensure_rendering_engine(engine) || (options[:layout] ||= false)
+        ensure_rendering_engine(engine) || (options[:layout] ||= @layout || false)
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine

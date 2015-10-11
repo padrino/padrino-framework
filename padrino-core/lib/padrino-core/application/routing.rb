@@ -394,7 +394,7 @@ module Padrino
         replace_instance_variable(:@_controller, args)
         replace_instance_variable(:@_defaults, options)
         replace_instance_variable(:@filters, :before => @filters[:before].dup, :after => @filters[:after].dup)
-        replace_instance_variable(:@layout, nil)
+        replace_instance_variable(:@layout, @layout)
 
         yield
 

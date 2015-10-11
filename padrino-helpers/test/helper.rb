@@ -68,7 +68,7 @@ class MiniTest::Spec
     path  = "/views/#{name}"
     path += ".#{options.delete(:locale)}" if options[:locale].present?
     path += ".#{options[:format]}" if options[:format].present?
-    path += ".erb" unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder/
+    path += ".erb" unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder|liquid/
     path += ".builder" if options[:format].to_s =~ /rss|atom/
     file  = File.dirname(__FILE__) + path
     File.open(file, 'w') { |io| io.write content }
