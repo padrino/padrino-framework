@@ -18,7 +18,8 @@ module Padrino
     %r{rake_test_loader\.rb},
     %r{custom_require\.rb$},
     %r{active_support},
-    %r{/thor}
+    %r{/thor},
+    %r{/lib/bundler},
   ] unless defined?(PADRINO_IGNORE_CALLERS)
 
   ##
