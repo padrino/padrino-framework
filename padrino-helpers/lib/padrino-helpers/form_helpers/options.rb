@@ -45,7 +45,7 @@ module Padrino
         #
         def option_is_selected?(value, caption, selected_values)
           Array(selected_values).any? do |selected|
-            value.to_s ?
+            value ?
               value.to_s == selected.to_s :
               caption.to_s == selected.to_s
           end
