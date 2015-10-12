@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.13.0 (Unreleased)
+== 0.13.0 (October 11th 2015)
 
 - FIX #1614 Do not search for caller in bundler lib (@ujifgc)
 - FIX #1796 Save and restore layout setting (@ujifgc)
