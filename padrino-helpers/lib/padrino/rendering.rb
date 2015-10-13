@@ -381,7 +381,8 @@ module Padrino
       end
 
       def content_type_symbol(type)
-        if defined?(::Rack::Mime::MIME_TYPES) && type.kind_of?(String)
+        if defined?(::Rack::Mime::MIME_TYPES) && type.kind_of?(String) &&
+           ::Rack::Mime::MIME_TYPES.key(type)
           type = ::Rack::Mime::MIME_TYPES.key(type).sub(/\./,'').to_sym
         end
         CONTENT_TYPE_ALIASES[type] || type
