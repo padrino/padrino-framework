@@ -151,6 +151,18 @@ describe "Rendering" do
       assert_equal 'layout404 file', body
     end
 
+    it 'should work with set content type not contained in rack-types' do
+      create_view "index.md.erb", "Hello"
+      mock_app do
+        get("/") {
+          content_type "text/x-markdown; charset=UTF-8"
+          render "index.erb", { :layout => nil }
+        }
+      end
+      get "/"
+      assert_equal "Hello", body
+    end
+
     it 'should not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
       create_layout :foo, "html file", :format => :html
 
@@ -677,7 +689,7 @@ describe "Rendering" do
       class Application < Sinatra::Base
         register Padrino::Rendering
         get '/' do
-          render :post, :views => File.dirname(__FILE__)+'/fixtures/apps/views/blog' 
+          render :post, :views => File.dirname(__FILE__)+'/fixtures/apps/views/blog'
         end
       end
       @app = Application.new
