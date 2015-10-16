@@ -226,7 +226,7 @@ module Padrino
       #   tag :img, :src => 'images/pony.jpg', :alt => 'My Little Pony'
       #   # => <img src="images/pony.jpg" alt="My Little Pony" />
       #
-      #   tag :img, :src => 'sinatra.jpg, :data => { :nsfw => false, :geo => [34.087, -118.407] }
+      #   tag :img, :src => 'sinatra.jpg', :data => { :nsfw => false, :geo => [34.087, -118.407] }
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
       def tag(name, options = nil, open = false)
