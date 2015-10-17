@@ -165,8 +165,8 @@ describe "Application" do
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine
         assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?
         assert_equal true, PrecompiledApp::SubApp.compiled_router.engine.compiled?
-        assert_equal 20, PrecompiledApp::App.compiled_router.engine.regexps.length
-        assert_equal 20, PrecompiledApp::SubApp.compiled_router.engine.regexps.length
+        assert_equal 20, PrecompiledApp::App.compiled_router.engine.routes.length
+        assert_equal 20, PrecompiledApp::SubApp.compiled_router.engine.routes.length
       end
     end
 

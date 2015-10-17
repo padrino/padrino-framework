@@ -4,7 +4,7 @@ module Padrino
       ##
       # The accessors are useful to access from PathRouter::Router
       #
-      attr_accessor :name, :capture, :order, :options, :index
+      attr_accessor :name, :capture, :order, :options, :index, :regexp
 
       ##
       # A reader for compile option
