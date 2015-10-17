@@ -37,7 +37,7 @@ module Padrino
       #
       def find_by(request_or_env)
         request = request_or_env.is_a?(Hash) ? Sinatra::Request.new(request_or_env) : request_or_env
-        pattern = encode_default_external(request.path_info)
+        pattern  = decode_pattern(request.path_info)
         verb    = request.request_method
         rotation { |offset| match?(offset, pattern) }.select { |route| route.verb == verb }
       end
@@ -47,7 +47,7 @@ module Padrino
       #
       def call_by_request(request)
         rotation do |offset|
-          pattern  = encode_default_external(request.path_info)
+          pattern  = decode_pattern(request.path_info)
           if route = match?(offset, pattern)
             params = route.params_for(pattern, request.params)
             yield(route, params) if route.verb == request.request_method
@@ -60,7 +60,7 @@ module Padrino
       # Finds routes by using PATH_INFO.
       #
       def find_by_pattern(pattern)
-        pattern = pattern.encode(Encoding.default_external)
+        pattern  = decode_pattern(pattern)
         rotation { |offset| match?(offset, pattern) }
       end
   
@@ -88,10 +88,24 @@ module Padrino
       end
 
       ##
+      # Decode env["PATH_INFO"]
+      #
+      def decode_pattern(pattern)
+        decode_uri(encode_default_external(pattern))
+      end
+
+      ##
       # Encode string with Encoding.default_external
       #
       def encode_default_external(string)
         string.encode(Encoding.default_external)
+      end
+
+      ##
+      # Decode uri escape sequences
+      #
+      def decode_uri(string)
+        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape(part) }.join('%2F')
       end
     end
   end
