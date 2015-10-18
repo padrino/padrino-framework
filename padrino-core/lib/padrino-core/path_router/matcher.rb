@@ -76,7 +76,7 @@ module Padrino
         @handler ||=
           case @path
           when String
-            Mustermann.new(@path, :capture => @capture)
+            Mustermann.new(@path, :capture => @capture, :uri_decode => false)
           when Regexp
             /^(?:#{@path})$/
           else
