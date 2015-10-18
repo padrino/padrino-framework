@@ -1,5 +1,13 @@
 = CHANGES
 
+== 0.13.1 (Unreleased)
+
+- FIX #1975 Improve routing memory usage and performance (@namusyaka)
+- FIX #1882 test for selected values for select tag (@ujifgc)
+- FIX rendering exception for custom mime types (@nesquena)
+- FIX relax mail gem dependency (@ujifgc)
+- FIX minor doc typos (@lokyoung, @markglenfletcher)
+
 == 0.13.0 (October 11th 2015)
 
 - FIX #1614 Do not search for caller in bundler lib (@ujifgc)
