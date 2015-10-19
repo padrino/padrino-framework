@@ -221,7 +221,9 @@ module Padrino
     #
     def files_for_rotation
       files = Set.new
-      files += Dir.glob("#{Padrino.root}/{lib,models,shared}/**/*.rb")
+      Padrino.dependency_paths.each do |path|
+        files += Dir.glob(path)
+      end
       reloadable_apps.each do |app|
         files << app.app_file
         files += Dir.glob(app.app_obj.prerequisites)
