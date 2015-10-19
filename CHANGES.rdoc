@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.13.1 (Unreleased)
+
+- FIX  #1978 Enable reloading of custom dependencies (@markglenfletcher)
+
 == 0.13.1.beta1 (October 18th 2015)
 
 - FIX #1975 Improve routing memory usage and performance (@namusyaka)
