@@ -56,11 +56,18 @@ end
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
 task :fresh => [:uninstall, :install, :clean]
 
-desc "Pushes repository to GitHub"
-task :push do
-  say "Updating and verifying submodules"
+desc "Pulls latest commits and updates submodules"
+task :pull do
+  say "Pulling latest commits"
+  sh "git checkout master"
+  sh "git pull origin master"
+  say "Updating submodules"
   sh "git submodule foreach git pull origin master"
   sh "ls padrino-gen/lib/padrino-gen/generators/templates/static/README.rdoc"
+end
+
+desc "Pushes repository to GitHub"
+task :push => :pull do
   say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
