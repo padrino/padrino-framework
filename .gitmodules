@@ -3,4 +3,4 @@
 	url = git://github.com/padrino/padrino-static.git
 [submodule "padrino-docs"]
 	path = padrino-docs
-	url = git@github.com:padrino/padrino-docs.git
+	url = git://github.com/padrino/padrino-docs.git
