@@ -60,20 +60,17 @@ check out the {Installation Guide}[http://www.padrinorb.com/guides/installation]
 == Usage
 
 Padrino is a framework which builds on the existing functionality of Sinatra and provides a variety of
-additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus
-on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic
+additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic
 usage of Sinatra itself.
 
 You can also check out the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
 to learn more about how Sinatra and Padrino work together.
 
-For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for
-{Using Padrino within Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
+For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for {Using Padrino within Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
 
 == Getting Started
 
-Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
-of existing Sinatra functionality!
+Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset of existing Sinatra functionality!
 
 First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
 to learn more about how Sinatra and Padrino work together.
@@ -98,7 +95,7 @@ Can't find an answer in the resources above?
 
 == Bug reporting
 
-Log it onto Github by "creating a new issue":http://github.com/padrino/padrino-framework/issues.
+Log it onto Github by {creating a new issue}[http://github.com/padrino/padrino-framework/issues].
 
 Be sure to include all relevant information, like the versions of Padrino, Rack, Sinatra, Ruby and operating system you are using.
 
@@ -106,4 +103,4 @@ A minimal project showing the issue published on Github with Gemfile.lock is als
 
 == Copyright
 
-Copyright (c) 2012-2015 Padrino. See LICENSE for details.
+Copyright (c) 2010-2015 Padrino. See LICENSE for details.
