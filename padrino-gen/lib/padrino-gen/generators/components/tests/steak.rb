@@ -46,22 +46,6 @@ feature "!PATH!" do
 end
 TEST
 
-STEAK_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(STEAK_RAKE)
-require 'rspec/core/rake_task'
-
-spec_tasks = Dir['spec/*/'].map { |d| File.basename(d) }
-
-spec_tasks.each do |folder|
-  RSpec::Core::RakeTask.new("spec:\#{folder}") do |t|
-    t.pattern = "./spec/\#{folder}/**/*_spec.rb"
-    t.rspec_opts = %w(-fs --color)
-  end
-end
-
-desc "Run complete application spec suite"
-task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
-TEST
-
 STEAK_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(STEAK_MODEL_TEST)
 require 'spec_helper'
 
@@ -87,7 +71,7 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'steak', :group => 'test'
   insert_test_suite_setup STEAK_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), STEAK_RAKE
+  inject_into_file(destination_root('Rakefile'), "PadrinoTasks.use(:spec)\n", :before => 'PadrinoTasks.init')
 end
 
 # Generates a controller test given the controllers name

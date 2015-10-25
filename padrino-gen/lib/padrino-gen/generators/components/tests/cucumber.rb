@@ -82,5 +82,5 @@ def setup_test
   create_file destination_root("cucumber.yml"), CUCUMBER_YML
   require_dependencies 'rspec', :group => 'test'
   insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), RSPEC_RAKE
+  inject_into_file(destination_root('Rakefile'), "PadrinoTasks.use(:spec)\n", :before => 'PadrinoTasks.init')
 end

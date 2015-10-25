@@ -45,22 +45,6 @@ context "!PATH!" do
 end
 TEST
 
-RIOT_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_RAKE)
-require 'rake/testtask'
-
-test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
-
-test_tasks.each do |folder|
-  Rake::TestTask.new("test:\#{folder}") do |test|
-    test.pattern = "test/\#{folder}/**/*_test.rb"
-    test.verbose = true
-  end
-end
-
-desc "Run application test suite"
-task 'test' => test_tasks.map { |f| "test:\#{f}" }
-TEST
-
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
@@ -93,7 +77,7 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'riot', :group => 'test'
   insert_test_suite_setup RIOT_SETUP
-  create_file destination_root("test/test.rake"), RIOT_RAKE
+  inject_into_file(destination_root('Rakefile'), "PadrinoTasks.use(:test)\n", :before => 'PadrinoTasks.init')
 end
 
 def generate_controller_test(name, path)
