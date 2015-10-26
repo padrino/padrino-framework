@@ -22,6 +22,7 @@ describe "FormHelpers" do
     it 'should display correct text inputs within form_tag' do
       actual_html = form_tag('/register', :"accept-charset" => "UTF-8", :class => 'test') { text_field_tag(:username) }
       assert_has_tag('form input', :type => 'text', :name => "username") { actual_html }
+      assert_has_no_tag('form input', :type => 'hidden', :name => "_method") { actual_html }
     end
 
     it 'should display correct form with remote' do
