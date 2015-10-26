@@ -3,7 +3,6 @@ class MiniTest::Spec
   # In this case, block is the html to evaluate
   def assert_has_tag(name, attributes = {})
     html = yield if block_given?
-    fail "Please specify a block" if html.blank?
     assert html.html_safe?, 'output in not #html_safe?'
     matcher = HaveSelector.new(name, attributes)
     assert matcher.matches?(html), matcher.failure_message
@@ -12,7 +11,10 @@ class MiniTest::Spec
   # assert_has_no_tag(:h1, :content => "yellow") { "<h1>green</h1>" }
   # In this case, block is the html to evaluate
   def assert_has_no_tag(name, attributes = {}, &block)
-    assert_has_tag(name, attributes.merge(:count => 0), &block)
+    html = yield if block_given?
+    assert html.html_safe?, 'output in not #html_safe?'
+    matcher = HaveSelector.new(name, attributes)
+    assert !matcher.matches?(html), matcher.negative_failure_message
   end
 
   # Assert_file_exists('/tmp/app')
