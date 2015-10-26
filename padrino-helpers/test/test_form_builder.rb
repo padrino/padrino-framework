@@ -209,7 +209,7 @@ describe "FormBuilder" do
   describe 'for #error_messages method' do
     it 'should display correct form html with no record' do
       actual_html = standard_builder(@user_none).error_messages(:header_message => "Demo form cannot be saved")
-      assert actual_html.blank?
+      assert_empty actual_html
     end
 
     it 'should display correct form html with valid record' do
@@ -264,7 +264,7 @@ describe "FormBuilder" do
   describe 'for #error_message_on method' do
     it 'should display correct form html with no record' do
       actual_html = standard_builder(@user_none).error_message_on(:name)
-      assert actual_html.blank?
+      assert_empty actual_html
     end
 
     it 'should display error for specified invalid object' do
