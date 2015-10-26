@@ -26,7 +26,7 @@ describe "AssetTagHelpers" do
       actual_html = flash_tag(:success, :warning, :error, :id => 'area')
       assert_has_tag('div.success#area', :content => flash[:success]) { actual_html }
       assert_has_tag('div.error#area', :content => flash[:error]) { actual_html }
-      assert_has_no_tag('div.notice') { actual_html }
+      assert_has_no_tag('div.warning') { actual_html }
     end
   end
 
