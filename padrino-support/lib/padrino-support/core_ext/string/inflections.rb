@@ -95,4 +95,18 @@ class String
   def classify
     ActiveSupport::Inflector.classify(self)
   end
+
+  ##
+  # Capitalizes the first word, turns underscores into spaces, and strips a trailing '_id' if present.
+  #
+  def humanize(options = {})
+    ActiveSupport::Inflector.humanize(self, options)
+  end
+
+  ##
+  # Replaces underscores with dashes in the string.
+  #
+  def dasherize
+    ActiveSupport::Inflector.dasherize(self)
+  end
 end
