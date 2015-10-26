@@ -85,7 +85,7 @@
     <% else %>
     if <%= @orm.multiple_destroy(@orm.name_plural) %>
     <% end %>
-      flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{ids.to_sentence}")
+      flash[:success] = pat(:destroy_many_success, :model => '<%= @orm.name_plural.capitalize %>', :ids => "#{ids.join(', ')}")
     end
     redirect url(:<%= @orm.name_plural %>, :index)
   end
