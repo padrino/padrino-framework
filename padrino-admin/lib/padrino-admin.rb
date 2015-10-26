@@ -1,4 +1,3 @@
-require 'active_support/core_ext/array/conversions'
 require 'padrino-core'
 require 'padrino-helpers'
 
