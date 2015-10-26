@@ -162,7 +162,7 @@ describe "FormHelpers" do
 
   describe 'for #error_messages_for method' do
     it 'should display correct error messages list in ruby' do
-      user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      user = mock_model("User", :errors => { :a => "1", :b => "2" })
       actual_html = error_messages_for(user)
       assert_has_tag('div.field-errors') { actual_html }
       assert_has_tag('div.field-errors h2', :content => "2 errors prohibited this User from being saved") { actual_html }
@@ -216,27 +216,27 @@ describe "FormHelpers" do
 
   describe 'for #error_message_on method' do
     it 'should display correct error message on specified model name in ruby' do
-      @user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      @user = mock_model("User", :errors => { :a => "1", :b => "2" })
       actual_html = error_message_on(:user, :a, :prepend => "foo", :append => "bar")
       assert_has_tag('span.error', :content => "foo 1 bar") { actual_html }
     end
 
     it 'should display correct error message on specified object in ruby' do
-      @bob = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      @bob = mock_model("User", :errors => { :a => "1", :b => "2" })
       actual_html = error_message_on(@bob, :a, :prepend => "foo", :append => "bar")
       assert_has_tag('span.error', :content => "foo 1 bar") { actual_html }
     end
 
     it 'should display no message when error is not present' do
-      @user = mock_model("User", :errors => { :a => "1", :b => "2" }, :blank? => false)
+      @user = mock_model("User", :errors => { :a => "1", :b => "2" })
       actual_html = error_message_on(:user, :fake, :prepend => "foo", :append => "bar")
-      assert actual_html.blank?
+      assert_empty actual_html
     end
 
     it 'should display no message when error is not present in an Array' do
-      @user = mock_model("User", :errors => { :a => [], :b => "2" }, :blank? => false)
+      @user = mock_model("User", :errors => { :a => [], :b => "2" })
       actual_html = error_message_on(:user, :a, :prepend => "foo", :append => "bar")
-      assert actual_html.blank?
+      assert_empty actual_html
     end
   end
 
