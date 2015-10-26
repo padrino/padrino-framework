@@ -55,7 +55,7 @@ module Padrino
         # Returns the options tags for a select based on the given option items.
         #
         def options_for_select(option_items, state = {})
-          return [] if option_items.blank?
+          return [] if option_items.count == 0
           option_items.map do |caption, value, attributes|
             html_attributes = { :value => value || caption }.merge(attributes||{})
             html_attributes[:selected] ||= option_is_selected?(html_attributes[:value], caption, state[:selected])

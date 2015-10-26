@@ -43,7 +43,7 @@ module Padrino
       options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
-      options[:server] = detect_rack_handler if options[:server].blank?
+      options[:server] ||= detect_rack_handler
       # disable Webrick AccessLog
       options[:AccessLog] = []
       new(options, app).start
@@ -95,7 +95,7 @@ module Padrino
     # Prepares a directory for pid file.
     #
     def self.prepare_pid(pid)
-      pid = 'tmp/pids/server.pid' if pid.blank?
+      pid ||= 'tmp/pids/server.pid'
       FileUtils.mkdir_p(File.dirname(pid))
       File.expand_path(pid)
     end

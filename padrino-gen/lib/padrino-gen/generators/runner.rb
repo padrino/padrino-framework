@@ -127,7 +127,7 @@ module Padrino
           when template_file =~ /gist/ && template_file !~ /raw/
             raw_link, _ = *open(template_file).read.scan(/<a\s+href\s?\=\"(.*?)\"\>raw/)
             raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
-          when File.extname(template_file).blank? # referencing official plugin (i.e hoptoad)
+          when File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
             "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
             File.expand_path(template_file)

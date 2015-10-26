@@ -135,6 +135,8 @@ module Padrino
             require_dependencies('bcrypt')
           end
 
+          require_dependencies 'activesupport', :version => ">= 3.1"
+
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"

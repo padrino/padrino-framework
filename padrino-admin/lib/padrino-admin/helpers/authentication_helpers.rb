@@ -78,7 +78,7 @@ module Padrino
         private
 
         def access_denied
-          if login_page.present?
+          if login_page
             redirect url(login_page)
           else
             halt 401, "You don't have permission for this resource"

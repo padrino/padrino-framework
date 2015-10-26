@@ -33,8 +33,8 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
         args.inject(ActiveSupport::SafeBuffer.new) do |html,kind|
+          next html unless flash[kind]
           flash_text = ActiveSupport::SafeBuffer.new << flash[kind]
-          next html if flash_text.blank?
           flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
           html << content_tag(:div, flash_text, { :class => kind }.update(options))
         end

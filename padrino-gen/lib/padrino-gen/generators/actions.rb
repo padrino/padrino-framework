@@ -168,7 +168,7 @@ module Padrino
       #   valid_choice?(:mock, 'rr')
       #
       def valid_choice?(component, choice)
-        choice.present? && self.class.available_choices_for(component).include?(choice.to_sym)
+        choice && self.class.available_choices_for(component).include?(choice.to_sym)
       end
 
       ##
@@ -328,8 +328,8 @@ WARNING
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
         gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
-        write_option  = gem_options.present? ? ", #{gem_options}" : ''
-        write_version = version.present? ? ", '#{version}'" : ''
+        write_option  = gem_options.empty? ? '' : ", #{gem_options}"
+        write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
@@ -359,7 +359,7 @@ WARNING
       #   insert_middleware(ActiveRecord::ConnectionAdapters::ConnectionManagement)
       #
       def insert_middleware(include_text, app=nil)
-        name = app || (options[:name].present? ? @app_name.downcase : 'app')
+        name = app || (options[:name] ? @app_name.downcase : 'app')
         inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
       end
 
@@ -455,7 +455,7 @@ WARNING
         default_text = default ? " (leave blank for #{default}):" : nil
         say("#{statement}#{default_text} ", color)
         result = $stdin.gets.strip
-        result.blank? ? default : result
+        result.empty? ? default : result
       end
 
       ##

@@ -121,7 +121,7 @@ module Padrino
       #   hidden_form_method_field('delete')
       #
       def hidden_form_method_field(desired_method)
-        return ActiveSupport::SafeBuffer.new if desired_method.blank? || desired_method.to_s =~ /get|post/i
+        return ActiveSupport::SafeBuffer.new if desired_method.nil? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
       end
 

@@ -114,7 +114,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     def local_database?(config, &block)
-      if %w( 127.0.0.1 localhost ).include?(config[:host]) || config[:host].blank?
+      if %w( 127.0.0.1 localhost ).include?(config[:host]) || !config[:host]
         yield
       else
         puts "This task only modifies local databases. #{config[:database]} is on a remote host."
@@ -243,7 +243,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ENV['PGPORT']     = config[:port].to_s if config[:port]
           ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
           search_path = config[:schema_search_path]
-          unless search_path.blank?
+          if search_path
             search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
           end
           `pg_dump -i -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`

@@ -196,7 +196,7 @@ module Padrino
         # field_name(:street) => "user[addresses_attributes][0][street]"
         def field_name(field=nil)
           result = field_name_fragment
-          result << "[#{field}]" unless field.blank?
+          result << "[#{field}]" if field
           result
         end
 
@@ -209,8 +209,8 @@ module Padrino
         def field_id(field=nil, value=nil)
           result = (namespace && !is_nested) ? "#{namespace}_" : ''
           result << field_id_fragment
-          result << "_#{field}" unless field.blank?
-          result << "_#{value}" unless value.blank?
+          result << "_#{field}" if field
+          result << "_#{value}" if value
           result
         end
 
@@ -308,7 +308,7 @@ module Padrino
 
         def error_class(field)
           error = @object.errors[field] if @object.respond_to?(:errors)
-          error.blank? ? {} : { :class => 'invalid' }
+          error.nil? || error.empty? ? {} : { :class => 'invalid' }
         end
 
         def default_options(field, options, defaults={})

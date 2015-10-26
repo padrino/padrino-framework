@@ -110,19 +110,19 @@ module Padrino
             model_name = I18n.t(:name, :default => object_name.humanize, :scope => [:models, object_name], :count => 1)
             I18n.t :header, :count => count, :model => model_name, :locale => options[:locale], :scope => [:models, :errors, :template]
           end
-          content_tag(options[:header_tag] || :h2, header_message) if header_message.present?
+          content_tag(options[:header_tag] || :h2, header_message) unless header_message.empty?
         end
 
         def error_body_tag(options)
           body_message = options[:message] || I18n.t(:body, :locale => options[:locale], :scope => [:models, :errors, :template])
-          content_tag(:p, body_message) if body_message.present?
+          content_tag(:p, body_message) unless body_message.empty?
         end
 
         def error_html_attributes(options)
           [:id, :class, :style].each_with_object({}) do |key,all|
             if options.include?(key)
               value = options[key]
-              all[key] = value unless value.blank?
+              all[key] = value if value
             else
               all[key] = 'field-errors' unless key == :style
             end

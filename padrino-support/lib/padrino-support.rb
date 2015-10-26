@@ -1,10 +1,10 @@
 ##
 # This file loads certain extensions required by Padrino from ActiveSupport.
 #
-require 'active_support/core_ext/object/blank'              # present?
 require 'active_support/core_ext/string/output_safety'      # SafeBuffer and html_safe
 
 # Remove these on 0.14:
+require 'active_support/core_ext/object/blank'              # present?
 require 'active_support/core_ext/hash/keys'                 # symbolize_keys
 require 'active_support/core_ext/hash/indifferent_access'   # params[:foo]
 require 'active_support/core_ext/hash/reverse_merge'        # reverse_merge

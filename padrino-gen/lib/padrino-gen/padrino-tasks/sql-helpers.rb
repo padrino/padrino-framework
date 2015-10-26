@@ -7,7 +7,7 @@ module Padrino
         case adapter
           when 'postgres'
             environment = {}
-            environment['PGPASSWORD'] = password unless password.blank?
+            environment['PGPASSWORD'] = password unless password.empty?
 
             arguments = []
             arguments << "--encoding=#{charset}" if charset
@@ -18,7 +18,7 @@ module Padrino
             Process.wait Process.spawn(environment, 'createdb', *arguments)
           when 'mysql', 'mysql2'
             environment = {}
-            environment['MYSQL_PWD'] = password unless password.blank?
+            environment['MYSQL_PWD'] = password unless password.empty?
 
             arguments = []
             arguments << "--user=#{user}" if user
@@ -41,7 +41,7 @@ module Padrino
         case adapter
           when 'postgres'
             environment = {}
-            environment['PGPASSWORD'] = password unless password.blank?
+            environment['PGPASSWORD'] = password unless password.empty?
 
             arguments = []
             arguments << "--host=#{host}" if host
@@ -51,7 +51,7 @@ module Padrino
             Process.wait Process.spawn(environment, 'dropdb', *arguments)
           when 'mysql', 'mysql2'
             environment = {}
-            environment['MYSQL_PWD'] = password unless password.blank?
+            environment['MYSQL_PWD'] = password unless password.empty?
 
             arguments = []
             arguments << "--user=#{user}" if user

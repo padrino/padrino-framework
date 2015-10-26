@@ -276,7 +276,7 @@ module Padrino
           template_candidates = glob_templates(layouts_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
 
-          fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout.present?
+          fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout
           selected_template
         end
       end
@@ -287,7 +287,7 @@ module Padrino
         return options if layout == false
 
         layout = @layout if !layout || layout == true
-        return options if settings.templates.has_key?(:layout) && layout.blank?
+        return options if settings.templates.has_key?(:layout) && !layout
 
         if layout.kind_of?(String) && Pathname.new(layout).absolute?
           layout_path, _, layout = layout.rpartition('/')
@@ -300,8 +300,8 @@ module Padrino
 
       def glob_templates(views_path, template_path)
         parts = []
-        parts << views_path if views_path.present?
-        if respond_to?(:request) && request.respond_to?(:controller) && request.controller.present? && Pathname.new(template_path).relative?
+        parts << views_path if views_path
+        if respond_to?(:request) && request.respond_to?(:controller) && request.controller && Pathname.new(template_path).relative?
           parts << "{,#{request.controller}}"
         end
         parts << template_path.chomp(File.extname(template_path)) + '.*'

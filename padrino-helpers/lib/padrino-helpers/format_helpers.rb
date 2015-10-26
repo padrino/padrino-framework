@@ -216,7 +216,7 @@ module Padrino
       def highlight(text, words, *args)
         options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
 
-        if text.blank? || words.blank?
+        if text.empty? || words.empty?
           text
         else
           match = Array(words).map { |p| Regexp.escape(p) }.join('|')

@@ -22,7 +22,7 @@ end
 
 def list_app_routes(app, args)
   app_routes = app.named_routes
-  app_routes.reject! { |r| r.identifier.to_s !~ /#{args.query}/ } if args.query.present?
+  app_routes.reject! { |r| r.identifier.to_s !~ /#{args.query}/ } if args.query && !args.query.empty?
   app_routes.map! { |r| [r.verb, r.name, r.path] }
   return if app_routes.empty?
   shell.say "\nApplication: #{app.app_class}", :yellow

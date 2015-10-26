@@ -1,6 +1,6 @@
 require 'padrino-core/tasks'
 require 'padrino-gen/command'
-require 'active_support/ordered_hash'
+require 'yaml'
 
 module Padrino
   ##
@@ -33,7 +33,7 @@ module Padrino
       # Return an ordered list of task with their class.
       #
       def mappings
-        @_mappings ||= ActiveSupport::OrderedHash.new
+        @_mappings ||= {}
       end
 
       ##

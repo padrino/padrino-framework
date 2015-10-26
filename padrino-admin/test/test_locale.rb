@@ -6,20 +6,20 @@ describe "Filters" do
     it "should have a vaild #{name} locale for admin" do
       base = YAML.load_file(file)
       base = base[name]['padrino']['admin']
-      assert base.present?
-      assert base['save'].present?
-      assert base['cancel'].present?
-      assert base['list'].present?
-      assert base['edit'].present?
-      assert base['new'].present?
-      assert base['show'].present?
-      assert base['delete'].present?
-      assert base['confirm'].present?
-      assert base['created_at'].present?
-      assert base['all'].present?
-      assert base['profile'].present?
-      assert base['settings'].present?
-      assert base['logout'].present?
+      assert base
+      assert base['save']
+      assert base['cancel']
+      assert base['list']
+      assert base['edit']
+      assert base['new']
+      assert base['show']
+      assert base['delete']
+      assert base['confirm']
+      assert base['created_at']
+      assert base['all']
+      assert base['profile']
+      assert base['settings']
+      assert base['logout']
     end
   end
 end
