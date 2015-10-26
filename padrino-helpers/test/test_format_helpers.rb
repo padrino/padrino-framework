@@ -158,6 +158,8 @@ describe "FormatHelpers" do
   end
 
   describe 'for #time_ago_in_words method' do
+    _DAY = 24*60*60
+
     it 'should less than 5 seconds' do
       assert_equal 'less than 5 seconds', time_ago_in_words(Time.now, true)
     end
@@ -177,52 +179,49 @@ describe "FormatHelpers" do
       assert_equal 'less than a minute', time_ago_in_words(Time.now)
     end
     it 'should display yesterday' do
-      assert_equal '1 day', time_ago_in_words(1.day.ago)
+      assert_equal '1 day', time_ago_in_words(Time.now - _DAY)
     end
     it 'should display tomorrow' do
-      assert_equal '1 day', time_ago_in_words(1.day.from_now)
+      assert_equal '1 day', time_ago_in_words(Time.now + _DAY)
     end
     it 'should return future number of days' do
-      assert_equal '4 days', time_ago_in_words(4.days.from_now)
+      assert_equal '4 days', time_ago_in_words(Time.now + 4*_DAY)
     end
     it 'should return past days ago' do
-      assert_equal '4 days', time_ago_in_words(4.days.ago)
+      assert_equal '4 days', time_ago_in_words(Time.now - 4*_DAY)
     end
     it 'should return formatted archived date' do
-      assert_equal '3 months', time_ago_in_words(100.days.ago)
+      assert_equal '3 months', time_ago_in_words(Time.now - 100*_DAY)
     end
     it 'should return formatted archived year date' do
-      assert_equal 'over 1 year', time_ago_in_words(500.days.ago)
+      assert_equal 'over 1 year', time_ago_in_words(Time.now - 500*_DAY)
     end
     it 'should display now as a minute ago' do
-      assert_equal '1 minute', time_ago_in_words(1.minute.ago)
+      assert_equal '1 minute', time_ago_in_words(Time.now - 60)
     end
     it 'should display a few minutes ago' do
-      assert_equal '4 minutes', time_ago_in_words(4.minute.ago)
+      assert_equal '4 minutes', time_ago_in_words(Time.now - 4*60)
     end
     it 'should display an hour ago' do
-      assert_equal 'about 1 hour', time_ago_in_words(1.hour.ago + 5.minutes.ago.sec)
+      assert_equal 'about 1 hour', time_ago_in_words(Time.now - 60*60 + 5)
     end
     it 'should display a few hours ago' do
-      assert_equal 'about 3 hours', time_ago_in_words(3.hour.ago + 5.minutes.ago.sec)
-    end
-    it 'should display a day ago' do
-      assert_equal '1 day', time_ago_in_words(1.day.ago)
+      assert_equal 'about 3 hours', time_ago_in_words(Time.now - 3*60*60 + 5*60)
     end
     it 'should display a few days ago' do
-      assert_equal '5 days', time_ago_in_words(5.days.ago - 5.minutes.ago.sec)
+      assert_equal '5 days', time_ago_in_words(Time.now - 5*_DAY - 5*60)
     end
     it 'should display a month ago' do
-      assert_equal 'about 1 month', time_ago_in_words(32.days.ago + 5.minutes.ago.sec)
+      assert_equal 'about 1 month', time_ago_in_words(Time.now - 32*_DAY + 5*60)
     end
     it 'should display a few months ago' do
-      assert_equal '6 months', time_ago_in_words(180.days.ago - 5.minutes.ago.sec)
+      assert_equal '6 months', time_ago_in_words(Time.now - 180*_DAY - 5*60)
     end
     it 'should display a year ago' do
-      assert_equal 'about 1 year', time_ago_in_words(365.days.ago - 5.minutes.ago.sec)
+      assert_equal 'about 1 year', time_ago_in_words(Time.now - 365*_DAY - 5*60)
     end
     it 'should display a few years ago' do
-      assert_equal 'over 7 years', time_ago_in_words(2800.days.ago - 5.minutes.ago.sec)
+      assert_equal 'over 7 years', time_ago_in_words(Time.now - 2800*_DAY - 5*60)
     end
   end
 
