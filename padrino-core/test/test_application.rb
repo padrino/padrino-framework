@@ -149,11 +149,18 @@ describe "Application" do
         assert_equal 'custom error', body
       end
 
-      it 'should raise NameError even if Kernel.require is extended' do
-        assert_raises NameError do
+      it 'should pass Routing#parent to Module#parent' do
+        # see naming collision in issue #1814
+        begin
           ConstTest = Class.new(Padrino::Application)
-          require 'active_support/dependencies'
-          ConstTest::UninitializedConstant
+          class Module
+            def parent
+              :dirty
+            end
+          end
+          assert_equal :dirty, ConstTest.parent
+        ensure
+          Module.instance_eval{ undef :parent }
         end
       end
     end
