@@ -137,7 +137,7 @@ module Padrino
           message = _padrino_mailer::Message.new(self)
           message.delivery_method(*delivery_settings)
           message.instance_eval(&block) if block_given?
-          mail_attributes.reverse_merge(mailer_defaults) if respond_to?(:mailer_defaults)
+          mail_attributes = mailer_defaults.merge(mail_attributes) if respond_to?(:mailer_defaults)
           mail_attributes.each_pair { |k, v| message.method(k).call(v) }
           message.deliver
         end

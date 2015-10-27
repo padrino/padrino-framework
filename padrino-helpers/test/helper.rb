@@ -33,7 +33,7 @@ class MiniTest::Spec
 
   # mock_model("Business", :new_record? => true) => <Business>
   def mock_model(klazz, options={})
-    options.reverse_merge!(:class => klazz, :new_record? => false, :id => 20, :errors => {})
+    options = { :class => klazz, :new_record? => false, :id => 20, :errors => {}}.update(options)
     record = stub(options)
     record.stubs(:to_ary => [record])
     record

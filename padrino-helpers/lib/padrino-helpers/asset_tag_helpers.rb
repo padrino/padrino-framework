@@ -85,7 +85,7 @@ module Padrino
         options  = args.extract_options!
         name = block_given? ? '' : args.shift
         href = args.first
-        options.reverse_merge!(:href => href || '#')
+        options = { :href => href || '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -116,7 +116,7 @@ module Padrino
       #
       def feed_tag(mime, url, options={})
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
-        tag(:link, options.reverse_merge(:rel => 'alternate', :type => full_mime, :title => mime, :href => url))
+        tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
       end
 
       ##
@@ -167,7 +167,7 @@ module Padrino
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
       def meta_tag(content, options={})
-        options.reverse_merge!("content" => content)
+        options = { "content" => content }.update(options)
         tag(:meta, options)
       end
 
@@ -189,7 +189,7 @@ module Padrino
       #
       def favicon_tag(source, options={})
         type = File.extname(source).sub('.','')
-        options = options.dup.reverse_merge!(:href => image_path(source), :rel => 'icon', :type => "image/#{type}")
+        options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
         tag(:link, options)
       end
 
@@ -207,8 +207,8 @@ module Padrino
       #   image_tag('icons/avatar.png')
       #
       def image_tag(url, options={})
-        options.reverse_merge!(:src => image_path(url))
-        options[:alt] ||= image_alt(url) unless url =~ /\A(?:cid|data):/ || url.blank?
+        options = { :src => image_path(url) }.update(options)
+        options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
 

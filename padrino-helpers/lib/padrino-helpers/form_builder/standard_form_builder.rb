@@ -17,7 +17,10 @@ module Padrino
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
           class_eval <<-EOF
           def #{field_type}_block(field, options={}, label_options={})
-            label_options = { :caption => options[:caption] }.update(label_options) if options[:caption]
+            if options[:caption]
+              options = options.dup
+              label_options = { :caption => options.delete(:caption) }.update(label_options)
+            end
             field_html = label(field, label_options)
             field_html << #{field_type}(field, options)
             @template.content_tag(:p, field_html)

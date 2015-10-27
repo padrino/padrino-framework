@@ -125,7 +125,7 @@ module Padrino
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
       def truncate(text, options={})
-        options.reverse_merge!(:length => 30, :omission => "...")
+        options = { :length => 30, :omission => "..." }.update(options)
         if text
           len = options[:length] - options[:omission].length
           chars = text
@@ -152,7 +152,7 @@ module Padrino
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
       def truncate_words(text, options={})
-        options.reverse_merge!(:length => 30, :omission => "...")
+        options = { :length => 30, :omission => "..." }.update(options)
         if text
           words = text.split()
           words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
@@ -181,7 +181,7 @@ module Padrino
         unless args.blank?
           options[:line_width] = args[0] || 80
         end
-        options.reverse_merge!(:line_width => 80)
+        options = { :line_width => 80 }.update(options)
 
         text.split("\n").map do |line|
           line.length > options[:line_width] ? line.gsub(/(.{1,#{options[:line_width]}})(\s+|$)/, "\\1\n").strip : line
@@ -214,8 +214,7 @@ module Padrino
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
       def highlight(text, words, *args)
-        options = args.extract_options!
-        options.reverse_merge!(:highlighter => '<strong class="highlight">\1</strong>')
+        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(args.extract_options!)
 
         if text.blank? || words.blank?
           text

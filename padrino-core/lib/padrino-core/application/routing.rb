@@ -507,7 +507,7 @@ module Padrino
         path, *route_options[:with] = path if path.is_a?(Array)
         action = path
         path, name, route_parents, options, route_options = *parse_route(path, route_options, verb)
-        options.reverse_merge!(@_conditions) if @_conditions
+        options = @_conditions.merge(options) if @_conditions
 
         method_name = "#{verb} #{path}"
         unbound_method = generate_method(method_name, &block)
@@ -656,8 +656,7 @@ module Padrino
           name = "#{controller_name} #{name}".to_sym unless controller_name.blank?
         end
 
-        # Merge in option defaults.
-        options.reverse_merge!(:default_values => @_defaults)
+        options[:default_values] = @_defaults unless options.has_key?(:default_values)
 
         [path, name, parent_params, options, route_options]
       end
