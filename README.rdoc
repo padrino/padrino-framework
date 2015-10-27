@@ -36,7 +36,7 @@ Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_
 Text Helpers:: Useful formatting like: time_ago_in_words, js_escape_html, sanitize_html.
 Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
 Caching:: Simple route and fragment caching to easily speed up your web requests.
-Admin:: Builtin Admin interface (like Django)
+Admin:: Built-in Admin interface (like Django)
 Logging:: Provide a unified logger that can interact with your ORM or any library.
 Reloading::  Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user's locale.
