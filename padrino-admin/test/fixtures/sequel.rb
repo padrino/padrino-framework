@@ -24,7 +24,7 @@ migration = Sequel.migration do
       String :role
     end
 
-    create_table :categories do
+    create_table :sections do
       primary_key :id
       foreign_key :account_id
       String :name
@@ -38,8 +38,8 @@ end
 
 migration.apply(Sequel::Model.db, :up)
 
-# Fake Category Model
-class Category < Sequel::Model
+# Fake Section Model
+class Section < Sequel::Model
   many_to_one :account
 end
 
@@ -47,7 +47,7 @@ end
 class Account < Sequel::Model
   attr_accessor :password, :password_confirmation
 
-  one_to_many :categories
+  one_to_many :sections
 
   def self.admin;  first(:role => "admin");  end
   def self.editor; first(:role => "editor"); end
@@ -67,6 +67,6 @@ editor = Account.create(:name => "Dexter", :role => "editor", :email => "editor@
                         :password => "some", :password_confirmation => "some")
 
 %w(News Press HowTo).each do |c|
-  admin.add_category(:name => c)
-  editor.add_category(:name => c)
+  admin.add_section(:name => c)
+  editor.add_section(:name => c)
 end

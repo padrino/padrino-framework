@@ -57,25 +57,6 @@ describe "FormatHelpers" do
     end
   end
 
-  describe 'for #pluralize method' do
-    it 'should return singular count for 1 item collections' do
-      actual_text = pluralize(1, 'person')
-      assert_equal '1 person', actual_text
-    end
-    it 'should return plural count for empty collections' do
-      actual_text = pluralize(0, 'person')
-      assert_equal '0 people', actual_text
-    end
-    it 'should return plural count for many collections' do
-      actual_text =  pluralize(2, 'person')
-      assert_equal '2 people', actual_text
-    end
-    it 'should return pluralized word specified as argument' do
-      actual_text =  pluralize(3, 'person', 'users')
-      assert_equal '3 users', actual_text
-    end
-  end
-
   describe 'for #word_wrap method' do
     it 'should return proper formatting for 8 max width' do
       actual_text = word_wrap('Once upon a time', :line_width => 8)
