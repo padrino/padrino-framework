@@ -106,7 +106,7 @@ module Padrino
 
         def file_field(field, options={})
           self.multipart = true
-          @template.file_field_tag field_name(field), default_options(field, options).except(:value)
+          @template.file_field_tag field_name(field), default_options(field, options).reject{ |key, _| key == :value }
         end
 
         def submit(*args)

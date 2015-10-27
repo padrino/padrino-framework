@@ -2,7 +2,6 @@ require 'padrino-support'
 require 'i18n'
 require 'enumerator'
 require 'active_support/core_ext/object/with_options' # with_options
-require 'active_support/core_ext/hash/except'         # Hash#except
 require 'padrino/rendering'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
