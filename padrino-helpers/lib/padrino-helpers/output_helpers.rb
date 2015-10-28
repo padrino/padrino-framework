@@ -53,9 +53,9 @@ module Padrino
       #   capture_html(object_for_block, &block) => "...html..."
       #
       # @example
-      #   ActiveSupport::SafeBuffer.new + capture_html { "<foo>" }
+      #   SafeBuffer.new + capture_html { "<foo>" }
       #   # => "&lt;foo&gt;"
-      #   ActiveSupport::SafeBuffer.new.safe_concat(capture_html { "<foo>" })
+      #   SafeBuffer.new.safe_concat(capture_html { "<foo>" })
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
@@ -181,7 +181,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        blocks.inject(ActiveSupport::SafeBuffer.new){ |all,content| all << capture_html(*args, &content) }
+        blocks.inject(SafeBuffer.new){ |all,content| all << capture_html(*args, &content) }
       end
 
       protected
@@ -213,7 +213,7 @@ module Padrino
       #
       # @param [String, Array<String>] the values to be marked safe.
       #
-      # @return [ActiveSupport::SafeBuffer, Array<ActiveSupport::SafeBuffer>]
+      # @return [SafeBuffer, Array<SafeBuffer>]
       def mark_safe(value)
         if value.respond_to? :map!
           value.map!{|v| v.html_safe if v }

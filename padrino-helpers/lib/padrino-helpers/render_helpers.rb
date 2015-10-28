@@ -45,7 +45,7 @@ module Padrino
         end
 
         locals = options[:locals]
-        items.each_with_object(ActiveSupport::SafeBuffer.new) do |item,html|
+        items.each_with_object(SafeBuffer.new) do |item,html|
           locals[item_name] = item if item
           locals["#{item_name}_counter".to_sym] = counter += 1 if counter
           content =

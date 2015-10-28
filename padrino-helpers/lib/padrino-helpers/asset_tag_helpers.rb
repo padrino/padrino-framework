@@ -32,9 +32,9 @@ module Padrino
       def flash_tag(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
-        args.inject(ActiveSupport::SafeBuffer.new) do |html,kind|
+        args.inject(SafeBuffer.new) do |html,kind|
           next html unless flash[kind]
-          flash_text = ActiveSupport::SafeBuffer.new << flash[kind]
+          flash_text = SafeBuffer.new << flash[kind]
           flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
           html << content_tag(:div, flash_text, { :class => kind }.update(options))
         end
@@ -244,7 +244,7 @@ module Padrino
           :rel => 'stylesheet',
           :type => 'text/css'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
-        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+        sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << tag(:link, { :href => asset_path(:css, source) }.update(options))
         end
       end
@@ -267,7 +267,7 @@ module Padrino
         options = {
           :type => 'text/javascript'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
-        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+        sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
         end
       end

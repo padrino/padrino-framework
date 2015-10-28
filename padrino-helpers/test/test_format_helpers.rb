@@ -209,23 +209,23 @@ describe "FormatHelpers" do
   describe 'for #js_escape_html method' do
     it 'should escape double quotes' do
       assert_equal "\\\"hello\\\"", js_escape_html('"hello"')
-      assert_equal "\\\"hello\\\"", js_escape_html(ActiveSupport::SafeBuffer.new('"hello"'))
+      assert_equal "\\\"hello\\\"", js_escape_html(SafeBuffer.new('"hello"'))
     end
     it 'should escape single quotes' do
       assert_equal "\\'hello\\'", js_escape_html("'hello'")
-      assert_equal "\\'hello\\'", js_escape_html(ActiveSupport::SafeBuffer.new("'hello'"))
+      assert_equal "\\'hello\\'", js_escape_html(SafeBuffer.new("'hello'"))
     end
     it 'should escape html tags and breaks' do
       assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html("\n\r<p>hello</p>\r\n")
-      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html(ActiveSupport::SafeBuffer.new("\n\r<p>hello</p>\r\n"))
+      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html(SafeBuffer.new("\n\r<p>hello</p>\r\n"))
     end
     it 'should escape data-confirm attribute' do
       assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html("<data-confirm=\"are you sure\">")
-      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(ActiveSupport::SafeBuffer.new("<data-confirm=\"are you sure\">"))
+      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(SafeBuffer.new("<data-confirm=\"are you sure\">"))
     end
     it 'should keep html_safe content html_safe' do
       assert_equal false, js_escape_html('"hello"').html_safe?
-      assert_equal true, js_escape_html(ActiveSupport::SafeBuffer.new('"hello"')).html_safe?
+      assert_equal true, js_escape_html(SafeBuffer.new('"hello"')).html_safe?
     end
   end
 end

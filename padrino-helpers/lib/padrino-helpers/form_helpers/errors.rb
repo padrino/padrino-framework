@@ -40,7 +40,7 @@ module Padrino
           options = objects.last.is_a?(Hash) ? Utils.symbolize_keys(objects.pop) : {}
           objects = objects.map{ |obj| resolve_object(obj) }.compact
           count   = objects.inject(0){ |sum, object| sum + object.errors.count }
-          return ActiveSupport::SafeBuffer.new if count.zero?
+          return SafeBuffer.new if count.zero?
 
           content_tag(:div, error_contents(objects, count, options), error_html_attributes(options))
         end
@@ -78,7 +78,7 @@ module Padrino
         # @api public
         def error_message_on(object, field, options={})
           error = Array(resolve_object(object).errors[field]).first
-          return ActiveSupport::SafeBuffer.new unless error
+          return SafeBuffer.new unless error
           options = { :tag => :span, :class => :error }.update(options)
           tag   = options.delete(:tag)
           error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
@@ -90,7 +90,7 @@ module Padrino
         def error_contents(objects, count, options)
           object_name = options[:object_name] || objects.first.class.to_s.underscore.gsub(/\//, ' ')
 
-          contents = ActiveSupport::SafeBuffer.new
+          contents = SafeBuffer.new
           contents << error_header_tag(options, object_name, count)
           contents << error_body_tag(options)
           contents << error_list_tag(objects, object_name)
@@ -98,7 +98,7 @@ module Padrino
 
         def error_list_tag(objects, object_name)
           errors = objects.inject({}){ |all,object| all.update(object.errors) }
-          error_messages = errors.inject(ActiveSupport::SafeBuffer.new) do |all, (field, message)|
+          error_messages = errors.inject(SafeBuffer.new) do |all, (field, message)|
             field_name = I18n.t(field, :default => field.to_s.humanize, :scope => [:models, object_name, :attributes])
             all << content_tag(:li, "#{field_name} #{message}")
           end

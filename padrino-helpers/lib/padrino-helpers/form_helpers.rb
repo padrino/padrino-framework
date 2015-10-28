@@ -121,7 +121,7 @@ module Padrino
       #   hidden_form_method_field('delete')
       #
       def hidden_form_method_field(desired_method)
-        return ActiveSupport::SafeBuffer.new if desired_method.nil? || desired_method.to_s =~ /get|post/i
+        return SafeBuffer.new if desired_method.nil? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
       end
 
@@ -144,7 +144,7 @@ module Padrino
       #
       def field_set_tag(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        legend_html = args.empty? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, args.first)
+        legend_html = args.empty? ? SafeBuffer.new : content_tag(:legend, args.first)
         concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
 
@@ -168,7 +168,7 @@ module Padrino
       #
       def label_tag(name, options={}, &block)
         options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
-        caption_text = ActiveSupport::SafeBuffer.new << options.delete(:caption)
+        caption_text = SafeBuffer.new << options.delete(:caption)
         caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
         if block_given?

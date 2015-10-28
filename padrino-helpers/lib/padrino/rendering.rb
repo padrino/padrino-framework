@@ -1,3 +1,4 @@
+require 'padrino/core_ext/output_safety'
 require 'padrino-support'
 require 'pathname'
 
@@ -206,7 +207,7 @@ module Padrino
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
-        @_out_buf,  buf_was = ActiveSupport::SafeBuffer.new, @_out_buf
+        @_out_buf,  buf_was = SafeBuffer.new, @_out_buf
 
         # Pass arguments to Sinatra render method.
         super(engine, data, with_layout(options), locals, &block)
