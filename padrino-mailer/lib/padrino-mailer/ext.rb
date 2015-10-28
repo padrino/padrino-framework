@@ -23,7 +23,8 @@ module Mail # @private
 
       initialize_without_app(*args, &block)
     end
-    alias_method_chain :initialize, :app
+    alias_method :initialize_without_app, :initialize
+    alias_method :initialize, :initialize_with_app
 
     ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
@@ -118,7 +119,10 @@ module Mail # @private
       encoded.each_line { |line| logger << ("  " + line.strip) } if logger.debug?
       do_delivery_without_logging
     end
-    alias_method_chain :do_delivery, :logging if Padrino.respond_to?(:logger)
+    if Padrino.respond_to?(:logger)
+      alias_method :do_delivery_without_logging, :do_delivery
+      alias_method :do_delivery, :do_delivery_with_logging
+    end
 
     ##
     # Sinatra and Padrino compatibility.
@@ -241,7 +245,8 @@ module Mail # @private
       mime = content_type_without_symbol(value)
       Padrino::Mailer::Mime.mime_type(mime)
     end
-    alias_method_chain :content_type, :symbol
+    alias_method :content_type_without_symbol, :content_type
+    alias_method :content_type, :content_type_with_symbol
 
     private
 

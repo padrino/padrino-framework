@@ -1,7 +1,6 @@
 ##
 # This file loads certain extensions required by Padrino from ActiveSupport.
 #
-require 'active_support/core_ext/module/aliasing'           # alias_method_chain
 require 'active_support/core_ext/hash/keys'                 # symbolize_keys
 require 'active_support/core_ext/hash/indifferent_access'   # params[:foo]
 require 'active_support/core_ext/hash/slice'                # slice
@@ -11,6 +10,7 @@ require 'active_support/core_ext/string/output_safety'      # SafeBuffer and htm
 
 # Remove these on 0.14:
 require 'active_support/core_ext/hash/reverse_merge'        # reverse_merge
+require 'active_support/core_ext/module/aliasing'           # alias_method_chain
 
 require 'padrino-support/core_ext/string/inflections'
 require 'padrino-support/core_ext/string/colorize'
