@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 module Padrino
   module Helpers
     ###
@@ -291,42 +290,43 @@ module Padrino
         distance_in_minutes = (((to_time.to_i - from_time.to_i).abs)/60).round
         distance_in_seconds = ((to_time.to_i - from_time.to_i).abs).round
 
-        I18n.with_options :locale => options[:locale], :scope => :'datetime.distance_in_words' do |locale|
+        phrase, locals =
           case distance_in_minutes
             when 0..1
-              return distance_in_minutes == 0 ?
-                     locale.t(:less_than_x_minutes, :count => 1) :
-                     locale.t(:x_minutes, :count => distance_in_minutes) unless include_seconds
-
-              case distance_in_seconds
-                when 0..4   then locale.t :less_than_x_seconds, :count => 5
-                when 5..9   then locale.t :less_than_x_seconds, :count => 10
-                when 10..19 then locale.t :less_than_x_seconds, :count => 20
-                when 20..39 then locale.t :half_a_minute
-                when 40..59 then locale.t :less_than_x_minutes, :count => 1
-                else             locale.t :x_minutes,           :count => 1
+              if include_seconds
+                case distance_in_seconds
+                  when 0..4   then [:less_than_x_seconds, :count => 5 ]
+                  when 5..9   then [:less_than_x_seconds, :count => 10]
+                  when 10..19 then [:less_than_x_seconds, :count => 20]
+                  when 20..39 then [:half_a_minute                    ]
+                  when 40..59 then [:less_than_x_minutes, :count => 1 ]
+                  else             [:x_minutes,           :count => 1 ]
+                end
+              else
+                distance_in_minutes == 0 ?
+                  [:less_than_x_minutes, :count => 1] :
+                  [:x_minutes, :count => distance_in_minutes]
               end
-
-            when 2..44           then locale.t :x_minutes,      :count => distance_in_minutes
-            when 45..89          then locale.t :about_x_hours,  :count => 1
-            when 90..1439        then locale.t :about_x_hours,  :count => (distance_in_minutes.to_f / 60.0).round
-            when 1440..2529      then locale.t :x_days,         :count => 1
-            when 2530..43199     then locale.t :x_days,         :count => (distance_in_minutes.to_f / 1440.0).round
-            when 43200..86399    then locale.t :about_x_months, :count => 1
-            when 86400..525599   then locale.t :x_months,       :count => (distance_in_minutes.to_f / 43200.0).round
+            when 2..44           then [:x_minutes,      :count => distance_in_minutes                       ]
+            when 45..89          then [:about_x_hours,  :count => 1                                         ]
+            when 90..1439        then [:about_x_hours,  :count => (distance_in_minutes.to_f / 60.0).round   ]
+            when 1440..2529      then [:x_days,         :count => 1                                         ]
+            when 2530..43199     then [:x_days,         :count => (distance_in_minutes.to_f / 1440.0).round ]
+            when 43200..86399    then [:about_x_months, :count => 1                                         ]
+            when 86400..525599   then [:x_months,       :count => (distance_in_minutes.to_f / 43200.0).round]
             else
               distance_in_years           = distance_in_minutes / 525600
               minute_offset_for_leap_year = (distance_in_years / 4) * 1440
               remainder                   = ((distance_in_minutes - minute_offset_for_leap_year) % 525600)
               if remainder < 131400
-                locale.t(:about_x_years,  :count => distance_in_years)
+                [:about_x_years,  :count => distance_in_years]
               elsif remainder < 394200
-                locale.t(:over_x_years,   :count => distance_in_years)
+                [:over_x_years,   :count => distance_in_years]
               else
-                locale.t(:almost_x_years, :count => distance_in_years + 1)
+                [:almost_x_years, :count => distance_in_years + 1]
               end
           end
-        end
+        I18n.translate phrase, locals.merge(:locale => options[:locale], :scope => :'datetime.distance_in_words')
       end
 
       ##
