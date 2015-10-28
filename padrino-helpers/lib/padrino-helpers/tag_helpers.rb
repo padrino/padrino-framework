@@ -280,7 +280,7 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject('') do |all,(key,value)|
-          attribute_with_name = "#{attribute}-#{key.to_s.dasherize}"
+          attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
           all << if value.is_a?(Hash)
             nested_values(attribute_with_name, value)
           else

@@ -167,7 +167,7 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
+        options = { :caption => "#{Inflections.humanize(name)}: ", :for => name }.update(options)
         caption_text = SafeBuffer.new << options.delete(:caption)
         caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
@@ -808,7 +808,7 @@ module Padrino
       def builder_instance(object, options={})
         default_builder = respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder'
         builder_class = options.delete(:builder) || default_builder
-        builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
+        builder_class = Padrino::Helpers::FormBuilder.const_get(builder_class) if builder_class.is_a?(String)
         builder_class.new(self, object, options)
       end
 

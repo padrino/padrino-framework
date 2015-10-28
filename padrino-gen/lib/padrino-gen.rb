@@ -1,5 +1,6 @@
 require 'padrino-core/tasks'
 require 'padrino-gen/command'
+require 'padrino-gen/core_ext/string'
 require 'yaml'
 
 module Padrino

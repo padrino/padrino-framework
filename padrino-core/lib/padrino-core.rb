@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'padrino-core/version'
 require 'padrino-support'
+require 'padrino-support/inflections'
 require 'padrino-core/configuration'
 require 'padrino-core/application'
 

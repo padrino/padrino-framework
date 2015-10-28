@@ -1,4 +1,5 @@
 require 'padrino-support'
+require 'padrino-support/inflections'
 require 'i18n'
 require 'enumerator'
 
