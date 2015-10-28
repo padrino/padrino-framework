@@ -4,3 +4,8 @@ Rake::TestTask.new(:bench) do |test|
   test.libs << 'test'
   test.test_files = Dir['test/**/bench_*.rb']
 end
+
+Rake::TestTask.new(:mem) do |test|
+  test.libs << 'test'
+  test.test_files = Dir['test/**/mem_*.rb']
+end
