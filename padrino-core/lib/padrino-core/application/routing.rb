@@ -217,10 +217,11 @@ module Padrino
       # @see http://www.padrinorb.com/guides/controllers#route-filters
       #
       def construct_filter(*args, &block)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         if except = options.delete(:except)
           fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
-          options = Array(except).extract_options!
+          except = Array(except)
+          options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
@@ -337,7 +338,7 @@ module Padrino
       #   url(:index, :fragment => 'comments')
       #
       def url(*args)
-        params = args.extract_options!
+        params = args.last.is_a?(Hash) ? args.pop : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params.symbolize_keys))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
@@ -401,7 +402,7 @@ module Padrino
 
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
 
         CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)

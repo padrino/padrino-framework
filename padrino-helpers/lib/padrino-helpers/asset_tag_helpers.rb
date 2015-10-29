@@ -30,7 +30,7 @@ module Padrino
       #   # <div class="success">flash-success</div>
       #
       def flash_tag(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
         args.inject(ActiveSupport::SafeBuffer.new) do |html,kind|
           flash_text = ActiveSupport::SafeBuffer.new << flash[kind]
@@ -82,7 +82,7 @@ module Padrino
       # condition padrino return true/false if the request.path_info match the given url.
       #
       def link_to(*args, &block)
-        options  = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
         options = { :href => href || '#' }.update(options)
@@ -242,7 +242,7 @@ module Padrino
         options = {
           :rel => 'stylesheet',
           :type => 'text/css'
-        }.update(sources.extract_options!.symbolize_keys)
+        }.update(sources.last.is_a?(Hash) ? sources.pop.symbolize_keys : {})
         sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
           all << tag(:link, { :href => asset_path(:css, source) }.update(options))
         end
@@ -265,7 +265,7 @@ module Padrino
       def javascript_include_tag(*sources)
         options = {
           :type => 'text/javascript'
-        }.update(sources.extract_options!.symbolize_keys)
+        }.update(sources.last.is_a?(Hash) ? sources.pop.symbolize_keys : {})
         sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
           all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
         end

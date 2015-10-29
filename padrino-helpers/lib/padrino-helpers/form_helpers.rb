@@ -143,9 +143,8 @@ module Padrino
       #   field_set_tag("Office", :class => 'office-set') { }
       #
       def field_set_tag(*args, &block)
-        options = args.extract_options!
-        legend_text = args.first
-        legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        legend_html = args.empty? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, args.first)
         concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
 
@@ -525,7 +524,7 @@ module Padrino
       #   submit_tag :class => 'btn'
       #
       def submit_tag(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         caption = args.length >= 1 ? args.first : "Submit"
         input_tag(:submit, { :value => caption }.merge(options))
       end
@@ -579,7 +578,7 @@ module Padrino
       #   # </form>
       #
       def button_to(*args, &block)
-        options   = args.extract_options!.dup
+        options = args.last.is_a?(Hash) ? args.pop : {}
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}
