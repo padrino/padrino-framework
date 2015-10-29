@@ -14,6 +14,7 @@ require 'padrino-support/core_ext/string/inflections'
 require 'padrino-support/core_ext/string/colorize'
 require 'padrino-support/core_ext/object_space'
 require 'padrino-support/file_set'
+require 'padrino-support/utils'
 
 
 ##

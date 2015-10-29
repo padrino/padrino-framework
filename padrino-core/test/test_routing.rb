@@ -2077,7 +2077,7 @@ describe "Routing" do
     mock_app do
       get(:index) { "%s %s" % [params[:account][:name], params[:account][:surname]] }
     end
-    get "/?" + { :account => { :name => 'foo', :surname => 'bar' } }.to_query
+    get "/?" + Padrino::Utils.build_uri_query(:account => { :name => 'foo', :surname => 'bar' })
     assert_equal 'foo bar', body
     get @app.url(:index, "account[name]" => "foo", "account[surname]" => "bar")
     assert_equal 'foo bar', body
