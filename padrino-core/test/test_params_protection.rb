@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require 'active_support/core_ext/hash/conversions'
 
 describe "Padrino::ParamsProtection" do
   before do
@@ -7,6 +6,7 @@ describe "Padrino::ParamsProtection" do
     @kim = { 'name' => 'Kim Bauer', 'position' => 'daughter', 'child' => @teri }
     @jack = { 'name' => 'Jack Bauer', 'position' => 'terrorist', 'child' => @kim }
     @family = { 'name' => 'Bauer', 'persons' => { 1 => @teri, 2 => @kim, 3 => @jack } }
+    @jack_query = Padrino::Utils.build_uri_query(@jack)
   end
 
   it 'should drop all parameters except allowed ones' do
@@ -17,7 +17,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic?' + @jack.to_query
+    post '/basic?' + @jack_query
     assert_equal({ 'name' => @jack['name'] }, result)
   end
 
@@ -29,7 +29,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic?' + @jack.to_query
+    post '/basic?' + @jack_query
     assert_equal(@jack, result)
   end
 
@@ -41,7 +41,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic?' + @jack.to_query
+    post '/basic?' + @jack_query
     assert_equal(
       [
         { 'name' => @jack['name'], 'child' => { 'name' => @kim['name'], 'child' => { 'name' => @teri['name'] } } },
@@ -59,7 +59,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic?' + @jack.to_query
+    post '/basic?' + @jack_query
     assert_equal({ 'name' => @jack['name'], 'position' => 'anti-terrorist' }, result)
   end
 
@@ -71,7 +71,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic/24/42?' + @jack.to_query
+    post '/basic/24/42?' + @jack_query
     assert_equal({ 'name' => @jack['name'], 'id' => '24', 'tag' => '42' }, result)
   end
 
@@ -83,7 +83,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/basic/24?' + @jack.to_query
+    post '/basic/24?' + @jack_query
     assert_equal({ 'id' => '24' }, result)
   end
 
@@ -99,9 +99,9 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    get '/hide/1?' + @jack.to_query
+    get '/hide/1?' + @jack_query
     assert_equal({"id"=>"1"}, result)
-    get '/show/1?' + @jack.to_query
+    get '/show/1?' + @jack_query
     assert_equal({"id"=>"1"}.merge(@jack), result)
   end
 
@@ -133,13 +133,13 @@ describe "Padrino::ParamsProtection" do
         end
       end
     end
-    post '/persons/create?' + @jack.to_query
+    post '/persons/create?' + @jack_query
     assert_equal({ 'name' => @jack['name'], 'position' => 'terrorist' }, result)
     post '/persons/update/1?name=Chloe+O\'Brian&position=hacker'
     assert_equal({ 'id' => '1', 'name' => 'Chloe O\'Brian' }, result)
-    post '/persons/delete?' + @jack.to_query
+    post '/persons/delete?' + @jack_query
     assert_equal(@jack, result)
-    post '/persons/destroy/1?' + @jack.to_query
+    post '/persons/destroy/1?' + @jack_query
     assert_equal({"id"=>"1"}, result)
     get '/noparam?a=1;b=2'
     assert_equal({}, result)
@@ -153,7 +153,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/family?' + @family.to_query
+    post '/family?' + Padrino::Utils.build_uri_query(@family)
     assert_equal({"persons" => {"3" => {"name" => @jack["name"]}, "2" => {"name" => @kim["name"]}, "1" => {"name" => @teri["name"]}}}, result)
   end
 
@@ -165,7 +165,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/family?names[]=Jack&names[]=Kim&names[]=Teri'
+    post '/family?' + Padrino::Utils.build_uri_query(:names => %w{Jack Kim Teri})
     assert_equal({"names" => %w[Jack Kim Teri]}, result)
   end
 
@@ -177,7 +177,7 @@ describe "Padrino::ParamsProtection" do
         ''
       end
     end
-    post '/i?gotta[what]=go&gotta[who]=self'
+    post '/i?' + Padrino::Utils.build_uri_query(:gotta => { :what => 'go', :who => 'self' })
     assert_equal({"gotta" => {"what" => "go"}}, result)
   end
 
