@@ -41,31 +41,9 @@ module Padrino
         params, query = params.each_with_object([{}, {}]) do |(key, val), parts|
           parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
         end
-        query = build_nested_query(query)
-        expanded_path = Rack::Utils.unescape(handler.expand(:append, params))
-        expanded_path += ?? + query unless query.empty?
+        expanded_path = handler.expand(:append, params)
+        expanded_path += ?? + Padrino::Utils.build_uri_query(query) unless query.empty?
         expanded_path
-      end
-
-      ##
-      # Builds nested query.
-      #
-      def build_nested_query(value, prefix = nil)
-        case value
-        when Array
-          value.map { |v|
-            build_nested_query(v, "#{prefix}[]")
-          }.join("&")
-        when Hash
-          value.map { |k, v|
-            build_nested_query(v, prefix ? "#{prefix}[#{k}]" : k)
-          }.reject(&:empty?).join('&')
-        when nil
-          prefix
-        else
-          raise ArgumentError, "value must be a Hash" if prefix.nil?
-          "#{prefix}=#{value}"
-        end
       end
   
       ##

@@ -309,7 +309,7 @@ describe "Routing" do
     delete "/123/destroy"
     assert_equal "/123/destroy", body
     get "/gangsta"
-    assert_equal "/gangsta?foo[bar]=baz&hoge=fuga", body
+    assert_equal "/gangsta?foo%5Bbar%5D=baz&hoge=fuga", body
     get "/splatter/123/456"
     assert_equal "/splatter/123/456", body
   end
