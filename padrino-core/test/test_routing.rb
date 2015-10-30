@@ -259,6 +259,7 @@ describe "Routing" do
       get(:anchor) { url(:anchor, :anchor => 'comments') }
       get(:fragment) { url(:anchor, :fragment => 'comments') }
       get(:fragment2) { url(:anchor, :fragment => :comments) }
+      get(:gangsta) { url(:gangsta, :foo => { :bar => :baz }, :hoge => :fuga) }
       get([:hash, :id]){ url(:hash, :id => 1) }
       get(:array, :with => :id){ url(:array, 23) }
       get([:array, :id]){ url(:array, 23) }
@@ -307,6 +308,8 @@ describe "Routing" do
     assert_equal "/drugs/123/destroy", body
     delete "/123/destroy"
     assert_equal "/123/destroy", body
+    get "/gangsta"
+    assert_equal "/gangsta?foo%5Bbar%5D=baz&hoge=fuga", body
     get "/splatter/123/456"
     assert_equal "/splatter/123/456", body
   end

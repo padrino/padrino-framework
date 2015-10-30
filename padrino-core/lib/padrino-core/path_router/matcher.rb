@@ -38,7 +38,11 @@ module Padrino
       #
       def expand(params)
         params = params.merge(@default_values) if @default_values.is_a?(Hash)
+        params, query = params.each_with_object([{}, {}]) do |(key, val), parts|
+          parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
+        end
         expanded_path = handler.expand(:append, params)
+        expanded_path += ?? + Padrino::Utils.build_uri_query(query) unless query.empty?
         expanded_path
       end
   
