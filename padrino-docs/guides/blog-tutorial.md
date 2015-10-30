@@ -204,7 +204,7 @@ We’ll want to attached some of the standard routes (:index and :show) to the c
     # app/controllers/posts.rb
     SampleBlog::App.controllers :posts do
       get :index do
-        @posts = Post.all
+        @posts = Post.order(created_at: :desc)
         render 'posts/index'
       end
       
