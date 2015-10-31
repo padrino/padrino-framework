@@ -1,9 +1,3 @@
-begin
-  require 'active_support/core_ext/object/deep_dup' # AS 4.1
-rescue LoadError
-  require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
-end
-
 module Padrino
   ##
   # Padrino application module providing means for mass-assignment protection.
@@ -45,7 +39,7 @@ module Padrino
       def params(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
         condition do
-          @original_params = params.deep_dup
+          @original_params = Utils.deep_dup(params)
           filter_params!(params, allowed_params)
         end
       end

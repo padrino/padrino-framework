@@ -11,6 +11,12 @@ require 'active_support/core_ext/hash/reverse_merge'        # reverse_merge
 require 'active_support/core_ext/module/aliasing'           # alias_method_chain
 require 'active_support/core_ext/array/extract_options'     # Array#extract_options!
 require 'active_support/core_ext/hash/slice'                # slice
+begin
+  require 'active_support/core_ext/object/deep_dup' # AS 4.1
+rescue LoadError
+  require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
+end
+
 
 require 'padrino-support/core_ext/string/inflections'
 require 'padrino-support/core_ext/string/colorize'
