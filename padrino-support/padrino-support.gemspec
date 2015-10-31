@@ -22,6 +22,4 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
-
-  s.add_dependency("activesupport", ">= 3.1")
 end
