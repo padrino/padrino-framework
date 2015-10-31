@@ -41,7 +41,7 @@ module Padrino
       #   # => 1234567890,50 &pound;
       #
       def number_to_currency(number, options = {})
-        options.symbolize_keys!
+        options = Utils.symbolize_keys(options)
 
         defaults  = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         currency  = I18n.translate(:'number.currency.format', :locale => options[:locale], :raise => true) rescue {}
@@ -89,7 +89,7 @@ module Padrino
       #   number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
       #
       def number_to_percentage(number, options = {})
-        options.symbolize_keys!
+        options = Utils.symbolize_keys(options)
 
         defaults   = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         percentage = I18n.translate(:'number.percentage.format', :locale => options[:locale], :raise => true) rescue {}
@@ -134,8 +134,7 @@ module Padrino
       #   # => 98 765 432,98
       #
       def number_with_delimiter(number, *args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
@@ -178,8 +177,7 @@ module Padrino
       #   # => 1.111,23
       #
       def number_with_precision(number, *args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults           = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
@@ -239,8 +237,7 @@ module Padrino
       def number_to_human_size(number, *args)
         return nil if number.nil?
 
-        options = args.last.is_a?(Hash) ? args.pop : {}
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}

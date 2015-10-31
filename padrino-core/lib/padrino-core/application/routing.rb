@@ -340,7 +340,7 @@ module Padrino
       def url(*args)
         params = args.last.is_a?(Hash) ? args.pop : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
-        path = make_path_with_params(args, value_to_param(params.symbolize_keys))
+        path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
       end
       alias :url_for :url
@@ -837,7 +837,7 @@ module Padrino
           path_params << params
         end
 
-        path_params[-1] = path_params[-1].symbolize_keys
+        path_params[-1] = Utils.symbolize_keys(path_params[-1])
         @route.path(*path_params)
       end
 

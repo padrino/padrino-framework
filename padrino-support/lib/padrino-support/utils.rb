@@ -53,5 +53,16 @@ module Padrino
         end
       end
     end
+
+    ##
+    # Returns a Hash with keys turned into symbols.
+    #
+    def symbolize_keys(hash)
+      result = hash.class.new
+      hash.each_key do |key|
+        result[(key.to_sym rescue key)] = hash[key]
+      end
+      result
+    end
   end
 end

@@ -39,7 +39,7 @@ module Padrino
 
     # Starts the application on the available server with specified options.
     def self.start(app, options={})
-      options = options.to_hash.symbolize_keys
+      options = Utils.symbolize_keys(options.to_hash)
       options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]

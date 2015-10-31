@@ -112,3 +112,13 @@ describe 'Padrino::Utils.deep_dup' do
     assert_equal 1, dup.keys.length
   end
 end
+
+describe 'Padrino::Utils.symbolize_keys' do
+  it 'should symbolize string keys' do
+    assert_equal({ :a  => 1, :b  => 2 }, Padrino::Utils.symbolize_keys('a' => 1, 'b' => 2))
+  end
+
+  it 'should not fail on non-symbolizable keys' do
+    assert_equal({ Object => 1, true => 2 }, Padrino::Utils.symbolize_keys(Object => 1, true => 2))
+  end
+end
