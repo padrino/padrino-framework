@@ -832,7 +832,7 @@ module Padrino
       #
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
-          path_params[-1] = params.merge(path_params[-1].with_indifferent_access)
+          path_params[-1] = params.merge(path_params[-1])
         else
           path_params << params
         end

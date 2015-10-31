@@ -2149,14 +2149,14 @@ describe "Routing" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:"foo bar", { :id => "fantastic" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:"foo bar", { :id => "18" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
-    assert_equal [:simple, { :id => "bar" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => "bar"))
-    assert_equal [:simple, { :id => "true" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => true))
-    assert_equal [:simple, { :id => "9" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => 9))
-    assert_equal [:with_format, { :id => "bar", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
-    assert_equal [:with_format, { :id => "true", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
-    assert_equal [:with_format, { :id => "9", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
+    assert_equal [:"foo bar", { "id" => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { "id" => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:simple, { "id" => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
+    assert_equal [:simple, { "id" => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
+    assert_equal [:simple, { "id" => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
+    assert_equal [:with_format, { "id" => "bar", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
+    assert_equal [:with_format, { "id" => "true", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
+    assert_equal [:with_format, { "id" => "9", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
   it 'should have current_path' do
