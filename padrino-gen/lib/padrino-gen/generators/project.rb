@@ -82,7 +82,7 @@ module Padrino
       #
       def setup_components
         return if options[:template]
-        @_components = options.dup.slice(*self.class.component_types)
+        @_components = options.class.new options.select{ |key,_| self.class.component_types.include?(key.to_sym) }
         self.class.component_types.each do |comp|
           choice = @_components[comp] = resolve_valid_choice(comp)
           execute_component_setup(comp, choice)

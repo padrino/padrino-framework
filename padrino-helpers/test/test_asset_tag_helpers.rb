@@ -146,7 +146,7 @@ describe "AssetTagHelpers" do
     end
 
     it 'should not double-escape ampersands in query' do
-      actual_html = mail_to('to@demo.com', "Email", :subject => 'Hi there', :bcc => 'bcc@test.com')
+      actual_html = mail_to('to@demo.com', "Email", :bcc => 'bcc@test.com', :subject => 'Hi there')
       assert_has_tag(:a, :href => 'mailto:to@demo.com?bcc=bcc@test.com&subject=Hi%20there', :content => 'Email') { actual_html }
       assert_match %r{&amp;}, actual_html
       refute_match %r{&amp;amp;}, actual_html

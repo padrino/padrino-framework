@@ -143,10 +143,11 @@ module Padrino
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
       def mail_to(email, caption=nil, mail_options={})
-        html_options = mail_options.slice!(:cc, :bcc, :subject, :body)
-        mail_query = Rack::Utils.build_query(mail_options).gsub(/\+/, '%20').gsub('%40', '@')
-        mail_href = "mailto:#{email}"; mail_href << "?#{mail_query}" if mail_query.present?
-        link_to((caption || email), mail_href, html_options)
+        mail_options, html_options = mail_options.partition{ |key,_| [:cc, :bcc, :subject, :body].include?(key) }
+        mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
+        mail_href = "mailto:#{email}"
+        mail_href << "?#{mail_query}" unless mail_query.empty?
+        link_to((caption || email), mail_href, Hash[html_options])
       end
 
       ##

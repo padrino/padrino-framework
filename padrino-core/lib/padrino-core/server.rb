@@ -110,9 +110,9 @@ module Padrino
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge options.slice(:Host, :Port)
-      address[:Host] = options[:host] if options[:host].present?
-      address[:Port] = options[:port] if options[:port].present?
+      address = DEFAULT_ADDRESS.merge options.select{ |key| [:Host, :Port].include?(key) }
+      address[:Host] = options[:host] if options[:host]
+      address[:Port] = options[:port] if options[:port]
       address
     end
   end

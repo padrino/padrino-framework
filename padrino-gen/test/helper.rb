@@ -73,10 +73,10 @@ class MiniTest::Spec
 
   # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
   def expects_generated_project(options={})
-    project_root = options[:root]
-    project_name = options[:name]
-    settings = options.slice!(:name, :root)
-    components = settings.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
+    options = options.dup
+    project_root = options.delete(:root)
+    project_name = options.delete(:name)
+    components = options.sort_by{ |k, v| k.to_s }.map{ |component, value| "--#{component}=#{value}" }
     params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end
