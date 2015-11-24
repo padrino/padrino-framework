@@ -12,7 +12,7 @@
   # end
 
   # get :foo, :with => :id do
-  #   'Maps to url '/foo/#{params[:id]}''
+  #   "Maps to url '/foo/#{params[:id]}'"
   # end
 
   # get '/example' do
