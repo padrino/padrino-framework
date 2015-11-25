@@ -4,7 +4,7 @@ de:
       # Benutze die strftime Parameter für die Formatierung
       # Wenn keine Formate angegeben werden, wird "default" benutzt.
       # Du kannst auch weitere Formate hinzufügen, wenn Du möchtest.
-      default: "&d.&m.%Y"
+      default: "%d.%m.%Y"
       short: "%d. %b"
       long: "%d. %B %Y"
       only_day: "%e"
