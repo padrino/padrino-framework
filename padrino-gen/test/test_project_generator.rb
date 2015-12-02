@@ -541,9 +541,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/gem 'bacon'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Bacon::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:test\)/,"#{@apptmp}/sample_project/Rakefile")
     end
 
     it 'should properly generate for riot' do
@@ -558,9 +557,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Riot::Situation/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/Riot::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/SampleProject::App\.tap/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:test\)/,"#{@apptmp}/sample_project/Rakefile")
     end
 
     it 'should properly generate for rspec' do
@@ -572,9 +570,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/gem 'rspec'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-      assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/RSpec::Core::RakeTask\.new\("spec:\#/,"#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/task 'spec' => spec_tasks/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:spec\)/,"#{@apptmp}/sample_project/Rakefile")
     end
 
     it 'should properly generate for shoulda' do
@@ -586,9 +583,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/gem 'shoulda'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:test\)/,"#{@apptmp}/sample_project/Rakefile")
     end
 
     it 'should properly generate for steak' do
@@ -600,9 +596,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/gem 'steak'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
-      assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/RSpec::Core::RakeTask\.new\("spec:\#/,"#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/task 'spec' => spec_tasks/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:spec\)/,"#{@apptmp}/sample_project/Rakefile")
     end
 
     it 'should properly generate for minitest' do
@@ -616,9 +611,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/MiniTest::Spec/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/SampleProject::App\.tap/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask\.new\("test:\#/,"#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:test\)/,"#{@apptmp}/sample_project/Rakefile")
     end # minitest
 
     it 'should properly generate for cucumber' do
@@ -635,9 +629,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/RSpec.configure/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
       assert_match_in_file(/Capybara.app = /, "#{@apptmp}/sample_project/features/support/env.rb")
       assert_match_in_file(/World\(Cucumber::Web::URLs\)/, "#{@apptmp}/sample_project/features/support/url.rb")
-      assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/RSpec::Core::RakeTask\.new\("spec:\#/,"#{@apptmp}/sample_project/spec/spec.rake")
-      assert_match_in_file(/task 'spec' => spec_tasks/,"#{@apptmp}/sample_project/spec/spec.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:spec\)/,"#{@apptmp}/sample_project/Rakefile")
       assert_file_exists("#{@apptmp}/sample_project/features/support/env.rb")
       assert_file_exists("#{@apptmp}/sample_project/features/add.feature")
       assert_file_exists("#{@apptmp}/sample_project/features/step_definitions/add_steps.rb")
@@ -762,8 +755,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/:group => 'test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'test-unit'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/,"#{@apptmp}/sample_project/test/test.rake")
+      assert_file_exists("#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(/PadrinoTasks.use\(:test\)/,"#{@apptmp}/sample_project/Rakefile")
       assert_match_in_file(/Dir\[File\.expand_path\(File\.dirname\(__FILE__\) \+ "\/\.\.\/app\/helpers\.rb"\)\]\.each\(&method\(:require\)\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")

@@ -38,29 +38,6 @@ RSpec.describe "!PATH!" do
 end
 TEST
 
-RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
-begin
-  require 'rspec/core/rake_task'
-
-  spec_tasks = Dir['spec/*/'].each_with_object([]) do |d, result|
-    result << File.basename(d) unless Dir["\#{d}*"].empty?
-  end
-
-  spec_tasks.each do |folder|
-    desc "Run the spec suite in \#{folder}"
-    RSpec::Core::RakeTask.new("spec:\#{folder}") do |t|
-      t.pattern = "./spec/\#{folder}/**/*_spec.rb"
-      t.rspec_opts = "--color"
-    end
-  end
-
-  desc "Run complete application spec suite"
-  task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
-rescue LoadError
-  puts "RSpec is not part of this bundle, skip specs."
-end
-TEST
-
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
@@ -89,7 +66,7 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'rspec', :group => 'test'
   insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), RSPEC_RAKE
+  inject_into_file(destination_root('Rakefile'), "PadrinoTasks.use(:spec)\n", :before => 'PadrinoTasks.init')
 end
 
 def generate_controller_test(name, path)
