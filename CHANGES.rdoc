@@ -1,11 +1,24 @@
 = CHANGES
 
-== Edge
+== 0.13.2 (Unreleased)
 
-- NEW #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3)
-- WARN #1989 Warn about coming behavior change
-- WARN Notice about removing ObjectSpace.classes and ObjectSpace.new_classes in 0.14
+- FIX #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3) (@ujifgc)
+- WARN #1989 Warn about coming behavior change (@ujifgc)
+- NEW #1987 Generator now failes with invalid namespace (@ujifgc)
+- NEW Remove many internal uses of ActiveSupport (@ujifgc)
+- FIX #2007 Respect Regexp#names at the time of route search (@namusyaka)
+- FIX #2004 Set default alt attribute for image_tag (@namusyaka)
+- FIX #2008 Login button on the admin app now looks as expected (@namusyaka)
+- FIX #2011 Update mongoid database configuration (@serradura)
+- FIX Remove empty rows and cols from textarea tag (@ujifgc)
+- FIX #2015 Update broken links in the README and docs (@mariozig)
+- FIX #2023 Preserve `default_builder` set in configure_apps (@ujifgc)
+- FIX #2025 Match plugin names with dashes in their names (@wikimatze)
+- WARN Notice about removing ObjectSpace.classes and ObjectSpace.new_classes in 0.14 (@ujifgc)
+- FIX #2027 Use Module#name instead of Module#to_s (@namusyaka)
 - NEW Logger option :sanitize_encoding (@ujifgc)
+- FIX #2006 load missing AR models before calling seeds.rb (@ujifgc)
+- NEW #1921 Adds `--api` option for project generator (@ujifgc)
 
 == 0.13.1 (January 17th 2016)
 
