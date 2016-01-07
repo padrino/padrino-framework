@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.13.2 (Unreleased)
+== 0.13.2 (May 9th 2016)
 
 - FIX #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3) (@ujifgc)
 - WARN #1989 Warn about coming behavior change (@ujifgc)
@@ -19,6 +19,8 @@
 - NEW Logger option :sanitize_encoding (@ujifgc)
 - FIX #2006 load missing AR models before calling seeds.rb (@ujifgc)
 - NEW #1921 Adds `--api` option for project generator (@ujifgc)
+- NEW #2032 Adds new `config/initializers` folder loaded during boot (@ujifgc)
+- FIX #2019 Removes deprecation warning for ActiveRecord (@wikimatze)
 
 == 0.13.1 (January 17th 2016)
 
