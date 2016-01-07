@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.12.6
+
+* FIX properly reload classes without instances (@ujifgc)
+* FIX do not pollute original Minitest::Benchmark (@ujifgc)
+* FIX #2027 Use Module#name instead of Module#to_s (@namusyaka)
+* FIX Remove empty rows and cols from textarea tag (@ujifgc)
+* FIX #2029 Don't set a value attribute on label tags (@sshaw)
+* FIX allow Padrino::Rendering on stdlib ERB (@ujifgc)
+* FIX #1880 Use proper file extention when resolving template for content_type (@ujifgc)
+* FIX #1796 save and restore layout setting (@ujifgc)
+
 == 0.12.5 (February 22nd 2015)
 
 * FIX #1794 inheritance of global prereqs (@ujifgc)
