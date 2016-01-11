@@ -3,6 +3,12 @@
 == 0.13.1 (Unreleased)
 
 - FIX #1978 Enable reloading of custom dependencies (@markglenfletcher)
+- FIX Remove use of ActiveSupport in tests (@ujifgc)
+- FIX #1982 Support nested query for expanding path (@namusyaka)
+- FIX #1994 Missing new line in mocha generator (@peter50216)
+- FIX #1995 Invalid german dates (@ujifgc)
+- FIX #1998 Only output a warning message if the spec task is invoked (@postmodern)
+- FIX #2000 Fix mutex handling for Ruby 2.3 (@tyabe)
 
 == 0.13.1.beta1 (October 18th 2015)
 
