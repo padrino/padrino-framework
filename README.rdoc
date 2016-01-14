@@ -89,7 +89,7 @@ The individual Padrino sub-gems also contain README's which outlines their funct
 
 Can't find an answer in the resources above?
 
-* Try the new {FAQ's}[https://github.com/padrino/padrino-framework/blob/master/padrino-docs/pages/faq.md].
+* Try the new {FAQ's}[https://github.com/padrino/padrino-docs/blob/master/pages/faq.md].
 
 * Ask any questions on the {gitter channel}[https://gitter.im/padrino/padrino-framework].
 
