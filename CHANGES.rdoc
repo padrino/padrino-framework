@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.13.1 (Unreleased)
+== 0.13.1 (January 17th 2016)
 
 - FIX #1978 Enable reloading of custom dependencies (@markglenfletcher)
 - FIX Remove use of ActiveSupport in tests (@ujifgc)
