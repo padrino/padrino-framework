@@ -3,6 +3,7 @@
 == Edge
 
 - NEW #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3)
+- WARN #1989 Warn about coming behavior change
 
 == 0.13.1 (January 17th 2016)
 

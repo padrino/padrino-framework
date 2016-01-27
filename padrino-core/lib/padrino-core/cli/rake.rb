@@ -10,7 +10,15 @@ end
 
 module PadrinoTasks
   def self.init(init=false)
-    $LOAD_PATH.unshift(File.expand_path("lib"))
+    lib_path = File.expand_path("lib")
+    unless $LOAD_PATH.any?{ |path| File.expand_path(path) == lib_path }
+      warn <<-EOT
+WARNING! In Padrino >= 0.14.0 cli command `padrino rake` will NOT add
+'./lib' folder to $LOAD_PATH. Please alter your `require` calls accordingly
+if you depend on this behavior.
+      EOT
+      $LOAD_PATH.unshift lib_path
+    end
     Padrino::Tasks.files.flatten.uniq.each { |rakefile| Rake.application.add_import(rakefile) rescue puts "<= Failed load #{ext}" }
     load(File.expand_path('../rake_tasks.rb', __FILE__))
     Rake.application.load_imports
