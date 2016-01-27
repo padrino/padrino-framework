@@ -24,6 +24,6 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-support", Padrino.version)
-  s.add_dependency("tilt", "~> 1.4.1")
+  s.add_dependency("tilt", ">= 1.4.1", "< 3")
   s.add_dependency("i18n", "~> 0.6", ">= 0.6.7")
 end

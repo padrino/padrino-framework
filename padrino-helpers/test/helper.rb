@@ -8,6 +8,8 @@ require 'webrat'
 require 'active_support/time'
 require 'builder'
 require 'padrino-helpers'
+require 'tilt/liquid'
+require 'tilt/builder'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'

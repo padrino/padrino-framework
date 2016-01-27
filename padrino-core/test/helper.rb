@@ -9,6 +9,7 @@ require 'builder'
 require 'rack/test'
 require 'yaml'
 require 'padrino-core'
+require 'tilt/haml'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'

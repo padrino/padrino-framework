@@ -1,5 +1,9 @@
 = CHANGES
 
+== Edge
+
+- NEW #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3)
+
 == 0.13.1 (January 17th 2016)
 
 - FIX #1978 Enable reloading of custom dependencies (@markglenfletcher)
