@@ -31,12 +31,12 @@ branches:
 services: mongodb
 matrix:
   include:
-    - rvm: 2.1
+    - rvm: 2.2.2
       env: SINATRA_EDGE=true
     - rvm: 2.1
       env: STDLIB_ERB=true
   allow_failures:
     - rvm: rbx-2
-      env: SINATRA_EDGE=true
+    - env: SINATRA_EDGE=true
     - rvm: ruby-head
     - rvm: jruby-head
