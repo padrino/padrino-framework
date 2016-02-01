@@ -30,6 +30,7 @@ module Padrino
       # Execute helper generation
       #
       def create_helper
+        validate_namespace name
         self.destination_root = options[:root]
         if in_app_root?
           app = options[:app]

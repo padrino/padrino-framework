@@ -36,6 +36,7 @@ module Padrino
       # Execute controller generation
       #
       def create_controller
+        validate_namespace name
         self.destination_root = options[:root]
         if in_app_root?
           app = options[:app]

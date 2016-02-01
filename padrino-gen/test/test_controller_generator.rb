@@ -22,6 +22,11 @@ describe "ControllerGenerator" do
       assert_no_file_exists("#{@apptmp}/app/controllers/demo.rb")
     end
 
+    it 'should fail with NameError if given invalid namespace names' do
+      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:controller, "wrong/name", "--root=#{@apptmp}/sample") } }
+    end
+
     it 'should generate controller within existing project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }

@@ -17,6 +17,11 @@ describe "MigrationGenerator" do
       assert_no_file_exists("#{@apptmp}/db/migrate")
     end
 
+    it 'should fail with NameError if given invalid namespace names' do
+      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:migration, "wrong/name", "--root=#{@apptmp}/sample") } }
+    end
+
     it 'should fail if we do not use an adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       assert_raises(SystemExit) { capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") } }
