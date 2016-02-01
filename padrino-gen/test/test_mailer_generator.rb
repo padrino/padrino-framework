@@ -17,6 +17,11 @@ describe "MailerGenerator" do
       assert_no_file_exists('/tmp/app/mailers/demo_mailer.rb')
     end
 
+    it 'should fail with NameError if given invalid namespace names' do
+      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:mailer, "wrong/name", "--root=#{@apptmp}/sample") } }
+    end
+
     it 'should generate mailer in specified app' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }

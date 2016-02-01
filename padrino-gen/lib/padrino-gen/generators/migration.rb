@@ -25,6 +25,7 @@ module Padrino
 
       # Creates the migration file within a Padrino project.
       def create_migration
+        validate_namespace name
         self.destination_root = options[:root]
         if in_app_root?
           self.behavior = :revoke if options[:destroy]

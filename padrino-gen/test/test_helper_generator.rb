@@ -19,6 +19,11 @@ describe "HelperGenerator" do
       assert_no_file_exists("#{@apptmp}/app/helpers/demo_helper.rb")
     end
 
+    it 'should fail with NameError if given invalid namespace names' do
+      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:helper, "wrong/name", "--root=#{@apptmp}/sample") } }
+    end
+
     it 'should generate helper within existing project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:helper, 'DemoItems', "-r=#{@apptmp}/sample_project") }

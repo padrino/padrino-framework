@@ -520,10 +520,22 @@ WARNING
       #
       def valid_constant?(name)
         if name =~ /^\d/
-          raise ::NameError, "Project name #{name} cannot start with numbers"
+          fail ::NameError, "Constant name #{name} cannot start with numbers"
         elsif name =~ /^\W/
-          raise ::NameError, "Project name #{name} cannot start with non-word character"
+          fail ::NameError, "Constant name #{name} cannot start with non-word character"
         end
+      end
+
+      ##
+      # Validates namespace name (controller name, etc.) or fails with an error.
+      #
+      # @example
+      #   validate_namespace 'Project_One1' #=> pass
+      #   validate_namespace 'Erroneous/name' #=> fail
+      #
+      def validate_namespace(name)
+        valid_constant? name
+        name.match(/^[[:alnum:]_]+$/) || fail(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
       end
 
       ##

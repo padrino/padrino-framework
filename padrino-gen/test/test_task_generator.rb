@@ -17,6 +17,11 @@ describe "TaskGenerator" do
       assert_no_file_exists('/tmp/tasks/foo.rake')
     end
 
+    it 'should fail with NameError if given invalid namespace names' do
+      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:task, "wrong/name", "--root=#{@apptmp}/sample") } }
+    end
+
     it 'should generate filename properly' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:task, 'DemoTask', "--namespace=Sample", "--description='This is a sample'", "-r=#{@apptmp}/sample_project") }
