@@ -14,6 +14,19 @@ require 'ext/minitest-spec'
 
 Padrino::Generators.load_components!
 
+# register fake URL to avoid downloading static files every time tests run
+fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
+%W[
+  js/dojo.js ujs/dojo.js
+  js/ext.js ujs/ext.js
+  js/jquery.js ujs/jquery.js
+  js/mootools.js ujs/mootools.js
+  js/right.js ujs/right.js
+  js/protopak.js js/lowpro.js ujs/prototype.js
+].each do |suffix|
+  FakeWeb.register_uri(:get, fake_uri_base + suffix, :body => '')
+end
+
 class MiniTest::Spec
   include Webrat::Methods
   include Webrat::Matchers

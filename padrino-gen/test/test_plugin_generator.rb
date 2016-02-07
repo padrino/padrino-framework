@@ -54,6 +54,7 @@ describe "PluginGenerator" do
 
     it 'should resolve generic url properly' do
       template_file = 'http://www.example.com/test.rb'
+      FakeWeb.register_uri :get, template_file, :body => ''
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(template_file).returns(true).once
       capture_io { project_gen.invoke_all }
@@ -71,6 +72,7 @@ describe "PluginGenerator" do
     it 'should resolve official template' do
       template_file = 'sampleblog'
       resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/templates/sampleblog_template.rb"
+      FakeWeb.register_uri :get, resolved_path, :body => template_file
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { project_gen.invoke_all }
@@ -86,6 +88,7 @@ describe "PluginGenerator" do
     it 'should resolve official plugin' do
       template_file = 'hoptoad'
       resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/plugins/hoptoad_plugin.rb"
+      FakeWeb.register_uri :get, resolved_path, :body => template_file
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
@@ -95,6 +98,7 @@ describe "PluginGenerator" do
     it 'should print a warning if template cannot be found' do
       template_file  = 'hwat'
       resolved_path = "https://raw.github.com/padrino/padrino-recipes/master/plugins/hwat_plugin.rb"
+      FakeWeb.register_uri :get, resolved_path, :status => 404
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:say).with("The template at #{resolved_path} could not be found!", :red).returns(true).once
