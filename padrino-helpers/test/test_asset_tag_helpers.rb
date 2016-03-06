@@ -76,6 +76,19 @@ describe "AssetTagHelpers" do
       assert_has_tag('img', :src => "/my/fancy/image.png") { actual_link }
     end
 
+    it 'should render alt text by default' do
+      actual_tag = image_tag("/my/fancy/image.png")
+      assert_has_tag('img', :src => "/my/fancy/image.png", :alt => "Image") { actual_tag }
+
+      actual_tag = image_tag("/my/fancy/image_white.png")
+      assert_has_tag('img', :src => "/my/fancy/image_white.png", :alt => "Image white") { actual_tag }
+    end
+
+    it 'should remove hash value from src path' do
+      actual_tag = image_tag("/my/fancy/sprite-47bce5c74f589f4867dbd57e9ca9f808.png")
+      assert_has_tag('img', :src => "/my/fancy/sprite-47bce5c74f589f4867dbd57e9ca9f808.png", :alt => "Sprite") { actual_tag }
+    end
+
     it 'should display link block element in haml' do
       visit '/haml/link_to'
       assert_have_selector :a, :content => "Test 1 No Block", :href => '/test1', :class => 'test', :id => 'test1'
@@ -223,7 +236,7 @@ describe "AssetTagHelpers" do
     end
 
     it 'should have xhtml convention tag' do
-      assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" />'
+      assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" alt="Pic" />'
     end
   end
 
