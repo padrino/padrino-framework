@@ -20,8 +20,9 @@ html lang='en'
 
           ul class='nav navbar-nav pull-right'
             li class='navbar-edit-account' = link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
-            li class='navbar-logout' = button_to(pat(:logout), url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form') do
-              = content_tag :button, tag_icon(:'power-off'), :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link'
+            li class='navbar-logout'
+              = button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form', :submit_options => { :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } do
+                = tag_icon(:'power-off')
 
           ul class='nav navbar-nav pull-left'
             - project_modules.each do |project_module|
