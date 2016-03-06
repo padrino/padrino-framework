@@ -56,18 +56,18 @@ module Padrino
       #
       def path(name, *args)
         params = args.extract_options!
-        @routes.each do |route|
-          next unless route.name == name
-          matcher = route.matcher
-          params_for_expand = params.dup
-          if !args.empty? && matcher.mustermann?
-            matcher.names.each_with_index do |matcher_name, index|
-              params_for_expand[matcher_name.to_sym] ||= args[index]
-            end
+        candidates = @routes.select { |route| route.name == name }
+        fail InvalidRouteException if candidates.empty?
+        route = candidates.sort_by! { |route|
+          (params.keys.map(&:to_s) - route.matcher.names).length }.shift
+        matcher = route.matcher
+        params_for_expand = params.dup
+        if !args.empty? && matcher.mustermann?
+          matcher.names.each_with_index do |matcher_name, index|
+            params_for_expand[matcher_name.to_sym] ||= args[index]
           end
-          return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path_for_generation
         end
-        fail InvalidRouteException
+        matcher.mustermann? ? matcher.expand(params_for_expand) : route.path_for_generation
       end
 
       ##
