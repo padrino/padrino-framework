@@ -20,8 +20,8 @@
           %ul.nav.navbar-nav.pull-right
             %li.navbar-edit-account=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
             %li.navbar-logout
-              =button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form' do
-                =content_tag :button, tag_icon('power-off'), :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link'
+              = button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form', :submit_options => { :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } do
+                = tag_icon('power-off')
 
           %ul.nav.navbar-nav.pull-left
             - project_modules.each do |project_module|
