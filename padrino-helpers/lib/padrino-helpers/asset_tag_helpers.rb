@@ -204,11 +204,23 @@ module Padrino
       #
       def image_tag(url, options={})
         options.reverse_merge!(:src => image_path(url))
+        options[:alt] ||= image_alt(url) unless url =~ /\A(?:cid|data):/ || url.blank?
         tag(:img, options)
       end
 
       ##
-      # Returns an html script tag for each of the sources provided.
+      # Returns a string suitable for an alt attribute of img element.
+      #
+      # @param [String] src
+      #   The source path for the image tag.
+      # @return [String] The alt attribute value.
+      #
+      def image_alt(src)
+        File.basename(src, '.*').sub(/-[[:xdigit:]]{32,64}\z/, '').tr('-_', ' ').capitalize
+      end
+
+      ##
+      # Returns a html link tag for each of the sources provided.
       # You can pass in the filename without extension or a symbol and we search it in your +appname.public_folder+
       # like app/public/stylesheets for inclusion. You can provide also a full path.
       #
