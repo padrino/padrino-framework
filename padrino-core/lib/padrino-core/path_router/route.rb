@@ -106,6 +106,15 @@ module Padrino
       end
 
       ##
+      # Overwrites path value by passing new path string.
+      #
+      def path=(pattern)
+        @path = pattern
+        @matcher = nil
+        @significant_variable_names = nil
+      end
+
+      ##
       # Returns parameters which is created by the matcher.
       #
       def params_for(pattern, others = {})
