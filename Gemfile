@@ -19,7 +19,7 @@ group :development do
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
   end
   gem "rack",      ">= 1.3.0"
-  gem "rake",      ">= 0.8.7"
+  gem "rake",      "~> 10.5.0"
   gem "yard",      ">= 0.7.2"
   gem "rack-test", "~> 0.6.3"
   gem "fakeweb",   ">= 1.2.8"
