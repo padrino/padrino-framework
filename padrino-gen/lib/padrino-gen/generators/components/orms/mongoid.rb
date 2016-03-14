@@ -1,31 +1,4 @@
 MONGOID = (<<-MONGO) unless defined?(MONGOID)
-# Connection.new takes host and port
-host = 'localhost'
-port = Mongo::Connection::DEFAULT_PORT
-
-database_name = case Padrino.env
-  when :development then '!NAME!_development'
-  when :production  then '!NAME!_production'
-  when :test        then '!NAME!_test'
-end
-
-Mongoid.database = Mongo::Connection.new(host, port).db(database_name)
-
-# You can also configure Mongoid this way:
-# Mongoid.configure do |config|
-#   name = @settings["database"]
-#   host = @settings["host"]
-#   config.master = Mongo::Connection.new.db(name)
-#   config.slaves = [
-#     Mongo::Connection.new(host, @settings["slave_one"]["port"], :slave_ok => true).db(name),
-#     Mongo::Connection.new(host, @settings["slave_two"]["port"], :slave_ok => true).db(name)
-#   ]
-# end
-#
-# More installation and setup notes are on http://mongoid.org/.
-MONGO
-
-MONGOID3 = (<<-MONGO) unless defined?(MONGOID3)
 # Connection.new takes host and port.
 
 host = 'localhost'
@@ -38,12 +11,18 @@ database_name = case Padrino.env
 end
 
 # Use MONGO_URI if it's set as an environmental variable.
-Mongoid::Config.sessions =
-  if ENV['MONGO_URI']
-    {default: {uri: ENV['MONGO_URI'] }}
-  else
-    {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
-  end
+database_settings = if ENV['MONGO_URI']
+  {default: {uri: ENV['MONGO_URI'] }}
+else
+  {default: {hosts: ["#\{host\}:#\{port\}"], database: database_name}}
+end
+
+case Mongoid::VERSION
+when /^(3|4)/
+  Mongoid::Config.sessions = database_settings
+else
+  Mongoid::Config.load_configuration :clients => database_settings
+end
 
 # If you want to use a YML file for config, use this instead:
 #
@@ -51,31 +30,33 @@ Mongoid::Config.sessions =
 #
 # And add a config/database.yml file like this:
 #   development:
-#     sessions:
+#     clients: #Replace clients with sessions to work with Mongoid version 3.x or 4.x
 #       default:
 #         database: !NAME!_development
 #         hosts:
 #           - localhost:27017
+#
 #   production:
-#     sessions:
+#     clients: #Replace clients with sessions to work with Mongoid version 3.x or 4.x
 #       default:
 #         database: !NAME!_production
 #         hosts:
 #           - localhost:27017
+#
 #   test:
-#     sessions:
+#     clients: #Replace clients with sessions to work with Mongoid version 3.x or 4.x
 #       default:
 #         database: !NAME!_test
 #         hosts:
 #           - localhost:27017
 #
 #
-# More installation and setup notes are on http://mongoid.org/en/mongoid/docs/installation.html#configuration
+# More installation and setup notes are on https://docs.mongodb.org/ecosystem/tutorial/mongoid-installation/
 MONGO
 
 def setup_orm
   require_dependencies 'mongoid', :version => '>= 3.0.0'
-  create_file('config/database.rb', MONGOID3.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
 MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
