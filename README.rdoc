@@ -42,7 +42,7 @@ Reloading::  Automatically reloads server code during development.
 Localization:: Full support of I18n language localization and can auto-set user's locale.
 
 Keep in mind, developers are able to individually pull in these modular components
-{into existing Sinatra applications}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra]
+{into existing Sinatra applications}[http://padrinorb.com/guides/advanced-usage/standalone-usage-in-sinatra/]
 or use them altogether for a full-stack Padrino application.
 
 == Installation
@@ -55,7 +55,7 @@ This will install the necessary padrino gems to get you started.
 Now you are ready to use this gem to enhance your Sinatra projects or to create new Padrino applications.
 
 For a more detailed look at installing Padrino,
-check out the {Installation Guide}[http://www.padrinorb.com/guides/installation].
+check out the {Installation Guide}[http://padrinorb.com/guides/getting-started/installation/].
 
 == Usage
 
@@ -63,8 +63,7 @@ Padrino is a framework which builds on the existing functionality of Sinatra and
 additional tools and helpers to build upon that foundation. This README and Padrino documentation in general will focus on the enhancements to the core Sinatra functionality. To use Padrino, one should be familiar with the basic
 usage of Sinatra itself.
 
-You can also check out the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
-to learn more about how Sinatra and Padrino work together.
+You can also check out the {Why Learn Padrino?}[http://padrinorb.com/guides/introduction/why-learn-padrino/] introduction to learn more about how Sinatra and Padrino work together.
 
 For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for {Using Padrino within Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
 
@@ -88,8 +87,6 @@ The individual Padrino sub-gems also contain README's which outlines their funct
 == Further Questions
 
 Can't find an answer in the resources above?
-
-* Try the new {FAQ's}[https://github.com/padrino/padrino-docs/blob/master/pages/faq.md].
 
 * Ask any questions on the {gitter channel}[https://gitter.im/padrino/padrino-framework].
 
