@@ -100,17 +100,10 @@ GEM_PATHS.each do |element|
   end
 end
 
-desc "Run tests for all padrino stack gems"
-task :default => :test
-
 desc "Generate documentation for the Padrino framework"
 task :doc do
   YARD::CLI::Yardoc.new.run
 end
 
-desc "Publish doc on padrinorb.com/api"
-task :pdoc => :doc do
-  say "Publishing doc on padrinorb.com ..."
-  sh "scp -r doc/* root@lps2.lipsiasoft.com:/mnt/www/apps/padrino/public/api/"
-  sh "rm -rf doc"
-end
+desc "Run tests for all padrino stack gems"
+task :default => :test
