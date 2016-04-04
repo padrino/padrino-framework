@@ -1,5 +1,6 @@
 lang: ruby
-before_install: gem install bundler --pre
+before_install:
+  - gem install bundler
 install:
   - gem update --system
   - bundle update
