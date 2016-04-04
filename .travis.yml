@@ -1,8 +1,9 @@
-lang: ruby
+language: ruby
+sudo: false
+cache: bundler
 before_install:
   - gem install bundler
 install:
-  - gem update --system
   - bundle update
 rvm:
   - 1.9.3
