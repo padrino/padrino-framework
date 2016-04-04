@@ -100,11 +100,10 @@ GEM_PATHS.each do |element|
   end
 end
 
-desc "Run tests for all padrino stack gems"
-task :default => :test
-
 desc "Generate documentation for the Padrino framework"
 task :doc do
   YARD::CLI::Yardoc.new.run
 end
 
+desc "Run tests for all padrino stack gems"
+task :default => :test
