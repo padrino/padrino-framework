@@ -7,4 +7,12 @@ describe "Padrino::Helpers" do
     end
     assert_equal '<div>bar</div>', Foo.new.content_tag(:div, 'bar')
   end
+
+  it 'should not overwrite default_builder setting' do
+    mock_app do
+      set :default_builder, 'FancyBuilder'
+      register Padrino::Helpers
+    end
+    assert_equal 'FancyBuilder', @app.default_builder
+  end
 end
