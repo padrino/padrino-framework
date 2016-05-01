@@ -55,7 +55,7 @@ module Padrino
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           http.start do
             http.request_get(uri.path) do |res|
-              plugins = res.body.scan(%r{/plugins/(\w+)_plugin.rb}).uniq
+              plugins = res.body.scan(%r{/plugins/(\w+-\w+)_plugin.rb}).uniq
             end
           end
           say "Available plugins:", :green
