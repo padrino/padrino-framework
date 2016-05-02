@@ -55,19 +55,19 @@ module Padrino
       # Returns all the classes in the object space.
       #
       def object_classes
-        сlasses = Set.new
+        klasses = Set.new
 
         ObjectSpace.each_object(Class).each do |klass|
           if block_given?
             if filtered_class = yield(klass)
-              сlasses << filtered_class
+              klasses << filtered_class
             end
           else
-            сlasses << klass
+            klasses << klass
           end
         end
 
-        сlasses
+        klasses
       end
 
       ##
