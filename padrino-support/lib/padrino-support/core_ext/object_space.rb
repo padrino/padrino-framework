@@ -11,21 +11,10 @@ module ObjectSpace
     #    end
     #  end
     #
-    def classes
-      rs = Set.new
-
-      ObjectSpace.each_object(Class).each do |klass|
-        if block_given?
-          if r = yield(klass)
-            # add the returned value if the block returns something
-            rs << r
-          end
-        else
-          rs << klass
-        end
-      end
-
-      rs
+    def classes(&block)
+      warn 'Warning! ObjectSpace.classes will be removed in Padrino 0.14'
+      require 'padrino-core/reloader'
+      Padrino::Reloader::Storage.send(:object_classes, &block)
     end
 
     ##
@@ -39,11 +28,9 @@ module ObjectSpace
     #   ObjectSpace.new_classes(snapshot)
     #
     def new_classes(snapshot)
-      self.classes do |klass|
-        if !snapshot.include?(klass)
-          klass
-        end
-      end
+      warn 'Warning! ObjectSpace.new_classes will be removed in Padrino 0.14'
+      require 'padrino-core/reloader'
+      Padrino::Reloader::Storage.send(:new_classes, snapshot)
     end
   end
 end

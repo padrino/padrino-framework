@@ -73,7 +73,7 @@ module Padrino
     # We lock dependencies sets to prevent reloading of protected constants
     #
     def lock!
-      klasses = ObjectSpace.classes do |klass|
+      klasses = Storage.send(:object_classes) do |klass|
         original_klass_name = klass._orig_klass_name
         original_klass_name.split('::').first if original_klass_name
       end
