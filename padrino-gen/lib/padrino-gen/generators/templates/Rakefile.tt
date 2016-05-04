@@ -6,3 +6,5 @@ PadrinoTasks.use(:database)
 PadrinoTasks.use(<%= options[:orm].to_sym.inspect %>)
 <%- end -%>
 PadrinoTasks.init
+
+task :default => :test

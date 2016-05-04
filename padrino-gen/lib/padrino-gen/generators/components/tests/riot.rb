@@ -59,6 +59,8 @@ end
 
 desc "Run application test suite"
 task 'test' => test_tasks.map { |f| "test:\#{f}" }
+
+task :default => :test
 TEST
 
 RIOT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(RIOT_MODEL_TEST)

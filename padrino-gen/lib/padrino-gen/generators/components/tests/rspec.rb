@@ -61,6 +61,8 @@ rescue LoadError
     puts "RSpec is not part of this bundle, skip specs."
   end
 end
+
+task :default => :spec
 TEST
 
 RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
