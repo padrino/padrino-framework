@@ -60,6 +60,8 @@ end
 
 desc "Run complete application spec suite"
 task 'spec' => spec_tasks.map { |f| "spec:\#{f}" }
+
+task :default => :spec
 TEST
 
 STEAK_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(STEAK_MODEL_TEST)

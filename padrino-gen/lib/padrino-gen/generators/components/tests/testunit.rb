@@ -36,6 +36,8 @@ end
 
 desc "Run application test suite"
 task 'test' => test_tasks.map { |f| "test:\#{f}" }
+
+task :default => :test
 TEST
 
 TESTUNIT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
