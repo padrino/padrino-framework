@@ -45,7 +45,9 @@ module Padrino
         instance = builder_instance(object, options)
         # this can erect instance.multipart flag if the block calls instance.file_field
         html = capture_html(instance, &block)
-        options = { :multipart => instance.multipart }.update(options.except(:namespace, :as))
+        options = { :multipart => instance.multipart }.update(options)
+        options.delete(:as)
+        options.delete(:namespace)
         form_tag(url, options) { html }
       end
 
