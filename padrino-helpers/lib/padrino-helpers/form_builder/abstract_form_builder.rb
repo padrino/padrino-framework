@@ -37,7 +37,9 @@ module Padrino
         def label(field, options={}, &block)
           options[:id] ||= nil
           options[:caption] ||= I18n.t("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models) + ': '
-          @template.label_tag(field_id(field), default_options(field, options), &block)
+          defaults = default_options(field, options)
+          defaults.delete(:value)
+          @template.label_tag(field_id(field), defaults, &block)
         end
 
         def hidden_field(field, options={})
@@ -110,7 +112,9 @@ module Padrino
 
         def file_field(field, options={})
           self.multipart = true
-          @template.file_field_tag field_name(field), default_options(field, options).except(:value)
+          defaults = default_options(field, options)
+          defaults.delete(:value)
+          @template.file_field_tag field_name(field), defaults
         end
 
         def submit(*args)
