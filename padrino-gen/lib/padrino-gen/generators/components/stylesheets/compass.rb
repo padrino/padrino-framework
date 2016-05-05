@@ -1,10 +1,7 @@
 COMPASS_INIT = <<-COMPASS unless defined?(COMPASS_INIT)
-# Enables support for Compass, a stylesheet authoring framework based on SASS.
-# See http://compass-style.org/ for more details.
-# Store Compass/SASS files (by default) within 'app/stylesheets'.
-
-module CompassInitializer
-  def self.registered(app)
+    # Enables support for Compass, a stylesheet authoring framework based on SASS.
+    # See http://compass-style.org/ for more details.
+    # Store Compass/SASS files (by default) within 'app/stylesheets'.
     require 'sass/plugin/rack'
 
     Compass.configuration do |config|
@@ -22,18 +19,10 @@ module CompassInitializer
     Compass.handle_configuration_change!
 
     app.use Sass::Plugin::Rack
-  end
-end
 COMPASS
-
-COMPASS_REGISTER = <<-COMPASSR unless defined?(COMPASS_REGISTER)
-    register CompassInitializer\n
-COMPASSR
 
 def setup_stylesheet
   require_dependencies 'compass-blueprint'
-  create_file destination_root('/lib/compass_plugin.rb'), COMPASS_INIT
-  inject_into_file destination_root('/app/app.rb'), COMPASS_REGISTER, :after => "register Padrino::Helpers\n"
-
+  initializer :compass, COMPASS_INIT.chomp
   directory "components/stylesheets/compass/", destination_root('/app/stylesheets')
 end
