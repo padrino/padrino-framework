@@ -31,9 +31,7 @@ module Padrino
         end
 
         def label(field, options={}, &block)
-          options[:id] ||= nil
-          options[:caption] ||= I18n.t("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models) + ': '
-          @template.label_tag(field_id(field), default_options(field, options), &block)
+          @template.label_tag(field_id(field), { :caption => "#{field_human_name(field)}: " }.update(options), &block)
         end
 
         def hidden_field(field, options={})
@@ -181,7 +179,7 @@ module Padrino
         # Returns the human name of the field. Look that use builtin I18n.
         #
         def field_human_name(field)
-          I18n.translate("#{object_model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
+          I18n.translate("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
         end
 
         ##
