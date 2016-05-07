@@ -385,6 +385,12 @@ module Padrino
     # @option options [Symbol] :colorize_logging (true)
     #   Whether or not to colorize log messages. Defaults to: true.
     #
+    # @option options [Symbol] :sanitize_encoding (false)
+    #   Logger will replace undefined or broken characters with
+    #   “uFFFD” for Unicode and “?” otherwise.
+    #   Can be an encoding, false or true.
+    #   If it's true, logger sanitizes to Encoding.default_external.
+    #
     def initialize(options={})
       @buffer           = []
       @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
@@ -396,6 +402,8 @@ module Padrino
       @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
       @source_location  = options[:source_location]
+      @sanitize_encoding = options[:sanitize_encoding] || false
+      @sanitize_encoding = Encoding.default_external if @sanitize_encoding == true
       colorize! if @colorize_logging
     end
 
@@ -409,7 +417,10 @@ module Padrino
     def flush
       return unless @buffer.size > 0
       @@mutex.synchronize do
-        @log.write(@buffer.join(''))
+        @buffer.each do |line|
+          line.encode!(@sanitize_encoding, :invalid => :replace, :undef => :replace) if @sanitize_encoding
+          @log.write(line)
+        end
         @buffer.clear
       end
     end

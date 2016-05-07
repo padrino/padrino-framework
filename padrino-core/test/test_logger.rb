@@ -82,12 +82,25 @@ describe "PadrinoLogger" do
       assert_match /log via alias/, @log.string
     end
 
-    it 'should not blow up on mixed or broken encoodings' do
-      skip
+    it 'should not blow up on mixed or broken encodings' do
       setup_logger(:log_level => :error, :auto_flush => false)
-      @logger.error "\xD0".force_encoding('BINARY')
-      @logger << 'фыв'
+      binary_data = "\xD0".force_encoding('BINARY')
+      utf8_data = 'фыв'
+      @logger.error binary_data
+      @logger.error utf8_data
       @logger.flush
+      assert @log.string.include?(utf8_data)
+      assert @log.string.force_encoding('BINARY').include?(binary_data)
+    end
+
+    it 'should sanitize mixed or broken encodings if said so' do
+      setup_logger(:log_level => :error, :auto_flush => false, :sanitize_encoding => 'windows-1251')
+      binary_data = "\xD0".force_encoding('BINARY')
+      utf8_data = 'фыв'
+      @logger.error binary_data
+      @logger.error utf8_data
+      @logger.flush
+      assert_match /\?.*фыв/m, @log.string
     end
 
     it 'should log an application' do
