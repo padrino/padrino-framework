@@ -94,13 +94,15 @@ describe "PadrinoLogger" do
     end
 
     it 'should sanitize mixed or broken encodings if said so' do
-      setup_logger(:log_level => :error, :auto_flush => false, :sanitize_encoding => 'windows-1251')
+      encoding = 'windows-1251'
+      setup_logger(:log_level => :error, :auto_flush => false, :sanitize_encoding => encoding)
+      @log.string.encode! encoding
       binary_data = "\xD0".force_encoding('BINARY')
       utf8_data = 'фыв'
       @logger.error binary_data
       @logger.error utf8_data
       @logger.flush
-      assert_match /\?.*фыв/m, @log.string
+      assert_match /\?.*фыв/m, @log.string.encode(Encoding.default_external)
     end
 
     it 'should log an application' do
