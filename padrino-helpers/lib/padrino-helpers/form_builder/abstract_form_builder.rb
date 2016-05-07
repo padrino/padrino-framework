@@ -193,6 +193,13 @@ module Padrino
         end
 
         ##
+        # Returns the object's models name.
+        #
+        def object_model_name(explicit_object=object)
+          explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
+        end
+
+        ##
         # Returns the name for the given field.
         # field_name(:username) => "user[username]"
         # field_name(:number) => "user[telephone_attributes][number]"
