@@ -1,8 +1,9 @@
 module <%= @project_name %>
   class <%= @app_name %> < Padrino::Application
+<% unless options.api? -%>
     register Padrino::Mailer
     register Padrino::Helpers
-
+<% end -%>
     enable :sessions
 
     ##
