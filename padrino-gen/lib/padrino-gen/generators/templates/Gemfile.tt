@@ -20,6 +20,15 @@ gem 'rake'
 
 # Test requirements
 
+<% if options.api? -%>
+<% if options.dev? -%>
+gem 'padrino-core', :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-core'
+gem 'padrino-gen', :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-gen'
+<% else -%>
+gem 'padrino-core', '<%= Padrino.version %>'
+gem 'padrino-gen', '<%= Padrino.version %>'
+<% end -%>
+<% else -%>
 # Padrino Stable Gem
 <% if options.dev? %># <% end %>gem 'padrino', '<%= Padrino.version %>'
 
@@ -30,3 +39,4 @@ gem 'rake'
 <% unless options.dev? %># <% end %>%w(core support gen helpers cache mailer admin).each do |g|
 <% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
 <% unless options.dev? %># <% end %>end
+<% end -%>
