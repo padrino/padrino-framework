@@ -309,6 +309,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         puts
       end
     end
+
+    task :seed => :environment do
+      missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
+      Padrino.require_dependencies(missing_model_features)
+      Rake::Task['db:seed'].invoke
+    end
   end
 
   def drop_database(config)
