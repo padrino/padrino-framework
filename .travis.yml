@@ -30,6 +30,7 @@ notifications:
 branches:
   only:
     - master
+    - 0.12
 services: mongodb
 matrix:
   include:
