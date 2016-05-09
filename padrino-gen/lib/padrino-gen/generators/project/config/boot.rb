@@ -35,7 +35,14 @@ Bundler.require(:default, RACK_ENV)
 # end
 
 ##
+# Require initializers before all other dependencies.
+# Dependencies from 'config' folder are NOT re-required on reload.
+#
+Padrino.dependency_paths.unshift Padrino.root('config/initializers/*.rb')
+
+##
 # Add your before (RE)load hooks here
+# These hooks are run before any dependencies are required.
 #
 Padrino.before_load do
 end
