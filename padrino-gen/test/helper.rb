@@ -92,7 +92,7 @@ class MiniTest::Spec
   # expects_initializer :test, "# Example"
   def expects_initializer(name, body,options={})
     #options.reverse_merge!(:root => "/tmp/sample_project")
-    path = File.join(options[:root],'lib',"#{name}_initializer.rb")
+    path = File.join(options[:root],'config/initializers',"#{name}.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
     include_text = "    register #{name.to_s.camelize}Initializer\n"
