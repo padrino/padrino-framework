@@ -88,7 +88,7 @@ desc "Run tests for all padrino stack gems"
 task :test do
   GEM_PATHS.each do |g|
     # Hardcode the 'cd' into the command and do not use Dir.chdir because this causes random tests to fail
-    sh "cd #{File.join(ROOT, g)} && RUBYOPT=W1 #{Gem.ruby} -S rake test"
+    sh "cd #{File.join(ROOT, g)} && #{Gem.ruby} -S rake test"
   end
 end
 
