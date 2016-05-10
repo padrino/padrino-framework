@@ -80,7 +80,7 @@ describe "SimpleReloader" do
       assert ok?
       last_body = body
       assert_equal 1, @app.filters[:before].size
-      assert_equal 1, @app.errors.size
+      assert_equal 0, @app.errors.reject{ |key, _| [404, Sinatra::NotFound].include? key }.size
       assert_equal 2, @app.filters[:after].size # app + content-type + padrino-flash
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
@@ -90,7 +90,7 @@ describe "SimpleReloader" do
       get "/rand"
       refute_equal last_body, body
       assert_equal 1, @app.filters[:before].size
-      assert_equal 1, @app.errors.size
+      assert_equal 0, @app.errors.reject{ |key, _| [404, Sinatra::NotFound].include? key }.size
       assert_equal 2, @app.filters[:after].size
       assert_equal 0, @app.middleware.size
       assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
