@@ -127,7 +127,7 @@ module Padrino
       #
       # @example
       #   retrieve_component_config(...)
-      #   # => { :mock => 'rr', :test => 'riot', ... }
+      #   # => { :mock => 'rr', :test => 'rspec', ... }
       #
       def retrieve_component_config(target)
         YAML.load_file(target)
@@ -631,7 +631,7 @@ WARNING
         #
         # @example
         #   available_choices_for :test
-        #   => [:shoulda, :bacon, :riot, :minitest]
+        #   => [:shoulda, :bacon, :minitest]
         #
         def available_choices_for(component)
           @available_choices[component] + [:none]

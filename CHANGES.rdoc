@@ -1,5 +1,9 @@
 = CHANGES
 
+== Edge
+
+- NEW Remove RightJS, Riot, Steak support (@ujifgc)
+
 == 0.13.2 (May 9th 2016)
 
 - FIX #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3) (@ujifgc)

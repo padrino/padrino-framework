@@ -109,7 +109,7 @@ module Padrino
 
           proc{|*args| args.map{|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
 
-          directory_name = [:rspec, :steak].include?(test_component.to_sym) ? "spec" : "test"
+          directory_name = [:rspec].include?(test_component.to_sym) ? "spec" : "test"
           base_path      = File.join(directory_name, "app")
           create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, :skip => true
           create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     :skip => true
