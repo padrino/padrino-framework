@@ -926,6 +926,10 @@ module Padrino
       end
 
       def dispatch!
+        unless @params
+          @params = indifferent_params(@request.params)
+          force_encoding(@params)
+        end
         invoke do
           static! if settings.static? && (request.get? || request.head?)
           route!
