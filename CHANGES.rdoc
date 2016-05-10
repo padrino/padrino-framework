@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.12.6
+== 0.12.6 (May 9th 2016)
 
 * FIX properly reload classes without instances (@ujifgc)
 * FIX do not pollute original Minitest::Benchmark (@ujifgc)
