@@ -14,6 +14,7 @@ describe "ObjectSpace" do
 
     it 'should be able to process a the class name given a block' do
       klasses = ObjectSpace.classes do |klass|
+        next unless klass.respond_to?(:name) # fix JRuby < 1.7.22
         if klass.name =~ /^Padrino::/
           klass
         end
