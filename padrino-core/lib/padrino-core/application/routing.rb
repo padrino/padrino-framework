@@ -579,6 +579,7 @@ module Padrino
       # controllers, parents, 'with' parameters, and other options.
       #
       def parse_route(path, options, verb)
+        path = path.dup if path.kind_of?(String)
         route_options = {}
 
         if options[:params] == true
