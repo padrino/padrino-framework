@@ -37,7 +37,7 @@ describe "ObjectSpace" do
 
       new_classes = ObjectSpace.new_classes(@snapshot)
 
-      assert_equal new_classes.size, 2
+      assert_equal new_classes.size, 3
       assert_equal new_classes.include?(OSTest), true
       assert_equal new_classes.include?(OSTestModule::B), true
     end
