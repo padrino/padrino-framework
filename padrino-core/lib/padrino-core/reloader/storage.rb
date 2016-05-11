@@ -57,7 +57,7 @@ module Padrino
       def object_classes
         klasses = Set.new
 
-        ObjectSpace.each_object(::Module).each do |klass|
+        ObjectSpace.each_object(::Class).each do |klass|
           if block_given?
             if filtered_class = yield(klass)
               klasses << filtered_class

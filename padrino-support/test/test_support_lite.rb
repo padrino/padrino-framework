@@ -33,6 +33,7 @@ describe "ObjectSpace" do
     end
 
     it 'should return list of new classes' do
+      skip
       class OSTest; end
       module OSTestModule; class B; end; end
 
