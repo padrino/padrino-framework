@@ -20,16 +20,14 @@ module Padrino
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
           app.class_eval do
+            class << self
+              attr_accessor :access_control
+            end
             def access_control
-              @@access_control
-            end
-            def self.access_control
-              @@access_control
-            end
-            def self.access_control=(control)
-              @@access_control = control
+              self.class.access_control
             end
           end
+
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
         end
         alias :included :registered
