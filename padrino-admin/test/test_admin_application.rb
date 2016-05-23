@@ -268,4 +268,21 @@ describe "AdminApplication" do
     get "/modules"
     assert_equal "admin => /admin", body
   end
+
+  it 'should use different access control for different apps' do
+    app1 = Sinatra.new Padrino::Application do
+      register Padrino::Admin::AccessControl
+      access_control.roles_for :any do |role|
+        role.project_module :foo, "/foo"
+      end
+    end
+    app2 = Sinatra.new Padrino::Application do
+      register Padrino::Admin::AccessControl
+      access_control.roles_for :any do |role|
+        role.project_module :bar, "/bar"
+      end
+    end
+    assert_equal '/foo', app1.access_control.project_modules(:any).first.path
+    assert_equal '/bar', app2.access_control.project_modules(:any).first.path
+  end
 end
