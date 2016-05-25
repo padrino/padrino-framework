@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.12.7 (May 25th 2016)
+
+* FIX backport #1814 to be compatible with AS landmine method
+
 == 0.12.6 (May 9th 2016)
 
 * FIX properly reload classes without instances (@ujifgc)
