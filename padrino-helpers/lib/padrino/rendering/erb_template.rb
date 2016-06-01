@@ -1,6 +1,18 @@
 module Padrino
   module Rendering
     class SafeERB < ::ERB
+      class Compiler < ::ERB::Compiler
+        def add_insert_cmd(out, content)
+          out.push("@__in_ruby_literal = true")
+          super
+          out.push("@__in_ruby_literal = false")
+        end
+      end
+
+      def make_compiler(trim_mode)
+        Compiler.new(trim_mode)
+      end
+
       def set_eoutvar(compiler, eoutvar = '_erbout')
         compiler.put_cmd = "#{eoutvar}.safe_concat"
         compiler.insert_cmd = "#{eoutvar}.concat"

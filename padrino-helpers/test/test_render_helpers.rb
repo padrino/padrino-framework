@@ -216,7 +216,6 @@ describe "RenderHelpers" do
   describe 'rendering with helpers that use render' do
     %W{erb haml slim}.each do |engine|
       it "should work with #{engine}" do
-        skip
         visit "/double_dive_#{engine}"
         assert_have_selector '.outer .wrapper form .inner .core'
       end

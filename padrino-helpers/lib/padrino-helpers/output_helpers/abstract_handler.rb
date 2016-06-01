@@ -46,7 +46,7 @@ module Padrino
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
-        def concat_to_template(text="")
+        def concat_to_template(text="", context=nil)
           text
         end
 
