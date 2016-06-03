@@ -7,7 +7,7 @@ module Padrino
     # @api private
     module SafeBufferEnhancer
       def add_expr_literal(src, code)
-        src << " #{@bufvar}.concat((" << code << ').to_s);'
+        src << " @__in_ruby_literal = true; #{@bufvar}.concat((" << code << ').to_s); @__in_ruby_literal = false;'
       end
 
       def add_stmt(src, code)

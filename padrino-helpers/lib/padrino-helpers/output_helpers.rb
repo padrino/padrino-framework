@@ -80,7 +80,7 @@ module Padrino
       #
       def concat_content(text="")
         if handler = find_proper_handler
-          handler.concat_to_template(text)
+          handler.concat_to_template(text, binding)
         else
           text
         end
