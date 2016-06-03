@@ -75,8 +75,8 @@ module Padrino
       #   link_to('click me', '/dashboard', :method => :delete)
       #   # Generates <a href="/dashboard" data-method="delete" rel="nofollow">click me</a>
       #
-      #   link_to('click me', :class => 'blocky') do; end
-      #   # Generates <a class="blocky" href="#">click me</a>
+      #   link_to('/dashboard', :class => 'blocky') { 'click me' }
+      #   # Generates <a class="blocky" href="/dashboard">click me</a>
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
       # condition padrino return true/false if the request.path_info match the given url.
