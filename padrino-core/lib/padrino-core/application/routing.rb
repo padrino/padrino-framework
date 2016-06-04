@@ -539,7 +539,7 @@ module Padrino
           route.default_values = defaults if defaults
         end
         options.delete_if do |option, captures|
-          if route.significant_variable_names.include?(option)
+          if route.significant_variable_names.include?(option.to_s)
             route.capture[option] = Array(captures).first
             true
           end
@@ -983,7 +983,11 @@ module Padrino
         @route = request.route_obj = route
         captured_params = captures_from_params(params)
 
-        @params.merge!(params) { |key, original, newval| original } unless params.empty?
+        # Should not overwrite params by given query
+        @params.merge!(params) do |key, original, newval|
+          @route.significant_variable_names.include?(key) ? newval : original
+        end unless params.empty?
+
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 

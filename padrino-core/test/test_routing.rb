@@ -2403,4 +2403,14 @@ describe "Routing" do
     get '/update/1?product[title]=test'
     assert_equal 'test==test', body
   end
+
+  it "prevent overwriting params by given query" do
+    mock_app do
+      get '/prohibit/:id' do
+        params[:id]
+      end
+    end
+    get '/prohibit/123?id=456'
+    assert_equal '123', body
+  end
 end
