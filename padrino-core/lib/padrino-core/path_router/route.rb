@@ -63,9 +63,9 @@ module Padrino
       def significant_variable_names
         @significant_variable_names ||=
           if @path.is_a?(String)
-            @path.scan(SIGNIFICANT_VARIABLES_REGEX).map{ |p| p.last.to_sym }
+            @path.scan(SIGNIFICANT_VARIABLES_REGEX).map(&:last)
           elsif @path.is_a?(Regexp) and @path.respond_to?(:named_captures)
-            @path.named_captures.keys.map(&:to_sym)
+            @path.named_captures.keys
           else
             []
           end
