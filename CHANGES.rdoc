@@ -3,6 +3,7 @@
 == Edge
 
 - NEW Remove RightJS, Riot, Steak support (@ujifgc)
+- NEW Allow shortened mailer render calls with default mailer and message names (@ujifgc)
 
 == 0.13.2 (May 9th 2016)
 

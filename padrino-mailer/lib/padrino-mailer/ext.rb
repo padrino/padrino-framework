@@ -6,6 +6,7 @@ module Mail # @private
     include Padrino::Rendering if defined?(Padrino::Rendering)
     include Padrino::Helpers::RenderHelpers if defined? Padrino::Helpers::RenderHelpers
     attr_reader :template_cache
+    attr_accessor :mailer_name, :message_name
 
     def initialize_with_app(*args, &block)
       @template_cache = Tilt::Cache.new
@@ -253,9 +254,16 @@ module Mail # @private
     ##
     # Defines the render for the mailer utilizing the padrino 'rendering' module
     #
-    def render(engine, data=nil, options={}, locals={}, &block)
+    def render(engine=nil, data=nil, options={}, locals={}, &block)
       locals = @_locals if options[:locals].blank? && locals.blank?
       @template_cache.clear if settings.reload_templates?
+
+      engine ||= message_name
+
+      if mailer_name
+        settings.views += "/#{mailer_name}"
+        engine = engine.to_s.sub(%r{^#{mailer_name}/}, '')
+      end
 
       provides.each do |format|
         part do |p|

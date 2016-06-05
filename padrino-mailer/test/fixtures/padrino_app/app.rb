@@ -53,6 +53,15 @@ class PadrinoApp < Padrino::Application
       via     :test
       render  'default_mailer_name'
     end
+
+    message :default_mailer_email_name do |name|
+      subject "Welcome Helper!"
+      to      'jim@fake.com'
+      from    'noreply@custom.com'
+      locals  :name => name
+      via     :test
+      render
+    end
   end
 
   mailer :nonexistant do
@@ -93,6 +102,11 @@ class PadrinoApp < Padrino::Application
 
   post "/deliver/default_mailer_name" do
     result = deliver(:sample, :default_mailer_name, "Jim")
+    result ? "mail delivered" : 'mail not delivered'
+  end
+
+  post "/deliver/default_mailer_email_name" do
+    result = deliver(:sample, :default_mailer_email_name, "Jim")
     result ? "mail delivered" : 'mail not delivered'
   end
 end
