@@ -120,11 +120,17 @@ describe "PadrinoMailer" do
     end
 
     it 'should be able to render default mailer names' do
-      skip
       post '/deliver/default_mailer_name'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
                         :content_type => 'text/plain', :body => "dmn")
+    end
+
+    it 'should be able to render default mailer email names' do
+      post '/deliver/default_mailer_email_name'
+      assert_equal 'mail delivered', body
+      assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
+                        :content_type => 'text/plain', :body => "dmen")
     end
   end
 end
