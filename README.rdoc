@@ -73,7 +73,7 @@ For information on how to use a specific gem in isolation within an existing Sin
 Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset
 of existing sinatra functionality!
 
-First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
+First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started/overview/] guide
 to learn more about how Sinatra and Padrino work together.
 
 Best way to learn more about building Padrino applications is to read following resources:
