@@ -750,4 +750,14 @@ describe "Rendering" do
       assert_equal "application/xml;charset=utf-8", response['Content-Type']
     end
   end
+
+  describe 'rendering with helpers that use render' do
+    %W{erb haml slim}.each do |engine|
+      it "should work with #{engine}" do
+        @app = RenderDemo
+        visit "/double_dive_#{engine}"
+        assert_have_selector '.outer .wrapper form .inner .core'
+      end
+    end
+  end
 end
