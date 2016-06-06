@@ -41,6 +41,7 @@ module Padrino
       #   end
       #
       def registered(app)
+        require 'padrino/rendering'
         app.register Padrino::Rendering
         app.set :default_builder, 'StandardFormBuilder' unless app.respond_to?(:default_builder)
         included(app)
