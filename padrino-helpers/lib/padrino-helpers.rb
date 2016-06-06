@@ -1,6 +1,8 @@
 require 'padrino-support'
 require 'i18n'
 require 'enumerator'
+
+# remove at 0.14
 require 'padrino/rendering'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
@@ -36,6 +38,7 @@ module Padrino
       #   end
       #
       def registered(app)
+        require 'padrino/rendering'
         app.register Padrino::Rendering
         app.set :default_builder, 'StandardFormBuilder' unless app.respond_to?(:default_builder)
         included(app)

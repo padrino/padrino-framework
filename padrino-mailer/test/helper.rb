@@ -6,6 +6,7 @@ require 'minitest/pride'
 require 'rack/test'
 require 'padrino-core'
 require 'padrino-helpers'
+require 'padrino/rendering'
 require 'padrino-mailer/ext'
 require 'padrino-mailer'
 

@@ -7,6 +7,7 @@ require 'rack/test'
 require 'webrat'
 require 'builder'
 require 'padrino-helpers'
+require 'padrino/rendering'
 require 'tilt/liquid'
 require 'tilt/builder'
 
