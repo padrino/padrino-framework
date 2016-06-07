@@ -212,4 +212,46 @@ describe "RenderHelpers" do
       assert_have_selector 'b', :content => 'c'
     end
   end
+
+  describe 'standalone partial rendering' do
+    it 'should properly render without Sinatra::Base or Padrino::Application' do
+      class Standalone
+        include Padrino::Helpers::RenderHelpers
+      end
+      locals = { :user => OpenStruct.new(:name => 'Joe') }
+      result = Standalone.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user'), :engine => :haml, :locals => locals)
+      assert_equal '<h1>User name is Joe</h1>', result.chomp
+    end
+
+    it 'should pass class context to renderer' do
+      class Standalone1
+        include Padrino::Helpers::RenderHelpers
+        def user
+          OpenStruct.new(:name => 'Jane')
+        end
+      end
+
+      result = Standalone1.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user.haml'))
+      assert_equal '<h1>User name is Jane</h1>', result.chomp
+    end
+
+    it 'should fail on missing template' do
+      class Standalone2
+        include Padrino::Helpers::RenderHelpers
+      end
+      assert_raises RuntimeError do
+        result = Standalone2.new.partial('none')
+      end
+    end
+
+    it 'should not override existing render methods' do
+      class Standalone3
+        def render(*)
+          'existing'
+        end
+        include Padrino::Helpers::RenderHelpers
+      end
+      assert_equal 'existing', Standalone3.new.partial('none')
+    end
+  end
 end
