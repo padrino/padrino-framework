@@ -92,7 +92,7 @@ module Padrino
       #
       def form_tag(url, options={}, &block)
         options = {
-          :action => url,
+          :action => escape_link(url),
           :protect_from_csrf => is_protected_from_csrf?,
           'accept-charset' => 'UTF-8'
         }.update(options)

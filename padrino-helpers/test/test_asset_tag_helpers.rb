@@ -76,6 +76,11 @@ describe "AssetTagHelpers" do
       assert_match "&lt;&amp;&gt;", actual_link
     end
 
+    it 'should escape the link href' do
+      actual_link = link_to('Sign up', '/register new%20user')
+      assert_has_tag('a', :href => '/register%20new%20user') { actual_link }
+    end
+
     it 'should not escape image_tag' do
       actual_link = link_to(image_tag("/my/fancy/image.png"), :class => 'first', :id => 'binky')
       assert_has_tag('img', :src => "/my/fancy/image.png") { actual_link }

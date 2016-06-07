@@ -235,6 +235,19 @@ module Padrino
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
+      ##
+      # Returns an escaped document link.
+      #
+      # @example
+      #   escape_link('http://example.com/spaced link')
+      #   # => 'http://example.com/spaced%20link'
+      #   escape_link('already%20partially escaped')
+      #   # => 'already%20partially%20escaped'
+      #
+      def escape_link(link)
+        link.gsub(' ', '%20')
+      end
+
       private
 
       ##
