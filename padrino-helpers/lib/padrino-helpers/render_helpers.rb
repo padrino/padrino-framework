@@ -34,7 +34,7 @@ module Padrino
         options = { :locals => {}, :layout => false }.update(options)
         explicit_engine = options.delete(:engine)
 
-        path,_,name = template.to_s.rpartition(File::SEPARATOR)
+        path, name = File.split(template.to_s)
         template_path = File.join(path,"_#{name}").to_sym
         item_name = name.partition('.').first.to_sym
 
@@ -58,6 +58,27 @@ module Padrino
         end
       end
       alias :render_partial :partial
+
+      def self.included(base)
+        unless base.instance_methods.include?(:render) || base.private_instance_methods.include?(:render)
+          base.class_eval do
+            fail "gem 'tilt' is required" unless defined?(::Tilt)
+
+            def render(engine, file=nil, options={}, locals=nil, &block)
+              locals ||= options[:locals] || {}
+              engine, file = file, engine if file.nil?
+              template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
+              fail "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
+              unless File.file?(file.to_s)
+                engine_extensions = ::Tilt.default_mapping.extensions_for(template_engine)
+                file = Dir.glob("#{file}.{#{engine_extensions.join(',')}}").first || fail("Template '#{file}' not found")
+              end
+              template = template_engine.new(file.to_s, options)
+              template.render(options[:scope] || self, locals, &block)
+            end
+          end
+        end
+      end
     end
   end
 end
