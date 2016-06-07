@@ -85,7 +85,7 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
-        options = { :href => href || '#' }.update(options)
+        options = { :href => href ? escape_link(href) : '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -315,7 +315,7 @@ module Padrino
       #
       def asset_path(kind, source = nil)
         kind, source = source, kind if source.nil?
-        source = asset_normalize_extension(kind, URI.escape(source.to_s))
+        source = asset_normalize_extension(kind, escape_link(source.to_s))
         return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\//
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
