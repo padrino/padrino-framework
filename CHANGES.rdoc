@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.12.8 (June 8th 2016)
+
+* FIX delegate padrino and padrino-gen to bundler binstubs
+
 == 0.12.7 (May 25th 2016)
 
 * FIX backport #1814 to be compatible with AS landmine method
