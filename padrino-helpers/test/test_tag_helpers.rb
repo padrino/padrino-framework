@@ -18,6 +18,8 @@ describe "TagHelpers" do
 
     it 'should support selected attribute by using "selected" if true' do
       actual_html = tag(:option, :selected => true)
+      # fix nokogiri 1.6.8 on jRuby
+      actual_html = content_tag(:select, actual_html)
       assert_has_tag('option', :selected => 'selected') { actual_html }
     end
 
