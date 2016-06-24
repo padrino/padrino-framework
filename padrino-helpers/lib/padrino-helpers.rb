@@ -2,6 +2,8 @@ require 'padrino-support'
 require 'i18n'
 require 'enumerator'
 require 'padrino/rendering'
+require 'active_support/core_ext/object/with_options' # with_options
+
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]
