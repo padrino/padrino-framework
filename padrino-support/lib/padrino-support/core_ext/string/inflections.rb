@@ -99,8 +99,14 @@ class String
   ##
   # Capitalizes the first word, turns underscores into spaces, and strips a trailing '_id' if present.
   #
-  def humanize(options = {})
-    ActiveSupport::Inflector.humanize(self, options)
+  if ActiveSupport::Inflector.method(:humanize).arity == 1
+    def humanize
+      ActiveSupport::Inflector.humanize(self)
+    end
+  else
+    def humanize(options = {})
+      ActiveSupport::Inflector.humanize(self, options)
+    end
   end
 
   ##

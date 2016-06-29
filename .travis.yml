@@ -38,6 +38,8 @@ matrix:
       env: SINATRA_EDGE=true
     - rvm: 2.1
       env: STDLIB_ERB=true
+    - rvm: 2.1
+      env: AS_VERSION=3.2.22.2
   allow_failures:
     - rvm: rbx-2
     - env: SINATRA_EDGE=true
