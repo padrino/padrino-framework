@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  s.add_dependency("activesupport", [">= 3.1", "< 5.0"])
+  s.add_dependency("activesupport", ">= 3.1")
 end

@@ -31,6 +31,6 @@ Gem::Specification.new do |s|
   end
   s.add_dependency("mustermann19")
   s.add_dependency("thor", "~> 0.18")
-  s.add_dependency("activesupport", [">= 3.1", "< 5.0"])
+  s.add_dependency("activesupport", ">= 3.1")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end
