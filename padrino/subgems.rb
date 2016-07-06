@@ -4,6 +4,6 @@ performance_gemspec = ::Gem::Specification.load(File.expand_path(File.dirname(__
 PADRINO_SUBGEMS ||= Hash[padrino_gemspec.dependencies.map{ |gem| [gem.name, gem.requirement.to_s] }]
 
 PADRINO_GEMS ||= PADRINO_SUBGEMS.merge(
-  'padrino-performance' => performance_gemspec.version.to_s,
   'padrino' => padrino_gemspec.version.to_s,
+  'padrino-performance' => performance_gemspec.version.to_s,
 )
