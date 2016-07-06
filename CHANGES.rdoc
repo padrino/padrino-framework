@@ -2,9 +2,17 @@
 
 == Edge
 
-- NEW Remove RightJS, Riot, Steak support (@ujifgc)
-- NEW Allow shortened mailer render calls with default mailer and message names (@ujifgc)
-- FIX delegate padrino and padrino-gen to bundler binstubs
+- FIX #1785 Nested forms and helpers with ERB and Erubis (@ujifgc)
+- FIX #1847 Shoulda on modern rubies
+- NEW #1851 Remove RightJS, Riot, Steak support (@ujifgc)
+- FIX #1872 Implement using partials without Sinatra (@ujifgc)
+- NEW #1906 Allow shortened mailer render calls with default mailer and message names (@ujifgc)
+- FIX #2013 Delegate padrino and padrino-gen to bundler binstubs (@ujifgc)
+- FIX #2016 Escape urls in link_to and form_tag (@ujifgc)
+- FIX #2042 Do not override access control object when registered in multiple apps (@nxs6)
+- FIX #2045 Prevent overwriting params by given query (@namusyaka)
+- NEW #2050 Update Moneta to 0.8.0 (@basex)
+- FIX #2052 String#humanize compatibility with AS ~3.2
 
 == 0.13.2 (May 9th 2016)
 
