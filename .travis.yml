@@ -6,11 +6,11 @@ before_install:
 install:
   - bundle update
 rvm:
-  - 1.9
-  - 2.0
-  - 2.1
-  - 2.2
-  - 2.3
+  - 1.9.3
+  - 2.0.0
+  - 2.1.5
+  - 2.2.2
+  - 2.3.1
   - rbx-2
   - jruby-9.0.5.0
   - ruby-head
@@ -34,11 +34,11 @@ branches:
 services: mongodb
 matrix:
   include:
-    - rvm: 2.2
+    - rvm: 2.2.2
       env: SINATRA_EDGE=true
-    - rvm: 2.1
+    - rvm: 2.1.5
       env: STDLIB_ERB=true
-    - rvm: 2.1
+    - rvm: 2.1.5
       env: AS_VERSION=3.2.22.2
   allow_failures:
     - rvm: rbx-2
