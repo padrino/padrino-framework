@@ -2,7 +2,6 @@
 require 'rubygems'  unless defined?(Gem)
 require 'fileutils' unless defined?(FileUtils)
 require 'rake'
-require 'yard'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
 ROOT     = File.expand_path(File.dirname(__FILE__))
@@ -112,6 +111,7 @@ task :default => :test
 
 desc "Generate documentation for the Padrino framework"
 task :doc do
+  require 'yard'
   YARD::CLI::Yardoc.new.run
 end
 
