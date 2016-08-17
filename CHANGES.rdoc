@@ -1,6 +1,6 @@
 = CHANGES
 
-== Edge
+== 0.13.3 (August 17th 2016)
 
 - FIX #1785 Nested forms and helpers with ERB and Erubis (@ujifgc)
 - FIX #1847 Shoulda on modern rubies
@@ -14,6 +14,7 @@
 - NEW #2050 Update Moneta to 0.8.0 (@basex)
 - FIX #2052 String#humanize compatibility with AS ~3.2
 - NEW #2056 Allow Pry as Padrino console shell
+- FIX #2066 fix reloader with native jruby classes
 
 == 0.13.2 (May 9th 2016)
 
