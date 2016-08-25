@@ -10,6 +10,11 @@ else
   end
 end
 
+if ENV["SINATRA_VERSION"]
+  puts "=> Using Sinatra version #{ENV['SINATRA_VERSION']}"
+  gem "sinatra", "~> #{ENV['SINATRA_VERSION']}"
+end
+
 group :db do
   gem "sequel"
   gem "dm-core",           ">=1.2"
