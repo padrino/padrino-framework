@@ -34,8 +34,8 @@ module Padrino
         options = { :locals => {}, :layout => false }.update(options)
         explicit_engine = options.delete(:engine)
 
-        path, name = File.split(template.to_s)
-        template_path = File.join(path,"_#{name}").to_sym
+        path, _, name = template.to_s.rpartition(File::SEPARATOR)
+        template_path = path.empty? ? :"_#{name}" : :"#{path}#{File::SEPARATOR}_#{name}"
         item_name = name.partition('.').first.to_sym
 
         items, counter = if options[:collection].respond_to?(:inject)
