@@ -253,5 +253,15 @@ describe "RenderHelpers" do
       end
       assert_equal 'existing', Standalone3.new.partial('none')
     end
+
+    it 'should not add "./" to partial template name' do
+      class Standalone4
+        def render(_, file, *)
+          file.to_s
+        end
+        include Padrino::Helpers::RenderHelpers
+      end
+      assert_equal '_none', Standalone4.new.partial('none')
+    end
   end
 end
