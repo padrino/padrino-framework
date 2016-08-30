@@ -12,6 +12,10 @@ Bundler.require(:default, RACK_ENV)
 # Padrino::Logger::Config[:development][:log_level]  = :devel
 # Padrino::Logger::Config[:development][:log_static] = true
 #
+# ## Configure Ruby to allow requiring features from your lib folder
+#
+# $LOAD_PATH.unshift Padrino.root('lib')
+#
 # ## Enable logging of source location
 #
 # Padrino::Logger::Config[:development][:source_location] = true
