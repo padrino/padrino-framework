@@ -260,8 +260,8 @@ module Mail # @private
 
       engine ||= message_name
 
-      if mailer_name
-        settings.views += "/#{mailer_name}"
+      if mailer_name && !engine.to_s.index('/')
+        settings.views += "/#{mailer_name}" 
         engine = engine.to_s.sub(%r{^#{mailer_name}/}, '')
       end
 
