@@ -88,6 +88,11 @@ describe "PadrinoMailer" do
                         :subject => 'Happy anniversary!', :body => "<p>Yay Joey &amp; Charlotte!</p>\n<p>You have been married 16 years</p>")
     end
 
+    it 'should be able to deliver emails with views in custom-named folders' do
+      post '/deliver/external'
+      assert_equal 'mail delivered', body
+    end
+
     it 'should be able to deliver a basic email using app settings' do
       @app.email(:to => 'john@apple.com', :from => 'joe@smith.com',
                  :subject => 'Test Email', :body => 'Test Body',
