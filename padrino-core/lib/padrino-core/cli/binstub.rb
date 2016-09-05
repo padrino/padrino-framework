@@ -5,7 +5,7 @@ module Padrino
   def self.replace_with_binstub(executable)
     begin
       return if Bundler.definition.missing_specs.empty?
-    rescue NameError, NoMethodError
+    rescue NameError, NoMethodError, Bundler::GemfileNotFound
     end
 
     project_root = Dir.pwd
