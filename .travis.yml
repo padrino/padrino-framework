@@ -1,14 +1,18 @@
-lang: ruby
-before_install: gem install bundler --pre
+language: ruby
+sudo: false
+cache: bundler
+before_install:
+  - gem install bundler
 install:
-  - gem update --system
   - bundle update
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1.1
+  - 2.1
+  - 2.2.2
+  - 2.3.1
   - rbx-2
-  - jruby
+  - jruby-9.1.4.0
   - ruby-head
   - jruby-head
 notifications:
@@ -30,10 +34,17 @@ branches:
 services: mongodb
 matrix:
   include:
-    - rvm: 2.1.1
+    - rvm: 2.2.2
       env: SINATRA_EDGE=true
+    - rvm: 2.1
+      env: STDLIB_ERB=true
+    - rvm: 2.1
+      env: AS_VERSION=3.2
+    - rvm: jruby
+      env: AS_VERSION=4.2
   allow_failures:
-    - rvm: 2.1.1
-      env: SINATRA_EDGE=true
+    - rvm: jruby-9.1.4.0
+    - rvm: rbx-2
+    - env: SINATRA_EDGE=true
     - rvm: ruby-head
     - rvm: jruby-head
