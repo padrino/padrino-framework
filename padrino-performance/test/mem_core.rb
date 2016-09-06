@@ -5,7 +5,6 @@ require 'padrino-core'
 require 'minitest/autorun'
 require 'minitest/benchmark'
 require 'rack/test'
-require 'memory_profiler'
 
 module MockBenchmark
   include Rack::Test::Methods
@@ -18,12 +17,8 @@ module MockBenchmark
     def run(*)
       puts 'Running ' + self.name
       puts `pmap -x #{$$} | tail -1`
-      report = MemoryProfiler.report do
-        super
-      end
+      super
       puts `pmap -x #{$$} | tail -1`
-      #puts `pmap -x #{$$}`
-      report.pretty_print
     end
   end
 

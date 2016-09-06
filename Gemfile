@@ -44,7 +44,6 @@ group :development do
   end
   gem "mocha",    ">= 0.10.0"
   gem "minitest", ">= 4.0"
-  gem "memory_profiler"
 end
 
 %w[
