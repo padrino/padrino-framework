@@ -135,7 +135,7 @@ module Padrino
 
           content = {
             :body         => @_response_buffer,
-            :content_type => @_content_type
+            :content_type => response.content_type
           }
 
           settings.cache.store(route_cache_key, content, :expires => cache_expires)

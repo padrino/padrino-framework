@@ -506,4 +506,19 @@ describe "PadrinoCache" do
     2.times { get "/object" }
     assert_equal "1", body
   end
+
+  it 'should cache full mime type of content_type' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/foo', :cache => true do
+        content_type :json, :charset => 'utf-8'
+        '{}'
+      end
+    end
+    get "/foo"
+    assert_equal 'application/json;charset=utf-8', last_response.content_type
+    get "/foo"
+    assert_equal 'application/json;charset=utf-8', last_response.content_type
+  end
 end
