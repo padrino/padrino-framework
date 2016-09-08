@@ -288,6 +288,7 @@ describe "Mounter" do
     end
 
     it "should not load dependency files if app's root isn't started with Padrino.root" do
+      Object.send(:remove_const, :FakeLib)
       path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/app')
       fake_path = File.expand_path(File.dirname(__FILE__) + "/fixtures/apps/external_apps/fake_root")
       require path
