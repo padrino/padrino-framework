@@ -17,7 +17,6 @@ end
 
 group :db do
   gem "sequel"
-  gem "dm-core",           ">=1.2"
   gem "sqlite3", :platforms => [:mri, :rbx]
   gem "jdbc-sqlite3", "~> 3.7.2", :platform => :jruby
 end
