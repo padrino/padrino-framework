@@ -2,7 +2,6 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
-require 'webrat'
 require 'fakeweb'
 require 'thor/group'
 require 'padrino-gen'
@@ -28,13 +27,6 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
 end
 
 class MiniTest::Spec
-  include Webrat::Methods
-  include Webrat::Matchers
-
-  Webrat.configure do |config|
-    config.mode = :rack
-  end
-
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
@@ -104,13 +96,5 @@ class MiniTest::Spec
   def expects_rake(command,options={})
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
-  end
-end
-
-module Webrat
-  module Logging
-    def logger # # @private
-      @logger = nil
-    end
   end
 end
