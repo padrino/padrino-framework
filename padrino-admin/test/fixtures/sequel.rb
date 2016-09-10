@@ -1,5 +1,6 @@
 require 'digest/sha1'
 require 'sequel'
+require 'sequel/extensions/migration'
 
 Sequel::Model.plugin(:schema)
 
@@ -12,7 +13,6 @@ Sequel::Model.db =
     Sequel.sqlite(":memory:")
   end
 
-Sequel.extension :migration
 migration = Sequel.migration do
   up do
     create_table :accounts do
