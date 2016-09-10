@@ -31,7 +31,7 @@ group :development do
   gem "yard",      ">= 0.7.2"
   gem "rack-test", "~> 0.6.3"
   gem "fakeweb",   ">= 1.2.8"
-  gem "webrat",    ">= 0.5.1"
+  gem "oga",       "~> 2.5"
   gem "haml",      ">= 4.0.5"
   gem "liquid",    ">= 2.1.2"
   if ENV['STDLIB_ERB']
