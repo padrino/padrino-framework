@@ -755,8 +755,8 @@ describe "Rendering" do
     %W{erb haml slim}.each do |engine|
       it "should work with #{engine}" do
         @app = RenderDemo
-        visit "/double_dive_#{engine}"
-        assert_have_selector '.outer .wrapper form .inner .core'
+        get "/double_dive_#{engine}"
+        assert_response_has_tag '.outer .wrapper form .inner .core'
       end
     end
   end
