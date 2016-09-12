@@ -6,15 +6,15 @@ before_install:
 install:
   - bundle update
 rvm:
+  - rbx-2
+  - jruby
+  - jruby-head
   - 1.9.3
   - 2.0.0
   - 2.1
   - 2.2.2
   - 2.3.1
-  - rbx-2
-  - jruby-9.1.4.0
   - ruby-head
-  - jruby-head
 notifications:
   irc: 'irc.freenode.org#padrino'
   recipients:
@@ -40,8 +40,6 @@ matrix:
       env: STDLIB_ERB=true
     - rvm: 2.1
       env: AS_VERSION=3.2
-    - rvm: jruby
-      env: AS_VERSION=4.2
   allow_failures:
     - rvm: jruby-9.1.4.0
     - rvm: rbx-2
