@@ -49,7 +49,7 @@ module Padrino
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
-            say "<= Your are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use -e haml or -e erb or -e slim", :yellow
+            say "<= You are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use #{supported_ext.map { |ext| ext.prepend('-e ') }.join(' or ')}", :yellow
             raise SystemExit
           end
 
