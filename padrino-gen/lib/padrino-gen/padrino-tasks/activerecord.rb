@@ -246,7 +246,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           unless search_path.blank?
             search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
           end
-          `pg_dump -i -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
+          `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
           raise "Error dumping database" if $?.exitstatus == 1
         when "sqlite", "sqlite3"
           dbfile = config[:database] || config[:dbfile]
