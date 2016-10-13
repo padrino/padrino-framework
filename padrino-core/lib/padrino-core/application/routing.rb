@@ -214,7 +214,7 @@ module Padrino
       #   before :agent => /IE/ do; ...; end
       #   # => match +HTTP_USER_AGENT+ containing +IE+
       #
-      # @see http://www.padrinorb.com/guides/controllers#route-filters
+      # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
