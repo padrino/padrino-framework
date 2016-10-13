@@ -53,7 +53,7 @@ to the template through the use of <tt>concat_content</tt>. Note have been built
 templates using the same syntax.
 
 For more information on using output helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/output-helpers/].
 
 === Tag Helpers
 
@@ -74,7 +74,7 @@ The input_tag is used to build tags that are related to accepting input from the
 Note that all of these accept html options and result in returning a string containing html tags.
 
 For more information on using tag helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/tag-helpers/].
 
 === Asset Helpers
 
@@ -95,7 +95,7 @@ simple view template:
     %p= image_tag 'padrino.png', :width => '35', :class => 'logo'
 
 For more information on using asset helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/asset-helpers/].
 
 === Form Helpers
 
@@ -120,7 +120,7 @@ example of constructing a non-object form would be:
       = submit_tag "Remove"
 
 For more information on using form helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/form-helpers/].
 
 === FormBuilders
 
@@ -153,7 +153,7 @@ A form_for using these basic fields might look like:
     %p
       = f.submit "Create", :class => 'button'
 
-Forms can also accept nested attributes using `fields_for` within the form builder in recent releases. Check out the guide for {Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers] to learn more about nested forms.
+Forms can also accept nested attributes using `fields_for` within the form builder in recent releases. Check out the guide for {Padrino Helpers}[http://padrinorb.com/guides/application-helpers/form-builders/] to learn more about nested forms.
 
 There is also an additional StandardFormBuilder which builds on the abstract fields that can be used within a form_for.
 
@@ -179,7 +179,7 @@ and would generate this html (with each input contained in a paragraph and conta
 You can also easily build your own FormBuilder which allows for customized fields and behavior.
 
 For more information on using the Padrino form builders, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/standard-form-builder/].
 
 === Format Helpers
 
@@ -207,7 +207,7 @@ Format helpers also includes a number of useful text manipulation functions such
 These helpers can be invoked from any route or view within your application.
 
 For more information on using the format helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/format-helpers/].
 
 === Render Helpers
 
@@ -232,7 +232,7 @@ Finally, we have the all-important partials support for rendering mini-templates
   partial 'photo/_item', :collection => @photos
 
 For more information on using the render and partial helpers, check out the guide for
-{Padrino Helpers}[http://www.padrinorb.com/guides/application-helpers].
+{Padrino Helpers}[http://padrinorb.com/guides/application-helpers/render-helpers/].
 
 == Copyright
 

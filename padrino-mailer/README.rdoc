@@ -98,7 +98,7 @@ Once the mailer definition has been completed and the template has been defined,
 And that will then deliver the email according the configured options. This is all you need to send basic emails.
 
 The mailer also supports the attachment of files and various other options. Be sure to check out the
-{Padrino Mailer}[http://www.padrinorb.com/guides/padrino-mailer] guide for more details on usage.
+{Padrino Mailer}[http://padrinorb.com/guides/features/padrino-mailer/] guide for more details on usage.
 
 == Copyright
 
