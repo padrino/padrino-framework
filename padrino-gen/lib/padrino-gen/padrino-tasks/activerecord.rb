@@ -44,7 +44,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           else
             begin
               # Create the SQLite database
-              Dir.mkdir File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
+              FileUtils.mkdir_p File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
               ActiveRecord::Base.establish_connection(config)
               ActiveRecord::Base.connection
             rescue StandardError => e
