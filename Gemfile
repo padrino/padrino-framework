@@ -4,10 +4,6 @@ source 'https://rubygems.org'
 
 if ENV["AS_VERSION"]
   gem 'activesupport', "~> #{ENV['AS_VERSION']}"
-else
-  if RUBY_VERSION < "2.2.2"
-    gem 'activesupport', "< 5.0.0", :group => :development
-  end
 end
 
 if ENV["SINATRA_VERSION"]
