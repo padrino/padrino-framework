@@ -1,5 +1,8 @@
 = CHANGES
 
+== 0.14.0.rc1 (2016-11-02)
+- NEW remove the requirement of ActiveSupport (export AS_VERSION=X.0 to put it back)
+
 == 0.13.3.3 (2016-11-02)
 - FIX #2075 cache actual content_type mime type
 - FIX #2081 remove -i option from pg_dump command (@dfens)
