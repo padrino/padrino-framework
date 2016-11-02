@@ -1,5 +1,19 @@
 = CHANGES
 
+== 0.13.3.3 (2016-11-02)
+- FIX #2075 cache actual content_type mime type
+- FIX #2081 remove -i option from pg_dump command (@dfens)
+- FIX #2083 be able to create sqlite's file to deep tree of subdirectories (@kkarakawa)
+- NEW dynamically list supported renderers (@jfredrickson)
+
+== 0.13.3.2 (2016-09-06)
+- FIX #2071 regression of #1906
+- FIX running padrino without Gemfile
+- NEW alias db:create for sequel adapter
+
+== 0.13.3.1 (2016-08-30)
+- NEW support usage of partials without view path
+
 == 0.13.3 (August 17th 2016)
 
 - FIX #1785 Nested forms and helpers with ERB and Erubis (@ujifgc)
