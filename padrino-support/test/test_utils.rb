@@ -107,7 +107,7 @@ describe 'Padrino::Utils.deep_dup' do
   end
 
   it 'should not double the frozen keys' do
-    hash = { Fixnum => 1 }
+    hash = { 'a'.freeze => 1 }
     dup = Padrino::Utils.deep_dup(hash)
     assert_equal 1, dup.keys.length
   end
