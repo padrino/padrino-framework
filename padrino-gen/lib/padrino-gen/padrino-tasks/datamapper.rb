@@ -50,7 +50,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
 
     desc "Create the database"
     task :create => :environment do
-      config = DataMapper.repository.adapter.options.symbolize_keys
+      config = Utils.symbolize_keys(DataMapper.repository.adapter.options)
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
 
@@ -67,7 +67,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
 
     desc "Drop the database (postgres and mysql only)"
     task :drop => :environment do
-      config = DataMapper.repository.adapter.options.symbolize_keys
+      config = Utils.symbolize_keys(DataMapper.repository.adapter.options)
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
 
