@@ -1,3 +1,5 @@
+require 'padrino-support'
+
 module Padrino
   module Cli
     module Adapter
