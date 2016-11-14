@@ -23,6 +23,7 @@ module Padrino
       end
       OutputHelpers.register(:erb, ErbHandler)
       OutputHelpers.register(:erubis, ErbHandler)
+      OutputHelpers.register(:erubi, ErbHandler)
     end
   end
 end

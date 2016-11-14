@@ -382,3 +382,12 @@ unless defined? Padrino::Rendering::SlimTemplate
     require 'padrino/rendering/slim_template'
   end
 end
+
+unless defined? Padrino::Rendering::ErubiTemplate
+  begin
+    require 'erubi'
+  rescue LoadError
+  else
+    require 'padrino/rendering/erubi_template'
+  end
+end
