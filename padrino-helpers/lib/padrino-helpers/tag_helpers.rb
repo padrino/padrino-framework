@@ -272,7 +272,7 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string.to_s.gsub(ESCAPE_REGEXP) { |char| ESCAPE_VALUES[char] }
+        string.to_s.gsub(ESCAPE_REGEXP, ESCAPE_VALUES)
       end
 
       ##
