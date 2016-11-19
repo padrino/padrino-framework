@@ -336,11 +336,8 @@ module Padrino
       def ensure_rendering_engine(engine)
         return true if settings.respond_to?(engine)
         return nil unless engine == :erb
-        require 'erb'
-      rescue LoadError
-      else
-        require 'padrino/rendering/erb_template'
-        settings.set :erb, Padrino::Rendering.engine_configurations[:erb]
+        require 'padrino/rendering/fast_safe_erb_template'
+        settings.set :erb, {}
       end
 
       def content_type_symbol(type)
