@@ -108,7 +108,7 @@ module Padrino
         end
 
         def submit(*args)
-          @template.submit_tag *args
+          @template.submit_tag(*args)
         end
 
         def image_submit(source, options={})

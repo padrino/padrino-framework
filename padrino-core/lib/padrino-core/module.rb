@@ -1,6 +1,6 @@
 module Padrino
   module Module
-    attr_accessor :root
+    attr_writer :root
 
     ##
     # Register this module as being loaded from a gem. This automatically

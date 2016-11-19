@@ -309,7 +309,7 @@ module Padrino
 
     @@mutex = Mutex.new
     def self.logger
-      @_logger || setup!
+      (@_logger ||= nil) || setup!
     end
 
     def self.logger=(logger)
