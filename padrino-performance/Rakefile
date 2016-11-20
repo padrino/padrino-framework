@@ -9,3 +9,15 @@ Rake::TestTask.new(:mem) do |test|
   test.libs << 'test'
   test.test_files = Dir['test/**/mem_*.rb']
 end
+
+desc "Measure memory footprint of some ERB engines"
+task :mem_erb do
+  %W(erubis fast_erubis erubi safe_erubi fast_safe_erb).each do |target|
+    puts "Running memory profiler on '#{target}'"
+    command = "TARGET=#{target} ruby bench/mem_erb.rb > mem_erb.#{target}.report.txt"
+    puts "Executing `#{command}`"
+    `#{command}`
+  end
+end
+
+task :default => :test
