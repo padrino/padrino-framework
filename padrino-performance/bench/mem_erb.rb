@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 require 'rubygems'
 require 'memory_profiler'
 require 'yaml'
@@ -37,8 +36,8 @@ MemoryProfiler.report do
     eval(erubi.src, context)
   when 'fast_safe_erb'
     require 'padrino/rendering/fast_safe_erb_engine'
-    fast_safe_erb = Padrino::Rendering::FastSafeErbEngine.new(template)
-    eval(fast_safe_erb.src, context)
+    fast_safe_erb_src = Padrino::Rendering::FastSafeErbEngine.compile(template)
+    eval(fast_safe_erb_src, context)
   end
   nil
 end.pretty_print

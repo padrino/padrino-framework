@@ -7,7 +7,7 @@ module Padrino
       def prepare; end
 
       def precompiled_template(locals)
-        FastSafeErbEngine.new(data).src
+        FastSafeErbEngine.compile(data)
       end
     end
   end

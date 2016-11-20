@@ -11,8 +11,6 @@ module Padrino
         string.to_s.gsub(ESCAPE_KEYS, ESCAPE_MAP)
       end
 
-      attr_reader :src
-
       PREAMBLE = "# frozen_string_literal: true
 __in_erb_template = true
 begin
@@ -28,7 +26,7 @@ end
 
       SCAN_REGEXP = /<%(={1,2}|-|%|\#)?(.*?)([-=])?%>([ \t]*\r?\n)?/m.freeze
 
-      def initialize(data)
+      def self.compile(data)
         compiled = PREAMBLE.dup
         buffer = String.new
 
@@ -57,10 +55,14 @@ end
           case indicator
           when '=' # <%=
             rspace = nil if tailch
-            buffer << "\#{\n    @__in_ruby_literal = true\n    result = (#{code})\n    @__in_ruby_literal = false\n    result.html_safe? ? result.to_s : Padrino::Rendering::FastSafeErbEngine.h(result)\n  }#{rspace}"
+#2.44            buffer << "\#{\n    @__in_ruby_literal = true\n    result = (#{code})\n    @__in_ruby_literal = false\n    result.html_safe? ? result.to_s : Padrino::Rendering::FastSafeErbEngine.h(result)\n  }#{rspace}"
+#2.18 !#1785vvvvvv
+            buffer << "\#{\n    result = (#{code})\n    result.html_safe? ? result.to_s : Padrino::Rendering::FastSafeErbEngine.h(result)\n  }#{rspace}"
           when '==' # <%==
             rspace = nil if tailch
-            buffer << "\#{\n    @__in_ruby_literal = true\n    result = (#{code})\n    @__in_ruby_literal = false\n    result.to_s\n  }#{rspace}"
+#2.44            buffer << "\#{\n    @__in_ruby_literal = true\n    result = (#{code})\n    @__in_ruby_literal = false\n    result.to_s\n  }#{rspace}"
+#2.18 !#1785vvvvvv
+            buffer << "\#{\n    (#{code}).to_s\n  }#{rspace}"
           when nil, '-' # <%, <%-
             unless buffer.empty?
               compiled << "  @_out_buf.safe_concat(%%Q`%s`)\n" % buffer
@@ -90,8 +92,6 @@ end
         compiled << "  @_out_buf.safe_concat(%%Q`%s`)\n" % buffer unless buffer.empty?
         compiled << "\n" unless compiled.end_with?("\n")
         compiled << POSTAMBLE
-
-        @src = compiled
       end
     end
   end
