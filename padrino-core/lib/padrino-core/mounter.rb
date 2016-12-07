@@ -129,6 +129,8 @@ module Padrino
     #   Array of routes.
     #
     def named_routes
+      return [] unless app_obj.respond_to?(:routes)
+
       app_obj.routes.map { |route|
         request_method = route.request_methods.first
         next if !route.name || request_method == 'HEAD'
