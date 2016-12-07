@@ -63,8 +63,8 @@ module Padrino
           end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
-          template 'templates/project_bin.tt', destination_root("bin/#{name}")
-          File.chmod(0755, destination_root("bin/#{name}"))
+          template 'templates/project_bin.tt', destination_root("exe/#{name}")
+          File.chmod(0755, destination_root("exe/#{name}"))
           if options.gem?
             template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
             template 'templates/gem/README.md.tt', destination_root('README.md')
