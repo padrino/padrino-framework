@@ -122,7 +122,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with MIGRATION_VERSION=x. Turn off output with VERBOSE=false."
-    task :migrate => :skeleton do
+    task :migrate => :environment do
       ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
       ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
       Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
@@ -130,7 +130,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     namespace :migrate do
       desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x.'
-      task :redo => :skeleton do
+      task :redo => :environment do
         if env_migration_version
           Rake::Task["ar:migrate:down"].invoke
           Rake::Task["ar:migrate:up"].invoke
@@ -144,17 +144,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
       desc 'Runs the "up" for a given MIGRATION_VERSION.'
-      task(:up => :skeleton){ migrate_as(:up) }
+      task(:up => :environment){ migrate_as(:up) }
 
       desc 'Runs the "down" for a given MIGRATION_VERSION.'
-      task(:down => :skeleton){ migrate_as(:down) }
+      task(:down => :environment){ migrate_as(:down) }
     end
 
     desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
-    task(:rollback => :skeleton){ move_as(:rollback) }
+    task(:rollback => :environment){ move_as(:rollback) }
 
     desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
-    task(:forward => :skeleton){ move_as(:forward) }
+    task(:forward => :environment){ move_as(:forward) }
 
     desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
     task :reset => [ 'ar:drop', 'ar:setup' ]
