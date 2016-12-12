@@ -432,7 +432,7 @@ WARNING
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
-        in_root { run 'bundle install' }
+        in_root { run 'bundle install --binstubs' }
       end
 
       ##
