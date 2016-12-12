@@ -20,7 +20,7 @@ describe "Core" do
     it 'should validate global helpers' do
       assert_equal :test, Padrino.env
       assert_match /\/test/, Padrino.root
-      refute_nil Padrino.version
+      assert Padrino.version
     end
 
     it 'should set correct utf-8 encoding' do

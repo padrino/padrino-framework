@@ -296,14 +296,14 @@ describe "PadrinoCache" do
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
-    assert_equal nil, @app.cache['/404']
+    assert_nil @app.cache['/404']
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status
-    assert_equal nil, @app.cache['/503']
+    assert_nil @app.cache['/503']
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status

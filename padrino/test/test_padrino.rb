@@ -3,10 +3,10 @@ require 'minitest/pride'
 
 describe "Padrino" do
   it "should be a metagem that requires subgems" do
-    assert_nil defined?(Padrino::Mailer)
-    assert_nil defined?(Padrino::Helpers)
+    refute defined?(Padrino::Mailer)
+    refute defined?(Padrino::Helpers)
     require File.expand_path('../../lib/padrino.rb', __FILE__)
-    refute_nil defined?(Padrino::Mailer)
-    refute_nil defined?(Padrino::Helpers)
+    assert defined?(Padrino::Mailer)
+    assert defined?(Padrino::Helpers)
   end
 end

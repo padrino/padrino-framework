@@ -79,7 +79,7 @@ describe "!NAME!" do
   end
 
   it "should return nil" do
-    assert_equal nil, helpers.foo
+    assert_nil helpers.foo
   end
 end
 TEST

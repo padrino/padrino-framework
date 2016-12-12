@@ -337,7 +337,7 @@ describe "Filters" do
   end
 
   it 'should catch exceptions in before filters' do
-    doodle = nil
+    doodle = ''
     mock_app do
       after do
         doodle = 'Been after'
@@ -355,7 +355,7 @@ describe "Filters" do
 
     get '/'
     assert_equal 'We broke before', body
-    assert_equal nil, doodle
+    assert_equal '', doodle
   end
 
   it 'should catch exceptions in after filters if no exceptions caught before' do
