@@ -21,7 +21,7 @@ cached based on request URL, with one cache entry per URL.
 This behavior is referred to as "page-level caching." If this strategy meets
 your needs, you can enable it very easily:
 
-  # Basic, page-level caching
+  # Page-level caching
   class SimpleApp < Padrino::Application
     register Padrino::Cache
     enable :caching
@@ -276,7 +276,7 @@ You can manage your cache from anywhere in your app:
 The Padrino cache constructor `Padrino::Cache.new` calls `Moneta.new` to create a cache instance. Please refer to the [Moneta documentation](http://rubydoc.info/gems/moneta) if you
 have special requirements, for example if you want to configure the marshalling mechanism or use a more exotic backend.
 
-==== Application Caching Options
+=== Application Caching Options
 
   set :cache, Padrino::Cache.new(:LRUHash)
   set :cache, Padrino::Cache.new(:Memcached)
