@@ -1,25 +1,25 @@
 if defined?(ActiveSupport::SafeBuffer)
-  SafeBuffer = ActiveSupport::SafeBuffer
+    SafeBuffer = ActiveSupport::SafeBuffer
 else
-  require 'padrino/safe_buffer'
+    require 'padrino/safe_buffer'
 
-  SafeBuffer = Padrino::SafeBuffer
+    SafeBuffer = Padrino::SafeBuffer
 
-  class String
-    def html_safe
-      SafeBuffer.new(self)
+    class String
+        def html_safe
+            SafeBuffer.new(self)
+        end
     end
-  end
 
-  class Object
-    def html_safe?
-      false
+    class Object
+        def html_safe?
+            false
+        end
     end
-  end
 
-  class Numeric
-    def html_safe?
-      true
+    class Numeric
+        def html_safe?
+            true
+        end
     end
-  end
 end

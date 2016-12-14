@@ -1,5 +1,5 @@
 class Parent
-  def family
-    'Danes'
-  end
+    def family
+        'Danes'
+    end
 end

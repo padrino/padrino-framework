@@ -1,2 +1,1 @@
-class MyKlass < OpenStruct
-end
+class MyKlass < OpenStruct; end

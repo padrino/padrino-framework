@@ -1,288 +1,286 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "AdminApplication" do
-
-  def setup
-    load_fixture 'sequel'
-  end
-
-  describe "session id setting" do
-    it "should provide it if it doesn't exist" do
-      mock_app do
-        register Padrino::Admin::AccessControl
-      end
-
-      assert_equal @app.session_id, "_padrino_#{File.basename(Padrino.root)}_#{@app.app_name}".to_sym
+describe 'AdminApplication' do
+    def setup
+        load_fixture 'sequel'
     end
 
-    # it "should preserve it if it already existed" do
-    #   Padrino.configure_apps { enable :sessions; set :session_id, "foo" }
+    describe 'session id setting' do
+        it "should provide it if it doesn't exist" do
+            mock_app do
+                register Padrino::Admin::AccessControl
+            end
 
-    #   mock_app do
-    #     register Padrino::Admin::AccessControl
-    #   end
+            assert_equal @app.session_id, "_padrino_#{File.basename(Padrino.root)}_#{@app.app_name}".to_sym
+        end
 
-    #   assert_equal @app.session_id, "foo"
-    # end
-  end
+        # it "should preserve it if it already existed" do
+        #   Padrino.configure_apps { enable :sessions; set :session_id, "foo" }
 
-  it 'should require correctly login' do
-    mock_app do
-      register Padrino::Admin::AccessControl
-      enable :sessions
+        #   mock_app do
+        #     register Padrino::Admin::AccessControl
+        #   end
 
-      # Do a simple mapping
-      access_control.roles_for :any do |role|
-        role.protect  "/foo"
-      end
-
-      get "/foo", :provides => [:html, :js] do
-        "foo"
-      end
-
-      get "/unauthenticated" do
-        "unauthenticated"
-      end
-
+        #   assert_equal @app.session_id, "foo"
+        # end
     end
 
-    get "/foo"
-    assert_equal "You don't have permission for this resource", body
+    it 'should require correctly login' do
+        mock_app do
+            register Padrino::Admin::AccessControl
+            enable :sessions
 
-    get "/unauthenticated"
-    assert_equal "unauthenticated", body
-  end
+            # Do a simple mapping
+            access_control.roles_for :any do |role|
+                role.protect '/foo'
+            end
 
-  it 'should set basic roles with store location and login page' do
-    mock_app do
-      set    :app_name, :basic_app
-      register Padrino::Admin::AccessControl
-      enable :store_location
-      enable :sessions
-      set    :login_page, "/login"
+            get '/foo', provides: [:html, :js] do
+                'foo'
+            end
 
-      access_control.roles_for :any do |role|
-        role.protect "/foo"
-      end
+            get '/unauthenticated' do
+                'unauthenticated'
+            end
+        end
 
-      # Prepare a basic page
-      get "/login" do
-        redirect_back_or_default("/foo") if logged_in?
-        set_current_account(Account.admin)
-        "login page"
-      end
+        get '/foo'
+        assert_equal "You don't have permission for this resource", body
 
-      get "/foo" do
-        "foo"
-      end
+        get '/unauthenticated'
+        assert_equal 'unauthenticated', body
     end
 
-    get "/foo"
-    follow_redirect!
-    assert_equal "login page", body
+    it 'should set basic roles with store location and login page' do
+        mock_app do
+            set :app_name, :basic_app
+            register Padrino::Admin::AccessControl
+            enable :store_location
+            enable :sessions
+            set    :login_page, '/login'
 
-    get "/foo"
-    assert_equal "foo", body
+            access_control.roles_for :any do |role|
+                role.protect '/foo'
+            end
 
-    get "/login"
-    follow_redirect!
-    assert_equal "foo", body
-  end
+            # Prepare a basic page
+            get '/login' do
+                redirect_back_or_default('/foo') if logged_in?
+                set_current_account(Account.admin)
+                'login page'
+            end
 
-  it 'should set advanced roles with store location and login page' do
-    mock_app do
-      register Padrino::Admin::AccessControl
-      enable :sessions
+            get '/foo' do
+                'foo'
+            end
+        end
 
-      access_control.roles_for :any do |role|
-        role.protect "/"
-        role.allow "/login"
-        role.allow "/any"
-      end
+        get '/foo'
+        follow_redirect!
+        assert_equal 'login page', body
 
-      access_control.roles_for :admin do |role|
-        role.project_module :settings, "/settings"
-      end
+        get '/foo'
+        assert_equal 'foo', body
 
-      access_control.roles_for :editor do |role|
-        role.project_module :posts, "/posts"
-      end
-
-      # Prepare a basic page
-      get "/login(/:role)?" do
-        set_current_account(Account.send(params[:role])) if params[:role]
-        "logged as #{params[:role] || "any"}"
-      end
-
-      get "/any"      do; "any";      end
-      get "/settings" do; "settings"; end
-      get "/posts"    do; "posts";    end
+        get '/login'
+        follow_redirect!
+        assert_equal 'foo', body
     end
 
-    assert @app.access_control.allowed?(Account.admin, "/login")
-    assert @app.access_control.allowed?(Account.admin, "/any")
-    assert @app.access_control.allowed?(Account.admin, "/settings")
-    assert ! @app.access_control.allowed?(Account.admin, "/posts")
+    it 'should set advanced roles with store location and login page' do
+        mock_app do
+            register Padrino::Admin::AccessControl
+            enable :sessions
 
-    assert @app.access_control.allowed?(Account.editor, "/login")
-    assert @app.access_control.allowed?(Account.editor, "/any")
-    assert ! @app.access_control.allowed?(Account.editor, "/settings")
-    assert @app.access_control.allowed?(Account.editor, "/posts")
+            access_control.roles_for :any do |role|
+                role.protect '/'
+                role.allow '/login'
+                role.allow '/any'
+            end
 
-    get "/login"
-    assert_equal "logged as any", body
+            access_control.roles_for :admin do |role|
+                role.project_module :settings, '/settings'
+            end
 
-    get "/any"
-    assert_equal "any", body
+            access_control.roles_for :editor do |role|
+                role.project_module :posts, '/posts'
+            end
 
-    get "/settings"
-    assert_equal "You don't have permission for this resource", body
+            # Prepare a basic page
+            get '/login(/:role)?' do
+                set_current_account(Account.send(params[:role])) if params[:role]
+                "logged as #{params[:role] || 'any'}"
+            end
 
-    get "/posts"
-    assert_equal "You don't have permission for this resource", body
+            get '/any'      do; 'any';      end
+            get '/settings' do; 'settings'; end
+            get '/posts'    do; 'posts';    end
+        end
 
-    get "/login/admin"
-    assert_equal "logged as admin", body
+        assert @app.access_control.allowed?(Account.admin, '/login')
+        assert @app.access_control.allowed?(Account.admin, '/any')
+        assert @app.access_control.allowed?(Account.admin, '/settings')
+        assert !@app.access_control.allowed?(Account.admin, '/posts')
 
-    get "/any"
-    assert_equal "any", body
+        assert @app.access_control.allowed?(Account.editor, '/login')
+        assert @app.access_control.allowed?(Account.editor, '/any')
+        assert !@app.access_control.allowed?(Account.editor, '/settings')
+        assert @app.access_control.allowed?(Account.editor, '/posts')
 
-    get "/settings"
-    assert_equal "settings", body
+        get '/login'
+        assert_equal 'logged as any', body
 
-    get "/posts"
-    assert_equal "You don't have permission for this resource", body
+        get '/any'
+        assert_equal 'any', body
 
-    get "/login/editor"
-    assert_equal "logged as editor", body
+        get '/settings'
+        assert_equal "You don't have permission for this resource", body
 
-    get "/any"
-    assert_equal "any", body
+        get '/posts'
+        assert_equal "You don't have permission for this resource", body
 
-    get "/settings"
-    assert_equal "You don't have permission for this resource", body
+        get '/login/admin'
+        assert_equal 'logged as admin', body
 
-    get "/posts"
-    assert_equal "posts", body
-  end
+        get '/any'
+        assert_equal 'any', body
 
-  it 'should emulate an ecommerce app' do
-    mock_app do
-      register Padrino::Admin::AccessControl
-      enable :sessions
+        get '/settings'
+        assert_equal 'settings', body
 
-      access_control.roles_for :any do |role|
-        role.protect "/cart"
-        role.allow "/cart/add"
-        role.allow "/cart/empty"
-      end
+        get '/posts'
+        assert_equal "You don't have permission for this resource", body
 
-      get "/login" do
-        set_current_account(Account.admin)
-        "Logged in"
-      end
+        get '/login/editor'
+        assert_equal 'logged as editor', body
 
-      get "/cart/checkout" do
-        "Checkout"
-      end
+        get '/any'
+        assert_equal 'any', body
 
-      get "/cart/add" do
-        "Product Added"
-      end
+        get '/settings'
+        assert_equal "You don't have permission for this resource", body
 
-      get "/cart/empty" do
-        "Cart Empty"
-      end
+        get '/posts'
+        assert_equal 'posts', body
     end
 
-    get "/cart/checkout"
-    assert_equal "You don't have permission for this resource", body
+    it 'should emulate an ecommerce app' do
+        mock_app do
+            register Padrino::Admin::AccessControl
+            enable :sessions
 
-    get "/cart/add"
-    assert_equal "Product Added", body
+            access_control.roles_for :any do |role|
+                role.protect '/cart'
+                role.allow '/cart/add'
+                role.allow '/cart/empty'
+            end
 
-    get "/cart/empty"
-    assert_equal "Cart Empty", body
+            get '/login' do
+                set_current_account(Account.admin)
+                'Logged in'
+            end
 
-    get "/login"
-    assert_equal "Logged in", body
+            get '/cart/checkout' do
+                'Checkout'
+            end
 
-    get "/cart/checkout"
-    assert_equal "Checkout", body
+            get '/cart/add' do
+                'Product Added'
+            end
 
-    get "/cart/add"
-    assert_equal "Product Added", body
+            get '/cart/empty' do
+                'Cart Empty'
+            end
+        end
 
-    get "/cart/empty"
-    assert_equal "Cart Empty", body
-  end
+        get '/cart/checkout'
+        assert_equal "You don't have permission for this resource", body
 
-  it 'should check access control helper' do
-    mock_app do
-      register Padrino::Admin::AccessControl
-      enable :sessions
+        get '/cart/add'
+        assert_equal 'Product Added', body
 
-      access_control.roles_for :any do |role|
-        role.project_module :foo, "/foo"
-        role.project_module :bar, "/bar"
-      end
+        get '/cart/empty'
+        assert_equal 'Cart Empty', body
 
-      access_control.roles_for :admin do |role|
-        role.project_module :admin, "/admin"
-      end
+        get '/login'
+        assert_equal 'Logged in', body
 
-      access_control.roles_for :editor do |role|
-        role.project_module :editor, "/editor"
-      end
+        get '/cart/checkout'
+        assert_equal 'Checkout', body
 
-      get "/login" do
-        set_current_account(Account.admin)
-        "Logged in"
-      end
+        get '/cart/add'
+        assert_equal 'Product Added', body
 
-      get "/roles" do
-        access_control.roles.join(", ")
-      end
-
-      get "/modules" do
-        project_modules.map { |pm| "#{pm.name} => #{pm.path}" }.join(", ")
-      end
-
-      get "/modules-prefixed" do
-        project_modules.map { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(", ")
-      end
+        get '/cart/empty'
+        assert_equal 'Cart Empty', body
     end
 
-    get "/roles"
-    assert_equal "admin, editor", body
+    it 'should check access control helper' do
+        mock_app do
+            register Padrino::Admin::AccessControl
+            enable :sessions
 
-    get "/modules"
-    assert_equal "foo => /foo, bar => /bar", body
+            access_control.roles_for :any do |role|
+                role.project_module :foo, '/foo'
+                role.project_module :bar, '/bar'
+            end
 
-    get "/modules-prefixed"
-    assert_equal "foo => /admin/foo, bar => /admin/bar", body
+            access_control.roles_for :admin do |role|
+                role.project_module :admin, '/admin'
+            end
 
-    get "/login"
-    assert_equal "Logged in", body
+            access_control.roles_for :editor do |role|
+                role.project_module :editor, '/editor'
+            end
 
-    get "/modules"
-    assert_equal "admin => /admin", body
-  end
+            get '/login' do
+                set_current_account(Account.admin)
+                'Logged in'
+            end
 
-  it 'should use different access control for different apps' do
-    app1 = Sinatra.new Padrino::Application do
-      register Padrino::Admin::AccessControl
-      access_control.roles_for :any do |role|
-        role.project_module :foo, "/foo"
-      end
+            get '/roles' do
+                access_control.roles.join(', ')
+            end
+
+            get '/modules' do
+                project_modules.map { |pm| "#{pm.name} => #{pm.path}" }.join(', ')
+            end
+
+            get '/modules-prefixed' do
+                project_modules.map { |pm| "#{pm.name} => #{pm.path('/admin')}" }.join(', ')
+            end
+        end
+
+        get '/roles'
+        assert_equal 'admin, editor', body
+
+        get '/modules'
+        assert_equal 'foo => /foo, bar => /bar', body
+
+        get '/modules-prefixed'
+        assert_equal 'foo => /admin/foo, bar => /admin/bar', body
+
+        get '/login'
+        assert_equal 'Logged in', body
+
+        get '/modules'
+        assert_equal 'admin => /admin', body
     end
-    app2 = Sinatra.new Padrino::Application do
-      register Padrino::Admin::AccessControl
-      access_control.roles_for :any do |role|
-        role.project_module :bar, "/bar"
-      end
+
+    it 'should use different access control for different apps' do
+        app1 = Sinatra.new Padrino::Application do
+            register Padrino::Admin::AccessControl
+            access_control.roles_for :any do |role|
+                role.project_module :foo, '/foo'
+            end
+        end
+        app2 = Sinatra.new Padrino::Application do
+            register Padrino::Admin::AccessControl
+            access_control.roles_for :any do |role|
+                role.project_module :bar, '/bar'
+            end
+        end
+        assert_equal '/foo', app1.access_control.project_modules(:any).first.path
+        assert_equal '/bar', app2.access_control.project_modules(:any).first.path
     end
-    assert_equal '/foo', app1.access_control.project_modules(:any).first.path
-    assert_equal '/bar', app2.access_control.project_modules(:any).first.path
-  end
 end

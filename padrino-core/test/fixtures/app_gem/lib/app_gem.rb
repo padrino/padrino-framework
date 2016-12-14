@@ -1,7 +1,7 @@
 require 'padrino'
 
 module AppGem
-  extend Padrino::Module
+    extend Padrino::Module
 
-  gem! 'app_gem'
+    gem! 'app_gem'
 end

@@ -1,3 +1,3 @@
 class Kiq < ::Sinatra::Base
-  set :root, '/weird'
+    set :root, '/weird'
 end
