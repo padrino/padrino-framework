@@ -1,3 +1,3 @@
 module DemoProject
-  APILib = Class.new
+    APILib = Class.new
 end

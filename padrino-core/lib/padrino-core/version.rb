@@ -5,16 +5,16 @@
 # without include full padrino core.
 #
 module Padrino
-  # The version constant for the current version of Padrino.
-  VERSION = '0.14.0.rc1' unless defined?(Padrino::VERSION)
+    # The version constant for the current version of Padrino.
+    VERSION = '0.14.0.rc1'.freeze unless defined?(Padrino::VERSION)
 
-  #
-  # The current Padrino version.
-  #
-  # @return [String]
-  #   The version number.
-  #
-  def self.version
-    VERSION
-  end
+    #
+    # The current Padrino version.
+    #
+    # @return [String]
+    #   The version number.
+    #
+    def self.version
+        VERSION
+    end
 end # Padrino

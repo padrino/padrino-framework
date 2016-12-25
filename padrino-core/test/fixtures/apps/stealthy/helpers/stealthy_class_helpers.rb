@@ -1,12 +1,11 @@
 class Boo
-  def self.class_method
-    "BooClass"
-  end
+    def self.class_method
+        'BooClass'
+    end
 end
 
 class Woo < Boo
-  def poo
-  end
+    def poo; end
 end
 
 class Soo < Boo
