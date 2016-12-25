@@ -29,7 +29,7 @@ group :development do
   gem "fakeweb",   ">= 1.2.8"
   gem "oga",       "~> 2.5"
   gem "haml",      ">= 4.0.5"
-  gem "liquid",    ">= 2.1.2"
+  gem "liquid",    ">= 2.1.2", "< 4"
   if ENV['STDLIB_ERB']
     puts "=> Using stdlib ERB engine"
   else
