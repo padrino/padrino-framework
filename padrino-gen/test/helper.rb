@@ -10,6 +10,7 @@ require 'padrino-mailer'
 require 'padrino-helpers'
 
 require 'ext/minitest-spec'
+require 'ext/fakeweb-ruby24'
 
 Padrino::Generators.load_components!
 
