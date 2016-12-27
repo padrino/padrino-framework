@@ -90,7 +90,7 @@ module Padrino
       # Attempts to pluralize the singular word unless count is 1. If plural is supplied, it will use that when count is > 1,
       # otherwise it will use inflector to determine the plural form.
       #
-      # @param [Fixnum] count
+      # @param [Integer] count
       #   The count which determines pluralization.
       # @param [String] singular
       #   The word to be pluralized if appropriate based on +count+.
@@ -114,7 +114,7 @@ module Padrino
       #   The text to be truncated.
       # @param [Hash] options
       #   Formatting options for the truncation.
-      # @option options [Fixnum] :length (30)
+      # @option options [Integer] :length (30)
       #   The number of characters before truncation occurs.
       # @option options [String] :omission ("...")
       #   The characters that are placed after the truncated text.
@@ -141,7 +141,7 @@ module Padrino
       #   The text to be truncated.
       # @param [Hash] options
       #   Formatting options for the truncation.
-      # @option options [Fixnum] :length (30)
+      # @option options [Integer] :length (30)
       #   The number of words before truncation occurs.
       # @option options [String] :omission ("...")
       #   The characters that are placed after the truncated text.
@@ -168,7 +168,7 @@ module Padrino
       #     The text to be wrapped.
       #   @param [Hash] options
       #     Formatting options for the wrapping.
-      #   @option options [Fixnum] :line_width (80)
+      #   @option options [Integer] :line_width (80)
       #     The line width before a wrap should occur.
       #
       # @return [String] The text with line wraps for lines longer then +line_width+.

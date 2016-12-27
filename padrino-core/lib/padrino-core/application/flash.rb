@@ -185,11 +185,11 @@ module Padrino
       #
       # @overload redirect(url, status_code)
       #   @param [String] url
-      #   @param [Fixnum] status_code
+      #   @param [Integer] status_code
       #
       # @overload redirect(url, status_code, flash_messages)
       #   @param [String] url
-      #   @param [Fixnum] status_code
+      #   @param [Integer] status_code
       #   @param [Hash]   flash_messages
       #
       # @overload redirect(url, flash_messages)
