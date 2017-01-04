@@ -1247,6 +1247,17 @@ describe "Routing" do
     assert_equal "lang is en", body
   end
 
+  it 'should override default values when parameters are passed' do
+    mock_app do
+      controller lang: :it do
+        get(:index, map: '/:lang') { "lang is #{params[:lang]}" }
+      end
+    end
+    assert_equal '/pt', @app.url(:index, lang: 'pt')
+    get '/pt'
+    assert_equal 'lang is pt', body
+  end
+
   it 'should transitions to the next matching route on pass' do
     mock_app do
       get '/:foo' do
