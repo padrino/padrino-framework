@@ -51,7 +51,6 @@ module Padrino
       return false if loaded?
       began_at = Time.now
       @_called_from = first_caller
-      set_encoding
       Padrino.logger
       Reloader.lock!
       before_load.each(&:call)

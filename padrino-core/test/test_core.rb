@@ -23,12 +23,6 @@ describe "Core" do
       assert Padrino.version
     end
 
-    it 'should set correct utf-8 encoding' do
-      Padrino.set_encoding
-      assert_equal Encoding.default_external, Encoding::UTF_8
-      assert_equal Encoding.default_internal, Encoding::UTF_8
-    end
-
     it 'should raise application error if I instantiate a new padrino application without mounted apps' do
       text = capture_io { Padrino.application }
       assert_match /No apps are mounted/, text.to_s
