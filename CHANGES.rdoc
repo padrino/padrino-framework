@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.14.0.rc2
+== 0.14.0.rc2 (2017-01-19)
 - FIX #2109 change the format of session_id for Padrino Admin AccessControl
 - WARN #2109 Existing sessions will be dropped
 - FIX #2097 Use exe folder for application executables (@adam12)
@@ -9,6 +9,8 @@
 - NEW remove deprecations planned for 0.14.0
 - NEW stop managing Ruby default encodings
   Default Encoding.default_internal is now nil (Ruby default) instead of UTF-8 (Padrino < 0.14 default)
+- FIX #2113 properly override default values in route definitions if parameter is present (@fidalgo)
+- FIX #2116 fix plugin list `padrino g plugin -l` (@fnordfish)
 
 == 0.14.0.rc1 (2016-11-02)
 - NEW remove the requirement of ActiveSupport (export AS_VERSION=X.0 to put it back)
