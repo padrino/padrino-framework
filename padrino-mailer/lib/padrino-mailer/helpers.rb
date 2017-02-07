@@ -21,7 +21,7 @@ module Padrino
       #     to      @user.email
       #     from    "awesomeness@example.com"
       #     subject "Welcome to Awesomeness!"
-      #     locals  :a => a, :b => b
+      #     locals  a: a, b: b
       #     render  'path/to/my/template'
       #   end
       #
@@ -78,7 +78,7 @@ module Padrino
         #       subject 'Happy Birthday!'
         #       to      'john@fake.com'
         #       from    'noreply@birthday.com'
-        #       locals  :name => name, :age => age
+        #       locals  name: name, age: age
         #       render  'sample/birthday'
         #     end
         #   end
@@ -122,7 +122,7 @@ module Padrino
         #   The block mail attributes for this message.
         #
         # @example
-        #   MyApp.email(:to => 'to@ma.il', :from => 'from@ma.il', :subject => 'Welcome!', :body => 'Welcome Here!')
+        #   MyApp.email(to: 'to@ma.il', from: 'from@ma.il', subject: 'Welcome!', body: 'Welcome Here!')
         #
         #   # or if you prefer blocks
         #
@@ -130,7 +130,7 @@ module Padrino
         #     to @user.email
         #     from "awesomeness@example.com"
         #     subject "Welcome to Awesomeness!"
-        #     body 'path/to/my/template', :locals => { :a => a, :b => b }
+        #     body 'path/to/my/template', locals: { a: a, b: b }
         #   end
         #
         def email(mail_attributes={}, &block)
@@ -149,7 +149,7 @@ module Padrino
         def delivery_settings
           @_delivery_setting ||= begin
             raise "You must setup :delivery_method, see api for more details" if RUBY_PLATFORM =~ /win32/ && !respond_to?(:delivery_method)
-            return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
+            return [:sendmail, { location: `which sendmail`.chomp }] unless respond_to?(:delivery_method)
             return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
             return [delivery_method, {}] if delivery_method.is_a?(Symbol)
             [nil, {}]

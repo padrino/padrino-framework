@@ -8,11 +8,11 @@ GEM_PATHS = PADRINO_GEMS.keys
 ROOT = File.expand_path(File.dirname(__FILE__))
 
 def sh_rake(command)
-  sh "#{Gem.ruby} -S rake #{command}", :verbose => true
+  sh "#{Gem.ruby} -S rake #{command}", verbose: true
 end
 
 def say(text, color=:magenta)
-  n = { :bold => 1, :red => 31, :green => 32, :yellow => 33, :blue => 34, :magenta => 35 }.fetch(color, 0)
+  n = { bold: 1, red: 31, green: 32, yellow: 33, blue: 34, magenta: 35 }.fetch(color, 0)
   puts "\e[%dm%s\e[0m" % [n, text]
 end
 
@@ -53,7 +53,7 @@ task :bump, [:version] do |t, args|
 end
 
 desc "Executes a fresh install removing all padrino version and then reinstall all gems"
-task :fresh => [:uninstall, :install, :clean]
+task fresh: [:uninstall, :install, :clean]
 
 desc "Pulls latest commits and updates submodules"
 task :pull do
@@ -66,7 +66,7 @@ task :pull do
 end
 
 desc "Pushes repository to GitHub"
-task :push => :pull do
+task push: :pull do
   say "Pushing to github..."
   sh "git tag #{Padrino.version}"
   sh "git push origin master"
@@ -74,14 +74,14 @@ task :push => :pull do
 end
 
 desc "Release all padrino gems"
-task :publish => :push do
+task publish: :push do
   say "Pushing to rubygems..."
   GEM_PATHS.each do |dir|
     Dir.chdir(dir) { sh_rake("release") }
   end
   Rake::Task["clean"].invoke
 end
-task :release => :publish
+task release: :publish
 
 desc "Run tests for all padrino stack gems"
 task :test do
@@ -105,4 +105,4 @@ task :doc do
 end
 
 desc "Run tests for all padrino stack gems"
-task :default => :test
+task default: :test

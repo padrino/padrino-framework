@@ -25,7 +25,7 @@ describe "String#colorize" do
   end
 
   it "should be possible to set the mode" do
-    assert_equal "\e[1;34mHello world\e[0m", "Hello world".colorize(:color => :blue, :mode => :bold)
+    assert_equal "\e[1;34mHello world\e[0m", "Hello world".colorize(color: :blue, mode: :bold)
     assert_equal "\e[1;34mHello world\e[0m", String::Colorizer.blue("Hello world", :bold)
   end
 end

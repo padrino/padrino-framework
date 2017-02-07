@@ -35,7 +35,7 @@ class MiniTest::Spec
     mail_message = Mail::TestMailer.deliveries.last
     raise "No mail message has been sent!" unless mail_message
     delivery_attributes = mail_attributes
-    delivery_attributes.update(:to => Array(mail_attributes[:to]), :from => Array(mail_attributes[:from]))
+    delivery_attributes.update(to: Array(mail_attributes[:to]), from: Array(mail_attributes[:from]))
     delivery_attributes.each_pair do |key, expected|
       next unless mail_message.respond_to?(key)
       actual = mail_message.send(key)

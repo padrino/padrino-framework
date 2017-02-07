@@ -17,10 +17,10 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen task generates a new task file."
 
-      argument     :name,        :desc => 'The name of your application task'
-      class_option :root,        :desc => 'The root destination',                     :aliases => '-r', :default => '.', :type => :string
-      class_option :description, :desc => 'The description of your application task', :aliases => '-d', :default => nil, :type => :string
-      class_option :namespace,   :desc => 'The namespace of your application task',   :aliases => '-n', :default => nil, :type => :string
+      argument     :name,        desc: 'The name of your application task'
+      class_option :root,        desc: 'The root destination',                     aliases: '-r', default: '.', type: :string
+      class_option :description, desc: 'The description of your application task', aliases: '-d', default: nil, type: :string
+      class_option :namespace,   desc: 'The namespace of your application task',   aliases: '-n', default: nil, type: :string
 
       # Show help if no ARGV given
       require_arguments!

@@ -28,23 +28,23 @@ class String
     # Returns colors integer mapping
     def self.colors
       @_colors ||= {
-        :default => 9,
-        :black   => 30,
-        :red     => 31,
-        :green   => 32,
-        :yellow  => 33,
-        :blue    => 34,
-        :magenta => 35,
-        :cyan    => 36,
-        :white   => 37
+        default: 9,
+        black: 30,
+        red: 31,
+        green: 32,
+        yellow: 33,
+        blue: 34,
+        magenta: 35,
+        cyan: 36,
+        white: 37
       }
     end
 
     # Returns modes integer mapping
     def self.modes
       @_modes ||= {
-        :default => 0,
-        :bold    => 1
+        default: 0,
+        bold: 1
       }
     end
 

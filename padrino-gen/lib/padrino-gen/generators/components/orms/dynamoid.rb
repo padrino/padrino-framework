@@ -1,9 +1,9 @@
 DYNAMOID = (<<-DYNAMOID) unless defined?(DYNAMOID)
 
 AWS.config({
-  :access_key_id => ENV['AWS_ACCESS_KEY'],
-  :secret_access_key => ENV['AWS_SECRET_KEY'],
-  :dynamo_db_endpoint => 'dynamodb.ap-southeast-1.amazonaws.com'
+  access_key_id: ENV['AWS_ACCESS_KEY'],
+  secret_access_key: ENV['AWS_SECRET_KEY'],
+  dynamo_db_endpoint: 'dynamodb.ap-southeast-1.amazonaws.com'
 })
 
 Dynamoid.configure do |config|
@@ -23,11 +23,11 @@ end
 # And then setting for AWS.config is as following:
 # 
 #   AWS.config({
-#     :access_key_id => 'xxx', # everything is ok
-#     :secret_access_key => 'xxx', # everything is ok
-#     :dynamo_db_endpoint => 'localhost', # fake_dynamo runs hostname
-#     :dynamo_db_port => 4567, # fake_dynamo listens port
-#     :use_ssl => false # fake_dynamo don't speak ssl
+#     access_key_id: 'xxx', # everything is ok
+#     secret_access_key: 'xxx', # everything is ok
+#     dynamo_db_endpoint: 'localhost', # fake_dynamo runs hostname
+#     dynamo_db_port: 4567, # fake_dynamo listens port
+#     use_ssl: false # fake_dynamo don't speak ssl
 #   })
 #
 # Additional information on https://github.com/ananthakumaran/fake_dynamo
@@ -35,7 +35,7 @@ DYNAMOID
 
 def setup_orm
   require_dependencies 'aws-sdk'
-  require_dependencies 'dynamoid', :version => '~>0.7.1'
+  require_dependencies 'dynamoid', version: '~>0.7.1'
   create_file("config/database.rb", DYNAMOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
@@ -48,7 +48,7 @@ class !NAME!
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }

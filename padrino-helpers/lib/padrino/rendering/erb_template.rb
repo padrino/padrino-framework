@@ -48,5 +48,5 @@ end
 Tilt.prefer(Padrino::Rendering::ERBTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :safe_buffer => true
+  safe_buffer: true
 }

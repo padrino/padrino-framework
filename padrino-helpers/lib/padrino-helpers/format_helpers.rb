@@ -72,7 +72,7 @@ module Padrino
       #
       # @example
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
-      #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
+      #   simple_format("hello\nworld", tag: :div, class: :foo) # => "<div class="foo">hello<br/>world</div>"
       #
       def simple_format(text, options={})
         t = options.delete(:tag) || :p
@@ -122,10 +122,10 @@ module Padrino
       # @return [String] The text truncated after the given number of characters.
       #
       # @example
-      #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+      #   truncate("Once upon a time in a world far far away", length: 8) => "Once upon..."
       #
       def truncate(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+        options = { length: 30, omission: "..." }.update(options)
         if text
           len = options[:length] - options[:omission].length
           chars = text
@@ -149,10 +149,10 @@ module Padrino
       # @return [String] The text truncated after the given number of words.
       #
       # @example
-      #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
+      #   truncate_words("Once upon a time in a world far far away", length: 8) => "Once upon a time in a world far..."
       #
       def truncate_words(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+        options = { length: 30, omission: "..." }.update(options)
         if text
           words = text.split()
           words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
@@ -174,14 +174,14 @@ module Padrino
       # @return [String] The text with line wraps for lines longer then +line_width+.
       #
       # @example
-      #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
+      #   word_wrap('Once upon a time', line_width: 8) => "Once upon\na time"
       #
       def word_wrap(text, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         unless args.empty?
           options[:line_width] = args[0] || 80
         end
-        options = { :line_width => 80 }.update(options)
+        options = { line_width: 80 }.update(options)
 
         text.split("\n").map do |line|
           line.length > options[:line_width] ? line.gsub(/(.{1,#{options[:line_width]}})(\s+|$)/, "\\1\n").strip : line
@@ -210,11 +210,11 @@ module Padrino
       #   highlight('Lorem ipsum dolor sit amet', 'dolor')
       #   # => Lorem ipsum <strong class="highlight">dolor</strong> sit amet
       #
-      #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
+      #   highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
       def highlight(text, words, *args)
-        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
+        options = { highlighter: '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
 
         if text.empty? || words.empty?
           text
@@ -294,38 +294,38 @@ module Padrino
             when 0..1
               if include_seconds
                 case distance_in_seconds
-                  when 0..4   then [:less_than_x_seconds, :count => 5 ]
-                  when 5..9   then [:less_than_x_seconds, :count => 10]
-                  when 10..19 then [:less_than_x_seconds, :count => 20]
+                  when 0..4   then [:less_than_x_seconds, count: 5 ]
+                  when 5..9   then [:less_than_x_seconds, count: 10]
+                  when 10..19 then [:less_than_x_seconds, count: 20]
                   when 20..39 then [:half_a_minute                    ]
-                  when 40..59 then [:less_than_x_minutes, :count => 1 ]
-                  else             [:x_minutes,           :count => 1 ]
+                  when 40..59 then [:less_than_x_minutes, count: 1 ]
+                  else             [:x_minutes,           count: 1 ]
                 end
               else
                 distance_in_minutes == 0 ?
-                  [:less_than_x_minutes, :count => 1] :
-                  [:x_minutes, :count => distance_in_minutes]
+                  [:less_than_x_minutes, count: 1] :
+                  [:x_minutes, count: distance_in_minutes]
               end
-            when 2..44           then [:x_minutes,      :count => distance_in_minutes                       ]
-            when 45..89          then [:about_x_hours,  :count => 1                                         ]
-            when 90..1439        then [:about_x_hours,  :count => (distance_in_minutes.to_f / 60.0).round   ]
-            when 1440..2529      then [:x_days,         :count => 1                                         ]
-            when 2530..43199     then [:x_days,         :count => (distance_in_minutes.to_f / 1440.0).round ]
-            when 43200..86399    then [:about_x_months, :count => 1                                         ]
-            when 86400..525599   then [:x_months,       :count => (distance_in_minutes.to_f / 43200.0).round]
+            when 2..44           then [:x_minutes,      count: distance_in_minutes                       ]
+            when 45..89          then [:about_x_hours,  count: 1                                         ]
+            when 90..1439        then [:about_x_hours,  count: (distance_in_minutes.to_f / 60.0).round   ]
+            when 1440..2529      then [:x_days,         count: 1                                         ]
+            when 2530..43199     then [:x_days,         count: (distance_in_minutes.to_f / 1440.0).round ]
+            when 43200..86399    then [:about_x_months, count: 1                                         ]
+            when 86400..525599   then [:x_months,       count: (distance_in_minutes.to_f / 43200.0).round]
             else
               distance_in_years           = distance_in_minutes / 525600
               minute_offset_for_leap_year = (distance_in_years / 4) * 1440
               remainder                   = ((distance_in_minutes - minute_offset_for_leap_year) % 525600)
               if remainder < 131400
-                [:about_x_years,  :count => distance_in_years]
+                [:about_x_years,  count: distance_in_years]
               elsif remainder < 394200
-                [:over_x_years,   :count => distance_in_years]
+                [:over_x_years,   count: distance_in_years]
               else
-                [:almost_x_years, :count => distance_in_years + 1]
+                [:almost_x_years, count: distance_in_years + 1]
               end
           end
-        I18n.translate phrase, locals.merge(:locale => options[:locale], :scope => :'datetime.distance_in_words')
+        I18n.translate phrase, locals.merge(locale: options[:locale], scope: :'datetime.distance_in_words')
       end
 
       ##

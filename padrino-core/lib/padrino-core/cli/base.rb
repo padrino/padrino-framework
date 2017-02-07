@@ -4,9 +4,9 @@ module Padrino
   module Cli
     class Base < Launcher
       desc "rake", "Execute rake tasks."
-      method_option :environment, :type => :string,  :aliases => "-e"
-      method_option :list,        :type => :string,  :aliases => "-T", :desc => "Display the tasks (matching optional PATTERN) with descriptions, then exit."
-      method_option :trace,       :type => :boolean, :aliases => "-t", :desc => "Turn on invoke/execute tracing, enable full backtrace."
+      method_option :environment, type: :string,  aliases: "-e"
+      method_option :list,        type: :string,  aliases: "-T", desc: "Display the tasks (matching optional PATTERN) with descriptions, then exit."
+      method_option :trace,       type: :boolean, aliases: "-t", desc: "Turn on invoke/execute tracing, enable full backtrace."
       def rake(*args)
         prepare :rake
         args << "-T" if options[:list]

@@ -12,7 +12,7 @@ describe "Padrino::ParamsProtection" do
   it 'should drop all parameters except allowed ones' do
     result = nil
     mock_app do
-      post :basic, :params => [ :name ] do
+      post :basic, params: [ :name ] do
         result = params
         ''
       end
@@ -24,7 +24,7 @@ describe "Padrino::ParamsProtection" do
   it 'should preserve original params' do
     result = nil
     mock_app do
-      post :basic, :params => [ :name ] do
+      post :basic, params: [ :name ] do
         result = original_params
         ''
       end
@@ -36,7 +36,7 @@ describe "Padrino::ParamsProtection" do
   it 'should work with recursive data' do
     result = nil
     mock_app do
-      post :basic, :params => [ :name, :child => [ :name, :child => [ :name ] ] ] do
+      post :basic, params: [ :name, child: [ :name, child: [ :name ] ] ] do
         result = [params, original_params]
         ''
       end
@@ -54,7 +54,7 @@ describe "Padrino::ParamsProtection" do
   it 'should be able to process the data' do
     result = nil
     mock_app do
-      post :basic, :params => [ :name, :position => proc{ |v| 'anti-'+v } ] do
+      post :basic, params: [ :name, position: proc{ |v| 'anti-'+v } ] do
         result = params
         ''
       end
@@ -66,7 +66,7 @@ describe "Padrino::ParamsProtection" do
   it 'should pass :with parameters' do
     result = nil
     mock_app do
-      post :basic, :with => [:id, :tag], :params => [ :name ] do
+      post :basic, with: [:id, :tag], params: [ :name ] do
         result = params
         ''
       end
@@ -78,7 +78,7 @@ describe "Padrino::ParamsProtection" do
   it 'should not fail if :with is not an Array' do
     result = nil
     mock_app do
-      post :basic, :with => :id, :params => [ :id ] do
+      post :basic, with: :id, params: [ :id ] do
         result = params
         ''
       end
@@ -90,11 +90,11 @@ describe "Padrino::ParamsProtection" do
   it 'should understand true or false values' do
     result = nil
     mock_app do
-      get :hide, :with => [ :id ], :params => false do
+      get :hide, with: [ :id ], params: false do
         result = params
         ''
       end
-      get :show, :with => [ :id ], :params => true do
+      get :show, with: [ :id ], params: true do
         result = params
         ''
       end
@@ -108,25 +108,25 @@ describe "Padrino::ParamsProtection" do
   it 'should be configurable with controller options' do
     result = nil
     mock_app do
-      controller :persons, :params => [ :name ] do
-        post :create, :params => [ :name, :position ] do
+      controller :persons, params: [ :name ] do
+        post :create, params: [ :name, :position ] do
           result = params
           ''
         end
-        post :update, :with => [ :id ] do
+        post :update, with: [ :id ] do
           result = params
           ''
         end
-        post :delete, :params => true do
+        post :delete, params: true do
           result = params
           ''
         end
-        post :destroy, :with => [ :id ], :params => false do
+        post :destroy, with: [ :id ], params: false do
           result = params
           ''
         end
       end
-      controller :noparam, :params => false do
+      controller :noparam, params: false do
         get :index do
           result = params
           ''
@@ -148,7 +148,7 @@ describe "Padrino::ParamsProtection" do
   it 'should successfully filter hashes' do
     result = nil
     mock_app do
-      post :family, :params => [ :persons => [ :name ] ] do
+      post :family, params: [ persons: [ :name ] ] do
         result = params
         ''
       end
@@ -160,31 +160,31 @@ describe "Padrino::ParamsProtection" do
   it 'should pass arrays' do
     result = nil
     mock_app do
-      post :family, :params => [ :names => [] ] do
+      post :family, params: [ names: [] ] do
         result = params
         ''
       end
     end
-    post '/family?' + Padrino::Utils.build_uri_query(:names => %w{Jack Kim Teri})
+    post '/family?' + Padrino::Utils.build_uri_query(names: %w{Jack Kim Teri})
     assert_equal({"names" => %w[Jack Kim Teri]}, result)
   end
 
   it 'should tolerate weird inflections' do
     result = nil
     mock_app do
-      post :i, :params => [ :gotta => [ :what ] ] do
+      post :i, params: [ gotta: [ :what ] ] do
         result = params
         ''
       end
     end
-    post '/i?' + Padrino::Utils.build_uri_query(:gotta => { :what => 'go', :who => 'self' })
+    post '/i?' + Padrino::Utils.build_uri_query(gotta: { what: 'go', who: 'self' })
     assert_equal({"gotta" => {"what" => "go"}}, result)
   end
 
   it 'should drop the key if the data type does not match route configuration' do
     result = nil
     mock_app do
-      post :i, :params => [ :gotta => [ :what ] ] do
+      post :i, params: [ gotta: [ :what ] ] do
         result = params
         ''
       end

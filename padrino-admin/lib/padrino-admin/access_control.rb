@@ -99,7 +99,7 @@ module Padrino
         #  # NOTE The un-mounted path is used ('/accounts' instead of '/admin/accounts')
         #  - if access_control.allowed?(current_account, '/accounts')
         #    # Admins see the "Profile" link, but Workers do not
-        #    = link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
+        #    = link_to 'Profile', url(:accounts, :edit, id: current_account.id)
         #
         def allowed?(account=nil, path=nil)
           path = "/" if path.nil? || path.empty?

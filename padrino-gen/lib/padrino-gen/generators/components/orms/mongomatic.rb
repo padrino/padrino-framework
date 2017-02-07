@@ -10,7 +10,7 @@ MONGO
 def setup_orm
   mongomatic = MONGOMATIC
   require_dependencies 'mongomatic'
-  require_dependencies 'bson_ext', :require => 'mongo'
+  require_dependencies 'bson_ext', require: 'mongo'
   create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
 end
 
@@ -43,13 +43,13 @@ class !NAME! < Mongomatic::Base
   #     be_present self['age'], "Age cannot be blank"
   #     be_present self['password'], "Password cannot be blank"
   #     be_a_number self['age'], "Age must be a number"
-  #     be_of_length self['password'], "Password must be at least 8 characters", :minimum => 8
+  #     be_of_length self['password'], "Password must be at least 8 characters", minimum: 8
   #   end
   # end
 
   # def create_indexes
-  #   self.collection.create_index('name', :unique => true)
-  #   self.collection.create_index('email', :unique => true)
+  #   self.collection.create_index('name', unique: true)
+  #   self.collection.create_index('email', unique: true)
   #   self.collection.create_index('age')
   # end
   def validate
@@ -62,7 +62,7 @@ class !NAME! < Mongomatic::Base
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
     field_tuples = options[:fields].map { |value| value.split(":") }

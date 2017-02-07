@@ -23,15 +23,15 @@ module Padrino
       # @return [String] The html generated from this partial.
       #
       # @example
-      #   partial 'photo/item', :object => @photo
-      #   partial 'photo/item', :collection => @photos
-      #   partial 'photo/item', :locals => { :foo => :bar }
-      #   partial 'photo/item', :engine => :erb
+      #   partial 'photo/item', object: @photo
+      #   partial 'photo/item', collection: @photos
+      #   partial 'photo/item', locals: { foo: :bar }
+      #   partial 'photo/item', engine: :erb
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
       def partial(template, options={}, &block)
-        options = { :locals => {}, :layout => false }.update(options)
+        options = { locals: {}, layout: false }.update(options)
         explicit_engine = options.delete(:engine)
 
         path, _, name = template.to_s.rpartition(File::SEPARATOR)

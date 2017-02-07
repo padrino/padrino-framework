@@ -28,7 +28,7 @@ Bundler.require(:default, RACK_ENV)
 # ## Configure your HTML5 data helpers
 #
 # Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
-# text_field :foo, :dialog => true
+# text_field :foo, dialog: true
 # Generates: <input type="text" data-dialog="true" name="foo" />
 #
 # ## Add helpers to mailer

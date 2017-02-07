@@ -62,5 +62,5 @@ end
 Tilt.prefer(Padrino::Rendering::ErubisTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :engine_class => Padrino::Rendering::SafeEruby,
+  engine_class: Padrino::Rendering::SafeEruby,
 }

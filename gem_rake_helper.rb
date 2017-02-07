@@ -20,4 +20,4 @@ end
 
 YARD::Rake::YardocTask.new
 
-task :default => :test
+task default: :test

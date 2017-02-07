@@ -74,7 +74,7 @@ describe "Application" do
 
     it 'should able to set custome session management' do
       class PadrinoTestApp3 < Padrino::Application
-        set :sessions, :use => Rack::Session::Pool
+        set :sessions, use: Rack::Session::Pool
       end
       Padrino.mount("PadrinoTestApp3").to("/")
       PadrinoTestApp3.get('/write') { session[:foo] = "pool" }
@@ -90,7 +90,7 @@ describe "Application" do
         enable :sessions
       end
       class PadrinoTestApp5 < Padrino::Application
-        set :sessions, :use => Rack::Session::Pool
+        set :sessions, use: Rack::Session::Pool
       end
       Padrino.mount("PadrinoTestApp4").to("/write")
       Padrino.mount("PadrinoTestApp5").to("/read")

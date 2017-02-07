@@ -35,7 +35,7 @@ describe "AdminApplication" do
         role.protect  "/foo"
       end
 
-      get "/foo", :provides => [:html, :js] do
+      get "/foo", provides: [:html, :js] do
         "foo"
       end
 

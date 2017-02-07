@@ -142,7 +142,7 @@ module Padrino
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
     def require_dependencies(*paths)
-      options = (paths.last.is_a?(Hash) ? paths.pop : {}).merge( :cyclic => true )
+      options = (paths.last.is_a?(Hash) ? paths.pop : {}).merge( cyclic: true )
 
       files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 

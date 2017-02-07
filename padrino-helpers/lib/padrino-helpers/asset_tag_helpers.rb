@@ -7,8 +7,8 @@ module Padrino
       APPEND_ASSET_EXTENSIONS = ["js", "css"]
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
       ASSET_FOLDERS = {
-        :js => 'javascripts',
-        :css => 'stylesheets',
+        js: 'javascripts',
+        css: 'stylesheets',
       }
 
       ##
@@ -18,12 +18,12 @@ module Padrino
       #   The type of flash to display in the tag.
       # @param [Hash] options
       #   The html options for this section.
-      #   use :bootstrap => true to support Twitter's bootstrap dismiss alert button.
+      #   use bootstrap: true to support Twitter's bootstrap dismiss alert button.
       #
       # @return [String] Flash tag html with specified +options+.
       #
       # @example
-      #   flash_tag(:notice, :id => 'flash-notice')
+      #   flash_tag(:notice, id: 'flash-notice')
       #   # Generates: <div class="notice" id="flash-notice">flash-notice</div>
       #   flash_tag(:error, :success)
       #   # Generates: <div class="error">flash-error</div>
@@ -35,8 +35,8 @@ module Padrino
         args.inject(SafeBuffer.new) do |html,kind|
           next html unless flash[kind]
           flash_text = SafeBuffer.new << flash[kind]
-          flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
-          html << content_tag(:div, flash_text, { :class => kind }.update(options))
+          flash_text << content_tag(:button, '&times;'.html_safe, {type: :button, class: :close, :'data-dismiss' => :alert}) if bootstrap
+          html << content_tag(:div, flash_text, { class: kind }.update(options))
         end
       end
 
@@ -66,16 +66,16 @@ module Padrino
       # @return [String] Link tag html with specified +options+.
       #
       # @example
-      #   link_to('click me', '/dashboard', :class => 'linky')
+      #   link_to('click me', '/dashboard', class: 'linky')
       #   # Generates <a class="linky" href="/dashboard">click me</a>
       #
-      #   link_to('click me', '/dashboard', :remote => true)
+      #   link_to('click me', '/dashboard', remote: true)
       #   # Generates <a href="/dashboard" data-remote="true">click me</a>
       #
-      #   link_to('click me', '/dashboard', :method => :delete)
+      #   link_to('click me', '/dashboard', method: :delete)
       #   # Generates <a href="/dashboard" data-method="delete" rel="nofollow">click me</a>
       #
-      #   link_to('/dashboard', :class => 'blocky') { 'click me' }
+      #   link_to('/dashboard', class: 'blocky') { 'click me' }
       #   # Generates <a class="blocky" href="/dashboard">click me</a>
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
@@ -85,7 +85,7 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
-        options = { :href => href ? escape_link(href) : '#' }.update(options)
+        options = { href: href ? escape_link(href) : '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -109,14 +109,14 @@ module Padrino
       # @return [String] Feed link html tag with specified +options+.
       #
       # @example
-      #   feed_tag :atom, url(:blog, :posts, :format => :atom), :title => "ATOM"
+      #   feed_tag :atom, url(:blog, :posts, format: :atom), title: "ATOM"
       #   # Generates: <link type="application/atom+xml" rel="alternate" href="/blog/posts.atom" title="ATOM" />
-      #   feed_tag :rss, url(:blog, :posts, :format => :rss)
+      #   feed_tag :rss, url(:blog, :posts, format: :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
       def feed_tag(mime, url, options={})
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
-        tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
+        tag(:link, { rel: 'alternate', type: full_mime, title: mime, href: url }.update(options))
       end
 
       ##
@@ -161,7 +161,7 @@ module Padrino
       # @return [String] Meta html tag with specified +options+.
       #
       # @example
-      #   meta_tag "weblog,news", :name => "keywords"
+      #   meta_tag "weblog,news", name: "keywords"
       #   # Generates: <meta name="keywords" content="weblog,news" />
       #
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
@@ -186,11 +186,11 @@ module Padrino
       #   favicon_tag 'favicon.png'
       #   favicon_tag 'icons/favicon.png'
       #   # or override some options
-      #   favicon_tag 'favicon.png', :type => 'image/ico'
+      #   favicon_tag 'favicon.png', type: 'image/ico'
       #
       def favicon_tag(source, options={})
         type = File.extname(source).sub('.','')
-        options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
+        options = { href: image_path(source), rel: 'icon', type: "image/#{type}" }.update(options)
         tag(:link, options)
       end
 
@@ -208,7 +208,7 @@ module Padrino
       #   image_tag('icons/avatar.png')
       #
       def image_tag(url, options={})
-        options = { :src => image_path(url) }.update(options)
+        options = { src: image_path(url) }.update(options)
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
@@ -241,11 +241,11 @@ module Padrino
       # @api public.
       def stylesheet_link_tag(*sources)
         options = {
-          :rel => 'stylesheet',
-          :type => 'text/css'
+          rel: 'stylesheet',
+          type: 'text/css'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
         sources.flatten.inject(SafeBuffer.new) do |all,source|
-          all << tag(:link, { :href => asset_path(:css, source) }.update(options))
+          all << tag(:link, { href: asset_path(:css, source) }.update(options))
         end
       end
 
@@ -265,10 +265,10 @@ module Padrino
       #
       def javascript_include_tag(*sources)
         options = {
-          :type => 'text/javascript'
+          type: 'text/javascript'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
         sources.flatten.inject(SafeBuffer.new) do |all,source|
-          all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
+          all << content_tag(:script, nil, { src: asset_path(:js, source) }.update(options))
         end
       end
 
@@ -390,7 +390,7 @@ module Padrino
       # Parses link_to options for given correct conditions.
       #
       # @example
-      #   parse_conditions("/some/url", :if => false) => true
+      #   parse_conditions("/some/url", if: false) => true
       #
       def parse_conditions(url, options)
         if options.has_key?(:if)

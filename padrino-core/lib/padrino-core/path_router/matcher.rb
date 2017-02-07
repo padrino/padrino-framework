@@ -60,10 +60,10 @@ module Padrino
         data = match(pattern)
         params = indifferent_hash
         if data.names.empty?
-          params.merge!(:captures => data.captures) unless data.captures.empty?
+          params.merge!(captures: data.captures) unless data.captures.empty?
         else
           if mustermann?
-            new_params = handler.params(pattern, :captures => data)
+            new_params = handler.params(pattern, captures: data)
             params.merge!(new_params) if new_params
           elsif data
             params.merge!(Hash[names.zip(data.captures)])
@@ -80,7 +80,7 @@ module Padrino
         @handler ||=
           case @path
           when String
-            Mustermann.new(@path, :capture => @capture, :uri_decode => false)
+            Mustermann.new(@path, capture: @capture, uri_decode: false)
           when Regexp
             /^(?:#{@path})$/
           else

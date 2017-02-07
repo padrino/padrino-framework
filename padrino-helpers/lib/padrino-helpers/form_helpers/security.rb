@@ -19,7 +19,7 @@ module Padrino
         #   csrf_token_field
         #
         def csrf_token_field
-          hidden_field_tag csrf_param, :value => csrf_token
+          hidden_field_tag csrf_param, value: csrf_token
         end
 
         ##
@@ -33,8 +33,8 @@ module Padrino
         #
         def csrf_meta_tags
           if is_protected_from_csrf?
-            meta_tag(csrf_param, :name => 'csrf-param') <<
-            meta_tag(csrf_token, :name => 'csrf-token')
+            meta_tag(csrf_param, name: 'csrf-param') <<
+            meta_tag(csrf_token, name: 'csrf-token')
           end
         end
 

@@ -30,11 +30,11 @@ module Padrino
       end
 
       desc "Description:\n\n\tpadrino-gen admin_page model(s)"
-      argument :models, :desc => "The name(s) of your model(s)", :type => :array
-      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
+      argument :models, desc: "The name(s) of your model(s)", type: :array
+      class_option :skip_migration, aliases: "-s", default: false, type: :boolean
+      class_option :root, desc: "The root destination", aliases: '-r', type: :string
+      class_option :destroy, aliases: '-d', default: false, type: :boolean
+      class_option :admin_name,  aliases: '-a', desc: 'The admin application name and path', default: 'admin', type: :string
       # Show help if no argv given.
       require_arguments!
 

@@ -2,20 +2,20 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
   namespace :dm do
     namespace :auto do
       desc "Perform auto migration (reset your db data)"
-      task :migrate => :environment do
+      task migrate: :environment do
         ::DataMapper.repository.auto_migrate!
         puts "<= dm:auto:migrate executed"
       end
 
       desc "Perform non destructive auto migration"
-      task :upgrade => :environment do
+      task upgrade: :environment do
         ::DataMapper.repository.auto_upgrade!
         puts "<= dm:auto:upgrade executed"
       end
     end
 
     namespace :migrate do
-      task :load => :environment do
+      task load: :environment do
         require 'dm-migrations/migration_runner'
         FileList["db/migrate/*.rb"].each do |migration|
           load migration
@@ -49,7 +49,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc "Create the database"
-    task :create => :environment do
+    task create: :environment do
       config = Utils.symbolize_keys(DataMapper.repository.adapter.options)
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
@@ -66,7 +66,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc "Drop the database (postgres and mysql only)"
-    task :drop => :environment do
+    task drop: :environment do
       config = Utils.symbolize_keys(DataMapper.repository.adapter.options)
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
@@ -80,10 +80,10 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc "Drop the database, migrate from scratch and initialize with the seed data"
-    task :reset => [:drop, :setup]
+    task reset: [:drop, :setup]
 
     desc "Create the database migrate and initialize with the seed data"
-    task :setup => [:create, :migrate, :seed]
+    task setup: [:create, :migrate, :seed]
   end
 
   task 'db:migrate:down' => 'dm:migrate:down'
