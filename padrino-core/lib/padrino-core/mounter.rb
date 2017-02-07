@@ -108,6 +108,7 @@ module Padrino
         app_obj.set :static,         public_folder_exists
         app_obj.set :cascade,        app_data.cascade
       else
+        app_obj.cascade       = app_data.cascade
         app_obj.uri_root      = uri_root
         app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end

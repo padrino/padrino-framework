@@ -1,7 +1,7 @@
 module Padrino
   class Mounter
     module ApplicationExtension
-      attr_accessor :uri_root, :mounter_options
+      attr_accessor :uri_root, :mounter_options, :cascade
       attr_writer :public_folder
 
       def dependencies
@@ -26,6 +26,10 @@ module Padrino
 
       def app_name
         @__app_name ||= mounter_options[:app_name] || self.to_s.underscore.to_sym
+      end
+
+      def cascade
+        @__cascade ||= trace_method(:cascade) { [] }
       end
 
       def setup_application!
