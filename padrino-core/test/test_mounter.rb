@@ -272,6 +272,16 @@ describe "Mounter" do
       assert_equal [], RackApp.prerequisites
     end
 
+    it 'should support the Rack Application with cascading style' do
+      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
+      require path
+      Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path, cascade: false).to('/rack_app')
+      Padrino.mount('sinatra_app', :app_class => 'SinatraApp', :app_file => path).to('/')
+      app = Padrino.application
+      res = Rack::MockRequest.new(app).get("/rack_app/404")
+      assert_equal "not found ;(", res.body
+    end
+
     it 'should support the Rack Application inside padrino project' do
       path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/app')
       api_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/api/app')
