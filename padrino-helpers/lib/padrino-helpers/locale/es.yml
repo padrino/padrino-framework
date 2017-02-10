@@ -99,5 +99,5 @@ es:
       template:
         header:
           one:    "1 error impidió que %{model} se guardara"
-          other:  "%{count} erroress impidieron que %{model} se guardara"
+          other:  "%{count} errores impidieron que %{model} se guardara"
         body: "Hay problemas con los siguientes campos:"
