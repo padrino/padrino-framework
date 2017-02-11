@@ -28,10 +28,6 @@ module Padrino
         @__app_name ||= mounter_options[:app_name] || self.to_s.underscore.to_sym
       end
 
-      def cascade
-        @__cascade ||= trace_method(:cascade) { [] }
-      end
-
       def setup_application!
         @configured ||= trace_method(:setup_application!) do
           $LOAD_PATH.concat(prerequisites)
