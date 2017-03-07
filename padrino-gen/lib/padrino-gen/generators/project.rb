@@ -70,6 +70,7 @@ module Padrino
           File.chmod(0755, destination_root("exe/#{name}"))
           if options.gem?
             template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
+            inject_into_file destination_root('Rakefile'), "require 'bundler/gem_tasks'\n", :after => "require 'bundler/setup'\n"
             template 'templates/gem/README.md.tt', destination_root('README.md')
             template 'templates/gem/lib/libname.tt', destination_root("lib/#{name}.rb")
             template 'templates/gem/lib/libname/version.tt', destination_root("lib/#{name}/version.rb")
