@@ -17,7 +17,7 @@ describe "PadrinoLogger" do
 
   def setup_logger(options={})
     @log    = StringIO.new
-    @logger = Padrino::Logger.new(options.merge(:stream => @log))
+    @logger = Padrino::Logger.new(options.merge(stream: @log))
   end
 
   describe 'for logger functionality' do
@@ -63,7 +63,7 @@ describe "PadrinoLogger" do
     end
 
     it 'should log something' do
-      setup_logger(:log_level => :error)
+      setup_logger(log_level: :error)
       @logger.error "You log this error?"
       assert_match(/You log this error?/, @log.string)
       @logger.debug "You don't log this error!"
@@ -73,7 +73,7 @@ describe "PadrinoLogger" do
     end
 
     it 'should respond to #write for Rack::CommonLogger' do
-      setup_logger(:log_level => :error)
+      setup_logger(log_level: :error)
       @logger.error "Error message"
       assert_match /Error message/, @log.string
       @logger << "logged anyways"
@@ -83,7 +83,7 @@ describe "PadrinoLogger" do
     end
 
     it 'should not blow up on mixed or broken encodings' do
-      setup_logger(:log_level => :error, :auto_flush => false)
+      setup_logger(log_level: :error, auto_flush: false)
       binary_data = "\xD0".force_encoding('BINARY')
       utf8_data = 'фыв'
       @logger.error binary_data
@@ -95,7 +95,7 @@ describe "PadrinoLogger" do
 
     it 'should sanitize mixed or broken encodings if said so' do
       encoding = 'windows-1251'
-      setup_logger(:log_level => :error, :auto_flush => false, :sanitize_encoding => encoding)
+      setup_logger(log_level: :error, auto_flush: false, sanitize_encoding: encoding)
       @log.string.encode! encoding
       binary_data = "\xD0".force_encoding('BINARY')
       utf8_data = 'фыв'

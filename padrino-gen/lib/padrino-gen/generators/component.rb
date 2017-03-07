@@ -17,11 +17,11 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen component add components into a Padrino project"
 
-      class_option :app,     :desc => 'The application name',                                             :aliases => '-n', :default => nil,         :type => :string
-      class_option :root,    :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
-      class_option :adapter, :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
+      class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
+      class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
 
-      defines_component_options :default => false
+      defines_component_options default: false
 
       ##
       # For each component, retrieve a valid choice and then execute the associated generator.
@@ -39,7 +39,7 @@ module Padrino
             self.class.component_types.each do |comp|
               list << [comp, fetch_component_choice(comp)]
             end
-            print_table(list, :indent => 2)
+            print_table(list, indent: 2)
             exit
           end
 
@@ -60,8 +60,8 @@ module Padrino
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
             if comp.to_s == 'orm' && choice.to_s != 'none'
-              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", :before => "PadrinoTasks.init"
-              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", :before => "PadrinoTasks.init"
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", before: "PadrinoTasks.init"
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", before: "PadrinoTasks.init"
             end
           end
         else

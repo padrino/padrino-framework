@@ -37,7 +37,7 @@ group :development do
   end
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
-  gem "mustermann19"
+  gem "mustermann", "~> 0.4.0"
   platforms :jruby do
     gem "jruby-openssl"
   end

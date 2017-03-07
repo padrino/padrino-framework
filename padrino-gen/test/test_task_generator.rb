@@ -34,7 +34,7 @@ describe "TaskGenerator" do
       file_path = "#{@apptmp}/sample_project/tasks/foo.rake"
       assert_no_match_in_file(/namespace/, file_path)
       assert_match_in_file(/desc "This is a sample"/, file_path)
-      assert_match_in_file(/task :foo => :environment do/, file_path)
+      assert_match_in_file(/task foo: :environment do/, file_path)
     end
 
     it 'should generate task file with namespace' do
@@ -42,7 +42,7 @@ describe "TaskGenerator" do
       capture_io { generate(:task, 'foo', "--namespace=Sample", "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/sample_foo.rake"
       assert_match_in_file(/namespace :sample do/, file_path)
-      assert_match_in_file(/task :foo => :environment do/, file_path)
+      assert_match_in_file(/task foo: :environment do/, file_path)
       assert_no_match_in_file(/desc/, file_path)
     end
 
@@ -52,7 +52,7 @@ describe "TaskGenerator" do
       file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"
       assert_match_in_file(/namespace :sample do/, file_path)
       assert_match_in_file(/desc "This is a sample"/, file_path)
-      assert_match_in_file(/task :demo_task => :environment do/, file_path)
+      assert_match_in_file(/task demo_task: :environment do/, file_path)
     end
   end
 end

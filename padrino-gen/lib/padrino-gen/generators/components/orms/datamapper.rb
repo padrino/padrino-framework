@@ -101,7 +101,7 @@ class !NAME!
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
@@ -126,7 +126,7 @@ MIGRATION
 
 DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
-  column :id, Integer, :serial => true
+  column :id, Integer, serial: true
   !FIELDS!
 end
 MIGRATION
@@ -137,8 +137,8 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
-       :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
+       column_format: Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', length: 255' if kind =~ /string/i}" },
+       base: DM_MIGRATION, up: DM_MODEL_UP_MG, down: DM_MODEL_DOWN_MG)
 end
 
 DM_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
@@ -149,8 +149,8 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
-    :remove => Proc.new { |field, kind| "drop_column :#{field}" }
+    base: DM_MIGRATION, change_format: DM_CHANGE_MG,
+    add: Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
+    remove: Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end

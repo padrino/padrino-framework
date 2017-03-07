@@ -10,20 +10,20 @@ CouchRest::Model::Base.configure do |conf|
   conf.database = CouchRest.database!(db_name)
   conf.environment = Padrino.env
   # conf.connection = {
-  #   :protocol => 'http',
-  #   :host     => 'localhost',
-  #   :port     => '5984',
-  #   :prefix   => 'padrino',
-  #   :suffix   => nil,
-  #   :join     => '_',
-  #   :username => nil,
-  #   :password => nil
+  #   protocol: 'http',
+  #   host: 'localhost',
+  #   port: '5984',
+  #   prefix: 'padrino',
+  #   suffix: nil,
+  #   join: '_',
+  #   username: nil,
+  #   password: nil
   # }
 end
 COUCHREST
 
 def setup_orm
-  require_dependencies 'couchrest_model', :version => '~>1.1.0'
+  require_dependencies 'couchrest_model', version: '~>1.1.0'
   require_dependencies 'json_pure'
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @project_name.underscore))
 end
@@ -36,7 +36,7 @@ class !NAME! < CouchRest::Model::Base
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }

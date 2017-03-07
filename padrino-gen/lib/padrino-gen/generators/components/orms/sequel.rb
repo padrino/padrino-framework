@@ -2,9 +2,9 @@ SEQUEL = (<<-SEQUEL) unless defined?(SEQUEL)
 Sequel::Model.plugin(:schema)
 Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
 Sequel::Model.db = case Padrino.env
-  when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
-  when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
-  when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
+  when :development then Sequel.connect(!DB_DEVELOPMENT!, loggers: [logger])
+  when :production  then Sequel.connect(!DB_PRODUCTION!,  loggers: [logger])
+  when :test        then Sequel.connect(!DB_TEST!,        loggers: [logger])
 end
 SEQUEL
 
@@ -17,7 +17,7 @@ def setup_orm
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
     sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{db}_test\"")
-    require_dependencies 'mysql', :version => "~> 2.8.1"
+    require_dependencies 'mysql', version: "~> 2.8.1"
     'mysql'
   when 'mysql', 'mysql2'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql2://localhost/#{db}_development\"")
@@ -48,7 +48,7 @@ class !NAME! < Sequel::Model
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
@@ -80,8 +80,8 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-         :column_format => Proc.new { |field, kind| "#{kind.underscore.camelize} :#{field}" },
-         :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
+         column_format: Proc.new { |field, kind| "#{kind.underscore.camelize} :#{field}" },
+         base: SQ_MIGRATION, up: SQ_MODEL_UP_MG, down: SQ_MODEL_DOWN_MG)
 end
 
 SQ_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
@@ -92,8 +92,8 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
-    :remove => Proc.new { |field, kind| "drop_column :#{field}" }
+    base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
+    add: Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
+    remove: Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end

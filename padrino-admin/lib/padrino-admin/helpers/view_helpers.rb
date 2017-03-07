@@ -17,7 +17,7 @@ module Padrino
         #   tag_icon(:edit, :list)
         #
         def tag_icon(icon, tag = nil)
-          content = content_tag(:i, '', :class=> "fa fa-#{icon}")
+          content = content_tag(:i, '', class: "fa fa-#{icon}")
           content << " #{tag}"
         end
 
@@ -32,10 +32,10 @@ module Padrino
         # @return [String] The translated word for the current locale.
         #
         # @example
-        #   # => t("padrino.admin.profile",  :default => "Profile")
+        #   # => t("padrino.admin.profile",  default: "Profile")
         #   pat(:profile)
         #
-        #   # => t("padrino.admin.profile",  :default => "My Profile")
+        #   # => t("padrino.admin.profile",  default: "My Profile")
         #   pat(:profile, "My Profile")
         #
         def padrino_admin_translate(word, *args)
@@ -56,11 +56,11 @@ module Padrino
         # @return [String] The translated attribute name for the current locale.
         #
         # @example
-        #   # => t("models.account.attributes.email", :default => "Email")
+        #   # => t("models.account.attributes.email", default: "Email")
         #   mat(:account, :email)
         #
         def model_attribute_translate(model, attribute)
-          t("models.#{model}.attributes.#{attribute}", :default => attribute.to_s.humanize)
+          t("models.#{model}.attributes.#{attribute}", default: attribute.to_s.humanize)
         end
         alias :t_attr :model_attribute_translate
         alias :mat :t_attr
@@ -74,11 +74,11 @@ module Padrino
         # @return [String] The translated model name for the current locale.
         #
         # @example
-        #   # => t("models.account.name", :default => "Account")
+        #   # => t("models.account.name", default: "Account")
         #   mt(:account)
         #
         def model_translate(model)
-          t("models.#{model}.name", :default => model.to_s.humanize)
+          t("models.#{model}.name", default: model.to_s.humanize)
         end
         alias :mt :model_translate
       end

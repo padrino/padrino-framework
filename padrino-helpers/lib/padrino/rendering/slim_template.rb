@@ -1,7 +1,7 @@
 module Padrino
   module Rendering
     class SlimOutputBuffer < Temple::Generators::StringBuffer
-      define_options :buffer_class => 'SafeBuffer'
+      define_options buffer_class: 'SafeBuffer'
 
       def call(exp)
         [preamble, compile(exp), postamble].flatten.compact.join('; '.freeze)
@@ -29,8 +29,8 @@ end
 Tilt.prefer(Padrino::Rendering::SlimTemplate, :slim)
 
 Padrino::Rendering.engine_configurations[:slim] = {
-  :generator => Padrino::Rendering::SlimOutputBuffer,
-  :buffer => "@_out_buf",
-  :use_html_safe => true,
-  :disable_capture => true,
+  generator: Padrino::Rendering::SlimOutputBuffer,
+  buffer: "@_out_buf",
+  use_html_safe: true,
+  disable_capture: true,
 }

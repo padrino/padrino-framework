@@ -90,7 +90,7 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { :name => column.name, :field_type => field_type(column.type) }
+            { name: column.name, field_type: field_type(column.type) }
           end
         end
 
@@ -141,10 +141,10 @@ module Padrino
         def find_by_ids(params=nil)
           case orm
             when :ohm then "#{klass_name}.fetch(#{params})"
-            when :datamapper then "#{klass_name}.all(:id => #{params})"
-            when :sequel then "#{klass_name}.where(:id => #{params})"
+            when :datamapper then "#{klass_name}.all(id: #{params})"
+            when :sequel then "#{klass_name}.where(id: #{params})"
             when :mongoid then "#{klass_name}.find(#{params})"
-            when :couchrest then "#{klass_name}.all(:keys => #{params})"
+            when :couchrest then "#{klass_name}.all(keys: #{params})"
             when :dynamoid then "#{klass_name}.find(#{params})"
             else find(params)
           end

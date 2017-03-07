@@ -5,7 +5,7 @@ describe "Dependencies" do
     before do
       @log_level = Padrino::Logger::Config[:test]
       @io = StringIO.new
-      Padrino::Logger::Config[:test] = { :log_level => :error, :stream => @io }
+      Padrino::Logger::Config[:test] = { log_level: :error, stream: @io }
       Padrino::Logger.setup!
     end
 

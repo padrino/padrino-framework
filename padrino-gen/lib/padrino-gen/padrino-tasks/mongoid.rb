@@ -18,7 +18,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       end
 
       def enum_mongoid_documents(collection)
-        collection.find({}, :timeout => false, :sort => "_id") do |cursor|
+        collection.find({}, timeout: false, sort: "_id") do |cursor|
           cursor.each do |doc|
             yield doc
           end
@@ -43,24 +43,24 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       end
 
       def enum_mongoid_documents(collection)
-        collection.find.sort(:_id => 1).each do |doc|
+        collection.find.sort(_id: 1).each do |doc|
           yield doc
         end
       end
 
       def rename_mongoid_collection(collection, new_name)
         db_name = collection.database.name
-        collection.database.session.with(:database => :admin) do |admin|
+        collection.database.session.with(database: :admin) do |admin|
           admin.command(
-            :renameCollection => "#{db_name}.#{collection.name}",
-            :to               => "#{db_name}.#{new_name}",
-            :dropTarget       => true)
+            renameCollection: "#{db_name}.#{collection.name}",
+            to: "#{db_name}.#{new_name}",
+            dropTarget: true)
         end
       end
     end
 
     desc 'Drops all the collections for the database for the current Padrino.env'
-    task :drop => :environment do
+    task drop: :environment do
       mongoid_collections.select {|c| c.name !~ /system/ }.each(&:drop)
     end
 
@@ -85,7 +85,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     desc 'Create the indexes defined on your mongoid models'
-    task :create_indexes => :environment do
+    task create_indexes: :environment do
       get_mongoid_models.each(&:create_indexes)
     end
 
@@ -110,7 +110,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     desc "Convert string objectids in mongo database to ObjectID type"
-    task :objectid_convert => :environment do
+    task objectid_convert: :environment do
       collection_names.each do |collection_name|
         puts "Converting #{collection_name} to use ObjectIDs"
 
@@ -124,7 +124,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         # Convert collection documents.
         enum_mongoid_documents(collection) do |doc|
           new_doc = convert_ids(doc)
-          new_collection.insert(new_doc, :safe => true)
+          new_collection.insert(new_doc, safe: true)
         end
 
         puts "Done! Converted collection is in #{new_collection.name}\n\n"
@@ -161,7 +161,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     desc "Clean up old collections backed up by objectid_convert"
-    task :cleanup_old_collections => :environment do
+    task cleanup_old_collections: :environment do
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
         mongoid_new_collection(collection, "#{collection.name}_old").drop
@@ -169,7 +169,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     desc "Generates .yml files for I18n translations"
-    task :translate => :environment do
+    task translate: :environment do
       models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
       models.each do |m|

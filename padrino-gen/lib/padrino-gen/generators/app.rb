@@ -16,12 +16,12 @@ module Padrino
       include Padrino::Generators::Actions
 
       desc "Description:\n\n\tpadrino-gen app generates a new Padrino application"
-      argument     :name,      :desc => 'The name of your padrino application'
-      class_option :root,      :desc => 'The root destination',                     :aliases => '-r', :default => '.',   :type => :string
-      class_option :destroy,                                                        :aliases => '-d', :default => false, :type => :boolean
-      class_option :tiny,      :desc => 'Generate tiny app skeleton',               :aliases => '-i', :default => false, :type => :boolean
-      class_option :namespace, :desc => 'The name space of your padrino project',   :aliases => '-n', :default => '',    :type => :string
-      class_option :force,     :desc => 'Generate app files if app already exists', :aliases => '-f', :default => false, :type => :boolean
+      argument     :name,      desc: 'The name of your padrino application'
+      class_option :root,      desc: 'The root destination',                     aliases: '-r', default: '.',   type: :string
+      class_option :destroy,                                                        aliases: '-d', default: false, type: :boolean
+      class_option :tiny,      desc: 'Generate tiny app skeleton',               aliases: '-i', default: false, type: :boolean
+      class_option :namespace, desc: 'The name space of your padrino project',   aliases: '-n', default: '',    type: :string
+      class_option :force,     desc: 'Generate app files if app already exists', aliases: '-f', default: false, type: :boolean
 
       # Show help if no ARGV given
       require_arguments!
@@ -52,9 +52,9 @@ module Padrino
           app_skeleton(lowercase_app_folder, options[:tiny])
           empty_directory destination_root("public/#{lowercase_app_folder}")
 
-          mount_command = "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n"
+          mount_command = "\nPadrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n"
           if File.read(destination_root('config/apps.rb')).match(/^Padrino.mount.*\.to\('\/'\)$/)
-            inject_into_file destination_root('config/apps.rb'), mount_command, :before => /^Padrino.mount.*\.to\('\/'\)$/
+            inject_into_file destination_root('config/apps.rb'), mount_command, before: /^Padrino.mount.*\.to\('\/'\)$/
           else
             append_file destination_root('config/apps.rb'), mount_command
           end

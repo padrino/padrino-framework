@@ -7,19 +7,19 @@ module Padrino
         ##
         # StandardFormBuilder
         #
-        #   text_field_block(:username, { :class => 'long' }, { :class => 'wide-label' })
-        #   text_area_block(:summary, { :class => 'long' }, { :class => 'wide-label' })
-        #   password_field_block(:password, { :class => 'long' }, { :class => 'wide-label' })
-        #   file_field_block(:photo, { :class => 'long' }, { :class => 'wide-label' })
-        #   check_box_block(:remember_me, { :class => 'long' }, { :class => 'wide-label' })
-        #   select_block(:color, :options => ['green', 'black'])
+        #   text_field_block(:username, { class: 'long' }, { class: 'wide-label' })
+        #   text_area_block(:summary, { class: 'long' }, { class: 'wide-label' })
+        #   password_field_block(:password, { class: 'long' }, { class: 'wide-label' })
+        #   file_field_block(:photo, { class: 'long' }, { class: 'wide-label' })
+        #   check_box_block(:remember_me, { class: 'long' }, { class: 'wide-label' })
+        #   select_block(:color, options: ['green', 'black'])
         #
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
           class_eval <<-EOF
           def #{field_type}_block(field, options={}, label_options={})
             if options[:caption]
               options = options.dup
-              label_options = { :caption => options.delete(:caption) }.update(label_options)
+              label_options = { caption: options.delete(:caption) }.update(label_options)
             end
             field_html = label(field, label_options)
             field_html << #{field_type}(field, options)

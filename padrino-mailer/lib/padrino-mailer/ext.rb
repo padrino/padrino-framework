@@ -59,9 +59,9 @@ module Mail # @private
     #  text_part { render('multipart/basic.text') }
     #
     def text_part(value = nil, &block)
-      add_resolved_part(:variable     => :text_part,
-                        :value        => value,
-                        :content_type => 'text/plain',
+      add_resolved_part(variable: :text_part,
+                        value: value,
+                        content_type: 'text/plain',
                         &block)
     end
 
@@ -75,18 +75,18 @@ module Mail # @private
     #  html_part { render('multipart/basic.html') }
     #
     def html_part(value = nil, &block)
-      add_resolved_part(:variable     => :html_part,
-                        :value        => value,
-                        :content_type => 'text/html',
+      add_resolved_part(variable: :html_part,
+                        value: value,
+                        content_type: 'text/html',
                         &block)
     end
 
     def add_resolved_part(attributes = {}, &block)
       variable, value, content_type = attributes.values_at(:variable, :value, :content_type)
       if block_given? || value
-        instance_variable_set "@#{variable}", self.part(:content_type => content_type,
-                                                        :body => value,
-                                                        :part_block => block)
+        instance_variable_set "@#{variable}", self.part(content_type: content_type,
+                                                        body: value,
+                                                        part_block: block)
         add_multipart_alternate_header if self.send(variable)
       else
         instance_variable_get("@#{variable}") || find_first_mime_type(content_type)
@@ -98,9 +98,9 @@ module Mail # @private
     #
     # @example
     #  mail = Mail.new do
-    #    part :content_type => "multipart/alternative", :content_disposition => "inline" do |p|
-    #      p.part :content_type => "text/plain", :body => "test text\nline #2"
-    #      p.part :content_type => "text/html", :body => "<b>test</b> HTML<br/>\nline #2"
+    #    part content_type: "multipart/alternative", content_disposition: "inline" do |p|
+    #      p.part content_type: "text/plain", body: "test text\nline #2"
+    #      p.part content_type: "text/html", body: "<b>test</b> HTML<br/>\nline #2"
     #    end
     #  end
     #

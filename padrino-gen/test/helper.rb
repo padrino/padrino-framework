@@ -24,7 +24,7 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
   js/right.js ujs/right.js
   js/protopak.js js/lowpro.js ujs/prototype.js
 ].each do |suffix|
-  FakeWeb.register_uri(:get, fake_uri_base + suffix, :body => '')
+  FakeWeb.register_uri(:get, fake_uri_base + suffix, body: '')
 end
 
 class MiniTest::Spec
@@ -39,7 +39,7 @@ class MiniTest::Spec
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
   end
 
-  # generate_with_parts(:app, "demo", "--root=/tmp/sample_project", :apps => "subapp")
+  # generate_with_parts(:app, "demo", "--root=/tmp/sample_project", apps: "subapp")
   # This method is intended to reproduce the real environment.
   def generate_with_parts(name, *params)
     features, constants = [$", Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
@@ -64,7 +64,7 @@ class MiniTest::Spec
     Padrino.expects(:bin_gen).with(generator, *params.split(' ')).returns(true)
   end
 
-  # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
+  # expects_generated_project test: :shoulda, orm: :activerecord, dev: true
   def expects_generated_project(options={})
     options = options.dup
     project_root = options.delete(:root)
@@ -84,7 +84,7 @@ class MiniTest::Spec
 
   # expects_initializer :test, "# Example"
   def expects_initializer(name, body,options={})
-    #options.reverse_merge!(:root => "/tmp/sample_project")
+    #options.reverse_merge!(root: "/tmp/sample_project")
     path = File.join(options[:root],'config/initializers',"#{name}.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
@@ -95,7 +95,7 @@ class MiniTest::Spec
 
   # expects_rake "custom"
   def expects_rake(command,options={})
-    #options.reverse_merge!(:root => '/tmp')
+    #options.reverse_merge!(root: '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
   end
 end

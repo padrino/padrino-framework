@@ -32,7 +32,7 @@ describe "Message" do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        locals  :foo => "Im Foo!"
+        locals  foo: "Im Foo!"
         body    erb("<%= foo %>")
       end
 
@@ -78,7 +78,7 @@ describe "Message" do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        render  'sample/foo', :layout => :"layouts/sample"
+        render  'sample/foo', layout: :"layouts/sample"
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -160,7 +160,7 @@ describe "Message" do
         to      'padrino@you.com'
         subject 'Hello there Padrino'
         views        File.dirname(__FILE__) + '/fixtures/views/mailers'
-        partial 'partial/object', :collection => objects
+        partial 'partial/object', collection: objects
       end
 
       assert_equal "Object 1<br>\nObject 2<br>\nObject &lt;evil&gt;<br>\nObject <good><br>", message.body.to_s.chomp

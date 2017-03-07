@@ -54,12 +54,12 @@ module Padrino
     # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
-      :fatal =>  4,
-      :error =>  3,
-      :warn  =>  2,
-      :info  =>  1,
-      :debug =>  0,
-      :devel => -1,
+      fatal:  4,
+      error:  3,
+      warn:  2,
+      info:  1,
+      debug:  0,
+      devel: -1,
     } unless defined?(Levels)
 
     module Extensions
@@ -229,12 +229,12 @@ module Padrino
     module Colorize
       # Colors for levels
       ColoredLevels = {
-        :fatal => [:bold, :red],
-        :error => [:default, :red],
-        :warn  => [:default, :yellow],
-        :info  => [:default, :green],
-        :debug => [:default, :cyan],
-        :devel => [:default, :magenta]
+        fatal: [:bold, :red],
+        error: [:default, :red],
+        warn: [:default, :yellow],
+        info: [:default, :green],
+        debug: [:default, :cyan],
+        devel: [:default, :magenta]
       } unless defined?(ColoredLevels)
 
       ##
@@ -245,7 +245,7 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(:color => colors[0], :mode => colors[1])
+        string.colorize(color: colors[0], mode: colors[1])
       end
 
       def stylized_level(level)
@@ -279,7 +279,7 @@ module Padrino
     # :colorize_logging:: Whether or not to colorize log messages. Defaults to: true
     #
     # @example
-    #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
+    #   Padrino::Logger::Config[:development] = { log_level: :debug, stream: :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
     #   # or change log file path
@@ -291,19 +291,19 @@ module Padrino
     #
     # Defaults are:
     #
-    #   :production  => { :log_level => :warn, :stream => :to_file }
-    #   :development => { :log_level => :debug, :stream => :stdout }
-    #   :test        => { :log_level => :fatal, :stream => :null }
+    #   production: { log_level: :warn, stream: :to_file }
+    #   development: { log_level: :debug, stream: :stdout }
+    #   test: { log_level: :fatal, stream: :null }
     #
     # In some cases, configuring the loggers before loading the framework is necessary.
     # You can do so by setting PADRINO_LOGGER:
     #
-    #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
+    #   PADRINO_LOGGER = { staging: { log_level: :debug, stream: :to_file }}
     #
     Config = {
-      :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => '' },
-      :test        => { :log_level => :debug, :stream => :null }
+      production: { log_level: :warn,  stream: :to_file },
+      development: { log_level: :debug, stream: :stdout, format_datetime: '' },
+      test: { log_level: :debug, stream: :null }
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
@@ -354,7 +354,7 @@ module Padrino
           else config[:stream] # return itself, probabilly is a custom stream.
         end
 
-        Padrino::Logger.new(config.merge(:stream => stream))
+        Padrino::Logger.new(config.merge(stream: stream))
       end
     end
 
@@ -418,7 +418,7 @@ module Padrino
       return unless @buffer.size > 0
       @@mutex.synchronize do
         @buffer.each do |line|
-          line.encode!(@sanitize_encoding, :invalid => :replace, :undef => :replace) if @sanitize_encoding
+          line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding
           @log.write(line)
         end
         @buffer.clear

@@ -16,9 +16,9 @@ describe "Router" do
       }, [""]]
     }
     map = Padrino::Router.new(
-      { :path => '/bar',     :to => app },
-      { :path => '/foo/bar', :to => app },
-      { :path => '/foo',     :to => app }
+      { path: '/bar',     to: app },
+      { path: '/foo/bar', to: app },
+      { path: '/foo',     to: app }
     )
 
     res = Rack::MockRequest.new(map).get("/")
@@ -88,8 +88,8 @@ describe "Router" do
       }, [""]]
     }
     map = Padrino::Router.new(
-      { :path => '/bar',     :to => api },
-      { :path => '/bar',     :to => app }
+      { path: '/bar',     to: api },
+      { path: '/bar',     to: app }
     )
 
     res = Rack::MockRequest.new(map).get("/werewolf")
@@ -143,9 +143,9 @@ describe "Router" do
     end
 
     map = Padrino::Router.new(
-        { :path => '/bar',     :to => api },
-        { :path => '/bar',   :to => app  },
-        { :path => '/bar',     :to => app2 }
+        { path: '/bar',     to: api },
+        { path: '/bar',   to: app  },
+        { path: '/bar',     to: app2 }
     )
 
     res = Rack::MockRequest.new(map).get("/bar/scary")
@@ -173,8 +173,8 @@ describe "Router" do
     end
 
     map = Padrino::Router.new(
-        { :path => '/bar',   :to => app  },
-        { :path => '/bar',     :to => app2 }
+        { path: '/bar',   to: app  },
+        { path: '/bar',     to: app2 }
     )
 
     request_case = lambda {
@@ -190,19 +190,19 @@ describe "Router" do
 
   it 'should dispatches hosts correctly' do
     map = Padrino::Router.new(
-     { :host => "foo.org", :to => lambda { |env|
+     { host: "foo.org", to: lambda { |env|
        [200,
         { "Content-Type" => "text/plain",
           "X-Position" => "foo.org",
           "X-Host" => env["HTTP_HOST"] || env["SERVER_NAME"],
         }, [""]]}},
-     { :host => "subdomain.foo.org", :to => lambda { |env|
+     { host: "subdomain.foo.org", to: lambda { |env|
        [200,
         { "Content-Type" => "text/plain",
           "X-Position" => "subdomain.foo.org",
           "X-Host" => env["HTTP_HOST"] || env["SERVER_NAME"],
         }, [""]]}},
-     { :host => /.*\.bar.org/, :to => lambda { |env|
+     { host: /.*\.bar.org/, to: lambda { |env|
        [200,
         { "Content-Type" => "text/plain",
           "X-Position" => "bar.org",
@@ -269,9 +269,9 @@ describe "Router" do
       [200, {'Content-Type' => 'text/plain'}, [""]]
     }
     map = Padrino::Router.new(
-      { :path => '/bar',     :to => app },
-      { :path => '/foo/bar', :to => app },
-      { :path => '/foo',     :to => app }
+      { path: '/bar',     to: app },
+      { path: '/foo/bar', to: app },
+      { path: '/foo',     to: app }
     )
 
     env = Rack::MockRequest.env_for("/bar/foo")

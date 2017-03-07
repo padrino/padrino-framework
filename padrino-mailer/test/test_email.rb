@@ -29,11 +29,11 @@ describe "Email" do
         register Padrino::Mailer
         get "/" do
           email({
-            :from    => 'padrino@me.com',
-            :to      => 'padrino@you.com',
-            :subject => 'Hello there Padrino',
-            :body    => 'Body',
-            :via     => :test
+            from: 'padrino@me.com',
+            to: 'padrino@you.com',
+            subject: 'Hello there Padrino',
+            body: 'Body',
+            via: :test
           })
         end
       end
@@ -75,7 +75,7 @@ describe "Email" do
         set :views, File.dirname(__FILE__) + '/fixtures/views'
         set :delivery_method, :test
         mailer :alternate do
-          defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
+          defaults from: 'padrino@from.com', to: 'padrino@to.com'
           email :foo do
             to 'padrino@different.com'
             subject 'Hello there again Padrino'
@@ -99,7 +99,7 @@ describe "Email" do
         register Padrino::Mailer
         set :delivery_method, :test
         set :views, File.dirname(__FILE__) + '/fixtures/views'
-        set :mailer_defaults, :from => 'padrino@from.com', :to => 'padrino@to.com', :subject => "This is a test"
+        set :mailer_defaults, from: 'padrino@from.com', to: 'padrino@to.com', subject: "This is a test"
         mailer :alternate do
           email :foo do
             to 'padrino@different.com'

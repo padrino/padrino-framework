@@ -31,7 +31,7 @@ module Padrino
         end
 
         def label(field, options={}, &block)
-          @template.label_tag(field_id(field), { :caption => "#{field_human_name(field)}: " }.update(options), &block)
+          @template.label_tag(field_id(field), { caption: "#{field_human_name(field)}: " }.update(options), &block)
         end
 
         def hidden_field(field, options={})
@@ -88,10 +88,10 @@ module Padrino
         end
 
         def check_box(field, options={})
-          options = default_options(field, options, :value => '1')
+          options = default_options(field, options, value: '1')
           options[:checked] = true if is_checked?(field, options)
           name = field_name(field)
-          html = @template.hidden_field_tag(name, :value => options.delete(:uncheck_value) || '0')
+          html = @template.hidden_field_tag(name, value: options.delete(:uncheck_value) || '0')
           html << @template.check_box_tag(name, options)
         end
 
@@ -154,10 +154,10 @@ module Padrino
           collection ||= default_collection
           include_index = default_collection.respond_to?(:each)
 
-          nested_options = { :parent => self, :association => child_association }
+          nested_options = { parent: self, association: child_association }
           Array(collection).each_with_index.inject(SafeBuffer.new) do |all,(child_instance,index)|
             nested_options[:index] = options[:index] || (include_index ? index : nil)
-            all << @template.fields_for(child_instance,  { :nested => nested_options, :builder => self.class }, &block) << "\n"
+            all << @template.fields_for(child_instance,  { nested: nested_options, builder: self.class }, &block) << "\n"
           end
         end
 
@@ -179,7 +179,7 @@ module Padrino
         # Returns the human name of the field. Look that use builtin I18n.
         #
         def field_human_name(field)
-          I18n.translate("#{model_name}.attributes.#{field}", :count => 1, :default => Inflections.humanize(field), :scope => :models)
+          I18n.translate("#{model_name}.attributes.#{field}", count: 1, default: Inflections.humanize(field), scope: :models)
         end
 
         ##
@@ -239,14 +239,14 @@ module Padrino
         # Builds a group of labels for radios or checkboxes.
         #
         def labeled_group(field, options={})
-          options = { :id => field_id(field), :selected => field_value(field) }.update(options)
+          options = { id: field_id(field), selected: field_value(field) }.update(options)
           options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
           variants_for_group(options).inject(SafeBuffer.new) do |html, (caption,value)|
             variant_id = "#{options[:id]}_#{value}"
-            attributes = { :value => value, :id => variant_id, :checked => selected_values.include?(value) }
+            attributes = { value: value, id: variant_id, checked: selected_values.include?(value) }
             caption = yield(attributes) << ' ' << caption
-            html << @template.label_tag("#{field_name(field)}[]", :for => variant_id, :caption => caption)
+            html << @template.label_tag("#{field_name(field)}[]", for: variant_id, caption: caption)
           end
         end
 
@@ -308,12 +308,12 @@ module Padrino
 
         def error_class(field)
           error = @object.errors[field] if @object.respond_to?(:errors)
-          error.nil? || error.empty? ? {} : { :class => 'invalid' }
+          error.nil? || error.empty? ? {} : { class: 'invalid' }
         end
 
         def default_options(field, options, defaults={})
-          { :value => field_value(field),
-            :id => field_id(field)
+          { value: field_value(field),
+            id: field_id(field)
           }.update(defaults).update(options).update(error_class(field)){ |_,*values| values.compact.join(' ') }
         end
       end

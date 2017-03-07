@@ -1,5 +1,5 @@
 MONGO = (<<-MONGO) unless defined?(MONGO)
-MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
+MongoMapper.connection = Mongo::Connection.new('localhost', nil, logger: logger)
 
 case Padrino.env
   when :development then MongoMapper.database = '!NAME!_development'
@@ -10,8 +10,8 @@ MONGO
 
 def setup_orm
   require_dependencies 'mongo_mapper'
-  require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'activemodel', :version => '< 5'
+  require_dependencies 'bson_ext', require: 'mongo'
+  require_dependencies 'activemodel', version: '< 5'
   create_file("config/database.rb", MONGO.gsub(/!NAME!/, @project_name.underscore))
 end
 
@@ -25,7 +25,7 @@ class !NAME!
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }

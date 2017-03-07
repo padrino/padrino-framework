@@ -14,7 +14,7 @@ module Padrino
       #   Options to use to generate the project.
       #
       # @example
-      #   project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
+      #   project test: :shoulda, orm: :activerecord, renderer: "haml"
       #
       def project(options={})
         components = options.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }

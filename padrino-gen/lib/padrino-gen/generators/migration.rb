@@ -15,10 +15,10 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen migration generates a new migration file"
 
-      argument :name, :desc => 'The name of your padrino migration'
-      argument :columns, :desc => 'The columns for the migration', :type => :array, :default => []
-      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
+      argument :name, desc: 'The name of your padrino migration'
+      argument :columns, desc: 'The columns for the migration', type: :array, default: []
+      class_option :root, desc: 'The root destination', aliases: '-r', default: '.', type: :string
+      class_option :destroy, aliases: '-d', default: false, type: :boolean
 
       # Show help if no ARGV given.
       require_arguments!

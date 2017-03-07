@@ -19,19 +19,19 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
 
-      argument :name, :desc => 'The name of your padrino project'
+      argument :name, desc: 'The name of your padrino project'
 
-      class_option :app ,             :desc => 'The application name',                                             :aliases => '-n', :default => nil,         :type => :string
-      class_option :bundle,           :desc => 'Run bundle install',                                               :aliases => '-b', :default => false,       :type => :boolean
-      class_option :root,             :desc => 'The root destination',                                             :aliases => '-r', :default => '.',         :type => :string
-      class_option :dev,              :desc => 'Use padrino from a git checkout',                                                    :default => false,       :type => :boolean
-      class_option :tiny,             :desc => 'Generate tiny app skeleton',                                       :aliases => '-i', :default => false,       :type => :boolean
-      class_option :lean,             :desc => 'Generate lean project without apps',                               :aliases => '-l', :default => false,       :type => :boolean
-      class_option :api,              :desc => 'Generate minimal project for APIs',                                                  :default => false,       :type => :boolean
-      class_option :template,         :desc => 'Generate project from template',                                   :aliases => '-p', :default => nil,         :type => :string
-      class_option :gem,              :desc => 'Generate project as a gem',                                        :aliases => '-g', :default => false,       :type => :boolean
-      class_option :migration_format, :desc => 'Filename format for migrations (number, timestamp)',                                 :default => 'number',    :type => :string
-      class_option :adapter,          :desc => 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', :aliases => '-a', :default => 'sqlite',    :type => :string
+      class_option :app ,             desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
+      class_option :bundle,           desc: 'Run bundle install',                                               aliases: '-b', default: false,       type: :boolean
+      class_option :root,             desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
+      class_option :dev,              desc: 'Use padrino from a git checkout',                                                    default: false,       type: :boolean
+      class_option :tiny,             desc: 'Generate tiny app skeleton',                                       aliases: '-i', default: false,       type: :boolean
+      class_option :lean,             desc: 'Generate lean project without apps',                               aliases: '-l', default: false,       type: :boolean
+      class_option :api,              desc: 'Generate minimal project for APIs',                                                  default: false,       type: :boolean
+      class_option :template,         desc: 'Generate project from template',                                   aliases: '-p', default: nil,         type: :string
+      class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
+      class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                                 default: 'number',    type: :string
+      class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
 
       # Definitions for the available customizable components.
       defines_component_options
@@ -62,7 +62,7 @@ module Padrino
           store_component_config('.components')
           unless options[:lean]
             app_skeleton('app', options[:tiny])
-            append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('app/app.rb')).to('/')\n"
+            append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('app/app.rb')).to('/')\n"
           end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
@@ -115,8 +115,8 @@ module Padrino
 
           directory_name = [:rspec].include?(test_component.to_sym) ? "spec" : "test"
           base_path      = File.join(directory_name, "app")
-          create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, :skip => true
-          create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     :skip => true
+          create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, skip: true
+          create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     skip: true
           helper_path = destination_root(File.join(directory_name, "#{directory_name == "spec" ? "spec_helper" : "test_config"}.rb"))
           gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, "helpers.rb"
         end

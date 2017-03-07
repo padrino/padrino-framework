@@ -30,7 +30,7 @@ describe "Rendering" do
           "this is a <%= yield %>"
         end
 
-        get("/"){ render :erb, "sinatra layout", :layout => true }
+        get("/"){ render :erb, "sinatra layout", layout: true }
       end
 
       get "/"
@@ -65,7 +65,7 @@ describe "Rendering" do
         with_view :index, "index" do
           mock_app do
             get("/with/layout"){ render :index }
-            get("/without/layout"){ render :index, :layout => false }
+            get("/without/layout"){ render :index, layout: false }
           end
           get "/with/layout"
           assert_equal "this is an index", body
@@ -78,9 +78,9 @@ describe "Rendering" do
     it 'should not use layout with js format' do
       create_layout :application, "this is an <%= yield %>"
       create_view :foo, "erb file"
-      create_view :foo, "js file", :format => :js
+      create_view :foo, "js file", format: :js
       mock_app do
-        get('/layout_test', :provides => [:html, :js]){ render :foo }
+        get('/layout_test', provides: [:html, :js]){ render :foo }
       end
       get "/layout_test"
       assert_equal "this is an erb file", body
@@ -91,7 +91,7 @@ describe "Rendering" do
     it 'should set and restore layout in controllers' do
       create_layout :boo, "boo is a <%= yield %>"
       create_layout :moo, "moo is a <%= yield %>"
-      create_view :foo, "liquid file", :format => :liquid
+      create_view :foo, "liquid file", format: :liquid
       mock_app do
         layout :boo
         controller :moo do
@@ -110,11 +110,11 @@ describe "Rendering" do
 
     it 'should use correct layout for each format' do
       create_layout :application, "this is an <%= yield %>"
-      create_layout :application, "document start <%= yield %> end", :format => :xml
+      create_layout :application, "document start <%= yield %> end", format: :xml
       create_view :foo, "erb file"
-      create_view :foo, "xml file", :format => :xml
+      create_view :foo, "xml file", format: :xml
       mock_app do
-        get('/layout_test', :provides => [:html, :xml]){ render :foo }
+        get('/layout_test', provides: [:html, :xml]){ render :foo }
       end
       get "/layout_test"
       assert_equal "this is an erb file", body
@@ -123,10 +123,10 @@ describe "Rendering" do
     end
 
     it 'should by default use html file when no other is given' do
-      create_layout :baz, "html file", :format => :html
+      create_layout :baz, "html file", format: :html
 
       mock_app do
-        get('/content_type_test', :provides => [:html, :xml]) { render :baz }
+        get('/content_type_test', provides: [:html, :xml]) { render :baz }
       end
 
       get "/content_type_test"
@@ -144,7 +144,7 @@ describe "Rendering" do
       mock_app do
         not_found do
           content_type 'text/html'
-          render 'e404', :layout => :error
+          render 'e404', layout: :error
         end
       end
       get '/missing'
@@ -156,7 +156,7 @@ describe "Rendering" do
       mock_app do
         get("/") {
           content_type "text/x-markdown; charset=UTF-8"
-          render "index.erb", { :layout => nil }
+          render "index.erb", { layout: nil }
         }
       end
       get "/"
@@ -164,10 +164,10 @@ describe "Rendering" do
     end
 
     it 'should not use html file when DEFAULT_RENDERING_OPTIONS[:strict_format] == true' do
-      create_layout :foo, "html file", :format => :html
+      create_layout :foo, "html file", format: :html
 
       mock_app do
-        get('/default_rendering_test', :provides => [:html, :xml]) { render :foo }
+        get('/default_rendering_test', provides: [:html, :xml]) { render :foo }
       end
 
       @save = Padrino::Rendering::DEFAULT_RENDERING_OPTIONS
@@ -199,11 +199,11 @@ describe "Rendering" do
         end
         controller :baz do
           layout :baz
-          get("/"){ render :erb, "baz", :layout => true }
+          get("/"){ render :erb, "baz", layout: true }
         end
         controller :none do
           get("/") { render :erb, "none" }
-          get("/with_foo_layout")  { render :erb, "none with layout", :layout => :foo }
+          get("/with_foo_layout")  { render :erb, "none with layout", layout: :foo }
         end
       end
       get "/foo"
@@ -226,8 +226,8 @@ describe "Rendering" do
     create_layout :"layouts/bar", "bar layout <%= yield %>"
     mock_app do
       get("/") { render :erb, "none" }
-      get("/foo") { render :erb, "foo", :layout => :foo }
-      get("/bar") { render :erb, "bar", :layout => :bar }
+      get("/foo") { render :erb, "foo", layout: :foo }
+      get("/bar") { render :erb, "bar", layout: :bar }
     end
     get "/"
     assert_equal "none", body
@@ -238,14 +238,14 @@ describe "Rendering" do
   end
 
   it 'should allow to render template with layout option that using other template engine.' do
-    create_layout :"layouts/foo", "application layout for <%= yield %>", :format => :erb
-    create_view :slim, "| slim", :format => :slim
-    create_view :haml, "haml", :format => :haml
-    create_view :erb, "erb", :format => :erb
+    create_layout :"layouts/foo", "application layout for <%= yield %>", format: :erb
+    create_view :slim, "| slim", format: :slim
+    create_view :haml, "haml", format: :haml
+    create_view :erb, "erb", format: :erb
     mock_app do
-      get("/slim") { render("slim.slim", :layout => "foo.erb") }
-      get("/haml") { render("haml.haml", :layout => "foo.erb") }
-      get("/erb") { render("erb.erb", :layout => "foo.erb") }
+      get("/slim") { render("slim.slim", layout: "foo.erb") }
+      get("/haml") { render("haml.haml", layout: "foo.erb") }
+      get("/erb") { render("erb.erb", layout: "foo.erb") }
     end
     get "/slim"
     assert_equal "application layout for slim", body.chomp
@@ -256,10 +256,10 @@ describe "Rendering" do
   end
 
   it 'should allow to use extension with layout method.' do
-    create_layout :"layouts/bar", "application layout for <%= yield %>", :format => :erb
-    create_view :slim, "| slim", :format => :slim
-    create_view :haml, "haml", :format => :haml
-    create_view :erb, "erb", :format => :erb
+    create_layout :"layouts/bar", "application layout for <%= yield %>", format: :erb
+    create_view :slim, "| slim", format: :slim
+    create_view :haml, "haml", format: :haml
+    create_view :erb, "erb", format: :erb
     mock_app do
       layout "bar.erb"
       get("/slim") { render("slim.slim") }
@@ -275,10 +275,10 @@ describe "Rendering" do
   end
 
   it 'should find a layout by symbol' do
-    create_layout :"layouts/bar", "application layout for <%= yield %>", :format => :erb
-    create_view :slim, "| slim", :format => :slim
-    create_view :haml, "haml", :format => :haml
-    create_view :erb, "erb", :format => :erb
+    create_layout :"layouts/bar", "application layout for <%= yield %>", format: :erb
+    create_view :slim, "| slim", format: :slim
+    create_view :haml, "haml", format: :haml
+    create_view :erb, "erb", format: :erb
     mock_app do
       layout :bar
       get("/slim") { render("slim.slim") }
@@ -294,8 +294,8 @@ describe "Rendering" do
   end
 
   it 'should not apply default layout to unsupported layout engines' do
-    create_layout :application, "erb template <%= yield %>", :format => :erb
-    create_view 'foo', "xml.instruct!", :format => :builder
+    create_layout :application, "erb template <%= yield %>", format: :erb
+    create_view 'foo', "xml.instruct!", format: :builder
     mock_app do
       get('/layout_test.xml' ){ render :foo }
     end
@@ -310,7 +310,7 @@ describe "Rendering" do
       create_view :index, "<%= foo %>"
       mock_app do
         enable :logging
-        get("/") { render "index", { :layout => nil }, { :foo => "bar" } }
+        get("/") { render "index", { layout: nil }, { foo: "bar" } }
       end
       get "/"
       assert_equal "bar", body
@@ -321,7 +321,7 @@ describe "Rendering" do
       create_view :index, "<%= foo %>"
       mock_app do
         enable :logging
-        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+        get("/") { render "index", { layout: true }, { foo: "bar" } }
       end
       get "/"
       assert_equal "layout bar", body
@@ -339,7 +339,7 @@ describe "Rendering" do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
-        get("/") { render "index", { :layout => true }, { :foo => "bar" } }
+        get("/") { render "index", { layout: true }, { foo: "bar" } }
       end
       get "/"
       assert_equal "layout bar", body
@@ -349,7 +349,7 @@ describe "Rendering" do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
-        get("/") { render :erb, :index, { :layout => true }, { :foo => "bar" } }
+        get("/") { render :erb, :index, { layout: true }, { foo: "bar" } }
       end
       get "/"
       assert_equal "layout bar", body
@@ -359,7 +359,7 @@ describe "Rendering" do
       create_layout :application, "layout <%= yield %>"
       create_view :index, "<%= foo %>"
       mock_app do
-        get("/") { render nil, :index, { :layout => true }, { :foo => "bar" } }
+        get("/") { render nil, :index, { layout: true }, { foo: "bar" } }
       end
       get "/"
       assert_equal "layout bar", body
@@ -401,10 +401,10 @@ describe "Rendering" do
     end
 
     it 'should resolve template content type' do
-      create_view :foo, "Im Js", :format => :js
+      create_view :foo, "Im Js", format: :js
       create_view :foo, "Im Erb"
       mock_app do
-        get("/foo", :provides => :js) { render :foo }
+        get("/foo", provides: :js) { render :foo }
         get("/bar.js") { render :foo }
       end
       get "/foo.js"
@@ -415,13 +415,13 @@ describe "Rendering" do
     end
 
     it 'should resolve with explicit template format' do
-      create_view :foo, "Im Js", :format => :js
-      create_view :foo, "Im Haml", :format => :haml
-      create_view :foo, "Im Xml", :format => :xml
+      create_view :foo, "Im Js", format: :js
+      create_view :foo, "Im Haml", format: :haml
+      create_view :foo, "Im Xml", format: :xml
       mock_app do
-        get("/foo_normal", :provides => :js) { render 'foo' }
-        get("/foo_haml", :provides => :js) { render 'foo.haml' }
-        get("/foo_xml", :provides => :js) { render 'foo.xml' }
+        get("/foo_normal", provides: :js) { render 'foo' }
+        get("/foo_haml", provides: :js) { render 'foo.haml' }
+        get("/foo_xml", provides: :js) { render 'foo.xml' }
       end
       get "/foo_normal.js"
       assert_equal "Im Js", body
@@ -433,9 +433,9 @@ describe "Rendering" do
 
     it 'should resolve without explict template format' do
       create_view :foo, "Im Html"
-      create_view :foo, "xml.rss", :format => :rss
+      create_view :foo, "xml.rss", format: :rss
       mock_app do
-        get(:index, :map => "/", :provides => [:html, :rss]){ render 'foo' }
+        get(:index, map: "/", provides: [:html, :rss]){ render 'foo' }
       end
       get "/", {}, { 'HTTP_ACCEPT' => 'text/html;q=0.9' }
       assert_equal "Im Html", body
@@ -444,9 +444,9 @@ describe "Rendering" do
     end
 
     it 'should ignore files ending in tilde and not render them' do
-      create_view :foo, "Im Wrong", :format => 'haml~'
-      create_view :foo, "Im Haml",  :format => :haml
-      create_view :bar, "Im Haml backup", :format => 'haml~'
+      create_view :foo, "Im Wrong", format: 'haml~'
+      create_view :foo, "Im Haml",  format: :haml
+      create_view :bar, "Im Haml backup", format: 'haml~'
       mock_app do
         get('/foo') { render 'foo' }
         get('/bar') { render 'bar' }
@@ -457,8 +457,8 @@ describe "Rendering" do
     end
 
     it 'should resolve template locale' do
-      create_view :foo, "Im English", :locale => :en
-      create_view :foo, "Im Italian", :locale => :it
+      create_view :foo, "Im English", locale: :en
+      create_view :foo, "Im Italian", locale: :it
       mock_app do
         get("/foo") { render :foo }
       end
@@ -471,14 +471,14 @@ describe "Rendering" do
     end
 
     it 'should resolve template content_type and locale' do
-      create_view :foo, "Im Js",          :format => :js
+      create_view :foo, "Im Js",          format: :js
       create_view :foo, "Im Erb"
-      create_view :foo, "Im English Erb", :locale => :en
-      create_view :foo, "Im Italian Erb", :locale => :it
-      create_view :foo, "Im English Js",  :format => :js, :locale => :en
-      create_view :foo, "Im Italian Js",  :format => :js, :locale => :it
+      create_view :foo, "Im English Erb", locale: :en
+      create_view :foo, "Im Italian Erb", locale: :it
+      create_view :foo, "Im English Js",  format: :js, locale: :en
+      create_view :foo, "Im Italian Js",  format: :js, locale: :it
       mock_app do
-        get("/foo", :provides => [:html, :js]) { render :foo }
+        get("/foo", provides: [:html, :js]) { render :foo }
       end
 
       I18n.enforce_available_locales = false
@@ -515,29 +515,29 @@ describe "Rendering" do
 
     it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
-        get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }
+        get("/foo") { render 'apps/views/blog/post', layout: 'layout', views: File.dirname(__FILE__)+'/fixtures' }
       end
       get '/foo'
       assert_match /okay absolute layout/, body
     end
 
     it 'should resolve template content_type and locale with layout' do
-      create_layout :foo, "Hello <%= yield %> in a Js layout",     :format => :js
-      create_layout :foo, "Hello <%= yield %> in a Js-En layout",  :format => :js, :locale => :en
-      create_layout :foo, "Hello <%= yield %> in a Js-It layout",  :format => :js, :locale => :it
-      create_layout :foo, "Hello <%= yield %> in a Erb-En layout", :locale => :en
-      create_layout :foo, "Hello <%= yield %> in a Erb-It layout", :locale => :it
+      create_layout :foo, "Hello <%= yield %> in a Js layout",     format: :js
+      create_layout :foo, "Hello <%= yield %> in a Js-En layout",  format: :js, locale: :en
+      create_layout :foo, "Hello <%= yield %> in a Js-It layout",  format: :js, locale: :it
+      create_layout :foo, "Hello <%= yield %> in a Erb-En layout", locale: :en
+      create_layout :foo, "Hello <%= yield %> in a Erb-It layout", locale: :it
       create_layout :foo, "Hello <%= yield %> in a Erb layout"
-      create_view   :bar, "Im Js",          :format => :js
+      create_view   :bar, "Im Js",          format: :js
       create_view   :bar, "Im Erb"
-      create_view   :bar, "Im English Erb", :locale => :en
-      create_view   :bar, "Im Italian Erb", :locale => :it
-      create_view   :bar, "Im English Js",  :format => :js, :locale => :en
-      create_view   :bar, "Im Italian Js",  :format => :js, :locale => :it
-      create_view   :bar, "Im a json",      :format => :json
+      create_view   :bar, "Im English Erb", locale: :en
+      create_view   :bar, "Im Italian Erb", locale: :it
+      create_view   :bar, "Im English Js",  format: :js, locale: :en
+      create_view   :bar, "Im Italian Js",  format: :js, locale: :it
+      create_view   :bar, "Im a json",      format: :json
       mock_app do
         layout :foo
-        get("/bar", :provides => [:html, :js, :json]) { render :bar }
+        get("/bar", provides: [:html, :js, :json]) { render :bar }
       end
 
       I18n.enforce_available_locales = false
@@ -607,10 +607,10 @@ describe "Rendering" do
           "this is a <%= yield %>"
         end
         get '/' do
-          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>', :layout => false
+          render :erb, '<p><%= %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>} %></p>', layout: false
         end
         get '/with_layout' do
-          render :erb, '<span>span</span>', :layout => true
+          render :erb, '<span>span</span>', layout: true
         end
       end
       get '/'
@@ -628,10 +628,10 @@ describe "Rendering" do
           "%p= yield"
         end
         get '/' do
-          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+          render :haml, '%p= %s{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', layout: false
         end
         get '/with_layout' do
-          render :haml, "%div\n  foo", :layout => true
+          render :haml, "%div\n  foo", layout: true
         end
       end
       get '/'
@@ -649,10 +649,10 @@ describe "Rendering" do
           "p= yield"
         end
         get '/' do
-          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', :layout => false
+          render :slim, 'p = %q{<script lang="ronin">alert("https://github.com/ronin-ruby/ronin")</script>}', layout: false
         end
         get "/with_layout" do
-          render :slim, 'div foo', :layout => true
+          render :slim, 'div foo', layout: true
         end
       end
       get '/'
@@ -689,7 +689,7 @@ describe "Rendering" do
       class Application < Sinatra::Base
         register Padrino::Rendering
         get '/' do
-          render :post, :views => File.dirname(__FILE__)+'/fixtures/apps/views/blog'
+          render :post, views: File.dirname(__FILE__)+'/fixtures/apps/views/blog'
         end
       end
       @app = Application.new

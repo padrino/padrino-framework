@@ -3,15 +3,15 @@ AR = (<<-AR) unless defined?(AR)
 # You can use other adapters like:
 #
 #   ActiveRecord::Base.configurations[:development] = {
-#     :adapter   => 'mysql2',
-#     :encoding  => 'utf8',
-#     :reconnect => true,
-#     :database  => 'your_database',
-#     :pool      => 5,
-#     :username  => 'root',
-#     :password  => '',
-#     :host      => 'localhost',
-#     :socket    => '/tmp/mysql.sock'
+#     adapter: 'mysql2',
+#     encoding: 'utf8',
+#     reconnect: true,
+#     database: 'your_database',
+#     pool: 5,
+#     username: 'root',
+#     password: '',
+#     host: 'localhost',
+#     socket: '/tmp/mysql.sock'
 #   }
 #
 ActiveRecord::Base.configurations[:development] = {
@@ -59,41 +59,41 @@ ActiveRecord::Base.default_timezone = :utc
 AR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
-  :adapter   => 'mysql',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+  adapter: 'mysql',
+  encoding: 'utf8',
+  reconnect: true,
+  database: !DB_NAME!,
+  pool: 5,
+  username: 'root',
+  password: '',
+  host: 'localhost',
+  socket: '/tmp/mysql.sock'
 MYSQL
 
 MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
-  :adapter   => 'mysql2',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+  adapter: 'mysql2',
+  encoding: 'utf8',
+  reconnect: true,
+  database: !DB_NAME!,
+  pool: 5,
+  username: 'root',
+  password: '',
+  host: 'localhost',
+  socket: '/tmp/mysql.sock'
 MYSQL2
 
 POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
-  :adapter   => 'postgresql',
-  :database  => !DB_NAME!,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :port      => 5432
+  adapter: 'postgresql',
+  database: !DB_NAME!,
+  username: 'root',
+  password: '',
+  host: 'localhost',
+  port: 5432
 POSTGRES
 
 SQLITE = (<<-SQLITE) unless defined?(SQLITE)
-  :adapter => 'sqlite3',
-  :database => !DB_NAME!
+  adapter: 'sqlite3',
+  database: !DB_NAME!
 SQLITE
 
 CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
@@ -117,7 +117,7 @@ def setup_orm
     ar.sub! /!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_development'")
     ar.sub! /!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_production'")
     ar.sub! /!DB_TEST!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql', :version => "~> 2.8.1"
+    require_dependencies 'mysql', version: "~> 2.8.1"
   when 'mysql', 'mysql2'
     ar.sub! /!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_development'")
     ar.sub! /!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_production'")
@@ -134,7 +134,7 @@ def setup_orm
     ar.sub! /!DB_TEST!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
     require_dependencies 'sqlite3'
   end
-  require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
+  require_dependencies 'activerecord', require: 'active_record', version: ">= 3.1"
   create_file("config/database.rb", ar)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
@@ -145,11 +145,11 @@ class !NAME! < ActiveRecord::Base
 end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = AR_MODEL.sub(/!NAME!/, name.to_s.underscore.camelize)
-  create_file(model_path, model_contents,:skip => true)
+  create_file(model_path, model_contents,skip: true)
 end
 
 
@@ -178,10 +178,10 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :up            => AR_MODEL_UP_MG,
-    :down          => AR_MODEL_DOWN_MG
+    base: AR_MIGRATION,
+    column_format: Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    up: AR_MODEL_UP_MG,
+    down: AR_MODEL_DOWN_MG
   )
 end
 
@@ -193,9 +193,9 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :change_format => AR_CHANGE_MG,
-    :add           => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove        => Proc.new { |field, kind| "t.remove :#{field}" }
+    base: AR_MIGRATION,
+    change_format: AR_CHANGE_MG,
+    add: Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    remove: Proc.new { |field, kind| "t.remove :#{field}" }
   )
 end

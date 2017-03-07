@@ -39,7 +39,7 @@ Given /^I visit the calculator page$/ do
 end
 
 Given /^I fill in '(.*)' for '(.*)'$/ do |value, field|
-  fill_in(field, :with => value)
+  fill_in(field, with: value)
 end
 
 When /^I press '(.*)'$/ do |name|
@@ -72,15 +72,15 @@ World(Cucumber::Web::URLs)
 TEST
 
 def setup_test
-  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'cucumber', :group => 'test'
-  require_dependencies 'capybara', :group => 'test'
-  insert_test_suite_setup CUCUMBER_SETUP, :path => "features/support/env.rb"
+  require_dependencies 'rack-test', require: 'rack/test', group: 'test'
+  require_dependencies 'cucumber', group: 'test'
+  require_dependencies 'capybara', group: 'test'
+  insert_test_suite_setup CUCUMBER_SETUP, path: "features/support/env.rb"
   create_file destination_root("features/support/url.rb"), CUCUMBER_URL
   create_file destination_root("features/add.feature"), CUCUMBER_FEATURE
   create_file destination_root("features/step_definitions/add_steps.rb"), CUCUMBER_STEP
   create_file destination_root("cucumber.yml"), CUCUMBER_YML
-  require_dependencies 'rspec', :group => 'test'
-  insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
+  require_dependencies 'rspec', group: 'test'
+  insert_test_suite_setup RSPEC_SETUP, path: "spec/spec_helper.rb"
   create_file destination_root("spec/spec.rake"), RSPEC_RAKE
 end

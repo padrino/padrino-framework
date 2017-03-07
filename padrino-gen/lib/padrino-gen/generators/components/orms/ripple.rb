@@ -51,12 +51,12 @@ class !NAME!
 
   # Relations
   # many :addresses
-  # many :friends, :class_name => "Person"
+  # many :friends, class_name: "Person"
   # one :account
 end
 
 MODEL
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ["title:string", "body:string"], app: 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }
