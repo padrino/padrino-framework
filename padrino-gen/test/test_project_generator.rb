@@ -444,7 +444,7 @@ describe "ProjectGenerator" do
     it 'should properly generate for erb' do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--script=none') }
       assert_match(/applying.*?erb.*?renderer/, out)
-      assert_match_in_file(/gem 'erubis'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'erubi'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     it 'should properly generate for haml' do
