@@ -622,6 +622,22 @@ describe "Rendering" do
       assert_equal 'this is a <span>span</span>', body
     end
 
+    it 'should render unescaped erb if requested' do
+      mock_app do
+        layout do
+          "<%= yield %>"
+        end
+
+        get "/" do
+          render  :erb, '<%== "<script></script>" %>'
+        end
+      end
+
+      get "/"
+      assert ok?
+      assert_equal "<script></script>", body
+    end
+
     it 'should render haml to a SafeBuffer' do
       mock_app do
         layout do

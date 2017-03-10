@@ -7,7 +7,7 @@ module Padrino
         end
 
         def add_expression_result_escaped(code)
-          @src << " #{bufvar}.safe_concat #{@escapefunc}((" << code << "));"
+          @src << " #{bufvar}.safe_concat (" << code << ");"
         end
 
         def add_text(text)
@@ -21,8 +21,6 @@ module Padrino
     end
 
     class ErubiTemplate < Tilt::ErubiTemplate
-      include SafeTemplate
-
       def precompiled_preamble(*)
         "__in_erb_template = true\n" << super
       end
