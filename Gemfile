@@ -35,7 +35,7 @@ group :development do
   else
     gem "erubis",    ">= 2.7.0"
   end
-  gem "erubi"
+  gem "erubi",     ">= 1.6.0"
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
   gem "mustermann19"
