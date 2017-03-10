@@ -11,11 +11,7 @@ module Padrino
         end
 
         def add_text(text)
-          @src << " #{bufvar}.safe_concat '" << escape_text(text) << "';" unless text.empty?
-        end
-
-        def escape_text(text)
-          text.gsub(/['\\]/, '\\\\\&')
+          @src << " #{bufvar}.safe_concat '" << text.gsub(/['\\]/, '\\\\\&') << "';" unless text.empty?
         end
       end
     end
