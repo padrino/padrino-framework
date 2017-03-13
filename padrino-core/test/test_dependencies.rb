@@ -53,5 +53,17 @@ describe "Dependencies" do
       assert_equal ["name"], F.fields
       assert_equal "", @io.string
     end
+
+    it 'should not silence LoadError raised in dependencies excluded from reloading' do
+      capture_io do
+        assert_raises(LoadError) do
+          Padrino::Reloader.exclude << Padrino.root("fixtures/dependencies/linear/h.rb")
+          Padrino.require_dependencies(
+            Padrino.root("fixtures/dependencies/linear/h.rb"),
+            Padrino.root("fixtures/dependencies/linear/i.rb"),
+          )
+        end
+      end
+    end
   end
 end

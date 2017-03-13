@@ -142,7 +142,7 @@ module Padrino
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
     def require_dependencies(*paths)
-      options = (paths.last.is_a?(Hash) ? paths.pop : {}).merge( :cyclic => true )
+      options = { :cyclic => true }.update(paths.last.is_a?(Hash) ? paths.pop : {})
 
       files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 
@@ -155,6 +155,7 @@ module Padrino
             files.delete(file)
             loaded = true
           rescue NameError, LoadError => error
+            raise if Reloader.exclude.any?{ |path| file.start_with?(path) } || options[:cyclic] == false
             logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
           rescue Exception => fatal
             break
