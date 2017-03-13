@@ -550,7 +550,7 @@ describe "Routing" do
 
   it 'should generate routes for format simple' do
     mock_app do
-      get(:foo, :provides => [:html, :rss]) { render :haml, "Test" }
+      get(:foo, :provides => [:html, :rss]) { "Test\n" }
     end
     get "/foo"
     assert_equal "Test\n", body
@@ -664,8 +664,8 @@ describe "Routing" do
   it 'should generate routes for format with controller' do
     mock_app do
       controller :posts do
-        get(:index, :provides => [:html, :rss, :atom, :js]) { render :haml, "Index.#{content_type}" }
-        get(:show,  :with => :id, :provides => [:html, :rss, :atom]) { render :haml, "Show.#{content_type}" }
+        get(:index, :provides => [:html, :rss, :atom, :js]) { "Index.#{content_type}\n" }
+        get(:show,  :with => :id, :provides => [:html, :rss, :atom]) { "Show.#{content_type}\n" }
       end
     end
     get "/posts"

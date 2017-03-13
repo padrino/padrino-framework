@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require 'haml'
 
 class PadrinoPristine < Padrino::Application; end
 class PadrinoTestApp  < Padrino::Application; end
