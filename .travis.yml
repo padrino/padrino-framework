@@ -38,7 +38,9 @@ matrix:
     - rvm: 2.2.2
       env: SINATRA_EDGE=true
     - rvm: 2.1
-      env: STDLIB_ERB=true
+      env: ERB_ENGINE=stdlib
+    - rvm: 2.1
+      env: ERB_ENGINE=erubis
     - rvm: 2.1
       env: AS_VERSION=3.2
   allow_failures:

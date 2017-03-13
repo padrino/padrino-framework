@@ -622,7 +622,8 @@ describe "Rendering" do
       assert_equal 'this is a <span>span</span>', body
     end
 
-    it 'should render unescaped erb if requested' do
+    it 'should render unescaped html on == token (Erubis and Erubi)' do
+      skip if ENV['ERB_ENGINE'] == 'stdlib'
       mock_app do
         layout do
           "<%= yield %>"

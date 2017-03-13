@@ -30,12 +30,15 @@ group :development do
   gem "oga",       "~> 2.5"
   gem "haml",      ">= 4.0.5"
   gem "liquid",    ">= 2.1.2", "< 4"
-  if ENV['STDLIB_ERB']
+  case ENV['ERB_ENGINE']
+  when "stdlib"
     puts "=> Using stdlib ERB engine"
-  else
+  when "erubis"
+    puts "=> Using Erubis ERB engine"
     gem "erubis",    ">= 2.7.0"
+  else
+    gem "erubi",     ">= 1.6.0"
   end
-  gem "erubi",     ">= 1.6.0"
   gem "slim",      ">= 1.3.0"
   gem "builder",    ">= 2.1.2"
   gem "mustermann19"
