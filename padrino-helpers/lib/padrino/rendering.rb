@@ -365,6 +365,15 @@ unless defined? Padrino::Rendering::HamlTemplate
   end
 end
 
+unless defined? Padrino::Rendering::HamlitTemplate
+  begin
+    require 'hamlit'
+  rescue LoadError
+  else
+    require 'padrino/rendering/hamlit_template'
+  end
+end
+
 unless defined? Padrino::Rendering::ErubisTemplate
   begin
     require 'erubis'

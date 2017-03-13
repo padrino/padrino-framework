@@ -28,8 +28,13 @@ group :development do
   gem "rack-test", "~> 0.6.3"
   gem "fakeweb",   ">= 1.2.8"
   gem "oga",       "~> 2.5"
-  gem "haml",      ">= 4.0.5"
   gem "liquid",    ">= 2.1.2", "< 4"
+  if ENV['HAML_ENGINE'] == 'haml'
+    puts "=> Using Haml Haml engine"
+    gem "haml", ">= 4.0.5"
+  else
+    gem "hamlit", "< 2.8.0"
+  end
   case ENV['ERB_ENGINE']
   when "stdlib"
     puts "=> Using stdlib ERB engine"

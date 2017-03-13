@@ -1,3 +1,3 @@
 def setup_renderer
-  require_dependencies 'haml'
+  require_dependencies 'hamlit'
 end

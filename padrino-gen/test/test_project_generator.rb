@@ -450,7 +450,7 @@ describe "ProjectGenerator" do
     it 'should properly generate for haml' do
       out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none') }
       assert_match(/applying.*?haml.*?renderer/, out)
-      assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'hamlit'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     it 'should properly generate for liquid' do
@@ -621,7 +621,7 @@ describe "ProjectGenerator" do
 
     it 'should properly generate for scss' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=scss') }
-      assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'hamlit'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
       assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
