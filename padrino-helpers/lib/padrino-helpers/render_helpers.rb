@@ -31,7 +31,7 @@ module Padrino
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
       def partial(template, options={}, &block)
-        options = { :locals => {}, :layout => false }.update(options)
+        options = options.dup
         explicit_engine = options.delete(:engine)
 
         path, _, name = template.to_s.rpartition(File::SEPARATOR)
@@ -44,15 +44,15 @@ module Padrino
           [[options.delete(:object)], nil]
         end
 
-        locals = options[:locals]
+        locals = options.delete(:locals) || {}
         items.each_with_object(SafeBuffer.new) do |item,html|
           locals[item_name] = item if item
           locals["#{item_name}_counter".to_sym] = counter += 1 if counter
           content =
             if block_given?
-              concat_content render(explicit_engine, template_path, options){ capture_html(&block) }
+              concat_content(render(explicit_engine, template_path, options, locals) { capture_html(&block) })
             else
-              render(explicit_engine, template_path, options)
+              render(explicit_engine, template_path, options, locals)
             end
           html.safe_concat content if content
         end
@@ -65,7 +65,6 @@ module Padrino
             fail "gem 'tilt' is required" unless defined?(::Tilt)
 
             def render(engine, file=nil, options={}, locals=nil, &block)
-              locals ||= options[:locals] || {}
               engine, file = file, engine if file.nil?
               template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
               fail "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
