@@ -183,7 +183,24 @@ module Padrino
         return nil if blocks.empty?
         blocks.inject(SafeBuffer.new){ |all,content| all << capture_html(*args, &content) }
       end
-
+      
+      ##
+      # Is there a content block for a given key?
+      #
+      # @param [Symbol] key
+      #   Name of content to yield
+      #
+      # @return [TrueClass,FalseClass] Result html for the given +key+
+      #
+      # @example
+      #   content_for? :header
+      #
+      # @api public
+      def content_for?(key)
+        blocks = content_blocks[key.to_sym]
+        !(blocks.nil? || blocks.empty?)
+      end
+        
       protected
       ##
       # Retrieves content_blocks stored by content_for or within yield_content.
