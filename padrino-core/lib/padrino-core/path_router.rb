@@ -54,8 +54,7 @@ module Padrino
       ##
       # Finds a path which is matched with conditions from arguments
       #
-      def path(name, *args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+      def path(name, *args, **params)
         candidates = @routes.select { |route| route.name == name }
         fail InvalidRouteException if candidates.empty?
         route = candidates.sort_by! { |candidate|

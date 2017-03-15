@@ -38,8 +38,7 @@ module Padrino
         #   # => t("padrino.admin.profile",  :default => "My Profile")
         #   pat(:profile, "My Profile")
         #
-        def padrino_admin_translate(word, *args)
-          options = args.last.is_a?(Hash) ? args.pop : {}
+        def padrino_admin_translate(word, *args, **options)
           options[:default] ||= word.to_s.humanize
           t("padrino.admin.#{word}", options)
         end

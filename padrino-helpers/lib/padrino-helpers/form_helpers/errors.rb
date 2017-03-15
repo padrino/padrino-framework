@@ -36,8 +36,7 @@ module Padrino
         # @example
         #   error_messages_for :user
         #
-        def error_messages_for(*objects)
-          options = objects.last.is_a?(Hash) ? Utils.symbolize_keys(objects.pop) : {}
+        def error_messages_for(*objects, **options)
           objects = objects.map{ |obj| resolve_object(obj) }.compact
           count   = objects.inject(0){ |sum, object| sum + object.errors.count }
           return SafeBuffer.new if count.zero?

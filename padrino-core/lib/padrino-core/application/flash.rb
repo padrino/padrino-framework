@@ -202,9 +202,7 @@ module Padrino
       #
       # @since 0.10.8
       # @api public
-      def redirect(url, *args)
-        flashes = args.last.is_a?(Hash) ? args.pop : {}
-
+      def redirect(url, *args, **flashes)
         flashes.each do |type, message|
           message = I18n.translate(message) if message.is_a?(Symbol) && defined?(I18n)
           flash[type] = message

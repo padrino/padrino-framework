@@ -306,8 +306,7 @@ WARNING
       #   require_dependencies('mocha', 'bacon', :group => 'test')
       #   require_dependencies('json', :version => ">=1.2.3")
       #
-      def require_dependencies(*gem_names)
-        options = gem_names.last.is_a?(Hash) ? gem_names.pop : {}
+      def require_dependencies(*gem_names, **options)
         gem_names.reverse_each { |lib| insert_into_gemfile(lib, options) }
       end
 

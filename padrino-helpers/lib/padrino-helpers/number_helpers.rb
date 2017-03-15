@@ -133,9 +133,7 @@ module Padrino
       #   number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
       #   # => 98 765 432,98
       #
-      def number_with_delimiter(number, *args)
-        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
-
+      def number_with_delimiter(number, *args, **options)
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
         delimiter ||= (options[:delimiter] || defaults[:delimiter])
@@ -176,9 +174,7 @@ module Padrino
       #   number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
       #   # => 1.111,23
       #
-      def number_with_precision(number, *args)
-        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
-
+      def number_with_precision(number, *args, **options)
         defaults           = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
                                                                         :raise => true) rescue {}
@@ -234,10 +230,8 @@ module Padrino
       #   number_to_human_size(483989, :precision => 0)                      # => 473 KB
       #   number_to_human_size(1234567, :precision => 2, :separator => ',')  # => 1,18 MB
       #
-      def number_to_human_size(number, *args)
+      def number_to_human_size(number, *args, **options)
         return nil if number.nil?
-
-        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}

@@ -216,8 +216,7 @@ module Padrino
       #
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
-      def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def construct_filter(*args, **options, &block)
         if except = options.delete(:except)
           fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
           except = Array(except)
@@ -337,8 +336,7 @@ module Padrino
       #   url(:controller_show, :id => 29)
       #   url(:index, :fragment => 'comments')
       #
-      def url(*args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+      def url(*args, **params)
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
@@ -402,9 +400,7 @@ module Padrino
       CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
 
       # Saves controller options, yields the block, restores controller options.
-      def with_new_options(*args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
-
+      def with_new_options(*args, **options)
         CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)
         replace_instance_variable(:@_defaults, options)

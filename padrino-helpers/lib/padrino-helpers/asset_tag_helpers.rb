@@ -29,8 +29,7 @@ module Padrino
       #   # Generates: <div class="error">flash-error</div>
       #   # <div class="success">flash-success</div>
       #
-      def flash_tag(*args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def flash_tag(*args, **options)
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
         args.inject(SafeBuffer.new) do |html,kind|
           next html unless flash[kind]
@@ -81,8 +80,7 @@ module Padrino
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
       # condition padrino return true/false if the request.path_info match the given url.
       #
-      def link_to(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def link_to(*args, **options, &block)
         name = block_given? ? '' : args.shift
         href = args.first
         options = { :href => href ? escape_link(href) : '#' }.update(options)
@@ -239,11 +237,11 @@ module Padrino
       #   stylesheet_link_tag 'style', 'application', 'layout'
       #
       # @api public.
-      def stylesheet_link_tag(*sources)
+      def stylesheet_link_tag(*sources, **options)
         options = {
           :rel => 'stylesheet',
           :type => 'text/css'
-        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        }.update(options)
         sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << tag(:link, { :href => asset_path(:css, source) }.update(options))
         end
@@ -263,10 +261,10 @@ module Padrino
       # @example
       #   javascript_include_tag 'application', :extjs
       #
-      def javascript_include_tag(*sources)
+      def javascript_include_tag(*sources, **options)
         options = {
           :type => 'text/javascript'
-        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        }.update(options)
         sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
         end

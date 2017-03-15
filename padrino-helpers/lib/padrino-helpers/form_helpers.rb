@@ -142,8 +142,7 @@ module Padrino
       #   field_set_tag(:class => "office-set") { }
       #   field_set_tag("Office", :class => 'office-set') { }
       #
-      def field_set_tag(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def field_set_tag(*args, **options, &block)
         legend_html = args.empty? ? SafeBuffer.new : content_tag(:legend, args.first)
         concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
@@ -523,8 +522,7 @@ module Padrino
       #   submit_tag "Create", :class => 'success'
       #   submit_tag :class => 'btn'
       #
-      def submit_tag(*args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def submit_tag(*args, **options)
         caption = args.length >= 1 ? args.first : "Submit"
         input_tag(:submit, { :value => caption }.merge(options))
       end
@@ -577,8 +575,7 @@ module Padrino
       #   #   <input type="submit" value="Delete" />
       #   # </form>
       #
-      def button_to(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def button_to(*args, **options, &block)
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}

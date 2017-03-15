@@ -141,8 +141,8 @@ module Padrino
     # @example For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
-    def require_dependencies(*paths)
-      options = { :cyclic => true }.update(paths.last.is_a?(Hash) ? paths.pop : {})
+    def require_dependencies(*paths, **options)
+      options = { :cyclic => true }.update(options)
 
       files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 

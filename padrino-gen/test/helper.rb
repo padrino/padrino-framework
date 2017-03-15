@@ -41,13 +41,12 @@ class MiniTest::Spec
 
   # generate_with_parts(:app, "demo", "--root=/tmp/sample_project", :apps => "subapp")
   # This method is intended to reproduce the real environment.
-  def generate_with_parts(name, *params)
+  def generate_with_parts(name, *params, **options)
     features, constants = [$", Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
 
     if root = params.find{|x| x.index(/\-r=|\-\-root=/) }
       root = root.split(/=/)[1]
-      options, model_path = {}, File.expand_path(File.join(root, "/models/**/*.rb"))
-      options = params.pop if params.last.is_a?(Hash)
+      model_path = File.expand_path(File.join(root, "/models/**/*.rb"))
       Dir[model_path].each{|path| require path }
       Array(options[:apps]).each do |app_name|
         path = File.expand_path(File.join(root, "/#{app_name}/app.rb"))

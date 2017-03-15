@@ -176,8 +176,7 @@ module Padrino
       # @example
       #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
       #
-      def word_wrap(text, *args)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+      def word_wrap(text, *args, **options)
         unless args.empty?
           options[:line_width] = args[0] || 80
         end
@@ -213,8 +212,8 @@ module Padrino
       #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
-      def highlight(text, words, *args)
-        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
+      def highlight(text, words, *args, **options)
+        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(options)
 
         if text.empty? || words.empty?
           text
