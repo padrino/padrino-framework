@@ -1,5 +1,13 @@
 = CHANGES
 
+== 0.14.0 (2017-03-15)
+- NEW #2120 enable cascading with Rack application (@namusyaka)
+- FIX lock rake < 11.0 to avoid last_comment error (@namusyaka)
+- FIX handle nil database passwords for create_db and drop_db (@phallstrom)
+- FIX #2119 add rake gem tasks to gem project Rakefile
+- NEW support Erubi ERB engine (@adam12)
+- FIX #2125 do not load in cycle files excluded from reloading
+
 == 0.14.0.rc2 (2017-01-19)
 - FIX #2109 change the format of session_id for Padrino Admin AccessControl
 - WARN #2109 Existing sessions will be dropped
