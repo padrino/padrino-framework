@@ -391,19 +391,29 @@ module Padrino
     #   Can be an encoding, false or true.
     #   If it's true, logger sanitizes to Encoding.default_external.
     #
-    def initialize(options={})
+    def initialize(
+      auto_flush: true,
+      log_level: :debug,
+      stream: nil,
+      format_datetime: "%d/%b/%Y %H:%M:%S",
+      format_message: "%s - %s %s",
+      log_static: false,
+      colorize_logging: true,
+      source_location: false,
+      sanitize_encoding: false,
+      **_
+    )
       @buffer           = []
-      @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
-      @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
-      @log              = options[:stream]  || $stdout
+      @auto_flush       = auto_flush
+      @level            = Padrino::Logger::Levels[log_level]
+      @log              = stream || $stdout
       @log.sync         = true
-      @format_datetime  = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message   = options[:format_message]  || "%s - %s %s"
-      @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
-      @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
-      @source_location  = options[:source_location]
-      @sanitize_encoding = options[:sanitize_encoding] || false
-      @sanitize_encoding = Encoding.default_external if @sanitize_encoding == true
+      @format_datetime  = format_datetime
+      @format_message   = format_message
+      @log_static       = log_static
+      @colorize_logging = colorize_logging
+      @source_location  = source_location
+      @sanitize_encoding = sanitize_encoding == true ? Encoding.default_external : sanitize_encoding
       colorize! if @colorize_logging
     end
 

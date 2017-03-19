@@ -75,12 +75,11 @@ module Padrino
         # @return [String] The html display of an error for a particular +object+ and +field+.
         #
         # @api public
-        def error_message_on(object, field, options={})
+        def error_message_on(object, field, tag: :span, prepend: nil, append: nil, **options)
           error = Array(resolve_object(object).errors[field]).first
           return SafeBuffer.new unless error
-          options = { :tag => :span, :class => :error }.update(options)
-          tag   = options.delete(:tag)
-          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
+          options = { :class => :error }.update(options)
+          error = [prepend, error, append].compact.join(" ")
           content_tag(tag, error, options)
         end
 

@@ -323,9 +323,8 @@ WARNING
       #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
       #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       #
-      def insert_into_gemfile(name, options={})
+      def insert_into_gemfile(name, version: nil, **options)
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
-        version       = options.delete(:version)
         gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''

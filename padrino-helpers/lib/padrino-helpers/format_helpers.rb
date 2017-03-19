@@ -124,12 +124,11 @@ module Padrino
       # @example
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
-      def truncate(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+      def truncate(text, length: 30, omission: "...")
         if text
-          len = options[:length] - options[:omission].length
+          len = length - omission.length
           chars = text
-          (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
+          (chars.length > length ? chars[0...len] + omission : text).to_s
         end
       end
 
@@ -151,11 +150,10 @@ module Padrino
       # @example
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
-      def truncate_words(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+      def truncate_words(text, length: 30, omission: "...")
         if text
-          words = text.split()
-          words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
+          words = text.split
+          words[0...length].join(' ') + (words.length > length ? omission : '')
         end
       end
 
@@ -176,14 +174,11 @@ module Padrino
       # @example
       #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
       #
-      def word_wrap(text, *args, **options)
-        unless args.empty?
-          options[:line_width] = args[0] || 80
-        end
-        options = { :line_width => 80 }.update(options)
+      def word_wrap(text, *args, line_width: 80)
+        line_width ||= args[0].to_i || 80 if args[0]
 
         text.split("\n").map do |line|
-          line.length > options[:line_width] ? line.gsub(/(.{1,#{options[:line_width]}})(\s+|$)/, "\\1\n").strip : line
+          line.length > line_width ? line.gsub(/(.{1,#{line_width}})(\s+|$)/, "\\1\n").strip : line
         end * "\n"
       end
 
@@ -212,14 +207,12 @@ module Padrino
       #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
-      def highlight(text, words, *args, **options)
-        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(options)
-
+      def highlight(text, words, highlighter: '<strong class="highlight">\1</strong>')
         if text.empty? || words.empty?
           text
         else
           match = Array(words).map { |p| Regexp.escape(p) }.join('|')
-          text.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
+          text.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, highlighter)
         end
       end
 
@@ -282,7 +275,7 @@ module Padrino
       #   distance_of_time_in_words(to_time, from_time, true)     # => about 6 years
       #   distance_of_time_in_words(Time.now, Time.now)           # => less than a minute
       #
-      def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false, options = {})
+      def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false, locale: nil)
         from_time = from_time.to_time if from_time.respond_to?(:to_time)
         to_time = to_time.to_time if to_time.respond_to?(:to_time)
         distance_in_minutes = (((to_time.to_i - from_time.to_i).abs)/60).round
@@ -324,7 +317,7 @@ module Padrino
                 [:almost_x_years, :count => distance_in_years + 1]
               end
           end
-        I18n.translate phrase, locals.merge(:locale => options[:locale], :scope => :'datetime.distance_in_words')
+        I18n.translate phrase, locals.merge(:locale => locale, :scope => :'datetime.distance_in_words')
       end
 
       ##

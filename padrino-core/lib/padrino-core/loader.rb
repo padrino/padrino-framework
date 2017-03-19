@@ -141,9 +141,7 @@ module Padrino
     # @example For require all our app libs we need to do:
     #   require_dependencies("#{Padrino.root}/lib/**/*.rb")
     #
-    def require_dependencies(*paths, **options)
-      options = { :cyclic => true }.update(options)
-
+    def require_dependencies(*paths, cyclic: true, force: false)
       files = paths.flatten.flat_map{ |path| Dir.glob(path).sort_by{ |filename| filename.count('/') } }.uniq
 
       until files.empty?
@@ -151,11 +149,11 @@ module Padrino
 
         files.dup.each do |file|
           begin
-            Reloader.safe_load(file, options)
+            Reloader.safe_load(file, cyclic: cyclic, force: force)
             files.delete(file)
             loaded = true
           rescue NameError, LoadError => error
-            raise if Reloader.exclude.any?{ |path| file.start_with?(path) } || options[:cyclic] == false
+            raise if Reloader.exclude.any?{ |path| file.start_with?(path) } || !cyclic
             logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
           rescue Exception => fatal
             break

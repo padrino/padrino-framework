@@ -30,21 +30,20 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      def partial(template, options={}, &block)
+      def partial(template, engine: nil, collection: nil, object: nil, locals: {}, **options, &block)
         options = options.dup
-        explicit_engine = options.delete(:engine)
+        explicit_engine = engine
 
         path, _, name = template.to_s.rpartition(File::SEPARATOR)
         template_path = path.empty? ? :"_#{name}" : :"#{path}#{File::SEPARATOR}_#{name}"
         item_name = name.partition('.').first.to_sym
 
-        items, counter = if options[:collection].respond_to?(:inject)
-          [options.delete(:collection), 0]
+        items, counter = if collection.respond_to?(:inject)
+          [collection, 0]
         else
-          [[options.delete(:object)], nil]
+          [[object], nil]
         end
 
-        locals = options.delete(:locals) || {}
         items.each_with_object(SafeBuffer.new) do |item,html|
           locals[item_name] = item if item
           locals["#{item_name}_counter".to_sym] = counter += 1 if counter

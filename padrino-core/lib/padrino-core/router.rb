@@ -49,19 +49,15 @@ module Padrino
     #
     # @return [Array] The sorted route mappings.
     # @api semipublic
-    def map(options={})
-      path = options[:path] || "/"
-      host = options[:host]
-      app  = options[:to]
-
-      raise ArgumentError, "paths need to start with /" if path[0] != ?/
-      raise ArgumentError, "app is required" if app.nil?
+    def map(path: "/", host: nil, to: nil)
+      raise ArgumentError, "paths need to start with /" unless path.start_with?("/")
+      raise ArgumentError, "app is required" if to.nil?
 
       path  = path.chomp('/')
       match = Regexp.new("^#{Regexp.quote(path).gsub('/', '/+')}(.*)", nil, 'n')
       host  = Regexp.new("^#{Regexp.quote(host)}$", true, 'n') unless host.nil? || host.is_a?(Regexp)
 
-      @mapping << [host, path, match, app]
+      @mapping << [host, path, match, to]
     end
 
     # The call handler setup to route a request given the mappings specified.

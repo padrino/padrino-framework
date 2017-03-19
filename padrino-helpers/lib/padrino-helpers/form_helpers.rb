@@ -88,21 +88,20 @@ module Padrino
       # @example
       #   form_tag '/register', :class => "registration_form" do ... end
       #
-      def form_tag(url, options={}, &block)
+      def form_tag(url, protect_from_csrf: is_protected_from_csrf?, multipart: false, **options, &block)
         options = {
           :action => escape_link(url),
-          :protect_from_csrf => is_protected_from_csrf?,
-          'accept-charset' => 'UTF-8'
+          :'accept-charset' => 'UTF-8'
         }.update(options)
-        options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
+        options[:enctype] = 'multipart/form-data' if multipart
 
         if (desired_method = options[:method]) =~ /get/i
-          options.delete(:protect_from_csrf)
+          protect_from_csrf = false
         else
           options[:method] = 'post'
         end
         inner_form_html = hidden_form_method_field(desired_method)
-        inner_form_html << csrf_token_field if options.delete(:protect_from_csrf)
+        inner_form_html << csrf_token_field if protect_from_csrf
         concat_content content_tag(:form, inner_form_html << capture_html(&block), options)
       end
 
@@ -165,10 +164,10 @@ module Padrino
       #   label_tag :username, :class => 'long-label'
       #   label_tag :username, :class => 'long-label' do ... end
       #
-      def label_tag(name, options={}, &block)
-        options = { :caption => "#{Inflections.humanize(name)}: ", :for => name }.update(options)
-        caption_text = SafeBuffer.new << options.delete(:caption)
-        caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
+      def label_tag(name, caption: "#{Inflections.humanize(name)}: ", required: false, **options, &block)
+        options = { :for => name }.update(options)
+        caption_text = SafeBuffer.new << caption
+        caption_text << "<span class='required'>*</span> ".html_safe if required
 
         if block_given?
           concat_content content_tag(:label, caption_text << capture_html(&block), options)
@@ -234,7 +233,7 @@ module Padrino
       #   text_field_tag :username, :placeholder => 'Your Username'
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
-      def text_field_tag(name, options={})
+      def text_field_tag(name, **options)
         input_tag(:text, { :name => name }.update(options))
       end
 
@@ -298,7 +297,7 @@ module Padrino
       #   number_field_tag :age, :min => 18, :max => 120, :step => 1
       #   # => <input name="age" min="18" max="120" step="1" type="number" />
       #
-      def number_field_tag(name, options={})
+      def number_field_tag(name, **options)
         input_tag(:number, { :name => name }.update(options))
       end
 
@@ -319,7 +318,7 @@ module Padrino
       #  # => <input name="work_phone" tabindex="2" type="tel" />
       #  # => <input name="home_phone" tabindex="3" type="tel" />
       #
-      def telephone_field_tag(name, options={})
+      def telephone_field_tag(name, **options)
         input_tag(:tel, { :name => name }.update(options))
       end
       alias_method :phone_field_tag, :telephone_field_tag
@@ -336,7 +335,7 @@ module Padrino
       #   email_field_tag :email, :value => 'padrinorb@gmail.com', :readonly => true
       #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
-      def email_field_tag(name, options={})
+      def email_field_tag(name, **options)
         input_tag(:email, { :name => name }.update(options))
       end
 
@@ -358,7 +357,7 @@ module Padrino
       #  search_field_tag :search, :autofocus => true
       #  # => <input name="search" autofocus type="search" />
       #
-      def search_field_tag(name, options={})
+      def search_field_tag(name, **options)
         input_tag(:search, { :name => name }.update(options))
       end
 
@@ -374,7 +373,7 @@ module Padrino
       #  url_field_tag :home_page, :class => 'string url'
       #  <input name="home_page" class="string url", type="url" />
       #
-      def url_field_tag(name, options={})
+      def url_field_tag(name, **options)
         input_tag(:url, { :name => name }.update(options))
       end
 
@@ -384,7 +383,7 @@ module Padrino
       # @example
       #   hidden_field_tag :session_key, :value => "__secret__"
       #
-      def hidden_field_tag(name, options={})
+      def hidden_field_tag(name, **options)
         input_tag(:hidden, { :name => name }.update(options))
       end
 
@@ -394,8 +393,8 @@ module Padrino
       # @example
       #   text_area_tag :username, :class => 'long', :value => "Demo?"
       #
-      def text_area_tag(name, options={})
-        inner_html = TagHelpers::NEWLINE + options.delete(:value).to_s
+      def text_area_tag(name, value: nil, **options)
+        inner_html = TagHelpers::NEWLINE + value.to_s
         content_tag(:textarea, inner_html, { :name => name }.update(options))
       end
 
@@ -406,7 +405,7 @@ module Padrino
       #   password_field_tag :password, :class => 'long'
       #
       # @api public
-      def password_field_tag(name, options={})
+      def password_field_tag(name, **options)
         input_tag(:password, { :name => name }.update(options))
       end
 
@@ -416,7 +415,7 @@ module Padrino
       # @example
       #   check_box_tag :remember_me, :value => 'Yes'
       #
-      def check_box_tag(name, options={})
+      def check_box_tag(name, **options)
         input_tag(:checkbox, { :name => name, :value => '1' }.update(options))
       end
 
@@ -426,7 +425,7 @@ module Padrino
       # @example
       #   radio_button_tag :remember_me, :value => 'true'
       #
-      def radio_button_tag(name, options={})
+      def radio_button_tag(name, **options)
         input_tag(:radio, { :name => name }.update(options))
       end
 
@@ -437,7 +436,7 @@ module Padrino
       #   file_field_tag :photo, :class => 'long'
       #
       # @api public
-      def file_field_tag(name, options={})
+      def file_field_tag(name, **options)
         name = "#{name}[]" if options[:multiple]
         input_tag(:file, { :name => name }.update(options))
       end
@@ -484,7 +483,7 @@ module Padrino
       #
       # @return [String] The HTML input field based on the +options+ specified.
       #
-      def select_tag(name, options={})
+      def select_tag(name, **options)
         options = { :name => name }.merge(options)
         options[:name] = "#{options[:name]}[]" if options[:multiple]
         content_tag(:select, extract_option_tags!(options), options)
@@ -503,7 +502,7 @@ module Padrino
       # @example
       #   button_tag "Cancel", :class => 'clear'
       #
-      def button_tag(caption, options = {})
+      def button_tag(caption, **options)
         input_tag(:button, { :value => caption }.update(options))
       end
 
@@ -522,8 +521,7 @@ module Padrino
       #   submit_tag "Create", :class => 'success'
       #   submit_tag :class => 'btn'
       #
-      def submit_tag(*args, **options)
-        caption = args.length >= 1 ? args.first : "Submit"
+      def submit_tag(caption="Submit", **options)
         input_tag(:submit, { :value => caption }.merge(options))
       end
 
@@ -540,7 +538,7 @@ module Padrino
       # @example
       #   image_submit_tag 'form/submit.png'
       #
-      def image_submit_tag(source, options={})
+      def image_submit_tag(source, **options)
         input_tag(:image, { :src => image_path(source) }.update(options))
       end
 
@@ -575,10 +573,9 @@ module Padrino
       #   #   <input type="submit" value="Delete" />
       #   # </form>
       #
-      def button_to(*args, **options, &block)
+      def button_to(*args, remote: false, submit_options: {}, **options, &block)
         name, url = *args
-        options['data-remote'] = 'true' if options.delete(:remote)
-        submit_options = options.delete(:submit_options) || {}
+        options[:'data-remote'] = 'true' if remote
         form_tag(url || name, options) do
           if block_given?
             content_tag(:button, capture_html(&block), submit_options)
@@ -607,9 +604,9 @@ module Padrino
       #  The range, in lieu of :min and :max.  See examples for details.
       # @return [String] The html range field
       #
-      def range_field_tag(name, options = {})
+      def range_field_tag(name, range: nil, **options)
         options = { :name => name }.update(options)
-        if range = options.delete(:range)
+        if range
           options[:min], options[:max] = range.min, range.max
         end
         input_tag(:range, options)
@@ -638,7 +635,7 @@ module Padrino
       #  The value of the datetime field. See examples for details.
       # @return [String] The html datetime field
       #
-      def datetime_field_tag(name, options = {})
+      def datetime_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%Y-%m-%dT%T.%L%z", options)
         input_tag(:datetime, options)
@@ -664,7 +661,7 @@ module Padrino
       #  The value of the datetime field. See examples for details.
       # @return [String] The html datetime-local field
       #
-      def datetime_local_field_tag(name, options = {})
+      def datetime_local_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%Y-%m-%dT%T", options)
         input_tag(:"datetime-local", options)
@@ -690,7 +687,7 @@ module Padrino
       #  The value of the date field. See examples for details.
       # @return [String] The html date field
       #
-      def date_field_tag(name, options = {})
+      def date_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%Y-%m-%d", options)
         input_tag(:date, options)
@@ -716,7 +713,7 @@ module Padrino
       #  The value of the month field. See examples for details.
       # @return [String] The html month field
       #
-      def month_field_tag(name, options = {})
+      def month_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%Y-%m", options)
         input_tag(:month, options)
@@ -742,7 +739,7 @@ module Padrino
       #  The value of the week field. See examples for details.
       # @return [String] The html week field
       #
-      def week_field_tag(name, options = {})
+      def week_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%Y-W%W", options)
         input_tag(:week, options)
@@ -768,7 +765,7 @@ module Padrino
       #  The value of the time field. See examples for details.
       # @return [String] The html time field
       #
-      def time_field_tag(name, options = {})
+      def time_field_tag(name, **options)
         options = { :name => name }.update(options)
         options = convert_attributes_into_datetime("%T.%L", options)
         input_tag(:time, options)
@@ -788,7 +785,7 @@ module Padrino
       # @option options [String] :value
       #  The value of the color field. See examples for details.
       #
-      def color_field_tag(name, options = {})
+      def color_field_tag(name, **options)
         options = { :name => name }.update(options)
         options[:value] = adjust_color(options[:value])
         input_tag(:color, options)
@@ -802,10 +799,8 @@ module Padrino
       # @example
       #   builder_instance(@account, :nested => { ... }) => <FormBuilder>
       #
-      def builder_instance(object, options={})
-        default_builder = respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder'
-        builder_class = options.delete(:builder) || default_builder
-        builder_class = Padrino::Helpers::FormBuilder.const_get(builder_class) if builder_class.is_a?(String)
+      def builder_instance(object, builder: respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder', **options)
+        builder_class = builder.is_a?(String) ? Padrino::Helpers::FormBuilder.const_get(builder) : builder
         builder_class.new(self, object, options)
       end
 

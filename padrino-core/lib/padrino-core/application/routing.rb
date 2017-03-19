@@ -36,10 +36,10 @@ module Padrino
 
       alias_method :optional?, :optional
 
-      def initialize(value, options={})
+      def initialize(value, map: nil, optional: nil, **options)
         super(value.to_s)
-        @map      = options.delete(:map)
-        @optional = options.delete(:optional)
+        @map      = map
+        @optional = optional
         @options  = options
       end
     end
@@ -216,12 +216,8 @@ module Padrino
       #
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
-      def construct_filter(*args, **options, &block)
-        if except = options.delete(:except)
-          fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
-          except = Array(except)
-          options = except.last.is_a?(Hash) ? except.pop : {}
-        end
+      def construct_filter(*args, except: nil, **options, &block)
+        fail "You cannot use :except with other options specified" if except && (!args.empty? || !options.empty?)
         Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
 
@@ -249,10 +245,9 @@ module Padrino
       #     end
       #   end
       #
-      def parent(name = nil, options={})
+      def parent(name = nil, **options)
         return super() unless name
-        defaults = { :optional => false, :map => name.to_s }
-        options = defaults.merge(options)
+        options = { :optional => false, :map => name.to_s }.merge(options)
         @_parent = Array(@_parent) unless @_parent.is_a?(Array)
         @_parent << Parent.new(name, options)
       end
@@ -336,8 +331,8 @@ module Padrino
       #   url(:controller_show, :id => 29)
       #   url(:index, :fragment => 'comments')
       #
-      def url(*args, **params)
-        fragment = params.delete(:fragment) || params.delete(:anchor)
+      def url(*args, fragment: nil, anchor: nil, **params)
+        fragment ||= anchor
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
       end
@@ -474,32 +469,18 @@ module Padrino
       #   get :list, :provides => [:html, :js, :json]            # => "/list(.{!format,js|json})"
       #   get :list, :priority => :low                           # Defers route to be last
       #   get /pattern/, :name => :foo, :generate_with => '/foo' # Generates :foo as /foo
-      def route(verb, path, *args, &block)
-        options = case args.size
-          when 2
-            args.last.merge(:map => args.first)
-          when 1
-            map = args.shift if args.first.is_a?(String)
-            if args.first.is_a?(Hash)
-              map ? args.first.merge(:map => map) : args.first
-            else
-              {:map => map || args.first}
-            end
-          when 0
-            {}
-          else raise
-        end
+      def route(verb, path, *args, **options, &block)
+        fail ArgumentError.new("#route has too many arguments: #{args.size+2}") if args.size > 1
 
         route_options = options.dup
+        route_options[:map] = args.first if args.size == 1
         route_options[:provides] = @_provides if @_provides
-        route_options[:accepts]  = @_accepts if @_accepts
+        route_options[:accepts] = @_accepts if @_accepts
         route_options[:params] = @_params unless @_params.nil? || route_options.include?(:params)
 
         # Add Sinatra condition to check rack-protection failure.
         if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
-          unless route_options.has_key?(:csrf_protection)
-            route_options[:csrf_protection] = true
-          end
+          route_options[:csrf_protection] = true unless route_options.has_key?(:csrf_protection)
         end
 
         path, *route_options[:with] = path if path.is_a?(Array)

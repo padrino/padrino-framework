@@ -29,12 +29,11 @@ module Padrino
       #   # Generates: <div class="error">flash-error</div>
       #   # <div class="success">flash-success</div>
       #
-      def flash_tag(*args, **options)
-        bootstrap = options.delete(:bootstrap) if options[:bootstrap]
+      def flash_tag(*args, bootstrap: nil, **options)
         args.inject(SafeBuffer.new) do |html,kind|
           next html unless flash[kind]
           flash_text = SafeBuffer.new << flash[kind]
-          flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
+          flash_text << content_tag(:button, '&times;'.html_safe, :type => :button, :class => :close, :'data-dismiss' => :alert) if bootstrap
           html << content_tag(:div, flash_text, { :class => kind }.update(options))
         end
       end
@@ -112,7 +111,7 @@ module Padrino
       #   feed_tag :rss, url(:blog, :posts, :format => :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
-      def feed_tag(mime, url, options={})
+      def feed_tag(mime, url, **options)
         full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
         tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
       end
@@ -140,12 +139,12 @@ module Padrino
       #   mail_to "me@demo.com", "My Email"
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
-      def mail_to(email, caption=nil, mail_options={})
-        mail_options, html_options = mail_options.partition{ |key,_| [:cc, :bcc, :subject, :body].include?(key) }
+      def mail_to(email, caption=nil, **options)
+        mail_options, html_options = options.partition{ |key,_| [:cc, :bcc, :subject, :body].include?(key) }
         mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
         mail_href = "mailto:#{email}"
         mail_href << "?#{mail_query}" unless mail_query.empty?
-        link_to((caption || email), mail_href, Hash[html_options])
+        link_to(caption || email, mail_href, Hash[html_options])
       end
 
       ##
@@ -165,8 +164,8 @@ module Padrino
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
-      def meta_tag(content, options={})
-        options = { "content" => content }.update(options)
+      def meta_tag(content, **options)
+        options = { :content => content }.update(options)
         tag(:meta, options)
       end
 
@@ -186,7 +185,7 @@ module Padrino
       #   # or override some options
       #   favicon_tag 'favicon.png', :type => 'image/ico'
       #
-      def favicon_tag(source, options={})
+      def favicon_tag(source, **options)
         type = File.extname(source).sub('.','')
         options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
         tag(:link, options)
@@ -238,10 +237,7 @@ module Padrino
       #
       # @api public.
       def stylesheet_link_tag(*sources, **options)
-        options = {
-          :rel => 'stylesheet',
-          :type => 'text/css'
-        }.update(options)
+        options = { :rel => 'stylesheet', :type => 'text/css' }.update(options)
         sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << tag(:link, { :href => asset_path(:css, source) }.update(options))
         end
@@ -262,9 +258,7 @@ module Padrino
       #   javascript_include_tag 'application', :extjs
       #
       def javascript_include_tag(*sources, **options)
-        options = {
-          :type => 'text/javascript'
-        }.update(options)
+        options = { :type => 'text/javascript' }.update(options)
         sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
         end

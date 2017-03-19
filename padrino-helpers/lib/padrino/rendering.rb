@@ -268,8 +268,8 @@ module Padrino
         I18n.locale if defined?(I18n)
       end
 
-      def resolve_layout(layout, options={})
-        layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
+      def resolve_layout(layout, layout_options: nil, views: nil)
+        layouts_path = layout_options && layout_options[:views] || views || settings.views || "./views"
         template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
 
@@ -295,7 +295,7 @@ module Padrino
           options[:layout_options] ||= {}
           options[:layout_options][:views] ||= layout_path
         end
-        layout, layout_engine = resolve_layout(layout, options)
+        layout, layout_engine = resolve_layout(layout, layout_options: options[:layout_options], views: options[:views])
         options.update(:layout => layout, :layout_engine => layout_engine)
       end
 

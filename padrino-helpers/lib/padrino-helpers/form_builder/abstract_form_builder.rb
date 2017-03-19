@@ -6,7 +6,7 @@ module Padrino
         attr_accessor :template, :object, :multipart
         attr_reader :namespace, :is_nested, :parent_form, :nested_index, :attributes_name, :model_name
 
-        def initialize(template, object, options={})
+        def initialize(template, object, **options)
           @template = template
           fail "FormBuilder template must be initialized" unless template
           @object = object.kind_of?(Symbol) ? build_object(object) : object
@@ -26,68 +26,68 @@ module Padrino
           @template.error_messages_for object, *params
         end
 
-        def error_message_on(field, options={})
+        def error_message_on(field, **options)
           @template.error_message_on object, field, options
         end
 
-        def label(field, options={}, &block)
+        def label(field, **options, &block)
           @template.label_tag(field_id(field), { :caption => "#{field_human_name(field)}: " }.update(options), &block)
         end
 
-        def hidden_field(field, options={})
+        def hidden_field(field, **options)
           @template.hidden_field_tag field_name(field), default_options(field, options)
         end
 
-        def text_field(field, options={})
+        def text_field(field, **options)
           @template.text_field_tag field_name(field), default_options(field, options)
         end
 
-        def number_field(field, options={})
+        def number_field(field, **options)
           @template.number_field_tag field_name(field), default_options(field, options)
         end
 
-        def telephone_field(field, options={})
+        def telephone_field(field, **options)
           @template.telephone_field_tag field_name(field), default_options(field, options)
         end
         alias_method :phone_field, :telephone_field
 
-        def email_field(field, options={})
+        def email_field(field, **options)
           @template.email_field_tag field_name(field), default_options(field, options)
         end
 
-        def search_field(field, options={})
+        def search_field(field, **options)
           @template.search_field_tag field_name(field), default_options(field, options)
         end
 
-        def url_field(field, options={})
+        def url_field(field, **options)
           @template.url_field_tag field_name(field), default_options(field, options)
         end
 
-        def text_area(field, options={})
+        def text_area(field, **options)
           @template.text_area_tag field_name(field), default_options(field, options)
         end
 
-        def password_field(field, options={})
+        def password_field(field, **options)
           @template.password_field_tag field_name(field), default_options(field, options)
         end
 
-        def select(field, options={})
+        def select(field, **options)
           @template.select_tag field_name(field), default_options(field, options)
         end
 
-        def check_box_group(field, options={})
+        def check_box_group(field, **options)
           labeled_group(field, options) do |attributes|
             @template.check_box_tag(field_name(field)+'[]', attributes)
           end
         end
 
-        def radio_button_group(field, options={})
+        def radio_button_group(field, **options)
           labeled_group(field, options) do |attributes|
             @template.radio_button_tag(field_name(field), attributes)
           end
         end
 
-        def check_box(field, options={})
+        def check_box(field, **options)
           options = default_options(field, options, :value => '1')
           options[:checked] = true if is_checked?(field, options)
           name = field_name(field)
@@ -95,14 +95,14 @@ module Padrino
           html << @template.check_box_tag(name, options)
         end
 
-        def radio_button(field, options={})
+        def radio_button(field, **options)
           options = default_options(field, options)
           options[:checked] = true if is_checked?(field, options)
           options[:id] = field_id(field, options[:value])
           @template.radio_button_tag field_name(field), options
         end
 
-        def file_field(field, options={})
+        def file_field(field, **options)
           self.multipart = true
           @template.file_field_tag field_name(field), default_options(field, options).reject{ |key, _| key == :value }
         end
@@ -111,35 +111,35 @@ module Padrino
           @template.submit_tag(*args)
         end
 
-        def image_submit(source, options={})
+        def image_submit(source, **options)
           @template.image_submit_tag source, options
         end
 
-        def datetime_field(field, options={})
+        def datetime_field(field, **options)
           @template.datetime_field_tag field_name(field), default_options(field, options)
         end
 
-        def datetime_local_field(field, options={})
+        def datetime_local_field(field, **options)
           @template.datetime_local_field_tag field_name(field), default_options(field, options)
         end
 
-        def date_field(field, options={})
+        def date_field(field, **options)
           @template.date_field_tag field_name(field), default_options(field, options)
         end
 
-        def month_field(field, options={})
+        def month_field(field, **options)
           @template.month_field_tag field_name(field), default_options(field, options)
         end
 
-        def week_field(field, options={})
+        def week_field(field, **options)
           @template.week_field_tag field_name(field), default_options(field, options)
         end
 
-        def time_field(field, options={})
+        def time_field(field, **options)
           @template.time_field_tag field_name(field), default_options(field, options)
         end
 
-        def color_field(field, options={})
+        def color_field(field, **options)
           @template.color_field_tag field_name(field), default_options(field, options)
         end
 
@@ -149,15 +149,15 @@ module Padrino
         # f.fields_for :addresses, address
         # f.fields_for :addresses, @addresses
         # f.fields_for :addresses, address, index: i
-        def fields_for(child_association, collection=nil, options={}, &block)
+        def fields_for(child_association, collection=nil, index: nil, &block)
           default_collection = self.object.send(child_association)
           collection ||= default_collection
           include_index = default_collection.respond_to?(:each)
 
           nested_options = { :parent => self, :association => child_association }
-          Array(collection).each_with_index.inject(SafeBuffer.new) do |all,(child_instance,index)|
-            nested_options[:index] = options[:index] || (include_index ? index : nil)
-            all << @template.fields_for(child_instance,  { :nested => nested_options, :builder => self.class }, &block) << "\n"
+          Array(collection).each_with_index.inject(SafeBuffer.new) do |all,(child_instance,child_index)|
+            nested_options[:index] = index || (include_index ? child_index : nil)
+            all << @template.fields_for(child_instance, :nested => nested_options, :builder => self.class, &block) << "\n"
           end
         end
 
@@ -238,7 +238,7 @@ module Padrino
         ##
         # Builds a group of labels for radios or checkboxes.
         #
-        def labeled_group(field, options={})
+        def labeled_group(field, **options)
           options = { :id => field_id(field), :selected => field_value(field) }.update(options)
           options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
@@ -252,11 +252,11 @@ module Padrino
 
         private
 
-        def is_checked?(field, options)
+        def is_checked?(field, **options)
           !options.has_key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
         end
 
-        def variants_for_group(options)
+        def variants_for_group(**options)
           if variants = options[:options]
             variants.map{ |caption, value| [caption.to_s, (value||caption).to_s] }
           elsif collection = options[:collection]
@@ -266,10 +266,10 @@ module Padrino
           end
         end
 
-        def resolve_checked_values(field, options)
-          selected_values = Array(options[:selected] || field_value(field))
-          if options[:collection]
-            _, id_method = *field_methods(options)
+        def resolve_checked_values(field, fields: nil, collection: nil, selected: nil, **_)
+          selected_values = Array(selected || field_value(field))
+          if collection
+            _, id_method = *field_methods(fields)
             selected_values.map do |value|
               (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
             end
@@ -278,12 +278,12 @@ module Padrino
           end
         end
 
-        def field_methods(options)
-          options[:fields] || [:name, :id]
+        def field_methods(fields)
+          fields || [:name, :id]
         end
 
-        def field_values(object, options)
-          field_methods(options).map{ |field| object.send(field).to_s }
+        def field_values(object, fields: nil, **_)
+          field_methods(fields).map{ |field| object.send(field).to_s }
         end
 
         def field_name_fragment
