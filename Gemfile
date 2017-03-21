@@ -29,11 +29,11 @@ group :development do
   gem "fakeweb",   ">= 1.2.8"
   gem "oga",       "~> 2.5"
   gem "liquid",    ">= 2.1.2", "< 4"
-  if ENV['HAML_ENGINE'] == 'haml'
-    puts "=> Using Haml Haml engine"
+  if ENV['HAML_ENGINE'] == 'haml' || RUBY_VERSION < "2.0.0"
+    puts "=> Using legacy Haml engine"
     gem "haml", ">= 4.0.5"
   else
-    gem "hamlit", "< 2.8.0"
+    gem "hamlit"
   end
   case ENV['ERB_ENGINE']
   when "stdlib"
