@@ -313,8 +313,13 @@ module Padrino
     end
 
     def self.logger=(logger)
-      logger.extend(Padrino::Logger::Extensions)
-
+      unless logger.class.ancestors.include?(Padrino::Logger::Extensions)
+        warn <<-EOT
+WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and other features.
+          To do it with a custom logger you have to manually `new_logger.extend(Padrino::Logger::Extensions)`
+          before passing to `Padrino.logger = new_logger`.
+        EOT
+      end
       @_logger = logger
     end
 
@@ -325,37 +330,37 @@ module Padrino
     #   A {Padrino::Logger} instance
     #
     def self.setup!
-      self.logger = begin
-        config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
-        config = Config[config_level]
+      config_level = (PADRINO_LOG_LEVEL || Padrino.env || :test).to_sym # need this for PADRINO_LOG_LEVEL
+      config = Config[config_level]
 
-        unless config
-          warn("No logging configuration for :#{config_level} found, falling back to :production")
-          config = Config[:production]
-        end
-
-        stream = case config[:stream]
-          when :to_file
-            if filename = config[:log_path]
-              filename = Padrino.root(filename) unless Pathname.new(filename).absolute?
-              if File.directory?(filename)
-                filename = File.join(filename, "#{Padrino.env}.log")
-              else
-                FileUtils.mkdir_p(File.dirname(filename))
-              end
-              File.new(filename, 'a+')
-            else
-              FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
-              File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
-            end
-          when :null   then StringIO.new
-          when :stdout then $stdout
-          when :stderr then $stderr
-          else config[:stream] # return itself, probabilly is a custom stream.
-        end
-
-        Padrino::Logger.new(config.merge(:stream => stream))
+      unless config
+        warn("No logging configuration for :#{config_level} found, falling back to :production")
+        config = Config[:production]
       end
+
+      stream = case config[:stream]
+        when :to_file
+          if filename = config[:log_path]
+            filename = Padrino.root(filename) unless Pathname.new(filename).absolute?
+            if File.directory?(filename)
+              filename = File.join(filename, "#{Padrino.env}.log")
+            else
+              FileUtils.mkdir_p(File.dirname(filename))
+            end
+            File.new(filename, 'a+')
+          else
+            FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
+            File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
+          end
+        when :null   then StringIO.new
+        when :stdout then $stdout
+        when :stderr then $stderr
+        else config[:stream] # return itself, probabilly is a custom stream.
+      end
+
+      new_logger = Padrino::Logger.new(config.merge(:stream => stream))
+      new_logger.extend(Padrino::Logger::Extensions)
+      self.logger = new_logger
     end
 
     ##

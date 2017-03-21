@@ -1,5 +1,8 @@
 = CHANGES
 
+==
+- FIX #2118 allow Logger without Extensions
+
 == 0.14.0 (2017-03-15)
 - NEW #2120 enable cascading with Rack application (@namusyaka)
 - FIX lock rake < 11.0 to avoid last_comment error (@namusyaka)
