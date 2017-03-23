@@ -264,4 +264,11 @@ describe "RenderHelpers" do
       assert_equal '_none', Standalone4.new.partial('none')
     end
   end
+
+  describe 'partial in an application with layout' do
+    it 'should not render with default layout' do
+      get '/'
+      assert_response_has_tag 'body', :count => 1
+    end
+  end
 end
