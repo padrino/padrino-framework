@@ -65,6 +65,7 @@ module Padrino
             fail "gem 'tilt' is required" unless defined?(::Tilt)
 
             def render(engine, file=nil, options={}, locals=nil, &block)
+              options.delete(:layout)
               engine, file = file, engine if file.nil?
               template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
               fail "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
