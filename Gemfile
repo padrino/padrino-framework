@@ -24,10 +24,8 @@ group :development do
   end
 
   if RUBY_VERSION < "2.0.0"
-    gem "haml",      ">= 4.0.5", "< 5"
     gem "slim",      ">= 1.3.0", "< 3"
   else
-    gem "haml",      ">= 4.0.5"
     gem "slim",      ">= 1.3.0"
   end
 
@@ -35,6 +33,17 @@ group :development do
     gem "liquid",    ">= 2.1.1", "< 4"
   else
     gem "liquid",    ">= 2.1.1"
+  end
+
+  if ENV['HAML_ENGINE'] == 'hamlit' && RUBY_VERSION >= "2.0.0"
+    puts "=> Using Hamlit Haml engine"
+    gem "hamlit"
+  else
+    if RUBY_VERSION < "2.0.0"
+      gem "haml",      ">= 4.0.5", "< 5"
+    else
+      gem "haml",      ">= 4.0.5"
+    end
   end
 
   case ENV['ERB_ENGINE']
