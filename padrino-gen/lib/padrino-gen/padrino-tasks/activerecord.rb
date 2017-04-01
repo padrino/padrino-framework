@@ -10,7 +10,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   namespace :ar do
     namespace :create do
-      desc 'Create all the local databases defined in config/database.yml'
+      desc "Create all the local databases defined in config/database.yml"
       task :all => :skeleton do
         ActiveRecord::Base.configurations.each_value do |config|
           # Skip entries that don't have a database key, such as the first entry here:
@@ -31,7 +31,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc 'Create the database defined in config/database.yml for the current Padrino.env'
+    desc "Creates the database defined in config/database.yml for the current Padrino.env"
     task :create => :skeleton do
       create_database(ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env])
     end
@@ -40,7 +40,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       begin
         if config[:adapter] =~ /sqlite/
           if File.exist?(config[:database])
-            $stderr.puts "#{config[:database]} already exists"
+            $stderr.puts "#{config[:database]} already exists."
           else
             begin
               # Create the SQLite database
@@ -88,7 +88,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :drop do
-      desc 'Drops all the local databases defined in config/database.yml'
+      desc "Drops all the local databases defined in config/database.yml"
       task :all => :skeleton do
         ActiveRecord::Base.configurations.each_value do |config|
           # Skip entries that don't have a database key
@@ -103,7 +103,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc 'Drops the database for the current Padrino.env'
+    desc "Drops the database for the current Padrino.env"
     task :drop => :skeleton do
       config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
       begin
@@ -129,7 +129,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :migrate do
-      desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x.'
+      desc "Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x."
       task :redo => :skeleton do
         if env_migration_version
           Rake::Task["ar:migrate:down"].invoke
@@ -140,23 +140,23 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
       end
 
-      desc 'Resets your database using your migrations for the current environment'
+      desc "Resets your database using your migrations for the current environment."
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
-      desc 'Runs the "up" for a given MIGRATION_VERSION.'
+      desc "Runs the "up" for a given MIGRATION_VERSION."
       task(:up => :skeleton){ migrate_as(:up) }
 
-      desc 'Runs the "down" for a given MIGRATION_VERSION.'
+      desc "Runs the "down" for a given MIGRATION_VERSION."
       task(:down => :skeleton){ migrate_as(:down) }
     end
 
-    desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
+    desc "Rolls the schema back to the previous version. Specify the number of steps with STEP=n"
     task(:rollback => :skeleton){ move_as(:rollback) }
 
-    desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
+    desc "Pushes the schema to the next version. Specify the number of steps with STEP=n"
     task(:forward => :skeleton){ move_as(:forward) }
 
-    desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
+    desc "Drops and recreates the database from db/schema.rb for the current environment and loads the seeds."
     task :reset => [ 'ar:drop', 'ar:setup' ]
 
     desc "Retrieves the charset for the current environment's database"
@@ -170,11 +170,11 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         ActiveRecord::Base.establish_connection(config)
         puts ActiveRecord::Base.connection.encoding
       else
-        puts 'sorry, your database adapter is not supported yet, feel free to submit a patch'
+        puts 'Sorry, your database adapter is not supported yet, feel free to submit a patch.'
       end
     end
 
-    desc "Retrieves the collation for the current environment's database"
+    desc "Retrieves the collation for the current environment's database."
     task :collation => :skeleton do
       config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
       case config[:adapter]
@@ -186,12 +186,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Retrieves the current schema version number"
+    desc "Retrieves the current schema version number."
     task :version => :skeleton do
       puts "Current version: #{ActiveRecord::Migrator.current_version}"
     end
 
-    desc "Raises an error if there are pending migrations"
+    desc "Raises an error if there are pending migrations."
     task :abort_if_pending_migrations => :skeleton do
       if defined? ActiveRecord
         pending_migrations = ActiveRecord::Migrator.open(ActiveRecord::Migrator.migrations_paths).pending_migrations
@@ -206,11 +206,11 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc 'Create the database, load the schema, and initialize with the seed data'
+    desc "Create the database, load the schema, and initialize with the seed data."
     task :setup => [ 'ar:create', 'ar:schema:load', 'seed' ]
 
     namespace :schema do
-      desc "Create a db/schema.rb file that can be portably used against any DB supported by AR"
+      desc "Create a db/schema.rb file that can be portably used against any DB supported by AR."
       task :dump => :skeleton do
         require 'active_record/schema_dumper'
         File.open(ENV['SCHEMA'] || Padrino.root("db", "schema.rb"), "w") do |file|
@@ -219,7 +219,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         Rake::Task["ar:schema:dump"].reenable
       end
 
-      desc "Load a schema.rb file into the database"
+      desc "Load a schema.rb file into the database."
       task :load => :skeleton do
         file = ENV['SCHEMA'] || Padrino.root("db", "schema.rb")
         if File.exist?(file)
@@ -231,7 +231,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :structure do
-      desc "Dump the database structure to a SQL file"
+      desc "Dump the database structure to a SQL file."
       task :dump => :skeleton do
         config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env]
         case config[:adapter]
@@ -259,7 +259,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           db_string = firebird_db_string(config)
           sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
         else
-          raise "Task not supported by '#{config[:adapter]}'"
+          raise "Task not supported by '#{config[:adapter]}'."
         end
 
         if ActiveRecord::Base.connection.supports_migrations?
@@ -268,23 +268,23 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Generates .yml files for I18n translations"
+    desc "Generates .yml files for I18n translations."
     task :translate => :environment do
       models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
 
       models.each do |m|
-        # Get the model class.
+        # get the model class
         klass = m.camelize.constantize
 
-        # Avoid non ActiveRecord models.
+        # avoid non ActiveRecord models
         next unless klass.ancestors.include?(ActiveRecord::Base)
 
-        # Init the processing.
+        # init the processing
         print "Processing #{m.humanize}: "
         FileUtils.mkdir_p("#{Padrino.root}/app/locale/models/#{m}")
         langs = Array(I18n.locale)
 
-        # Create models for it and en locales.
+        # create models for it and en locales
         langs.each do |lang|
           filename   = "#{Padrino.root}/app/locale/models/#{m}/#{lang}.yml"
           columns    = klass.columns.map(&:name)
