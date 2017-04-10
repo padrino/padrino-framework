@@ -507,7 +507,7 @@ WARNING
       end
 
       ##
-      # Ensure that project name is valid, else raise an NameError.
+      # Ensures that project name is valid, else raise an NameError.
       #
       # @param [String] name
       #   Name of project.
@@ -528,6 +528,9 @@ WARNING
 
       ##
       # Validates namespace name (controller name, etc.) or fails with an error.
+      #
+      # @param [String] name
+      #   Name of namespace
       #
       # @example
       #   validate_namespace 'Project_One1' #=> pass
@@ -601,14 +604,14 @@ WARNING
         end
 
         ##
-        # Tell Padrino that for this Thor::Group it is a necessary task to run.
+        # Tells Padrino that for this Thor::Group it is a necessary task to run.
         #
         def require_arguments!
           @require_arguments = true
         end
 
         ##
-        # Return true if we need an arguments for our Thor::Group.
+        # Returns true if we need an arguments for our Thor::Group.
         #
         def require_arguments?
           @require_arguments
