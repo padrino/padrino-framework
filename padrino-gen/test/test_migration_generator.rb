@@ -52,7 +52,7 @@ describe "MigrationGenerator" do
 
     describe "the default migration numbering" do
       it 'should properly calculate version number' do
-        capture_io { generate(:project, 'sample_project', "--migration_format=number", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
         capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
@@ -64,7 +64,7 @@ describe "MigrationGenerator" do
 
     describe "the timestamped migration numbering" do
       it 'should properly calculate version number' do
-        capture_io { generate(:project, 'sample_project', "--migration_format=timestamp", "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
 
         time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
 
@@ -90,8 +90,11 @@ describe "MigrationGenerator" do
   end
 
   describe 'the migration generator for activerecord' do
-    it 'should generate migration for generic needs' do
+    before do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+    end
+
+    it 'should generate migration for generic needs' do
       response_success = capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb"
       assert_match_in_file(/class ModifyUserFields/m, migration_file_path)
@@ -100,8 +103,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for adding columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      migration_params = ['AddEmailToUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['AddEmailToUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/class AddEmailToUsers/m, migration_file_path)
@@ -112,8 +114,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for removing columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb"
       assert_match_in_file(/class RemoveEmailFromUsers/m, migration_file_path)
@@ -125,8 +126,11 @@ describe "MigrationGenerator" do
   end
 
   describe 'the migration generator for datamapper' do
-    it 'should generate migration for generic needs' do
+    before do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
+    end
+
+    it 'should generate migration for generic needs' do
       response_success = capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb"
       assert_match_in_file(/migration\s1.*?:modify_user_fields/m, migration_file_path)
@@ -135,8 +139,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for adding columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
-      migration_params = ['AddEmailToUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['AddEmailToUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/migration\s1.*?:add_email_to_users/m, migration_file_path)
@@ -147,8 +150,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for removing columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
-      migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb"
       assert_match_in_file(/migration\s1.*?:remove_email_from_users/m, migration_file_path)
@@ -159,7 +161,6 @@ describe "MigrationGenerator" do
     end
 
     it 'should properly version migration files' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
       response_success = capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
       response_success = capture_io { generate(:migration, 'ModifyUserFields2', "-r=#{@apptmp}/sample_project") }
       response_success = capture_io { generate(:migration, 'ModifyUserFields3', "-r=#{@apptmp}/sample_project") }
@@ -170,8 +171,11 @@ describe "MigrationGenerator" do
   end
 
   describe 'the migration generator for sequel' do
-    it 'should generate migration for generic needs' do
+    before do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+    end
+
+    it 'should generate migration for generic needs' do
       response_success = capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb"
       assert_match_in_file(/Sequel\.migration/m, migration_file_path)
@@ -180,8 +184,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for adding columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      migration_params = ['AddEmailToUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['AddEmailToUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/Sequel\.migration/m, migration_file_path)
@@ -192,8 +195,7 @@ describe "MigrationGenerator" do
     end
 
     it 'should generate migration for removing columns' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       response_success = capture_io { generate(:migration, *migration_params) }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb"
       assert_match_in_file(/Sequel\.migration/m, migration_file_path)
@@ -205,21 +207,21 @@ describe "MigrationGenerator" do
   end
 
   describe "the migration destroy option" do
+    before do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      @migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
+    end
 
     it 'should destroy the migration files' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
-      capture_io { generate(:migration, *migration_params) }
+      capture_io { generate(:migration, *@migration_params) }
       capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project",'-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb")
     end
 
     it 'should destroy the migration file regardless of number' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      migration_params = ['RemoveEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
-      migration_param2 = ['AddEmailFromUsers', "email:string", "age:integer", "-r=#{@apptmp}/sample_project"]
+      migration_param2 = ['AddEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       capture_io { generate(:migration, *migration_param2) }
-      capture_io { generate(:migration, *migration_params) }
+      capture_io { generate(:migration, *@migration_params) }
       capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project",'-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_remove_email_from_users.rb")
     end
