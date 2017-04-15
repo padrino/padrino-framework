@@ -1,3 +1,4 @@
+# encoding: utf-8
 COUCHREST = (<<-COUCHREST) unless defined?(COUCHREST)
 case Padrino.env
   when :development then db_name = '!NAME!_development'

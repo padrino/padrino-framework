@@ -1,3 +1,4 @@
+# encoding: utf-8
 MONGO = (<<-MONGO) unless defined?(MONGO)
 MongoMapper.connection = Mongo::Connection.new('localhost', nil, :logger => logger)
 

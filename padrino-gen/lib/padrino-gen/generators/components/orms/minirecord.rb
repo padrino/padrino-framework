@@ -1,3 +1,4 @@
+# encoding: utf-8
 MR = (<<-MR) unless defined?(MR)
 ##
 # You can use other adapters like:
