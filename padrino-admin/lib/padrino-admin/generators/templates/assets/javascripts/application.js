@@ -111,6 +111,24 @@
       });
     }
 
+    // Store default values.
+    var defaultValues = {}, xlargeInputs = $('.input-xlarge:not(input[type="checkbox"])');
+    xlargeInputs.each(function() {
+      var input = $(this);
+      defaultValues[input.attr('name')] = input.val();
+    });
+
+    // Remove unnecessary parameters.
+    function removeUnnecessaryAttributes() {
+      xlargeInputs.each(function() {
+        var input = $(this);
+        if(defaultValues[input.attr('name')] === input.val()){
+          input.removeAttr('name');
+        }
+      });
+    }
+    $('.form-actions input').on('click', removeUnnecessaryAttributes);
+
     // Autofocus first field with an error. (usability)
     var error_input;
     if (error_input = $('.has-error :input').first()) { error_input.focus(); }
