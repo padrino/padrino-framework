@@ -1,0 +1,4 @@
+class <%= @klass_name %> < ActiveRecord::Observer
+  # Put here your before and after callbacks (more callbacks can be found under http://api.rubyonrails.org/v3.2.13/classes/ActiveRecord/Callbacks.html)
+
+end
