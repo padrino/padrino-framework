@@ -61,6 +61,10 @@ module Padrino
       #
       NEWLINE = "\n".html_safe.freeze
 
+      PRE_CONTENT_STRING = {
+        :textarea => NEWLINE
+      }
+
       ##
       # Creates an HTML tag with given name, content, and options.
       #
@@ -126,6 +130,7 @@ module Padrino
         attributes = tag_attributes(options)
         output = SafeBuffer.new
         output.safe_concat "<#{name}#{attributes}>"
+        output.safe_concat PRE_CONTENT_STRING[name.to_sym].to_s
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each{ |item| output.concat item; output.safe_concat NEWLINE }
         else
