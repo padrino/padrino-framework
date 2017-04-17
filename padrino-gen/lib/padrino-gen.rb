@@ -1,3 +1,4 @@
+require 'psych'
 require 'padrino-core/tasks'
 require 'padrino-gen/command'
 require 'padrino-gen/core_ext/string'
