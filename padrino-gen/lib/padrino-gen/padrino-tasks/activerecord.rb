@@ -143,10 +143,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc "Resets your database using your migrations for the current environment."
       task :reset => ["ar:drop", "ar:create", "ar:migrate"]
 
-      desc "Runs the "up" for a given MIGRATION_VERSION."
+      desc "Runs the 'up' for a given MIGRATION_VERSION."
       task(:up => :skeleton){ migrate_as(:up) }
 
-      desc "Runs the "down" for a given MIGRATION_VERSION."
+      desc "Runs the 'down' for a given MIGRATION_VERSION."
       task(:down => :skeleton){ migrate_as(:down) }
     end
 
