@@ -930,7 +930,7 @@ module Padrino
 
       def dispatch!
         unless @params
-          @params = indifferent_params(@request.params)
+          @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
           force_encoding(@params)
         end
         invoke do
