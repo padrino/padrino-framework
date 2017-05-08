@@ -6,11 +6,6 @@ if ENV["AS_VERSION"]
   gem 'activesupport', "~> #{ENV['AS_VERSION']}"
 end
 
-if ENV["SINATRA_VERSION"]
-  puts "=> Using Sinatra version #{ENV['SINATRA_VERSION']}"
-  gem "sinatra", "~> #{ENV['SINATRA_VERSION']}"
-end
-
 group :db do
   gem "sequel"
   gem "sqlite3", :platforms => [:mri, :rbx]
@@ -18,18 +13,30 @@ group :db do
 end
 
 group :development do
-  if ENV['SINATRA_EDGE']
+  if ENV["SINATRA_VERSION"]
+    puts "=> Using Sinatra version ~> #{ENV['SINATRA_VERSION']}"
+    gem "sinatra", "~> #{ENV['SINATRA_VERSION']}"
+  elsif ENV['SINATRA_EDGE']
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
+  elsif RUBY_VERSION < "2.2.0"
+    gem "sinatra", "< 2"
   end
-  gem "rack",      ">= 1.3.0"
-  gem "rake",      "< 11.0"
-  gem "yard",      ">= 0.7.2"
-  gem "rack-test", "~> 0.6.3"
-  gem "fakeweb",   ">= 1.2.8"
-  gem "oga",       "~> 2.5"
-  gem "haml",      ">= 4.0.5"
-  gem "liquid",    ">= 2.1.2", "< 4"
+
+  if RUBY_VERSION < "2.0.0"
+    gem "haml",      ">= 4.0.5", "< 5"
+    gem "slim",      ">= 1.3.0", "< 3"
+  else
+    gem "haml",      ">= 4.0.5"
+    gem "slim",      ">= 1.3.0"
+  end
+
+  if RUBY_VERSION < "2.1.0"
+    gem "liquid",    ">= 2.1.1", "< 4"
+  else
+    gem "liquid",    ">= 2.1.1"
+  end
+
   case ENV['ERB_ENGINE']
   when "stdlib"
     puts "=> Using stdlib ERB engine"
@@ -39,14 +46,20 @@ group :development do
   else
     gem "erubi",     ">= 1.6.0"
   end
-  gem "slim",      ">= 1.3.0"
+
+  gem "rack",      ">= 1.3.0"
+  gem "rake",      ">= 10.5.0"
+  gem "yard",      ">= 0.7.2"
+  gem "rack-test", "~> 0.6.3"
+  gem "fakeweb",   ">= 1.2.8"
+  gem "oga",       "~> 2.5"
   gem "builder",    ">= 2.1.2"
-  gem "mustermann19"
+  gem "mocha",    ">= 0.10.0"
+  gem "minitest", ">= 4.0"
+
   platforms :jruby do
     gem "jruby-openssl"
   end
-  gem "mocha",    ">= 0.10.0"
-  gem "minitest", ">= 4.0"
 end
 
 load File.expand_path('../padrino/subgems.rb', __FILE__)
