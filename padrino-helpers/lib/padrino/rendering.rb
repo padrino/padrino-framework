@@ -200,7 +200,6 @@ module Padrino
         options.delete(:layout)
 
         # set some defaults
-        options[:outvar]           ||= '@_out_buf'
         options[:default_encoding] ||= settings.default_encoding
 
         # compile and render template
