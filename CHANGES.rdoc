@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.14.1 (2017-05-16)
+- FIX syntax error in ActiveRecord tasks (@sue445)
+- NEW use hamlit if available in Gemfile
+
 == 0.14.0.2 (2017-05-08)
 - FIX #2132 use Sinatra2 IndifferentHash if available
 
