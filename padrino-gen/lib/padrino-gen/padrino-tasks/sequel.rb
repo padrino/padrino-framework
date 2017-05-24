@@ -1,5 +1,30 @@
 if PadrinoTasks.load?(:sequel, defined?(Sequel))
   namespace :sq do
+    namespace :schema do
+      desc "Dumps the database schema to db/schema.rb"
+      task :dump => :skeleton do
+        ::Sequel.extension :schema_dumper
+        ::Sequel::Model.db.extension :schema_dumper
+        schema = ::Sequel::Model.db.dump_schema_migration
+        File.open(File.join(Padrino.root, 'db', 'schema.rb'), 'w') { |f| f.write (schema) }
+        puts "<= sq:schema:dump executed"
+      end
+
+      desc "Drops the database schema using db/schema.rb"
+      task :drop => :skeleton do
+        ::Sequel.extension :migration
+        eval(File.read(File.join(Padrino.root, 'db', 'schema.rb'))).apply(::Sequel::Model.db, :down)
+        puts "<= sq:schema:drop executed"
+      end
+
+      desc "Loads the database schema from db/schema.rb"
+      task :load => :skeleton do
+        ::Sequel.extension :migration
+        eval(File.read(File.join(Padrino.root, 'db', 'schema.rb'))).apply(::Sequel::Model.db, :up)
+        puts "<= sq:schema:load executed"
+      end
+    end
+
     namespace :migrate do
       desc "Perform automigration (reset your db data)"
       task :auto => :skeleton do
