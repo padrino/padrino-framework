@@ -2424,4 +2424,13 @@ describe "Routing" do
     get '/prohibit/123?id=456'
     assert_equal '123', body
   end
+
+  it "functions in a standalone app" do
+    mock_app(Sinatra::Application) do
+      register Padrino::Routing
+      get(:index) { 'Standalone' }
+    end
+    get '/'
+    assert_equal 200, status
+  end
 end
