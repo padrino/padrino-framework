@@ -2,8 +2,6 @@ require 'digest/sha1'
 require 'sequel'
 require 'sequel/extensions/migration'
 
-Sequel::Model.plugin(:schema)
-
 Sequel::Model.db = 
   if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
     require 'jdbc/sqlite3' 
