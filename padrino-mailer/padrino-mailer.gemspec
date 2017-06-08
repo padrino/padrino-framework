@@ -24,6 +24,10 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("mime-types", "< 3")
+  if RUBY_VERSION >= "2.0"
+    s.add_dependency("mime-types")
+  else
+    s.add_dependency("mime-types", "< 3")
+  end
   s.add_dependency("mail", "~> 2.5")
 end
