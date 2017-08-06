@@ -152,7 +152,19 @@ def create_model_file(name, options={})
   create_file(model_path, model_contents,:skip => true)
 end
 
+if defined?(ActiveRecord::Migration) && ActiveRecord::Migration.respond_to?(:[])
+AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
+class !FILECLASS! < ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]
+  def self.up
+    !UP!
+  end
 
+  def self.down
+    !DOWN!
+  end
+end
+MIGRATION
+else
 AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration
   def self.up
@@ -164,6 +176,7 @@ class !FILECLASS! < ActiveRecord::Migration
   end
 end
 MIGRATION
+end
 
 AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/,'    ') unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|
