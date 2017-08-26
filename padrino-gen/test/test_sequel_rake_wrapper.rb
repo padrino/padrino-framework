@@ -125,7 +125,9 @@ describe Padrino::Generators::SequelRakeWrapper do
 
         assert_output (expected_output) { sequel_wrapper.create }
 
-        assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+        if !defined? JRUBY_VERSION
+          assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+        end
       end
 
       it "takes values from ENV" do
@@ -154,7 +156,10 @@ describe Padrino::Generators::SequelRakeWrapper do
         assert_equal false, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
 
         assert_output (expected_output) { sequel_wrapper.create }
-        assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+
+        if !defined? JRUBY_VERSION
+          assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+        end
       end
 
       it "takes default values" do
@@ -183,7 +188,10 @@ describe Padrino::Generators::SequelRakeWrapper do
 
         expected_output = "=> Creating database 'mochadatabase'\n<= sq:create executed\n"
         assert_output (expected_output) { sequel_wrapper.create }
-        assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+
+        if !defined? JRUBY_VERSION
+          assert_equal true, $LOADED_FEATURES.grep(%r{padrino-gen/padrino-tasks/sql-helpers}).any?
+        end
       end
     end
   end
@@ -277,7 +285,7 @@ private
 
 # deletes sql-helpers.rb file from the included files
 def clear_sql_helpers_from_loaded_features
-  sql_helpers_index = $LOADED_FEATURES.index { |s| s.include?('padrino-gen/padrino-tasks/sql-helpers.rb')}
+  sql_helpers_index = $LOADED_FEATURES.index { |s| s.include?('padrino-gen/padrino-tasks/sql-helpers')}
 
   if sql_helpers_index
     $LOADED_FEATURES.delete_at sql_helpers_index
