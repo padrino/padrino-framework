@@ -60,10 +60,11 @@ describe "PluginGenerator" do
       capture_io { project_gen.invoke_all }
     end
 
+
     it 'should resolve gist url properly' do
-      FakeWeb.register_uri(:get, "https://gist.github.com/achiu/357045", :body => '<a href="/raw/8f731dc7cb830aa94dc2878a966c307f19145e3b/blog_template.rb">raw</a>')
-      template_file = 'https://gist.github.com/357045'
-      resolved_path = 'https://gist.github.com/raw/357045/4356/blog_template.rb'
+      FakeWeb.register_uri(:get, "https://gist.github.com/achiu/357045", :body => '<a href="/achiu/357045/raw/8f731dc7cb830aa94dc2878a966c307f19145e3b/blog_template.rb">raw</a>')
+      template_file = 'https://gist.github.com/achiu/357045'
+      resolved_path = 'https://gist.github.com/achiu/357045/raw/8f731dc7cb830aa94dc2878a966c307f19145e3b/blog_template.rb'
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { project_gen.invoke_all }
