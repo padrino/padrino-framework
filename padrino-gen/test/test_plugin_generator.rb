@@ -101,7 +101,8 @@ describe "PluginGenerator" do
       FakeWeb.register_uri :get, resolved_path, :status => 404
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
       plugin_gen.expects(:in_app_root?).returns(true).once
-      plugin_gen.expects(:say).with("The template at #{resolved_path} could not be found!", :red).returns(true).once
+      # Use regex to ignore trailing whitespace in message
+      plugin_gen.expects(:say).with(/The template at #{resolved_path} could not be loaded: 404/, :red).returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
   end
