@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'open-uri'
 
 module Padrino
   module Generators
