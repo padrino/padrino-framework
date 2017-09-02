@@ -91,7 +91,7 @@ module Padrino
           choice = @_components[comp] = resolve_valid_choice(comp)
           execute_component_setup(comp, choice)
         end
-        store_component_config('.components')
+        store_component_config('.components', :force => true)
         store_component_choice(:namespace, @project_name)
         store_component_choice(:migration_format, options[:migration_format])
       end

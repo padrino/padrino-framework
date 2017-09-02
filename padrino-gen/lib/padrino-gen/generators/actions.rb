@@ -145,11 +145,11 @@ module Padrino
       #   resolve_valid_choice(:mock)
       #
       def resolve_valid_choice(component)
-        available_string = self.class.available_choices_for(component).join(", ")
+        choices = self.class.available_choices_for(component).map(&:to_s)
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component} (#{available_string}):")
+          choice = ask("Please enter a valid option for #{component}:", :limited_to => choices)
         end
         choice
       end
@@ -181,9 +181,9 @@ module Padrino
       # @example
       #   store_component_config('/foo/bar')
       #
-      def store_component_config(destination)
+      def store_component_config(destination, opts = {})
         components = @_components || options
-        create_file(destination) do
+        create_file(destination, opts) do
           self.class.component_types.inject({}) { |result, comp|
             result[comp] = components[comp].to_s; result
           }.to_yaml
@@ -433,29 +433,6 @@ WARNING
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
         in_root { run 'bundle install --binstubs' }
-      end
-
-      ##
-      # Ask something to the user and receives a response.
-      #
-      # @param [String] statement
-      #   String of statement to display for input.
-      # @param [String] default
-      #   Default value for input.
-      # @param [String] color
-      #   Name of color to display input.
-      #auto_locale
-      # @return [String] Input value
-      #
-      # @example
-      #   ask("What is your name?")
-      #   ask("Path for ruby", "/usr/local/bin/ruby") => "Path for ruby (leave blank for /usr/local/bin/ruby):"
-      #
-      def ask(statement, default=nil, color=nil)
-        default_text = default ? " (leave blank for #{default}):" : nil
-        say("#{statement}#{default_text} ", color)
-        result = $stdin.gets.strip
-        result.empty? ? default : result
       end
 
       ##
