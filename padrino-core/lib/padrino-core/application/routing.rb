@@ -512,7 +512,7 @@ module Padrino
         options = @_conditions.merge(options) if @_conditions
 
         method_name = "#{verb} #{path}"
-        unbound_method = generate_method(method_name, &block)
+        unbound_method = generate_method(method_name.to_sym, &block)
 
         block_arity = block.arity
         block = if block_arity == 0
