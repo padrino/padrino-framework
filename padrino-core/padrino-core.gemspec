@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("sinatra", ">= 1.4.6")
   s.add_dependency("mustermann19")
-  s.add_dependency("thor", "~> 0.18")
+  # v0.20.0 won't work with http templates, see: https://github.com/erikhuda/thor/pull/576
+  s.add_dependency("thor", "~> 0.18", "< 0.20.0")
   s.add_dependency("rack-protection", ">= 1.5.0")
 end
