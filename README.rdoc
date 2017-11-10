@@ -1,5 +1,5 @@
 = Padrino
- 
+
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
@@ -8,6 +8,7 @@ Padrino is the godfather of Sinatra. Follow us on
 {<img src="https://gemnasium.com/padrino/padrino-framework.svg" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
 {<img src="http://img.shields.io/codeclimate/github/padrino/padrino-framework.svg" />}[https://codeclimate.com/github/padrino/padrino-framework]
 {<img src="https://badges.gitter.im/Join Chat.svg" />}[https://gitter.im/padrino/padrino-framework]
+{<img src='https://www.codetriage.com/padrino/padrino-framework/badges/users.svg' alt='Code Triagers Badge' />}[https://www.codetriage.com/padrino/padrino-framework]
 
 == Preface
 
