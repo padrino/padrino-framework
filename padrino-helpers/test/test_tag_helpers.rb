@@ -42,6 +42,16 @@ describe "TagHelpers" do
       actual_html = tag(:br, :class => 'Example <foo> & "bar"')
       assert_equal "<br class=\"Example &lt;foo&gt; &amp; &quot;bar&quot;\" />", actual_html
     end
+
+    it 'should allow array as attributes' do
+        actual_html = tag(:p, :class => %i[foo bar])
+        assert_html_has_tag(actual_html, 'p.foo.bar')
+    end
+
+    it 'should allow array as nested attributes' do
+        actual_html = tag(:p, :data => { :foo => %i[bar baz] })
+        assert_html_has_tag(actual_html, 'p', :'data-foo' => 'bar baz')
+    end
   end
 
   describe 'for #content_tag method' do
