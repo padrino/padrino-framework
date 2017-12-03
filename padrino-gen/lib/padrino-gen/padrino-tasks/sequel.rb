@@ -1,35 +1,41 @@
+def get_sequel_rake_wrapper
+  require 'sequel'
+  require_relative 'sql-helpers'
+
+  sequel = Sequel
+  sequel.extension :migration, :core_extensions
+  migrator = Sequel::Migrator
+  model = Sequel::Model
+  sql_helpers = Padrino::Generators::SqlHelpers
+
+  Padrino::Generators::SequelRakeWrapper.new sequel, migrator, model, sql_helpers
+end
+
 if PadrinoTasks.load?(:sequel, defined?(Sequel))
+  @sequel_rake_wrapper = get_sequel_rake_wrapper
+
   namespace :sq do
     namespace :migrate do
+
       desc "Perform automigration (reset your db data)"
       task :auto => :skeleton do
-        ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate", :target => 0
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate"
-        puts "<= sq:migrate:auto executed"
+        @sequel_rake_wrapper.auto
       end
 
       desc "Perform migration up/down to MIGRATION_VERSION"
       task :to, [:version] => :skeleton do |t, args|
         version = (args[:version] || env_migration_version).to_s.strip
-        ::Sequel.extension :migration
-        fail "No MIGRATION_VERSION was provided" if version.empty?
-        ::Sequel::Migrator.apply(Sequel::Model.db, "db/migrate", version.to_i)
-        puts "<= sq:migrate:to[#{version}] executed"
+        @sequel_rake_wrapper.to version
       end
 
       desc "Perform migration up to latest migration available"
       task :up => :skeleton do
-        ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate"
-        puts "<= sq:migrate:up executed"
+        @sequel_rake_wrapper.up
       end
 
       desc "Perform migration down (erase all data)"
       task :down => :skeleton do
-        ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate", :target => 0
-        puts "<= sq:migrate:down executed"
+        @sequel_rake_wrapper.down
       end
     end
 
@@ -38,45 +44,19 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
     desc "Create the database"
     task :create => :skeleton do
-      config = Sequel::Model.db.opts
-      user, password, host = config[:user], config[:password], config[:host]
-      database = config[:database]
-      charset = config[:charset] || ENV['CHARSET']   || 'utf8'
-      collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
-
-      puts "=> Creating database '#{database}'"
-      if config[:adapter] == 'sqlite3'
-        ::Sequel.sqlite(database)
-      else
-        require 'padrino-gen/padrino-tasks/sql-helpers'
-        Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation)
-      end
-      puts "<= sq:create executed"
+      @sequel_rake_wrapper.create
     end
 
     desc "Drop the database (postgres and mysql only)"
     task :drop => :skeleton do
-      config = ::Sequel::Model.db.opts
-      user, password, host, database = config[:user], config[:password], config[:host], config[:database]
-
-      ::Sequel::Model.db.disconnect
-
-      puts "=> Dropping database '#{database}'"
-      if config[:adapter] == 'sqlite3'
-        File.delete(database) if File.exist?(database)
-      else
-        Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database)
-      end
-      puts "<= sq:drop executed"
+      @sequel_rake_wrapper.drop
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
     task :reset => ['drop', 'create', 'migrate', 'seed']
 
     task :seed => :environment do
-      missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
-      Padrino.require_dependencies(missing_model_features)
-      Rake::Task['db:seed'].invoke
+      @sequel_rake_wrapper.seed
     end
   end
 
