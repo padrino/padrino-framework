@@ -13,6 +13,6 @@ module Padrino
   #
   def self.bin_gen(*args)
     @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path("../../../bin/padrino-gen", __FILE__)]
-    system args.unshift(@_padrino_gen_bin).join(" ")
+    system *@_padrino_gen_bin, *args
   end
 end
