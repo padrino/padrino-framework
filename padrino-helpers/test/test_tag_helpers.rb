@@ -44,12 +44,12 @@ describe "TagHelpers" do
     end
 
     it 'should allow array as attributes' do
-        actual_html = tag(:p, :class => %i[foo bar])
+        actual_html = tag(:p, :class => [:foo, :bar])
         assert_html_has_tag(actual_html, 'p.foo.bar')
     end
 
     it 'should allow array as nested attributes' do
-        actual_html = tag(:p, :data => { :foo => %i[bar baz] })
+        actual_html = tag(:p, :data => { :foo => [:bar, :baz] })
         assert_html_has_tag(actual_html, 'p', :'data-foo' => 'bar baz')
     end
   end
