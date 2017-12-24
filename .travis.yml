@@ -32,6 +32,7 @@ branches:
   only:
     - master
     - 0.12
+    - move-to-mustermann
 services: mongodb
 matrix:
   include:
