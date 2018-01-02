@@ -1,5 +1,17 @@
 = CHANGES
 
+== 0.14.2 (2018-01-02)
+- FIX router in non-Padrino applications (@adam12)
+- FIX padrino-admin haml layout
+- FIX Datamapper tasks (@adam12)
+- FIX #1979 default test or spec task
+- FIX #2150 refuse invalid database adapters
+- FIX #2152 using open without requiring 'open-uri'
+- NEW #2161 allow array as tag attribute (@aeris)
+- FIX #2163 preserve spaces in args of padrino gen
+- update Sequel usage
+- update ActiveRecord::Migration usage (@adam12)
+
 == 0.14.1 (2017-05-16)
 - FIX syntax error in ActiveRecord tasks (@sue445)
 - NEW use hamlit if available in Gemfile
