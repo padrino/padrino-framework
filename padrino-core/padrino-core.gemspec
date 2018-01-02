@@ -24,8 +24,6 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-support", Padrino.version)
-  s.add_dependency("sinatra", ">= 1.4.6")
-  s.add_dependency("mustermann", ">= 1.0.1")
+  s.add_dependency("sinatra", ">= 2.0.0")
   s.add_dependency("thor", "~> 0.18")
-  s.add_dependency("rack-protection", ">= 1.5.0")
 end
