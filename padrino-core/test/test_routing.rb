@@ -2255,7 +2255,6 @@ describe "Routing" do
   end
 
   it "should support named captures like %r{/hello/(?<person>[^/?#]+)} on Ruby >= 1.9" do
-    next if RUBY_VERSION < '1.9'
     mock_app do
       get Regexp.new('/hello/(?<person>[^/?#]+)') do
         "Hello #{params['person']}"

@@ -19,31 +19,16 @@ group :development do
   elsif ENV['SINATRA_EDGE']
     puts "=> Using sinatra edge"
     gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
-  elsif RUBY_VERSION < "2.2.0"
-    gem "sinatra", "< 2"
   end
 
-  if RUBY_VERSION < "2.0.0"
-    gem "slim",      ">= 1.3.0", "< 3"
-  else
-    gem "slim",      ">= 1.3.0"
-  end
+  gem "slim",      ">= 1.3.0"
+  gem "liquid",    ">= 2.1.1"
 
-  if RUBY_VERSION < "2.1.0"
-    gem "liquid",    ">= 2.1.1", "< 4"
-  else
-    gem "liquid",    ">= 2.1.1"
-  end
-
-  if ENV['HAML_ENGINE'] == 'hamlit' && RUBY_VERSION >= "2.0.0"
+  if ENV['HAML_ENGINE'] == 'hamlit'
     puts "=> Using Hamlit Haml engine"
     gem "hamlit"
   else
-    if RUBY_VERSION < "2.0.0"
-      gem "haml",      ">= 4.0.5", "< 5"
-    else
-      gem "haml",      ">= 4.0.5"
-    end
+    gem "haml",      ">= 4.0.5"
   end
 
   case ENV['ERB_ENGINE']
