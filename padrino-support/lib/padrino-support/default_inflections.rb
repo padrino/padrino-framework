@@ -1,6 +1,7 @@
+# frozen-string-literal: true
 ##
-# This module is based on Sequel 4.27.0
-# sequel-4.27.0/lib/sequel/model/default_inflections.rb
+# This module is based on Sequel 5.4.0
+# sequel-5.4.0/lib/sequel/model/default_inflections.rb
 #
 module Padrino
   # Proc that is instance evaled to create the default inflections for both the
