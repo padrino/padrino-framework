@@ -156,6 +156,16 @@ describe "Routing" do
     assert_equal "My lucky number: 99 99", body
   end
 
+  it 'should ignore trailing slashes' do
+    mock_app do
+      get(%r./trailing.) { "slash" }
+    end
+    get "/trailing"
+    assert_equal "slash", body
+    get "/trailing/"
+    assert_equal "slash", body
+  end
+
   it 'should accept regexp routes with generate with :generate_with' do
     mock_app do
       get(%r{/fob|/baz}, :name => :foo, :generate_with => '/fob') { "regexp" }

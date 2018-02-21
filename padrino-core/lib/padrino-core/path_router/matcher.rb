@@ -21,7 +21,7 @@ module Padrino
       def match(pattern)
         if match_data = handler.match(pattern)
           match_data
-        elsif mustermann? && pattern != "/" && pattern.end_with?("/")
+        elsif pattern != "/" && pattern.end_with?("/")
           handler.match(pattern[0..-2])
         end
       end
