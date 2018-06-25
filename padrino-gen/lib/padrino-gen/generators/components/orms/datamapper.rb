@@ -159,7 +159,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
+    :add => Proc.new { |field, kind| "add_column :#{field}, DataMapper::Property::#{kind.classify}" },
     :remove => Proc.new { |field, kind| "drop_column :#{field}" }
   )
 end
