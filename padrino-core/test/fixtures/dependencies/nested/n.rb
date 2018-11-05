@@ -1,0 +1,2 @@
+class N < J
+end
