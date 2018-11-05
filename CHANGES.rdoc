@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.14.4 (2018-11-05)
+- FIX #2177 regexp routes and trailing slashes (@pdlug)
+- FIX #2182 NoMethodError on `ar` tasks with activerecord v5.2.0+ (@sue445)
+- FIX #2185 self.authenticate method in mongoid.rb.tt (@LarryFransson)
+- FIX #2179 Deprecate safe_level of `ERB.new` in Ruby 2.6 (@koic)
+- FIX #2193 nested require_dependencies (@genkami)
+
+== 0.14.3 (2018-02-23)
+- locks onto Sinatra 2
+- #2169 drop support of ruby < 2.2.2
+
 == 0.14.2 (2018-01-02)
 - FIX router in non-Padrino applications (@adam12)
 - FIX padrino-admin haml layout
