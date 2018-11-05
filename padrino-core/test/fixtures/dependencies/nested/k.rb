@@ -1,0 +1,2 @@
+class K
+end

@@ -65,5 +65,16 @@ describe "Dependencies" do
         end
       end
     end
+
+    it 'should not remove constants that are newly commited in nested require_dependencies' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root("fixtures/dependencies/nested/j.rb"),
+          Padrino.root("fixtures/dependencies/nested/k.rb"),
+          Padrino.root("fixtures/dependencies/nested/l.rb")
+        )
+      end
+      assert_equal "hello", M.hello
+    end
   end
 end
