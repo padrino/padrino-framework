@@ -90,7 +90,7 @@ module Padrino
       return unless options[:force] || file_changed?(file)
       return require(file) if feature_excluded?(file)
 
-      Storage.prepare(file, MTIMES) # might call #safe_load recursively
+      Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
       begin
         with_silence{ require(file) }
@@ -101,7 +101,7 @@ module Padrino
           logger.exception exception, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
-        Storage.rollback(file, MTIMES)
+        Storage.rollback(file)
         raise
       end
     end
