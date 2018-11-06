@@ -77,16 +77,33 @@ describe "Dependencies" do
       assert_equal "hello", M.hello
     end
 
-    it 'should resolve interdependence by out/in side require_dependencies' do
-      capture_io do
-        Padrino.require_dependencies(
-          Padrino.root("fixtures/dependencies/nested/ooo.rb"),
-          Padrino.root("fixtures/dependencies/nested/ppp.rb"),
-          Padrino.root("fixtures/dependencies/nested/qqq.rb")
-        )
+
+    describe "change log level for :devel" do
+      before do
+        @log_level_devel = Padrino::Logger::Config[:test]
+        @io = StringIO.new
+        Padrino::Logger::Config[:test] = { :log_level => :devel, :stream => @io }
+        Padrino::Logger.setup!
       end
-      assert_equal "hello", RRR.hello
-      assert_equal "hello", OOO.hello
+
+      after do
+        Padrino::Logger::Config[:test] = @log_level_devel
+        Padrino::Logger.setup!
+      end
+
+      it 'should resolve interdependence by out/in side nested require_dependencies' do
+        capture_io do
+          Padrino.require_dependencies(
+            Padrino.root("fixtures/dependencies/nested/ooo.rb"),
+            Padrino.root("fixtures/dependencies/nested/ppp.rb"),
+            Padrino.root("fixtures/dependencies/nested/qqq.rb")
+          )
+        end
+        assert_equal "hello", RRR.hello
+        assert_equal "hello", OOO.hello
+        assert_equal "hello", RollbackTarget.hello
+        assert_match /Removed constant RollbackTarget from Object/, @io.string
+      end
     end
   end
 end
