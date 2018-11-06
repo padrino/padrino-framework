@@ -76,5 +76,17 @@ describe "Dependencies" do
       end
       assert_equal "hello", M.hello
     end
+
+    it 'should resolve interdependence by out/in side require_dependencies' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root("fixtures/dependencies/nested/ooo.rb"),
+          Padrino.root("fixtures/dependencies/nested/ppp.rb"),
+          Padrino.root("fixtures/dependencies/nested/qqq.rb")
+        )
+      end
+      assert_equal "hello", RRR.hello
+      assert_equal "hello", OOO.hello
+    end
   end
 end
