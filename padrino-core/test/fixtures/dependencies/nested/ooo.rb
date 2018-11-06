@@ -1,0 +1,2 @@
+class OOO < RRR
+end
