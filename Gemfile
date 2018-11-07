@@ -44,7 +44,7 @@ group :development do
   gem "rack",      ">= 1.3.0"
   gem "rake",      ">= 10.5.0"
   gem "yard",      ">= 0.7.2"
-  gem "rack-test", "~> 0.6.3"
+  gem "rack-test", ">= 0.6.3"
   gem "fakeweb",   ">= 1.2.8"
   gem "oga",       "~> 2.5"
   gem "builder",    ">= 2.1.2"
