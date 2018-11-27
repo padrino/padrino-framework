@@ -105,5 +105,33 @@ describe "Dependencies" do
         assert_match /Removed constant RollbackTarget from Object/, @io.string
       end
     end
+
+    describe 'when we require lib, app in one circle' do
+      before do
+        Padrino.clear!
+        @log_level_devel = Padrino::Logger::Config[:test]
+        @io = StringIO.new
+        Padrino::Logger::Config[:test] = { :log_level => :devel, :stream => @io }
+        Padrino::Logger.setup!
+      end
+
+      after do
+        Padrino::Logger::Config[:test] = @log_level_devel
+        Padrino::Logger.setup!
+      end
+
+      it 'some model not define' do
+        capture_io do
+          Padrino.require_dependencies(
+            Padrino.root("fixtures/dependencies/nested_app/lib/**/*.rb"),
+            Padrino.root("fixtures/dependencies/nested_app/config/apps.rb"),
+          )
+        end
+	      puts @io.string
+        assert_raises(NameError) do
+          RModel.hello
+        end
+      end
+    end
   end
 end

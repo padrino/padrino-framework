@@ -1,0 +1,2 @@
+class OLib < PLib
+end

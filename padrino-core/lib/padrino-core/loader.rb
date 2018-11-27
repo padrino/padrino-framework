@@ -54,7 +54,7 @@ module Padrino
       Padrino.logger
       Reloader.lock!
       before_load.each(&:call)
-      require_dependencies(*dependency_paths)
+      dependency_paths.each{ |path| require_dependencies(path) }
       after_load.each(&:call)
       logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
       precompile_all_routes!
