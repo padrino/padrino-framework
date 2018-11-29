@@ -127,7 +127,6 @@ describe "Dependencies" do
             Padrino.root("fixtures/dependencies/nested_app/config/apps.rb"),
           )
         end
-	      puts @io.string
         assert_raises(NameError) do
           RModel.hello
         end
