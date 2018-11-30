@@ -120,16 +120,18 @@ describe "Dependencies" do
         Padrino::Logger.setup!
       end
 
-      it 'some model not define' do
+      it 'should resolve interdependence by out/in side nested require_dependencies' do
         capture_io do
           Padrino.require_dependencies(
             Padrino.root("fixtures/dependencies/nested_app/lib/**/*.rb"),
-            Padrino.root("fixtures/dependencies/nested_app/config/apps.rb"),
+            Padrino.root("fixtures/dependencies/nested_app/config/apps.rb")
           )
         end
-        assert_raises(NameError) do
-          RModel.hello
-        end
+        assert_equal "hello", RModel.hello
+        assert_equal "hello_from_t_module", RModel.new.hello_from_t_module
+        assert_equal "hello_from_t_module", SModel.new.hello_from_t_module
+        assert_equal "hello", RollbackTargetSModel.hello
+        assert_match /Removed constant RollbackTargetSModel from Object/, @io.string
       end
     end
   end
