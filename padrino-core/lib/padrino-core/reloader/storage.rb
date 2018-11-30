@@ -45,7 +45,12 @@ module Padrino
                              next if file == name
                              break if data[:constants].include?(klass)
                            end
-          Reloader.remove_constant(klass) if loaded_in_name
+          if loaded_in_name
+            @old_entries.each do |file, data|
+              data[:constants] << klass if file != name
+            end
+            Reloader.remove_constant(klass)
+          end
         end
         @old_entries.delete(name)
       end
