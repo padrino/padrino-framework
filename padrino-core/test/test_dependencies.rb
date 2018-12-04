@@ -131,7 +131,6 @@ describe "Dependencies" do
         assert_equal "hello_from_t_module", RModel.new.hello_from_t_module
         assert_equal "hello_from_t_module", SModel.new.hello_from_t_module
         assert_equal "hello", RollbackTargetSModel.hello
-        assert_match /Removed constant RollbackTargetSModel from Object/, @io.string
       end
     end
   end
