@@ -283,7 +283,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           end
         end
 
-        if ActiveRecord::Base.connection.supports_migrations?
+        if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
           File.open(resolve_structure_sql, "a"){|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
