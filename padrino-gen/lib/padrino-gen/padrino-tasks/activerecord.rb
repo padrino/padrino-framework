@@ -429,7 +429,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       db_configs = ActiveRecord::Base.configurations.configs_for(env_name: env_name.to_s)
 
       db_configs.each do |db_config|
-        yield db_config.config
+        yield db_config.config.with_indifferent_access
       end
     end
   end
@@ -441,7 +441,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     else
       ActiveRecord::Base.configurations.configs_for.each do |db_config|
-        yield db_config.config
+        yield db_config.config.with_indifferent_access
       end
     end
   end
