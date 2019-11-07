@@ -12,7 +12,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     namespace :create do
       desc "Create all the local databases defined in config/database.yml"
       task :all => :skeleton do
-        ActiveRecord::Base.configurations.each_value do |config|
+        with_all_databases do |config|
           # Skip entries that don't have a database key, such as the first entry here:
           #
           #  defaults: &defaults
@@ -33,7 +33,9 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc "Creates the database defined in config/database.yml for the current Padrino.env"
     task :create => :skeleton do
-      create_database(ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env])
+      with_database(Padrino.env) do |config|
+        create_database(config)
+      end
     end
 
     def create_database(config)
@@ -90,7 +92,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     namespace :drop do
       desc "Drops all the local databases defined in config/database.yml"
       task :all => :skeleton do
-        ActiveRecord::Base.configurations.each_value do |config|
+        with_all_databases do |config|
           # Skip entries that don't have a database key
           next unless config[:database]
           begin
@@ -105,11 +107,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc "Drops the database for the current Padrino.env"
     task :drop => :skeleton do
-      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
-      begin
-        drop_database(config)
-      rescue StandardError => e
-        catch_error(:drop, e, config)
+      with_database(Padrino.env || :development) do |config|
+        begin
+          drop_database(config)
+        rescue StandardError => e
+          catch_error(:drop, e, config)
+        end
       end
     end
 
@@ -127,8 +130,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
       if less_than_active_record_5_2?
         ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
-      else
+      elsif less_than_active_record_6_0?
         ActiveRecord::MigrationContext.new("db/migrate/").migrate(env_migration_version)
+      else
+        ActiveRecord::MigrationContext.new("db/migrate/", ActiveRecord::SchemaMigration).migrate(env_migration_version)
       end
 
       Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
@@ -167,28 +172,30 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc "Retrieves the charset for the current environment's database"
     task :charset => :skeleton do
-      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
-      case config[:adapter]
-      when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
-        ActiveRecord::Base.establish_connection(config)
-        puts ActiveRecord::Base.connection.charset
-      when 'postgresql'
-        ActiveRecord::Base.establish_connection(config)
-        puts ActiveRecord::Base.connection.encoding
-      else
-        puts 'Sorry, your database adapter is not supported yet, feel free to submit a patch.'
+      with_database(Padrino.env || :development) do |config|
+        case config[:adapter]
+        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+          ActiveRecord::Base.establish_connection(config)
+          puts ActiveRecord::Base.connection.charset
+        when 'postgresql'
+          ActiveRecord::Base.establish_connection(config)
+          puts ActiveRecord::Base.connection.encoding
+        else
+          puts 'Sorry, your database adapter is not supported yet, feel free to submit a patch.'
+        end
       end
     end
 
     desc "Retrieves the collation for the current environment's database."
     task :collation => :skeleton do
-      config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env || :development]
-      case config[:adapter]
-      when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
-        ActiveRecord::Base.establish_connection(config)
-        puts ActiveRecord::Base.connection.collation
-      else
-        puts 'sorry, your database adapter is not supported yet, feel free to submit a patch'
+      with_database(Padrino.env || :development) do |config|
+        case config[:adapter]
+        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+          ActiveRecord::Base.establish_connection(config)
+          puts ActiveRecord::Base.connection.collation
+        else
+          puts 'sorry, your database adapter is not supported yet, feel free to submit a patch'
+        end
       end
     end
 
@@ -203,8 +210,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         pending_migrations =
           if less_than_active_record_5_2?
             ActiveRecord::Migrator.open(ActiveRecord::Migrator.migrations_paths).pending_migrations
-          else
+          elsif less_than_active_record_6_0?
             ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).open.pending_migrations
+          else
+            ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).open.pending_migrations
           end
 
         if pending_migrations.any?
@@ -244,36 +253,37 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     namespace :structure do
       desc "Dump the database structure to a SQL file."
       task :dump => :skeleton do
-        config = ActiveRecord::Base.configurations.with_indifferent_access[Padrino.env]
-        case config[:adapter]
-        when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
-          config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
-          ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
-        when "postgresql"
-          ENV['PGHOST']     = config[:host] if config[:host]
-          ENV['PGPORT']     = config[:port].to_s if config[:port]
-          ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
-          search_path = config[:schema_search_path]
-          if search_path
-            search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
+        with_database(Padrino.env) do |config|
+          case config[:adapter]
+          when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
+            config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
+            ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
+          when "postgresql"
+            ENV['PGHOST']     = config[:host] if config[:host]
+            ENV['PGPORT']     = config[:port].to_s if config[:port]
+            ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
+            search_path = config[:schema_search_path]
+            if search_path
+              search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
+            end
+            `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
+            raise "Error dumping database" if $?.exitstatus == 1
+          when "sqlite", "sqlite3"
+            dbfile = config[:database] || config[:dbfile]
+            `#{config[:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
+          when "sqlserver"
+            `scptxfr /s #{config[:host]} /d #{config[:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
+            `scptxfr /s #{config[:host]} /d #{config[:database]} /I /F db\ /q /A /r`
+          when "firebird"
+            set_firebird_env(config)
+            db_string = firebird_db_string(config)
+            sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
+          else
+            raise "Task not supported by '#{config[:adapter]}'."
           end
-          `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
-          raise "Error dumping database" if $?.exitstatus == 1
-        when "sqlite", "sqlite3"
-          dbfile = config[:database] || config[:dbfile]
-          `#{config[:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
-        when "sqlserver"
-          `scptxfr /s #{config[:host]} /d #{config[:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
-          `scptxfr /s #{config[:host]} /d #{config[:database]} /I /F db\ /q /A /r`
-        when "firebird"
-          set_firebird_env(config)
-          db_string = firebird_db_string(config)
-          sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
-        else
-          raise "Task not supported by '#{config[:adapter]}'."
         end
 
-        if ActiveRecord::Base.connection.supports_migrations?
+        if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
           File.open(resolve_structure_sql, "a"){|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
@@ -371,8 +381,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     if less_than_active_record_5_2?
       ActiveRecord::Migrator.run(type, "db/migrate/", version)
-    else
+    elsif less_than_active_record_6_0?
       ActiveRecord::MigrationContext.new('db/migrate/').run(type, version)
+    else
+      ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).run(type, version)
     end
 
     dump_schema
@@ -383,8 +395,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     if less_than_active_record_5_2?
       ActiveRecord::Migrator.send(type, 'db/migrate/', step)
-    else
+    elsif less_than_active_record_6_0?
       ActiveRecord::MigrationContext.new('db/migrate/').send(type, step)
+    else
+      ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).send(type, step)
     end
 
     dump_schema
@@ -400,6 +414,36 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def less_than_active_record_5_2?
     ActiveRecord.version < Gem::Version.create("5.2.0")
+  end
+
+  def less_than_active_record_6_0?
+    ActiveRecord.version < Gem::Version.create("6.0.0")
+  end
+
+  def with_database(env_name)
+    if less_than_active_record_6_0?
+      config = ActiveRecord::Base.configurations.with_indifferent_access[env_name]
+
+      yield config
+    else
+      db_configs = ActiveRecord::Base.configurations.configs_for(env_name: env_name.to_s)
+
+      db_configs.each do |db_config|
+        yield db_config.config.with_indifferent_access
+      end
+    end
+  end
+
+  def with_all_databases
+    if less_than_active_record_6_0?
+      ActiveRecord::Base.configurations.each_value do |config|
+        yield config
+      end
+    else
+      ActiveRecord::Base.configurations.configs_for.each do |db_config|
+        yield db_config.config.with_indifferent_access
+      end
+    end
   end
 
   task 'db:migrate' => 'ar:migrate'
