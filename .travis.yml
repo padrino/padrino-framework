@@ -2,16 +2,16 @@ language: ruby
 sudo: false
 cache: bundler
 before_install:
-  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
-  - gem install bundler -v 1.17.3
+  - gem install bundler
 install:
   - bundle update
 rvm:
-  - 2.2.2
   - 2.3.0
   - 2.3.3
   - 2.4.3
   - 2.5.0
+  - 2.6.0
+  - 2.7.0
   - ruby-head
   - rbx-2
   - jruby
