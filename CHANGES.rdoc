@@ -1,10 +1,9 @@
 = CHANGES
 
-<<<<<<< HEAD
-== 0.14.0 (May 14th 2020)
+== 0.15.0 (2020-05-14)
 
 - FIX #2205 Relax bundler version and get tests passing (@rogerhu, @yb66)
-=======
+
 == 0.14.4 (2018-11-05)
 - FIX #2177 regexp routes and trailing slashes (@pdlug)
 - FIX #2182 NoMethodError on `ar` tasks with activerecord v5.2.0+ (@sue445)
@@ -91,7 +90,6 @@
 - FIX #2052 String#humanize compatibility with AS ~3.2
 - NEW #2056 Allow Pry as Padrino console shell
 - FIX #2066 fix reloader with native jruby classes
->>>>>>> d52f29e24866d879cd87cf1dc88a3c615e0c20f5
 
 == 0.13.2 (May 9th 2016)
 

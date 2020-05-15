@@ -6,11 +6,7 @@
 #
 module Padrino
   # The version constant for the current version of Padrino.
-<<<<<<< HEAD
-  VERSION = '0.14.0' unless defined?(Padrino::VERSION)
-=======
-  VERSION = '0.14.4' unless defined?(Padrino::VERSION)
->>>>>>> d52f29e24866d879cd87cf1dc88a3c615e0c20f5
+  VERSION = '0.15.0' unless defined?(Padrino::VERSION)
 
   #
   # The current Padrino version.
