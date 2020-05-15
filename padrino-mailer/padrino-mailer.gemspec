@@ -5,7 +5,6 @@ require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FIL
 
 Gem::Specification.new do |s|
   s.name = "padrino-mailer"
-  s.rubyforge_project = "padrino-mailer"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.email = "padrinorb@gmail.com"
   s.summary = "Mailer system for padrino"
@@ -24,6 +23,6 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("mime-types", "< 3")
+  s.add_dependency("mime-types", "< 4")
   s.add_dependency("mail", "~> 2.5")
 end

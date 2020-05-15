@@ -29,8 +29,8 @@ module Padrino
     #
     def initialize(name, options={})
       @name      = name.to_s
-      @app_class = options[:app_class] || @name.camelize
-      @gem       = options[:gem]       || @app_class.split("::").first.underscore
+      @app_class = options[:app_class] || Inflections.camelize(@name)
+      @gem       = options[:gem]       || Inflections.underscore(@app_class.split("::").first)
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
@@ -108,6 +108,7 @@ module Padrino
         app_obj.set :static,         public_folder_exists
         app_obj.set :cascade,        app_data.cascade
       else
+        app_obj.cascade       = app_data.cascade
         app_obj.uri_root      = uri_root
         app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end
@@ -129,7 +130,11 @@ module Padrino
     #   Array of routes.
     #
     def named_routes
+      return [] unless app_obj.respond_to?(:routes)
+
       app_obj.routes.map { |route|
+        request_method = route.request_methods.first
+        next if !route.name || request_method == 'HEAD'
         route_name = route.name.to_s
         route_name =
           if route.controller
@@ -138,8 +143,6 @@ module Padrino
             ":#{route_name}"
           end
         name_array = "(#{route_name})"
-        request_method = route.request_methods.first
-        next if route.name.blank? || request_method == 'HEAD'
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
         OpenStruct.new(:verb => request_method, :identifier => route.name, :name => name_array, :path => full_path)

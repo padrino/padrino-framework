@@ -2,12 +2,12 @@ module Padrino
   module Rendering
     ##
     # SafeBufferEnhancer is an Erubis Enhancer that compiles templates that
-    # are fit for using ActiveSupport::SafeBuffer as a Buffer.
+    # are fit for using SafeBuffer as a Buffer.
     #
     # @api private
     module SafeBufferEnhancer
       def add_expr_literal(src, code)
-        src << " #{@bufvar}.concat((" << code << ').to_s);'
+        src << " @__in_ruby_literal = true; #{@bufvar}.concat((" << code << ').to_s); @__in_ruby_literal = false;'
       end
 
       def add_stmt(src, code)
@@ -53,7 +53,7 @@ module Padrino
       def precompiled_preamble(locals)
         original = super
         return original unless @is_padrino_app
-        "__in_erb_template = true\n" << original.rpartition("\n").first << "#{@outvar} = _buf = ActiveSupport::SafeBuffer.new\n"
+        "__in_erb_template = true\n" << original.rpartition("\n").first << "#{@outvar} = _buf = SafeBuffer.new\n"
       end
     end
   end
@@ -63,4 +63,5 @@ Tilt.prefer(Padrino::Rendering::ErubisTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
   :engine_class => Padrino::Rendering::SafeEruby,
+  :outvar => '@_out_buf',
 }

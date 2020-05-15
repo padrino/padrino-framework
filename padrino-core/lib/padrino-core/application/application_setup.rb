@@ -13,7 +13,7 @@ module Padrino
       #
       def default_configuration!
         set :app_file, File.expand_path(caller_files.first || $0)
-        set :app_name, settings.to_s.underscore.to_sym
+        set :app_name, Inflections.underscore(settings).to_sym
 
         set :environment, Padrino.env
         set :reload, proc { development? }

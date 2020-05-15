@@ -71,8 +71,8 @@ module Padrino
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
             tuples = direction ? columns.map { |value| value.split(":") } : []
             tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] }
-            add_columns    = tuples.map(&options[:add]).join("\n    ")
-            remove_columns = tuples.map(&options[:remove]).join("\n    ")
+            add_columns    = tuples.map(&options[:add]).join("\n      ")
+            remove_columns = tuples.map(&options[:remove]).join("\n      ")
             forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?
             back_text    = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, remove_columns) if tuples.any?
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m,   (direction == 'add' ? forward_text.to_s : back_text.to_s))

@@ -5,7 +5,6 @@ require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FIL
 
 Gem::Specification.new do |s|
   s.name = "padrino-cache"
-  s.rubyforge_project = "padrino-cache"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.email = "padrinorb@gmail.com"
   s.summary = "Page and fragment caching for Padrino"
@@ -25,5 +24,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency("padrino-core", Padrino.version)
   s.add_runtime_dependency("padrino-helpers", Padrino.version)
-  s.add_runtime_dependency("moneta", ["~> 0.7.0"])
+  s.add_runtime_dependency("moneta", ["~> 1.1.0"])
 end

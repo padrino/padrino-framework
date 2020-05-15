@@ -140,4 +140,20 @@ describe "SystemReloader" do
       assert Padrino::Reloader.changed?, 'Change to custom dependency has not been recognised'
     end
   end
+
+  describe 'reloading module constants' do
+    it 'should remove constants of misdesigned modules' do
+      skip
+      Padrino.clear!
+      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/concerned/app.rb')
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to("/")
+      get '/'
+
+      original_value = BadModule.instance_variable_get(:@happy_global_variable)
+      FileUtils.touch File.dirname(__FILE__) + '/fixtures/apps/concerned/models/mixins/badmodule.rb'
+      Padrino.reload!
+      assert_equal original_value, BadModule.instance_variable_get(:@happy_global_variable)
+    end
+  end
 end

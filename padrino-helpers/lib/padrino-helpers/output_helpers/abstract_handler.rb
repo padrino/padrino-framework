@@ -29,7 +29,7 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          self.output_buffer, _buf_was = ActiveSupport::SafeBuffer.new, self.output_buffer
+          self.output_buffer, _buf_was = SafeBuffer.new, self.output_buffer
           raw = yield(*args)
           captured = template.instance_variable_get(:@_out_buf)
           self.output_buffer = _buf_was
@@ -46,7 +46,7 @@ module Padrino
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
-        def concat_to_template(text="")
+        def concat_to_template(text="", context=nil)
           text
         end
 

@@ -102,7 +102,8 @@ describe "PadrinoLogger" do
       @logger.error binary_data
       @logger.error utf8_data
       @logger.flush
-      assert_match /\?.*фыв/m, @log.string.encode(Encoding.default_external)
+      assert @log.string.force_encoding(encoding).include?("?\n".encode(encoding))
+      assert @log.string.force_encoding(encoding).include?(utf8_data.encode(encoding))
     end
 
     it 'should log an application' do
@@ -195,7 +196,9 @@ describe "alternate logger" do
   before do
     @save_logger = Padrino.logger
     @log = StringIO.new
-    Padrino.logger = FancyLogger.new(@log)
+    new_logger = FancyLogger.new(@log)
+    new_logger.extend(Padrino::Logger::Extensions)
+    capture_io { Padrino.logger = new_logger }
   end
 
   after do
@@ -222,11 +225,34 @@ describe "alternate logger" do
   end
 end
 
+describe "binary logger" do
+  before do
+    @save_logger = Padrino.logger
+    @log = StringIO.new
+    new_logger = Logger.new(@log)
+    new_logger.formatter = proc do |_, _, _, message|
+      "#{message.size}"
+    end
+    capture_io { Padrino.logger = new_logger }
+  end
+
+  after do
+    Padrino.logger = @save_logger
+  end
+
+  it 'should not convert parameters to strings before formatting' do
+    logger.info({:a => 2})
+    assert_equal "1", @log.string
+  end
+end
+
 describe "alternate logger: stdlib logger" do
   before do
     @log = StringIO.new
     @save_logger = Padrino.logger
-    Padrino.logger = Logger.new(@log)
+    new_logger = Logger.new(@log)
+    new_logger.extend(Padrino::Logger::Extensions)
+    capture_io { Padrino.logger = new_logger }
   end
 
   after do

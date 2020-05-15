@@ -31,11 +31,11 @@ module Padrino
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
       def partial(template, options={}, &block)
-        options = { :locals => {}, :layout => false }.update(options)
+        options = { :layout => false }.update(options)
         explicit_engine = options.delete(:engine)
 
-        path,_,name = template.to_s.rpartition(File::SEPARATOR)
-        template_path = File.join(path,"_#{name}").to_sym
+        path, _, name = template.to_s.rpartition(File::SEPARATOR)
+        template_path = path.empty? ? :"_#{name}" : :"#{path}#{File::SEPARATOR}_#{name}"
         item_name = name.partition('.').first.to_sym
 
         items, counter = if options[:collection].respond_to?(:inject)
@@ -44,20 +44,41 @@ module Padrino
           [[options.delete(:object)], nil]
         end
 
-        locals = options[:locals]
-        items.each_with_object(ActiveSupport::SafeBuffer.new) do |item,html|
+        locals = options.delete(:locals) || {}
+        items.each_with_object(SafeBuffer.new) do |item,html|
           locals[item_name] = item if item
           locals["#{item_name}_counter".to_sym] = counter += 1 if counter
           content =
             if block_given?
-              concat_content render(explicit_engine, template_path, options){ capture_html(&block) }
+              concat_content(render(explicit_engine, template_path, options, locals) { capture_html(&block) })
             else
-              render(explicit_engine, template_path, options)
+              render(explicit_engine, template_path, options, locals)
             end
           html.safe_concat content if content
         end
       end
       alias :render_partial :partial
+
+      def self.included(base)
+        unless base.instance_methods.include?(:render) || base.private_instance_methods.include?(:render)
+          base.class_eval do
+            fail "gem 'tilt' is required" unless defined?(::Tilt)
+
+            def render(engine, file=nil, options={}, locals=nil, &block)
+              options.delete(:layout)
+              engine, file = file, engine if file.nil?
+              template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
+              fail "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
+              unless File.file?(file.to_s)
+                engine_extensions = ::Tilt.default_mapping.extensions_for(template_engine)
+                file = Dir.glob("#{file}.{#{engine_extensions.join(',')}}").first || fail("Template '#{file}' not found")
+              end
+              template = template_engine.new(file.to_s, options)
+              template.render(options[:scope] || self, locals, &block)
+            end
+          end
+        end
+      end
     end
   end
 end

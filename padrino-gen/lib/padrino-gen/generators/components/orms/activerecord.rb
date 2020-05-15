@@ -111,29 +111,38 @@ MIDDLEWARE
 def setup_orm
   ar = AR
   db = @project_name.underscore
-  # We're now defaulting to mysql2 since mysql is deprecated
-  case options[:adapter]
-  when 'mysql-gem'
-    ar.sub! /!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_development'")
-    ar.sub! /!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_production'")
-    ar.sub! /!DB_TEST!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql', :version => "~> 2.8.1"
-  when 'mysql', 'mysql2'
-    ar.sub! /!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_development'")
-    ar.sub! /!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_production'")
-    ar.sub! /!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'mysql2'
-  when 'postgres'
-    ar.sub! /!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_development'")
-    ar.sub! /!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_production'")
-    ar.sub! /!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_test'")
-    require_dependencies 'pg'
-  else
-    ar.sub! /!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
-    ar.sub! /!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
-    ar.sub! /!DB_TEST!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
-    require_dependencies 'sqlite3'
+
+  begin
+    case adapter ||= options[:adapter]
+    when 'mysql-gem'
+      ar.sub! /!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_development'")
+      ar.sub! /!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_production'")
+      ar.sub! /!DB_TEST!/, MYSQL.sub(/!DB_NAME!/,"'#{db}_test'")
+      require_dependencies 'mysql', :version => "~> 2.8.1"
+    when 'mysql', 'mysql2'
+      ar.sub! /!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_development'")
+      ar.sub! /!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_production'")
+      ar.sub! /!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/,"'#{db}_test'")
+      require_dependencies 'mysql2'
+    when 'postgres'
+      ar.sub! /!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_development'")
+      ar.sub! /!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_production'")
+      ar.sub! /!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/,"'#{db}_test'")
+      require_dependencies 'pg'
+    when 'sqlite'
+      ar.sub! /!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
+      ar.sub! /!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
+      ar.sub! /!DB_TEST!/, SQLITE.sub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
+      require_dependencies 'sqlite3'
+    else
+      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      fail ArgumentError
+    end
+  rescue ArgumentError
+    adapter = ask("Please, choose a proper adapter:", :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    retry
   end
+
   require_dependencies 'activerecord', :require => 'active_record', :version => ">= 3.1"
   create_file("config/database.rb", ar)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
@@ -152,7 +161,19 @@ def create_model_file(name, options={})
   create_file(model_path, model_contents,:skip => true)
 end
 
+if defined?(ActiveRecord::Migration) && ActiveRecord::Migration.respond_to?(:[])
+AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
+class !FILECLASS! < ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]
+  def self.up
+    !UP!
+  end
 
+  def self.down
+    !DOWN!
+  end
+end
+MIGRATION
+else
 AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration
   def self.up
@@ -164,6 +185,7 @@ class !FILECLASS! < ActiveRecord::Migration
   end
 end
 MIGRATION
+end
 
 AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/,'    ') unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|

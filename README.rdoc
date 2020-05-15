@@ -1,13 +1,13 @@
 = Padrino
- 
+
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
 
 {<img src="https://api.travis-ci.org/padrino/padrino-framework.svg" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
-{<img src="https://gemnasium.com/padrino/padrino-framework.svg" alt="Dependency Status" />}[https://gemnasium.com/padrino/padrino-framework]
 {<img src="http://img.shields.io/codeclimate/github/padrino/padrino-framework.svg" />}[https://codeclimate.com/github/padrino/padrino-framework]
 {<img src="https://badges.gitter.im/Join Chat.svg" />}[https://gitter.im/padrino/padrino-framework]
+{<img src='https://www.codetriage.com/padrino/padrino-framework/badges/users.svg' alt='Code Triagers Badge' />}[https://www.codetriage.com/padrino/padrino-framework]
 
 == Preface
 
@@ -65,18 +65,18 @@ usage of Sinatra itself.
 
 You can also check out the {Why Learn Padrino?}[http://padrinorb.com/guides/introduction/why-learn-padrino/] introduction to learn more about how Sinatra and Padrino work together.
 
-For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for {Using Padrino within Sinatra}[http://www.padrinorb.com/guides/standalone-usage-in-sinatra].
+For information on how to use a specific gem in isolation within an existing Sinatra project, checkout the guide for {Using Padrino within Sinatra}[http://padrinorb.com/guides/advanced-usage/standalone-usage-in-sinatra/].
 
 == Getting Started
 
 Once a developer understands Sinatra, Padrino is quite easy to get comfortable with since Padrino is simply a superset of existing Sinatra functionality!
 
-First, be sure to read over the {Getting Started}[http://www.padrinorb.com/guides/getting-started] guide
+First, be sure to read over the {Getting Started}[http://padrinorb.com/guides/getting-started/overview/] guide
 to learn more about how Sinatra and Padrino work together.
 
 Best way to learn more about building Padrino applications is to read following resources:
 
-* {Padrino Guides}[http://www.padrinorb.com/guides] - Guides outlining the major functionality within Padrino.
+* {Padrino Guides}[http://padrinorb.com/guides] - Guides outlining the major functionality within Padrino.
 * {Blog Tutorial}[http://padrinorb.com/guides/getting-started/blog-tutorial/] - Step-by-step guide to building a blog application with Padrino.
 * {Padrino API}[http://www.rubydoc.info/github/padrino/padrino-framework] - YARD documentation for the Padrino framework.
 * {Quick Overview}[http://padrinorb.com/guides/getting-started/basic-projects/] - Outlines basic generation commands.

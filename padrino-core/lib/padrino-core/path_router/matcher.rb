@@ -14,14 +14,14 @@ module Padrino
         @capture = options[:capture]
         @default_values = options[:default_values]
       end
-  
+
       ##
       # Matches a pattern with the route matcher.
       #
       def match(pattern)
         if match_data = handler.match(pattern)
           match_data
-        elsif mustermann? && pattern != "/" && pattern.end_with?("/")
+        elsif pattern != "/" && pattern.end_with?("/")
           handler.match(pattern[0..-2])
         end
       end
@@ -32,12 +32,12 @@ module Padrino
       def to_regexp
         mustermann? ? handler.to_regexp : handler
       end
-  
+
       ##
       # Expands the path by using parameters.
       #
       def expand(params)
-        params = params.merge(@default_values) if @default_values.is_a?(Hash)
+        params = @default_values.merge(params) if @default_values.is_a?(Hash)
         params, query = params.each_with_object([{}, {}]) do |(key, val), parts|
           parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
         end
@@ -45,7 +45,7 @@ module Padrino
         expanded_path += ?? + Padrino::Utils.build_uri_query(query) unless query.empty?
         expanded_path
       end
-  
+
       ##
       # Returns true if handler is an instance of Mustermann.
       #
@@ -72,7 +72,7 @@ module Padrino
         end
         params
       end
-  
+
       ##
       # Returns the handler which is an instance of Mustermann or Regexp.
       #
@@ -87,14 +87,14 @@ module Padrino
             @path
           end
       end
-  
+
       ##
       # Converts the handler into string.
       #
       def to_s
         handler.to_s
       end
-  
+
       ##
       # Returns names of the handler.
       # @see Regexp#names

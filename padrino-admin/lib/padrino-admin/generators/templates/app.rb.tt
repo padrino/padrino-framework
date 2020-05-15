@@ -1,3 +1,6 @@
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/string/inflections'
+
 module <%= @app_name %>
   class <%= @admin_name %> < Padrino::Application
     register Padrino::Mailer

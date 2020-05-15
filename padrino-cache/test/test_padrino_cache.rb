@@ -296,14 +296,14 @@ describe "PadrinoCache" do
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
-    assert_equal nil, @app.cache['/404']
+    assert_nil @app.cache['/404']
     get '/404'
     assert_equal 'fancy 404', body
     assert_equal 404, status
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status
-    assert_equal nil, @app.cache['/503']
+    assert_nil @app.cache['/503']
     get '/503'
     assert_equal 'fancy 503', body
     assert_equal 503, status
@@ -505,5 +505,20 @@ describe "PadrinoCache" do
     assert_equal "1", body
     2.times { get "/object" }
     assert_equal "1", body
+  end
+
+  it 'should cache full mime type of content_type' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/foo', :cache => true do
+        content_type :json, :charset => 'utf-8'
+        '{}'
+      end
+    end
+    get "/foo"
+    assert_equal 'application/json;charset=utf-8', last_response.content_type
+    get "/foo"
+    assert_equal 'application/json;charset=utf-8', last_response.content_type
   end
 end

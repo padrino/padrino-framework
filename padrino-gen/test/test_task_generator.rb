@@ -54,5 +54,12 @@ describe "TaskGenerator" do
       assert_match_in_file(/desc "This is a sample"/, file_path)
       assert_match_in_file(/task :demo_task => :environment do/, file_path)
     end
+
+    it 'should preserve spaces' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino.bin_gen('task', 'DemoTask', "--namespace=Sample", "--description=This is a sample", "-r=#{@apptmp}/sample_project", :out => File::NULL)
+      file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"
+      assert_match_in_file(/desc "This is a sample"/, file_path)
+    end
   end
 end

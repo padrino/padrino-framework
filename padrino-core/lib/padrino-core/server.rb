@@ -39,11 +39,11 @@ module Padrino
 
     # Starts the application on the available server with specified options.
     def self.start(app, options={})
-      options = options.to_hash.symbolize_keys
+      options = Utils.symbolize_keys(options.to_hash)
       options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
-      options[:server] = detect_rack_handler if options[:server].blank?
+      options[:server] ||= detect_rack_handler
       # disable Webrick AccessLog
       options[:AccessLog] = []
       new(options, app).start
@@ -95,7 +95,7 @@ module Padrino
     # Prepares a directory for pid file.
     #
     def self.prepare_pid(pid)
-      pid = 'tmp/pids/server.pid' if pid.blank?
+      pid ||= 'tmp/pids/server.pid'
       FileUtils.mkdir_p(File.dirname(pid))
       File.expand_path(pid)
     end
@@ -104,15 +104,15 @@ module Padrino
     #
     def self.parse_server_options(options)
       parsed_server_options = Array(options).flat_map{ |option| option.split('=', 2) }
-      Hash[*parsed_server_options].symbolize_keys
+      Utils.symbolize_keys(Hash[*parsed_server_options])
     end
 
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge options.slice(:Host, :Port)
-      address[:Host] = options[:host] if options[:host].present?
-      address[:Port] = options[:port] if options[:port].present?
+      address = DEFAULT_ADDRESS.merge options.select{ |key| [:Host, :Port].include?(key) }
+      address[:Host] = options[:host] if options[:host]
+      address[:Port] = options[:port] if options[:port]
       address
     end
   end

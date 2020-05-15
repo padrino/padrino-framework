@@ -124,7 +124,7 @@ module Padrino
 
         options    = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        output = ActiveSupport::SafeBuffer.new
+        output = SafeBuffer.new
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each{ |item| output.concat item; output.safe_concat NEWLINE }
@@ -235,6 +235,19 @@ module Padrino
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
+      ##
+      # Returns an escaped document link.
+      #
+      # @example
+      #   escape_link('http://example.com/spaced link')
+      #   # => 'http://example.com/spaced%20link'
+      #   escape_link('already%20partially escaped')
+      #   # => 'already%20partially%20escaped'
+      #
+      def escape_link(link)
+        link.gsub(' ', '%20')
+      end
+
       private
 
       ##
@@ -259,7 +272,8 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string.to_s.gsub(ESCAPE_REGEXP) { |char| ESCAPE_VALUES[char] }
+        string =  string.collect(&:to_s).join(' ') if string.is_a?(Array)
+        string.to_s.gsub(ESCAPE_REGEXP, ESCAPE_VALUES)
       end
 
       ##
@@ -267,7 +281,7 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject('') do |all,(key,value)|
-          attribute_with_name = "#{attribute}-#{key.to_s.dasherize}"
+          attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
           all << if value.is_a?(Hash)
             nested_values(attribute_with_name, value)
           else

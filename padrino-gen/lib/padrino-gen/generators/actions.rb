@@ -127,7 +127,7 @@ module Padrino
       #
       # @example
       #   retrieve_component_config(...)
-      #   # => { :mock => 'rr', :test => 'riot', ... }
+      #   # => { :mock => 'rr', :test => 'rspec', ... }
       #
       def retrieve_component_config(target)
         YAML.load_file(target)
@@ -145,11 +145,11 @@ module Padrino
       #   resolve_valid_choice(:mock)
       #
       def resolve_valid_choice(component)
-        available_string = self.class.available_choices_for(component).join(", ")
+        choices = self.class.available_choices_for(component).map(&:to_s)
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component} (#{available_string}):")
+          choice = ask("Please enter a valid option for #{component}:", :limited_to => choices)
         end
         choice
       end
@@ -168,7 +168,7 @@ module Padrino
       #   valid_choice?(:mock, 'rr')
       #
       def valid_choice?(component, choice)
-        choice.present? && self.class.available_choices_for(component).include?(choice.to_sym)
+        choice && self.class.available_choices_for(component).include?(choice.to_sym)
       end
 
       ##
@@ -181,9 +181,9 @@ module Padrino
       # @example
       #   store_component_config('/foo/bar')
       #
-      def store_component_config(destination)
+      def store_component_config(destination, opts = {})
         components = @_components || options
-        create_file(destination) do
+        create_file(destination, opts) do
           self.class.component_types.inject({}) { |result, comp|
             result[comp] = components[comp].to_s; result
           }.to_yaml
@@ -307,7 +307,7 @@ WARNING
       #   require_dependencies('json', :version => ">=1.2.3")
       #
       def require_dependencies(*gem_names)
-        options = gem_names.extract_options!
+        options = gem_names.last.is_a?(Hash) ? gem_names.pop : {}
         gem_names.reverse_each { |lib| insert_into_gemfile(lib, options) }
       end
 
@@ -328,8 +328,8 @@ WARNING
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
         gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
-        write_option  = gem_options.present? ? ", #{gem_options}" : ''
-        write_version = version.present? ? ", '#{version}'" : ''
+        write_option  = gem_options.empty? ? '' : ", #{gem_options}"
+        write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
         inject_into_file('Gemfile', include_text, :after => after_pattern)
       end
@@ -359,7 +359,7 @@ WARNING
       #   insert_middleware(ActiveRecord::ConnectionAdapters::ConnectionManagement)
       #
       def insert_middleware(include_text, app=nil)
-        name = app || (options[:name].present? ? @app_name.downcase : 'app')
+        name = app || (options[:name] ? @app_name.downcase : 'app')
         inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
       end
 
@@ -432,30 +432,7 @@ WARNING
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
-        in_root { run 'bundle install' }
-      end
-
-      ##
-      # Ask something to the user and receives a response.
-      #
-      # @param [String] statement
-      #   String of statement to display for input.
-      # @param [String] default
-      #   Default value for input.
-      # @param [String] color
-      #   Name of color to display input.
-      #auto_locale
-      # @return [String] Input value
-      #
-      # @example
-      #   ask("What is your name?")
-      #   ask("Path for ruby", "/usr/local/bin/ruby") => "Path for ruby (leave blank for /usr/local/bin/ruby):"
-      #
-      def ask(statement, default=nil, color=nil)
-        default_text = default ? " (leave blank for #{default}):" : nil
-        say("#{statement}#{default_text} ", color)
-        result = $stdin.gets.strip
-        result.blank? ? default : result
+        in_root { run 'bundle install --binstubs' }
       end
 
       ##
@@ -507,7 +484,7 @@ WARNING
       end
 
       ##
-      # Ensure that project name is valid, else raise an NameError.
+      # Ensures that project name is valid, else raise an NameError.
       #
       # @param [String] name
       #   Name of project.
@@ -528,6 +505,9 @@ WARNING
 
       ##
       # Validates namespace name (controller name, etc.) or fails with an error.
+      #
+      # @param [String] name
+      #   Name of namespace
       #
       # @example
       #   validate_namespace 'Project_One1' #=> pass
@@ -601,14 +581,14 @@ WARNING
         end
 
         ##
-        # Tell Padrino that for this Thor::Group it is a necessary task to run.
+        # Tells Padrino that for this Thor::Group it is a necessary task to run.
         #
         def require_arguments!
           @require_arguments = true
         end
 
         ##
-        # Return true if we need an arguments for our Thor::Group.
+        # Returns true if we need an arguments for our Thor::Group.
         #
         def require_arguments?
           @require_arguments
@@ -631,7 +611,7 @@ WARNING
         #
         # @example
         #   available_choices_for :test
-        #   => [:shoulda, :bacon, :riot, :minitest]
+        #   => [:shoulda, :bacon, :minitest]
         #
         def available_choices_for(component)
           @available_choices[component] + [:none]

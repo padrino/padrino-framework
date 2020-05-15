@@ -31,5 +31,38 @@ module Padrino
         "#{CGI.escape(namespace.to_s)}=#{CGI.escape(object.to_s)}"
       end
     end
+
+    ##
+    # Recursively duplicates the passed object.
+    #
+    def deep_dup(object)
+      case object
+      when Array
+        object.map{ |value| deep_dup(value) }
+      when Hash
+        object.each_with_object(object.dup.clear) do |(key, value), new_hash|
+          new_hash[deep_dup(key)] = deep_dup(value)
+        end
+      when NilClass, FalseClass, TrueClass, Symbol, Numeric, Method
+        object
+      else
+        begin
+          object.dup
+        rescue TypeError
+          object
+        end
+      end
+    end
+
+    ##
+    # Returns a Hash with keys turned into symbols.
+    #
+    def symbolize_keys(hash)
+      result = hash.class.new
+      hash.each_key do |key|
+        result[(key.to_sym rescue key)] = hash[key]
+      end
+      result
+    end
   end
 end

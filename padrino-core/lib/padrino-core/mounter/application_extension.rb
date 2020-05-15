@@ -1,7 +1,7 @@
 module Padrino
   class Mounter
     module ApplicationExtension
-      attr_accessor :uri_root, :mounter_options
+      attr_accessor :uri_root, :mounter_options, :cascade
       attr_writer :public_folder
 
       def dependencies

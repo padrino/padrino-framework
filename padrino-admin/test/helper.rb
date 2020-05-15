@@ -6,7 +6,7 @@ require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
 require 'thor/group'
-require 'dm-core'
+require 'sequel/model'
 require 'padrino-admin'
 
 require 'ext/minitest-spec'

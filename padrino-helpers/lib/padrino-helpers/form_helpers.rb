@@ -90,7 +90,7 @@ module Padrino
       #
       def form_tag(url, options={}, &block)
         options = {
-          :action => url,
+          :action => escape_link(url),
           :protect_from_csrf => is_protected_from_csrf?,
           'accept-charset' => 'UTF-8'
         }.update(options)
@@ -121,7 +121,7 @@ module Padrino
       #   hidden_form_method_field('delete')
       #
       def hidden_form_method_field(desired_method)
-        return ActiveSupport::SafeBuffer.new if desired_method.blank? || desired_method.to_s =~ /get|post/i
+        return SafeBuffer.new if desired_method.nil? || desired_method.to_s =~ /get|post/i
         hidden_field_tag(:_method, :value => desired_method)
       end
 
@@ -143,9 +143,8 @@ module Padrino
       #   field_set_tag("Office", :class => 'office-set') { }
       #
       def field_set_tag(*args, &block)
-        options = args.extract_options!
-        legend_text = args.first
-        legend_html = legend_text.blank? ? ActiveSupport::SafeBuffer.new : content_tag(:legend, legend_text)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        legend_html = args.empty? ? SafeBuffer.new : content_tag(:legend, args.first)
         concat_content content_tag(:fieldset, legend_html << capture_html(&block), options)
       end
 
@@ -168,8 +167,8 @@ module Padrino
       #   label_tag :username, :class => 'long-label' do ... end
       #
       def label_tag(name, options={}, &block)
-        options = { :caption => "#{name.to_s.humanize}: ", :for => name }.update(options)
-        caption_text = ActiveSupport::SafeBuffer.new << options.delete(:caption)
+        options = { :caption => "#{Inflections.humanize(name)}: ", :for => name }.update(options)
+        caption_text = SafeBuffer.new << options.delete(:caption)
         caption_text << "<span class='required'>*</span> ".html_safe if options.delete(:required)
 
         if block_given?
@@ -525,7 +524,7 @@ module Padrino
       #   submit_tag :class => 'btn'
       #
       def submit_tag(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         caption = args.length >= 1 ? args.first : "Submit"
         input_tag(:submit, { :value => caption }.merge(options))
       end
@@ -579,7 +578,7 @@ module Padrino
       #   # </form>
       #
       def button_to(*args, &block)
-        options   = args.extract_options!.dup
+        options = args.last.is_a?(Hash) ? args.pop : {}
         name, url = *args
         options['data-remote'] = 'true' if options.delete(:remote)
         submit_options = options.delete(:submit_options) || {}
@@ -809,7 +808,7 @@ module Padrino
       def builder_instance(object, options={})
         default_builder = respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder'
         builder_class = options.delete(:builder) || default_builder
-        builder_class = "Padrino::Helpers::FormBuilder::#{builder_class}".constantize if builder_class.is_a?(String)
+        builder_class = Padrino::Helpers::FormBuilder.const_get(builder_class) if builder_class.is_a?(String)
         builder_class.new(self, object, options)
       end
 

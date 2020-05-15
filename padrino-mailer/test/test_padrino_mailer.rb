@@ -12,8 +12,7 @@ describe "PadrinoMailer" do
       assert_email_sent(:to => 'john@apple.com',
                         :from => 'joe@smith.com',
                         :subject => 'Test Email',
-                        :body => 'Test Body',
-                        :delivery_method => @app.delivery_method)
+                        :body => 'Test Body')
     end
 
     it 'should be able to deliver plain text emails' do
@@ -21,7 +20,6 @@ describe "PadrinoMailer" do
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'john@fake.com',
                         :from => 'noreply@birthday.com',
-                        :delivery_method => @app.delivery_method,
                         :subject => "Happy Birthday!",
                         :body => "Happy Birthday Joey!\nYou are turning 21")
     end
@@ -32,7 +30,6 @@ describe "PadrinoMailer" do
       assert_email_sent(:template => 'mailers/sample/foo_message',
                         :to => 'john@fake.com',
                         :from => 'noreply@custom.com',
-                        :delivery_method => @app.delivery_method,
                         :subject => 'Welcome Message!',
                         :body => 'Hello to Bobby')
     end
@@ -43,9 +40,8 @@ describe "PadrinoMailer" do
       assert_email_sent(:to => 'julie@fake.com',
                         :from => 'noreply@anniversary.com',
                         :content_type => 'text/html',
-                        :delivery_method => @app.delivery_method,
                         :subject => 'Happy anniversary!',
-                        :body => "<p>Yay Joey & Charlotte!</p>\n<p>You have been married 16 years</p>")
+                        :body => "<p>Yay Joey &amp; Charlotte!</p>\n<p>You have been married 16 years</p>")
     end
 
     it 'should be able to deliver a basic email using app settings' do
@@ -53,8 +49,7 @@ describe "PadrinoMailer" do
                  :subject => 'Test Email', :body => 'Test Body',
                  :via => :test)
       assert_email_sent(:to => 'john@apple.com', :from => 'joe@smith.com',
-                        :subject => 'Test Email', :body => 'Test Body',
-                        :delivery_method => @app.delivery_method)
+                        :subject => 'Test Email', :body => 'Test Body')
     end
   end
 
@@ -65,7 +60,7 @@ describe "PadrinoMailer" do
       post '/deliver/inline'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'john@apple.com', :from => 'joe@smith.com',
-                        :delivery_method => @app.delivery_method, :subject => 'Test Email',
+                        :subject => 'Test Email',
                         :body => 'Test Body')
     end
 
@@ -73,7 +68,7 @@ describe "PadrinoMailer" do
       post '/deliver/plain'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'john@fake.com', :from => 'noreply@birthday.com',
-                        :delivery_method => @app.delivery_method, :subject => "Happy Birthday!",
+                        :subject => "Happy Birthday!",
                         :body => "Happy Birthday Joey!\nYou are turning 21")
     end
 
@@ -81,7 +76,7 @@ describe "PadrinoMailer" do
       post '/deliver/custom'
       assert_equal 'mail delivered', body
       assert_email_sent(:template => 'mailers/sample/foo_message', :to => 'john@fake.com',
-                        :from => 'noreply@custom.com', :delivery_method => @app.delivery_method,
+                        :from => 'noreply@custom.com',
                         :subject => 'Welcome Message!', :body => 'Hello to Bobby')
     end
 
@@ -89,8 +84,13 @@ describe "PadrinoMailer" do
       post '/deliver/html'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'julie@fake.com', :from => 'noreply@anniversary.com',
-                        :content_type => 'text/html', :delivery_method => @app.delivery_method,
-                        :subject => 'Happy anniversary!', :body => "<p>Yay Joey & Charlotte!</p>\n<p>You have been married 16 years</p>")
+                        :content_type => 'text/html',
+                        :subject => 'Happy anniversary!', :body => "<p>Yay Joey &amp; Charlotte!</p>\n<p>You have been married 16 years</p>")
+    end
+
+    it 'should be able to deliver emails with views in custom-named folders' do
+      post '/deliver/external'
+      assert_equal 'mail delivered', body
     end
 
     it 'should be able to deliver a basic email using app settings' do
@@ -98,8 +98,7 @@ describe "PadrinoMailer" do
                  :subject => 'Test Email', :body => 'Test Body',
                  :via => :test)
       assert_email_sent(:to => 'john@apple.com', :from => 'joe@smith.com',
-                        :subject => 'Test Email', :body => 'Test Body',
-                        :delivery_method => @app.delivery_method)
+                        :subject => 'Test Email', :body => 'Test Body')
     end
 
     it 'should be able to deliver a basic email using Padrino::Helpers' do
@@ -107,7 +106,7 @@ describe "PadrinoMailer" do
       post '/deliver/helper'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
-                        :content_type => 'text/html', :delivery_method => @app.delivery_method,
+                        :content_type => 'text/html',
                         :subject => 'Welcome Helper!', :body => "<a href=\"#\">jim</a>")
     end
 
@@ -123,6 +122,20 @@ describe "PadrinoMailer" do
         post '/deliver/failing_message'
       end
       assert_match /has no message/, error.message
+    end
+
+    it 'should be able to render default mailer names' do
+      post '/deliver/default_mailer_name'
+      assert_equal 'mail delivered', body
+      assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
+                        :content_type => 'text/plain', :body => "dmn")
+    end
+
+    it 'should be able to render default mailer email names' do
+      post '/deliver/default_mailer_email_name'
+      assert_equal 'mail delivered', body
+      assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
+                        :content_type => 'text/plain', :body => "dmen")
     end
   end
 end

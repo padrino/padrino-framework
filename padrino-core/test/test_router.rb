@@ -94,13 +94,13 @@ describe "Router" do
 
     res = Rack::MockRequest.new(map).get("/werewolf")
     assert_equal 404, res.status
-    assert_equal nil, res["X-API"]
-    assert_equal nil, res["X-ScriptName"]
-    assert_equal nil, res["X-PathInfo"]
+    refute_includes res, "X-API"
+    refute_includes res, "X-ScriptName"
+    refute_includes res, "X-PathInfo"
 
     res = Rack::MockRequest.new(map).get("/bar/mitzvah")
     assert res.ok?
-    assert_equal nil, res["X-API"]
+    refute_includes res, "X-API"
     assert_equal 'text/plain', res["Content-Type"]
     assert_equal "/bar", res["X-ScriptName"]
     assert_equal "/mitzvah", res["X-PathInfo"]
@@ -114,7 +114,7 @@ describe "Router" do
 
     res = Rack::MockRequest.new(map).get("/bar/scary")
     assert_equal 404, res.status
-    assert_equal nil, res["X-API"]
+    refute_includes res, "X-API"
     assert_equal 'text/plain', res["Content-Type"]
     assert_equal "/bar", res["X-ScriptName"]
     assert_equal "/scary", res["X-PathInfo"]

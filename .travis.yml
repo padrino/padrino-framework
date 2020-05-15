@@ -2,18 +2,19 @@ language: ruby
 sudo: false
 cache: bundler
 before_install:
-  - gem install bundler
+  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler 
 install:
   - bundle update
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1
-  - 2.2
   - 2.3.0
+  - 2.3.3
+  - 2.4.3
+  - 2.5.0
+  - 2.6.3
+  - ruby-head
   - rbx-2
   - jruby
-  - ruby-head
   - jruby-head
 notifications:
   irc: 'irc.freenode.org#padrino'
@@ -31,15 +32,23 @@ branches:
   only:
     - master
     - 0.12
+    - 0.14
 services: mongodb
 matrix:
   include:
-    - rvm: 2.2.2
+    - rvm: 2.6.3
       env: SINATRA_EDGE=true
-    - rvm: 2.1
-      env: STDLIB_ERB=true
+    - rvm: 2.6.3
+      env: ERB_ENGINE=stdlib
+    - rvm: 2.6.3
+      env: ERB_ENGINE=erubis
+    - rvm: 2.6.3
+      env: HAML_ENGINE=hamlit
+    - rvm: 2.6.3
+      env: AS_VERSION=3.2
   allow_failures:
     - rvm: rbx-2
-    - env: SINATRA_EDGE=true
-    - rvm: ruby-head
+    - rvm: jruby
     - rvm: jruby-head
+    - rvm: ruby-head
+    - env: SINATRA_EDGE=true

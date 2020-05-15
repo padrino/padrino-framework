@@ -1,5 +1,3 @@
-require 'active_support/core_ext/class/attribute_accessors'
-
 module Padrino
   module Admin
     class AccessControlError < StandardError
@@ -14,22 +12,20 @@ module Padrino
         #
         def registered(app)
           app.register Padrino::Admin unless app.extensions.include?(Padrino::Admin)
-          app.set :session_id, "_padrino_#{File.basename(Padrino.root)}_#{app.app_name}".to_sym unless app.respond_to?(:session_id)
+          app.set :session_id, "_padrino_#{Padrino.env}_#{app.app_name}" unless app.respond_to?(:session_id)
           app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
           app.before { login_required }
           app.class_eval do
+            class << self
+              attr_accessor :access_control
+            end
             def access_control
-              @@access_control
-            end
-            def self.access_control
-              @@access_control
-            end
-            def self.access_control=(control)
-              @@access_control = control
+              self.class.access_control
             end
           end
+
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
         end
         alias :included :registered
@@ -106,7 +102,7 @@ module Padrino
         #    = link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
         #
         def allowed?(account=nil, path=nil)
-          path = "/" if path.blank?
+          path = "/" if path.nil? || path.empty?
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq

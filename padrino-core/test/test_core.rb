@@ -20,13 +20,7 @@ describe "Core" do
     it 'should validate global helpers' do
       assert_equal :test, Padrino.env
       assert_match /\/test/, Padrino.root
-      refute_nil Padrino.version
-    end
-
-    it 'should set correct utf-8 encoding' do
-      Padrino.set_encoding
-      assert_equal Encoding.default_external, Encoding::UTF_8
-      assert_equal Encoding.default_internal, Encoding::UTF_8
+      assert Padrino.version
     end
 
     it 'should raise application error if I instantiate a new padrino application without mounted apps' do

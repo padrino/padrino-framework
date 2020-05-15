@@ -5,7 +5,6 @@ require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FIL
 
 Gem::Specification.new do |s|
   s.name = "padrino-support"
-  s.rubyforge_project = "padrino-support"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu", "Igor Bochkariov"]
   s.email = "padrinorb@gmail.com"
   s.summary = "Support for padrino"
@@ -22,6 +21,4 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
-
-  s.add_dependency("activesupport", ">= 3.1")
 end

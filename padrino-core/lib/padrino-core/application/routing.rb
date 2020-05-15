@@ -214,13 +214,14 @@ module Padrino
       #   before :agent => /IE/ do; ...; end
       #   # => match +HTTP_USER_AGENT+ containing +IE+
       #
-      # @see http://www.padrinorb.com/guides/controllers#route-filters
+      # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         if except = options.delete(:except)
           fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
-          options = Array(except).extract_options!
+          except = Array(except)
+          options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
       end
@@ -337,9 +338,9 @@ module Padrino
       #   url(:index, :fragment => 'comments')
       #
       def url(*args)
-        params = args.extract_options!
+        params = args.last.is_a?(Hash) ? args.pop : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
-        path = make_path_with_params(args, value_to_param(params.symbolize_keys))
+        path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
       end
       alias :url_for :url
@@ -376,7 +377,7 @@ module Padrino
           new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << url
         else
-          url.blank? ? '/' : url
+          url.empty? ? '/' : url
         end
       end
 
@@ -387,7 +388,7 @@ module Padrino
       def process_path_for_parent_params(path, parent_params)
         parent_prefix = parent_params.flatten.compact.uniq.map do |param|
           map  = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
-          part = "#{map}/:#{param.to_s.singularize}_id/"
+          part = "#{map}/:#{Inflections.singularize(param)}_id/"
           part = "(#{part})?" if param.respond_to?(:optional) && param.optional?
           part
         end
@@ -397,11 +398,12 @@ module Padrino
 
       private
 
+      # temporary variables named @_parent, @_provides, @_use_format, @_cache, @_expires, @_map, @_conditions, @_accepts, @_params
       CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
 
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
 
         CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)
@@ -498,7 +500,7 @@ module Padrino
         route_options[:params] = @_params unless @_params.nil? || route_options.include?(:params)
 
         # Add Sinatra condition to check rack-protection failure.
-        if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
+        if respond_to?(:protect_from_csrf) && protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
           unless route_options.has_key?(:csrf_protection)
             route_options[:csrf_protection] = true
           end
@@ -510,7 +512,7 @@ module Padrino
         options = @_conditions.merge(options) if @_conditions
 
         method_name = "#{verb} #{path}"
-        unbound_method = generate_method(method_name, &block)
+        unbound_method = generate_method(method_name.to_sym, &block)
 
         block_arity = block.arity
         block = if block_arity == 0
@@ -538,7 +540,7 @@ module Padrino
           route.default_values = defaults if defaults
         end
         options.delete_if do |option, captures|
-          if route.significant_variable_names.include?(option)
+          if route.significant_variable_names.include?(option.to_s)
             route.capture[option] = Array(captures).first
             true
           end
@@ -579,6 +581,7 @@ module Padrino
       # controllers, parents, 'with' parameters, and other options.
       #
       def parse_route(path, options, verb)
+        path = path.dup if path.kind_of?(String)
         route_options = {}
 
         if options[:params] == true
@@ -622,7 +625,7 @@ module Padrino
 
           unless controller.empty?
             # Now we need to add our controller path only if not mapped directly
-            if map.blank? and !absolute_map
+            if !map && !absolute_map
               controller_path = controller.join("/")
               path.gsub!(%r{^\(/\)|/\?}, "")
               path = File.join(controller_path, path)  unless @_map
@@ -636,7 +639,7 @@ module Padrino
           end
 
           # Add any controller level map to the front of the path.
-          path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
+          path = "#{@_map}/#{path}".squeeze('/') unless absolute_map || !@_map
 
           # Small reformats
           path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
@@ -653,7 +656,7 @@ module Padrino
         name = options.delete(:name) if name.nil? && options.key?(:name)
         if name
           controller_name = controller.join("_")
-          name = "#{controller_name} #{name}".to_sym unless controller_name.blank?
+          name = "#{controller_name} #{name}".to_sym unless controller_name.empty?
         end
 
         options[:default_values] = @_defaults unless options.has_key?(:default_values)
@@ -830,12 +833,12 @@ module Padrino
       #
       def current_path(*path_params)
         if path_params.last.is_a?(Hash)
-          path_params[-1] = params.merge(path_params[-1].with_indifferent_access)
+          path_params[-1] = params.merge(path_params[-1])
         else
           path_params << params
         end
 
-        path_params[-1] = path_params[-1].symbolize_keys
+        path_params[-1] = Utils.symbolize_keys(path_params[-1])
         @route.path(*path_params)
       end
 
@@ -926,6 +929,8 @@ module Padrino
       end
 
       def dispatch!
+        @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
+        force_encoding(@params)
         invoke do
           static! if settings.static? && (request.get? || request.head?)
           route!
@@ -954,7 +959,7 @@ module Padrino
           @params, @layout = original_params, parent_layout
         end
 
-        if routes.present?
+        unless routes.empty?
           verb = request.request_method
           candidacies, allows = routes.partition{|route| route.verb == verb }
           if candidacies.empty?
@@ -977,7 +982,11 @@ module Padrino
         @route = request.route_obj = route
         captured_params = captures_from_params(params)
 
-        @params.merge!(params) { |key, original, newval| original } unless params.empty?
+        # Should not overwrite params by given query
+        @params.merge!(params) do |key, original, newval|
+          @route.significant_variable_names.include?(key) ? newval : original
+        end unless params.empty?
+
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 
@@ -998,7 +1007,7 @@ module Padrino
       end
 
       def captures_from_params(params)
-        if params[:captures].instance_of?(Array) && params[:captures].present?
+        if params[:captures].instance_of?(Array) && !params[:captures].empty?
           params.delete(:captures)
         else
           params.values_at(*route.matcher.names).flatten

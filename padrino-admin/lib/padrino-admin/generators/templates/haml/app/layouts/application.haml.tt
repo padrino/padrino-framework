@@ -18,7 +18,7 @@
         .container
           =link_to 'Padrino', url(:base, :index), :class => 'navbar-brand', :title => 'Padrino Admin'
           %ul.nav.navbar-nav.pull-right
-            %li.navbar-edit-account=link_to tag_icon(:user), url(:accounts, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
+            %li.navbar-edit-account=link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
             %li.navbar-logout
               = button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form', :submit_options => { :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } do
                 = tag_icon('power-off')

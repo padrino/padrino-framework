@@ -45,7 +45,7 @@ describe Padrino::Flash do
 
     it 'should not know the values you set right away' do
       @storage[:foo] = 'bar'
-      assert_nil @storage[:foo]
+      refute_includes @storage, :foo
     end
 
     it 'should knows the values you set next time' do
@@ -62,7 +62,7 @@ describe Padrino::Flash do
     it 'should forgets values you set only for now next time' do
       @storage.now[:foo] = 'bar'
       @storage.sweep
-      assert_nil @storage[:foo]
+      refute_includes @storage, :foo
     end
   end
 

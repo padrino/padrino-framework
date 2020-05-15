@@ -30,11 +30,11 @@ module Padrino
       #   # <div class="success">flash-success</div>
       #
       def flash_tag(*args)
-        options = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
-        args.inject(ActiveSupport::SafeBuffer.new) do |html,kind|
-          flash_text = ActiveSupport::SafeBuffer.new << flash[kind]
-          next html if flash_text.blank?
+        args.inject(SafeBuffer.new) do |html,kind|
+          next html unless flash[kind]
+          flash_text = SafeBuffer.new << flash[kind]
           flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
           html << content_tag(:div, flash_text, { :class => kind }.update(options))
         end
@@ -75,17 +75,17 @@ module Padrino
       #   link_to('click me', '/dashboard', :method => :delete)
       #   # Generates <a href="/dashboard" data-method="delete" rel="nofollow">click me</a>
       #
-      #   link_to('click me', :class => 'blocky') do; end
-      #   # Generates <a class="blocky" href="#">click me</a>
+      #   link_to('/dashboard', :class => 'blocky') { 'click me' }
+      #   # Generates <a class="blocky" href="/dashboard">click me</a>
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
       # condition padrino return true/false if the request.path_info match the given url.
       #
       def link_to(*args, &block)
-        options  = args.extract_options!
+        options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
-        options = { :href => href || '#' }.update(options)
+        options = { :href => href ? escape_link(href) : '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -143,10 +143,11 @@ module Padrino
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
       def mail_to(email, caption=nil, mail_options={})
-        html_options = mail_options.slice!(:cc, :bcc, :subject, :body)
-        mail_query = Rack::Utils.build_query(mail_options).gsub(/\+/, '%20').gsub('%40', '@')
-        mail_href = "mailto:#{email}"; mail_href << "?#{mail_query}" if mail_query.present?
-        link_to((caption || email), mail_href, html_options)
+        mail_options, html_options = mail_options.partition{ |key,_| [:cc, :bcc, :subject, :body].include?(key) }
+        mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
+        mail_href = "mailto:#{email}"
+        mail_href << "?#{mail_query}" unless mail_query.empty?
+        link_to((caption || email), mail_href, Hash[html_options])
       end
 
       ##
@@ -242,8 +243,8 @@ module Padrino
         options = {
           :rel => 'stylesheet',
           :type => 'text/css'
-        }.update(sources.extract_options!.symbolize_keys)
-        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << tag(:link, { :href => asset_path(:css, source) }.update(options))
         end
       end
@@ -265,8 +266,8 @@ module Padrino
       def javascript_include_tag(*sources)
         options = {
           :type => 'text/javascript'
-        }.update(sources.extract_options!.symbolize_keys)
-        sources.flatten.inject(ActiveSupport::SafeBuffer.new) do |all,source|
+        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        sources.flatten.inject(SafeBuffer.new) do |all,source|
           all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
         end
       end
@@ -314,7 +315,7 @@ module Padrino
       #
       def asset_path(kind, source = nil)
         kind, source = source, kind if source.nil?
-        source = asset_normalize_extension(kind, URI.escape(source.to_s))
+        source = asset_normalize_extension(kind, escape_link(source.to_s))
         return source if source =~ ABSOLUTE_URL_PATTERN || source =~ /^\//
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)

@@ -74,7 +74,7 @@ module Padrino
     #
     def lock!
       klasses = Storage.send(:object_classes) do |klass|
-        original_klass_name = klass._orig_klass_name
+        original_klass_name = constant_name(klass)
         original_klass_name.split('::').first if original_klass_name
       end
       klasses |= Padrino.mounted_apps.map(&:app_class)
@@ -244,7 +244,7 @@ module Padrino
     # Tells if a constant should be excluded from Reloader routines.
     #
     def constant_excluded?(const)
-      external_constant?(const) || (exclude_constants - include_constants).any?{ |excluded_constant| const._orig_klass_name.start_with?(excluded_constant) }
+      external_constant?(const) || (exclude_constants - include_constants).any?{ |excluded_constant| constant_name(const).start_with?(excluded_constant) }
     end
 
     ##
@@ -309,6 +309,12 @@ module Padrino
       yield
     ensure
       $-v = verbosity_level
+    end
+
+    def constant_name(constant)
+      constant._orig_klass_name
+    rescue NoMethodError
+      constant.name
     end
   end
 end

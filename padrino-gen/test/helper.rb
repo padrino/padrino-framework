@@ -2,7 +2,6 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
-require 'webrat'
 require 'fakeweb'
 require 'thor/group'
 require 'padrino-gen'
@@ -11,6 +10,7 @@ require 'padrino-mailer'
 require 'padrino-helpers'
 
 require 'ext/minitest-spec'
+require 'ext/fakeweb-ruby24'
 
 Padrino::Generators.load_components!
 
@@ -28,13 +28,6 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
 end
 
 class MiniTest::Spec
-  include Webrat::Methods
-  include Webrat::Matchers
-
-  Webrat.configure do |config|
-    config.mode = :rack
-  end
-
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
@@ -73,10 +66,10 @@ class MiniTest::Spec
 
   # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
   def expects_generated_project(options={})
-    project_root = options[:root]
-    project_name = options[:name]
-    settings = options.slice!(:name, :root)
-    components = settings.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
+    options = options.dup
+    project_root = options.delete(:root)
+    project_name = options.delete(:name)
+    components = options.sort_by{ |k, v| k.to_s }.map{ |component, value| "--#{component}=#{value}" }
     params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end
@@ -104,13 +97,5 @@ class MiniTest::Spec
   def expects_rake(command,options={})
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
-  end
-end
-
-module Webrat
-  module Logging
-    def logger # # @private
-      @logger = nil
-    end
   end
 end

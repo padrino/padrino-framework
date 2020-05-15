@@ -57,3 +57,68 @@ describe 'Padrino::Utils.build_uri_query' do
       'user'
   end
 end
+
+describe 'Padrino::Utils.deep_dup' do
+  it 'should recursively dup array' do
+    array = [1, [2, 3]]
+    dup = Padrino::Utils.deep_dup(array)
+    dup[1][2] = 4
+    assert_equal 2, array[1].size
+    assert_equal 4, dup[1][2]
+  end
+
+  it 'should recursively dup hash' do
+    hash = { :a => { :b => 'b' } }
+    dup = Padrino::Utils.deep_dup(hash)
+    dup[:a][:c] = 'c'
+    refute_includes hash[:a], :c
+    assert_equal 'c', dup[:a][:c]
+  end
+
+  it 'should recursively dup array with hash' do
+    array = [1, { :a => 2, :b => 3 } ]
+    dup = Padrino::Utils.deep_dup(array)
+    dup[1][:c] = 4
+    refute_includes array[1], :c
+    assert_equal 4, dup[1][:c]
+  end
+
+  it 'should recursively dup hash with array' do
+    hash = { :a => [1, 2] }
+    dup = Padrino::Utils.deep_dup(hash)
+    dup[:a][2] = 'c'
+    assert_equal 2, hash[:a].size
+    assert_equal 'c', dup[:a][2]
+  end
+
+  it 'should dup initial hash values' do
+    zero_hash = Hash.new 0
+    hash = { :a => zero_hash }
+    dup = Padrino::Utils.deep_dup(hash)
+    assert_equal 0, dup[:a][44]
+  end
+
+  it 'should properly dup objects' do
+    object = Object.new
+    dup = Padrino::Utils.deep_dup(object)
+    dup.instance_variable_set(:@a, 1)
+    assert !object.instance_variable_defined?(:@a)
+    assert dup.instance_variable_defined?(:@a)
+  end
+
+  it 'should not double the frozen keys' do
+    hash = { 'a'.freeze => 1 }
+    dup = Padrino::Utils.deep_dup(hash)
+    assert_equal 1, dup.keys.length
+  end
+end
+
+describe 'Padrino::Utils.symbolize_keys' do
+  it 'should symbolize string keys' do
+    assert_equal({ :a  => 1, :b  => 2 }, Padrino::Utils.symbolize_keys('a' => 1, 'b' => 2))
+  end
+
+  it 'should not fail on non-symbolizable keys' do
+    assert_equal({ Object => 1, true => 2 }, Padrino::Utils.symbolize_keys(Object => 1, true => 2))
+  end
+end

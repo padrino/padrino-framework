@@ -1,7 +1,6 @@
 # rake bump[X.X.X] && rake publish
 require 'fileutils'
 require 'rake'
-require 'yard'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
 
 load File.expand_path('../padrino/subgems.rb', __FILE__)
@@ -101,6 +100,7 @@ end
 
 desc "Generate documentation for the Padrino framework"
 task :doc do
+  require 'yard'
   YARD::CLI::Yardoc.new.run
 end
 

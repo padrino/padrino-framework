@@ -1,0 +1,2 @@
+class PPP
+end

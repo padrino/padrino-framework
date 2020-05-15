@@ -16,7 +16,7 @@ module Padrino
       #   Currency value to format.
       # @param [Hash] options
       #   Options for currency conversion.
-      # @option options [Fixnum] :precision (2)
+      # @option options [Integer] :precision (2)
       #   Sets the level of precision.
       # @option options [String] :unit ("$")
       #   Sets the denomination of the currency.
@@ -41,7 +41,7 @@ module Padrino
       #   # => 1234567890,50 &pound;
       #
       def number_to_currency(number, options = {})
-        options.symbolize_keys!
+        options = Utils.symbolize_keys(options)
 
         defaults  = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         currency  = I18n.translate(:'number.currency.format', :locale => options[:locale], :raise => true) rescue {}
@@ -69,11 +69,11 @@ module Padrino
       # Formats a +number+ as a percentage string (e.g., 65%). You can customize the
       # format in the +options+ hash.
       #
-      # @param [Fixnum, Float] number
+      # @param [Integer, Float] number
       #   Percentage value to format.
       # @param [Hash] options
       #   Options for percentage conversion.
-      # @option options [Fixnum] :precision (3)
+      # @option options [Integer] :precision (3)
       #   Sets the level of precision.
       # @option options [String] :separator (".")
       #   Sets the separator between the units.
@@ -89,7 +89,7 @@ module Padrino
       #   number_to_percentage(302.24398923423, :precision => 5)           # => 302.24399%
       #
       def number_to_percentage(number, options = {})
-        options.symbolize_keys!
+        options = Utils.symbolize_keys(options)
 
         defaults   = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         percentage = I18n.translate(:'number.percentage.format', :locale => options[:locale], :raise => true) rescue {}
@@ -114,7 +114,7 @@ module Padrino
       # customize the format in the +options+ hash.
       #
       # @overload number_with_delimiter(number, options={})
-      #   @param [Fixnum, Float] number
+      #   @param [Integer, Float] number
       #     Number value to format.
       #   @param [Hash] options
       #     Options for formatter.
@@ -134,8 +134,7 @@ module Padrino
       #   # => 98 765 432,98
       #
       def number_with_delimiter(number, *args)
-        options = args.extract_options!
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
@@ -156,11 +155,11 @@ module Padrino
       # You can customize the format in the +options+ hash.
       #
       # @overload number_with_precision(number, options={})
-      #   @param [Fixnum, Float] number
+      #   @param [Integer, Float] number
       #     Number value to format.
       #   @param [Hash] options
       #     Options for formatter.
-      #   @option options [Fixnum] :precision (3)
+      #   @option options [Integer] :precision (3)
       #     Sets the level of precision.
       #   @option options [String] :separator (".")
       #     Sets the separator between the units.
@@ -178,8 +177,7 @@ module Padrino
       #   # => 1.111,23
       #
       def number_with_precision(number, *args)
-        options = args.extract_options!
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults           = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
@@ -212,11 +210,11 @@ module Padrino
       #
       #
       # @overload number_to_human_size(number, options={})
-      #   @param [Fixnum] number
+      #   @param [Integer] number
       #     Number value to format.
       #   @param [Hash] options
       #     Options for formatter.
-      #   @option options [Fixnum] :precision (1)
+      #   @option options [Integer] :precision (1)
       #     Sets the level of precision.
       #   @option options [String] :separator (".")
       #     Sets the separator between the units.
@@ -239,8 +237,7 @@ module Padrino
       def number_to_human_size(number, *args)
         return nil if number.nil?
 
-        options = args.extract_options!
-        options.symbolize_keys!
+        options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}

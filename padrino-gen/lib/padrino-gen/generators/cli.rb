@@ -42,7 +42,7 @@ module Padrino
       def setup
         Padrino::Generators.load_components!
 
-        generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0].present?
+        generator_kind  = ARGV.delete_at(0).to_s.downcase.to_sym if ARGV[0] && !ARGV[0].empty?
         generator_class = Padrino::Generators.mappings[generator_kind]
 
         if generator_class

@@ -435,27 +435,6 @@ describe "ModelGenerator" do
       assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
-    # RIOT
-    it 'should generate test file for riot' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=riot', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model" do/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-    end
-
-    it 'should generate test file for riot in specified app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=riot', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', "-a=/subby", "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SomeUser Model" do/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/asserts\("that record is not nil"\) \{ \!topic.nil\? \}/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-    end
-
     # MINITEST
     it 'should generate test file for minitest' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }

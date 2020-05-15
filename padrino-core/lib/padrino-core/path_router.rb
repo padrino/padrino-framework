@@ -55,11 +55,11 @@ module Padrino
       # Finds a path which is matched with conditions from arguments
       #
       def path(name, *args)
-        params = args.extract_options!
+        params = args.last.is_a?(Hash) ? args.pop : {}
         candidates = @routes.select { |route| route.name == name }
         fail InvalidRouteException if candidates.empty?
-        route = candidates.sort_by! { |route|
-          (params.keys.map(&:to_s) - route.matcher.names).length }.shift
+        route = candidates.sort_by! { |candidate|
+          (params.keys.map(&:to_s) - candidate.matcher.names).length }.shift
         matcher = route.matcher
         params_for_expand = params.dup
         if !args.empty? && matcher.mustermann?

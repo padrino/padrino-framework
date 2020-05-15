@@ -6,16 +6,16 @@ describe "Locales" do
     name = File.basename(file, '.yml')
     it "should should have correct locale for #{name}" do
       base = base_original[name]['date']['formats']
-      assert base['default'].present?
-      assert base['short'].present?
-      assert base['long'].present?
-      assert base['only_day'].present?
+      assert base['default']
+      assert base['short']
+      assert base['long']
+      assert base['only_day']
       base = base_original[name]['date']
-      assert base['day_names'].present?
-      assert base['abbr_day_names'].present?
-      assert base['month_names'].present?
-      assert base['abbr_month_names'].present?
-      assert base['order'].present?
+      assert base['day_names']
+      assert base['abbr_day_names']
+      assert base['month_names']
+      assert base['abbr_month_names']
+      assert base['order']
     end
   end
 end

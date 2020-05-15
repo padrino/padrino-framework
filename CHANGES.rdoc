@@ -1,8 +1,97 @@
 = CHANGES
 
+<<<<<<< HEAD
 == 0.14.0 (May 14th 2020)
 
 - FIX #2205 Relax bundler version and get tests passing (@rogerhu, @yb66)
+=======
+== 0.14.4 (2018-11-05)
+- FIX #2177 regexp routes and trailing slashes (@pdlug)
+- FIX #2182 NoMethodError on `ar` tasks with activerecord v5.2.0+ (@sue445)
+- FIX #2185 self.authenticate method in mongoid.rb.tt (@LarryFransson)
+- FIX #2179 Deprecate safe_level of `ERB.new` in Ruby 2.6 (@koic)
+- FIX #2193 nested require_dependencies (@genkami)
+
+== 0.14.3 (2018-02-23)
+- locks onto Sinatra 2
+- #2169 drop support of ruby < 2.2.2
+
+== 0.14.2 (2018-01-02)
+- FIX router in non-Padrino applications (@adam12)
+- FIX padrino-admin haml layout
+- FIX Datamapper tasks (@adam12)
+- FIX #1979 default test or spec task
+- FIX #2150 refuse invalid database adapters
+- FIX #2152 using open without requiring 'open-uri'
+- NEW #2161 allow array as tag attribute (@aeris)
+- FIX #2163 preserve spaces in args of padrino gen
+- update Sequel usage
+- update ActiveRecord::Migration usage (@adam12)
+
+== 0.14.1 (2017-05-16)
+- FIX syntax error in ActiveRecord tasks (@sue445)
+- NEW use hamlit if available in Gemfile
+
+== 0.14.0.2 (2017-05-08)
+- FIX #2132 use Sinatra2 IndifferentHash if available
+
+== 0.14.0.1 (2017-03-23)
+- FIX #2118 allow Logger without Extensions
+- FIX #2128 do not render default layout in partials
+
+== 0.14.0 (2017-03-15)
+- NEW #2120 enable cascading with Rack application (@namusyaka)
+- FIX lock rake < 11.0 to avoid last_comment error (@namusyaka)
+- FIX handle nil database passwords for create_db and drop_db (@phallstrom)
+- FIX #2119 add rake gem tasks to gem project Rakefile
+- NEW support Erubi ERB engine (@adam12)
+- FIX #2125 do not load in cycle files excluded from reloading
+
+== 0.14.0.rc2 (2017-01-19)
+- FIX #2109 change the format of session_id for Padrino Admin AccessControl
+- WARN #2109 Existing sessions will be dropped
+- FIX #2097 Use exe folder for application executables (@adam12)
+- FIX #2105 Run bundle with --binstubs on -b switch (@adam12)
+- FIX #2111 disallow conflicting project names
+- NEW remove deprecations planned for 0.14.0
+- NEW stop managing Ruby default encodings
+  Default Encoding.default_internal is now nil (Ruby default) instead of UTF-8 (Padrino < 0.14 default)
+- FIX #2113 properly override default values in route definitions if parameter is present (@fidalgo)
+- FIX #2116 fix plugin list `padrino g plugin -l` (@fnordfish)
+
+== 0.14.0.rc1 (2016-11-02)
+- NEW remove the requirement of ActiveSupport (export AS_VERSION=X.0 to put it back)
+
+== 0.13.3.3 (2016-11-02)
+- FIX #2075 cache actual content_type mime type
+- FIX #2081 remove -i option from pg_dump command (@dfens)
+- FIX #2083 be able to create sqlite's file to deep tree of subdirectories (@kkarakawa)
+- NEW dynamically list supported renderers (@jfredrickson)
+
+== 0.13.3.2 (2016-09-06)
+- FIX #2071 regression of #1906
+- FIX running padrino without Gemfile
+- NEW alias db:create for sequel adapter
+
+== 0.13.3.1 (2016-08-30)
+- NEW support usage of partials without view path
+
+== 0.13.3 (August 17th 2016)
+
+- FIX #1785 Nested forms and helpers with ERB and Erubis (@ujifgc)
+- FIX #1847 Shoulda on modern rubies
+- NEW #1851 Remove RightJS, Riot, Steak support (@ujifgc)
+- FIX #1872 Implement using partials without Sinatra (@ujifgc)
+- NEW #1906 Allow shortened mailer render calls with default mailer and message names (@ujifgc)
+- FIX #2013 Delegate padrino and padrino-gen to bundler binstubs (@ujifgc)
+- FIX #2016 Escape urls in link_to and form_tag (@ujifgc)
+- FIX #2042 Do not override access control object when registered in multiple apps (@nxs6)
+- FIX #2045 Prevent overwriting params by given query (@namusyaka)
+- NEW #2050 Update Moneta to 0.8.0 (@basex)
+- FIX #2052 String#humanize compatibility with AS ~3.2
+- NEW #2056 Allow Pry as Padrino console shell
+- FIX #2066 fix reloader with native jruby classes
+>>>>>>> d52f29e24866d879cd87cf1dc88a3c615e0c20f5
 
 == 0.13.2 (May 9th 2016)
 

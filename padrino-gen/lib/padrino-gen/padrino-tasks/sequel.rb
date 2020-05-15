@@ -80,6 +80,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     end
   end
 
+  task 'db:create' => 'sq:create'
   task 'db:migrate' => 'sq:migrate'
   task 'db:reset' => 'sq:reset'
 end

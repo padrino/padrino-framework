@@ -1,7 +1,6 @@
 require 'digest/sha1'
 require 'sequel'
-
-Sequel::Model.plugin(:schema)
+require 'sequel/extensions/migration'
 
 Sequel::Model.db = 
   if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
@@ -12,7 +11,6 @@ Sequel::Model.db =
     Sequel.sqlite(":memory:")
   end
 
-Sequel.extension :migration
 migration = Sequel.migration do
   up do
     create_table :accounts do
@@ -29,6 +27,19 @@ migration = Sequel.migration do
       foreign_key :account_id
       String :name
     end
+
+    create_table :friends do
+      primary_key :id
+      String :name
+      String :age
+      String :email
+    end
+
+    create_table :pages do
+      primary_key :id
+      String :name
+      String :body
+    end
   end
 
   down do
@@ -37,6 +48,12 @@ migration = Sequel.migration do
 end
 
 migration.apply(Sequel::Model.db, :up)
+
+class Friend < Sequel::Model
+end
+
+class Page < Sequel::Model
+end
 
 # Fake Section Model
 class Section < Sequel::Model

@@ -107,4 +107,8 @@ class RenderDemo < Padrino::Application
     @ext = params[:ext]
     render "dive_outer_#{@ext}"
   end
+
+  get '/' do
+    render 'index'
+  end
 end

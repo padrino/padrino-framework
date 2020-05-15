@@ -622,6 +622,23 @@ describe "Rendering" do
       assert_equal 'this is a <span>span</span>', body
     end
 
+    it 'should render unescaped html on == token (Erubis and Erubi)' do
+      skip if ENV['ERB_ENGINE'] == 'stdlib'
+      mock_app do
+        layout do
+          "<%= yield %>"
+        end
+
+        get "/" do
+          render  :erb, '<%== "<script></script>" %>'
+        end
+      end
+
+      get "/"
+      assert ok?
+      assert_equal "<script></script>", body
+    end
+
     it 'should render haml to a SafeBuffer' do
       mock_app do
         layout do
@@ -748,6 +765,16 @@ describe "Rendering" do
       end
       get '/'
       assert_equal "application/xml;charset=utf-8", response['Content-Type']
+    end
+  end
+
+  describe 'rendering with helpers that use render' do
+    %W{erb haml slim}.each do |engine|
+      it "should work with #{engine}" do
+        @app = RenderDemo
+        get "/double_dive_#{engine}"
+        assert_response_has_tag '.outer .wrapper form .inner .core'
+      end
     end
   end
 end

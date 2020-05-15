@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-require 'rubygems' unless defined?(Gem) # Useful only on --dev mode
-require 'bundler/setup' if %w(Gemfile .components).all? { |f| File.exist?(f) }
+require 'padrino-core/cli/binstub'
+Padrino.replace_with_binstub('padrino-gen')
 
 padrino_gen_path = File.expand_path('../../lib', __FILE__)
 $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)

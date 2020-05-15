@@ -156,6 +156,16 @@ describe "Routing" do
     assert_equal "My lucky number: 99 99", body
   end
 
+  it 'should ignore trailing slashes' do
+    mock_app do
+      get(%r./trailing.) { "slash" }
+    end
+    get "/trailing"
+    assert_equal "slash", body
+    get "/trailing/"
+    assert_equal "slash", body
+  end
+
   it 'should accept regexp routes with generate with :generate_with' do
     mock_app do
       get(%r{/fob|/baz}, :name => :foo, :generate_with => '/fob') { "regexp" }
@@ -550,7 +560,7 @@ describe "Routing" do
 
   it 'should generate routes for format simple' do
     mock_app do
-      get(:foo, :provides => [:html, :rss]) { render :haml, "Test" }
+      get(:foo, :provides => [:html, :rss]) { "Test\n" }
     end
     get "/foo"
     assert_equal "Test\n", body
@@ -664,8 +674,8 @@ describe "Routing" do
   it 'should generate routes for format with controller' do
     mock_app do
       controller :posts do
-        get(:index, :provides => [:html, :rss, :atom, :js]) { render :haml, "Index.#{content_type}" }
-        get(:show,  :with => :id, :provides => [:html, :rss, :atom]) { render :haml, "Show.#{content_type}" }
+        get(:index, :provides => [:html, :rss, :atom, :js]) { "Index.#{content_type}\n" }
+        get(:show,  :with => :id, :provides => [:html, :rss, :atom]) { "Show.#{content_type}\n" }
       end
     end
     get "/posts"
@@ -1245,6 +1255,17 @@ describe "Routing" do
     assert_equal "/foo", @app.url(:foo)
     get "/en"
     assert_equal "lang is en", body
+  end
+
+  it 'should override default values when parameters are passed' do
+    mock_app do
+      controller lang: :it do
+        get(:index, map: '/:lang') { "lang is #{params[:lang]}" }
+      end
+    end
+    assert_equal '/pt', @app.url(:index, lang: 'pt')
+    get '/pt'
+    assert_equal 'lang is pt', body
   end
 
   it 'should transitions to the next matching route on pass' do
@@ -2101,7 +2122,7 @@ describe "Routing" do
     mock_app { set :environment, :development }
     get "/"
     assert_equal 404, status
-    assert_match %r{(Sinatra doesn&rsquo;t know this ditty.|<h1>Not Found</h1>)}, body
+    assert_match %r{GET /}, body
   end
 
   it 'should render a custom NotFound page' do
@@ -2149,14 +2170,14 @@ describe "Routing" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:"foo bar", { :id => "fantastic" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:"foo bar", { :id => "18" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
-    assert_equal [:simple, { :id => "bar" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => "bar"))
-    assert_equal [:simple, { :id => "true" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => true))
-    assert_equal [:simple, { :id => "9" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => 9))
-    assert_equal [:with_format, { :id => "bar", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
-    assert_equal [:with_format, { :id => "true", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
-    assert_equal [:with_format, { :id => "9", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
+    assert_equal [:"foo bar", { "id" => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { "id" => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:simple, { "id" => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
+    assert_equal [:simple, { "id" => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
+    assert_equal [:simple, { "id" => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
+    assert_equal [:with_format, { "id" => "bar", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
+    assert_equal [:with_format, { "id" => "true", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
+    assert_equal [:with_format, { "id" => "9", "format" => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
   it 'should have current_path' do
@@ -2244,7 +2265,6 @@ describe "Routing" do
   end
 
   it "should support named captures like %r{/hello/(?<person>[^/?#]+)} on Ruby >= 1.9" do
-    next if RUBY_VERSION < '1.9'
     mock_app do
       get Regexp.new('/hello/(?<person>[^/?#]+)') do
         "Hello #{params['person']}"
@@ -2402,5 +2422,24 @@ describe "Routing" do
     end
     get '/update/1?product[title]=test'
     assert_equal 'test==test', body
+  end
+
+  it "prevent overwriting params by given query" do
+    mock_app do
+      get '/prohibit/:id' do
+        params[:id]
+      end
+    end
+    get '/prohibit/123?id=456'
+    assert_equal '123', body
+  end
+
+  it "functions in a standalone app" do
+    mock_app(Sinatra::Application) do
+      register Padrino::Routing
+      get(:index) { 'Standalone' }
+    end
+    get '/'
+    assert_equal 200, status
   end
 end

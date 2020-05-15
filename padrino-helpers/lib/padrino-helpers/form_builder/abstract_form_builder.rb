@@ -13,7 +13,7 @@ module Padrino
           fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
           @namespace = options[:namespace]
-          @model_name = options[:as] || @object.class.to_s.underscore.tr('/', '_')
+          @model_name = options[:as] || Inflections.underscore(@object.class).tr('/', '_')
           nested = options[:nested]
           if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
             @parent_form = nested_parent
@@ -108,7 +108,7 @@ module Padrino
         end
 
         def submit(*args)
-          @template.submit_tag *args
+          @template.submit_tag(*args)
         end
 
         def image_submit(source, options={})
@@ -155,7 +155,7 @@ module Padrino
           include_index = default_collection.respond_to?(:each)
 
           nested_options = { :parent => self, :association => child_association }
-          Array(collection).each_with_index.inject(ActiveSupport::SafeBuffer.new) do |all,(child_instance,index)|
+          Array(collection).each_with_index.inject(SafeBuffer.new) do |all,(child_instance,index)|
             nested_options[:index] = options[:index] || (include_index ? index : nil)
             all << @template.fields_for(child_instance,  { :nested => nested_options, :builder => self.class }, &block) << "\n"
           end
@@ -179,7 +179,7 @@ module Padrino
         # Returns the human name of the field. Look that use builtin I18n.
         #
         def field_human_name(field)
-          I18n.translate("#{model_name}.attributes.#{field}", :count => 1, :default => field.to_s.humanize, :scope => :models)
+          I18n.translate("#{model_name}.attributes.#{field}", :count => 1, :default => Inflections.humanize(field), :scope => :models)
         end
 
         ##
@@ -196,7 +196,7 @@ module Padrino
         # field_name(:street) => "user[addresses_attributes][0][street]"
         def field_name(field=nil)
           result = field_name_fragment
-          result << "[#{field}]" unless field.blank?
+          result << "[#{field}]" if field
           result
         end
 
@@ -209,8 +209,8 @@ module Padrino
         def field_id(field=nil, value=nil)
           result = (namespace && !is_nested) ? "#{namespace}_" : ''
           result << field_id_fragment
-          result << "_#{field}" unless field.blank?
-          result << "_#{value}" unless value.blank?
+          result << "_#{field}" if field
+          result << "_#{value}" if value
           result
         end
 
@@ -232,7 +232,7 @@ module Padrino
         # Returns a record from template instance or create a record of specified class.
         #
         def build_object(symbol)
-          @template.instance_variable_get("@#{symbol}") || symbol.to_s.camelize.constantize.new
+          @template.instance_variable_get("@#{symbol}") || Inflections.constantize(Inflections.camelize(symbol)).new
         end
 
         ##
@@ -242,7 +242,7 @@ module Padrino
           options = { :id => field_id(field), :selected => field_value(field) }.update(options)
           options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
-          variants_for_group(options).inject(ActiveSupport::SafeBuffer.new) do |html, (caption,value)|
+          variants_for_group(options).inject(SafeBuffer.new) do |html, (caption,value)|
             variant_id = "#{options[:id]}_#{value}"
             attributes = { :value => value, :id => variant_id, :checked => selected_values.include?(value) }
             caption = yield(attributes) << ' ' << caption
@@ -308,7 +308,7 @@ module Padrino
 
         def error_class(field)
           error = @object.errors[field] if @object.respond_to?(:errors)
-          error.blank? ? {} : { :class => 'invalid' }
+          error.nil? || error.empty? ? {} : { :class => 'invalid' }
         end
 
         def default_options(field, options, defaults={})

@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'haml'
 
 class SinatraApp < Sinatra::Base
   register Padrino::Mailer

@@ -185,11 +185,11 @@ module Padrino
       #
       # @overload redirect(url, status_code)
       #   @param [String] url
-      #   @param [Fixnum] status_code
+      #   @param [Integer] status_code
       #
       # @overload redirect(url, status_code, flash_messages)
       #   @param [String] url
-      #   @param [Fixnum] status_code
+      #   @param [Integer] status_code
       #   @param [Hash]   flash_messages
       #
       # @overload redirect(url, flash_messages)
@@ -203,7 +203,7 @@ module Padrino
       # @since 0.10.8
       # @api public
       def redirect(url, *args)
-        flashes = args.extract_options!
+        flashes = args.last.is_a?(Hash) ? args.pop : {}
 
         flashes.each do |type, message|
           message = I18n.translate(message) if message.is_a?(Symbol) && defined?(I18n)

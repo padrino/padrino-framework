@@ -4,26 +4,22 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/setup'
 require 'rack/test'
-require 'webrat'
 require 'builder'
 require 'padrino-helpers'
+require 'padrino/rendering'
 require 'tilt/liquid'
 require 'tilt/builder'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
+require 'padrino/test-methods'
 
 class MiniTest::Spec
   include Padrino::Helpers::OutputHelpers
   include Padrino::Helpers::TagHelpers
   include Padrino::Helpers::AssetTagHelpers
   include Rack::Test::Methods
-  include Webrat::Methods
-  include Webrat::Matchers
-
-  Webrat.configure do |config|
-    config.mode = :rack
-  end
+  include Padrino::TestMethods
 
   def stop_time_for_test
     time = Time.now
@@ -43,8 +39,8 @@ class MiniTest::Spec
     FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
     FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
     path  = "/views/#{name}"
-    path += ".#{options.delete(:locale)}" if options[:locale].present?
-    path += ".#{options[:format]}" if options[:format].present?
+    path += ".#{options.delete(:locale)}" if options[:locale]
+    path += ".#{options[:format]}" if options[:format]
     path += ".erb" unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder|liquid/
     path += ".builder" if options[:format].to_s =~ /rss|atom/
     file  = File.dirname(__FILE__) + path
@@ -77,13 +73,5 @@ class MiniTest::Spec
 
   def app
     Rack::Lint.new(@app)
-  end
-end
-
-module Webrat
-  module Logging
-    def logger # @private
-      @logger = nil
-    end
   end
 end
