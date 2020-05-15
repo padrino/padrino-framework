@@ -5,7 +5,6 @@ require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FIL
 
 Gem::Specification.new do |s|
   s.name = "padrino-gen"
-  s.rubyforge_project = "padrino-gen"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.email = "padrinorb@gmail.com"
   s.summary = "Generators for easily creating and building padrino applications"
