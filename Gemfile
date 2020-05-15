@@ -38,7 +38,7 @@ group :development do
     puts "=> Using Erubis ERB engine"
     gem "erubis",    ">= 2.7.0"
   else
-    gem "erubi",     ">= 1.6.0"
+    gem "erubi",     ">= 1.6.1"
   end
 
   gem "rack",      ">= 1.3.0"
@@ -46,7 +46,7 @@ group :development do
   gem "yard",      ">= 0.7.2"
   gem "rack-test", ">= 0.6.3"
   gem "fakeweb",   ">= 1.2.8"
-  gem "oga",       "~> 2.5"
+  gem "oga",       ">= 2.5", "< 3"
   gem "builder",    ">= 2.1.2"
   gem "mocha",    ">= 0.10.0"
   gem "minitest", ">= 4.0"
