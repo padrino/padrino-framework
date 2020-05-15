@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.14.0 (May 14th 2020)
+
+- FIX #2205 Relax bundler version and get tests passing (@rogerhu, @yb66)
+
 == 0.13.2 (May 9th 2016)
 
 - FIX #1789 Relax Tilt version to allow Tilt 2 (>= 1.4.1, < 3) (@ujifgc)
