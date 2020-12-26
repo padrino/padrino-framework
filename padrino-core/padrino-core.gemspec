@@ -24,5 +24,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("sinatra", ">= 2.0.0")
-  s.add_dependency("thor", "~> 0.18")
+  s.add_dependency("thor", "~> 1.0")
 end
