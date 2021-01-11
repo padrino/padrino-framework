@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-# require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
+require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/padrino_app/app')
 
 describe "PadrinoMailer" do
   describe 'for mail delivery in sample Sinatra application' do
-    before { skip; @app = SinatraApp }
+    before { @app = SinatraApp }
 
     it 'should be able to deliver inline emails using the email helper' do
       post '/deliver/inline'
