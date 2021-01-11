@@ -50,6 +50,7 @@ group :development do
   gem "builder",    ">= 2.1.2"
   gem "mocha",    ">= 0.10.0"
   gem "minitest", ">= 4.0"
+  gem 'rb-readline', '~> 0.4.2'
 
   platforms :jruby do
     gem "jruby-openssl"
