@@ -2,15 +2,13 @@ language: ruby
 cache: bundler
 before_install:
   - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
-  - gem install bundler 
+  - gem install bundler
 install:
   - bundle update
 rvm:
-  - 2.3.0
-  - 2.3.3
-  - 2.4.3
   - 2.5.0
   - 2.6.3
+  - 2.7.3
   - ruby-head
   - rbx-2
   - jruby
