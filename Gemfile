@@ -8,7 +8,7 @@ end
 
 group :db do
   gem "sequel"
-  gem "sqlite3", :platforms => [:mri, :rbx]
+  gem "sqlite3", :platforms => [:mri]
   gem "jdbc-sqlite3", "~> 3.7.2", :platform => :jruby
 end
 
