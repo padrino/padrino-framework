@@ -2,7 +2,7 @@ ENV['RACK_ENV'] = 'test'
 
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'mocha/setup'
+require 'mocha/minitest'
 require 'rack/test'
 require 'builder'
 require 'padrino-helpers'

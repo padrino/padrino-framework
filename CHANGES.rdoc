@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.15.1 (2021-04-25)
+
+- FIX Adds readline as a dep (@nesquena)
+- FIX #2229 Fix polish translations (@tiwi)
+- FIX #2234 Avoid mocha warning in tests (@olleolleolle)
+- FIX #2235 Update thor to a more recent version (@basex)
+
+== 0.15.0 (2020-05-14)
+
+- FIX #2205 Relax bundler version and get tests passing (@rogerhu, @yb66)
+
 == 0.14.4 (2018-11-05)
 - FIX #2177 regexp routes and trailing slashes (@pdlug)
 - FIX #2182 NoMethodError on `ar` tasks with activerecord v5.2.0+ (@sue445)

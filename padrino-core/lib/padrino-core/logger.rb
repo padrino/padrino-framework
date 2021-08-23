@@ -22,18 +22,27 @@ module Padrino
   # Set the padrino logger.
   #
   # @param [Object] value
-  #   an object that respond to <<, write, puts, debug, warn etc..
+  #   an object that respond to <<, write, puts, debug, warn, devel, etc..
   #
   # @return [Object]
   #   The given value.
   #
   # @example using ruby default logger
   #   require 'logger'
-  #   Padrino.logger = Logger.new(STDOUT)
+  #   new_logger = ::Logger.new(STDOUT)
+  #   new_logger.extend(Padrino::Logger::Extensions)
+  #   Padrino.logger = new_logger
   #
   # @example using ActiveSupport
   #   require 'active_support/buffered_logger'
   #   Padrino.logger = Buffered.new(STDOUT)
+  #
+  # @example using custom logger class
+  #   require 'logger'
+  #   class CustomLogger < ::Logger
+  #     include Padrino::Logger::Extensions
+  #   end
+  #   Padrino.logger = CustomLogger.new(STDOUT)
   #
   def self.logger=(value)
     Padrino::Logger.logger = value

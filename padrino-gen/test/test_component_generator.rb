@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
+require "rb-readline"
 
 describe "ComponentGenerator" do
   def setup

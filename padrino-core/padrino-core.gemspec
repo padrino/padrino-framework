@@ -5,7 +5,6 @@ require File.expand_path("../lib/padrino-core/version.rb", __FILE__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-core"
-  s.rubyforge_project = "padrino-core"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.email = "padrinorb@gmail.com"
   s.summary = "The required Padrino core gem"
@@ -25,5 +24,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("sinatra", ">= 2.0.0")
-  s.add_dependency("thor", "~> 0.18")
+  s.add_dependency("thor", "~> 1.0")
 end

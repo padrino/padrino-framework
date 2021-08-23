@@ -5,7 +5,6 @@ require File.expand_path("../lib/padrino-performance/version.rb", __FILE__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-performance"
-  s.rubyforge_project = "padrino-performance"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu", "Florian Gilcher", "Darío Javier Cravero", "Igor Bochkariov"]
   s.email = "padrinorb@gmail.com"
   s.summary = "A gem for finding performance problems in Padrino"

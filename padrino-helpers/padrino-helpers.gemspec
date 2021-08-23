@@ -5,7 +5,6 @@ require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FIL
 
 Gem::Specification.new do |s|
   s.name = "padrino-helpers"
-  s.rubyforge_project = "padrino-helpers"
   s.authors = ["Padrino Team", "Nathan Esquenazi", "Davide D'Agostino", "Arthur Chiu"]
   s.email = "padrinorb@gmail.com"
   s.summary = "Helpers for padrino"
@@ -25,5 +24,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-support", Padrino.version)
   s.add_dependency("tilt", ">= 1.4.1", "< 3")
-  s.add_dependency("i18n", "~> 0.6", ">= 0.6.7")
+  s.add_dependency("i18n", ">= 0.6.7", "< 2")
 end
