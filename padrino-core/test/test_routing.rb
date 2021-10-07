@@ -192,7 +192,7 @@ describe "Routing" do
     mock_app do
       get('/щч') { 'success!' }
     end
-    get(URI.escape('/щч'))
+    get('/' + CGI.escape('щч'))
     assert_equal 'success!', body
   end
 

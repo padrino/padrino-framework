@@ -325,7 +325,8 @@ module Padrino
                 [:almost_x_years, :count => distance_in_years + 1]
               end
           end
-        I18n.translate phrase, locals.merge(:locale => options[:locale], :scope => :'datetime.distance_in_words')
+
+        I18n.translate phrase, :count => locals[:count], :locale => options[:locale], :scope => :'datetime.distance_in_words'
       end
 
       ##
