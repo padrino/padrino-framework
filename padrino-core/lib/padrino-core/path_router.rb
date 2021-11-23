@@ -61,7 +61,7 @@ module Padrino
         i = 0
         route = candidates.sort_by! { |candidate|
           # Tries to find the route that matches more, but with fewer names, in stable order
-          [(params.keys.map(&:to_s) - candidate.matcher.names).length, -candidate.matcher.names.size, i += 1] }.shift
+          [(params.keys.map(&:to_s) - candidate.matcher.names).length, candidate.matcher.names.size, i += 1] }.shift
         matcher = route.matcher
         params_for_expand = params.dup
         if !args.empty? && matcher.mustermann?
