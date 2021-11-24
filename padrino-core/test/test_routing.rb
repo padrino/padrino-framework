@@ -96,6 +96,17 @@ describe "Routing" do
     assert_equal "/1234.json?baz=baz", @app.url_for(:index, :id => "1234", :format => "json", :baz => "baz")
   end
 
+  it 'should recognize route even if paths are duplicated, in reverse order' do
+    mock_app do
+      get(:index, :with => :id, :provides => :json) {}
+      get(:index, :with => :id) {}
+      get(:index) {}
+    end
+    assert_equal "/", @app.url_for(:index)
+    assert_equal "/1234", @app.url_for(:index, :id => "1234")
+    assert_equal "/1234.json?baz=baz", @app.url_for(:index, :id => "1234", :format => "json", :baz => "baz")
+  end
+
   it 'should fail with unrecognized route exception when not found' do
     mock_app do
       get(:index){ "okey" }
