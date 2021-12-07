@@ -14,16 +14,16 @@ AR = (<<-AR) unless defined?(AR)
 #     :socket    => '/tmp/mysql.sock'
 #   }
 #
-ActiveRecord::Base.configurations[:development] = {
+ActiveRecord::Base.configurations = {
+  :development => {
 !DB_DEVELOPMENT!
-}
-
-ActiveRecord::Base.configurations[:production] = {
+  },
+  :production => {
 !DB_PRODUCTION!
-}
-
-ActiveRecord::Base.configurations[:test] = {
+  },
+  :test => {
 !DB_TEST!
+  }
 }
 
 # Setup our logger
@@ -52,48 +52,48 @@ ActiveSupport.use_standard_json_time_format = true
 ActiveSupport.escape_html_entities_in_json = false
 
 # Now we can establish connection with our db.
-ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
+ActiveRecord::Base.establish_connection(Padrino.env)
 
 # Timestamps are in the utc by default.
 ActiveRecord::Base.default_timezone = :utc
 AR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
-  :adapter   => 'mysql',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+    :adapter   => 'mysql',
+    :encoding  => 'utf8',
+    :reconnect => true,
+    :database  => !DB_NAME!,
+    :pool      => 5,
+    :username  => 'root',
+    :password  => '',
+    :host      => 'localhost',
+    :socket    => '/tmp/mysql.sock'
 MYSQL
 
 MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
-  :adapter   => 'mysql2',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+    :adapter   => 'mysql2',
+    :encoding  => 'utf8',
+    :reconnect => true,
+    :database  => !DB_NAME!,
+    :pool      => 5,
+    :username  => 'root',
+    :password  => '',
+    :host      => 'localhost',
+    :socket    => '/tmp/mysql.sock'
 MYSQL2
 
 POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
-  :adapter   => 'postgresql',
-  :database  => !DB_NAME!,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :port      => 5432
+    :adapter   => 'postgresql',
+    :database  => !DB_NAME!,
+    :username  => 'root',
+    :password  => '',
+    :host      => 'localhost',
+    :port      => 5432
 POSTGRES
 
 SQLITE = (<<-SQLITE) unless defined?(SQLITE)
-  :adapter => 'sqlite3',
-  :database => !DB_NAME!
+    :adapter => 'sqlite3',
+    :database => !DB_NAME!
 SQLITE
 
 CONNECTION_POOL_MIDDLEWARE = <<-MIDDLEWARE
