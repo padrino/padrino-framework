@@ -14,7 +14,8 @@ module Padrino
       #  The translation for the specified keys.
       #
       def translate(*args)
-        I18n.translate(*args)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        I18n.translate(*args, **options)
       end
       alias :t :translate
 
