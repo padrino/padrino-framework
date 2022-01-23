@@ -1,12 +1,14 @@
 = Padrino
 
+
 Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
 
-{<img src="https://api.travis-ci.org/padrino/padrino-framework.svg" alt="Build Status" />}[http://travis-ci.org/padrino/padrino-framework]
+{<img src="https://circleci.com/gh/padrino/padrino-framework/tree/master.svg?style=svg" alt="Build Status" />}[https://app.circleci.com/pipelines/github/padrino/padrino-framework]
 {<img src="https://api.codeclimate.com/v1/badges/900d6e424498f0e2b7ff/maintainability" alt="CodeClimate Maintainability score" />}[https://codeclimate.com/github/padrino/padrino-framework/maintainability]
 {<img src="https://badges.gitter.im/Join Chat.svg" />}[https://gitter.im/padrino/padrino-framework]
+{<img src='https://www.codetriage.com/padrino/padrino-framework/badges/users.svg' alt='Code Triagers Badge' />}[https://www.codetriage.com/padrino/padrino-framework]
 {<img src='https://www.codetriage.com/padrino/padrino-framework/badges/users.svg' alt='Code Triagers Badge' />}[https://www.codetriage.com/padrino/padrino-framework]
 
 == Preface
