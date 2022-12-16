@@ -28,7 +28,7 @@ group :development do
     puts "=> Using Hamlit Haml engine"
     gem "hamlit"
   else
-    gem "haml",      ">= 4.0.5"
+    gem "haml",      "~> 5"
   end
 
   case ENV['ERB_ENGINE']
