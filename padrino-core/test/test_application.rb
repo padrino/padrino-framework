@@ -51,7 +51,7 @@ describe "Application" do
     end
 
     it 'should have shared sessions accessible in project' do
-      Padrino.configure_apps { enable :sessions; set :session_secret, 'secret' }
+      Padrino.configure_apps { enable :sessions; set :session_secret, PadrinoTestApp2.session_secret }
       Padrino.mount("PadrinoTestApp").to("/write")
       Padrino.mount("PadrinoTestApp2").to("/read")
       PadrinoTestApp.send :default_configuration!
