@@ -1,6 +1,5 @@
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'mocha/setup'
 require 'rack/test'
 require 'fakeweb'
 require 'thor/group'
@@ -11,6 +10,7 @@ require 'padrino-helpers'
 
 require 'ext/minitest-spec'
 require 'ext/fakeweb-ruby24'
+require 'mocha/minitest'
 
 Padrino::Generators.load_components!
 

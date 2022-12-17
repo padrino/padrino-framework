@@ -48,7 +48,7 @@ group :development do
   gem "fakeweb",   ">= 1.2.8"
   gem "oga",       ">= 2.5", "< 3"
   gem "builder",    ">= 2.1.2"
-  gem "mocha",    ">= 0.10.0"
+  gem "mocha",    ">= 2.0"
   gem "minitest", ">= 4.0"
   gem 'rb-readline', '~> 0.4.2'
 
