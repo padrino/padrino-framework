@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@0.1.2
+  ruby: circleci/ruby@2.0.0
 
 jobs:
   build:
@@ -8,14 +8,11 @@ jobs:
       ruby-version:
         type: string
     docker:
-      - image: circleci/<< parameters.ruby-version >>
+      - image: cimg/ruby:<< parameters.ruby-version >>
     executor: ruby/default
     steps:
       - checkout
-      - run:
-          name: Which bundler?
-          command: gem install bundler
-      - ruby/bundle-install
+      - ruby/install-deps
       - run:
           name: Run tests
           command: bundle exec rake test
@@ -30,9 +27,7 @@ workflows:
               ruby-version:
                 - "ruby:2.6.10"
                 - "ruby:2.7.7"
-                - "jruby:9.2.10.0"
-                - "jruby:9.2.14.0"
-                - "jruby:9.2.19.0"
+                - "jruby:9.3.9.0"
   build-and-test-latest:
     jobs:
       - build:
