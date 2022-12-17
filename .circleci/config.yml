@@ -28,12 +28,8 @@ workflows:
               # https://github.com/CircleCI-Public/cimg-ruby
               # only supports the last three ruby versions
               ruby-version:
-                - "ruby:2.5.0"
-                - "ruby:2.5.9"
-                - "ruby:2.6.3"
-                - "ruby:2.6.9"
-                - "ruby:2.7.3"
-                - "ruby:2.7.5"
+                - "ruby:2.6.10"
+                - "ruby:2.7.7"
                 - "jruby:9.2.10.0"
                 - "jruby:9.2.14.0"
                 - "jruby:9.2.19.0"
