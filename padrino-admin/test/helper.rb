@@ -3,7 +3,6 @@ PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
 
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'mocha/setup'
 require 'rack/test'
 require 'thor/group'
 require 'sequel/model'
@@ -11,6 +10,7 @@ require 'padrino-admin'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
+require 'mocha/minitest'
 
 Padrino::Generators.load_components!
 
