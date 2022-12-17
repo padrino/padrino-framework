@@ -59,9 +59,6 @@ if ActiveRecord::VERSION::MAJOR.to_i < 6
 else
   ActiveRecord::Base.establish_connection(Padrino.env)
 end
-
-# Timestamps are in the utc by default.
-ActiveRecord::Base.default_timezone = :utc
 AR
 
 MYSQL = (<<-MYSQL) unless defined?(MYSQL)
