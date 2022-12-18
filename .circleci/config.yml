@@ -8,11 +8,15 @@ jobs:
       ruby-version:
         type: string
     docker:
-      - image: cimg/ruby:<< parameters.ruby-version >>
-    executor: ruby/default
+      - image: circleci/<< parameters.ruby-version >>
     steps:
       - checkout
-      - ruby/install-deps
+      - run:
+          name: Install Bundler
+          command: gem install bundler
+      - run:
+          name: Install dependencies
+          command: bundle install
       - run:
           name: Run tests
           command: bundle exec rake test
@@ -25,9 +29,10 @@ workflows:
               # https://github.com/CircleCI-Public/cimg-ruby
               # only supports the last three ruby versions
               ruby-version:
-                - "ruby:2.6.10"
-                - "ruby:2.7.7"
-                - "jruby:9.3.9.0"
+                - "ruby:2.6.9"
+                - "ruby:2.7.5"
+                - "ruby:3.0.3"
+                - "jruby:9.3.3.0"
   build-and-test-latest:
     jobs:
       - build:
