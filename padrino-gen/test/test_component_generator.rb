@@ -26,6 +26,8 @@ describe "ComponentGenerator" do
       assert_match_in_file(/gem 'activerecord', '>= 3.1', :require => 'active_record'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/sample_project/Gemfile")
       refute_match(/Switch renderer to/, out)
+      database_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'database_template.rb')
+      assert FileUtils.compare_file("#{@apptmp}/sample_project/config/database.rb", database_template_path)
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'activerecord', components_chosen[:orm]
     end

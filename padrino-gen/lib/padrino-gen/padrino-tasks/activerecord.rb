@@ -420,6 +420,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     ActiveRecord.version < Gem::Version.create("6.0.0")
   end
 
+  def less_than_active_record_6_1?
+    ActiveRecord.version < Gem::Version.create("6.1.0")
+  end
+
   def with_database(env_name)
     if less_than_active_record_6_0?
       config = ActiveRecord::Base.configurations.with_indifferent_access[env_name]
@@ -429,7 +433,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       db_configs = ActiveRecord::Base.configurations.configs_for(env_name: env_name.to_s)
 
       db_configs.each do |db_config|
-        yield db_config.config.with_indifferent_access
+        yield configuration_hash(db_config)
       end
     end
   end
@@ -441,9 +445,15 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     else
       ActiveRecord::Base.configurations.configs_for.each do |db_config|
-        yield db_config.config.with_indifferent_access
+        yield configuration_hash(db_config)
       end
     end
+  end
+
+  def configuration_hash(configuration)
+    return configuration if less_than_active_record_6_0?
+    config = less_than_active_record_6_1 ? configuration.config : configuration.configuration_hash
+    config.with_indifferent_access
   end
 
   task 'db:migrate' => 'ar:migrate'
