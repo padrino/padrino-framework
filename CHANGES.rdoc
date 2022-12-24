@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.15.2 (2022-12-23)
+
+- FIX #2261 Resolve failures in CI Build and update Circle config (@jkowens)
+- FIX #2263 Padrino-gen fix for ActiveRecord 6.1 (@jkowens)
+- FIX #2260 Pin HAML to newer version 5 (@jkowens)
+- NEW #2259 Add Sinatra 3 compatibility (@jkowens)
+- NEW #2251 Sets up CircleCI for new builds (@wikimatze)
+- FIX #2243 for cascading mailer path when using partials (@HR-Partner)
+- FIX #2250 I18n translation issue on Ruby 3.0 (@jinshen1983)
+- FIX #2246 Various routing upgrades and fixes (@takeshi-yashiro)
+
 == 0.15.1 (2021-04-25)
 
 - FIX Adds readline as a dep (@nesquena)
