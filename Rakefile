@@ -61,6 +61,7 @@ task :pull do
   sh "git checkout master"
   sh "git pull origin master"
   say "Updating submodules"
+  sh "git submodule update"
   sh "git submodule foreach git pull origin master"
   sh "ls padrino-gen/lib/padrino-gen/generators/templates/static/README.rdoc"
 end
