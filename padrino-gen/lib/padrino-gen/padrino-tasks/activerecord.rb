@@ -452,7 +452,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def configuration_hash(configuration)
     return configuration if less_than_active_record_6_0?
-    config = less_than_active_record_6_1 ? configuration.config : configuration.configuration_hash
+    config = less_than_active_record_6_1? ? configuration.config : configuration.configuration_hash
     config.with_indifferent_access
   end
 
