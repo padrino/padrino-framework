@@ -124,8 +124,8 @@ module Padrino
 
         def update_attributes(params=nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
-            when :datamapper, :ohm then "@#{name_singular}.update(#{params})"
+            when :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
+            when :activerecord, :minirecord, :datamapper, :ohm then "@#{name_singular}.update(#{params})"
             when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
