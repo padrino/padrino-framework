@@ -1,5 +1,10 @@
 = CHANGES
 
+== 0.15.3 (2023-02-25)
+
+- FIX #2266 Update ORM generator for ActiveRecord changes (@jkowens)
+- FIX #2267 activerecord in gen task (@DimitriosLisenko)
+
 == 0.15.2 (2022-12-23)
 
 - FIX #2261 Resolve failures in CI Build and update Circle config (@jkowens)
