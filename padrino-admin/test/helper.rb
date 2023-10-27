@@ -23,7 +23,7 @@ module Kernel
   end
 end
 
-class MiniTest::Spec
+class Minitest::Spec
   include Rack::Test::Methods
 
   # Sets up a Sinatra::Base subclass defined with the block

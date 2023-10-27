@@ -3,7 +3,7 @@ RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
 
-class MiniTest::Spec
+class Minitest::Spec
   include Rack::Test::Methods
 
   # You can use this method to custom specify a Rack app

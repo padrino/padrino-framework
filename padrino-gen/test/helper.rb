@@ -27,7 +27,7 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
   FakeWeb.register_uri(:get, fake_uri_base + suffix, :body => '')
 end
 
-class MiniTest::Spec
+class Minitest::Spec
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
