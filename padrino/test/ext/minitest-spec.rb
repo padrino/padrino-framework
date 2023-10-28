@@ -1,4 +1,4 @@
-class MiniTest::Spec
+class Minitest::Spec
   # Assert_file_exists('/tmp/app')
   def assert_file_exists(file_path)
     assert File.file?(file_path), "File at path '#{file_path}' does not exist!"

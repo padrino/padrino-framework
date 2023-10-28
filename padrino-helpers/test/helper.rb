@@ -14,7 +14,7 @@ require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
 require 'padrino/test-methods'
 
-class MiniTest::Spec
+class Minitest::Spec
   include Padrino::Helpers::OutputHelpers
   include Padrino::Helpers::TagHelpers
   include Padrino::Helpers::AssetTagHelpers

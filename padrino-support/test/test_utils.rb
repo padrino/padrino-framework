@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-class MiniTest::Spec
+class Minitest::Spec
   def assert_query_equal(expected, actual, namespace=nil)
     assert_equal expected.split('&').sort, Padrino::Utils.build_uri_query(actual, namespace).split('&').sort
   end
