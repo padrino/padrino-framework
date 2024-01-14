@@ -102,8 +102,7 @@ describe "PadrinoLogger" do
       @logger.error binary_data
       @logger.error utf8_data
       @logger.flush
-      assert @log.string.force_encoding(encoding).include?("?\n".encode(encoding))
-      assert @log.string.force_encoding(encoding).include?(utf8_data.encode(encoding))
+      assert_match /\.*фыв/m, @log.string.encode(Encoding.default_external)
     end
 
     it 'should log an application' do

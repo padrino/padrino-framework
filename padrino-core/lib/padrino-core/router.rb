@@ -58,7 +58,7 @@ module Padrino
       raise ArgumentError, "app is required" if app.nil?
 
       path  = path.chomp('/')
-      match = Regexp.new("^#{Regexp.quote(path).gsub('/', '/+')}(.*)", nil, 'n')
+      match = Regexp.new("^#{Regexp.quote(path).gsub('/', '/+')}(.*)", Regexp::NOENCODING)
       host  = Regexp.new("^#{Regexp.quote(host)}$", true, 'n') unless host.nil? || host.is_a?(Regexp)
 
       @mapping << [host, path, match, app]
