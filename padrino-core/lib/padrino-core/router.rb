@@ -59,7 +59,7 @@ module Padrino
 
       path  = path.chomp('/')
       match = Regexp.new("^#{Regexp.quote(path).gsub('/', '/+')}(.*)", Regexp::NOENCODING)
-      host  = Regexp.new("^#{Regexp.quote(host)}$", true, 'n') unless host.nil? || host.is_a?(Regexp)
+      host  = Regexp.new("^#{Regexp.quote(host)}$", Regexp::NOENCODING) unless host.nil? || host.is_a?(Regexp)
 
       @mapping << [host, path, match, app]
     end
