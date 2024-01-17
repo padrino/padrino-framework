@@ -14,6 +14,8 @@ Lint/AssignmentInCondition:
   Enabled: false
 Lint/UnusedMethodArgument:
   Enabled: false
+Style/AccessorGrouping:
+  Enabled: false
 Style/Alias:
   Enabled: false
 Style/ArrayJoin:
@@ -26,7 +28,11 @@ Style/ClassCheck:
   Enabled: false
 Style/ClassVars:
   Enabled: false
+Style/CommentedKeyword:
+  Enabled: false
 Style/Documentation:
+  Enabled: false
+Style/EmptyCaseCondition:
   Enabled: false
 Style/FormatString:
   Enabled: false
@@ -38,21 +44,35 @@ Style/GuardClause:
   Enabled: false
 Style/HashSyntax:
   Enabled: false
+Style/IfInsideElse:
+  Enabled: false
 Style/IfUnlessModifier:
   Enabled: false
 Style/IfUnlessModifierOfIfUnless:
   Enabled: false
 Style/MultilineIfModifier:
   Enabled: false
+Style/MultilineTernaryOperator:
+  Enabled: false
+Style/NestedTernaryOperator:
+  Enabled: false
 Style/MutableConstant:
   Enabled: false
 Style/NumericPredicate:
+  Enabled: false
+Style/ParallelAssignment:
   Enabled: false
 Style/PreferredHashMethods:
   Enabled: false
 Style/RedundantSelf:
   Enabled: false
 Style/RegexpLiteral:
+  Enabled: false
+Style/Semicolon:
+  Enabled: false
+Style/SignalException:
+  Enabled: false
+Style/SingleLineMethods:
   Enabled: false
 Style/SoleNestedConditional:
   Enabled: false
@@ -65,6 +85,8 @@ Style/StringLiteralsInInterpolation:
 Style/SymbolArray:
   Enabled: false
 Style/TrailingCommaInHashLiteral:
+  Enabled: false
+Style/WordArray:
   Enabled: false
 Style/ZeroLengthPredicate:
   Enabled: false
