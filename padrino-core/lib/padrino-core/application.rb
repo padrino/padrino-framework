@@ -138,7 +138,7 @@ module Padrino
           'controllers/**/*.rb',
           'controllers.rb',
           'helpers/**/*.rb',
-          'helpers.rb',
+          'helpers.rb'
         ].flat_map{ |file| Dir.glob(File.join(settings.root, file)) }
       end
 

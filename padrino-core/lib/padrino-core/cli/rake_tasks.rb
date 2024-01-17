@@ -49,7 +49,7 @@ rescue ArgumentError
 end
 
 desc "Displays a listing of the named routes within a project, optionally only those matched by [query]"
-task :routes, [:query] => :environment do |t, args|
+task :routes, [:query] => :environment do |_t, args|
   Padrino.mounted_apps.each do |app|
     list_app_routes(app, args)
   end
@@ -57,16 +57,16 @@ end
 
 desc "Displays a listing of the named routes a given app [app]"
 namespace :routes do
-  task :app, [:app] => :environment do |t, args|
+  task :app, [:app] => :environment do |_t, args|
     app = Padrino.mounted_apps.find { |app| app.app_class == args.app }
     list_app_routes(app, args) if app
   end
 end
 
 Dir["{lib/tasks/**,tasks/**,test,spec}/*.rake"].each do |file|
-  begin
+  
     load(File.expand_path(file))
   rescue LoadError => e
     warn "#{file}: #{e.message}"
-  end
+  
 end

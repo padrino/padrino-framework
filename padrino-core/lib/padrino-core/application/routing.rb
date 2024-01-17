@@ -440,10 +440,9 @@ module Padrino
         when Array
           object.map { |item| value_to_param(item) }.compact
         when Hash
-          object.inject({}) do |all, (key, value)|
+          object.each_with_object({}) do |(key, value), all|
             next all if value.nil?
             all[key] = value_to_param(value)
-            all
           end
         when nil
         else
@@ -453,7 +452,7 @@ module Padrino
 
       # Add prefix slash if its not present and remove trailing slashes.
       def conform_uri(uri_string)
-        uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/[\/]+$/, '')
+        uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/\/+$/, '')
       end
 
       ##
@@ -863,7 +862,7 @@ module Padrino
         path = File.expand_path(public_dir + unescape(path_info))
         return unless path.start_with?(public_dir)
         return unless File.file?(path)
-        return path
+        path
       end
 
       #
@@ -993,7 +992,7 @@ module Padrino
         filter! :before if first_time
 
         catch(:pass) do
-          begin
+          
               (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
               @layout = route.use_layout if route.use_layout
               route.custom_conditions.each {|block| pass if block.bind(self).call == false }
@@ -1002,7 +1001,7 @@ module Padrino
               halt(route_response)
           ensure
             (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) }
-          end
+          
         end
       end
 

@@ -13,7 +13,7 @@ class RackApp
   end
 end
 
-RackApp2 = lambda{|_| [200, {}, ["hello rack app2"]] }
+RackApp2 = ->(_){ [200, {}, ["hello rack app2"]] }
 
 class SinatraApp < Sinatra::Base
   set :public_folder, File.dirname(__FILE__)

@@ -21,7 +21,7 @@ module Padrino
       method_option :server_options,   :type => :boolean, :desc => "Tells the current server handler's options that can be used with --options"
       def start(*args)
         prepare :start
-        require File.expand_path("../adapter", __FILE__)
+        require File.expand_path('adapter', __dir__)
         require File.expand_path('config/boot.rb')
 
         if options[:server_options]
@@ -36,7 +36,7 @@ module Padrino
       method_option :pid, :type => :string,  :aliases => "-p", :desc => "File to store pid", :default => 'tmp/pids/server.pid'
       def stop
         prepare :stop
-        require File.expand_path("../adapter", __FILE__)
+        require File.expand_path('adapter', __dir__)
         Padrino::Cli::Adapter.stop(options)
       end
 
@@ -44,7 +44,7 @@ module Padrino
 
       # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
-        begin
+        
           info = []
           server = Rack::Handler.get(options[:server]) || Rack::Handler.default(options)
           if server && server.respond_to?(:valid_options)
@@ -57,12 +57,12 @@ module Padrino
               info << "  -O %-21s %s" % [name, description]
               has_options = true
             end
-            return "" if !has_options
+            return "" unless has_options
           end
           info.join("\n")
         rescue NameError
-          return "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
-        end
+          "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
+        
       end
 
       protected

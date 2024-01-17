@@ -14,7 +14,7 @@ module Padrino
       project_root = project_root.rpartition('/').first
     end
 
-    if %w(Gemfile .components).all? { |file| File.file?(File.join(project_root, file)) }
+    if %w[Gemfile .components].all? { |file| File.file?(File.join(project_root, file)) }
       binstub = File.join(project_root, 'bin', executable)
       if File.file?(binstub)
         exec Gem.ruby, binstub, *ARGV

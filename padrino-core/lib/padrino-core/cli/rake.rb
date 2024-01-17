@@ -1,4 +1,4 @@
-require File.expand_path('../../tasks', __FILE__)
+require File.expand_path('../tasks', __dir__)
 require 'rake'
 require 'rake/dsl_definition'
 require 'thor'
@@ -10,8 +10,12 @@ end
 
 module PadrinoTasks
   def self.init(init=false)
-    Padrino::Tasks.files.flatten.uniq.each { |rakefile| Rake.application.add_import(rakefile) rescue puts "<= Failed load #{ext}" }
-    load(File.expand_path('../rake_tasks.rb', __FILE__))
+    Padrino::Tasks.files.flatten.uniq.each { |rakefile| begin
+                                                          Rake.application.add_import(rakefile)
+                                                        rescue StandardError
+                                                          puts "<= Failed load #{ext}"
+                                                        end }
+    load(File.expand_path('rake_tasks.rb', __dir__))
     Rake.application.load_imports
   end
 

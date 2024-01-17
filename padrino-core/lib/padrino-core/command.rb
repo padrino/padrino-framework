@@ -14,7 +14,7 @@ module Padrino
   #   Padrino.bin('start', '-e production')
   #
   def self.bin(*args)
-    @_padrino_bin ||= [self.ruby_command, File.expand_path("../../../bin/padrino", __FILE__)]
+    @_padrino_bin ||= [self.ruby_command, File.expand_path('../../bin/padrino', __dir__)]
     args.empty? ? @_padrino_bin : system(args.unshift(@_padrino_bin).join(" "))
   end
 

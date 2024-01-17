@@ -7,7 +7,5 @@ class E
     subclass.fields.replace fields.dup
   end
 
-  G
-
   fields << "name"
 end

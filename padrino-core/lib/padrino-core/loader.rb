@@ -150,7 +150,7 @@ module Padrino
         error = fatal = loaded = nil
 
         files.dup.each do |file|
-          begin
+          
             Reloader.safe_load(file, options)
             files.delete(file)
             loaded = true
@@ -159,14 +159,13 @@ module Padrino
             logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
           rescue Exception => fatal
             break
-          end
+          
         end
 
-        if fatal || !loaded
-          exception = fatal || error
-          logger.exception exception, :short
-          raise exception
-        end
+        next unless fatal || !loaded
+        exception = fatal || error
+        logger.exception exception, :short
+        raise exception
       end
     end
 
@@ -196,7 +195,7 @@ module Padrino
         "#{root}/lib/**/*.rb",
         "#{root}/models/**/*.rb",
         "#{root}/shared/**/*.rb",
-        "#{root}/config/apps.rb",
+        "#{root}/config/apps.rb"
       ]
     end
   end
