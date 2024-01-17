@@ -51,6 +51,8 @@ group :development do
   gem "mocha",    ">= 2.0"
   gem "minitest", ">= 4.0"
   gem 'rb-readline', '~> 0.4.2'
+  gem 'rubocop', '~> 1.6'
+  gem 'rubocop-minitest', '~>0.34.4'
 
   platforms :jruby do
     gem "jruby-openssl"
