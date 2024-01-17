@@ -50,8 +50,8 @@ group :development do
   gem "rack-test", ">= 0.6.3"
   gem "rake",      ">= 10.5.0"
   gem 'rb-readline', '~> 0.4.2'
-  gem 'rubocop', '~> 1.6'
-  gem 'rubocop-minitest', '~>0.34.4'
+  gem 'rubocop', '~> 1.6', :platforms => [:mri]
+  gem 'rubocop-minitest', '~>0.34.4', :platforms => [:mri]
   gem "yard",      ">= 0.7.2"
 
   platforms :jruby do
