@@ -2,7 +2,7 @@ def setup_script
   begin
     get('https://raw.github.com/padrino/padrino-static/master/js/jquery.js',  destination_root("/public/javascripts/jquery.js"))
     get('https://raw.github.com/padrino/padrino-static/master/ujs/jquery.js', destination_root("/public/javascripts/jquery-ujs.js"))
-  rescue
+  rescue StandardError
     copy_file('templates/static/js/jquery.js',  destination_root("/public/javascripts/jquery.js"))
     copy_file('templates/static/ujs/jquery.js', destination_root("/public/javascripts/jquery-ujs.js"))
   end

@@ -76,7 +76,7 @@ module Padrino
       #   include_component_module_for(:mock, 'rr')
       #
       def include_component_module_for(component, choice=nil)
-        choice = fetch_component_choice(component) unless choice
+        choice ||= fetch_component_choice(component)
         return false if choice.to_s == 'none'
         apply_component_for(choice, component)
       end
@@ -184,8 +184,8 @@ module Padrino
       def store_component_config(destination, opts = {})
         components = @_components || options
         create_file(destination, opts) do
-          self.class.component_types.inject({}) { |result, comp|
-            result[comp] = components[comp].to_s; result
+          self.class.component_types.each_with_object({}) { |comp, result|
+            result[comp] = components[comp].to_s; 
           }.to_yaml
         end
       end
@@ -216,7 +216,11 @@ module Padrino
       # Returns true if constant name already exists.
       #
       def already_exists?(name, project_name = nil)
-        project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
+        project_name = project_name ? begin
+                                        Object.const_get(project_name)
+                                      rescue StandardError
+                                        nil
+                                      end : nil
         Object.const_defined?(name) || (project_name && project_name.const_defined?(name))
       end
 
@@ -557,8 +561,8 @@ WARNING
         #   component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
         #
         def component_option(name, caption, options = {})
-          (@component_types   ||= []) << name # TODO use ordered hash and combine with choices below
-          (@available_choices ||= Hash.new)[name] = options[:choices]
+          (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
+          (@available_choices ||= {})[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
           class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
         end

@@ -1,4 +1,4 @@
-COUCHREST = (<<-COUCHREST) unless defined?(COUCHREST)
+COUCHREST = <<-COUCHREST unless defined?(COUCHREST)
 case Padrino.env
   when :development then db_name = '!NAME!_development'
   when :production  then db_name = '!NAME!_production'
@@ -28,7 +28,7 @@ def setup_orm
   create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @project_name.underscore))
 end
 
-CR_MODEL = (<<-MODEL) unless defined?(CR_MODEL)
+CR_MODEL = <<-MODEL unless defined?(CR_MODEL)
 class !NAME! < CouchRest::Model::Base
   unique_id :id
   # property <name>
@@ -40,7 +40,7 @@ MODEL
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(":") }
-  column_declarations = field_tuples.map { |field, kind| "property :#{field}" }.join("\n  ")
+  column_declarations = field_tuples.map { |field, _kind| "property :#{field}" }.join("\n  ")
   model_contents = CR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)

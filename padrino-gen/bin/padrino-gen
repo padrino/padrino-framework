@@ -2,11 +2,11 @@
 require 'padrino-core/cli/binstub'
 Padrino.replace_with_binstub('padrino-gen')
 
-padrino_gen_path = File.expand_path('../../lib', __FILE__)
+padrino_gen_path = File.expand_path('../lib', __dir__)
 $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)
 
 # We try to load the vendored padrino-core if exist (useful also for --dev mode)
-padrino_core_path = File.expand_path('../../../padrino-core/lib', __FILE__)
+padrino_core_path = File.expand_path('../../padrino-core/lib', __dir__)
 $:.unshift(padrino_core_path) if File.directory?(padrino_core_path) && !$:.include?(padrino_core_path)
 
 require 'padrino-gen'

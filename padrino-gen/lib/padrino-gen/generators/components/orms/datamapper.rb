@@ -1,4 +1,4 @@
-DM = (<<-DM) unless defined?(DM)
+DM = <<-DM unless defined?(DM)
 ##
 # A MySQL connection:
 # DataMapper.setup(:default, 'mysql://user:password@localhost/the_database_name')
@@ -59,7 +59,7 @@ MIDDLEWARE
 def setup_orm
   dm = DM
   db = @project_name.underscore
-  %w(
+  %w[
     dm-core
     dm-types
     dm-aggregates
@@ -67,7 +67,7 @@ def setup_orm
     dm-migrations
     dm-timestamps
     dm-validations
-  ).each { |dep| require_dependencies dep }
+  ].each { |dep| require_dependencies dep }
 
   begin
     case adapter ||= options[:adapter]
@@ -100,7 +100,7 @@ def setup_orm
   middleware :identity_map, IDENTITY_MAP_MIDDLEWARE
 end
 
-DM_MODEL = (<<-MODEL) unless defined?(DM_MODEL)
+DM_MODEL = <<-MODEL unless defined?(DM_MODEL)
 class !NAME!
   include DataMapper::Resource
 
@@ -121,7 +121,7 @@ def create_model_file(name, options={})
   create_file(model_path, model_contents)
 end
 
-DM_MIGRATION = (<<-MIGRATION) unless defined?(DM_MIGRATION)
+DM_MIGRATION = <<-MIGRATION unless defined?(DM_MIGRATION)
 migration !VERSION!, :!FILENAME! do
   up do
     !UP!
@@ -133,24 +133,24 @@ migration !VERSION!, :!FILENAME! do
 end
 MIGRATION
 
-DM_MODEL_UP_MG =  (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
+DM_MODEL_UP_MG =  <<-MIGRATION.gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
   column :id, Integer, :serial => true
   !FIELDS!
 end
 MIGRATION
 
-DM_MODEL_DOWN_MG =  (<<-MIGRATION) unless defined?(DM_MODEL_DOWN_MG)
+DM_MODEL_DOWN_MG =  <<-MIGRATION unless defined?(DM_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
+       :column_format => proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
-DM_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
+DM_CHANGE_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
 modify_table :!TABLE! do
   !COLUMNS!
 end
@@ -159,7 +159,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
-    :remove => Proc.new { |field, kind| "drop_column :#{field}" }
+    :add => proc { |field, kind| "add_column :#{field}, #{kind.classify}" },
+    :remove => proc { |field, _kind| "drop_column :#{field}" }
   )
 end

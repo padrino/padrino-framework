@@ -6,7 +6,7 @@ module Padrino
     class Model < Thor::Group
       Padrino::Generators.add_generator(:model, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen model [name] [fields]"; end
 
       include Thor::Actions

@@ -18,7 +18,7 @@ module Padrino
       # custom generators, so is necessary know who are.
       #
       def load_boot
-        begin
+        
           ENV['PADRINO_LOG_LEVEL'] ||= 'test'
           ENV['BUNDLE_GEMFILE'] = File.join(options[:root], 'Gemfile') if options[:root]
           boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
@@ -33,7 +33,7 @@ module Padrino
         ensure
           ENV.delete('BUNDLE_GEMFILE')
           ENV.delete('PADRINO_LOG_LEVEL')
-        end
+        
       end
 
       ##

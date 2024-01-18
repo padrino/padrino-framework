@@ -39,10 +39,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     def create_database(config)
-      begin
+      
         if config[:adapter] =~ /sqlite/
           if File.exist?(config[:database])
-            $stderr.puts "#{config[:database]} already exists."
+            warn "#{config[:database]} already exists."
           else
             begin
               # Create the SQLite database
@@ -58,21 +58,21 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.establish_connection(config)
           ActiveRecord::Base.connection
         end
-      rescue
+      rescue StandardError
         case config[:adapter]
         when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
           @charset   = ENV['CHARSET']   || 'utf8'
           @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
-          creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
+          creation_options = {:charset => config[:charset] || @charset, :collation => config[:collation] || @collation}
           begin
             ActiveRecord::Base.establish_connection(config.merge(:database => nil))
             ActiveRecord::Base.connection.create_database(config[:database], creation_options)
             ActiveRecord::Base.establish_connection(config)
           rescue StandardError => e
-            $stderr.puts *(e.backtrace)
-            $stderr.puts e.inspect
-            $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
-            $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
+            warn(*e.backtrace)
+            warn e.inspect
+            warn "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
+            warn "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
           end
         when 'postgresql'
           @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
@@ -85,8 +85,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           end
         end
       else
-        $stderr.puts "#{config[:database]} already exists"
-      end
+        warn "#{config[:database]} already exists"
+      
     end
 
     namespace :drop do
@@ -108,16 +108,16 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     desc "Drops the database for the current Padrino.env"
     task :drop => :skeleton do
       with_database(Padrino.env || :development) do |config|
-        begin
+        
           drop_database(config)
         rescue StandardError => e
           catch_error(:drop, e, config)
-        end
+        
       end
     end
 
     def local_database?(config, &block)
-      if %w( 127.0.0.1 localhost ).include?(config[:host]) || !config[:host]
+      if %w[ 127.0.0.1 localhost ].include?(config[:host]) || !config[:host]
         yield
       else
         puts "This task only modifies local databases. #{config[:database]} is on a remote host."
@@ -225,7 +225,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           pending_migrations.each do |pending_migration|
             puts '  %4d %s' % [pending_migration.version, pending_migration.name]
           end
-          abort %{Run "rake ar:migrate" to update your database then try again.}
+          abort %(Run "rake ar:migrate" to update your database then try again.)
         end
       end
     end
@@ -249,7 +249,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         if File.exist?(file)
           load(file)
         else
-          raise %{#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
+          raise %(#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded)
         end
       end
     end
@@ -260,7 +260,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         with_database(Padrino.env) do |config|
           case config[:adapter]
           when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
-            config = config.inject({}){|result, (key, value)| result[key.to_s] = value; result }
+            config = config.each_with_object({}){|(key, value), result| result[key.to_s] = value;  }
             ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
           when "postgresql"
             ENV['PGHOST']     = config[:host] if config[:host]
@@ -369,13 +369,13 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def catch_error(type, error, config)
-    $stderr.puts *(error.backtrace)
-    $stderr.puts error.inspect
+    warn(*error.backtrace)
+    warn error.inspect
     case type
     when :create
-      $stderr.puts "Couldn't create database for #{config.inspect}"
+      warn "Couldn't create database for #{config.inspect}"
     when :drop
-      $stderr.puts "Couldn't drop #{config[:database]}"
+      warn "Couldn't drop #{config[:database]}"
     end
   end
 
@@ -446,11 +446,9 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
   end
 
-  def with_all_databases
+  def with_all_databases(&block)
     if less_than_active_record_6_0?
-      ActiveRecord::Base.configurations.each_value do |config|
-        yield config
-      end
+      ActiveRecord::Base.configurations.each_value(&block)
     else
       ActiveRecord::Base.configurations.configs_for.each do |db_config|
         yield configuration_hash(db_config)

@@ -9,7 +9,7 @@ module Padrino
     class Project < Thor::Group
       Padrino::Generators.add_generator(:project, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen project [name] [options]"; end
 
       include Thor::Actions
@@ -44,7 +44,7 @@ module Padrino
       #
       def setup_project
         valid_constant? name
-        app = (options[:app] || "App")
+        app = options[:app] || "App"
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
 
@@ -67,7 +67,7 @@ module Padrino
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')
           template 'templates/project_bin.tt', destination_root("exe/#{name}")
-          File.chmod(0755, destination_root("exe/#{name}"))
+          File.chmod(0o755, destination_root("exe/#{name}"))
           if options.gem?
             template 'templates/gem/gemspec.tt', destination_root(name + '.gemspec')
             inject_into_file destination_root('Rakefile'), "require 'bundler/gem_tasks'\n", :after => "require 'bundler/setup'\n"
@@ -86,7 +86,7 @@ module Padrino
       #
       def setup_components
         return if options[:template]
-        @_components = options.class.new options.select{ |key,_| self.class.component_types.include?(key.to_sym) }
+        @_components = options.class.new(options.select{ |key,_| self.class.component_types.include?(key.to_sym) })
         self.class.component_types.each do |comp|
           choice = @_components[comp] = resolve_valid_choice(comp)
           execute_component_setup(comp, choice)
@@ -149,7 +149,11 @@ module Padrino
       # Returns the git author name config or a fill-in value.
       #
       def git_author_name
-        git_author_name = `git config user.name`.chomp rescue ''
+        git_author_name = begin
+                            `git config user.name`.chomp
+                          rescue StandardError
+                            ''
+                          end
         git_author_name.empty? ? "TODO: Write your name" : git_author_name
       end
 
@@ -157,7 +161,11 @@ module Padrino
       # Returns the git author email config or a fill-in value.
       #
       def git_author_email
-        git_author_email = `git config user.email`.chomp rescue ''
+        git_author_email = begin
+                             `git config user.email`.chomp
+                           rescue StandardError
+                             ''
+                           end
         git_author_email.empty? ? "TODO: Write your email address" : git_author_email
       end
     end

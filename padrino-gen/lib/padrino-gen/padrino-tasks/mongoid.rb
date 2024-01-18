@@ -17,11 +17,9 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         collection.db.collection(name)
       end
 
-      def enum_mongoid_documents(collection)
+      def enum_mongoid_documents(collection, &block)
         collection.find({}, :timeout => false, :sort => "_id") do |cursor|
-          cursor.each do |doc|
-            yield doc
-          end
+          cursor.each(&block)
         end
       end
 
@@ -42,10 +40,8 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         Mongoid.default_session[name]
       end
 
-      def enum_mongoid_documents(collection)
-        collection.find.sort(:_id => 1).each do |doc|
-          yield doc
-        end
+      def enum_mongoid_documents(collection, &block)
+        collection.find.sort(:_id => 1).each(&block)
       end
 
       def rename_mongoid_collection(collection, new_name)
@@ -75,7 +71,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
             documents << klass
           end
-        rescue => e
+        rescue StandardError => e
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end

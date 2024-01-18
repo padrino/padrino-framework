@@ -1,4 +1,4 @@
-MONGOID = (<<-MONGO) unless defined?(MONGOID)
+MONGOID = <<-MONGO unless defined?(MONGOID)
 # Connection.new takes host and port.
 
 host = 'localhost'
@@ -59,7 +59,7 @@ def setup_orm
   create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
-MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
+MONGOID_MODEL = <<-MODEL unless defined?(MONGOID_MODEL)
 class !NAME!
   include Mongoid::Document
   include Mongoid::Timestamps # adds created_at and updated_at fields

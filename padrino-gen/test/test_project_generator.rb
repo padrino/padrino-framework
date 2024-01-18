@@ -250,7 +250,7 @@ describe "ProjectGenerator" do
 
     describe "for sequel" do
       it 'should properly generate default' do
-        @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
+        @app.instance_eval("undef setup_orm if respond_to?('setup_orm')", __FILE__, __LINE__)
         out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=sequel', '--script=none') }
         assert_match(/applying.*?sequel.*?orm/, out)
         assert_match_in_file(/gem 'sequel'/, "#{@apptmp}/project.com/Gemfile")
@@ -611,7 +611,7 @@ describe "ProjectGenerator" do
     it 'should properly generate for compass' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=compass') }
       assert_match_in_file(/gem 'compass-blueprint'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Compass.configure_sass_plugin\!/, "#{@apptmp}/sample_project/config/initializers/compass.rb")
+      assert_match_in_file(/Compass.configure_sass_plugin!/, "#{@apptmp}/sample_project/config/initializers/compass.rb")
       assert_match_in_file(/module CompassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/compass.rb")
       assert_match_in_file(/register CompassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
 

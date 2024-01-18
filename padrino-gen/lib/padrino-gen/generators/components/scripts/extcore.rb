@@ -2,7 +2,7 @@ def setup_script
   begin
     get('https://raw.github.com/padrino/padrino-static/master/js/ext.js',  destination_root("/public/javascripts/ext.js"))
     get('https://raw.github.com/padrino/padrino-static/master/ujs/ext.js', destination_root("/public/javascripts/ext-ujs.js"))
-  rescue
+  rescue StandardError
     copy_file('templates/static/js/ext.js',  destination_root("/public/javascripts/ext.js"))
     copy_file('templates/static/ujs/ext.js', destination_root("/public/javascripts/ext-ujs.js"))
   end

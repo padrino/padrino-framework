@@ -1,7 +1,5 @@
 #!/usr/bin/env gem build
-# encoding: utf-8
-
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('../padrino-core/lib/padrino-core/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-gen"
@@ -22,8 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("bundler", ">= 1.0", "< 3")
+  s.add_dependency("padrino-core", Padrino.version)
   s.add_development_dependency("padrino-helpers", Padrino.version)
   s.add_development_dependency("padrino-mailer", Padrino.version)
 end

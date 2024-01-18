@@ -1,4 +1,4 @@
-TESTUNIT_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
+TESTUNIT_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -22,7 +22,7 @@ class Test::Unit::TestCase
 end
 TEST
 
-TESTUNIT_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTUNIT_RAKE)
+TESTUNIT_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_RAKE)
 require 'rake/testtask'
 
 test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
@@ -40,7 +40,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 task :default => :test
 TEST
 
-TESTUNIT_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
+TESTUNIT_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 class !NAME!ControllerTest < Test::Unit::TestCase
@@ -54,7 +54,7 @@ class !NAME!ControllerTest < Test::Unit::TestCase
 end
 TEST
 
-TESTUNIT_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_TEST)
+TESTUNIT_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 class !NAME!Test < Test::Unit::TestCase
@@ -65,7 +65,7 @@ class !NAME!Test < Test::Unit::TestCase
 end
 TEST
 
-TESTUNIT_HELPER_TEST = (<<-TEST) unless defined?(TESTUNIT_HELPER_TEST)
+TESTUNIT_HELPER_TEST = <<-TEST unless defined?(TESTUNIT_HELPER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 class !NAME!Test < Test::Unit::TestCase
