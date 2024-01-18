@@ -1,4 +1,3 @@
-#encoding: utf-8
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 class FooError < RuntimeError; end
@@ -67,7 +66,7 @@ describe "Routing" do
     post "/#{File.basename(__FILE__)}?status=422"
     assert_equal response.status, 422
     assert_equal File.size(__FILE__).to_s, response['Content-Length']
-    assert response.headers.include?('Last-Modified')
+    assert_includes response.headers, 'Last-Modified'
   end
 
   it 'should ignore trailing delimiters for basic route' do
@@ -146,12 +145,12 @@ describe "Routing" do
 
   it 'should accept regexp routes' do
     mock_app do
-      get(%r./fob|/baz.) { "regexp" }
+      get(%r{/fob|/baz}) { "regexp" }
       get("/foo")        { "str" }
-      get %r./([0-9]+)/. do |num|
+      get %r{/([0-9]+)/} do |num|
         "Your lucky number: #{num} #{params[:captures].first}"
       end
-      get %r./page/([0-9]+)|/. do |num|
+      get %r{/page/([0-9]+)|/} do |num|
         "My lucky number: #{num} #{params[:captures].first}"
       end
     end
@@ -169,7 +168,7 @@ describe "Routing" do
 
   it 'should ignore trailing slashes' do
     mock_app do
-      get(%r./trailing.) { "slash" }
+      get(%r{/trailing}) { "slash" }
     end
     get "/trailing"
     assert_equal "slash", body
@@ -306,7 +305,7 @@ describe "Routing" do
       post(:foo, '', :with => :id){ |id| "/#{id}" }
       delete(:drugs, :with => [:id, 'destroy']){ |id| "/drugs/#{id}/destroy" }
       delete(:drugs, '', :with => [:id, 'destroy']){ |id| "/#{id}/destroy" }
-      get(:splatter, "/splatter/*/*"){ |a, b| url(:splatter, :splat => ["123", "456"])  }
+      get(:splatter, "/splatter/*/*"){ |_a, _b| url(:splatter, :splat => ["123", "456"])  }
     end
     get "/foo"
     assert_equal "/foo", body
@@ -519,7 +518,7 @@ describe "Routing" do
 
   it 'should send the appropriate number of params' do
     mock_app do
-      get('/id/:user_id', :provides => [:json]) { |user_id, format| user_id}
+      get('/id/:user_id', :provides => [:json]) { |user_id, _format| user_id}
     end
     get '/id/5.json'
     assert_equal '5', body
@@ -766,7 +765,7 @@ describe "Routing" do
     assert_equal "js", body
     get "/b"
     assert_equal "any", body
-    # TODO randomly fails in minitest :(
+    # TODO: randomly fails in minitest :(
     # assert_raises(RuntimeError) { get "/b.foo" }
     get "/c"
     assert_equal 200, status
@@ -1009,7 +1008,7 @@ describe "Routing" do
         id
       end
 
-      get 'format/:id', :provides => [:json, :html] do |id, format|
+      get 'format/:id', :provides => [:json, :html] do |_id, format|
         format
       end
     end
@@ -1958,7 +1957,7 @@ describe "Routing" do
     counter = 0
 
     mock_app do
-      self.class.send(:define_method, :increment!) do |*args|
+      self.class.send(:define_method, :increment!) do |*_args|
         condition { counter += 1 }
       end
 
@@ -2142,7 +2141,7 @@ describe "Routing" do
     end
     get "/"
     assert_equal 404, status
-    assert_match /not found/, body
+    assert_match(/not found/, body)
   end
 
   it 'should render a custom 404 page using not_found' do
@@ -2246,7 +2245,7 @@ describe "Routing" do
       end
     end
     get "/say/hello/to/world"
-    assert_equal %Q[["hello", "world"]], body
+    assert_equal %(["hello", "world"]), body
   end
 
   it "should recognize the route containing splat params if path is ended with slash" do
@@ -2340,7 +2339,7 @@ describe "Routing" do
     env = Rack::MockRequest.env_for("/mock_sample")
     assert_equal :mock_sample, @app.router.recognize(env).first.name
     env = Rack::MockRequest.env_for("/invalid")
-    assert_equal [], @app.router.recognize(env)
+    assert_empty @app.router.recognize(env)
   end
 
   it "should be able to use params after sending request" do

@@ -66,7 +66,7 @@ describe Padrino::Flash do
     end
   end
 
-  routes = Proc.new do
+  routes = proc do
     get :index do
       params[:key] ? flash[params[:key].to_sym].to_s : flash.now.inspect
     end

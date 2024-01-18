@@ -92,7 +92,7 @@ describe "Mounter" do
     end
 
     it 'should raise error when app has no located file' do
-      # TODO enabling this screws minitest
+      # TODO: enabling this screws minitest
       # assert_raises(Padrino::Mounter::MounterException) { Padrino.mount("tester_app").to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
@@ -229,7 +229,7 @@ describe "Mounter" do
     it 'should not clobber the public setting when mounting an app' do
       class ::PublicApp < Padrino::Application
         set :root, "/root"
-        set :public_folder, File.expand_path(File.dirname(__FILE__))
+        set :public_folder, __dir__
       end
 
       Padrino.mount("public_app").to("/public")
@@ -269,7 +269,7 @@ describe "Mounter" do
       assert_equal "hello sinatra app", res.body
       res = Rack::MockRequest.new(app).get("/sinatra_app/static.html")
       assert_equal "hello static file\n", res.body
-      assert_equal [], RackApp.prerequisites
+      assert_empty RackApp.prerequisites
     end
 
     it 'should support the Rack Application with cascading style' do

@@ -26,7 +26,7 @@ describe "Dependencies" do
         end
       end
       assert_equal 1, D
-      assert_match /RuntimeError - SomeThing/, @io.string
+      assert_match(/RuntimeError - SomeThing/, @io.string)
     end
 
     it 'should resolve dependency problems' do
@@ -60,7 +60,7 @@ describe "Dependencies" do
           Padrino::Reloader.exclude << Padrino.root("fixtures/dependencies/linear/h.rb")
           Padrino.require_dependencies(
             Padrino.root("fixtures/dependencies/linear/h.rb"),
-            Padrino.root("fixtures/dependencies/linear/i.rb"),
+            Padrino.root("fixtures/dependencies/linear/i.rb")
           )
         end
       end
@@ -102,7 +102,7 @@ describe "Dependencies" do
         assert_equal "hello", RRR.hello
         assert_equal "hello", OOO.hello
         assert_equal "hello", RollbackTarget.hello
-        assert_match /Removed constant RollbackTarget from Object/, @io.string
+        assert_match(/Removed constant RollbackTarget from Object/, @io.string)
       end
     end
   end

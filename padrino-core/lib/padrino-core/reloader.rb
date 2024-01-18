@@ -24,7 +24,7 @@ module Padrino
     # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
     #
     def exclude
-      @_exclude ||= Set.new %w(test spec tmp features config public db).map{ |path| Padrino.root(path) }
+      @_exclude ||= Set.new(%w[test spec tmp features config public db].map{ |path| Padrino.root(path) })
     end
 
     ##

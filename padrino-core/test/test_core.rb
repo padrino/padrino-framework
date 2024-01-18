@@ -19,13 +19,13 @@ describe "Core" do
 
     it 'should validate global helpers' do
       assert_equal :test, Padrino.env
-      assert_match /\/test/, Padrino.root
+      assert_match(/\/test/, Padrino.root)
       assert Padrino.version
     end
 
     it 'should raise application error if I instantiate a new padrino application without mounted apps' do
       text = capture_io { Padrino.application }
-      assert_match /No apps are mounted/, text.to_s
+      assert_match(/No apps are mounted/, text.to_s)
     end
 
     it 'should check before/after padrino load hooks' do
@@ -46,7 +46,7 @@ describe "Core" do
         def call(env)
           status, headers, body = @app.call(env)
           headers["Middleware-Called"] = "yes"
-          return status, headers, body
+          [status, headers, body]
         end
       }
 
@@ -80,8 +80,8 @@ describe "Core" do
 
       get "/"
       assert_equal 500, status
-      assert body.include?("StandardError")
-      assert body.include?("<code>show_exceptions</code> setting")
+      assert_includes body, "StandardError"
+      assert_includes body, "<code>show_exceptions</code> setting"
     end
   end
 end

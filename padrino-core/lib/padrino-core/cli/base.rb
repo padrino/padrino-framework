@@ -16,7 +16,7 @@ module Padrino
         ARGV.clear
         ARGV.concat(args)
         puts "=> Executing Rake #{ARGV.join(' ')} ..."
-        load File.expand_path('../rake.rb', __FILE__)
+        load File.expand_path('rake.rb', __dir__)
         Rake.application.init
         Rake.application.instance_variable_set(:@rakefile, __FILE__)
         load File.expand_path('Rakefile')
@@ -27,10 +27,10 @@ module Padrino
       map "c" => :console
       def console(*args)
         prepare :console
-        require File.expand_path("../../version", __FILE__)
+        require File.expand_path('../version', __dir__)
         require File.expand_path('config/boot.rb')
         puts "=> Loading #{Padrino.env} console (Padrino v.#{Padrino.version})"
-        require File.expand_path('../console', __FILE__)
+        require File.expand_path('console', __dir__)
         ARGV.clear
         if defined? Pry
           Pry.start
@@ -47,18 +47,18 @@ module Padrino
       desc "generate", "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
       map ["gen", "g"] => :generate
       def generate(*args)
-        begin
+        
           # We try to load the vendored padrino-gen if exist
-          padrino_gen_path = File.expand_path('../../../../../padrino-gen/lib', __FILE__)
+          padrino_gen_path = File.expand_path('../../../../padrino-gen/lib', __dir__)
           $:.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$:.include?(padrino_gen_path)
           require 'padrino-core/command'
           require 'padrino-gen/command'
           ARGV.shift
           ARGV << 'help' if ARGV.empty?
           Padrino.bin_gen(*ARGV)
-        rescue
+        rescue StandardError
           puts "<= You need padrino-gen! Run: gem install padrino-gen"
-        end
+        
       end
 
       desc "version", "Show current Padrino version."

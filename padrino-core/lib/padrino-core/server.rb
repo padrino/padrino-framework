@@ -12,7 +12,6 @@ module Padrino
     Server.start(*detect_application(options))
   end
 
-  private
 
   #
   #
@@ -65,16 +64,11 @@ module Padrino
     end
 
     # The application the server will run.
-    def app
-      @app
-    end
+    attr_reader :app
     alias :wrapped_app :app
 
-    def options
-      @options
-    end
+    attr_reader :options
 
-    private
 
     # Detects the supported handler to use.
     #
@@ -83,11 +77,11 @@ module Padrino
     #
     def self.detect_rack_handler
       Handlers.each do |handler|
-        begin
+        
           return handler if Rack::Handler.get(handler.to_s.downcase)
         rescue LoadError
         rescue NameError
-        end
+        
       end
       fail "Server handler (#{Handlers.join(', ')}) not found."
     end
@@ -110,7 +104,7 @@ module Padrino
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge options.select{ |key| [:Host, :Port].include?(key) }
+      address = DEFAULT_ADDRESS.merge(options.select{ |key| [:Host, :Port].include?(key) })
       address[:Host] = options[:host] if options[:host]
       address[:Port] = options[:port] if options[:port]
       address

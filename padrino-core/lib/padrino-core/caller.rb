@@ -19,7 +19,7 @@ module Padrino
     %r{custom_require\.rb$},
     %r{active_support},
     %r{/thor},
-    %r{/lib/bundler},
+    %r{/lib/bundler}
   ] unless defined?(PADRINO_IGNORE_CALLERS)
 
   ##
@@ -27,7 +27,6 @@ module Padrino
   #
   PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
 
-  private
   ##
   # The filename for the file that is the direct caller (first caller).
   #
@@ -48,7 +47,7 @@ module Padrino
   def self.caller_files
     caller(1).
       map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
-      reject { |file,line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
-      map    { |file,line| file }
+      reject { |file,_line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
+      map    { |file,_line| file }
   end
 end

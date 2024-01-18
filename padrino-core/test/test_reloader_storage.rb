@@ -22,7 +22,7 @@ describe "Padrino::Reloader::Storage" do
 
       assert_equal (klasses.size > 1), true
       klasses.each do |klass|
-        assert_match /^Padrino::/, klass.to_s
+        assert_match(/^Padrino::/, klass.to_s)
       end
     end
   end

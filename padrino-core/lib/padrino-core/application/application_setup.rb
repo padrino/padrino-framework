@@ -95,7 +95,7 @@ module Padrino
           '/models.rb',
           '/models/**/*.rb',
           '/lib.rb',
-          '/lib/**/*.rb',
+          '/lib/**/*.rb'
         ].map{ |glob| File.join(settings.root, glob) }
       end
 

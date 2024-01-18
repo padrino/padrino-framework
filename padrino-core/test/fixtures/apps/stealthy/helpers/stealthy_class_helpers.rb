@@ -5,8 +5,7 @@ class Boo
 end
 
 class Woo < Boo
-  def poo
-  end
+  def poo; end
 end
 
 class Soo < Boo
