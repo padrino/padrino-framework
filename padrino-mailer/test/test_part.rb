@@ -90,7 +90,7 @@ describe "Part" do
         render  'multipart/basic'
       end
 
-      assert_match /^multipart\/alternative/, message['content-type'].value
+      assert_match(/^multipart\/alternative/, message['content-type'].value)
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
       assert_equal 'plain text', message.parts[0].body.decoded.chomp

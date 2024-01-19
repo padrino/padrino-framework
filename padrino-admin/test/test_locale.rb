@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Filters" do
-  Dir[File.expand_path("../../lib/padrino-admin/locale/admin/*.yml", __FILE__)].each do |file|
+  Dir[File.expand_path('../lib/padrino-admin/locale/admin/*.yml', __dir__)].each do |file|
     name = File.basename(file, '.yml')
     it "should have a vaild #{name} locale for admin" do
       base = YAML.load_file(file)

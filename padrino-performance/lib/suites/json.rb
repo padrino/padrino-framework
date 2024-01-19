@@ -31,17 +31,17 @@ unneccessary memory overhead at should be avoided. Consult the
 following call stacks to see who loaded the offending libraries
 and contact the authors if necessary:"
 WARN
-          loaded_libs.each do |name, stack|
-            $stderr.puts "=================="
-            $stderr.puts "libname: " + name
-            $stderr.puts "=================="
-            $stderr.puts caller
+          loaded_libs.each do |name, _stack|
+            warn "=================="
+            warn "libname: " + name
+            warn "=================="
+            warn caller
           end
         end
       end
 
       def self.infect_require!
-        Object.send(:include, InfectedRequire)
+        Object.include InfectedRequire
       end
 
       infect_require!

@@ -1,9 +1,9 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 
 describe "PadrinoCache" do
   after do
-    tmp = File.expand_path("../tmp", __FILE__)
-    %x[rm -rf #{tmp}]
+    tmp = File.expand_path('tmp', __dir__)
+    `rm -rf #{tmp}`
   end
 
   it 'should cache a fragment' do
@@ -394,7 +394,7 @@ describe "PadrinoCache" do
     assert_equal '{"foo":"bar"}', @app.cache[:foo][:body]
     get "/foo"
     assert_equal '{"foo":"bar"}', body
-    assert_match /json/, last_response.content_type
+    assert_match(/json/, last_response.content_type)
   end
 
   it 'should cache an object' do
@@ -474,9 +474,7 @@ describe "PadrinoCache" do
     end
 
     adapter = @app.cache.adapter
-    while adapter.respond_to? :adapter
-      adapter = adapter.adapter
-    end
+    adapter = adapter.adapter while adapter.respond_to? :adapter
     assert_kind_of Moneta::Adapters::Memory, adapter
   end
 

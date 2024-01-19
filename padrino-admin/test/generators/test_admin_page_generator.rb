@@ -56,7 +56,7 @@ describe "AdminPageGenerator" do
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.haml"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/index.haml"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/new.haml"
-        %w(name age email).each do |field|
+        %w[name age email].each do |field|
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
         end
@@ -72,7 +72,7 @@ describe "AdminPageGenerator" do
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.erb"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/index.erb"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/new.erb"
-        %w(name age email).each do |field|
+        %w[name age email].each do |field|
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.erb"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.erb"
         end
@@ -88,7 +88,7 @@ describe "AdminPageGenerator" do
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.slim"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/index.slim"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/new.slim"
-        %w(name age email).each do |field|
+        %w[name age email].each do |field|
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
         end
@@ -108,7 +108,7 @@ describe "AdminPageGenerator" do
       assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.haml"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/index.haml"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/new.haml"
-      %w(name age email).each do |field|
+      %w[name age email].each do |field|
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
       end
@@ -119,7 +119,7 @@ describe "AdminPageGenerator" do
       assert_file_exists "#{@apptmp}/sample_project/admin/views/pages/edit.haml"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/pages/index.haml"
       assert_file_exists "#{@apptmp}/sample_project/admin/views/pages/new.haml"
-      %w(name body).each do |field|
+      %w[name body].each do |field|
         assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
         assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/pages/_form.haml"
       end

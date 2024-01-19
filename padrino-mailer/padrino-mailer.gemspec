@@ -1,7 +1,5 @@
 #!/usr/bin/env gem build
-# encoding: utf-8
-
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('../padrino-core/lib/padrino-core/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-mailer"
@@ -22,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
-  s.add_dependency("padrino-core", Padrino.version)
-  s.add_dependency("mime-types", "< 4")
   s.add_dependency("mail", "~> 2.5")
+  s.add_dependency("mime-types", "< 4")
+  s.add_dependency("padrino-core", Padrino.version)
 end

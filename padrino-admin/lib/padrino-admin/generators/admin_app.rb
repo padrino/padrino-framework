@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 module Padrino
   module Generators
     ##
@@ -10,7 +9,7 @@ module Padrino
       Padrino::Generators.add_generator(:admin, self)
 
       # Define the source template root
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
 
@@ -22,9 +21,9 @@ module Padrino
       # Look for custom template files in a generators folder under the project root.
       def source_paths
         if File.exist? destination_root('generators', 'templates')
-          ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+          ["#{destination_root('generators')}", __dir__]
         else
-          [File.expand_path(File.dirname(__FILE__))]
+          [__dir__]
         end
       end
 
@@ -106,7 +105,7 @@ module Padrino
             admin_app.invoke_all
           end
 
-          # TODO See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
+          # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
           template "templates/account/#{orm}.rb.tt", destination_root("models", "#{@model_singular}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))

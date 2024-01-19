@@ -16,7 +16,7 @@ module Padrino
       end
 
       def self.linux?
-        self.unix? and not self.mac?
+        self.unix? and !self.mac?
       end
     end
   end

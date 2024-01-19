@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
 describe "Padrino Performance OS Module" do
-  WINDOWS_RELATED_SYSTEMS = %w(cygwin mswin mingw bccwin wince emx)
+  WINDOWS_RELATED_SYSTEMS = %w[cygwin mswin mingw bccwin wince emx]
 
   describe "#windows?" do
     it 'should return false if OS is now windows' do

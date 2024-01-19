@@ -12,7 +12,11 @@ module Padrino
         # Tell us which orm we are using.
         #
         def orm
-          fetch_component_choice(:orm).to_sym rescue :activerecord
+          
+            fetch_component_choice(:orm).to_sym
+          rescue StandardError
+            :activerecord
+          
         end
         alias :adapter :orm
 
@@ -20,7 +24,11 @@ module Padrino
         # Tell us which rendering engine you are using.
         #
         def ext
-          fetch_component_choice(:admin_renderer).to_sym rescue :haml
+          
+            fetch_component_choice(:admin_renderer).to_sym
+          rescue StandardError
+            :haml
+          
         end
 
         ##

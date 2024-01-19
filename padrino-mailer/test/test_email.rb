@@ -141,7 +141,7 @@ describe "Email" do
       assert_equal ['padrino@you.com'],   email.to
       assert_equal 'Hello there Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
-      assert_match /TestMailer/, email.delivery_method.to_s
+      assert_match(/TestMailer/, email.delivery_method.to_s)
     end
 
     it 'should raise an error if there are two messages with the same name' do

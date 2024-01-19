@@ -1,7 +1,5 @@
 #!/usr/bin/env gem build
-# encoding: utf-8
-
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('../padrino-core/lib/padrino-core/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-admin"
@@ -24,6 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency("padrino-core", Padrino.version)
   s.add_dependency("padrino-helpers", Padrino.version)
-  s.add_development_dependency("therubyracer", "~> 0.11.1")
   s.add_development_dependency("less", "~> 2.2.2")
+  s.add_development_dependency("therubyracer", "~> 0.11.1")
 end

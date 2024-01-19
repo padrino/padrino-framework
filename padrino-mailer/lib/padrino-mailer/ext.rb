@@ -242,7 +242,11 @@ module Mail # @private
     # See Padrino::Mailer::Mime for more usage informations.
     #
     def content_type_with_symbol(value=nil)
-      value = Padrino::Mailer::Mime::MIME_TYPES.find { |k,v| v == value }[0] rescue value if value.is_a?(Symbol)
+      value = begin
+                Padrino::Mailer::Mime::MIME_TYPES.find { |_k,v| v == value }[0]
+              rescue StandardError
+                value
+              end if value.is_a?(Symbol)
       mime = content_type_without_symbol(value)
       Padrino::Mailer::Mime.mime_type(mime)
     end

@@ -1,7 +1,5 @@
 #!/usr/bin/env gem build
-# encoding: utf-8
-
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('../padrino-core/lib/padrino-core/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-cache"
@@ -22,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options  = ["--charset=UTF-8"]
 
+  s.add_runtime_dependency("moneta", ["~> 1.1.0"])
   s.add_runtime_dependency("padrino-core", Padrino.version)
   s.add_runtime_dependency("padrino-helpers", Padrino.version)
-  s.add_runtime_dependency("moneta", ["~> 1.1.0"])
 end

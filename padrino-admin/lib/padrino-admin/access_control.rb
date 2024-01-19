@@ -61,7 +61,11 @@ module Padrino
         # Return an array of project_modules.
         #
         def project_modules(account)
-          role = account.role.to_sym rescue :any
+          role = begin
+                   account.role.to_sym
+                 rescue StandardError
+                   :any
+                 end
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(role) }
           authorizations.flat_map(&:project_modules).uniq
         end
@@ -103,7 +107,11 @@ module Padrino
         #
         def allowed?(account=nil, path=nil)
           path = "/" if path.nil? || path.empty?
-          role = account.role.to_sym rescue nil
+          role = begin
+                   account.role.to_sym
+                 rescue StandardError
+                   nil
+                 end
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
           denied_paths   = authorizations.map(&:denied).flatten.uniq

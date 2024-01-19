@@ -73,7 +73,11 @@ class Account < Sequel::Model
   # Replace ActiveRecord method.
   #
   def self.find_by_id(id)
-    self[id] rescue nil
+    
+      self[id]
+    rescue StandardError
+      nil
+    
   end
 end
 
@@ -83,7 +87,7 @@ admin  = Account.create(:name => "DAddYE", :role => "admin",  :email => "d.dagos
 editor = Account.create(:name => "Dexter", :role => "editor", :email => "editor@lipsiasoft.com",
                         :password => "some", :password_confirmation => "some")
 
-%w(News Press HowTo).each do |c|
+%w[News Press HowTo].each do |c|
   admin.add_section(:name => c)
   editor.add_section(:name => c)
 end

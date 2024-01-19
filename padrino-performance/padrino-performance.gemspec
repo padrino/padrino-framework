@@ -1,7 +1,5 @@
 #!/usr/bin/env gem build
-# encoding: utf-8
-
-require File.expand_path("../lib/padrino-performance/version.rb", __FILE__)
+require File.expand_path('lib/padrino-performance/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-performance"
