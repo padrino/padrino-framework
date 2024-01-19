@@ -30,7 +30,8 @@ workflows:
               # only supports the last three ruby versions
               ruby-version:
                 - "ruby:2.7.5"
-                - "ruby:3.0.3"
+                - "ruby:3.2.2"
+                - "ruby:3.3.0"
                 - "jruby:9.3.3.0"
   build-and-test-latest:
     jobs:
