@@ -42,7 +42,6 @@ group :development do
   end
 
   gem "builder",    ">= 2.1.2"
-  gem "webmock", ">= 0"
   gem "minitest", ">= 4.0"
   gem "mocha",    ">= 2.0"
   gem "oga",       ">= 2.5", "< 3"
@@ -52,6 +51,7 @@ group :development do
   gem 'rb-readline', '~> 0.4.2'
   gem 'rubocop', '~> 1.6', :platforms => [:mri]
   gem 'rubocop-minitest', '~>0.34.4', :platforms => [:mri]
+  gem "webmock", "~> 3.19"
   gem "yard",      ">= 0.7.2"
 
   platforms :jruby do
