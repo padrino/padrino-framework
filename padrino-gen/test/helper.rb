@@ -1,7 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'rack/test'
-require 'fakeweb'
 require 'thor/group'
 require 'padrino-gen'
 require 'padrino-core'
@@ -9,8 +8,10 @@ require 'padrino-mailer'
 require 'padrino-helpers'
 
 require 'ext/minitest-spec'
-require 'ext/fakeweb-ruby24'
 require 'mocha/minitest'
+require 'webmock/minitest'
+
+# include WebMock::API
 
 Padrino::Generators.load_components!
 
@@ -24,7 +25,7 @@ fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
   js/right.js ujs/right.js
   js/protopak.js js/lowpro.js ujs/prototype.js
 ].each do |suffix|
-  FakeWeb.register_uri(:get, fake_uri_base + suffix, :body => '')
+  WebMock::API.stub_request(:get, fake_uri_base + suffix)
 end
 
 class Minitest::Spec

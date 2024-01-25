@@ -43,6 +43,7 @@ group :development do
 
   gem "builder",    ">= 2.1.2"
   gem "fakeweb",   ">= 1.2.8"
+  gem "webmock", ">= 0"
   gem "minitest", ">= 4.0"
   gem "mocha",    ">= 2.0"
   gem "oga",       ">= 2.5", "< 3"
