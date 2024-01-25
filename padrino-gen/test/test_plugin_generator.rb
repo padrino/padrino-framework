@@ -12,22 +12,22 @@ describe "PluginGenerator" do
 
   describe "the plugin generator" do
     it 'should respect --root option' do
-      path = File.expand_path('../fixtures/plugin_template.rb', __FILE__)
+      path = File.expand_path('fixtures/plugin_template.rb', __dir__)
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      out, err = capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
-      refute_match /You are not at the root/, out
+      out, _err = capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
+      refute_match(/You are not at the root/, out)
     end
   end
 
   describe "the plugin destroy option" do
     it 'should remove the plugin instance' do
-      path = File.expand_path('../fixtures/plugin_template.rb', __FILE__)
+      path = File.expand_path('fixtures/plugin_template.rb', __dir__)
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/lib/hoptoad_initializer.rb")
-      assert_no_match_in_file(/enable \:raise_errors/,"#{@apptmp}/sample_project/app/app.rb")
-      assert_no_match_in_file(/rack\_hoptoad/, "#{@apptmp}/sample_project/Gemfile")
+      assert_no_match_in_file(/enable :raise_errors/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_no_match_in_file(/rack_hoptoad/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
 
@@ -124,7 +124,7 @@ describe "PluginGenerator" do
   describe "with git commands" do
     it 'should generate a repository correctly' do
       skip 'Change stubs here'
-      expects_generated_project :test => :rspec, :orm => :activerecord, :name => 'sample_git', :root => "#{@apptmp}"
+      expects_generated_project :test => :rspec, :orm => :activerecord, :name => 'sample_git', :root => @apptmp.to_s
       expects_git :init, :root => "#{@apptmp}/sample_git"
       expects_git :add, :arguments => '.', :root => "#{@apptmp}/sample_git"
       expects_git :commit, :arguments => 'hello', :root => "#{@apptmp}/sample_git"
@@ -135,7 +135,7 @@ describe "PluginGenerator" do
 
   describe "with rake invocations" do
     it 'should Run rake task and list tasks' do
-      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_rake', :root => "#{@apptmp}"
+      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_rake', :root => @apptmp.to_s
       expects_rake "custom", :root => "#{@apptmp}/sample_rake"
       rake_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'rake_template.rb')
       capture_io { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
@@ -144,7 +144,7 @@ describe "PluginGenerator" do
 
   describe "with admin commands" do
     it 'should generate correctly an admin' do
-      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_admin', :root => "#{@apptmp}"
+      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_admin', :root => @apptmp.to_s
       expects_generated :model, "post title:string body:text -r=#{@apptmp}/sample_admin"
       expects_rake "ar:create", :root => "#{@apptmp}/sample_admin"
       expects_generated :admin, "-r=#{@apptmp}/sample_admin"
