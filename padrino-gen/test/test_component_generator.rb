@@ -5,6 +5,7 @@ describe "ComponentGenerator" do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
+    stub_static_files
   end
 
   def teardown

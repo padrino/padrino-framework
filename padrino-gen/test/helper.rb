@@ -11,28 +11,35 @@ require 'ext/minitest-spec'
 require 'mocha/minitest'
 require 'webmock/minitest'
 
-# include WebMock::API
-
 Padrino::Generators.load_components!
-
-# register fake URL to avoid downloading static files every time tests run
-fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
-%W[
-  js/dojo.js ujs/dojo.js
-  js/ext.js ujs/ext.js
-  js/jquery.js ujs/jquery.js
-  js/mootools.js ujs/mootools.js
-  js/right.js ujs/right.js
-  js/protopak.js js/lowpro.js ujs/prototype.js
-].each do |suffix|
-  WebMock::API.stub_request(:get, fake_uri_base + suffix)
-end
 
 class Minitest::Spec
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
     return time
+  end
+
+  def stub_static_files
+    # register fake URL to avoid downloading static files every time tests run
+    fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
+    %W[
+      js/dojo.js
+      js/ext.js
+      js/jquery.js
+      js/lowpro.js
+      js/mootools.js
+      js/protopak.js
+      js/right.js
+      ujs/dojo.js
+      ujs/ext.js
+      ujs/jquery.js
+      ujs/mootools.js
+      ujs/prototype.js
+      ujs/right.js
+    ].each do |suffix|
+      WebMock::API.stub_request(:get, fake_uri_base + suffix)
+    end
   end
 
   # generate(:controller, 'DemoItems', '-r=/tmp/sample_project')
