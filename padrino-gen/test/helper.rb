@@ -1,7 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'rack/test'
-require 'fakeweb'
 require 'thor/group'
 require 'padrino-gen'
 require 'padrino-core'
@@ -9,29 +8,38 @@ require 'padrino-mailer'
 require 'padrino-helpers'
 
 require 'ext/minitest-spec'
-require 'ext/fakeweb-ruby24'
 require 'mocha/minitest'
+require 'webmock/minitest'
 
 Padrino::Generators.load_components!
-
-# register fake URL to avoid downloading static files every time tests run
-fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
-%W[
-  js/dojo.js ujs/dojo.js
-  js/ext.js ujs/ext.js
-  js/jquery.js ujs/jquery.js
-  js/mootools.js ujs/mootools.js
-  js/right.js ujs/right.js
-  js/protopak.js js/lowpro.js ujs/prototype.js
-].each do |suffix|
-  FakeWeb.register_uri(:get, fake_uri_base + suffix, :body => '')
-end
 
 class Minitest::Spec
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
-    return time
+    time
+  end
+
+  def stub_static_files
+    # register fake URL to avoid downloading static files every time tests run
+    fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
+    %w[
+      js/dojo.js
+      js/ext.js
+      js/jquery.js
+      js/lowpro.js
+      js/mootools.js
+      js/protopak.js
+      js/right.js
+      ujs/dojo.js
+      ujs/ext.js
+      ujs/jquery.js
+      ujs/mootools.js
+      ujs/prototype.js
+      ujs/right.js
+    ].each do |suffix|
+      WebMock::API.stub_request(:get, fake_uri_base + suffix)
+    end
   end
 
   # generate(:controller, 'DemoItems', '-r=/tmp/sample_project')
@@ -44,7 +52,7 @@ class Minitest::Spec
   def generate_with_parts(name, *params)
     features, constants = [$", Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
 
-    if root = params.find{|x| x.index(/\-r=|\-\-root=/) }
+    if root = params.find{|x| x.index(/-r=|--root=/) }
       root = root.split(/=/)[1]
       options, model_path = {}, File.expand_path(File.join(root, "/models/**/*.rb"))
       options = params.pop if params.last.is_a?(Hash)
@@ -69,7 +77,7 @@ class Minitest::Spec
     options = options.dup
     project_root = options.delete(:root)
     project_name = options.delete(:name)
-    components = options.sort_by{ |k, v| k.to_s }.map{ |component, value| "--#{component}=#{value}" }
+    components = options.sort_by{ |k, _v| k.to_s }.map{ |component, value| "--#{component}=#{value}" }
     params = [project_name, *components].push("-r=#{project_root}")
     Padrino.expects(:bin_gen).with(*params.unshift('project')).returns(true)
   end

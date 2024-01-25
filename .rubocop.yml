@@ -24,6 +24,8 @@ Style/BlockDelimiters:
   Enabled: false
 Style/CharacterLiteral:
   Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
 Style/ClassCheck:
   Enabled: false
 Style/ClassVars:
