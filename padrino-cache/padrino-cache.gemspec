@@ -24,5 +24,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency("padrino-core", Padrino.version)
   s.add_runtime_dependency("padrino-helpers", Padrino.version)
-  s.add_runtime_dependency("moneta", ["~> 1.6.0"])
+  s.add_runtime_dependency("moneta", ["~> 1.6"])
 end
