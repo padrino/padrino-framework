@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.rdoc_options  = ["--charset=UTF-8"]
 
   s.add_dependency("padrino-support", Padrino.version)
-  s.add_dependency("sinatra", ">= 2.2.4")
+  s.add_dependency("sinatra", "~> 4")
   s.add_dependency("thor", "~> 1.0")
 end
