@@ -134,7 +134,7 @@ module Padrino
         configure :production do
           error ::Exception do
             logger.exception env['sinatra.error']
-            halt(500, { 'Content-Type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
+            halt(500, { 'content-type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
           end unless errors.has_key?(::Exception)
         end
       end

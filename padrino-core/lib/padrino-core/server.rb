@@ -30,7 +30,7 @@ module Padrino
   ##
   # This module builds a Padrino server to run the project based on available handlers.
   #
-  class Server < Rack::Server
+  class Server < Rackup::Server
     DEFAULT_ADDRESS = { :Host => '127.0.0.1', :Port => 3000 }
 
     # Server Handlers

@@ -91,7 +91,7 @@ module Padrino
         env['SCRIPT_NAME'] = script_name
         env['PATH_INFO'] = path_info
         Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
-        [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{path_info}"]]
+        [404, {"content-type" => "text/plain", "x-cascade" => "pass"}, ["Not Found: #{path_info}"]]
       end
     end
   end
