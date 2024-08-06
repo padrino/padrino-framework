@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.16.0.pre (2024-08-06)
+== 0.16.0.pre2 (2024-08-06)
 
 - FIX #2292 to README and cleanup (@olleolleolle)
 - FIX 2290 Fixes nil error with latest Rack (@nesquena)
