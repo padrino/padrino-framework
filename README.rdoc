@@ -5,7 +5,7 @@ Padrino is the godfather of Sinatra. Follow us on
 {www.padrinorb.com}[http://padrinorb.com] and on twitter
 {@padrinorb}[http://twitter.com/padrinorb]. Join us on {gitter}[https://gitter.im/padrino/padrino-framework]
 
-{rdoc-image:https://circleci.com/gh/padrino/padrino-framework/tree/master.svg?style=svg}[https://app.circleci.com/pipelines/github/padrino/padrino-framework]
+{rdoc-image:https://github.com/padrino/padrino-framework/actions/workflows/ci.yml/badge.svg?branch=master}[https://github.com/padrino/padrino-framework/actions/workflows/ci.yml]
 {rdoc-image:https://api.codeclimate.com/v1/badges/900d6e424498f0e2b7ff/maintainability}[https://codeclimate.com/github/padrino/padrino-framework/maintainability]
 {rdoc-image:https://badges.gitter.im/Join Chat.svg}[https://gitter.im/padrino/padrino-framework]
 {rdoc-image:https://www.codetriage.com/padrino/padrino-framework/badges/users.svg}[https://www.codetriage.com/padrino/padrino-framework]
