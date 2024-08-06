@@ -1,4 +1,5 @@
 # rake bump[X.X.X] && rake publish
+
 require 'fileutils'
 require 'rake'
 require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)

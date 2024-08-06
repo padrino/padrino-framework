@@ -1,5 +1,16 @@
 = CHANGES
 
+== 0.16.0.pre (2024-08-06)
+
+- FIX #2292 to README and cleanup (@olleolleolle)
+- FIX 2290 Fixes nil error with latest Rack (@nesquena)
+- FIX #2287 Bump to rack ~>3 and add rack to gemspec (@achirizo)
+- FIX #2286 Bump moneta to 1.6 (@achirizo)
+- FIX #2282 Remove FakeWeb, use Webmock (@achiurizo)
+- NEW #2279 Initial Rubocop setup (@achiurizo)
+- FIX #2277 Upgrade deprecations and support Ruby 3.2 (@achiurizo)
+- FIX #2276 Rename MiniTest to Minitest (@kevin-j-m)
+
 == 0.15.3 (2023-02-25)
 
 - FIX #2266 Update ORM generator for ActiveRecord changes (@jkowens)
