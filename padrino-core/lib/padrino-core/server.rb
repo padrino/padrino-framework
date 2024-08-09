@@ -77,11 +77,9 @@ module Padrino
     #
     def self.detect_rack_handler
       Handlers.each do |handler|
-        
-          return handler if Rack::Handler.get(handler.to_s.downcase)
-        rescue LoadError
-        rescue NameError
-        
+        return handler if Rackup::Handler.get(handler.to_s.downcase)
+      rescue LoadError, NameError
+        # Ignored
       end
       fail "Server handler (#{Handlers.join(', ')}) not found."
     end
