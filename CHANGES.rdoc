@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.16.0.pre3 (2024-08-09)
+
+- FIX #2294 Make `detect_rack_handler` compatible with Rack 3 (@osbre)
+
 == 0.16.0.pre2 (2024-08-06)
 
 - FIX #2292 to README and cleanup (@olleolleolle)
