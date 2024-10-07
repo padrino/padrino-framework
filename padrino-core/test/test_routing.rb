@@ -537,7 +537,7 @@ describe "Routing" do
       get("/foo", :provides => [:html, :js, :xml]) { content_type.to_s }
     end
 
-    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
   end
 
@@ -556,7 +556,7 @@ describe "Routing" do
     end
 
     get "/a", {}, {}
-    assert_equal "application/javascript;charset=utf-8", content_type
+    assert_equal "text/javascript;charset=utf-8", content_type
   end
 
   it 'should not match routes if url_format and http_accept is provided but not included' do
@@ -794,7 +794,7 @@ describe "Routing" do
     end
     get "/a.js"
     assert_equal "js", body
-    assert_equal 'application/javascript;charset=utf-8', response["Content-Type"]
+    assert_equal 'text/javascript;charset=utf-8', response["Content-Type"]
     get "/a.json"
     assert_equal "json", body
     assert_equal 'application/json', response["Content-Type"]
@@ -1324,9 +1324,9 @@ describe "Routing" do
       end
     end
 
-    get '/foo', {}, { 'CONTENT_TYPE' => 'application/javascript' }
+    get '/foo', {}, { 'CONTENT_TYPE' => 'text/javascript' }
     assert ok?
-    assert_equal 'application/javascript', body
+    assert_equal 'text/javascript', body
   end
 
   it 'should filters by accept header' do
@@ -1345,14 +1345,14 @@ describe "Routing" do
     assert ok?
     assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
 
-    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript' }
     assert ok?
-    assert_equal 'application/javascript', body
-    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+    assert_equal 'text/javascript', body
+    assert_equal 'text/javascript;charset=utf-8', response.headers['Content-Type']
 
     get '/foo.js'
     assert ok?
-    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+    assert_equal 'text/javascript;charset=utf-8', response.headers['Content-Type']
 
     get '/foo', {}, { "HTTP_ACCEPT" => 'text/html' }
     assert_equal 406, status
@@ -1433,11 +1433,11 @@ describe "Routing" do
     assert_equal 'html', body
   end
 
-  it 'should set content_type to :js if Accept includes both application/javascript and */*;q=0.5' do
+  it 'should set content_type to :js if Accept includes both text/javascript and */*;q=0.5' do
     mock_app do
       get("/foo", :provides => [:html, :js]) { content_type.to_s }
     end
-    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
   end
 
@@ -1450,12 +1450,12 @@ describe "Routing" do
     assert_equal 'html', body
   end
 
-  it 'should set content_type to :js if Accept includes both application/javascript, */*;q=0.5 and provides of :any' do
+  it 'should set content_type to :js if Accept includes both text/javascript, */*;q=0.5 and provides of :any' do
     mock_app do
       get("/foo", :provides => :any) { content_type.to_s }
     end
 
-    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript, */*;q=0.5' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
   end
 

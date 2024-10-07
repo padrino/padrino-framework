@@ -17,14 +17,14 @@ describe "Filters" do
     assert ok?
     assert_equal 'application/xml;charset=utf-8', response.headers['Content-Type']
 
-    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/javascript' }
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript' }
     assert ok?
-    assert_equal 'application/javascript', body
-    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+    assert_equal 'text/javascript', body
+    assert_equal 'text/javascript;charset=utf-8', response.headers['Content-Type']
 
     get '/foo.js'
     assert ok?
-    assert_equal 'application/javascript;charset=utf-8', response.headers['Content-Type']
+    assert_equal 'text/javascript;charset=utf-8', response.headers['Content-Type']
 
     get '/foo', {}, { "HTTP_ACCEPT" => 'text/html' }
     assert_equal 406, status
