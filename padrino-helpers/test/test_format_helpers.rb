@@ -31,7 +31,7 @@ describe "FormatHelpers" do
 
     it 'should escape html tags' do
       actual_text = simple_format("Will you escape <b>that</b>?")
-      assert_equal "<p>Will you escape &lt;b&gt;that&lt;&#x2F;b&gt;?</p>", actual_text
+      assert_equal "<p>Will you escape &lt;b&gt;that&lt;/b&gt;?</p>", actual_text
     end
 
     it 'should support already sanitized text' do
@@ -118,18 +118,18 @@ describe "FormatHelpers" do
 
   describe 'for #h and #h! method' do
     it 'should escape the simple html' do
-      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h('<h1>hello</h1>')
-      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', escape_html('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', escape_html('<h1>hello</h1>')
     end
     it 'should escape all brackets, quotes and ampersands' do
-      assert_equal '&lt;h1&gt;&lt;&gt;&quot;&amp;demo&amp;&quot;&lt;&gt;&lt;&#x2F;h1&gt;', h('<h1><>"&demo&"<></h1>')
+      assert_equal '&lt;h1&gt;&lt;&gt;&quot;&amp;demo&amp;&quot;&lt;&gt;&lt;/h1&gt;', h('<h1><>"&demo&"<></h1>')
     end
     it 'should return default text if text is empty' do
       assert_equal 'default', h!("", "default")
       assert_equal '&nbsp;', h!("")
     end
     it 'should return text escaped if not empty' do
-      assert_equal '&lt;h1&gt;hello&lt;&#x2F;h1&gt;', h!('<h1>hello</h1>')
+      assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h!('<h1>hello</h1>')
     end
     it 'should mark escaped text as safe' do
       assert_equal false, '<h1>hello</h1>'.html_safe?
