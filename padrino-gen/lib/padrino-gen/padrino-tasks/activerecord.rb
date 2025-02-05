@@ -409,7 +409,11 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def dump_schema
-    Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+    if less_than_active_record_7_0?
+      Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+    else
+      Rake::Task["ar:schema:dump"].invoke if ActiveRecord.schema_format == :ruby
+    end
   end
 
   def resolve_structure_sql
