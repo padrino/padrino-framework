@@ -136,11 +136,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         ActiveRecord::MigrationContext.new("db/migrate/", ActiveRecord::SchemaMigration).migrate(env_migration_version)
       end
 
-      if less_than_active_record_7_0?
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      else
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord.schema_format == :ruby
-      end
+      dump_schema
     end
 
     namespace :migrate do
