@@ -64,7 +64,7 @@ describe "ComplexReloader" do
         assert_equal 200, status
 
         get "/complex_2_demo/var/destroy/variable"
-        assert_equal '{"id"=>"variable"}', body
+        assert_equal '{"id":"variable"}', body
       ensure
         # Now we need to prevent to commit a new changed file so we revert it
         File.open(Complex1Demo.app_file, "w") { |f| f.write(buffer) }

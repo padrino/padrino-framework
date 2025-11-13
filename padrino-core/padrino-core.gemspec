@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.summary = "The required Padrino core gem"
   s.homepage = "http://www.padrinorb.com"
   s.description = "The Padrino core gem required for use of this framework"
+  s.required_ruby_version = ">= 2.7.8"
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.date = Time.now.strftime("%Y-%m-%d")
