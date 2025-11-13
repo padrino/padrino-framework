@@ -107,11 +107,11 @@ describe "Filters" do
     mock_app do
       before { }
       get :index do
-        params.inspect
+        params.to_json
       end
     end
     get '/?test=what'
-    assert_equal '{"test"=>"what"}', body
+    assert_equal '{"test":"what"}', body
   end
 
   it 'should be able to filter based on a path' do

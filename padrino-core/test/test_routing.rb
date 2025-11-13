@@ -1681,11 +1681,11 @@ describe "Routing" do
     mock_app do
       before { }
       get :index do
-        params.inspect
+        params.to_json
       end
     end
     get '/?test=what'
-    assert_equal '{"test"=>"what"}', body
+    assert_equal '{"test":"what"}', body
   end
 
   it 'should work only for the given controller and route when using before-filter with route name' do
@@ -2267,11 +2267,11 @@ describe "Routing" do
       end
 
       put '/b/:b/:c', :csrf_protection => false do
-        params.inspect
+        params.to_json
       end
     end
     put "/b/x/y"
-    assert_equal '{"b"=>"x", "c"=>"y"}', body
+    assert_equal '{"b":"x","c":"y"}', body
   end
 
   it "should support named captures like %r{/hello/(?<person>[^/?#]+)} on Ruby >= 1.9" do

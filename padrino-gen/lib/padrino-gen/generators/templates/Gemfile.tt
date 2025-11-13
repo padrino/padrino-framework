@@ -7,8 +7,11 @@ source 'https://rubygems.org'
 <% unless options.gem? %># <% end %>gemspec
 
 # Server requirements
-# gem 'thin' # or mongrel
-# gem 'trinidad', :platform => 'jruby'
+<% if options.server == 'trinidad' -%>
+gem 'trinidad', :platform => 'jruby'
+<% else -%>
+gem '<%= options.server %>'
+<% end -%>
 
 # Optional JSON codec (faster performance)
 # gem 'oj'

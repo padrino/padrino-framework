@@ -247,8 +247,39 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for orm components" do
+  describe "the generator for HTTP server" do
+    it 'should properly generate for webrick by default' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match_in_file(/# Server requirements\ngem 'webrick'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
 
+    it 'should properly generate for puma' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma') }
+      assert_match_in_file(/# Server requirements\ngem 'puma'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should properly generate for thin' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=thin') }
+      assert_match_in_file(/# Server requirements\ngem 'thin'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should properly generate for mongrel' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=mongrel') }
+      assert_match_in_file(/# Server requirements\ngem 'mongrel'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should properly generate for spider-gazelle' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=spider-gazelle') }
+      assert_match_in_file(/# Server requirements\ngem 'spider-gazelle'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should properly generate for trinidad' do
+      out, err = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=trinidad') }
+      assert_match_in_file(/# Server requirements\ngem 'trinidad', :platform => 'jruby'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+  end
+
+  describe "the generator for orm components" do
     describe "for sequel" do
       it 'should properly generate default' do
         @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
@@ -398,7 +429,6 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
     end
 
-
     it 'should properly generate for couchrest' do
       out, err = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=couchrest', '--script=none') }
       assert_match(/applying.*?couchrest.*?orm/, out)
@@ -439,7 +469,6 @@ describe "ProjectGenerator" do
       assert_match_in_file(/Dynamoid.configure/, "#{@apptmp}/sample_project/config/database.rb")
     end
   end
-
 
   describe "the generator for renderer component" do
     it 'should properly generate for erb' do

@@ -16,7 +16,7 @@ class Complex2Demo < Padrino::Application
   get("/old"){ "Old Sinatra Way" }
 
   controllers :var do
-    get(:destroy){ params.inspect }
+    get(:destroy){ params.to_json }
   end
 
   get("/"){ "The magick number is: 12!" } # Change only the number!!!
