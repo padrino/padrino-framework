@@ -19,7 +19,8 @@ module Padrino
     %r{custom_require\.rb$},
     %r{active_support},
     %r{/thor},
-    %r{/lib/bundler}
+    %r{/lib/bundler},
+    %r{/core_ext/kernel_require}
   ] unless defined?(PADRINO_IGNORE_CALLERS)
 
   ##

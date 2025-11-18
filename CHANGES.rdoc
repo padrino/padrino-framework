@@ -5,6 +5,7 @@
 - FIX Specs are now passing for Ruby 3.4 (@crashtech)
 - NEW Added what HTTP Server to use as an option when generating a new project (@crashtech)
 - FIX Added the HTTP Server to Gemfile as Ruby 3.0 removed WEBrick from standard library (@crashtech)
+- FIX Patch `Padrino.core` by filtering any 'core_ext/kernel_require' (common patter for gems that override Kernel#require) from caller entries (@crashtech)
 
 == 0.16.0.pre3 (2024-08-09)
 
