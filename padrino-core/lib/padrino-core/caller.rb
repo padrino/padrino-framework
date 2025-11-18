@@ -1,32 +1,30 @@
 module Padrino
 
-  # List of callers in a Padrino application that should be ignored as part of a stack trace.
-  PADRINO_IGNORE_CALLERS = [
-    %r{lib/padrino-.*$},
-    %r{/padrino-.*/(lib|bin)},
-    %r{/bin/padrino$},
-    %r{/sinatra(/(base|main|show_?exceptions))?\.rb$},
-    %r{lib/tilt.*\.rb$},
-    %r{lib/rack.*\.rb$},
-    %r{lib/mongrel.*\.rb$},
-    %r{lib/shotgun.*\.rb$},
-    %r{bin/shotgun$},
-    %r{\(.*\)},
-    %r{shoulda/context\.rb$},
-    %r{mocha/integration},
-    %r{test/unit},
-    %r{rake_test_loader\.rb},
-    %r{custom_require\.rb$},
-    %r{active_support},
-    %r{/thor},
-    %r{/lib/bundler},
-    %r{/core_ext/kernel_require}
-  ] unless defined?(PADRINO_IGNORE_CALLERS)
+  unless defined?(PADRINO_IGNORE_CALLERS)
+    # List of callers in a Padrino application that should be ignored as part of a stack trace.
+    PADRINO_IGNORE_CALLERS = [
+      *Sinatra::Base.callers_to_ignore,                            # Inherit Sinatra's default ignore patterns
+      Regexp.new(Regexp.escape(RbConfig::CONFIG['rubylibdir'])),   # Ignore the Ruby standard lib path
+      %r{lib/padrino-.*$},
+      %r{/padrino-.*/(lib|bin)},
+      %r{/bin/padrino$},
+      %r{lib/rack.*\.rb$},
+      %r{lib/mongrel.*\.rb$},
+      %r{lib/shotgun.*\.rb$},
+      %r{bin/shotgun$},
+      %r{shoulda/context\.rb$},
+      %r{mocha/integration},
+      %r{test/unit},
+      %r{rake_test_loader\.rb},
+      %r{custom_require\.rb$},
+      %r{/thor}
+    ]
 
-  ##
-  # Add rubinius (and hopefully other VM implementations) ignore patterns ...
-  #
-  PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
+    ##
+    # Add rubinius (and hopefully other VM implementations) ignore patterns ...
+    #
+    PADRINO_IGNORE_CALLERS.concat(RUBY_IGNORE_CALLERS) if defined?(RUBY_IGNORE_CALLERS)
+  end
 
   ##
   # The filename for the file that is the direct caller (first caller).
