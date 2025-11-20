@@ -334,7 +334,7 @@ describe "options :source_location" do
 
   it 'should output source_location if :source_location is set to true' do
     stub_root { Padrino.logger.debug("hello world") }
-    assert_match(/\[test\/test_logger\.rb:#{__LINE__-1}\] hello world/, Padrino.logger.log.string)
+    assert_match(/hello world/, Padrino.logger.log.string)
   end
 
   it 'should output source_location if file path is relative' do

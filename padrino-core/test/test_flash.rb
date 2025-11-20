@@ -68,12 +68,12 @@ describe Padrino::Flash do
 
   routes = proc do
     get :index do
-      params[:key] ? flash[params[:key].to_sym].to_s : flash.now.inspect
+      params[:key] ? flash[params[:key].to_sym].to_s : flash.now.to_json
     end
 
     post :index do
       params.each { |k,v| flash[k.to_sym] = v.to_s }
-      flash.next.inspect
+      flash.next.to_json
     end
 
     get :session do
@@ -107,7 +107,7 @@ describe Padrino::Flash do
 
     it 'should set a flash' do
       post '/', :foo => :bar
-      assert_equal '{:foo=>"bar"}', body
+      assert_equal '{"foo":"bar"}', body
     end
   end
 
@@ -129,7 +129,7 @@ describe Padrino::Flash do
 
     it 'should set a flash' do
       post '/', :foo => :bar
-      assert_equal '{:foo=>"bar"}', body
+      assert_equal '{"foo":"bar"}', body
     end
 
     it 'should get a flash' do

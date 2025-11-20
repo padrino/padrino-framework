@@ -1,4 +1,5 @@
 require 'pathname'
+require 'stringio'
 
 # Defines the log level for a Padrino project.
 PADRINO_LOG_LEVEL = ENV['PADRINO_LOG_LEVEL'] unless defined?(PADRINO_LOG_LEVEL)
@@ -361,7 +362,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
             FileUtils.mkdir_p(Padrino.root('log')) unless File.exist?(Padrino.root('log'))
             File.new(Padrino.root('log', "#{Padrino.env}.log"), 'a+')
           end
-        when :null   then StringIO.new
+        when :null   then ::StringIO.new
         when :stdout then $stdout
         when :stderr then $stderr
         else config[:stream] # return itself, probabilly is a custom stream.

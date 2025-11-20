@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.summary = "The Godfather of Sinatra"
   s.homepage = "http://www.padrinorb.com"
   s.description = "The Godfather of Sinatra provides a full-stack agnostic framework on top of Sinatra"
+  s.required_ruby_version = ">= 2.7.8"
   s.required_rubygems_version = ">= 1.3.6"
   s.version = Padrino.version
   s.platform = Gem::Platform::RUBY
