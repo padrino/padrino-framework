@@ -52,6 +52,9 @@ group :development do
   gem 'rb-readline', '~> 0.4.2'
   gem 'rubocop', '~> 1.6', :platforms => [:mri]
   gem 'rubocop-minitest', '~>0.34.4', :platforms => [:mri]
+  gem 'rubocop-rake', :platforms => [:mri]
+  gem 'rubocop-sequel', :platforms => [:mri]
+  gem 'rubocop-performance', :platforms => [:mri]
   gem "webmock", "~> 3.19"
   gem "yard",      ">= 0.7.2"
 
