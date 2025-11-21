@@ -300,7 +300,7 @@ describe "Rendering" do
       get('/layout_test.xml' ){ render :foo }
     end
     get "/layout_test.xml"
-    refute_match /erb template/, body
+    refute_match(/erb template/, body)
     assert_match '<?xml', body
   end
 
@@ -518,7 +518,7 @@ describe "Rendering" do
         get("/foo") { render 'apps/views/blog/post', :layout => 'layout', :views => File.dirname(__FILE__)+'/fixtures' }
       end
       get '/foo'
-      assert_match /okay absolute layout/, body
+      assert_match(/okay absolute layout/, body)
     end
 
     it 'should resolve template content_type and locale with layout' do

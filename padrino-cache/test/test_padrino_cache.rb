@@ -394,7 +394,7 @@ describe "PadrinoCache" do
     assert_equal '{"foo":"bar"}', @app.cache[:foo][:body]
     get "/foo"
     assert_equal '{"foo":"bar"}', body
-    assert_match /json/, last_response.content_type
+    assert_match(/json/, last_response.content_type)
   end
 
   it 'should cache an object' do

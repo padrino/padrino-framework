@@ -114,14 +114,14 @@ describe "PadrinoMailer" do
       error = assert_raises RuntimeError do
         post '/deliver/failing_mailer'
       end
-      assert_match /is not registered/, error.message
+      assert_match(/is not registered/, error.message)
     end
 
     it 'should fail with proper message if message does not exist' do
       error = assert_raises RuntimeError do
         post '/deliver/failing_message'
       end
-      assert_match /has no message/, error.message
+      assert_match(/has no message/, error.message)
     end
 
     it 'should be able to render default mailer names' do

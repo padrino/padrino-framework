@@ -223,7 +223,7 @@ describe "AdminAppGenerator" do
       end
 
       out, err = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      refute_match /Overwrite\s.*?\/db\/seeds.rb/, out
+      refute_match(/Overwrite\s.*?\/db\/seeds.rb/, out)
 
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.new(', "#{@apptmp}/sample_project/db/seeds.rb"

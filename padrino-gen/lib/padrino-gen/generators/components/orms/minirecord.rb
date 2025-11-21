@@ -115,24 +115,24 @@ def setup_orm
   begin
     case adapter ||= options[:adapter]
     when 'mysql-gem'
-      ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
+      ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'"))
       require_dependencies 'mysql', :version => "~> 2.8.1"
     when 'mysql', 'mysql2'
-      ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
+      ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'"))
       require_dependencies 'mysql2'
     when 'postgres'
-      ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_test'")
+      ar.gsub!(/!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_test'"))
       require_dependencies 'pg'
     when 'sqlite'
-      ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
-      ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
-      ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
+      ar.gsub!(/!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')"))
+      ar.gsub!(/!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')"))
+      ar.gsub!(/!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')"))
       require_dependencies 'sqlite3'
     else
       say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
