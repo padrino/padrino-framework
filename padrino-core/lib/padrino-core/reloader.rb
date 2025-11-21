@@ -113,6 +113,7 @@ module Padrino
       return if constant_excluded?(const)
       base, _, object = const.to_s.rpartition('::')
       base = base.empty? ? Object : base.constantize
+      return unless base.const_get(object).equal?(const)
       base.send :remove_const, object
       logger.devel "Removed constant #{const} from #{base}"
     rescue NameError

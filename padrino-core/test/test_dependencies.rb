@@ -77,6 +77,15 @@ describe "Dependencies" do
       assert_equal "hello", M.hello
     end
 
+    it 'should not remove constants that are already `remove_const`ed' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root("fixtures/dependencies/gc/t.rb"),
+          Padrino.root("fixtures/dependencies/gc/u.rb")
+        )
+      end
+      assert_equal "hello", V.hello
+    end
 
     describe "change log level for :devel" do
       before do
