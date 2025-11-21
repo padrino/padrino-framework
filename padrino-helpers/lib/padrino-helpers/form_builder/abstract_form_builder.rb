@@ -104,7 +104,9 @@ module Padrino
 
         def file_field(field, options={})
           self.multipart = true
-          @template.file_field_tag field_name(field), default_options(field, options).reject{ |key, _| key == :value }
+          options = default_options(field, options)
+          options.delete(:value)
+          @template.file_field_tag field_name(field), options
         end
 
         def submit(*args)

@@ -29,7 +29,7 @@ module Padrino
       def setup_components
         self.destination_root = options[:root]
         if in_app_root?
-          @_components = options.class.new options.select{ |key,_| self.class.component_types.include?(key.to_sym) }
+          @_components = options.class.new(options.slice(*self.class.component_types))
           @app_name = (options[:app] || "App").gsub(/\W/, '_').camelize
           if @_components.values.delete_if(&:empty?).empty?
             self.class.start(["-h"])
