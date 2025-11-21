@@ -65,9 +65,9 @@ class Minitest::Spec
   alias :with_layout :with_template
 
   def mock_app(base=Padrino::Application, &block)
-    @app = Sinatra.new base do
+    @app = Sinatra.new(base) do
       register Padrino::Helpers
-      instance_eval &block
+      instance_eval(&block)
     end
   end
 

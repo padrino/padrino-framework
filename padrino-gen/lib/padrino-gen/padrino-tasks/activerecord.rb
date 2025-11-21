@@ -69,7 +69,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             ActiveRecord::Base.connection.create_database(config[:database], creation_options)
             ActiveRecord::Base.establish_connection(config)
           rescue StandardError => e
-            $stderr.puts *(e.backtrace)
+            $stderr.puts(*e.backtrace)
             $stderr.puts e.inspect
             $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
             $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
@@ -369,7 +369,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def catch_error(type, error, config)
-    $stderr.puts *(error.backtrace)
+    $stderr.puts(*error.backtrace)
     $stderr.puts error.inspect
     case type
     when :create
