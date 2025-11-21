@@ -6,6 +6,7 @@ require 'securerandom' unless defined?(SecureRandom)
 begin
   require 'padrino-gen'
 rescue LoadError
+  # do nothing if padrino-gen is not available
 end
 
 module PadrinoTasks

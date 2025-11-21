@@ -382,6 +382,7 @@ module Padrino
         return nil unless engine == :erb
         require 'erb'
       rescue LoadError
+        # do nothing since erb is not available
       else
         require 'padrino/rendering/erb_template'
         settings.set :erb, Padrino::Rendering.engine_configurations[:erb]
@@ -404,6 +405,7 @@ unless defined? Padrino::Rendering::HamlTemplate
     require 'haml/helpers/xss_mods'
     require 'haml/helpers/action_view_extensions'
   rescue LoadError
+    # do nothing since haml is not available
   else
     require 'padrino/rendering/haml_template'
   end
@@ -413,6 +415,7 @@ unless defined? Padrino::Rendering::HamlitTemplate
   begin
     require 'hamlit'
   rescue LoadError
+    # do nothing since hamlit is not available
   else
     require 'padrino/rendering/hamlit_template'
   end
@@ -422,6 +425,7 @@ unless defined? Padrino::Rendering::ErubisTemplate
   begin
     require 'erubis'
   rescue LoadError
+    # do nothing since erubis is not available
   else
     require 'padrino/rendering/erubis_template'
   end
@@ -431,6 +435,7 @@ unless defined? Padrino::Rendering::SlimTemplate
   begin
     require 'slim'
   rescue LoadError
+    # do nothing since slim is not available
   else
     require 'padrino/rendering/slim_template'
   end
@@ -440,6 +445,7 @@ unless defined? Padrino::Rendering::ErubiTemplate
   begin
     require 'erubi'
   rescue LoadError
+    # do nothing since erubi is not available
   else
     require 'padrino/rendering/erubi_template'
   end

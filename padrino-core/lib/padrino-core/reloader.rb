@@ -116,6 +116,7 @@ module Padrino
       base.send :remove_const, object
       logger.devel "Removed constant #{const} from #{base}"
     rescue NameError
+      # no const to remove
     end
 
     ##

@@ -39,6 +39,7 @@ module Padrino
           begin
             require "irb/completion"
           rescue LoadError
+            # do nothing
           end
           IRB.start
         end
