@@ -830,9 +830,9 @@ module Padrino
       # Converts special attributes into datetime format strings that conforms to RFC 3399.
       #
       def convert_attributes_into_datetime(format, options)
-        DATETIME_ATTRIBUTES.each_with_object(options) do |attribute|
-          value = datetime_value(options[attribute])
-          options[attribute] = value.strftime(format) if value.respond_to?(:strftime)
+        DATETIME_ATTRIBUTES.each_with_object(options) do |attribute, opts|
+          value = datetime_value(opts[attribute])
+          opts[attribute] = value.strftime(format) if value.respond_to?(:strftime)
         end
       end
 
