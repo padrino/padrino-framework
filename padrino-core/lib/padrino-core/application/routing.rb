@@ -444,7 +444,8 @@ module Padrino
             next all if value.nil?
             all[key] = value_to_param(value)
           end
-        when nil
+        when NilClass
+          nil
         else
           object.respond_to?(:to_param) ? object.to_param : object
         end

@@ -105,8 +105,7 @@ module Padrino
             params[key] = value.empty? ? nil : value.to_i
           when type.kind_of?(Proc)
             params[key] = type.call(value)
-          when type == true
-          else
+          when type != true
             params.delete(key)
           end
         end
