@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 module Padrino
   module Generators
     ##
