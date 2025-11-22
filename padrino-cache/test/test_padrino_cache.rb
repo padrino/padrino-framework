@@ -474,9 +474,7 @@ describe "PadrinoCache" do
     end
 
     adapter = @app.cache.adapter
-    while adapter.respond_to? :adapter
-      adapter = adapter.adapter
-    end
+    adapter = adapter.adapter while adapter.respond_to?(:adapter)
     assert_kind_of Moneta::Adapters::Memory, adapter
   end
 
