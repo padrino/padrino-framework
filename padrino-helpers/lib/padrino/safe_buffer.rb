@@ -71,7 +71,7 @@ module Padrino
       escaped_args =
         case args
         when Hash
-          Hash[args.map { |k,arg| [k, html_escape_interpolated_argument(arg)] }]
+          args.transform_values { |arg| html_escape_interpolated_argument(arg) }
         else
           Array(args).map { |arg| html_escape_interpolated_argument(arg) }
         end
