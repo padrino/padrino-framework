@@ -92,7 +92,7 @@ class Padrino::CoreBenchmark < Minitest::Benchmark
     Padrino.clear!
 
     @app = Sinatra.new Padrino::Application do
-      get("/foo") { "okey" }
+      get('/foo') { 'okey' }
 
       MockBenchmark.paths.each do |p|
         get("/#{p}") { p.to_s }
@@ -111,7 +111,7 @@ class SinatraBenchmark < Minitest::Benchmark
 
   def setup
     @app = Sinatra.new do
-      get("/foo") { "okey" }
+      get('/foo') { 'okey' }
 
       MockBenchmark.paths.each do |p|
         get("/#{p}") { p.to_s }

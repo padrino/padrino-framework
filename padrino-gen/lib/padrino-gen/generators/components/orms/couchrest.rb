@@ -25,7 +25,7 @@ COUCHREST
 def setup_orm
   require_dependencies 'couchrest_model', :version => '~>1.1.0'
   require_dependencies 'json_pure'
-  create_file("config/database.rb", COUCHREST.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', COUCHREST.gsub(/!NAME!/, @project_name.underscore))
 end
 
 CR_MODEL = <<-MODEL unless defined?(CR_MODEL)
@@ -39,7 +39,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, _kind| "property :#{field}" }.join("\n  ")
   model_contents = CR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

@@ -1,3 +1,4 @@
+require 'English'
 ENV['RACK_ENV'] = 'test'
 
 require 'padrino-core'
@@ -16,9 +17,9 @@ module MockBenchmark
 
     def run(*)
       puts 'Running ' + self.name
-      puts `pmap -x #{$$} | tail -1`
+      puts `pmap -x #{$PROCESS_ID} | tail -1`
       super
-      puts `pmap -x #{$$} | tail -1`
+      puts `pmap -x #{$PROCESS_ID} | tail -1`
     end
   end
 

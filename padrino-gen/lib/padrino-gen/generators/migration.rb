@@ -7,7 +7,7 @@ module Padrino
       Padrino::Generators.add_generator(:migration, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen migration [name] [fields]"; end
+      def self.banner; 'padrino-gen migration [name] [fields]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions

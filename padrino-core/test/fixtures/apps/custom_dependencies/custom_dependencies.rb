@@ -5,7 +5,7 @@ class CustomDependencies < Padrino::Application
 end
 
 CustomDependencies.controllers do
-  get "/" do
-    "foo"
+  get '/' do
+    'foo'
   end
 end

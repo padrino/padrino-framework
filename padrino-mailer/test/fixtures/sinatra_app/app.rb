@@ -8,7 +8,7 @@ class SinatraApp < Sinatra::Base
 
   mailer :sample do
     email :birthday do |name, age|
-      subject "Happy Birthday!"
+      subject 'Happy Birthday!'
       to      'john@fake.com'
       from    'noreply@birthday.com'
       locals  :name => name, :age => age
@@ -17,7 +17,7 @@ class SinatraApp < Sinatra::Base
     end
 
     email :anniversary do |names, years_married|
-      subject "Happy anniversary!"
+      subject 'Happy anniversary!'
       to   'julie@fake.com'
       from 'noreply@anniversary.com'
       locals :names => names, :years_married => years_married
@@ -27,7 +27,7 @@ class SinatraApp < Sinatra::Base
     end
 
     message :welcome do |name|
-      subject "Welcome Message!"
+      subject 'Welcome Message!'
       to      'john@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -36,23 +36,23 @@ class SinatraApp < Sinatra::Base
     end
   end
 
-  post "/deliver/inline" do
-    result = email(:to => "john@apple.com", :from => "joe@smith.com", :subject => "Test Email", :body => "Test Body", :via => :test)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/inline' do
+    result = email(:to => 'john@apple.com', :from => 'joe@smith.com', :subject => 'Test Email', :body => 'Test Body', :via => :test)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/plain" do
-    result = deliver(:sample, :birthday, "Joey", 21)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/plain' do
+    result = deliver(:sample, :birthday, 'Joey', 21)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/html" do
-    result = deliver(:sample, :anniversary, "Joey & Charlotte", 16)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/html' do
+    result = deliver(:sample, :anniversary, 'Joey & Charlotte', 16)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/custom" do
-    result = deliver(:sample, :welcome, "Bobby")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/custom' do
+    result = deliver(:sample, :welcome, 'Bobby')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 end

@@ -10,7 +10,7 @@ module Padrino
       Padrino::Generators.add_generator(:project, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen project [name] [options]"; end
+      def self.banner; 'padrino-gen project [name] [options]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -45,7 +45,7 @@ module Padrino
       #
       def setup_project
         valid_constant? name
-        app = options[:app] || "App"
+        app = options[:app] || 'App'
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
 
@@ -103,23 +103,23 @@ module Padrino
       def setup_test_files
         if options[:tiny] && @_components[:test] != :none
           test_component = @_components[:test]
-          test_component = "rspec" if test_component == "cucumber"
+          test_component = 'rspec' if test_component == 'cucumber'
           uppercase_test_component = test_component.upcase
           controller_template_name = "#{uppercase_test_component}_CONTROLLER_TEST"
           helper_template_name     = "#{uppercase_test_component}_HELPER_TEST"
           return unless defined?(controller_template_name)
 
-          controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, "Controller").gsub(/!NAME!/, "").gsub(/!EXPANDED_PATH!/, "/")
+          controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, 'Controller').gsub(/!NAME!/, '').gsub(/!EXPANDED_PATH!/, '/')
           helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
 
           proc{|*args| args.map{|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
 
-          directory_name = [:rspec].include?(test_component.to_sym) ? "spec" : "test"
-          base_path      = File.join(directory_name, "app")
+          directory_name = [:rspec].include?(test_component.to_sym) ? 'spec' : 'test'
+          base_path      = File.join(directory_name, 'app')
           create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, :skip => true
           create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     :skip => true
           helper_path = destination_root(File.join(directory_name, "#{directory_name == "spec" ? "spec_helper" : "test_config"}.rb"))
-          gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, "helpers.rb"
+          gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, 'helpers.rb'
         end
       end
 
@@ -141,8 +141,8 @@ module Padrino
         say "#{name} is ready for development!", :green
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
-        say "$ bundle --binstubs" unless options[:bundle]
-        say "=" * 65, :green
+        say '$ bundle --binstubs' unless options[:bundle]
+        say '=' * 65, :green
         say
       end
 
@@ -151,7 +151,7 @@ module Padrino
       #
       def git_author_name
         git_author_name = `git config user.name`.chomp rescue ''
-        git_author_name.empty? ? "TODO: Write your name" : git_author_name
+        git_author_name.empty? ? 'TODO: Write your name' : git_author_name
       end
 
       ##
@@ -159,7 +159,7 @@ module Padrino
       #
       def git_author_email
         git_author_email = `git config user.email`.chomp rescue ''
-        git_author_email.empty? ? "TODO: Write your email address" : git_author_email
+        git_author_email.empty? ? 'TODO: Write your email address' : git_author_email
       end
     end
   end

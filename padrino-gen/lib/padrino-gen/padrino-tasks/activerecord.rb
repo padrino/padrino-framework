@@ -1,3 +1,4 @@
+require 'English'
 if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   # Fixes for Yardoc YRI Building
   begin
@@ -10,7 +11,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   namespace :ar do
     namespace :create do
-      desc "Create all the local databases defined in config/database.yml"
+      desc 'Create all the local databases defined in config/database.yml'
       task :all => :skeleton do
         with_all_databases do |config|
           # Skip entries that don't have a database key, such as the first entry here:
@@ -31,7 +32,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Creates the database defined in config/database.yml for the current Padrino.env"
+    desc 'Creates the database defined in config/database.yml for the current Padrino.env'
     task :create => :skeleton do
       with_database(Padrino.env) do |config|
         create_database(config)
@@ -57,7 +58,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         ActiveRecord::Base.establish_connection(config)
         ActiveRecord::Base.connection
       end
-    rescue
+    rescue StandardError
       case config[:adapter]
       when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
         @charset   = ENV['CHARSET']   || 'utf8'
@@ -71,7 +72,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           $stderr.puts(*e.backtrace)
           $stderr.puts e.inspect
           $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
-          $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
+          $stderr.puts '(if you set the charset manually, make sure you have a matching collation)' if config[:charset]
         end
       when 'postgresql'
         @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
@@ -88,7 +89,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :drop do
-      desc "Drops all the local databases defined in config/database.yml"
+      desc 'Drops all the local databases defined in config/database.yml'
       task :all => :skeleton do
         with_all_databases do |config|
           # Skip entries that don't have a database key
@@ -103,7 +104,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Drops the database for the current Padrino.env"
+    desc 'Drops the database for the current Padrino.env'
     task :drop => :skeleton do
       with_database(Padrino.env || :development) do |config|
         drop_database(config)
@@ -120,39 +121,39 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with MIGRATION_VERSION=x. Turn off output with VERBOSE=false."
+    desc 'Migrate the database through scripts in db/migrate and update db/schema.rb by invoking ar:schema:dump. Target specific version with MIGRATION_VERSION=x. Turn off output with VERBOSE=false.'
     task :migrate => :skeleton do
-      ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
+      ActiveRecord::Migration.verbose = ENV['VERBOSE'] ? ENV['VERBOSE'] == 'true' : true
 
       if less_than_active_record_5_2?
-        ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
+        ActiveRecord::Migrator.migrate('db/migrate/', env_migration_version)
       elsif less_than_active_record_6_0?
-        ActiveRecord::MigrationContext.new("db/migrate/").migrate(env_migration_version)
+        ActiveRecord::MigrationContext.new('db/migrate/').migrate(env_migration_version)
       else
-        ActiveRecord::MigrationContext.new("db/migrate/", ActiveRecord::SchemaMigration).migrate(env_migration_version)
+        ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).migrate(env_migration_version)
       end
 
       if less_than_active_record_7_0?
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+        Rake::Task['ar:schema:dump'].invoke if ActiveRecord::Base.schema_format == :ruby
       else
-        Rake::Task["ar:schema:dump"].invoke if ActiveRecord.schema_format == :ruby
+        Rake::Task['ar:schema:dump'].invoke if ActiveRecord.schema_format == :ruby
       end
     end
 
     namespace :migrate do
-      desc "Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x."
+      desc 'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with MIGRATION_VERSION=x.'
       task :redo => :skeleton do
         if env_migration_version
-          Rake::Task["ar:migrate:down"].invoke
-          Rake::Task["ar:migrate:up"].invoke
+          Rake::Task['ar:migrate:down'].invoke
+          Rake::Task['ar:migrate:up'].invoke
         else
-          Rake::Task["ar:rollback"].invoke
-          Rake::Task["ar:migrate"].invoke
+          Rake::Task['ar:rollback'].invoke
+          Rake::Task['ar:migrate'].invoke
         end
       end
 
-      desc "Resets your database using your migrations for the current environment."
-      task :reset => ["ar:drop", "ar:create", "ar:migrate"]
+      desc 'Resets your database using your migrations for the current environment.'
+      task :reset => ['ar:drop', 'ar:create', 'ar:migrate']
 
       desc "Runs the 'up' for a given MIGRATION_VERSION."
       task(:up => :skeleton){ migrate_as(:up) }
@@ -161,13 +162,13 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task(:down => :skeleton){ migrate_as(:down) }
     end
 
-    desc "Rolls the schema back to the previous version. Specify the number of steps with STEP=n"
+    desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
     task(:rollback => :skeleton){ move_as(:rollback) }
 
-    desc "Pushes the schema to the next version. Specify the number of steps with STEP=n"
+    desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
     task(:forward => :skeleton){ move_as(:forward) }
 
-    desc "Drops and recreates the database from db/schema.rb for the current environment and loads the seeds."
+    desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
     task :reset => [ 'ar:drop', 'ar:setup' ]
 
     desc "Retrieves the charset for the current environment's database"
@@ -199,12 +200,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Retrieves the current schema version number."
+    desc 'Retrieves the current schema version number.'
     task :version => :skeleton do
       puts "Current version: #{ActiveRecord::Migrator.current_version}"
     end
 
-    desc "Raises an error if there are pending migrations."
+    desc 'Raises an error if there are pending migrations.'
     task :abort_if_pending_migrations => :skeleton do
       if defined? ActiveRecord
         pending_migrations =
@@ -226,22 +227,22 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
-    desc "Create the database, load the schema, and initialize with the seed data."
+    desc 'Create the database, load the schema, and initialize with the seed data.'
     task :setup => [ 'ar:create', 'ar:schema:load', 'seed' ]
 
     namespace :schema do
-      desc "Create a db/schema.rb file that can be portably used against any DB supported by AR."
+      desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR.'
       task :dump => :skeleton do
         require 'active_record/schema_dumper'
-        File.open(ENV['SCHEMA'] || Padrino.root("db", "schema.rb"), "w") do |file|
+        File.open(ENV['SCHEMA'] || Padrino.root('db', 'schema.rb'), 'w') do |file|
           ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
         end
-        Rake::Task["ar:schema:dump"].reenable
+        Rake::Task['ar:schema:dump'].reenable
       end
 
-      desc "Load a schema.rb file into the database."
+      desc 'Load a schema.rb file into the database.'
       task :load => :skeleton do
-        file = ENV['SCHEMA'] || Padrino.root("db", "schema.rb")
+        file = ENV['SCHEMA'] || Padrino.root('db', 'schema.rb')
         if File.exist?(file)
           load(file)
         else
@@ -251,30 +252,30 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     namespace :structure do
-      desc "Dump the database structure to a SQL file."
+      desc 'Dump the database structure to a SQL file.'
       task :dump => :skeleton do
         with_database(Padrino.env) do |config|
           case config[:adapter]
-          when "mysql", "mysql2", 'em_mysql2', "oci", "oracle", 'jdbcmysql'
+          when 'mysql', 'mysql2', 'em_mysql2', 'oci', 'oracle', 'jdbcmysql'
             config = config.each_with_object({}) { |(key, value), result| result[key.to_s] = value }
             ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
-          when "postgresql"
+          when 'postgresql'
             ENV['PGHOST']     = config[:host] if config[:host]
             ENV['PGPORT']     = config[:port].to_s if config[:port]
             ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
             search_path = config[:schema_search_path]
             if search_path
-              search_path = search_path.split(",").map{|search_path| "--schema=#{search_path.strip}" }.join(" ")
+              search_path = search_path.split(',').map{|search_path| "--schema=#{search_path.strip}" }.join(' ')
             end
             `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
-            raise "Error dumping database" if $?.exitstatus == 1
-          when "sqlite", "sqlite3"
+            raise 'Error dumping database' if $CHILD_STATUS.exitstatus == 1
+          when 'sqlite', 'sqlite3'
             dbfile = config[:database] || config[:dbfile]
             `#{config[:adapter]} #{dbfile} .schema > db/#{Padrino.env}_structure.sql`
-          when "sqlserver"
+          when 'sqlserver'
             `scptxfr /s #{config[:host]} /d #{config[:database]} /I /f db\\#{Padrino.env}_structure.sql /q /A /r`
             `scptxfr /s #{config[:host]} /d #{config[:database]} /I /F db\ /q /A /r`
-          when "firebird"
+          when 'firebird'
             set_firebird_env(config)
             db_string = firebird_db_string(config)
             sh "isql -a #{db_string} > #{Padrino.root}/db/#{Padrino.env}_structure.sql"
@@ -284,14 +285,14 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
 
         if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
-          File.open(resolve_structure_sql, "a"){|f| f << ActiveRecord::Base.connection.dump_schema_information }
+          File.open(resolve_structure_sql, 'a'){|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
     end
 
-    desc "Generates .yml files for I18n translations."
+    desc 'Generates .yml files for I18n translations.'
     task :translate => :environment do
-      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
 
       models.each do |m|
         # get the model class
@@ -317,15 +318,15 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             end
           else
             locale     = "#{lang}:" + "\n" \
-                         "  models:" + "\n" \
+                         '  models:' + "\n" \
                          "    #{m}:" + "\n" \
                          "      name: #{klass.model_name.human}" + "\n" \
-                         "      attributes:" + "\n" +
+                         '      attributes:' + "\n" +
                          columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
           end
 
           $stdout.flush
-          File.open(filename, "w") { |f| f.puts locale }
+          File.open(filename, 'w') { |f| f.puts locale }
         end
         puts
       end
@@ -356,8 +357,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def set_firebird_env(config)
-    ENV["ISC_USER"]     = config[:username].to_s if config[:username]
-    ENV["ISC_PASSWORD"] = config[:password].to_s if config[:password]
+    ENV['ISC_USER']     = config[:username].to_s if config[:username]
+    ENV['ISC_PASSWORD'] = config[:password].to_s if config[:password]
   end
 
   def firebird_db_string(config)
@@ -377,10 +378,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def migrate_as(type)
     version = env_migration_version
-    fail "MIGRATION_VERSION is required" unless version
+    fail 'MIGRATION_VERSION is required' unless version
 
     if less_than_active_record_5_2?
-      ActiveRecord::Migrator.run(type, "db/migrate/", version)
+      ActiveRecord::Migrator.run(type, 'db/migrate/', version)
     elsif less_than_active_record_6_0?
       ActiveRecord::MigrationContext.new('db/migrate/').run(type, version)
     else
@@ -405,7 +406,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def dump_schema
-    Rake::Task["ar:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+    Rake::Task['ar:schema:dump'].invoke if ActiveRecord::Base.schema_format == :ruby
   end
 
   def resolve_structure_sql
@@ -413,19 +414,19 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def less_than_active_record_5_2?
-    ActiveRecord.version < Gem::Version.create("5.2.0")
+    ActiveRecord.version < Gem::Version.create('5.2.0')
   end
 
   def less_than_active_record_6_0?
-    ActiveRecord.version < Gem::Version.create("6.0.0")
+    ActiveRecord.version < Gem::Version.create('6.0.0')
   end
 
   def less_than_active_record_6_1?
-    ActiveRecord.version < Gem::Version.create("6.1.0")
+    ActiveRecord.version < Gem::Version.create('6.1.0')
   end
 
   def less_than_active_record_7_0?
-    ActiveRecord.version < Gem::Version.create("7.0.0")
+    ActiveRecord.version < Gem::Version.create('7.0.0')
   end
 
   def with_database(env_name)

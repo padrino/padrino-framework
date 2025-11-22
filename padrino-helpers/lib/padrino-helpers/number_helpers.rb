@@ -60,7 +60,7 @@ module Padrino
             :delimiter => delimiter,
             :separator => separator)
           ).gsub(/%u/, unit)
-        rescue
+        rescue StandardError
           number
         end
       end
@@ -103,8 +103,8 @@ module Padrino
           number_with_precision(number,
             :precision => precision,
             :separator => separator,
-            :delimiter => delimiter) + "%"
-        rescue
+            :delimiter => delimiter) + '%'
+        rescue StandardError
           number
         end
       end
@@ -145,7 +145,7 @@ module Padrino
           parts = number.to_s.split('.')
           parts[0].gsub!(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
           parts.join(separator)
-        rescue
+        rescue StandardError
           number
         end
       end
@@ -193,7 +193,7 @@ module Padrino
           number_with_delimiter("%01.#{precision}f" % rounded_number,
             :separator => separator,
             :delimiter => delimiter)
-        rescue
+        rescue StandardError
           number
         end
       end
@@ -270,7 +270,7 @@ module Padrino
               :delimiter => delimiter
             ).sub(/(#{escaped_separator})(\d*[1-9])?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
             storage_units_format.gsub(/%n/, formatted_number).gsub(/%u/, unit)
-          rescue
+          rescue StandardError
             number
           end
         end

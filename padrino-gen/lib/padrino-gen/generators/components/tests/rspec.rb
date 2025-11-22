@@ -92,12 +92,12 @@ TEST
 def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'rspec', :group => 'test'
-  insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), RSPEC_RAKE
+  insert_test_suite_setup RSPEC_SETUP, :path => 'spec/spec_helper.rb'
+  create_file destination_root('spec/spec.rake'), RSPEC_RAKE
 end
 
 def generate_controller_test(name, path)
-  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
+  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
   controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
   create_file destination_root(controller_spec_path), rspec_contents, :skip => true
 end

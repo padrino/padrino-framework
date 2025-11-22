@@ -18,7 +18,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       end
 
       def enum_mongoid_documents(collection, &block)
-        collection.find({}, :timeout => false, :sort => "_id") do |cursor|
+        collection.find({}, :timeout => false, :sort => '_id') do |cursor|
           cursor.each(&block)
         end
       end
@@ -71,7 +71,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
             documents << klass
           end
-        rescue
+        rescue StandardError
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end
@@ -105,7 +105,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       @collection_names ||= get_mongoid_models.map{ |d| d.collection.name }.uniq
     end
 
-    desc "Convert string objectids in mongo database to ObjectID type"
+    desc 'Convert string objectids in mongo database to ObjectID type'
     task :objectid_convert => :environment do
       collection_names.each do |collection_name|
         puts "Converting #{collection_name} to use ObjectIDs"
@@ -153,10 +153,10 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         end
       end
 
-      puts "DONE! Run `padrino rake mi:cleanup_old_collections` to remove old collections"
+      puts 'DONE! Run `padrino rake mi:cleanup_old_collections` to remove old collections'
     end
 
-    desc "Clean up old collections backed up by objectid_convert"
+    desc 'Clean up old collections backed up by objectid_convert'
     task :cleanup_old_collections => :environment do
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
@@ -164,9 +164,9 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
       end
     end
 
-    desc "Generates .yml files for I18n translations"
+    desc 'Generates .yml files for I18n translations'
     task :translate => :environment do
-      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
 
       models.each do |m|
         # Get the model class.
@@ -192,15 +192,15 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
             end
           else
             locale     = "#{lang}:" + "\n" \
-            "  models:" + "\n" \
+            '  models:' + "\n" \
             "    #{m}:" + "\n" \
             "      name: #{klass.name}" + "\n" \
-            "      attributes:" + "\n" +
+            '      attributes:' + "\n" +
             columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
           end
 
           $stdout.flush
-          File.open(filename, "w") { |f| f.puts locale }
+          File.open(filename, 'w') { |f| f.puts locale }
         end
         puts
       end

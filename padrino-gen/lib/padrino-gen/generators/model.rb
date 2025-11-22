@@ -7,7 +7,7 @@ module Padrino
       Padrino::Generators.add_generator(:model, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen model [name] [fields]"; end
+      def self.banner; 'padrino-gen model [name] [fields]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -57,7 +57,7 @@ module Padrino
         else
           unless options[:force]
             say "#{@camel_name} already exists."
-            say "Please, change the name."
+            say 'Please, change the name.'
             return false
           end
         end if model_name_already_exists?
@@ -73,7 +73,7 @@ module Padrino
       def model_name_already_exists?
         @camel_name = name.to_s.underscore.camelize
 
-        @project_name = ""
+        @project_name = ''
         @project_name = fetch_project_name
 
         return false unless already_exists?(@camel_name, @project_name)
@@ -86,7 +86,7 @@ module Padrino
       def check_orm
         return true if include_component_module_for(:orm)
 
-        say "<= You need an ORM adapter for run this generator. Sorry!"
+        say '<= You need an ORM adapter for run this generator. Sorry!'
         raise SystemExit
       end
 

@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require 'logger'
 require 'tempfile'
 
-describe "PadrinoLogger" do
+describe 'PadrinoLogger' do
   before do
     @save_config = Padrino::Logger::Config[:test].dup
     Padrino::Logger::Config[:test][:stream] = :null
@@ -64,21 +64,21 @@ describe "PadrinoLogger" do
 
     it 'should log something' do
       setup_logger(:log_level => :error)
-      @logger.error "You log this error?"
+      @logger.error 'You log this error?'
       assert_match(/You log this error?/, @log.string)
       @logger.debug "You don't log this error!"
       refute_match(/You don't log this error!/, @log.string)
-      @logger << "Yep this can be logged"
+      @logger << 'Yep this can be logged'
       assert_match(/Yep this can be logged/, @log.string)
     end
 
     it 'should respond to #write for Rack::CommonLogger' do
       setup_logger(:log_level => :error)
-      @logger.error "Error message"
+      @logger.error 'Error message'
       assert_match(/Error message/, @log.string)
-      @logger << "logged anyways"
+      @logger << 'logged anyways'
       assert_match(/logged anyways/, @log.string)
-      @logger.write "log via alias"
+      @logger.write 'log via alias'
       assert_match(/log via alias/, @log.string)
     end
 
@@ -108,53 +108,53 @@ describe "PadrinoLogger" do
     it 'should log an application' do
       mock_app do
         enable :logging
-        get("/"){ "Foo" }
+        get('/'){ 'Foo' }
       end
-      get "/"
-      assert_equal "Foo", body
+      get '/'
+      assert_equal 'Foo', body
       assert_match(/GET/, Padrino.logger.log.string)
     end
 
     it 'should log an application\'s status code' do
       mock_app do
         enable :logging
-        get("/"){ "Foo" }
+        get('/'){ 'Foo' }
       end
-      get "/"
+      get '/'
       assert_match(/\e\[1;9m200\e\[0m OK/, Padrino.logger.log.string)
     end
 
-    describe "static asset logging" do
+    describe 'static asset logging' do
       it 'should not log static assets by default' do
         mock_app do
           enable :logging
-          get("/images/something.png"){ env["sinatra.static_file"] = '/public/images/something.png'; "Foo" }
+          get('/images/something.png'){ env['sinatra.static_file'] = '/public/images/something.png'; 'Foo' }
         end
-        get "/images/something.png"
-        assert_equal "Foo", body
-        assert_match "", Padrino.logger.log.string
+        get '/images/something.png'
+        assert_equal 'Foo', body
+        assert_match '', Padrino.logger.log.string
       end
 
       it 'should allow turning on static assets logging' do
         Padrino.logger.instance_eval{ @log_static = true }
         mock_app do
           enable :logging
-          get("/images/something.png"){ env["sinatra.static_file"] = '/public/images/something.png'; "Foo" }
+          get('/images/something.png'){ env['sinatra.static_file'] = '/public/images/something.png'; 'Foo' }
         end
-        get "/images/something.png"
-        assert_equal "Foo", body
+        get '/images/something.png'
+        assert_equal 'Foo', body
         assert_match(/GET/, Padrino.logger.log.string)
         Padrino.logger.instance_eval{ @log_static = false }
       end
     end
 
-    describe "health-check requests logging" do
+    describe 'health-check requests logging' do
       def access_to_mock_app
         mock_app do
           enable :logging
-          get("/"){ "Foo" }
+          get('/'){ 'Foo' }
         end
-        get "/"
+        get '/'
       end
 
       it 'should output under debug level' do
@@ -180,7 +180,7 @@ describe "PadrinoLogger" do
   end
 end
 
-describe "alternate logger" do
+describe 'alternate logger' do
   class FancyLogger
     attr_accessor :level, :log
     def initialize(buf)
@@ -205,7 +205,7 @@ describe "alternate logger" do
   end
 
   it 'should annotate the logger to support additional Padrino fancyness' do
-    Padrino.logger.debug("Debug message")
+    Padrino.logger.debug('Debug message')
     assert_match(/Debug message/, @log.string)
     Padrino.logger.exception(Exception.new('scary message'))
     assert_match(/Exception - scary message/, @log.string)
@@ -216,15 +216,15 @@ describe "alternate logger" do
 
     mock_app do
       enable :logging
-      get("/"){ "Foo" }
+      get('/'){ 'Foo' }
     end
-    get "/"
+    get '/'
 
     assert_match(/\e\[1;9m200\e\[0m OK/, @log.string)
   end
 end
 
-describe "binary logger" do
+describe 'binary logger' do
   before do
     @save_logger = Padrino.logger
     @log = StringIO.new
@@ -239,11 +239,11 @@ describe "binary logger" do
 
   it 'should not convert parameters to strings before formatting' do
     logger.info({:a => 2})
-    assert_equal "1", @log.string
+    assert_equal '1', @log.string
   end
 end
 
-describe "alternate logger: stdlib logger" do
+describe 'alternate logger: stdlib logger' do
   before do
     @log = StringIO.new
     @save_logger = Padrino.logger
@@ -257,7 +257,7 @@ describe "alternate logger: stdlib logger" do
   end
 
   it 'should annotate the logger to support additional Padrino fancyness' do
-    Padrino.logger.debug("Debug message")
+    Padrino.logger.debug('Debug message')
     assert_match(/Debug message/, @log.string)
   end
 
@@ -266,21 +266,21 @@ describe "alternate logger: stdlib logger" do
 
     mock_app do
       enable :logging
-      get("/"){ "Foo" }
+      get('/'){ 'Foo' }
     end
-    get "/"
+    get '/'
 
     assert_match(/\e\[1;9m200\e\[0m OK/, @log.string)
   end
 end
 
-describe "options :colorize_logging" do
+describe 'options :colorize_logging' do
   def access_to_mock_app
     mock_app do
       enable :logging
-      get("/"){ "Foo" }
+      get('/'){ 'Foo' }
     end
-    get "/"
+    get '/'
   end
 
   before do
@@ -319,38 +319,38 @@ describe "options :colorize_logging" do
   end
 end
 
-describe "options :source_location" do
+describe 'options :source_location' do
   before do
     Padrino::Logger::Config[:test][:source_location] = true
     Padrino::Logger.setup!
   end
 
-  def stub_root(base_path = File.expand_path("."), &block)
+  def stub_root(base_path = File.expand_path('.'), &block)
     callable = proc{ |*args| File.join(base_path, *args) }
     Padrino.stub(:root, callable, &block)
   end
 
   it 'should output source_location if :source_location is set to true' do
-    stub_root { Padrino.logger.debug("hello world") }
+    stub_root { Padrino.logger.debug('hello world') }
     assert_match(/hello world/, Padrino.logger.log.string)
   end
 
   it 'should output source_location if file path is relative' do
     stub_message = "test/test_logger.rb:269:in `test'"
-    Padrino::Logger.logger.stub(:caller, [stub_message]){ stub_root { Padrino.logger.debug("hello relative path") }}
+    Padrino::Logger.logger.stub(:caller, [stub_message]){ stub_root { Padrino.logger.debug('hello relative path') }}
     assert_match(/\[test\/test_logger\.rb:269\] hello relative path/, Padrino.logger.log.string)
   end
 
   it 'should not output source_location if :source_location is set to false' do
     Padrino::Logger::Config[:test][:source_location] = false
     Padrino::Logger.setup!
-    stub_root { Padrino.logger.debug("hello world") }
+    stub_root { Padrino.logger.debug('hello world') }
     assert_match(/hello world/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello world/, Padrino.logger.log.string)
   end
 
   it 'should not output source_location unless file path is not started with Padrino.root' do
-    stub_root("/unknown/path/") { Padrino.logger.debug("hello boy") }
+    stub_root('/unknown/path/') { Padrino.logger.debug('hello boy') }
     assert_match(/hello boy/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello boy/, Padrino.logger.log.string)
   end
@@ -358,7 +358,7 @@ describe "options :source_location" do
   it 'should not output source_location if source file path is started with Padrino.root + vendor' do
     base_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/')
     stub_message = File.expand_path(File.dirname(__FILE__) + '/fixtures/vendor/logger.rb') + ":291:in `test'"
-    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root(base_path) { Padrino.logger.debug("hello vendor") } }
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root(base_path) { Padrino.logger.debug('hello vendor') } }
     assert_match(/hello vendor/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello vendor/, Padrino.logger.log.string)
   end

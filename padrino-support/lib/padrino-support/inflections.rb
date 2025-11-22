@@ -70,8 +70,8 @@ module Padrino
     #   irregular 'octopus', 'octopi'
     #   irregular 'person', 'people'
     def self.irregular(singular, plural)
-      plural(Regexp.new("(#{singular[0,1]})#{singular[1..-1]}$", "i"), '\1' + plural[1..-1])
-      singular(Regexp.new("(#{plural[0,1]})#{plural[1..-1]}$", "i"), '\1' + singular[1..-1])
+      plural(Regexp.new("(#{singular[0,1]})#{singular[1..-1]}$", 'i'), '\1' + plural[1..-1])
+      singular(Regexp.new("(#{plural[0,1]})#{plural[1..-1]}$", 'i'), '\1' + singular[1..-1])
     end
 
     # Specifies a new pluralization rule and its replacement. The rule can either be a string or a regular expression.
@@ -104,7 +104,7 @@ module Padrino
 
     instance_eval(&DEFAULT_INFLECTIONS_PROC)
 
-    extend self
+    module_function
 
     # Convert the given string to CamelCase.  Will also convert '/' to '::' which is useful for converting paths to namespaces.
     def camelize(s)

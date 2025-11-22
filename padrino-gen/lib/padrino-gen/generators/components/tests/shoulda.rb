@@ -93,7 +93,7 @@ def setup_test
   require_dependencies 'shoulda', :group => 'test'
   require_dependencies 'test-unit', :group => 'test'
   insert_test_suite_setup SHOULDA_SETUP
-  create_file destination_root("test/test.rake"), SHOULDA_RAKE
+  create_file destination_root('test/test.rake'), SHOULDA_RAKE
 end
 
 def generate_controller_test(name, path = nil)

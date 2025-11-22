@@ -2,9 +2,9 @@
 class RackApp
   def self.call(env)
     if env['PATH_INFO'] == '/404'
-      [404, {}, ["not found ;("]]
+      [404, {}, ['not found ;(']]
     else
-      [200, {}, ["hello rack app"]]
+      [200, {}, ['hello rack app']]
     end
   end
 
@@ -13,11 +13,11 @@ class RackApp
   end
 end
 
-RackApp2 = ->(_){ [200, {}, ["hello rack app2"]] }
+RackApp2 = ->(_){ [200, {}, ['hello rack app2']] }
 
 class SinatraApp < Sinatra::Base
   set :public_folder, File.dirname(__FILE__)
-  get "/" do
-    "hello sinatra app"
+  get '/' do
+    'hello sinatra app'
   end
 end

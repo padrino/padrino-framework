@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "AppGenerator" do
+describe 'AppGenerator' do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -89,7 +89,7 @@ describe "AppGenerator" do
     it 'should destroys itself' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d', :apps => "demo") }
+      out, = capture_io { generate_with_parts(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d', :apps => 'demo') }
       refute_match(/has been mounted/, out)
       assert_no_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/app.rb")
@@ -112,7 +112,7 @@ describe "AppGenerator" do
     it 'should abort if app name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'subapp', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", :apps => "subapp") }
+      out, = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", :apps => 'subapp') }
       assert_dir_exists("#{@apptmp}/sample_project/public/subapp")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/controllers")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/helpers")
@@ -122,7 +122,7 @@ describe "AppGenerator" do
 
     it 'should generate app files if :force option is specified' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      capture_io { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project", "--force") }
+      capture_io { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project", '--force') }
       assert_dir_exists("#{@apptmp}/sample_project/public/kernel")
       assert_dir_exists("#{@apptmp}/sample_project/kernel/controllers")
       assert_dir_exists("#{@apptmp}/sample_project/kernel/helpers")
@@ -131,7 +131,7 @@ describe "AppGenerator" do
 
     it 'should allow to pass upcased name as the app name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      capture_io { generate(:app, 'API', "--root=#{@apptmp}/sample_project", "--force") }
+      capture_io { generate(:app, 'API', "--root=#{@apptmp}/sample_project", '--force') }
       assert_dir_exists("#{@apptmp}/sample_project/public/api")
       assert_dir_exists("#{@apptmp}/sample_project/api/controllers")
       assert_dir_exists("#{@apptmp}/sample_project/api/helpers")

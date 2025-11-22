@@ -1,7 +1,7 @@
 module DemoProject
   class App < Padrino::Application
     get :index do
-      "padrino app"
+      'padrino app'
     end
   end
 end

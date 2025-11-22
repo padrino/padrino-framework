@@ -1,6 +1,6 @@
 require File.expand_path('helper', __dir__)
 
-describe "PadrinoCache" do
+describe 'PadrinoCache' do
   after do
     tmp = File.expand_path('tmp', __dir__)
     `rm -rf #{tmp}`
@@ -11,12 +11,12 @@ describe "PadrinoCache" do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get("/foo"){ cache(:test) { called ? halt(500) : (called = 'test fragment') } }
+      get('/foo'){ cache(:test) { called ? halt(500) : (called = 'test fragment') } }
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test fragment', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test fragment', body
     refute_equal called, false
@@ -29,10 +29,10 @@ describe "PadrinoCache" do
       enable :caching
       get('/foo', :cache => true){ called ? halt(500) : (called = 'test page') }
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test page', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test page', body
     refute_equal false, called
@@ -45,8 +45,8 @@ describe "PadrinoCache" do
       enable :caching
       get('/foo', :cache => true){ called_times += 1; called_times.to_s }
     end
-    head "/foo"
-    head "/foo"
+    head '/foo'
+    head '/foo'
     assert_equal 1, called_times
   end
 
@@ -57,9 +57,9 @@ describe "PadrinoCache" do
       enable :caching
       post('/foo', :cache => true){ called_times += 1; called_times.to_s }
     end
-    post "/foo"
+    post '/foo'
     assert_equal 1, called_times
-    post "/foo"
+    post '/foo'
     assert_equal 2, called_times
   end
 
@@ -70,9 +70,9 @@ describe "PadrinoCache" do
       enable :caching
       delete('/foo', :cache => true){ called_times += 1; called_times.to_s }
     end
-    delete "/foo"
+    delete '/foo'
     assert_equal 1, called_times
-    delete "/foo"
+    delete '/foo'
     assert_equal 2, called_times
   end
 
@@ -83,9 +83,9 @@ describe "PadrinoCache" do
       enable :caching
       put('/foo', :cache => true){ called_times += 1; called_times.to_s }
     end
-    put "/foo"
+    put '/foo'
     assert_equal 1, called_times
-    put "/foo"
+    put '/foo'
     assert_equal 2, called_times
   end
 
@@ -97,11 +97,11 @@ describe "PadrinoCache" do
       get('/foo', :cache => true){ called ? 'test page again' : (called = 'test page') }
       get('/delete_foo'){ expire('/foo') }
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test page', body
-    get "/delete_foo"
-    get "/foo"
+    get '/delete_foo'
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test page again', body
     refute_equal false, called
@@ -134,18 +134,18 @@ describe "PadrinoCache" do
         end
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'foo', body
     assert_equal 'foo', @app.cache[:foo][:body]
-    get "/foo"
+    get '/foo'
     assert_equal 'foo', body
 
-    get "/bar"
+    get '/bar'
     assert_equal 200, status
     assert_equal 'bar', body
     assert_equal 'bar', @app.cache[:bar][:body]
-    get "/bar"
+    get '/bar'
     assert_equal 'bar', body
   end
 
@@ -157,11 +157,11 @@ describe "PadrinoCache" do
       get(:foo, :with => :id, :cache => true) { called ? 'test page again' : (called = 'test page') }
       get(:delete_foo, :with => :id) { expire(:foo, params[:id]) }
     end
-    get "/foo/12"
+    get '/foo/12'
     assert_equal 200, status
     assert_equal 'test page', body
-    get "/delete_foo/12"
-    get "/foo/12"
+    get '/delete_foo/12'
+    get '/foo/12'
     assert_equal 200, status
     assert_equal 'test page again', body
   end
@@ -172,13 +172,13 @@ describe "PadrinoCache" do
       controller :cache => true do
         register Padrino::Cache
         enable :caching
-        get("/foo"){ called ? halt(500) : (called = 'test') }
+        get('/foo'){ called ? halt(500) : (called = 'test') }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
   end
@@ -190,16 +190,16 @@ describe "PadrinoCache" do
       controller :cache => true do
         enable :caching
         expires 1
-        get("/foo"){ called ? halt(500) : (called = 'test') }
+        get('/foo'){ called ? halt(500) : (called = 'test') }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    Time.stub(:now, Time.now + 2) { get "/foo" }
+    Time.stub(:now, Time.now + 2) { get '/foo' }
     assert_equal 500, status
   end
 
@@ -209,13 +209,13 @@ describe "PadrinoCache" do
       register Padrino::Cache
       enable :caching
       controller :cache => true do
-        get("/foo", :cache => false){ called ? 'test again' : (called = 'test') }
+        get('/foo', :cache => false){ called ? 'test again' : (called = 'test') }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -226,19 +226,19 @@ describe "PadrinoCache" do
       register Padrino::Cache
       enable :caching
       controller :cache => true do
-        get("/foo") {
+        get('/foo') {
           expires 1
           called ? 'test again' : (called = 'test')
         }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    Time.stub(:now, Time.now + 3) { get "/foo" }
+    Time.stub(:now, Time.now + 3) { get '/foo' }
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -249,7 +249,7 @@ describe "PadrinoCache" do
       register Padrino::Cache
       enable :caching
       controller do
-        get("/foo") {
+        get('/foo') {
           expires 1
           cache(:test, :expires => 2) do
             called ? 'test again' : (called = 'test')
@@ -257,13 +257,13 @@ describe "PadrinoCache" do
         }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    Time.stub(:now, Time.now + 3) { get "/foo" }
+    Time.stub(:now, Time.now + 3) { get '/foo' }
     assert_equal 200, status
     assert_equal 'test again', body
   end
@@ -274,13 +274,13 @@ describe "PadrinoCache" do
       register Padrino::Cache
       disable :caching
       controller :cache => true do
-        get("/foo"){ called ? halt(500) : (called = 'test') }
+        get('/foo'){ called ? halt(500) : (called = 'test') }
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal 'test', body
-    get "/foo"
+    get '/foo'
     assert_equal 500, status
   end
 
@@ -388,11 +388,11 @@ describe "PadrinoCache" do
         end
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 200, status
     assert_equal '{"foo":"bar"}', body
     assert_equal '{"foo":"bar"}', @app.cache[:foo][:body]
-    get "/foo"
+    get '/foo'
     assert_equal '{"foo":"bar"}', body
     assert_match(/json/, last_response.content_type)
   end
@@ -426,34 +426,34 @@ describe "PadrinoCache" do
       register Padrino::Cache
       enable :caching
       controller :cache => true do
-        get("/foo") do
+        get('/foo') do
           expires 1
           called_times_a += 1
           called_times_b.to_s
         end
-        get("/bar") do
+        get('/bar') do
           expires 3
           called_times_b += 1
           called_times_b.to_s
         end
       end
     end
-    Time.stub(:now, Time.now) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now) { get '/foo'; get '/bar' }
     assert_equal 1, called_times_a
     assert_equal 1, called_times_b
-    Time.stub(:now, Time.now + 0.5) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now + 0.5) { get '/foo'; get '/bar' }
     assert_equal 1, called_times_a
     assert_equal 1, called_times_b
-    Time.stub(:now, Time.now + 2) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now + 2) { get '/foo'; get '/bar' }
     assert_equal 2, called_times_a
     assert_equal 1, called_times_b
-    Time.stub(:now, Time.now + 2.5) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now + 2.5) { get '/foo'; get '/bar' }
     assert_equal 2, called_times_a
     assert_equal 1, called_times_b
-    Time.stub(:now, Time.now + 4) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now + 4) { get '/foo'; get '/bar' }
     assert_equal 3, called_times_a
     assert_equal 2, called_times_b
-    Time.stub(:now, Time.now + 5.5) { get "/foo"; get "/bar" }
+    Time.stub(:now, Time.now + 5.5) { get '/foo'; get '/bar' }
     assert_equal 4, called_times_a
     assert_equal 2, called_times_b
   end
@@ -478,12 +478,12 @@ describe "PadrinoCache" do
     assert_kind_of Moneta::Adapters::Memory, adapter
   end
 
-  it "should check key existence" do
+  it 'should check key existence' do
     count1, count2 = 0, 0
     mock_app do
       register Padrino::Cache
       enable :caching
-      get "/" do
+      get '/' do
         cache(:foo) do
           count1 += 1
           nil
@@ -491,7 +491,7 @@ describe "PadrinoCache" do
         count1.inspect
       end
 
-      get "/object" do
+      get '/object' do
         cache_object(:bar) do
           count2 += 1
           nil
@@ -499,10 +499,10 @@ describe "PadrinoCache" do
         count2.inspect
       end
     end
-    2.times { get "/" }
-    assert_equal "1", body
-    2.times { get "/object" }
-    assert_equal "1", body
+    2.times { get '/' }
+    assert_equal '1', body
+    2.times { get '/object' }
+    assert_equal '1', body
   end
 
   it 'should cache full mime type of content_type' do
@@ -514,9 +514,9 @@ describe "PadrinoCache" do
         '{}'
       end
     end
-    get "/foo"
+    get '/foo'
     assert_equal 'application/json;charset=utf-8', last_response.content_type
-    get "/foo"
+    get '/foo'
     assert_equal 'application/json;charset=utf-8', last_response.content_type
   end
 end

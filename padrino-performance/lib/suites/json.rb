@@ -32,9 +32,9 @@ following call stacks to see who loaded the offending libraries
 and contact the authors if necessary:"
 WARN
           loaded_libs.each_key do |name|
-            $stderr.puts "=================="
-            $stderr.puts "libname: " + name
-            $stderr.puts "=================="
+            $stderr.puts '=================='
+            $stderr.puts 'libname: ' + name
+            $stderr.puts '=================='
             $stderr.puts caller
           end
         end
@@ -45,7 +45,7 @@ WARN
       end
 
       infect_require!
-      setup_captures!("json", "json_pure", "yajl-ruby", "oj", "crack")
+      setup_captures!('json', 'json_pure', 'yajl-ruby', 'oj', 'crack')
     end # JSON
   # Performance
   end

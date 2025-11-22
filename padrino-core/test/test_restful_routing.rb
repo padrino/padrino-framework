@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Routing" do
+describe 'Routing' do
   it 'should perform restul routing' do
     mock_app do
       controller :parent => :parents do
@@ -21,13 +21,13 @@ describe "Routing" do
         end
       end
     end
-    get "/parents/1/hi"
-    assert_equal "/parents/1/hi get", body
-    put "/parents/1/hi"
-    assert_equal "/parents/1/hi put", body
-    post "/parents/1/hi"
-    assert_equal "/parents/1/hi post", body
-    delete "/parents/1/hi"
-    assert_equal "/parents/1/hi delete", body
+    get '/parents/1/hi'
+    assert_equal '/parents/1/hi get', body
+    put '/parents/1/hi'
+    assert_equal '/parents/1/hi put', body
+    post '/parents/1/hi'
+    assert_equal '/parents/1/hi post', body
+    delete '/parents/1/hi'
+    assert_equal '/parents/1/hi delete', body
   end
 end

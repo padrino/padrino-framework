@@ -219,7 +219,7 @@ module Padrino
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
         if except = options.delete(:except)
-          fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
+          fail 'You cannot use :except with other options specified' unless args.empty? && options.empty?
           except = Array(except)
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
@@ -393,7 +393,7 @@ module Padrino
           part
         end
 
-        [parent_prefix, path].flatten.join("")
+        [parent_prefix, path].flatten.join('')
       end
 
       private
@@ -428,7 +428,7 @@ module Padrino
       # Searches compiled router for a path responding to args and makes a path with params.
       def make_path_with_params(args, params)
         names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
-        name = names[0, 2].join(" ").to_sym
+        name = names[0, 2].join(' ').to_sym
         compiled_router.path(name, *(params_array << params))
       rescue PathRouter::InvalidRouteException
         raise Padrino::Routing::UnrecognizedException, "Route mapping for url(#{name.inspect}) could not be found"
@@ -523,7 +523,7 @@ module Padrino
 
         invoke_hook(:route_added, verb, path, block)
 
-        path[0, 0] = "/" if path == "(.:format)?"
+        path[0, 0] = '/' if path == '(.:format)?'
         route = router.add(verb, path, route_options)
         route.name = name if name
         route.action = action
@@ -626,8 +626,8 @@ module Padrino
           unless controller.empty?
             # Now we need to add our controller path only if not mapped directly
             if !map && !absolute_map
-              controller_path = controller.join("/")
-              path.gsub!(%r{^\(/\)|/\?}, "")
+              controller_path = controller.join('/')
+              path.gsub!(%r{^\(/\)|/\?}, '')
               path = File.join(controller_path, path)  unless @_map
             end
           end
@@ -644,8 +644,8 @@ module Padrino
           # Small reformats
           path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
           path.gsub!(%r{//$}, '/')                     # Remove index path
-          path[0,0] = "/" if path !~ %r{^\(?/}         # Paths must start with a /
-          path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
+          path[0,0] = '/' if path !~ %r{^\(?/}         # Paths must start with a /
+          path.sub!(%r{/(\))?$}, '\\1') if path != '/' # Remove latest trailing delimiter
           path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
           path.squeeze!('/')
         when Regexp
@@ -655,7 +655,7 @@ module Padrino
         name = options.delete(:route_name) if name.nil? && options.key?(:route_name)
         name = options.delete(:name) if name.nil? && options.key?(:name)
         if name
-          controller_name = controller.join("_")
+          controller_name = controller.join('_')
           name = "#{controller_name} #{name}".to_sym unless controller_name.empty?
         end
 
@@ -671,7 +671,7 @@ module Padrino
       def process_path_for_with_params(path, with_params)
         File.join(path, Array(with_params).map do |step|
           step.kind_of?(String) ? step : step.inspect
-        end.join("/"))
+        end.join('/'))
       end
 
       ##
@@ -679,7 +679,7 @@ module Padrino
       # Used for calculating path in route method.
       #
       def process_path_for_provides(path)
-        path << "(.:format)?" unless path[-11, 11] == '(.:format)?'
+        path << '(.:format)?' unless path[-11, 11] == '(.:format)?'
       end
 
       ##
@@ -722,7 +722,7 @@ module Padrino
           accepts = request.accept.map(&:to_str)
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
-          catch_all = accepts.delete("*/*")
+          catch_all = accepts.delete('*/*')
 
           return provides_any?(accepts) if types.include?(:any)
 
@@ -963,7 +963,7 @@ module Padrino
           verb = request.request_method
           candidacies, allows = routes.partition{|route| route.verb == verb }
           if candidacies.empty?
-            response["Allows"] = allows.map(&:verb).join(", ")
+            response['Allows'] = allows.map(&:verb).join(', ')
             halt 405
           end
         end

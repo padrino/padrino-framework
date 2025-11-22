@@ -102,7 +102,7 @@ module Padrino
         #    = link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
         #
         def allowed?(account=nil, path=nil)
-          path = "/" if path.nil? || path.empty?
+          path = '/' if path.nil? || path.empty?
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq

@@ -50,12 +50,12 @@ module Padrino
     # @return [Array] The sorted route mappings.
     # @api semipublic
     def map(options={})
-      path = options[:path] || "/"
+      path = options[:path] || '/'
       host = options[:host]
       app  = options[:to]
 
-      raise ArgumentError, "paths need to start with /" if path[0] != ?/
-      raise ArgumentError, "app is required" if app.nil?
+      raise ArgumentError, 'paths need to start with /' if path[0] != ?/
+      raise ArgumentError, 'app is required' if app.nil?
 
       path  = path.chomp('/')
       match = Regexp.new("^#{Regexp.quote(path).gsub('/', '/+')}(.*)", Regexp::NOENCODING)
@@ -67,7 +67,7 @@ module Padrino
     # The call handler setup to route a request given the mappings specified.
     def call(env)
       began_at = Time.now
-      path_info = env["PATH_INFO"].to_s
+      path_info = env['PATH_INFO'].to_s
       script_name = env['SCRIPT_NAME']
       http_host = env['HTTP_HOST']
       last_result = nil
@@ -77,7 +77,7 @@ module Padrino
         next unless path_info =~ match && rest = ::Regexp.last_match(1)
         next unless rest.empty? || rest[0] == ?/
 
-        rest = "/" if rest.empty?
+        rest = '/' if rest.empty?
 
         env['SCRIPT_NAME'] = script_name + path
         env['PATH_INFO'] = rest
@@ -91,7 +91,7 @@ module Padrino
         env['SCRIPT_NAME'] = script_name
         env['PATH_INFO'] = path_info
         Padrino::Logger::Rack.new(nil,'/').send(:log, env, 404, {}, began_at) if logger.debug?
-        [404, {"content-type" => "text/plain", "x-cascade" => "pass"}, ["Not Found: #{path_info}"]]
+        [404, {'content-type' => 'text/plain', 'x-cascade' => 'pass'}, ["Not Found: #{path_info}"]]
       end
     end
   end

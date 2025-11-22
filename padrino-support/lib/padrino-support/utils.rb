@@ -2,7 +2,7 @@ require 'cgi'
 
 module Padrino
   module Utils
-    extend self
+    module_function
 
     ##
     # Builds an URI query from a Hash or any Object.
@@ -18,7 +18,7 @@ module Padrino
       case object
       when Hash
         object.map do |key, value|
-          next if value == {} || value == []
+          next if [{}, []].include?(value)
           build_uri_query(value, namespace ? "#{namespace}[#{key}]" : key)
         end.compact.join('&')
       when Array

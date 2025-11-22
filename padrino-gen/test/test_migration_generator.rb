@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "MigrationGenerator" do
+describe 'MigrationGenerator' do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -18,8 +18,8 @@ describe "MigrationGenerator" do
     end
 
     it 'should fail with NameError if given invalid namespace names' do
-      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
-      assert_raises(::NameError) { capture_io { generate(:migration, "wrong/name", "--root=#{@apptmp}/sample") } }
+      capture_io { generate(:project, 'sample', "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:migration, 'wrong/name', "--root=#{@apptmp}/sample") } }
     end
 
     it 'should fail if we do not use an adapter' do
@@ -43,32 +43,32 @@ describe "MigrationGenerator" do
 
     it 'should generate migration inside app root with singular table' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      capture_io { generate(:migration, 'add_email_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:migration, 'add_email_to_user', 'email:string', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_user.rb"
       assert_match_in_file(/class AddEmailToUser/m, migration_file_path)
       assert_match_in_file(/t.string :email/, migration_file_path)
       assert_match_in_file(/t.remove :email/, migration_file_path)
     end
 
-    describe "the default migration numbering" do
+    describe 'the default migration numbering' do
       it 'should properly calculate version number' do
         capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-        capture_io { generate(:migration, 'add_email_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
-        capture_io { generate(:migration, 'add_name_to_person', "email:string", "-r=#{@apptmp}/sample_project") }
-        capture_io { generate(:migration, 'add_age_to_user', "email:string", "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_email_to_person', 'email:string', "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_name_to_person', 'email:string', "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_age_to_user', 'email:string', "-r=#{@apptmp}/sample_project") }
         assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/001_add_email_to_person.rb")
         assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/002_add_name_to_person.rb")
         assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/003_add_age_to_user.rb")
       end
     end
 
-    describe "the timestamped migration numbering" do
+    describe 'the timestamped migration numbering' do
       it 'should properly calculate version number' do
         capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
 
-        time = stop_time_for_test.utc.strftime("%Y%m%d%H%M%S")
+        time = stop_time_for_test.utc.strftime('%Y%m%d%H%M%S')
 
-        capture_io { generate(:migration, 'add_gender_to_person', "gender:string", "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:migration, 'add_gender_to_person', 'gender:string', "-r=#{@apptmp}/sample_project") }
         assert_match_in_file(/Sequel\.migration do/m, "#{@apptmp}/sample_project/db/migrate/#{time}_add_gender_to_person.rb")
       end
     end
@@ -206,7 +206,7 @@ describe "MigrationGenerator" do
     end
   end
 
-  describe "the migration destroy option" do
+  describe 'the migration destroy option' do
     before do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       @migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]

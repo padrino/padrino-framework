@@ -11,7 +11,7 @@ module Padrino
       # Define the source template root
       def self.source_root; __dir__; end
       # Defines the "banner" text for the CLI.
-      def self.banner; "padrino-gen admin"; end
+      def self.banner; 'padrino-gen admin'; end
 
       # Include related modules.
       include Thor::Actions
@@ -29,12 +29,12 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
-      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
+      class_option :skip_migration, :aliases => '-s', :default => false, :type => :boolean
       # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
-      class_option :root, :desc => "The root destination", :aliases => '-r', :default => ".", :type => :string
+      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :renderer, :aliases => '-e', :desc => "Rendering engine (erb, haml, slim)", :type => :string
-      class_option :admin_model, :aliases => '-m', :desc => "The name of model for access controlling", :default => 'Account', :type => :string
+      class_option :renderer, :aliases => '-e', :desc => 'Rendering engine (erb, haml, slim)', :type => :string
+      class_option :admin_model, :aliases => '-m', :desc => 'The name of model for access controlling', :default => 'Account', :type => :string
       class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
 
       # Copies over the Padrino base admin application.
@@ -70,9 +70,9 @@ module Padrino
           @model_singular = @model_name.underscore
           @model_plural   = @model_singular.pluralize
 
-          directory "templates/app",       destination_root(@admin_path)
-          directory "templates/assets",    destination_root("public", @admin_path)
-          template  "templates/app.rb.tt", destination_root(@admin_path + "/app.rb")
+          directory 'templates/app',       destination_root(@admin_path)
+          directory 'templates/assets',    destination_root('public', @admin_path)
+          template  'templates/app.rb.tt', destination_root(@admin_path + '/app.rb')
           inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
           unless options[:destroy]
             insert_middleware 'ConnectionPoolManagement', @admin_path if [:minirecord, :activerecord].include?(orm)
@@ -80,12 +80,12 @@ module Padrino
           end
 
           params = [
-            @model_singular, "name:string", "surname:string", "email:string", "crypted_password:string", "role:string",
+            @model_singular, 'name:string', 'surname:string', 'email:string', 'crypted_password:string', 'role:string',
             "-a=#{options[:models_path]}",
             "-r=#{options[:root]}"
           ]
-          params << "-s" if options[:skip_migration]
-          params << "-d" if options[:destroy]
+          params << '-s' if options[:skip_migration]
+          params << '-d' if options[:destroy]
 
           Padrino::Generators::Model.start(params)
           column = Struct.new(:name, :type)
@@ -106,19 +106,19 @@ module Padrino
           end
 
           # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
-          template "templates/account/#{orm}.rb.tt", destination_root("models", "#{@model_singular}.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root('models', "#{@model_singular}.rb"), :force => true
 
-          if File.exist?(destination_root("db/seeds.rb"))
+          if File.exist?(destination_root('db/seeds.rb'))
             run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
           end
-          template "templates/account/seeds.rb.tt", destination_root("db/seeds.rb")
+          template 'templates/account/seeds.rb.tt', destination_root('db/seeds.rb')
 
-          empty_directory destination_root(@admin_path+"/controllers")
-          empty_directory destination_root(@admin_path+"/views")
-          empty_directory destination_root(@admin_path+"/views/base")
-          empty_directory destination_root(@admin_path+"/views/layouts")
-          empty_directory destination_root(@admin_path+"/views/sessions")
-          empty_directory destination_root(@admin_path+"/views/errors")
+          empty_directory destination_root(@admin_path+'/controllers')
+          empty_directory destination_root(@admin_path+'/views')
+          empty_directory destination_root(@admin_path+'/views/base')
+          empty_directory destination_root(@admin_path+'/views/layouts')
+          empty_directory destination_root(@admin_path+'/views/sessions')
+          empty_directory destination_root(@admin_path+'/views/errors')
 
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root(@admin_path+"/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root(@admin_path+"/views/layouts/application.#{ext}")
@@ -134,7 +134,7 @@ module Padrino
             require_dependencies('bcrypt')
           end
 
-          require_dependencies 'activesupport', :version => ">= 3.1"
+          require_dependencies 'activesupport', :version => '>= 3.1'
 
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.
@@ -156,14 +156,14 @@ module Padrino
           instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
 
           say
-          say "="*65, :green
-          say "The admin panel has been mounted! Next, follow these steps:", :green
-          say "="*65, :green
+          say '='*65, :green
+          say 'The admin panel has been mounted! Next, follow these steps:', :green
+          say '='*65, :green
           say instructions.join("\n")
-          say "="*65, :green
+          say '='*65, :green
           say
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end

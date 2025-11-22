@@ -10,7 +10,7 @@ module Padrino
       # Constructs an instance of PathRouter::Matcher.
       #
       def initialize(path, options = {})
-        @path = path.is_a?(String) && path.empty? ? "/" : path
+        @path = path.is_a?(String) && path.empty? ? '/' : path
         @capture = options[:capture]
         @default_values = options[:default_values]
       end
@@ -21,7 +21,7 @@ module Padrino
       def match(pattern)
         if match_data = handler.match(pattern)
           match_data
-        elsif pattern != "/" && pattern.end_with?("/")
+        elsif pattern != '/' && pattern.end_with?('/')
           handler.match(pattern[0..-2])
         end
       end

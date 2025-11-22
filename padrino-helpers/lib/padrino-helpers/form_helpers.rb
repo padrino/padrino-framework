@@ -525,7 +525,7 @@ module Padrino
       #
       def submit_tag(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        caption = args.length >= 1 ? args.first : "Submit"
+        caption = args.length >= 1 ? args.first : 'Submit'
         input_tag(:submit, { :value => caption }.merge(options))
       end
 
@@ -643,7 +643,7 @@ module Padrino
       #
       def datetime_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%Y-%m-%dT%T.%L%z", options)
+        options = convert_attributes_into_datetime('%Y-%m-%dT%T.%L%z', options)
         input_tag(:datetime, options)
       end
 
@@ -669,7 +669,7 @@ module Padrino
       #
       def datetime_local_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%Y-%m-%dT%T", options)
+        options = convert_attributes_into_datetime('%Y-%m-%dT%T', options)
         input_tag(:"datetime-local", options)
       end
 
@@ -695,7 +695,7 @@ module Padrino
       #
       def date_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%Y-%m-%d", options)
+        options = convert_attributes_into_datetime('%Y-%m-%d', options)
         input_tag(:date, options)
       end
 
@@ -721,7 +721,7 @@ module Padrino
       #
       def month_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%Y-%m", options)
+        options = convert_attributes_into_datetime('%Y-%m', options)
         input_tag(:month, options)
       end
 
@@ -747,7 +747,7 @@ module Padrino
       #
       def week_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%Y-W%W", options)
+        options = convert_attributes_into_datetime('%Y-W%W', options)
         input_tag(:week, options)
       end
 
@@ -773,7 +773,7 @@ module Padrino
       #
       def time_field_tag(name, options = {})
         options = { :name => name }.update(options)
-        options = convert_attributes_into_datetime("%T.%L", options)
+        options = convert_attributes_into_datetime('%T.%L', options)
         input_tag(:time, options)
       end
 
@@ -845,9 +845,9 @@ module Padrino
       #   adust_color("#foobar") #=> "#000000"
       #
       def adjust_color(color)
-        return "#000000" unless color =~ COLOR_CODE_REGEXP
+        return '#000000' unless color =~ COLOR_CODE_REGEXP
         return color if (color_size = color.size) == 7
-        color.slice(1, color_size - 1).each_char.with_object("#") do |chr, obj|
+        color.slice(1, color_size - 1).each_char.with_object('#') do |chr, obj|
           obj << chr * 2
         end
       end

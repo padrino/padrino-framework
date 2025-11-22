@@ -186,7 +186,7 @@ module Padrino
 
         # extract generic options
         locals          = options.delete(:locals) || locals         || {}
-        views           = options.delete(:views)  || settings.views || "./views"
+        views           = options.delete(:views)  || settings.views || './views'
         layout          = options[:layout]
         layout          = false if layout.nil? && options.include?(:layout)
         eat_errors      = layout.nil?
@@ -294,7 +294,7 @@ module Padrino
 
         settings.cache_template_path(["#{controller_key}/#{template_path}", rendering_options[1], rendering_options[2]]) do
           options = DEFAULT_RENDERING_OPTIONS.merge(options)
-          view_path = options[:views] || settings.views || "./views"
+          view_path = options[:views] || settings.views || './views'
 
           template_candidates = glob_templates(view_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
@@ -313,7 +313,7 @@ module Padrino
       end
 
       def resolve_layout(layout, options={})
-        layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || "./views"
+        layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || './views'
         template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
 

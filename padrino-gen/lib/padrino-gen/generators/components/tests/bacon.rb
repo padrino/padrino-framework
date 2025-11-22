@@ -81,11 +81,11 @@ def setup_test
   require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
   require_dependencies 'bacon', :group => 'test'
   insert_test_suite_setup BACON_SETUP, :path => 'test/test_config.rb'
-  create_file destination_root("test/test.rake"), BACON_RAKE
+  create_file destination_root('test/test.rake'), BACON_RAKE
 end
 
 def generate_controller_test(name, path)
-  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
+  bacon_contents       = BACON_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
   controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), bacon_contents, :skip => true
 end

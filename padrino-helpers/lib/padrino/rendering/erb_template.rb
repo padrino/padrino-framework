@@ -3,9 +3,9 @@ module Padrino
     class SafeERB < ::ERB
       class Compiler < ::ERB::Compiler
         def add_insert_cmd(out, content)
-          out.push("@__in_ruby_literal = true")
+          out.push('@__in_ruby_literal = true')
           super
-          out.push("@__in_ruby_literal = false")
+          out.push('@__in_ruby_literal = false')
         end
       end
 

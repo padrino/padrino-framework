@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "ProjectGenerator" do
+describe 'ProjectGenerator' do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -57,13 +57,13 @@ describe "ProjectGenerator" do
     end
 
     it 'should raise an Error when given invalid constant names' do
-      assert_raises(::NameError) { capture_io { generate(:project, "123asdf", "--root=#{@apptmp}") } }
-      assert_raises(::NameError) { capture_io { generate(:project, "./sample_project", "--root=#{@apptmp}") } }
+      assert_raises(::NameError) { capture_io { generate(:project, '123asdf', "--root=#{@apptmp}") } }
+      assert_raises(::NameError) { capture_io { generate(:project, './sample_project', "--root=#{@apptmp}") } }
     end
 
     it 'should display the right path' do
-      out, = capture_io { generate(:project, 'project', "--root=/tmp") }
-      assert_dir_exists("/tmp/project")
+      out, = capture_io { generate(:project, 'project', '--root=/tmp') }
+      assert_dir_exists('/tmp/project')
       assert_match(/cd \/tmp\/project/, out)
     end
 
@@ -96,8 +96,8 @@ describe "ProjectGenerator" do
     end
 
     it 'should generate lean project correctly even if the component is specified' do
-      _, err = capture_io { generate(:project,'sample_project', '--lean', "--root=#{@apptmp}", "--orm=activerecord", "--stylesheet=compass") }
-      assert_match("", err)
+      _, err = capture_io { generate(:project,'sample_project', '--lean', "--root=#{@apptmp}", '--orm=activerecord', '--stylesheet=compass') }
+      assert_match('', err)
     end
 
     it 'should generate tiny skeleton' do
@@ -205,19 +205,19 @@ describe "ProjectGenerator" do
     end
 
     it 'should create .keep files for empty directories that are required for running application' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--stylesheet=sass", "--orm=sequel") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass', '--orm=sequel') }
       assert_file_exists("#{@apptmp}/sample_project/tmp/.keep")
       assert_file_exists("#{@apptmp}/sample_project/log/.keep")
     end
 
     it 'should allow to pass upcased name as the app name' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--app=API") }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=API') }
       assert_file_exists("#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class API < Padrino::Application/, "#{@apptmp}/sample_project/app/app.rb")
     end
   end
 
-  describe "a generator for mock component" do
+  describe 'a generator for mock component' do
     it 'should properly generate for rr and minitest' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
@@ -247,7 +247,7 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for HTTP server" do
+  describe 'the generator for HTTP server' do
     it 'should properly generate for webrick by default' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_match_in_file(/# Server requirements\ngem 'webrick'\n/, "#{@apptmp}/sample_project/Gemfile")
@@ -279,8 +279,8 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for orm components" do
-    describe "for sequel" do
+  describe 'the generator for orm components' do
+    describe 'for sequel' do
       it 'should properly generate default' do
         @app.send(:undef, :setup_orm) if @app.respond_to?(:setup_orm)
         out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=sequel', '--script=none') }
@@ -328,7 +328,7 @@ describe "ProjectGenerator" do
       end
     end
 
-    describe "for activerecord" do
+    describe 'for activerecord' do
       it 'should properly generate default' do
         out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
         assert_match(/applying.*?activerecord.*?orm/, out)
@@ -374,7 +374,7 @@ describe "ProjectGenerator" do
       end
     end
 
-    describe "for datamapper" do
+    describe 'for datamapper' do
       it 'should properly generate default' do
         out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=datamapper', '--script=none') }
         assert_match(/applying.*?datamapper.*?orm/, out)
@@ -470,7 +470,7 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for renderer component" do
+  describe 'the generator for renderer component' do
     it 'should properly generate for erb' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--script=none') }
       assert_match(/applying.*?erb.*?renderer/, out)
@@ -496,7 +496,7 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for script component" do
+  describe 'the generator for script component' do
     it 'should properly generate for jquery' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
       assert_match(/applying.*?jquery.*?script/, out)
@@ -539,7 +539,7 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for test component" do
+  describe 'the generator for test component' do
     it 'should properly generate for bacon' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=bacon', '--script=none') }
       assert_match(/applying.*?bacon.*?test/, out)
@@ -621,7 +621,7 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "the generator for stylesheet component" do
+  describe 'the generator for stylesheet component' do
     it 'should properly generate for sass' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=sass') }
       assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
@@ -659,9 +659,9 @@ describe "ProjectGenerator" do
     end
   end
 
-  describe "tiny app skeleton generator for test component" do
-    it "should properly generate for rspec" do
-      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=rspec") }
+  describe 'tiny app skeleton generator for test component' do
+    it 'should properly generate for rspec' do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", '--test=rspec') }
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
@@ -671,8 +671,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/RSpec.describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
 
-    it "should properly generate for cucumber" do
-      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=cucumber") }
+    it 'should properly generate for cucumber' do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", '--test=cucumber') }
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/controllers/controllers_spec.rb")
       assert_file_exists("#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
@@ -681,8 +681,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
 
-    it "should properly generate for bacon" do
-      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=bacon") }
+    it 'should properly generate for bacon' do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", '--test=bacon') }
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
@@ -691,8 +691,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
 
-    it "should properly generate for minitest" do
-      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=minitest") }
+    it 'should properly generate for minitest' do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", '--test=minitest') }
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
@@ -701,8 +701,8 @@ describe "ProjectGenerator" do
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
 
-    it "should properly generate for shoulda" do
-      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", "--test=shoulda") }
+    it 'should properly generate for shoulda' do
+      capture_io { generate(:project,'sample_project', '--tiny', "--root=#{@apptmp}", '--test=shoulda') }
       assert_dir_exists("#{@apptmp}/sample_project/test/")
       assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
@@ -711,7 +711,7 @@ describe "ProjectGenerator" do
       assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
 
-    it "should properly generate for testunit" do
+    it 'should properly generate for testunit' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testunit', '--script=none', '--tiny') }
       assert_match(/applying.*?testunit.*?test/, out)
       assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")

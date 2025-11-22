@@ -21,7 +21,7 @@ module Padrino
       end
 
       def public_folder
-        @public_folder ||= trace_method(:public_folder) { "" }
+        @public_folder ||= trace_method(:public_folder) { '' }
       end
 
       def app_name

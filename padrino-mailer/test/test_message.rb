@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Message" do
+describe 'Message' do
   describe 'the message' do
     it 'should accept headers and body' do
       message = Mail::Message.new do
@@ -32,8 +32,8 @@ describe "Message" do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        locals  :foo => "Im Foo!"
-        body    erb("<%= foo %>")
+        locals  :foo => 'Im Foo!'
+        body    erb('<%= foo %>')
       end
 
       assert_equal ['padrino@me.com'],    message.from

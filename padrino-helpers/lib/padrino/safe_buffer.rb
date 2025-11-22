@@ -13,7 +13,7 @@ module Padrino
 
     class SafeConcatError < StandardError
       def initialize
-        super "Could not concatenate to the buffer because it is not html safe."
+        super 'Could not concatenate to the buffer because it is not html safe.'
       end
     end
 
@@ -36,7 +36,7 @@ module Padrino
       original_concat(value)
     end
 
-    def initialize(str = "")
+    def initialize(str = '')
       @html_safe = true
       super
     end

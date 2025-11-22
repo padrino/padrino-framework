@@ -1,6 +1,6 @@
 class Boo
   def self.class_method
-    "BooClass"
+    'BooClass'
   end
 end
 

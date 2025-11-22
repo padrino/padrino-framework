@@ -12,7 +12,7 @@ module Padrino
       # Defines default settings for Padrino application.
       #
       def default_configuration!
-        set :app_file, File.expand_path(caller_files.first || $0)
+        set :app_file, File.expand_path(caller_files.first || $PROGRAM_NAME)
         set :app_name, Inflections.underscore(settings).to_sym
 
         set :environment, Padrino.env

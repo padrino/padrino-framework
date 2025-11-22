@@ -18,8 +18,8 @@ module Kernel
   def load_fixture(file)
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)
-    file += ".rb" if file !~ /.rb$/
-    capture_io { load File.join(File.dirname(__FILE__), "fixtures", file) }
+    file += '.rb' if file !~ /.rb$/
+    capture_io { load File.join(File.dirname(__FILE__), 'fixtures', file) }
   end
 end
 

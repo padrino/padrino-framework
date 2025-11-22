@@ -60,7 +60,7 @@ module Padrino
         server.threaded = true if server.respond_to?(:threaded=)
       end
     ensure
-      puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
+      puts '<= Padrino leaves the gun, takes the cannoli' unless options[:daemonize]
     end
 
     # The application the server will run.

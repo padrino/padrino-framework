@@ -36,7 +36,7 @@ DYNAMOID
 def setup_orm
   require_dependencies 'aws-sdk'
   require_dependencies 'dynamoid', :version => '~>0.7.1'
-  create_file("config/database.rb", DYNAMOID.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', DYNAMOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
 DYNAMOID_MODEL = <<-MODEL unless defined?(DYNAMOID_MODEL)
@@ -51,7 +51,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "field :#{field}, :#{kind}" }.join("\n  ")
   model_contents = DYNAMOID_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

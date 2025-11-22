@@ -11,9 +11,9 @@ if defined?(MongoMapper)
       MongoMapper.database.collections.reject {|c| c.name =~ /system/ }.each(&:drop)
     end
 
-    desc "Generates .yml files for I18n translations"
+    desc 'Generates .yml files for I18n translations'
     task :translate => :environment do
-      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
 
       models.each do |m|
         # Get the model class.
@@ -36,15 +36,15 @@ if defined?(MongoMapper)
             end
           else
             locale     = "#{lang}:" + "\n" \
-                         "  models:" + "\n" \
+                         '  models:' + "\n" \
                          "    #{m}:" + "\n" \
                          "      name: #{klass.human_name}" + "\n" \
-                         "      attributes:" + "\n" +
+                         '      attributes:' + "\n" +
                          columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
           end
 
           $stdout.flush
-          File.open(filename, "w") { |f| f.puts locale }
+          File.open(filename, 'w') { |f| f.puts locale }
         end
         puts
       end

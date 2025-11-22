@@ -18,7 +18,7 @@ def setup_orm
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
       sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{db}_test\"")
-      require_dependencies 'mysql', :version => "~> 2.8.1"
+      require_dependencies 'mysql', :version => '~> 2.8.1'
     when 'mysql', 'mysql2'
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql2://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql2://localhost/#{db}_production\"")
@@ -39,11 +39,11 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask("Please, choose a proper adapter:", :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 
-  create_file("config/database.rb", sequel)
+  create_file('config/database.rb', sequel)
   empty_directory('db/migrate')
 end
 

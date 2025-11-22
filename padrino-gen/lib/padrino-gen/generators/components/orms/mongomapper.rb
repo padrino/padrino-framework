@@ -12,7 +12,7 @@ def setup_orm
   require_dependencies 'mongo_mapper'
   require_dependencies 'bson_ext', :require => 'mongo'
   require_dependencies 'activemodel', :version => '< 5'
-  create_file("config/database.rb", MONGO.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', MONGO.gsub(/!NAME!/, @project_name.underscore))
 end
 
 MM_MODEL = <<-MODEL unless defined?(MM_MODEL)
@@ -28,7 +28,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "key :#{field}, #{kind.underscore.camelize}" }.join("\n  ")
   model_contents = MM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

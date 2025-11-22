@@ -21,7 +21,7 @@ module Padrino
         components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
-        Padrino.bin_gen(*params.unshift("project"))
+        Padrino.bin_gen(*params.unshift('project'))
       end
 
       ##
@@ -37,8 +37,8 @@ module Padrino
       #   generate :controller, "posts get:index get:new post:new"
       #   generate :migration, "AddEmailToUser email:string"
       #
-      def generate(type, arguments="")
-        params = arguments.split(" ").push("-r=#{destination_root}")
+      def generate(type, arguments='')
+        params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
         say "=> Executing: padrino-gen #{type} #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift(type))
@@ -54,7 +54,7 @@ module Padrino
       #   rake "custom task1 task2"
       #
       def rake(command)
-        Padrino.bin("rake", command, "-c=#{destination_root}")
+        Padrino.bin('rake', command, "-c=#{destination_root}")
       end
 
       ##
@@ -96,7 +96,7 @@ module Padrino
       #
       def git(*args)
         FileUtils.cd(destination_root) do
-          cmd = "git %s" % args.join(' ')
+          cmd = 'git %s' % args.join(' ')
           say cmd, :green
           system cmd
         end
@@ -135,7 +135,7 @@ module Padrino
           end
         begin
           self.apply(template_path)
-        rescue => error
+        rescue StandardError => error
           say("The template at #{template_path} could not be loaded: #{error.message}", :red)
         end
       end

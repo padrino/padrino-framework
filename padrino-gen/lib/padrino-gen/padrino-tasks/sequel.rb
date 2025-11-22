@@ -1,42 +1,42 @@
 if PadrinoTasks.load?(:sequel, defined?(Sequel))
   namespace :sq do
     namespace :migrate do
-      desc "Perform automigration (reset your db data)"
+      desc 'Perform automigration (reset your db data)'
       task :auto => :skeleton do
         ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate", :target => 0
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate"
-        puts "<= sq:migrate:auto executed"
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', :target => 0
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
+        puts '<= sq:migrate:auto executed'
       end
 
-      desc "Perform migration up/down to MIGRATION_VERSION"
+      desc 'Perform migration up/down to MIGRATION_VERSION'
       task :to, [:version] => :skeleton do |_t, args|
         version = (args[:version] || env_migration_version).to_s.strip
         ::Sequel.extension :migration
-        fail "No MIGRATION_VERSION was provided" if version.empty?
-        ::Sequel::Migrator.apply(Sequel::Model.db, "db/migrate", version.to_i)
+        fail 'No MIGRATION_VERSION was provided' if version.empty?
+        ::Sequel::Migrator.apply(Sequel::Model.db, 'db/migrate', version.to_i)
         puts "<= sq:migrate:to[#{version}] executed"
       end
 
-      desc "Perform migration up to latest migration available"
+      desc 'Perform migration up to latest migration available'
       task :up => :skeleton do
         ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate"
-        puts "<= sq:migrate:up executed"
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
+        puts '<= sq:migrate:up executed'
       end
 
-      desc "Perform migration down (erase all data)"
+      desc 'Perform migration down (erase all data)'
       task :down => :skeleton do
         ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, "db/migrate", :target => 0
-        puts "<= sq:migrate:down executed"
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', :target => 0
+        puts '<= sq:migrate:down executed'
       end
     end
 
-    desc "Perform migration up to latest migration available"
+    desc 'Perform migration up to latest migration available'
     task :migrate => 'sq:migrate:up'
 
-    desc "Create the database"
+    desc 'Create the database'
     task :create => :skeleton do
       config = Sequel::Model.db.opts
       user, password, host = config[:user], config[:password], config[:host]
@@ -51,10 +51,10 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
         require 'padrino-gen/padrino-tasks/sql-helpers'
         Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation)
       end
-      puts "<= sq:create executed"
+      puts '<= sq:create executed'
     end
 
-    desc "Drop the database (postgres and mysql only)"
+    desc 'Drop the database (postgres and mysql only)'
     task :drop => :skeleton do
       config = ::Sequel::Model.db.opts
       user, password, host, database = config[:user], config[:password], config[:host], config[:database]
@@ -67,7 +67,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       else
         Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database)
       end
-      puts "<= sq:drop executed"
+      puts '<= sq:drop executed'
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'

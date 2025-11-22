@@ -12,7 +12,7 @@ module Padrino
 
       class << self
         def source_root; __dir__; end
-        def banner; "padrino-gen task [name]"; end
+        def banner; 'padrino-gen task [name]'; end
       end
 
       desc "Description:\n\n\tpadrino-gen task generates a new task file."
@@ -32,7 +32,7 @@ module Padrino
           @task_name = name.to_s.underscore
           @namespace = options[:namespace].underscore if options[:namespace]
           @desc      = options[:description]
-          filename   = @task_name + ".rake"
+          filename   = @task_name + '.rake'
           filename   = "#{@namespace}_#{filename}" if @namespace
 
           template 'templates/task.rb.tt', destination_root('tasks', filename)

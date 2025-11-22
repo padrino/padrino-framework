@@ -1,6 +1,6 @@
 class RollbackTarget
   def self.hello
-    "hello"
+    'hello'
   end
 end
 

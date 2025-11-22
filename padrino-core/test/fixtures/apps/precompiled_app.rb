@@ -13,7 +13,7 @@ module PrecompiledApp
   end
 end
 
-Padrino.mount("PrecompiledApp::SubApp").to("/subapp")
-Padrino.mount("PrecompiledApp::App").to("/")
+Padrino.mount('PrecompiledApp::SubApp').to('/subapp')
+Padrino.mount('PrecompiledApp::App').to('/')
 
 Padrino.load!

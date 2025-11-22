@@ -8,15 +8,15 @@ class SimpleDemo < Padrino::Application
   set :reload, true
   before { true }
   after  { true }
-  error(404) { "404" }
+  error(404) { '404' }
 end
 
 SimpleDemo.controllers do
-  get "/" do
+  get '/' do
     'The magick number is: 2767356926488785838763860464013972991031534522105386787489885890443740254365!' # Change only the number!!!
   end
 
-  get "/rand" do
+  get '/rand' do
     rand(2 ** 256).to_s
   end
 end

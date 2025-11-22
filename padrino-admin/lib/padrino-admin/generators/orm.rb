@@ -53,7 +53,7 @@ module Padrino
             when :datamapper   then @klass.properties.map { |p| dm_column(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values.reject { |col| %w[_id _type].include?(col.name) }
-            when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
+            when :mongomapper  then @klass.keys.values.reject { |key| key.name == '_id' } # On MongoMapper keys are an hash
             when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
             when :dynamoid     then @klass.attributes.map { |k,v| Column.new(k.to_s, v[:type]) }

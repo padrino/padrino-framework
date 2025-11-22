@@ -27,7 +27,7 @@ module Padrino
           else
             return if migration_exist?(filename)
             model_name = name.to_s.pluralize
-            field_tuples = columns.map { |value| value.split(":") }
+            field_tuples = columns.map { |value| value.split(':') }
             field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] }
             column_declarations = field_tuples.map(&options[:column_format]).join("\n      ")
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
@@ -69,7 +69,7 @@ module Padrino
             change_format = options[:change_format]
             migration_scan = filename.underscore.camelize.scan(/(Add|Remove).*?(?:(?:To|From).+?)*(?:To|From)((?:To|From)?.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
-            tuples = direction ? columns.map { |value| value.split(":") } : []
+            tuples = direction ? columns.map { |value| value.split(':') } : []
             tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] }
             add_columns    = tuples.map(&options[:add]).join("\n      ")
             remove_columns = tuples.map(&options[:remove]).join("\n      ")
@@ -99,7 +99,7 @@ module Padrino
         #
         def current_migration_number
           if fetch_component_choice(:migration_format).to_s == 'timestamp'
-            Time.now.utc.strftime("%Y%m%d%H%M%S")
+            Time.now.utc.strftime('%Y%m%d%H%M%S')
           else
             return_last_migration_number + 1
           end.to_s
@@ -144,7 +144,7 @@ module Padrino
         #   => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
         #
         def insert_test_suite_setup(suite_text, options={})
-          options = { :path => "test/test_config.rb" }.update(options)
+          options = { :path => 'test/test_config.rb' }.update(options)
           create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"))
         end
 
@@ -161,7 +161,7 @@ module Padrino
         #   => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
         #
         def insert_mocking_include(library_name, options={})
-          options = { :indent => 2, :after => /class.*?\n/, :path => "test/test_config.rb" }.update(options)
+          options = { :indent => 2, :after => /class.*?\n/, :path => 'test/test_config.rb' }.update(options)
           return unless File.exist?(destination_root(options[:path]))
           include_text = indent_spaces(2) + "include #{library_name}\n"
           inject_into_file(options[:path], include_text, :after => options[:after])
@@ -187,11 +187,11 @@ module Padrino
         #   controller_actions("get:index", "post:test")
         #
         def controller_actions(fields)
-          field_tuples = fields.map { |value| value.split(":") }
+          field_tuples = fields.map { |value| value.split(':') }
           action_declarations = field_tuples.map do |request, name|
             "#{request} :#{name} do\n\nend\n"
           end
-          action_declarations.join("\n").gsub(/^/, " " * 2).gsub(/^\s*$/, "")
+          action_declarations.join("\n").gsub(/^/, ' ' * 2).gsub(/^\s*$/, '')
         end
 
         def create_helper_files(app, name)

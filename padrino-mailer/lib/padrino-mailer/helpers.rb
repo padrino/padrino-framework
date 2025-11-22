@@ -149,7 +149,7 @@ module Padrino
         def delivery_settings
           @_delivery_setting ||= begin
             if Gem.win_platform? && !respond_to?(:delivery_method)
-              raise "To use mailers on Windows you must set a :delivery_method, see http://padrinorb.com/guides/features/padrino-mailer/#configuration"
+              raise 'To use mailers on Windows you must set a :delivery_method, see http://padrinorb.com/guides/features/padrino-mailer/#configuration'
             end
 
             return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)

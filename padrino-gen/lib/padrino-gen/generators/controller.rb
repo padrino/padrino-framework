@@ -10,7 +10,7 @@ module Padrino
       Padrino::Generators.add_generator(:controller, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen controller [name]"; end
+      def self.banner; 'padrino-gen controller [name]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -62,9 +62,9 @@ module Padrino
             path = @controller.dup
 
             if options[:parent] && !options[:parent].empty?
-              path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend("/")
+              path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend('/')
             end
-            path.prepend("/") unless path.start_with?("/")
+            path.prepend('/') unless path.start_with?('/')
             generate_controller_test(name, path)
           end
 

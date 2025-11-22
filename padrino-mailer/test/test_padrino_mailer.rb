@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/padrino_app/app')
 
-describe "PadrinoMailer" do
+describe 'PadrinoMailer' do
   describe 'for mail delivery in sample Sinatra application' do
     before { @app = SinatraApp }
 
@@ -20,7 +20,7 @@ describe "PadrinoMailer" do
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'john@fake.com',
                         :from => 'noreply@birthday.com',
-                        :subject => "Happy Birthday!",
+                        :subject => 'Happy Birthday!',
                         :body => "Happy Birthday Joey!\nYou are turning 21")
     end
 
@@ -68,7 +68,7 @@ describe "PadrinoMailer" do
       post '/deliver/plain'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'john@fake.com', :from => 'noreply@birthday.com',
-                        :subject => "Happy Birthday!",
+                        :subject => 'Happy Birthday!',
                         :body => "Happy Birthday Joey!\nYou are turning 21")
     end
 
@@ -107,7 +107,7 @@ describe "PadrinoMailer" do
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
                         :content_type => 'text/html',
-                        :subject => 'Welcome Helper!', :body => "<a href=\"#\">jim</a>")
+                        :subject => 'Welcome Helper!', :body => '<a href="#">jim</a>')
     end
 
     it 'should fail with proper message if mailer is not registered' do
@@ -128,14 +128,14 @@ describe "PadrinoMailer" do
       post '/deliver/default_mailer_name'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
-                        :content_type => 'text/plain', :body => "dmn")
+                        :content_type => 'text/plain', :body => 'dmn')
     end
 
     it 'should be able to render default mailer email names' do
       post '/deliver/default_mailer_email_name'
       assert_equal 'mail delivered', body
       assert_email_sent(:to => 'jim@fake.com', :from => 'noreply@custom.com',
-                        :content_type => 'text/plain', :body => "dmen")
+                        :content_type => 'text/plain', :body => 'dmen')
     end
   end
 end

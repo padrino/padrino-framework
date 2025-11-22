@@ -118,7 +118,7 @@ def setup_orm
       ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'"))
       ar.gsub!(/!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'"))
       ar.gsub!(/!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'"))
-      require_dependencies 'mysql', :version => "~> 2.8.1"
+      require_dependencies 'mysql', :version => '~> 2.8.1'
     when 'mysql', 'mysql2'
       ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'"))
       ar.gsub!(/!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'"))
@@ -139,7 +139,7 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask("Please, choose a proper adapter:", :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 
@@ -159,7 +159,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "field :#{field}, :as => :#{kind}" }.join("\n  ")
   model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

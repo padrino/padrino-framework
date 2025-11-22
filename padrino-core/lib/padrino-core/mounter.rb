@@ -30,7 +30,7 @@ module Padrino
     def initialize(name, options={})
       @name      = name.to_s
       @app_class = options[:app_class] || Inflections.camelize(@name)
-      @gem       = options[:gem]       || Inflections.underscore(@app_class.split("::").first)
+      @gem       = options[:gem]       || Inflections.underscore(@app_class.split('::').first)
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
@@ -39,7 +39,7 @@ module Padrino
         @app_obj.mounter_options = options
       end
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
-      @uri_root  = "/"
+      @uri_root  = '/'
       @cascade   = options[:cascade] ? options[:cascade] == true ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
       Padrino::Reloader.exclude_constants << @app_class
     end
@@ -138,7 +138,7 @@ module Padrino
         route_name = route.name.to_s
         route_name =
           if route.controller
-            route_name.split(" ", 2).map{|name| ":#{name}" }.join(", ")
+            route_name.split(' ', 2).map{|name| ":#{name}" }.join(', ')
           else
             ":#{route_name}"
           end
@@ -164,7 +164,7 @@ module Padrino
     #
     def app_constant
       klass = Object
-      app_class.split("::").each do |piece|
+      app_class.split('::').each do |piece|
         piece = piece.to_sym
         if klass.const_defined?(piece, false)
           klass = klass.const_get(piece)
@@ -196,15 +196,15 @@ module Padrino
       candidates  = []
       candidates << app_const.app_file if app_const.respond_to?(:app_file)
       candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-      candidates << Padrino.mounted_root(name.downcase, "app.rb")
-      simple_name = name.split("::").last.downcase
-      mod_name = name.split("::")[0..-2].join("::")
+      candidates << Padrino.mounted_root(name.downcase, 'app.rb')
+      simple_name = name.split('::').last.downcase
+      mod_name = name.split('::')[0..-2].join('::')
       Padrino.modules.each do |mod|
         if mod.name == mod_name
-          candidates << mod.root(simple_name, "app.rb")
+          candidates << mod.root(simple_name, 'app.rb')
         end
       end
-      candidates << Padrino.root("app", "app.rb")
+      candidates << Padrino.root('app', 'app.rb')
       candidates.find { |candidate| File.exist?(candidate) }
     end
 
@@ -235,7 +235,7 @@ module Padrino
     #   the root to the mounted apps base directory.
     #
     def mounted_root(*args)
-      Padrino.root(@mounted_root ||= "", *args)
+      Padrino.root(@mounted_root ||= '', *args)
     end
 
     ##

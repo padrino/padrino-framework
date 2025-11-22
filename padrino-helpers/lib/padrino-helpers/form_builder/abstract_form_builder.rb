@@ -8,7 +8,7 @@ module Padrino
 
         def initialize(template, object, options={})
           @template = template
-          fail "FormBuilder template must be initialized" unless template
+          fail 'FormBuilder template must be initialized' unless template
           @object = object.kind_of?(Symbol) ? build_object(object) : object
           fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
@@ -292,7 +292,7 @@ module Padrino
           if is_nested
             fragment = parent_form.field_name.dup << "[#{attributes_name}"
             fragment << "][#{nested_index}" if nested_index
-            fragment << "]"
+            fragment << ']'
           else
             model_name.to_s.dup
           end

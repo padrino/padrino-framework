@@ -11,7 +11,7 @@ def setup_orm
   _mongomatic = MONGOMATIC
   require_dependencies 'mongomatic'
   require_dependencies 'bson_ext', :require => 'mongo'
-  create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
 end
 
 MONGOMATIC_MODEL = <<-MODEL unless defined?(MONGOMATIC_MODEL)
@@ -65,7 +65,7 @@ MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options={})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-    field_tuples = options[:fields].map { |value| value.split(":") }
+    field_tuples = options[:fields].map { |value| value.split(':') }
     column_declarations = field_tuples.map { |field, _kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
     # Really ugly oneliner
     integers = field_tuples.select { |_col, type| type =~ /[Ii]nteger/ }.map { |field, _kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")

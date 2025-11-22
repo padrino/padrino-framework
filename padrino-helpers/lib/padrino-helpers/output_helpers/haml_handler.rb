@@ -2,7 +2,7 @@ module Padrino
   module Helpers
     module OutputHelpers
       # Haml and Hamlit require different detection code
-      if defined?(Haml) && Tilt.template_for('.haml').to_s == "Padrino::Rendering::HamlTemplate"
+      if defined?(Haml) && Tilt.template_for('.haml').to_s == 'Padrino::Rendering::HamlTemplate'
         ##
         # Handler for Haml templates.
         #

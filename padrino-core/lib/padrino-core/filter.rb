@@ -27,7 +27,7 @@ module Padrino
     private
 
     def scoped_controller_name
-      @scoped_controller_name ||= Array(@scoped_controller).join("_")
+      @scoped_controller_name ||= Array(@scoped_controller).join('_')
     end
 
     def match_with_arguments?(request)
@@ -37,7 +37,7 @@ module Padrino
         if argument.instance_of?(Symbol)
           next unless route
           name = route.name
-          argument == name || name == [scoped_controller_name, argument].join(" ").to_sym
+          argument == name || name == [scoped_controller_name, argument].join(' ').to_sym
         else
           argument === path
         end

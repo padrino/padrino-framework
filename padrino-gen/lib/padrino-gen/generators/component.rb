@@ -9,7 +9,7 @@ module Padrino
       Padrino::Generators.add_generator(:component, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen component [options]"; end
+      def self.banner; 'padrino-gen component [options]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -30,11 +30,11 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           @_components = options.class.new(options.slice(*self.class.component_types))
-          @app_name = (options[:app] || "App").gsub(/\W/, '_').camelize
+          @app_name = (options[:app] || 'App').gsub(/\W/, '_').camelize
           if @_components.values.delete_if(&:empty?).empty?
-            self.class.start(["-h"])
+            self.class.start(['-h'])
             say
-            say "Current Selected Components:"
+            say 'Current Selected Components:'
             list = []
             self.class.component_types.each do |comp|
               list << [comp, fetch_component_choice(comp)]
@@ -54,14 +54,14 @@ module Padrino
             @project_name = fetch_component_choice(:namespace)
             if comp.to_s == 'test' && !already_exists?(@app_name, @project_name)
               say "#{@project_name}::#{@app_name} does not exist."
-              say "Please, change app name."
+              say 'Please, change app name.'
               next
             end
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
             if comp.to_s == 'orm' && choice.to_s != 'none'
-              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", :before => "PadrinoTasks.init"
-              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", :before => "PadrinoTasks.init"
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", :before => 'PadrinoTasks.init'
+              inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", :before => 'PadrinoTasks.init'
             end
           end
         else

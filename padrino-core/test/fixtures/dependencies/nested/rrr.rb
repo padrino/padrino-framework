@@ -1,5 +1,5 @@
 class RRR
   def self.hello
-    "hello"
+    'hello'
   end
 end

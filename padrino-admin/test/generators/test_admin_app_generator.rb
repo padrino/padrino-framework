@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe "AdminAppGenerator" do
+describe 'AdminAppGenerator' do
   before do
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -28,12 +28,12 @@ describe "AdminAppGenerator" do
       assert_raises(SystemExit) { @out, @err = capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
-    it "should store and apply session_secret" do
+    it 'should store and apply session_secret' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper','-e=haml') }
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
-    it "should generate the admin app" do
+    it 'should generate the admin app' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_dir_exists("#{@apptmp}/sample_project")
@@ -59,14 +59,14 @@ describe "AdminAppGenerator" do
       assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
     end
 
-    it "should generate the master app" do
+    it 'should generate the master app' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project", '--admin-name=master') }
       assert_file_exists("#{@apptmp}/sample_project/master/app.rb")
     end
 
     # users can override certain templates from a generators/templates folder in the destination_root
-    it "should use custom generator templates from the project root, if they exist" do
+    it 'should use custom generator templates from the project root, if they exist' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       custom_template_path = "#{@apptmp}/sample_project/generators/templates/slim/app/layouts/"
       `mkdir -p #{custom_template_path} && echo "h1 = 'Hello, custom generator' " > #{custom_template_path}application.slim.tt`
@@ -74,12 +74,12 @@ describe "AdminAppGenerator" do
       assert_match_in_file(/Hello, custom generator/, "#{@apptmp}/sample_project/admin/views/layouts/application.slim")
     end
 
-    it "should generate the admin app under a different folder" do
+    it 'should generate the admin app under a different folder' do
       # TODO: FIXME Implement option --admin_root or something. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
       skip
     end
 
-    describe "renderers" do
+    describe 'renderers' do
       it 'should correctly generate a new padrino admin application with haml renderer (default)' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
@@ -179,7 +179,7 @@ describe "AdminAppGenerator" do
       # assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
     end
 
-    describe "activerecord middleware" do
+    describe 'activerecord middleware' do
       it 'should add it for #activerecord' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
@@ -199,7 +199,7 @@ describe "AdminAppGenerator" do
       end
     end
 
-    describe "datamapper middleware" do
+    describe 'datamapper middleware' do
       it 'should add it for #datamapper' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
@@ -219,7 +219,7 @@ describe "AdminAppGenerator" do
       # Add seeds file
       FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
       File.open(@apptmp + '/sample_project/db/seeds.rb', 'w+') do |seeds_rb|
-        seeds_rb.puts "# Old Seeds Content"
+        seeds_rb.puts '# Old Seeds Content'
       end
 
       out, = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }

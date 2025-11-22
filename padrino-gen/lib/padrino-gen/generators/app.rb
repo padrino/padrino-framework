@@ -10,7 +10,7 @@ module Padrino
       Padrino::Generators.add_generator(:app, self)
 
       def self.source_root; __dir__; end
-      def self.banner; "padrino-gen app [name]"; end
+      def self.banner; 'padrino-gen app [name]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -43,7 +43,7 @@ module Padrino
           else
             unless options[:force]
               say "#{@app_name} already exists."
-              say "Please, change the name."
+              say 'Please, change the name.'
               return
             end
           end if already_exists?(@app_name, @project_name)

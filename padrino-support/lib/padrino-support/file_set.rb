@@ -2,7 +2,7 @@
 # FileSet helper method for iterating and interacting with files inside a directory
 #
 module FileSet
-  extend self
+  module_function
   ##
   # Iterates over every file in the glob pattern and yields to a block
   # Returns the list of files matching the glob pattern

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Core" do
+describe 'Core' do
   def setup
     Padrino.clear!
   end
@@ -45,7 +45,7 @@ describe "Core" do
 
         def call(env)
           status, headers, body = @app.call(env)
-          headers["Middleware-Called"] = "yes"
+          headers['Middleware-Called'] = 'yes'
           [status, headers, body]
         end
       }
@@ -53,10 +53,10 @@ describe "Core" do
       class Foo < Padrino::Application; end
 
       Padrino.use(test)
-      Padrino.mount(Foo).to("/")
+      Padrino.mount(Foo).to('/')
 
-      res = Rack::MockRequest.new(Padrino.application).get("/")
-      assert_equal "yes", res["Middleware-Called"]
+      res = Rack::MockRequest.new(Padrino.application).get('/')
+      assert_equal 'yes', res['Middleware-Called']
     end
 
     it 'should properly set default options' do
@@ -78,10 +78,10 @@ describe "Core" do
         get(:index){ raise StandardError }
       end
 
-      get "/"
+      get '/'
       assert_equal 500, status
-      assert_includes body, "StandardError"
-      assert_includes body, "<code>show_exceptions</code> setting"
+      assert_includes body, 'StandardError'
+      assert_includes body, '<code>show_exceptions</code> setting'
     end
   end
 end

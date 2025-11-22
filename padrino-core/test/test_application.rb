@@ -4,7 +4,7 @@ class PadrinoPristine < Padrino::Application; end
 class PadrinoTestApp  < Padrino::Application; end
 class PadrinoTestApp2 < Padrino::Application; end
 
-describe "Application" do
+describe 'Application' do
   before { Padrino.clear! }
 
   describe 'for application functionality' do
@@ -33,29 +33,29 @@ describe "Application" do
     end
 
     it 'should set global project settings' do
-      Padrino.configure_apps { enable :sessions; set :foo, "bar" }
+      Padrino.configure_apps { enable :sessions; set :foo, 'bar' }
       PadrinoTestApp.send(:default_configuration!)
       PadrinoTestApp2.send(:default_configuration!)
-      assert PadrinoTestApp.sessions, "should have sessions enabled"
-      assert_equal "bar", PadrinoTestApp.settings.foo, "should have foo assigned"
+      assert PadrinoTestApp.sessions, 'should have sessions enabled'
+      assert_equal 'bar', PadrinoTestApp.settings.foo, 'should have foo assigned'
       assert_equal PadrinoTestApp.session_secret, PadrinoTestApp2.session_secret
     end
 
     it 'should be able to configure_apps multiple times' do
-      Padrino.configure_apps { set :foo1, "bar" }
-      Padrino.configure_apps { set :foo1, "bam" }
-      Padrino.configure_apps { set :foo2, "baz" }
+      Padrino.configure_apps { set :foo1, 'bar' }
+      Padrino.configure_apps { set :foo1, 'bam' }
+      Padrino.configure_apps { set :foo2, 'baz' }
       PadrinoTestApp.send(:default_configuration!)
-      assert_equal "bam", PadrinoTestApp.settings.foo1, "should have foo1 assigned to bam"
-      assert_equal "baz", PadrinoTestApp.settings.foo2, "should have foo2 assigned to baz"
+      assert_equal 'bam', PadrinoTestApp.settings.foo1, 'should have foo1 assigned to bam'
+      assert_equal 'baz', PadrinoTestApp.settings.foo2, 'should have foo2 assigned to baz'
     end
 
     it 'should have shared sessions accessible in project' do
       Padrino.configure_apps { enable :sessions; set :session_secret, PadrinoTestApp2.session_secret }
-      Padrino.mount("PadrinoTestApp").to("/write")
-      Padrino.mount("PadrinoTestApp2").to("/read")
+      Padrino.mount('PadrinoTestApp').to('/write')
+      Padrino.mount('PadrinoTestApp2').to('/read')
       PadrinoTestApp.send :default_configuration!
-      PadrinoTestApp.get('/') { session[:foo] = "shared" }
+      PadrinoTestApp.get('/') { session[:foo] = 'shared' }
       PadrinoTestApp2.send(:default_configuration!)
       PadrinoTestApp2.get('/') { session[:foo] }
       @app = Padrino.application
@@ -75,8 +75,8 @@ describe "Application" do
       class PadrinoTestApp3 < Padrino::Application
         set :sessions, :use => Rack::Session::Pool
       end
-      Padrino.mount("PadrinoTestApp3").to("/")
-      PadrinoTestApp3.get('/write') { session[:foo] = "pool" }
+      Padrino.mount('PadrinoTestApp3').to('/')
+      PadrinoTestApp3.get('/write') { session[:foo] = 'pool' }
       PadrinoTestApp3.get('/read') { session[:foo] }
       @app = Padrino.application
       get '/write'
@@ -91,9 +91,9 @@ describe "Application" do
       class PadrinoTestApp5 < Padrino::Application
         set :sessions, :use => Rack::Session::Pool
       end
-      Padrino.mount("PadrinoTestApp4").to("/write")
-      Padrino.mount("PadrinoTestApp5").to("/read")
-      PadrinoTestApp4.get('/') { session[:foo] = "cookie" }
+      Padrino.mount('PadrinoTestApp4').to('/write')
+      Padrino.mount('PadrinoTestApp5').to('/read')
+      PadrinoTestApp4.get('/') { session[:foo] = 'cookie' }
       PadrinoTestApp5.get('/') { session[:foo] }
       @app = Padrino.application
       get '/write'
@@ -106,8 +106,8 @@ describe "Application" do
       mock_app do
         provides :xml
 
-        get("/foo"){ "Foo in #{content_type.inspect}" }
-        get("/bar"){ "Foo in #{content_type.inspect}" }
+        get('/foo'){ "Foo in #{content_type.inspect}" }
+        get('/bar'){ "Foo in #{content_type.inspect}" }
       end
 
       get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
@@ -116,7 +116,7 @@ describe "Application" do
       assert_equal 'Foo in :xml', body
 
       get '/bar', {}, { 'HTTP_ACCEPT' => 'application/xml' }
-      assert_equal "Foo in nil", body
+      assert_equal 'Foo in nil', body
     end
 
     it 'should resolve views and layouts paths' do
@@ -124,16 +124,16 @@ describe "Application" do
       assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
     end
 
-    describe "errors" do
+    describe 'errors' do
       it 'should have not mapped errors on development' do
         mock_app { get('/'){ 'HI' } }
-        get "/"
+        get '/'
         assert_empty @app.errors
       end
 
       it 'should have mapped errors on production' do
         mock_app { set :environment, :production; get('/'){ 'HI' } }
-        get "/"
+        get '/'
         assert_equal 1, @app.errors.size
       end
 
@@ -143,7 +143,7 @@ describe "Application" do
           get('/'){ raise }
           error(::Exception){ 'custom error' }
         end
-        get "/"
+        get '/'
         assert_equal 1, @app.errors.size
         assert_equal 'custom error', body
       end
@@ -164,8 +164,8 @@ describe "Application" do
       end
     end
 
-    describe "pre-compile routes" do
-      it "should compile routes before first request if enabled the :precompile_routes option" do
+    describe 'pre-compile routes' do
+      it 'should compile routes before first request if enabled the :precompile_routes option' do
         require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine

@@ -91,12 +91,12 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask("Please, choose a proper adapter:", :limited_to => %w[mysql mysql2 postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 postgres sqlite])
     retry
   end
 
-  create_file("config/database.rb", dm)
-  insert_hook("DataMapper.finalize", :after_load)
+  create_file('config/database.rb', dm)
+  insert_hook('DataMapper.finalize', :after_load)
   middleware :identity_map, IDENTITY_MAP_MIDDLEWARE
 end
 
@@ -114,7 +114,7 @@ MODEL
 def create_model_file(name, options={})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   field_tuples.map! { |field, kind| kind =~ /datetime/i ? [field, 'DateTime'] : [field, kind] } # fix datetime
   column_declarations = field_tuples.map { |field, kind|"property :#{field}, #{kind.underscore.camelize}" }.join("\n  ")
   model_contents.gsub!(/!FIELDS!/, column_declarations)

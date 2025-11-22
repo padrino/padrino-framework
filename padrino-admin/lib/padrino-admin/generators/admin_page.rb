@@ -12,7 +12,7 @@ module Padrino
       # Define the source template root.
       def self.source_root; __dir__; end
       # Defines the "banner" text for the CLI.
-      def self.banner; "padrino-gen admin_page [model]"; end
+      def self.banner; 'padrino-gen admin_page [model]'; end
 
       # Include related modules.
       include Thor::Actions
@@ -29,9 +29,9 @@ module Padrino
       end
 
       desc "Description:\n\n\tpadrino-gen admin_page model(s)"
-      argument :models, :desc => "The name(s) of your model(s)", :type => :array
-      class_option :skip_migration, :aliases => "-s", :default => false, :type => :boolean
-      class_option :root, :desc => "The root destination", :aliases => '-r', :type => :string
+      argument :models, :desc => 'The name(s) of your model(s)', :type => :array
+      class_option :skip_migration, :aliases => '-s', :default => false, :type => :boolean
+      class_option :root, :desc => 'The root destination', :aliases => '-r', :type => :string
       class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
       class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
       # Show help if no argv given.
@@ -50,7 +50,7 @@ module Padrino
             self.behavior = :revoke if options[:destroy]
             empty_directory destination_root(@admin_path+"/views/#{@orm.name_plural}")
 
-            template "templates/page/controller.rb.tt",       destination_root(@admin_path+"/controllers/#{@orm.name_plural}.rb")
+            template 'templates/page/controller.rb.tt',       destination_root(@admin_path+"/controllers/#{@orm.name_plural}.rb")
             template "templates/#{ext}/page/_form.#{ext}.tt", destination_root(@admin_path+"/views/#{@orm.name_plural}/_form.#{ext}")
             template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root(@admin_path+"/views/#{@orm.name_plural}/edit.#{ext}")
             template "templates/#{ext}/page/index.#{ext}.tt", destination_root(@admin_path+"/views/#{@orm.name_plural}/index.#{ext}")
@@ -59,7 +59,7 @@ module Padrino
             options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end
         else
-          say "You are not at the root of a Padrino application! (config/boot.rb not found)"
+          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
         end
       end
     end

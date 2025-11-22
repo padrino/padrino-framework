@@ -81,7 +81,7 @@ module Padrino
           return SafeBuffer.new unless error
           options = { :tag => :span, :class => :error }.update(options)
           tag   = options.delete(:tag)
-          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(" ")
+          error = [options.delete(:prepend), error, options.delete(:append)].compact.join(' ')
           content_tag(tag, error, options)
         end
 

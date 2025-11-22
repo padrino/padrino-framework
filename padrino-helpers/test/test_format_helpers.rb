@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
 
-describe "FormatHelpers" do
+describe 'FormatHelpers' do
   include Padrino::Helpers::FormatHelpers
 
   def app
@@ -25,13 +25,13 @@ describe "FormatHelpers" do
     end
 
     it 'should support defining a class for the paragraphs' do
-      actual_text = simple_format("Look me! A class!", :class => 'description')
-      assert_equal "<p class=\"description\">Look me! A class!</p>", actual_text
+      actual_text = simple_format('Look me! A class!', :class => 'description')
+      assert_equal '<p class="description">Look me! A class!</p>', actual_text
     end
 
     it 'should escape html tags' do
-      actual_text = simple_format("Will you escape <b>that</b>?")
-      assert_equal "<p>Will you escape &lt;b&gt;that&lt;/b&gt;?</p>", actual_text
+      actual_text = simple_format('Will you escape <b>that</b>?')
+      assert_equal '<p>Will you escape &lt;b&gt;that&lt;/b&gt;?</p>', actual_text
     end
 
     it 'should support already sanitized text' do
@@ -51,8 +51,8 @@ describe "FormatHelpers" do
       end
 
       it 'should support defining a class for the paragraphs' do
-        actual_text = simple_format("Look me! A class!", :class => 'description', :tag => :div)
-        assert_equal "<div class=\"description\">Look me! A class!</div>", actual_text
+        actual_text = simple_format('Look me! A class!', :class => 'description', :tag => :div)
+        assert_equal '<div class="description">Look me! A class!</div>', actual_text
       end
     end
   end
@@ -67,10 +67,10 @@ describe "FormatHelpers" do
       assert_equal "Once\nupon\na\ntime", actual_text
     end
     it 'should return proper formatting for default width' do
-      actual_text = word_wrap((1..50).to_a.join(" "))
-      assert_equal (1..30).to_a.join(" ") + "\n" + (31..50).to_a.join(" "), actual_text
-      actual_text = word_wrap((1..50).to_a.join(" "), 80)
-      assert_equal (1..30).to_a.join(" ") + "\n" + (31..50).to_a.join(" "), actual_text
+      actual_text = word_wrap((1..50).to_a.join(' '))
+      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
+      actual_text = word_wrap((1..50).to_a.join(' '), 80)
+      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
     end
   end
 
@@ -88,31 +88,31 @@ describe "FormatHelpers" do
 
   describe 'for #truncate method' do
     it 'should support default truncation' do
-      actual_text = truncate("Once upon a time in a world far far away")
-      assert_equal "Once upon a time in a world...", actual_text
+      actual_text = truncate('Once upon a time in a world far far away')
+      assert_equal 'Once upon a time in a world...', actual_text
     end
     it 'should support specifying length' do
-      actual_text = truncate("Once upon a time in a world far far away", :length => 14)
-      assert_equal "Once upon a...", actual_text
+      actual_text = truncate('Once upon a time in a world far far away', :length => 14)
+      assert_equal 'Once upon a...', actual_text
     end
     it 'should support specifying omission text' do
-      actual_text = truncate("And they found that many people were sleeping better.", :length => 25, :omission => "(clipped)")
-      assert_equal "And they found t(clipped)", actual_text
+      actual_text = truncate('And they found that many people were sleeping better.', :length => 25, :omission => '(clipped)')
+      assert_equal 'And they found t(clipped)', actual_text
     end
   end
 
   describe 'for #truncate_words method' do
     it 'should support default truncation' do
-      actual_text = truncate_words("Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.")
-      assert_equal "Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...", actual_text
+      actual_text = truncate_words('Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.')
+      assert_equal 'Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...', actual_text
     end
     it 'should support specifying length' do
-      actual_text = truncate_words("Once upon a time in a world far far away", :length => 8)
-      assert_equal "Once upon a time in a world far...", actual_text
+      actual_text = truncate_words('Once upon a time in a world far far away', :length => 8)
+      assert_equal 'Once upon a time in a world far...', actual_text
     end
     it 'should support specifying omission text' do
-      actual_text = truncate_words("And they found that many people were sleeping better.", :length => 4, :omission => "(clipped)")
-      assert_equal "And they found that(clipped)", actual_text
+      actual_text = truncate_words('And they found that many people were sleeping better.', :length => 4, :omission => '(clipped)')
+      assert_equal 'And they found that(clipped)', actual_text
     end
   end
 
@@ -125,8 +125,8 @@ describe "FormatHelpers" do
       assert_equal '&lt;h1&gt;&lt;&gt;&quot;&amp;demo&amp;&quot;&lt;&gt;&lt;/h1&gt;', h('<h1><>"&demo&"<></h1>')
     end
     it 'should return default text if text is empty' do
-      assert_equal 'default', h!("", "default")
-      assert_equal '&nbsp;', h!("")
+      assert_equal 'default', h!('', 'default')
+      assert_equal '&nbsp;', h!('')
     end
     it 'should return text escaped if not empty' do
       assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h!('<h1>hello</h1>')
@@ -134,7 +134,7 @@ describe "FormatHelpers" do
     it 'should mark escaped text as safe' do
       assert_equal false, '<h1>hello</h1>'.html_safe?
       assert_equal true, h('<h1>hello</h1>').html_safe?
-      assert_equal true, h!("", "default").html_safe?
+      assert_equal true, h!('', 'default').html_safe?
     end
   end
 
@@ -208,20 +208,20 @@ describe "FormatHelpers" do
 
   describe 'for #js_escape_html method' do
     it 'should escape double quotes' do
-      assert_equal "\\\"hello\\\"", js_escape_html('"hello"')
-      assert_equal "\\\"hello\\\"", js_escape_html(SafeBuffer.new('"hello"'))
+      assert_equal '\"hello\"', js_escape_html('"hello"')
+      assert_equal '\"hello\"', js_escape_html(SafeBuffer.new('"hello"'))
     end
     it 'should escape single quotes' do
       assert_equal "\\'hello\\'", js_escape_html("'hello'")
       assert_equal "\\'hello\\'", js_escape_html(SafeBuffer.new("'hello'"))
     end
     it 'should escape html tags and breaks' do
-      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html("\n\r<p>hello</p>\r\n")
-      assert_equal "\\n\\n<p>hello<\\/p>\\n", js_escape_html(SafeBuffer.new("\n\r<p>hello</p>\r\n"))
+      assert_equal '\\n\\n<p>hello<\\/p>\\n', js_escape_html("\n\r<p>hello</p>\r\n")
+      assert_equal '\\n\\n<p>hello<\\/p>\\n', js_escape_html(SafeBuffer.new("\n\r<p>hello</p>\r\n"))
     end
     it 'should escape data-confirm attribute' do
-      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html("<data-confirm=\"are you sure\">")
-      assert_equal "<data-confirm=\\\"are you sure\\\">", js_escape_html(SafeBuffer.new("<data-confirm=\"are you sure\">"))
+      assert_equal '<data-confirm=\"are you sure\">', js_escape_html('<data-confirm="are you sure">')
+      assert_equal '<data-confirm=\"are you sure\">', js_escape_html(SafeBuffer.new('<data-confirm="are you sure">'))
     end
     it 'should keep html_safe content html_safe' do
       assert_equal false, js_escape_html('"hello"').html_safe?

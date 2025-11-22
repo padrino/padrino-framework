@@ -111,7 +111,7 @@ module Padrino
         return unless path && line
         root = Padrino.root
         path = File.realpath(path) if Pathname.new(path).relative?
-        if path.start_with?(root) && !path.start_with?(Padrino.root("vendor"))
+        if path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
           "[#{path.gsub("#{root}/", "")}:#{line}] "
         end
       end
@@ -412,8 +412,8 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
       @log              = options[:stream]  || $stdout
       @log.sync         = true
-      @format_datetime  = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message   = options[:format_message]  || "%s - %s %s"
+      @format_datetime  = options[:format_datetime] || '%d/%b/%Y %H:%M:%S'
+      @format_message   = options[:format_message]  || '%s - %s %s'
       @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
       @source_location  = options[:source_location]
@@ -486,7 +486,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     class Rack
       def initialize(app, uri_root)
         @app = app
-        @uri_root = uri_root.sub(/\/$/,"")
+        @uri_root = uri_root.sub(/\/$/,'')
       end
 
       def call(env)
@@ -502,12 +502,12 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       def log(env, status, header, began_at)
         return if env['sinatra.static_file'] && (!logger.respond_to?(:log_static) || !logger.log_static)
         logger.bench(
-          env["REQUEST_METHOD"],
+          env['REQUEST_METHOD'],
           began_at,
           [
             @uri_root.to_s,
-            env["PATH_INFO"],
-            env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
+            env['PATH_INFO'],
+            env['QUERY_STRING'].empty? ? '' : '?' + env['QUERY_STRING'],
             ' - ',
             logger.colorize(status.to_s[0..3], :default, :bold),
             ' ',

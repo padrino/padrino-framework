@@ -30,7 +30,7 @@ Tilt.prefer(Padrino::Rendering::SlimTemplate, :slim)
 
 Padrino::Rendering.engine_configurations[:slim] = {
   :generator => Padrino::Rendering::SlimOutputBuffer,
-  :buffer => "@_out_buf",
+  :buffer => '@_out_buf',
   :use_html_safe => true,
   :disable_capture => true,
 }

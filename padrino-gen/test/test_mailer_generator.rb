@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "MailerGenerator" do
+describe 'MailerGenerator' do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -18,8 +18,8 @@ describe "MailerGenerator" do
     end
 
     it 'should fail with NameError if given invalid namespace names' do
-      capture_io { generate(:project, "sample", "--root=#{@apptmp}") }
-      assert_raises(::NameError) { capture_io { generate(:mailer, "wrong/name", "--root=#{@apptmp}/sample") } }
+      capture_io { generate(:project, 'sample', "--root=#{@apptmp}") }
+      assert_raises(::NameError) { capture_io { generate(:mailer, 'wrong/name', "--root=#{@apptmp}/sample") } }
     end
 
     it 'should generate mailer in specified app' do
@@ -62,7 +62,7 @@ describe "MailerGenerator" do
     end
   end
 
-  describe "the mailer destroy option" do
+  describe 'the mailer destroy option' do
     it 'should destroy mailer file' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project") }

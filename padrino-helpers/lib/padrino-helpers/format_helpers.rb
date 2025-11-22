@@ -53,7 +53,7 @@ module Padrino
       #   strip_tags("<b>Hey</b>") => "Hey"
       #
       def strip_tags(html)
-        html&.gsub(/<\/?[^>]*>/, "")
+        html&.gsub(/<\/?[^>]*>/, '')
       end
 
       ##
@@ -103,7 +103,7 @@ module Padrino
       #   pluralize(2, 'person') => '2 people'
       #
       def pluralize(count, singular, plural = nil)
-        "#{count || 0} " + (count == 1 || count == '1' ? singular : (plural || singular.pluralize))
+        "#{count || 0} " + ([1, '1'].include?(count) ? singular : (plural || singular.pluralize))
       end
 
       ##
@@ -125,7 +125,7 @@ module Padrino
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
       def truncate(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+        options = { :length => 30, :omission => '...' }.update(options)
         if text
           len = options[:length] - options[:omission].length
           chars = text
@@ -152,7 +152,7 @@ module Padrino
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
       def truncate_words(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+        options = { :length => 30, :omission => '...' }.update(options)
         if text
           words = text.split
           words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')

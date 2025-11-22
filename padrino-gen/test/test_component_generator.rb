@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
-require "rb-readline"
+require 'rb-readline'
 
-describe "ComponentGenerator" do
+describe 'ComponentGenerator' do
   def setup
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
@@ -19,7 +19,7 @@ describe "ComponentGenerator" do
     end
   end
 
-  describe "add components" do
+  describe 'add components' do
     it 'should properly generate default' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=activerecord', "-r=#{@apptmp}/sample_project") }
@@ -44,26 +44,26 @@ describe "ComponentGenerator" do
 
     it 'should enable @app_name value' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      capture_io { generate_with_parts(:component, '--test=cucumber', "-r=#{@apptmp}/sample_project", :apps => "app") }
+      capture_io { generate_with_parts(:component, '--test=cucumber', "-r=#{@apptmp}/sample_project", :apps => 'app') }
       assert_match_in_file(/SampleProject::App\.tap \{ \|app\|  \}/, "#{@apptmp}/sample_project/features/support/env.rb")
     end
 
     it 'should generate component in specified app' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'compo', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate_with_parts(:component, '--test=cucumber', "--app=compo", "-r=#{@apptmp}/sample_project", :apps => "compo") }
+      capture_io { generate_with_parts(:component, '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", :apps => 'compo') }
       assert_match_in_file(/SampleProject::Compo\.tap \{ \|app\|  \}/, "#{@apptmp}/sample_project/features/support/env.rb")
     end
 
     it 'should not generate component in specified app if the app does not exist' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      out, = capture_io { generate_with_parts(:component, '--test=cucumber', "--app=compo", "-r=#{@apptmp}/sample_project", :apps => "compo") }
+      out, = capture_io { generate_with_parts(:component, '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", :apps => 'compo') }
       assert_match(/SampleProject::Compo does not exist./, out)
       assert_no_file_exists("#{@apptmp}/sample_project/features")
     end
   end
 
-  describe "specified of same the component" do
+  describe 'specified of same the component' do
     it 'should does not change' do
       capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
@@ -76,7 +76,7 @@ describe "ComponentGenerator" do
     end
   end
 
-  describe "component changes" do
+  describe 'component changes' do
     it 'should when allow changes, will be applied' do
       capture_io { generate(:project, 'sample_project', '--renderer=slim', "--root=#{@apptmp}") }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")

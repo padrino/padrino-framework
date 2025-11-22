@@ -16,7 +16,7 @@ module Mail # @private
         settings.views            = File.join(app.views, 'mailers')
         settings.reload_templates = app.reload_templates?
       else
-        settings.views = File.expand_path("./mailers")
+        settings.views = File.expand_path('./mailers')
         settings.reload_templates = true
       end
 
@@ -117,7 +117,7 @@ module Mail # @private
 
     def do_delivery_with_logging
       logger.debug "Sending email to: #{destinations.join(" ")}"
-      encoded.each_line { |line| logger << ("  " + line.strip) } if logger.debug?
+      encoded.each_line { |line| logger << ('  ' + line.strip) } if logger.debug?
       do_delivery_without_logging
     end
     if Padrino.respond_to?(:logger)
@@ -199,7 +199,7 @@ module Mail # @private
     # Return the default encoding.
     #
     def self.default_encoding
-      "utf-8"
+      'utf-8'
     end
 
     ##

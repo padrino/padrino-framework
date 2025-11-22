@@ -7,7 +7,7 @@ module Padrino
     ##
     # Default helper name for use in tiny app skeleton generator.
     #
-    DEFAULT_HELPER_NAME = "Helper".freeze
+    DEFAULT_HELPER_NAME = 'Helper'.freeze
     ##
     # Common actions needed to support project and component generation.
     #
@@ -232,7 +232,7 @@ module Padrino
       #   invalid_fields ['foo:bar', 'hello:world']
       #
       def invalid_fields(fields)
-        results = fields.select { |field| field.split(":").first =~ /\W/ }
+        results = fields.select { |field| field.split(':').first =~ /\W/ }
         results.empty? ? nil : results
       end
 
@@ -264,15 +264,15 @@ module Padrino
         @project_name ||= begin
           detected_namespace = File.basename(destination_root('.')).gsub(/\W/, '_').camelize
 
-          say "Autodetecting project namespace using folder name.", :red
-          say ""
+          say 'Autodetecting project namespace using folder name.', :red
+          say ''
           say <<-WARNING, :red
 From v0.11.0 on, applications should have a `namespace` setting
 in their .components file. Please include a line like the following
 in your .components file:
 WARNING
           say "\t:namespace: #{detected_namespace}", :yellow
-          say ""
+          say ''
 
           detected_namespace
         end
@@ -328,7 +328,7 @@ WARNING
       def insert_into_gemfile(name, options={})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
@@ -379,8 +379,8 @@ WARNING
       def initializer(name, data=nil)
         @_init_name, @_init_data = name, data
         register = data ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
-        inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
-        template "templates/initializer.rb.tt", destination_root("/config/initializers/#{name}.rb") if data
+        inject_into_file destination_root('/app/app.rb'), register, :after => "Padrino::Application\n"
+        template 'templates/initializer.rb.tt', destination_root("/config/initializers/#{name}.rb") if data
       end
 
       ##
@@ -410,8 +410,8 @@ WARNING
       #
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
-        contrib = "require '" + File.join("padrino-contrib", contrib) + "'\n"
-        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino.load!"
+        contrib = "require '" + File.join('padrino-contrib', contrib) + "'\n"
+        inject_into_file destination_root('/config/boot.rb'), contrib, :before => "\nPadrino.load!"
       end
 
       ##
@@ -448,9 +448,9 @@ WARNING
       def check_app_existence(app)
         unless File.exist?(destination_root(app))
           say
-          say "================================================================="
+          say '================================================================='
           say "Unable to locate '#{app.underscore.camelize}' application        "
-          say "================================================================="
+          say '================================================================='
           say
           raise SystemExit
         end

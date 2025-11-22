@@ -22,7 +22,7 @@ class Minitest::Spec
 
   def stub_static_files
     # register fake URL to avoid downloading static files every time tests run
-    fake_uri_base = "https://raw.github.com/padrino/padrino-static/master/"
+    fake_uri_base = 'https://raw.github.com/padrino/padrino-static/master/'
     %w[
       js/dojo.js
       js/ext.js
@@ -50,11 +50,11 @@ class Minitest::Spec
   # generate_with_parts(:app, "demo", "--root=/tmp/sample_project", :apps => "subapp")
   # This method is intended to reproduce the real environment.
   def generate_with_parts(name, *params)
-    features, constants = [$", Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
+    features, constants = [$LOADED_FEATURES, Object.constants].map{|x| Marshal.load(Marshal.dump(x)) }
 
     if root = params.find{|x| x.index(/-r=|--root=/) }
       root = root.split(/=/)[1]
-      options, model_path = {}, File.expand_path(File.join(root, "/models/**/*.rb"))
+      options, model_path = {}, File.expand_path(File.join(root, '/models/**/*.rb'))
       options = params.pop if params.last.is_a?(Hash)
       Dir[model_path].each{|path| require path }
       Array(options[:apps]).each do |app_name|
@@ -63,12 +63,12 @@ class Minitest::Spec
       end if options[:apps]
     end
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
-    ($" - features).each{|x| $".delete(x) }
+    ($LOADED_FEATURES - features).each{|x| $LOADED_FEATURES.delete(x) }
     (Object.constants - constants).each{|constant| Object.instance_eval{ remove_const(constant) }}
   end
 
   # expects_generated :model, "post title:string body:text"
-  def expects_generated(generator, params="")
+  def expects_generated(generator, params='')
     Padrino.expects(:bin_gen).with(generator, *params.split(' ')).returns(true)
   end
 
@@ -104,6 +104,6 @@ class Minitest::Spec
   # expects_rake "custom"
   def expects_rake(command,options={})
     #options.reverse_merge!(:root => '/tmp')
-    Padrino.expects(:bin).with("rake", command, "-c=#{options[:root]}").returns(true)
+    Padrino.expects(:bin).with('rake', command, "-c=#{options[:root]}").returns(true)
   end
 end

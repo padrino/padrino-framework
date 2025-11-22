@@ -5,7 +5,7 @@ require 'padrino-support/core_ext/string/colorize'
 require 'padrino-support/file_set'
 require 'padrino-support/utils'
 
-if ENV["AS_VERSION"]
+if ENV['AS_VERSION']
   # require ActiveSupport features for tests or legacy projects
   require 'active_support/core_ext/string/output_safety'      # SafeBuffer and html_safe
   require 'active_support/core_ext/object/blank'              # present?

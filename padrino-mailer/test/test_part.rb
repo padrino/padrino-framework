@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Part" do
-  describe "the part" do
+describe 'Part' do
+  describe 'the part' do
     it 'should use correctly parts' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
