@@ -71,7 +71,7 @@ describe "Router" do
 
   it 'should dispatch requests to cascade mounted apps' do
     app = lambda { |env|
-      scary = !!env['PATH_INFO'].match(/scary/)
+      scary = env['PATH_INFO'].match?(/scary/)
       [scary ? 404 : 200, {
         'X-ScriptName' => env['SCRIPT_NAME'],
         'X-PathInfo' => env['PATH_INFO'],
@@ -79,7 +79,7 @@ describe "Router" do
       }, [""]]
     }
     api = lambda { |env|
-      spooky = !!env['QUERY_STRING'].match(/spooky/)
+      spooky = env['QUERY_STRING'].match?(/spooky/)
       [spooky ? 200 : 404, {
         'X-API' => spooky,
         'X-ScriptName' => env['SCRIPT_NAME'],
