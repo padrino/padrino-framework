@@ -68,12 +68,13 @@ module Padrino
     end
 
     def %(args)
-      case args
-      when Hash
-        escaped_args = Hash[args.map { |k,arg| [k, html_escape_interpolated_argument(arg)] }]
-      else
-        escaped_args = Array(args).map { |arg| html_escape_interpolated_argument(arg) }
-      end
+      escaped_args =
+        case args
+        when Hash
+          Hash[args.map { |k,arg| [k, html_escape_interpolated_argument(arg)] }]
+        else
+          Array(args).map { |arg| html_escape_interpolated_argument(arg) }
+        end
 
       self.class.new(super(escaped_args))
     end
