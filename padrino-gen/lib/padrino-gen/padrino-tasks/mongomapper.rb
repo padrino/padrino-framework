@@ -8,7 +8,7 @@ if defined?(MongoMapper)
   namespace :mm do
     desc 'Drops all the collections for the database for the current Padrino.env'
     task :drop => :environment do
-      MongoMapper.database.collections.select {|c| c.name !~ /system/ }.each(&:drop)
+      MongoMapper.database.collections.reject {|c| c.name =~ /system/ }.each(&:drop)
     end
 
     desc "Generates .yml files for I18n translations"

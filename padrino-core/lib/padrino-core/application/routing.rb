@@ -951,7 +951,7 @@ module Padrino
         first_time = true
 
         routes = base.compiled_router.call(@request) do |route, params|
-          next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+          next if route.user_agent && route.user_agent !~ @request.user_agent
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
