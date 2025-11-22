@@ -115,7 +115,7 @@ module Padrino
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
       def feed_tag(mime, url, options={})
-        full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
+        full_mime = mime == :atom ? 'application/atom+xml' : 'application/rss+xml'
         tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
       end
 

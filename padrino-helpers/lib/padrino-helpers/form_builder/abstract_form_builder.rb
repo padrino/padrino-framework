@@ -209,7 +209,7 @@ module Padrino
         # field_name(:number) => "user_telephone_attributes_number"
         # field_name(:street) => "user_addresses_attributes_0_street"
         def field_id(field=nil, value=nil)
-          result = (namespace && !is_nested) ? "#{namespace}_" : ''
+          result = namespace && !is_nested ? "#{namespace}_" : ''
           result << field_id_fragment
           result << "_#{field}" if field
           result << "_#{value}" if value
