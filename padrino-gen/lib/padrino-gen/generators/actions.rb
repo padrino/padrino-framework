@@ -559,7 +559,7 @@ WARNING
         #
         def component_option(name, caption, options = {})
           (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
-          (@available_choices ||= Hash.new)[name] = options[:choices]
+          (@available_choices ||= {})[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
           class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
         end
