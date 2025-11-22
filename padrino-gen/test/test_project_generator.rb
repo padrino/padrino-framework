@@ -282,7 +282,7 @@ describe "ProjectGenerator" do
   describe "the generator for orm components" do
     describe "for sequel" do
       it 'should properly generate default' do
-        @app.instance_eval("undef setup_orm if respond_to?('setup_orm')")
+        @app.send(:undef, :setup_orm) if @app.respond_to?(:setup_orm)
         out, _ = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=sequel', '--script=none') }
         assert_match(/applying.*?sequel.*?orm/, out)
         assert_match_in_file(/gem 'sequel'/, "#{@apptmp}/project.com/Gemfile")
