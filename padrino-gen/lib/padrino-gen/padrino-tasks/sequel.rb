@@ -10,7 +10,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       end
 
       desc "Perform migration up/down to MIGRATION_VERSION"
-      task :to, [:version] => :skeleton do |t, args|
+      task :to, [:version] => :skeleton do |_t, args|
         version = (args[:version] || env_migration_version).to_s.strip
         ::Sequel.extension :migration
         fail "No MIGRATION_VERSION was provided" if version.empty?

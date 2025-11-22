@@ -18,7 +18,7 @@ module Padrino
       #   project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
       #
       def project(options={})
-        components = options.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
+        components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift("project"))

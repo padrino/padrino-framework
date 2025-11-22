@@ -31,7 +31,7 @@ unneccessary memory overhead at should be avoided. Consult the
 following call stacks to see who loaded the offending libraries
 and contact the authors if necessary:"
 WARN
-          loaded_libs.each do |name, stack|
+          loaded_libs.each do |name, _stack|
             $stderr.puts "=================="
             $stderr.puts "libname: " + name
             $stderr.puts "=================="

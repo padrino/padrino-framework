@@ -41,7 +41,7 @@ describe 'Padrino::Cache - Moneta store' do
 
   it "be able to cache forever" do
     Padrino.cache.store('forever', 'cached', :expires => false)
-    2.times { |i| assert_equal 'cached', Padrino.cache['forever'] }
+    2.times { assert_equal 'cached', Padrino.cache['forever'] }
   end
 
   it 'delete a value' do

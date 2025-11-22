@@ -44,7 +44,7 @@ task :version do
 end
 
 desc "Bumps the version number based on given version"
-task :bump, [:version] do |t, args|
+task :bump, [:version] do |_t, args|
   raise "Please specify version=x.x.x !" unless args.version
   version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
   version_text = File.read(version_path).sub(/VERSION = '[a-z0-9\.]+'/, "VERSION = '#{args.version}'")

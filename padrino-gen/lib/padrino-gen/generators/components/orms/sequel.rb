@@ -99,6 +99,6 @@ def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
     :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
-    :remove => Proc.new { |field, kind| "drop_column :#{field}" }
+    :remove => Proc.new { |field, _kind| "drop_column :#{field}" }
   )
 end

@@ -296,7 +296,7 @@ module Padrino
       def parse_data_options(tag, options)
         return unless options
         parsed_options = options.dup
-        options.each do |key, value|
+        options.each do |key, _value|
           next if !DATA_ATTRIBUTES.include?(key) || (tag.to_s == 'form' && key == :method)
           parsed_options["data-#{key}"] = parsed_options.delete(key)
           parsed_options[:rel] = 'nofollow' if key == :method

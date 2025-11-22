@@ -164,7 +164,7 @@ describe "FormBuilder" do
     end
 
     it 'should display fail for nil object' do
-      assert_raises(RuntimeError) { fields_for(@not_real) { |f| "Demo" } }
+      assert_raises(RuntimeError) { fields_for(@not_real) { |_f| "Demo" } }
     end
 
     it 'should respect the builder of parent' do
