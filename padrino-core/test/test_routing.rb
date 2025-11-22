@@ -784,12 +784,7 @@ describe "Routing" do
     Rack::Mime::MIME_TYPES['.foo'] = 'application/foo'
     mock_app do
       get :a, :provides => :any do
-        case content_type
-          when :js    then "js"
-          when :json  then "json"
-          when :foo   then "foo"
-          when :html  then "html"
-        end
+        content_type.to_s if %i[js json foo html].include?(content_type)
       end
     end
     get "/a.js"
