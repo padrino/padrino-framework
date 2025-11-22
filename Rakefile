@@ -2,9 +2,9 @@
 
 require 'fileutils'
 require 'rake'
-require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('padrino-core/lib/padrino-core/version.rb', __dir__)
 
-load File.expand_path('../padrino/subgems.rb', __FILE__)
+load File.expand_path('padrino/subgems.rb', __dir__)
 GEM_PATHS = PADRINO_GEMS.keys
 ROOT = __dir__
 

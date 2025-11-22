@@ -1,8 +1,8 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 
 describe "PadrinoCache" do
   after do
-    tmp = File.expand_path("../tmp", __FILE__)
+    tmp = File.expand_path('tmp', __dir__)
     `rm -rf #{tmp}`
   end
 

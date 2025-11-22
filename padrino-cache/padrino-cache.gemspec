@@ -1,7 +1,7 @@
 #!/usr/bin/env gem build
 # encoding: utf-8
 
-require File.expand_path("../../padrino-core/lib/padrino-core/version.rb", __FILE__)
+require File.expand_path('../padrino-core/lib/padrino-core/version.rb', __dir__)
 
 Gem::Specification.new do |s|
   s.name = "padrino-cache"

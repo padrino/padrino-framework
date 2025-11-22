@@ -2,7 +2,7 @@
 require 'optparse'
 require 'rbconfig'
 
-padrino_perf_path = File.expand_path('../../lib', __FILE__)
+padrino_perf_path = File.expand_path('../lib', __dir__)
 
 argv = []
 OptionParser.new do |opts|
