@@ -154,7 +154,7 @@ module Padrino
       def truncate_words(text, options={})
         options = { :length => 30, :omission => "..." }.update(options)
         if text
-          words = text.split()
+          words = text.split
           words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
         end
       end

@@ -916,7 +916,7 @@ describe "FormHelpers" do
 
     describe 'for omitted args' do
       it 'should display submit tag with default caption' do
-        actual_html = submit_tag()
+        actual_html = submit_tag
         assert_html_has_tag(actual_html, :input, :type => 'submit', :value => 'Submit')
       end
     end
